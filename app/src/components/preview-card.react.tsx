@@ -922,23 +922,25 @@ function isScrollContainer(element: Element) {
 }
 
 /**
- * Returns whether the element shows a classic scrollbar, which takes room.
- * Stopping the element on a touch would hide the scrollbar and reflow its
- * content. Phones and tablets show overlay scrollbars, which take none.
+ * Returns whether the document shows classic scrollbars, which take room.
+ * Stopping a scroll container would hide its scrollbar and reflow its content,
+ * as on a laptop with a touch screen. Phones and tablets show overlay
+ * scrollbars, which take none.
  */
-function hasClassicScrollbar(element: Element) {
-  if (!(element instanceof HTMLElement)) return false;
+function hasClassicScrollbars(doc: Document) {
+  const probe = doc.createElement("div");
+  probe.style.cssText =
+    "position: fixed; width: 100px; height: 100px; overflow: scroll; visibility: hidden";
+  doc.body.appendChild(probe);
+  const classic = probe.offsetWidth > probe.clientWidth;
+  probe.remove();
+  return classic;
+}
+
+function hasScrollOverflow(element: Element) {
   const style = getComputedStyle(element);
-  const borderX =
-    Number.parseFloat(style.borderLeftWidth) +
-    Number.parseFloat(style.borderRightWidth);
-  const borderY =
-    Number.parseFloat(style.borderTopWidth) +
-    Number.parseFloat(style.borderBottomWidth);
-  // The element sizes are rounded, so a pixel of difference is no scrollbar.
   return (
-    element.offsetWidth - element.clientWidth - borderX > 1 ||
-    element.offsetHeight - element.clientHeight - borderY > 1
+    /auto|scroll/.test(style.overflowX) || /auto|scroll/.test(style.overflowY)
   );
 }
 
@@ -951,6 +953,8 @@ function hasClassicScrollbar(element: Element) {
  */
 function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
   const activeRef = useRef(false);
+  // Lets the returned function update the touch scroll lock.
+  const activeChangeRef = useRef<() => void>(undefined);
 
   useEffect(() => {
     const viewport = ref.current;
@@ -965,9 +969,81 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
     const isInViewport = (target: EventTarget | null) => {
       return target instanceof Node && viewport.contains(target);
     };
+    const isActive = () => {
+      if (!activeRef.current) return false;
+      const focused = doc.activeElement;
+      // A click in a preview frame moves focus to it without a pointer or focus
+      // event in this document.
+      if (!focused) return true;
+      if (focused === doc.body) return true;
+      return stage.contains(focused);
+    };
+
+    // A touch cannot pass its scrolling to the page like the wheel. On a touch
+    // screen, an inactive preview stops its scroll containers, so the browser
+    // scrolls the page. See global.css. The browser picks the scroller when a
+    // touch starts, and iOS Safari cancels the touch if that scroller stops
+    // during it, so the containers stop before any touch. This includes
+    // containers whose content fits, since it can overflow later without a DOM
+    // change, such as when the viewport rotates.
+    const touchScreen = window.matchMedia("(any-pointer: coarse)");
+    const scrollLocked = new Set<Element>();
+    let lockable = false;
+    const updateScrollLock = () => {
+      const locked = lockable && !isActive();
+      for (const element of scrollLocked) {
+        if (locked && viewport.contains(element)) continue;
+        element.removeAttribute("data-preview-scroll-lock");
+        scrollLocked.delete(element);
+      }
+      if (!locked) return;
+      for (const element of [viewport, ...viewport.querySelectorAll("*")]) {
+        if (scrollLocked.has(element)) continue;
+        if (!hasScrollOverflow(element)) continue;
+        // Hydration would report the attribute on server-rendered containers as
+        // a mismatch, so islands wait until they drop ssr. React can still be
+        // hydrating then, which only development builds report.
+        if (element.closest("astro-island[ssr]")) continue;
+        element.setAttribute("data-preview-scroll-lock", "");
+        scrollLocked.add(element);
+      }
+    };
+    // Waits for focus to settle, and lets a burst of changes update the lock
+    // once.
+    let scrollLockFrame = 0;
+    const scheduleScrollLock = () => {
+      if (scrollLockFrame) return;
+      scrollLockFrame = requestAnimationFrame(() => {
+        scrollLockFrame = 0;
+        updateScrollLock();
+      });
+    };
+    activeChangeRef.current = scheduleScrollLock;
+    // Scroll containers, such as popups, can appear in the example.
+    const scrollLockObserver = new MutationObserver((records) => {
+      const changed = records.some(
+        (record) => record.attributeName !== "data-preview-scroll-lock",
+      );
+      if (!changed) return;
+      scheduleScrollLock();
+    });
+    const observeScrollLock = () => {
+      scrollLockObserver.disconnect();
+      lockable = touchScreen.matches && !hasClassicScrollbars(doc);
+      if (lockable) {
+        scrollLockObserver.observe(viewport, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+        });
+      }
+      updateScrollLock();
+    };
+
     // Runs in the capture phase, before the handle activates the preview.
     const updateActive = (event: Event) => {
       activeRef.current = isInViewport(event.target);
+      scheduleScrollLock();
     };
     // A touch or pen in the example can start a scroll of the page, so only the
     // click of a tap activates the preview. A tap that stops a scrolling page
@@ -980,82 +1056,55 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
     // body listens to clicks, so the listener is on the viewport.
     const onClick = () => {
       activeRef.current = true;
+      scheduleScrollLock();
     };
-    const isActive = () => {
-      if (!activeRef.current) return false;
-      const focused = doc.activeElement;
-      // A click in a preview frame moves focus to it without a pointer or focus
-      // event in this document.
-      if (!focused) return true;
-      if (focused === doc.body) return true;
-      return stage.contains(focused);
-    };
-    const getScrollContainers = (target: EventTarget | null) => {
-      const containers: Element[] = [];
-      // The listeners are on the viewport, so the target is in its document.
+    const isInScrollContainer = (target: EventTarget | null) => {
+      // The listener is on the viewport, so the target is in its document.
       let element = target instanceof Element ? target : null;
       while (element) {
-        if (isScrollContainer(element)) {
-          containers.push(element);
-        }
-        if (element === viewport) break;
+        if (isScrollContainer(element)) return true;
+        if (element === viewport) return false;
         element = element.parentElement;
       }
-      return containers;
+      return false;
     };
     const onWheel = (event: WheelEvent) => {
       if (isActive()) return;
       // Pinch zoom on trackpads sends wheel events with ctrlKey.
       if (event.ctrlKey) return;
-      if (!getScrollContainers(event.target).length) return;
+      if (!isInScrollContainer(event.target)) return;
       event.preventDefault();
       scrollPage(viewport, event);
     };
-    // A touch cannot pass its scrolling to the page like the wheel, so it stops
-    // the scroll containers under it until it ends. See global.css. Containers
-    // with a classic scrollbar keep scrolling under the touch.
-    let scrollLocked: Element[] = [];
-    const unlockScroll = () => {
+    observeScrollLock();
+    touchScreen.addEventListener("change", observeScrollLock);
+    doc.addEventListener("pointerdown", onPointerDown, true);
+    doc.addEventListener("focusin", updateActive, true);
+    // Focus that moves to a preview frame blurs the window.
+    window.addEventListener("blur", scheduleScrollLock);
+    // A media query can make an element a scroll container.
+    window.addEventListener("resize", scheduleScrollLock);
+    viewport.addEventListener("click", onClick, true);
+    viewport.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      cancelAnimationFrame(scrollLockFrame);
+      scrollLockObserver.disconnect();
+      activeChangeRef.current = undefined;
       for (const element of scrollLocked) {
         element.removeAttribute("data-preview-scroll-lock");
       }
-      scrollLocked = [];
-    };
-    const onTouchStart = (event: TouchEvent) => {
-      if (isActive()) return;
-      for (const element of getScrollContainers(event.target)) {
-        if (hasClassicScrollbar(element)) continue;
-        element.setAttribute("data-preview-scroll-lock", "");
-        scrollLocked.push(element);
-      }
-    };
-    const onTouchEnd = (event: TouchEvent) => {
-      // Touches outside the viewport can still be down.
-      for (const touch of event.touches) {
-        if (isInViewport(touch.target)) return;
-      }
-      unlockScroll();
-    };
-    doc.addEventListener("pointerdown", onPointerDown, true);
-    doc.addEventListener("focusin", updateActive, true);
-    viewport.addEventListener("click", onClick, true);
-    viewport.addEventListener("wheel", onWheel, { passive: false });
-    viewport.addEventListener("touchstart", onTouchStart, { passive: true });
-    viewport.addEventListener("touchend", onTouchEnd);
-    viewport.addEventListener("touchcancel", onTouchEnd);
-    return () => {
-      unlockScroll();
+      touchScreen.removeEventListener("change", observeScrollLock);
       doc.removeEventListener("pointerdown", onPointerDown, true);
       doc.removeEventListener("focusin", updateActive, true);
+      window.removeEventListener("blur", scheduleScrollLock);
+      window.removeEventListener("resize", scheduleScrollLock);
       viewport.removeEventListener("click", onClick, true);
       viewport.removeEventListener("wheel", onWheel);
-      viewport.removeEventListener("touchstart", onTouchStart);
-      viewport.removeEventListener("touchend", onTouchEnd);
-      viewport.removeEventListener("touchcancel", onTouchEnd);
     };
   }, [ref]);
 
   return () => {
     activeRef.current = true;
+    activeChangeRef.current?.();
   };
 }

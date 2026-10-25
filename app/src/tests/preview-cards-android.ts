@@ -15,9 +15,8 @@ async function getCenter(locator: Locator): Promise<Point> {
   return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
 }
 
-// Playwright can tap, but it cannot swipe or keep two fingers down, so the
-// tests send touches through the Chrome DevTools Protocol. Chrome then scrolls
-// as it would for a person.
+// Playwright can tap, but it cannot swipe, so the tests send touches through
+// the Chrome DevTools Protocol. Chrome then scrolls as it would for a person.
 async function openTouchscreen(page: Page) {
   const session = await page.context().newCDPSession(page);
   return {
@@ -71,38 +70,8 @@ async function swipe({ page, from, distance, fling = false }: SwipeParams) {
   await touchscreen.send("touchEnd", [], end);
 }
 
-interface TwoFingerTouchParams {
-  page: Page;
-  first: Point;
-  second: Point;
-  whileDown: () => Promise<void>;
-}
-
-// Puts a finger on each point, runs the callback while both are down, and lifts
-// the first finger before the second one. The second finger keeps the first one
-// from being a tap.
-async function touchWithTwoFingers({
-  page,
-  first,
-  second,
-  whileDown,
-}: TwoFingerTouchParams) {
-  await using touchscreen = await openTouchscreen(page);
-  await touchscreen.send("touchStart", [first]);
-  await touchscreen.send("touchStart", [first, second]);
-  await whileDown();
-  // Without points, touchEnd lifts each finger in the order it went down.
-  await touchscreen.send("touchEnd", []);
-}
-
 // A position in the padding of the example, away from its controls.
 const paddingPosition = { x: 8, y: 120 };
-
-async function getPaddingPoint(viewport: Locator): Promise<Point> {
-  const box = await viewport.boundingBox();
-  if (!box) throw new Error("The example has no bounding box.");
-  return { x: box.x + paddingPosition.x, y: box.y + paddingPosition.y };
-}
 
 async function getComboboxFrame(page: Page) {
   await gotoAndSettle(page, "/react/recipes/combobox-group/");
@@ -118,17 +87,11 @@ async function getComboboxFrame(page: Page) {
   await expect(listbox).toBeVisible();
   // The popup has more options than it fits, so a touch over it could scroll
   // it. Its contained overscroll would also keep the touch from the page.
-  await expect
-    .poll(() =>
-      listbox.evaluate(
-        (element) => element.scrollHeight > element.clientHeight,
-      ),
-    )
-    .toBe(true);
+  await expect.poll(() => isOverflowing(listbox)).toBe(true);
   return { frame, listbox };
 }
 
-async function getSlotsViewport(page: Page, card: Locator) {
+async function findSlotsViewport(page: Page, card: Locator) {
   await gotoAndSettle(page, "/react/recipes/text-field/");
   await card.scrollIntoViewIfNeeded();
   // The card hydrates when it scrolls into view, and then measures the width
@@ -140,15 +103,19 @@ async function getSlotsViewport(page: Page, card: Locator) {
     state: "attached",
   });
   const viewportId = await handle.getAttribute("aria-controls");
-  const viewport = page.locator(`[id="${viewportId}"]`);
+  return page.locator(`[id="${viewportId}"]`);
+}
+
+function isOverflowing(locator: Locator) {
+  return locator.evaluate(
+    (element) => element.scrollHeight > element.clientHeight,
+  );
+}
+
+async function getSlotsViewport(page: Page, card: Locator) {
+  const viewport = await findSlotsViewport(page, card);
   // The example is taller than the card on a phone, so it scrolls in it.
-  await expect
-    .poll(() =>
-      viewport.evaluate(
-        (element) => element.scrollHeight > element.clientHeight,
-      ),
-    )
-    .toBe(true);
+  await expect.poll(() => isOverflowing(viewport)).toBe(true);
   return viewport;
 }
 
@@ -165,6 +132,9 @@ test("preview card frames pass touch scrolling to the page until activated", asy
   q,
 }) => {
   const { frame, listbox } = await getComboboxFrame(page);
+  // The browser picks the scroller when a touch starts, so the popup stops
+  // before any touch.
+  await expect(listbox).toHaveCSS("overflow-y", "hidden");
   const pageScroll = await getPageScroll(page);
   await swipe({ page, from: await getCenter(listbox), distance: 100 });
   await expect.poll(() => getPageScroll(page)).toBeGreaterThan(pageScroll);
@@ -185,6 +155,7 @@ test("preview card frames pass touch scrolling to the page until activated", asy
     "data-preview-active",
     "",
   );
+  await expect(listbox).toHaveCSS("overflow-y", "auto");
   await swipe({ page, from: await getCenter(listbox), distance: 100 });
   await expect.poll(() => getScrollTop(listbox)).toBeGreaterThan(0);
 
@@ -211,6 +182,7 @@ test("preview card frames pass touch scrolling to the page until activated", asy
     "data-preview-active",
     "",
   );
+  await expect(listbox).toHaveCSS("overflow-y", "hidden");
   const inactiveScroll = await getPageScroll(page);
   const listboxScroll = await getScrollTop(listbox);
   await swipe({ page, from: await getCenter(listbox), distance: -100 });
@@ -223,6 +195,7 @@ test("preview card frames pass touch scrolling to the page until activated", asy
     "",
   );
   await expect(listbox).toBeVisible();
+  await expect(listbox).toHaveCSS("overflow-y", "auto");
   const activeScroll = await getScrollTop(listbox);
   await swipe({ page, from: await getCenter(listbox), distance: -100 });
   await expect.poll(() => getScrollTop(listbox)).toBeLessThan(activeScroll);
@@ -243,6 +216,13 @@ test("preview card frames take arrow keys after a touch on the docs page", async
   const frame = iframe.contentFrame();
   const root = frame.locator("html");
   await expect(root).toHaveAttribute("data-preview-hydrated", "");
+  // The sidebar fits the frame, but it can overflow once the frame resizes, so
+  // it stops before any touch.
+  const sidebar = query(frame)
+    .navigation("Primary")
+    .locator(".shell-sidebar-body");
+  expect(await isOverflowing(sidebar)).toBe(false);
+  await expect(sidebar).toHaveCSS("overflow-y", "hidden");
   const today = query(frame).radio("Today");
   await today.tap();
   await expect(today).toBeFocused();
@@ -264,32 +244,15 @@ test("preview card frames take arrow keys after a touch on the docs page", async
   await expect(root).toHaveAttribute("data-preview-active", "");
 });
 
-test("preview card frames stop scrolling only while a touch is in them", async ({
-  page,
-  q,
-}) => {
-  const { frame, listbox } = await getComboboxFrame(page);
-  const cardTitle = query(q.region("Combobox Group", { exact: true })).heading(
-    "Combobox Group",
-  );
-  // A finger on the docs page that lifts last does not keep the popup still.
-  await touchWithTwoFingers({
-    page,
-    first: await getCenter(query(frame).text("Members")),
-    second: await getCenter(cardTitle),
-    whileDown: async () => {
-      await expect(listbox).toHaveCSS("overflow-y", "hidden");
-    },
-  });
-  await expect(listbox).toHaveCSS("overflow-y", "auto");
-});
-
 test("inline previews pass touch scrolling to the page until tapped", async ({
   page,
   q,
 }) => {
   const card = q.region("Slots", { exact: true });
   const viewport = await getSlotsViewport(page, card);
+  // The browser picks the scroller when a touch starts, so the example stops
+  // before any touch.
+  await expect(viewport).toHaveCSS("overflow-y", "hidden");
   const pageScroll = await getPageScroll(page);
   await swipe({ page, from: await getCenter(viewport), distance: 100 });
   await expect.poll(() => getPageScroll(page)).toBeGreaterThan(pageScroll);
@@ -298,6 +261,7 @@ test("inline previews pass touch scrolling to the page until tapped", async ({
   // A tap in the example activates it, so the next touch scrolls it.
   await viewport.tap({ position: paddingPosition });
   await expect(viewport).toBeFocused();
+  await expect(viewport).toHaveCSS("overflow-y", "auto");
   await swipe({ page, from: await getCenter(viewport), distance: 100 });
   await expect.poll(() => getScrollTop(viewport)).toBeGreaterThan(0);
 
@@ -313,6 +277,7 @@ test("inline previews pass touch scrolling to the page until tapped", async ({
   await swipe({ page, from: await getCenter(cardTitle), distance: 100 });
   await expect.poll(() => getPageScroll(page)).toBeGreaterThan(cardScroll);
   await expect(email).toBeFocused();
+  await expect(viewport).toHaveCSS("overflow-y", "hidden");
   const inactiveScroll = await getPageScroll(page);
   const viewportScroll = await getScrollTop(viewport);
   expect(viewportScroll).toBeGreaterThan(0);
@@ -321,6 +286,7 @@ test("inline previews pass touch scrolling to the page until tapped", async ({
   expect(await getScrollTop(viewport)).toBe(viewportScroll);
 
   await email.tap();
+  await expect(viewport).toHaveCSS("overflow-y", "auto");
   const activeScroll = await getScrollTop(viewport);
   expect(activeScroll).toBeGreaterThan(0);
   await swipe({ page, from: await getCenter(viewport), distance: -100 });
@@ -361,20 +327,23 @@ test("inline previews stay inactive after a tap that stops the page", async ({
   expect(await getScrollTop(viewport)).toBe(0);
 });
 
-test("inline previews stop scrolling only while a touch is in them", async ({
+test("inline previews stop their scroll containers before they overflow", async ({
   page,
   q,
 }) => {
+  // The Slots example fits its card in this portrait viewport, and overflows it
+  // once the viewport rotates, without a DOM change.
+  await page.setViewportSize({ width: 393, height: 851 });
   const card = q.region("Slots", { exact: true });
-  const viewport = await getSlotsViewport(page, card);
-  // A finger outside the example that lifts last does not keep it still.
-  await touchWithTwoFingers({
-    page,
-    first: await getPaddingPoint(viewport),
-    second: await getCenter(query(card).heading("Slots")),
-    whileDown: async () => {
-      await expect(viewport).toHaveCSS("overflow-y", "hidden");
-    },
-  });
-  await expect(viewport).toHaveCSS("overflow-y", "auto");
+  const viewport = await findSlotsViewport(page, card);
+  expect(await isOverflowing(viewport)).toBe(false);
+  await expect(viewport).toHaveCSS("overflow-y", "hidden");
+
+  await page.setViewportSize({ width: 851, height: 393 });
+  await expect.poll(() => isOverflowing(viewport)).toBe(true);
+  await viewport.scrollIntoViewIfNeeded();
+  const pageScroll = await getPageScroll(page);
+  await swipe({ page, from: await getCenter(viewport), distance: 100 });
+  await expect.poll(() => getPageScroll(page)).toBeGreaterThan(pageScroll);
+  expect(await getScrollTop(viewport)).toBe(0);
 });

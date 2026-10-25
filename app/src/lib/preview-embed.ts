@@ -347,16 +347,13 @@ export function setupPreviewEmbed() {
         style.overscrollBehaviorX !== "auto");
     return scrollsY || scrollsX;
   };
-  const getScrollContainers = (target: EventTarget | null) => {
-    const containers: Element[] = [];
+  const isInScrollContainer = (target: EventTarget | null) => {
     let element = target instanceof Element ? target : null;
     while (element && element !== document.body) {
-      if (isScrollContainer(element)) {
-        containers.push(element);
-      }
+      if (isScrollContainer(element)) return true;
       element = element.parentElement;
     }
-    return containers;
+    return false;
   };
   window.addEventListener(
     "wheel",
@@ -364,7 +361,7 @@ export function setupPreviewEmbed() {
       if (root.hasAttribute("data-preview-active")) return;
       // Pinch zoom on trackpads sends wheel events with ctrlKey.
       if (event.ctrlKey) return;
-      if (!getScrollContainers(event.target).length) return;
+      if (!isInScrollContainer(event.target)) return;
       event.preventDefault();
       window.parent.postMessage(
         {
@@ -381,57 +378,90 @@ export function setupPreviewEmbed() {
   );
 
   // Stopping a container hides its scrollbar. A classic scrollbar takes room,
-  // so the content would reflow under the touch. Phones and tablets show
-  // overlay scrollbars, which take none.
-  const hasClassicScrollbar = (element: Element) => {
-    if (!(element instanceof HTMLElement)) return false;
+  // so the content would reflow, as on a laptop with a touch screen. Phones and
+  // tablets show overlay scrollbars, which take none.
+  const hasClassicScrollbars = () => {
+    const probe = document.createElement("div");
+    probe.style.cssText =
+      "position: fixed; width: 100px; height: 100px; overflow: scroll; visibility: hidden";
+    document.body.appendChild(probe);
+    const classic = probe.offsetWidth > probe.clientWidth;
+    probe.remove();
+    return classic;
+  };
+  const hasScrollOverflow = (element: Element) => {
     const style = getComputedStyle(element);
-    const borderX =
-      Number.parseFloat(style.borderLeftWidth) +
-      Number.parseFloat(style.borderRightWidth);
-    const borderY =
-      Number.parseFloat(style.borderTopWidth) +
-      Number.parseFloat(style.borderBottomWidth);
-    // The element sizes are rounded, so a pixel of difference is no scrollbar.
     return (
-      element.offsetWidth - element.clientWidth - borderX > 1 ||
-      element.offsetHeight - element.clientHeight - borderY > 1
+      /auto|scroll/.test(style.overflowX) || /auto|scroll/.test(style.overflowY)
     );
   };
 
-  // A touch cannot pass its scrolling to the docs page like the wheel. On an
-  // inactive page, the touch stops the scroll containers under it until it
-  // ends, and the site stylesheet lets their overscroll reach the docs page.
-  // The browser then scrolls the docs page, as it does over the stopped root.
-  // Containers with a classic scrollbar keep scrolling under the touch.
-  let scrollLocked: Element[] = [];
-  window.addEventListener(
-    "touchstart",
-    (event) => {
-      if (root.hasAttribute("data-preview-active")) return;
-      for (const element of getScrollContainers(event.target)) {
-        if (hasClassicScrollbar(element)) continue;
-        element.setAttribute("data-preview-scroll-lock", "");
-        scrollLocked.push(element);
-      }
-    },
-    { capture: true, passive: true },
-  );
-  const unlockScroll = (event: TouchEvent) => {
-    // Touches on the docs page can still be down. Chrome lists them with this
-    // document as their target, and a touch in the page targets an element.
-    for (const touch of event.touches) {
-      if (touch.target instanceof Element && document.contains(touch.target)) {
-        return;
-      }
-    }
+  // A touch cannot pass its scrolling to the docs page like the wheel. On a
+  // touch screen, an inactive page stops its scroll containers, and the site
+  // stylesheet lets their overscroll reach the docs page. The browser then
+  // scrolls the docs page, as it does over the stopped root. The browser picks
+  // the scroller when a touch starts, and iOS Safari cancels the touch if that
+  // scroller stops during it, so the containers stop before any touch. This
+  // includes containers whose content fits, since it can overflow later without
+  // a DOM change, such as when the viewport rotates.
+  const touchScreen = window.matchMedia("(any-pointer: coarse)");
+  const scrollLocked = new Set<Element>();
+  let lockable = false;
+  const updateScrollLock = () => {
+    const locked = lockable && !root.hasAttribute("data-preview-active");
     for (const element of scrollLocked) {
+      if (locked && element.isConnected) continue;
       element.removeAttribute("data-preview-scroll-lock");
+      scrollLocked.delete(element);
     }
-    scrollLocked = [];
+    if (!locked) return;
+    for (const element of document.body.querySelectorAll("*")) {
+      if (scrollLocked.has(element)) continue;
+      if (!hasScrollOverflow(element)) continue;
+      element.setAttribute("data-preview-scroll-lock", "");
+      scrollLocked.add(element);
+    }
   };
-  window.addEventListener("touchend", unlockScroll, true);
-  window.addEventListener("touchcancel", unlockScroll, true);
+  // A burst of changes updates the lock once.
+  let scrollLockFrame = 0;
+  const scheduleScrollLock = () => {
+    if (scrollLockFrame) return;
+    scrollLockFrame = requestAnimationFrame(() => {
+      scrollLockFrame = 0;
+      updateScrollLock();
+    });
+  };
+  // The page becomes active or inactive, and scroll containers such as popups
+  // appear, with DOM changes.
+  const scrollLockObserver = new MutationObserver((records) => {
+    const changed = records.some(
+      (record) => record.attributeName !== "data-preview-scroll-lock",
+    );
+    if (!changed) return;
+    scheduleScrollLock();
+  });
+  const observeScrollLock = () => {
+    scrollLockObserver.disconnect();
+    lockable = touchScreen.matches && !hasClassicScrollbars();
+    if (lockable) {
+      scrollLockObserver.observe(root, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
+    }
+    updateScrollLock();
+  };
+  // Hydration would report the attribute on server-rendered containers as a
+  // mismatch, so the lock waits for the preview island to hydrate. Next.js
+  // pages don't mark the root, so React can still report it there, but only
+  // development builds do.
+  onHydrated(() => {
+    observeScrollLock();
+    touchScreen.addEventListener("change", observeScrollLock);
+    // A media query can make an element a scroll container.
+    window.addEventListener("resize", scheduleScrollLock);
+  });
 
   // The DOM types do not include the Navigation API yet. Unlike history, it
   // only moves through the entries of this frame, so the back button never
