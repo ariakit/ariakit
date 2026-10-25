@@ -449,8 +449,8 @@ importers:
         specifier: 1.9.17
         version: 1.9.17
       stripe:
-        specifier: 23.0.0
-        version: 23.0.0(@types/node@24.19.2)
+        specifier: 23.0.1
+        version: 23.0.1(@types/node@24.19.2)
       tailwindcss:
         specifier: 4.3.3
         version: 4.3.3
@@ -9108,8 +9108,8 @@ packages:
     resolution: {integrity: sha512-aT2BU9KkizY9SATf14WhhYVv2uOapBWX0OFWF4xvcj1mPaNotlSc2CsxpS4DS46ZueSppmCF5BX1sNYBtwBvfw==}
     engines: {node: '>=12.*'}
 
-  stripe@23.0.0:
-    resolution: {integrity: sha512-MDE2A5ZVVluYURORaZEVghSmnLJc3w6aHAlZSxDQMsOjOb3V0O6ro/CiaeFlJS4N7uIVmsg98ocRsPmUK6YfyA==}
+  stripe@23.0.1:
+    resolution: {integrity: sha512-VFLs9IAzSZ8GIm6/vqhjqOL0fbYrSNYCpgZ3LS3YkSi/i5RnyMpu/Hf9YxPTOCYwc3mZKU3IJvuvKffQH2NLMg==}
     engines: {node: '>=20'}
     peerDependencies:
       '@types/node': '>=20'
@@ -18948,7 +18948,7 @@ snapshots:
       '@types/node': 24.13.3
       qs: 6.16.0
 
-  stripe@23.0.0(@types/node@24.19.2):
+  stripe@23.0.1(@types/node@24.19.2):
     optionalDependencies:
       '@types/node': 24.19.2
 
