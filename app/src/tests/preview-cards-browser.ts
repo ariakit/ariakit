@@ -15,6 +15,32 @@ async function waitForArticle(article: Locator) {
   await status.filter({ hasText: "Article loaded" }).waitFor();
 }
 
+// A preview frame loads lazily once it scrolls into view, and its example
+// hydrates once its modules load. On a slow runner, the frame navigation can
+// take longer than the assertion timeout, so the wait uses the test budget,
+// like the preview hydration wait in withFramework.
+async function waitForFrameHydration(iframe: Locator) {
+  await iframe.scrollIntoViewIfNeeded();
+  const frame = iframe.contentFrame();
+  await frame
+    .locator("html[data-preview-hydrated]")
+    .waitFor({ state: "attached" });
+  return frame;
+}
+
+// The card shows its frame once the page in it has loaded and settled its
+// popup. After a navigation, the wait spans the docs page, the card hydration,
+// and the frame navigation, which can take longer than the assertion timeout on
+// a slow runner, so the wait uses the test budget, like the wait in
+// getRevealedComboboxState.
+async function waitForShownFrame(page: Page, title: string) {
+  const iframe = page.locator(`iframe[title="${title}"]`);
+  await page
+    .locator(`[aria-busy="false"]:has(> iframe[title="${title}"])`)
+    .waitFor({ state: "attached" });
+  return iframe;
+}
+
 // The card shows the frame once the popup of its example has opened and the
 // frame has scrolled to it, so the frame does not show the closed combobox and
 // then jump. A retrying assertion would also pass if the popup opened after the
@@ -31,6 +57,7 @@ async function getRevealedComboboxState(page: Page) {
       const doc = iframe?.contentDocument;
       const combobox = doc?.querySelector("[role=combobox]");
       return {
+        hydrated: doc?.documentElement.hasAttribute("data-preview-hydrated"),
         expanded: combobox?.getAttribute("aria-expanded"),
         scrollTop: doc?.documentElement.scrollTop,
       };
@@ -77,13 +104,7 @@ test("combobox preview cards work in their iframes", async ({ page, q }) => {
 
   for (const title of ["Combobox Group", "Custom Items"]) {
     const iframe = page.locator(`iframe[title="${title}"]`);
-    await iframe.scrollIntoViewIfNeeded();
-    const frame = iframe.contentFrame();
-    await expect(frame.locator("html")).toHaveAttribute(
-      "data-preview-hydrated",
-      "",
-    );
-    const preview = query(frame);
+    const preview = query(await waitForFrameHydration(iframe));
     await preview.combobox("Find records").fill("annual");
     await expect(preview.option(/annual_report\.pdf/)).toBeVisible();
     await expect(preview.group("Files")).toBeVisible();
@@ -116,12 +137,7 @@ test("preview card frames do not scroll or take focus until activated", async ({
 }) => {
   await gotoAndSettle(page, "/react/recipes/combobox-group/");
   const iframe = page.locator('iframe[title="Combobox Group"]');
-  await iframe.scrollIntoViewIfNeeded();
-  const frame = iframe.contentFrame();
-  await expect(frame.locator("html")).toHaveAttribute(
-    "data-preview-hydrated",
-    "",
-  );
+  const frame = await waitForFrameHydration(iframe);
   const combobox = query(frame).combobox("Find records");
   const getPageScroll = () => page.evaluate(() => window.scrollY);
   const getFrameScroll = () =>
@@ -171,12 +187,7 @@ test("preview card frames pass the wheel to the page over contained scroll areas
   await page.setViewportSize({ width: 1600, height: 900 });
   await gotoAndSettle(page, "/react/recipes/navigation/");
   const iframe = page.locator('iframe[title="Sidebar Sections"]');
-  await iframe.scrollIntoViewIfNeeded();
-  const frame = iframe.contentFrame();
-  await expect(frame.locator("html")).toHaveAttribute(
-    "data-preview-hydrated",
-    "",
-  );
+  const frame = await waitForFrameHydration(iframe);
   const link = query(frame).link(/Combobox/);
   await expect(link).toBeVisible();
   // Contain the overscroll of the open section, as an app could, so it keeps
@@ -303,6 +314,10 @@ test("preview cards show the popup of their example open", async ({
 }) => {
   await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
   const revealed = await getRevealedComboboxState(page);
+  // The card waits for the example to hydrate before it shows the frame, so a
+  // failure here means the card showed the frame too early, and a failure on
+  // the popup state below means the example did not open it.
+  expect(revealed.hydrated).toBe(true);
   expect(revealed.expanded).toBe("true");
 
   const iframe = page.locator('iframe[title="Combobox Group"]');
@@ -376,11 +391,7 @@ test("preview cards show an example that fails to hydrate", async ({
     route.abort(),
   );
   await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
-  const iframe = page.locator('iframe[title="Combobox Group"]');
-  await expect(iframe.locator("xpath=..")).toHaveAttribute(
-    "aria-busy",
-    "false",
-  );
+  const iframe = await waitForShownFrame(page, "Combobox Group");
   expect(routedFrames).toContain("/react/previews/combobox-group/");
   // The server-rendered combobox has no name until hydration labels it.
   const combobox = query(iframe.contentFrame()).combobox();
@@ -404,11 +415,7 @@ test("preview cards show a static example that opens its popup", async ({
     await route.fulfill({ response, body });
   });
   await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
-  const iframe = page.locator('iframe[title="Combobox Group"]');
-  await expect(iframe.locator("xpath=..")).toHaveAttribute(
-    "aria-busy",
-    "false",
-  );
+  const iframe = await waitForShownFrame(page, "Combobox Group");
   const toggle = query(iframe.contentFrame()).button("Toggle sidebar");
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
 });
@@ -422,11 +429,7 @@ test("preview cards show an example that throws", async ({ page }) => {
     }),
   );
   await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
-  const iframe = page.locator('iframe[title="Combobox Group"]');
-  await expect(iframe.locator("xpath=..")).toHaveAttribute(
-    "aria-busy",
-    "false",
-  );
+  await waitForShownFrame(page, "Combobox Group");
   expect(routedFrames).toContain("/react/previews/combobox-group/");
 });
 
@@ -438,13 +441,7 @@ test("preview cards resize their viewport from the end edge", async ({
   await page.setViewportSize({ width: 1600, height: 900 });
   await gotoAndSettle(page, "/react/recipes/app-shell/");
   const iframe = page.locator('iframe[title="App Shell"]');
-  await iframe.scrollIntoViewIfNeeded();
-  const frame = iframe.contentFrame();
-  await expect(frame.locator("html")).toHaveAttribute(
-    "data-preview-hydrated",
-    "",
-  );
-  const preview = query(frame);
+  const preview = query(await waitForFrameHydration(iframe));
   const handle = query(q.region("App Shell", { exact: true })).separator(
     "Resize preview",
   );

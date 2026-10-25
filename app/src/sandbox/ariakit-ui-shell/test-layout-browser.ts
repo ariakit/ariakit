@@ -192,6 +192,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   test("collapses an open sidebar at 3xl with the fold and compensation together", async ({
     page,
     q,
+    browserName,
   }) => {
     await page.setViewportSize({ width: 800, height: 900 });
     await q.button("Toggle layout navigation").click();
@@ -211,7 +212,23 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         throw new Error("Missing main body");
       }
       const samples: { width: number; space: number }[] = [];
-      const finished = new Promise<typeof samples>((resolve) => {
+      // A busy CI runner can render no frame during the whole fold, so the
+      // samples may jump to zero. Transition events still arrive with the next
+      // frame and show whether the width transition ran without being
+      // cancelled. The sync check below only compares the frames it samples.
+      const transitions: string[] = [];
+      const onTransition = (event: Event) => {
+        if (event.target !== column) return;
+        if (!(event instanceof TransitionEvent)) return;
+        if (event.propertyName !== "width") return;
+        transitions.push(event.type);
+      };
+      column.addEventListener("transitionrun", onTransition);
+      column.addEventListener("transitioncancel", onTransition);
+      const finished = new Promise<{
+        samples: typeof samples;
+        transitions: typeof transitions;
+      }>((resolve) => {
         const sample = () => {
           const width = column.getBoundingClientRect().width;
           samples.push({
@@ -221,7 +238,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             ),
           });
           if (width === 0) {
-            resolve(samples);
+            // A cancel that this frame's style change causes dispatches its
+            // event in the next frame, before its animation frame callbacks.
+            requestAnimationFrame(() => {
+              column.removeEventListener("transitionrun", onTransition);
+              column.removeEventListener("transitioncancel", onTransition);
+              resolve({ samples, transitions });
+            });
           } else {
             requestAnimationFrame(sample);
           }
@@ -232,10 +255,16 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
     await page.setViewportSize({ width: 740, height: 900 });
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
-    const samples = await recording.evaluate(({ finished }) => finished);
-    expect(
-      samples.some((sample) => sample.width > 0 && sample.width < 192),
-    ).toBe(true);
+    const { samples, transitions } = await recording.evaluate(
+      ({ finished }) => finished,
+    );
+    // WebKit can cancel the exit fold on a breakpoint resize, as the display
+    // tests describe.
+    // https://github.com/ariakit/ariakit/issues/7972
+    if (browserName !== "webkit") {
+      expect(transitions).toContain("transitionrun");
+      expect(transitions).not.toContain("transitioncancel");
+    }
     for (const sample of samples) {
       expect(Math.abs(sample.width - sample.space)).toBeLessThan(2);
     }
