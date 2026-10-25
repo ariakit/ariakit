@@ -29,12 +29,34 @@ withFramework(import.meta.dirname, async ({ test }) => {
             throw new Error("Missing sidebar column");
           }
           const samples: { width: number; display: string }[] = [];
-          const finished = new Promise<typeof samples>((resolve) => {
+          // A busy CI runner can render no frame during the whole fold, so the
+          // samples may jump to the final width. Transition events still arrive
+          // with the next frame and show whether the width transition ran
+          // without being cancelled.
+          const transitions: string[] = [];
+          const onTransition = (event: TransitionEvent) => {
+            if (event.target !== column) return;
+            if (event.propertyName !== "width") return;
+            transitions.push(event.type);
+          };
+          column.addEventListener("transitionrun", onTransition);
+          column.addEventListener("transitioncancel", onTransition);
+          const finished = new Promise<{
+            samples: typeof samples;
+            transitions: typeof transitions;
+          }>((resolve) => {
             const sample = () => {
               const width = column.getBoundingClientRect().width;
               samples.push({ width, display: getComputedStyle(node).display });
               if (width === (open ? 192 : 0)) {
-                resolve(samples);
+                // A cancel that this frame's style change causes dispatches its
+                // event in the next frame, before its animation frame
+                // callbacks.
+                requestAnimationFrame(() => {
+                  column.removeEventListener("transitionrun", onTransition);
+                  column.removeEventListener("transitioncancel", onTransition);
+                  resolve({ samples, transitions });
+                });
               } else {
                 requestAnimationFrame(sample);
               }
@@ -48,7 +70,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
         } else {
           await page.setViewportSize({ width: open ? 800 : 740, height: 900 });
         }
-        const samples = await recording.evaluate(({ finished }) => finished);
+        const { samples, transitions } = await recording.evaluate(
+          ({ finished }) => finished,
+        );
         const folding = samples.filter(({ width }) => width > 0 && width < 192);
         // WebKit cancels the exit transition when a query container around the
         // panel changes size, as the shell does on a breakpoint resize, and can
@@ -60,7 +84,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
           browserName === "webkit" && control === "breakpoint";
         if (open || !mayCancelExit) {
           const phase = open ? "reopening" : "closing";
-          expect(folding.length, `${phase} folds`).toBeGreaterThan(0);
+          expect(transitions, `${phase} folds`).toContain("transitionrun");
+          expect(transitions, `${phase} folds`).not.toContain(
+            "transitioncancel",
+          );
         }
         // Firefox cannot transition display yet, so it may hide immediately,
         // like WebKit when it cancels the exit transition. Reopening must never

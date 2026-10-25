@@ -12,8 +12,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // Keep the Ariakit.com navigations independent of the external site's
   // response time. The route is on the context so it also covers the new tabs
-  // that Firefox loads, and it fulfills every request because a test can retry
-  // the key press.
+  // that Firefox loads.
   test.beforeEach(async ({ context }) => {
     await context.route("https://ariakit.com/", (route) =>
       route.fulfill({ body: "" }),
@@ -82,13 +81,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.option("Ariakit.com")).toHaveAttribute("data-active-item");
     if (browserName === "webkit") {
       // Safari doesn't support Cmd+Enter to open a link in a new tab
-      // programmatically. Keep the retry deadline inside the 90-second
-      // slow-test budget so a missing navigation reports the URL assertion
-      // instead of timing out the whole test.
-      await expect(async () => {
-        await page.keyboard.press(`${modifier}+Enter`);
-        await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
-      }).toPass({ timeout: 60_000 });
+      // programmatically, so the link navigates this page. WebKit commits that
+      // navigation in another process, and a key press whose keyup the old page
+      // hasn't handled by then never resolves. Hold the response until the key
+      // press resolves.
+      const { promise: pressed, resolve: release } =
+        Promise.withResolvers<void>();
+      await page.route("https://ariakit.com/", async (route) => {
+        await pressed;
+        await route.fulfill({ body: "" });
+      });
+      await page.keyboard.press(`${modifier}+Enter`);
+      release();
+      await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
     } else {
       // Keep the page-event deadline inside the 90-second slow-test budget so a
       // missing tab names the event instead of timing out the whole test.

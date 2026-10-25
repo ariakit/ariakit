@@ -181,55 +181,72 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   }
 
-  test("applies sidebar visibility to all four columns and preserves closed state", async ({
+  const sidebarNames = [
+    "Part navigation",
+    "More navigation",
+    "Part details",
+    "More details",
+  ];
+
+  // Each visibility gets its own test. In one test, these widths took up to the
+  // whole 30s budget on the Safari CI runner.
+  const visibilityCases = [
+    ["never", [1440, false], [700, false]],
+    ["always", [700, true]],
+    ["default", [767, false], [768, true]],
+    ["5xl", [1023, false], [1024, true]],
+    ["max-5xl", [1023, true], [1024, false]],
+  ] as const;
+
+  for (const [visibility, ...widths] of visibilityCases) {
+    test(`applies ${visibility} sidebar visibility to all four columns`, async ({
+      q,
+      page,
+    }) => {
+      await q.checkbox("Second start sidebar").check();
+      await q.checkbox("Second end sidebar").check();
+      // Change the visibility at the first width, so the change itself can show
+      // or hide the sidebars.
+      const [[firstWidth]] = widths;
+      await page.setViewportSize({ width: firstWidth, height: 900 });
+      await q.combobox("Start sidebar visibility").selectOption(visibility);
+      await q.combobox("End sidebar visibility").selectOption(visibility);
+      for (const [width, visible] of widths) {
+        await page.setViewportSize({ width, height: 900 });
+        for (const name of sidebarNames) {
+          await expect(getSidebar(q, name)).toHaveCSS(
+            "width",
+            visible ? "160px" : "0px",
+          );
+          await expect(getSidebar(q, name).locator(":scope > *")).toBeVisible({
+            visible,
+          });
+        }
+        expect(
+          (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
+        ).toBeCloseTo(width - (visible ? 640 : 0), 0);
+      }
+    });
+  }
+
+  test("preserves the closed state of a sidebar that the shell width hides", async ({
     q,
-    page,
   }) => {
     await q.checkbox("Second start sidebar").check();
     await q.checkbox("Second end sidebar").check();
-    const names = [
-      "Part navigation",
-      "More navigation",
-      "Part details",
-      "More details",
-    ];
-    const cases = [
-      ["never", 1440, false],
-      ["never", 700, false],
-      ["always", 700, true],
-      ["default", 767, false],
-      ["default", 768, true],
-      ["5xl", 1023, false],
-      ["5xl", 1024, true],
-      ["max-5xl", 1023, true],
-      ["max-5xl", 1024, false],
-    ] as const;
-    for (const [visibility, width, visible] of cases) {
-      await page.setViewportSize({ width, height: 900 });
-      await q.combobox("Start sidebar visibility").selectOption(visibility);
-      await q.combobox("End sidebar visibility").selectOption(visibility);
-      for (const name of names) {
-        await expect(getSidebar(q, name)).toHaveCSS(
-          "width",
-          visible ? "160px" : "0px",
-        );
-        await expect(getSidebar(q, name).locator(":scope > *")).toBeVisible({
-          visible,
-        });
-      }
-      expect(
-        (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
-      ).toBeCloseTo(width - (visible ? 640 : 0), 0);
+    await q.combobox("Start sidebar visibility").selectOption("max-5xl");
+    await q.combobox("End sidebar visibility").selectOption("max-5xl");
+    for (const name of sidebarNames) {
+      await expect(getSidebar(q, name)).toHaveCSS("width", "0px");
     }
-    await page.setViewportSize({ width: 1440, height: 900 });
     await q.checkbox("Narrow shell").check();
-    for (const name of names) {
+    for (const name of sidebarNames) {
       await expect(getSidebar(q, name)).toHaveCSS("width", "160px");
     }
     await q.checkbox("Open end sidebar").uncheck();
     await expect(getSidebar(q, "Part details")).toHaveCSS("width", "0px");
     await q.checkbox("Narrow shell").uncheck();
-    for (const name of names) {
+    for (const name of sidebarNames) {
       await expect(getSidebar(q, name)).toHaveCSS("width", "0px");
     }
     await q.checkbox("Narrow shell").check();

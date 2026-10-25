@@ -1,6 +1,6 @@
 import type { Page } from "@ariakit/test/playwright";
 import { expect } from "@ariakit/test/playwright";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 function pressTab(page: Page, browserName: string, shift = false) {
   const key = shift ? "Shift+Tab" : "Tab";
@@ -191,8 +191,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
     }
 
     await page.keyboard.press("Escape");
-    await expect(q.menu("Services")).not.toBeVisible();
     await expect(q.menuitem("Services")).toBeFocused();
+    // Services becomes focus-visible on the next frame, and its onFocusVisible
+    // shows the menu again.
+    await expect(q.menuitem("Services")).toHaveAttribute(
+      "data-focus-visible",
+      "true",
+    );
+    // The menu hides again two frames after Escape, and no state tracks that
+    // pending hide. An Enter before that frame lands on the reopened menu.
+    await flushFrames(page, 1);
+    await expect(q.menu("Services")).not.toBeVisible();
     await page.keyboard.press("Enter");
     await expect(q.menu("Services")).not.toBeVisible();
     await expect(q.menuitem("Services")).toBeFocused();
