@@ -183,6 +183,20 @@ Typically, when using [CSS transitions](/tags/css-transitions), [`data-enter`](#
 }
 ```
 
+### `[data-instant]`
+
+The `data-instant` attribute is applied to the [Tooltip](/components/tooltip) component when it shows at once because of the [`skipTimeout`](/reference/use-tooltip-store#skiptimeout) window, without waiting for the [`showTimeout`](/reference/use-tooltip-store#showtimeout) delay. This happens when the pointer moves to its anchor while another tooltip is active, or back to one of its anchors shortly after it hides. It's also applied to the tooltip that another tooltip replaces, while it hides. A tooltip that shows after the normal delay doesn't have this attribute.
+
+This works across tooltips with separate stores. Use it to skip the exit transition of the replaced tooltip, so its content doesn't overlap the next tooltip. Use `transition: none` instead of a zero duration, because the replaced tooltip can already be in its exit transition, which only `transition: none` stops.
+
+```css
+.tooltip[data-instant]:not([data-open]) {
+  transition: none;
+}
+```
+
+The `:not([data-open])` selector keeps the enter transition of the tooltip that shows at once. If you shorten that enter transition too, use a short non-zero duration, such as `1ms`. When a tooltip enters with no transition, Ariakit treats it as not animated and doesn't wait for its later exit transitions.
+
 ### `[data-focus-visible]`
 
 The `data-focus-visible` attribute is applied to the [Focusable](/components/focusable) component and all components that use it underneath when there's a keyboard interaction on a focusable element.

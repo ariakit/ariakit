@@ -11,6 +11,7 @@
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
 import {
+  Button,
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
@@ -266,24 +267,23 @@ const hasSidebar = sidebar && navigation.length > 0;
               }
             </Nav>
           </ShellHeaderCenter>
-          <ShellHeaderEnd className="[&>astro-island]:contents!">
+          <ShellHeaderEnd>
             {/* The phone menu holds the theme options below 48rem. A viewport
                 query matches the outer shell, which spans the viewport. */}
             {/* The label hides when the open panel narrows the inner shell, so
-                the button names itself. */}
-            <TooltipButton
-              client:load
-              tooltip="Theme"
+                the button names itself. The theme buttons don't hydrate, so
+                they set the tabindex that Safari needs to focus them on click. */}
+            <Button
+              tabIndex={0}
               aria-label="Theme"
               aria-expanded="false"
               aria-controls={THEME_PANEL_ID}
               data-shell-toggle
-              suppressHydrationWarning
               className="max-md:hidden"
             >
               <ButtonSlot><SwatchBook /></ButtonSlot>
               <ButtonLabel className="@max-lg/shell:hidden">Theme</ButtonLabel>
-            </TooltipButton>
+            </Button>
           </ShellHeaderEnd>
         </ShellHeader>
         {
@@ -428,15 +428,14 @@ const hasSidebar = sidebar && navigation.length > 0;
       >
         <ShellSidebarHeader $height="sm" className="justify-between">
           <span class="font-medium">Theme</span>
-          <TooltipButton
-            client:load
-            tooltip="Close theme"
+          <Button
+            tabIndex={0}
             aria-label="Close theme"
             aria-controls={THEME_PANEL_ID}
             data-shell-close
           >
             <ButtonSlot><X /></ButtonSlot>
-          </TooltipButton>
+          </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody>
           <AppThemeOptions client:load idPrefix={THEME_PANEL_ID} />

@@ -7,8 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { query } from "@ariakit/test/playwright";
-import type { Page } from "@playwright/test";
+import type { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { gotoAndSettle } from "#app/test-utils/preview.ts";
@@ -23,12 +22,6 @@ const recipePath = "/react/recipes/tooltip/";
  */
 async function waitForTooltipButton(q: Query, name: string) {
   await expect(q.tooltip(name, { includeHidden: true })).toBeAttached();
-}
-
-/** Moves the pointer onto a button after the pointer rests elsewhere. */
-async function hoverAgain(page: Page, q: Query, name: string) {
-  await page.mouse.move(0, 0);
-  await q.button(name).hover();
 }
 
 test("names the header buttons with tooltips on hover and focus", async ({
@@ -70,45 +63,18 @@ test("keeps the layout script wiring on the tooltip buttons", async ({
   await expect(q.navigation("Site")).toBeVisible();
 });
 
-test("keeps the Theme button wired when the open panel hides its label", async ({
-  page,
-  q,
-}) => {
-  // At this width, the open theme panel narrows the header enough to hide the
-  // label of the Theme button.
-  await page.setViewportSize({ width: 800, height: 800 });
-  await gotoAndSettle(page, recipePath);
-  const theme = q.button("Theme");
-  const label = query(theme).text("Theme");
-  await theme.click();
-  await expect(theme).toHaveAttribute("aria-expanded", "true");
-  await expect(label).toBeHidden();
-  await waitForTooltipButton(q, "Theme");
-  await hoverAgain(page, q, "Theme");
-  await expect(q.tooltip("Theme")).toBeVisible();
-  // The layout script wired the button element before the island hydrated, so
-  // the hidden label must leave the same element in place to close the panel.
-  await theme.click();
-  await expect(theme).toHaveAttribute("aria-expanded", "false");
-  await expect(q.complementary("Theme")).not.toBeVisible();
-});
-
-test("keeps the gap between the Theme icon and its label", async ({
-  page,
-  q,
-}) => {
+test("renders the theme buttons without tooltips", async ({ page, q }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await gotoAndSettle(page, recipePath);
-  const theme = q.button("Theme");
-  // The island wraps the icon slot and the label in an element that would take
-  // them out of the button layout and its gap. The server renders the wrapper
-  // too, so the layout doesn't wait for hydration.
-  const iconBox = await theme.locator("svg").boundingBox();
-  const labelBox = await query(theme).text("Theme").boundingBox();
-  expect(iconBox).not.toBeNull();
-  expect(labelBox).not.toBeNull();
-  if (!iconBox || !labelBox) return;
-  expect(labelBox.x).toBeGreaterThan(iconBox.x + iconBox.width);
+  // The tooltip button islands hydrate together, so the hidden tooltip of
+  // another button shows that a theme button tooltip would have rendered.
+  await waitForTooltipButton(q, "Toggle navigation");
+  await q.button("Theme").click();
+  await expect(q.complementary("Theme")).toBeVisible();
+  await expect(q.tooltip("Theme", { includeHidden: true })).toHaveCount(0);
+  await expect(q.tooltip("Close theme", { includeHidden: true })).toHaveCount(
+    0,
+  );
 });
 
 test("keeps the header controls at the start of the header", async ({
