@@ -75,6 +75,31 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(query(section).status()).toHaveText("Slides: 0");
   });
 
+  // The Scroll section keeps the default unmountOnHide, so its popup mounts
+  // again each time it opens.
+  test("opens in place again after the popup unmounts", async ({ page, q }) => {
+    const section = q.region("Scroll");
+    const list = query(section).group("Scroll list");
+    await hoverAnchor(query(list).button("Item 1"));
+    await test.expect(q.tooltip("Item 1 tooltip")).toBeVisible();
+    await waitPastSlide(page);
+    await test.expect(query(section).status()).toHaveText("Slides: 0");
+    // A corner of the page is clear of the tooltip, so the move doesn't scroll
+    // the page under the open tooltip.
+    await page.mouse.move(0, 0);
+    await test
+      .expect(q.tooltip("Item 1 tooltip", { includeHidden: true }))
+      .toHaveCount(0);
+    // The next tooltip must open after its show delay, as a new tooltip, so the
+    // pointer waits until the previous one is no longer active. The count check
+    // above already waited for the popup to unmount.
+    await page.waitForTimeout(SKIP_TIMEOUT);
+    await hoverAnchor(query(list).button("Item 3"));
+    await test.expect(q.tooltip("Item 3 tooltip")).toBeVisible();
+    await waitPastSlide(page);
+    await test.expect(query(section).status()).toHaveText("Slides: 0");
+  });
+
   test("doesn't slide with $slide set to false", async ({ page, q }) => {
     const section = q.region("No slide");
     await hoverAnchor(query(section).button("One"));
@@ -97,9 +122,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   });
 
   // Without the popup's own enter animation, Ariakit adds data-enter in the
-  // same update as data-open on a reopen, which can let a reopened popup slide
-  // from its previous anchor. The first open still waits for the popup to be in
-  // place, and a move between anchors still slides.
+  // same update as data-open when a popup that stays mounted reopens, which can
+  // let it slide from its previous anchor. The first open still waits for the
+  // popup to be in place, and a move between anchors still slides.
   test("opens in place without the popup motion", async ({ page, q }) => {
     const section = q.region("No popup motion");
     await hoverAnchor(query(section).button("One"));

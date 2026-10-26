@@ -89,7 +89,9 @@ export default function Example() {
         <TooltipAnchor aria-label="Custom anchor label" render={<Button />}>
           Tooltip anchor
         </TooltipAnchor>
-        <TooltipPopover>Tooltip label</TooltipPopover>
+        {/* The label stays mounted while hidden, so the anchor could take its
+            id as aria-labelledby at rest. */}
+        <TooltipPopover unmountOnHide={false}>Tooltip label</TooltipPopover>
       </TooltipProvider>
 
       <TagProvider>

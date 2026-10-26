@@ -28,11 +28,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // The tooltip still plays its enter animation.
     test.expect(animations).toBeGreaterThan(0);
     // The replaced tooltip skips its exit transition, so the two tooltips don't
-    // overlap. A retrying assertion would also pass after a fade.
-    const boldOpacity = await q
+    // overlap: it is already unmounted, or it no longer paints. A retrying
+    // assertion would also pass after a fade.
+    const boldOpacities = await q
       .tooltip(/^Bold/, { includeHidden: true })
-      .evaluate((element) => getComputedStyle(element).opacity);
-    test.expect(boldOpacity).toBe("0");
+      .evaluateAll((elements) =>
+        elements.map((element) => getComputedStyle(element).opacity),
+      );
+    test.expect(boldOpacities.filter((opacity) => opacity !== "0")).toEqual([]);
     await test.expect(q.tooltip(/^Italic/)).toBeVisible();
     await test.expect(q.tooltip()).toHaveCount(1);
   });
