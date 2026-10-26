@@ -138,4 +138,31 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       );
     });
   });
+
+  // The hover offset darkened the brand fill of a focused unselected flat tab
+  // under 3:1 against a dark strip.
+  // https://github.com/ariakit/ariakit/issues/8111
+  test("keeps the focus fill of a hovered unselected tab @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorScheme(page, async (colorScheme) => {
+      const box = q.article("Flat tabs without select on move");
+      const usage = query(box).tab("Usage");
+      await hoverOver(usage);
+      await tabTo(page, query(box).tab("Code"));
+      await page.keyboard.press("ArrowRight");
+      await expectFocusVisible(usage);
+      await test.expect(usage).toHaveAttribute("aria-selected", "false");
+      await test.expect
+        .poll(() => usage.evaluate((node) => node.matches(":hover")))
+        .toBe(true);
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-tabs/focused-hovered-tab",
+        }),
+      );
+    });
+  });
 });

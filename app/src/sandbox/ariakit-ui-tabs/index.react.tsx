@@ -846,6 +846,51 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Flat tabs without select on move"
+        description="Arrow keys move focus without selecting. The brand fill marks the focused tab."
+        stretch
+        code={`
+          <Tabs selectOnMove={false}>
+            <TabList>
+              <Tab $kind="flat">
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab $kind="flat">
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab $kind="flat">
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs selectOnMove={false} defaultSelectedId="manual-flat-code">
+          <TabList aria-label="Flat tabs without select on move">
+            <Tab $kind="flat" id="manual-flat-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab $kind="flat" id="manual-flat-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab $kind="flat" id="manual-flat-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">Press Enter to select a focused tab.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Borderless flat tabs"
         description="A pill marks the selected tab while the tab panels have no border."
         stretch

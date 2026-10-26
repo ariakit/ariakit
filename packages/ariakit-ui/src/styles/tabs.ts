@@ -100,6 +100,10 @@ const tabBox = cx(
   "ui-selected:ui-focus-visible:ak-state-0",
   "ui-selected:ui-focus-visible:ui-hover:ak-state-0",
   "ui-selected:ui-focus-visible:ak-state-push-0",
+  // The hover offset is also a state offset, which can move the focus fill of
+  // an unselected tab under 3:1 against the strip.
+  // https://github.com/ariakit/ariakit/issues/8111
+  "not-ui-selected:ui-focus-visible:ui-hover:ak-state-0",
   "not-ui-selected:ui-focus-visible:bg-(--ak-layer)",
 );
 
