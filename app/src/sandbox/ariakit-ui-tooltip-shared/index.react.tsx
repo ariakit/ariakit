@@ -121,10 +121,13 @@ function ScrollSection({ name, ...props }: SectionProps) {
 export default function Example() {
   return (
     <div className="grid gap-12 p-12">
-      <SlideSection name="Slide" />
+      {/* The popup stays mounted while hidden, so it reopens at another anchor
+          from its previous place. */}
+      <SlideSection name="Slide" unmountOnHide={false} />
       <SlideSection name="No slide" $slide={false} />
       {/* Without the popup's enter animation, Ariakit adds data-enter in the
-          same update as data-open, before the popup is in place. */}
+          same update as data-open when a popup that stays mounted reopens,
+          before the popup is in place. */}
       <SlideSection name="No popup motion" className="transition-none" />
       <div className="flex gap-24">
         <ScrollSection name="Scroll" />

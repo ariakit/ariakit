@@ -131,16 +131,26 @@ export interface TooltipPopoverProps
 
 /**
  * Renders the tooltip popup: a short label or description for its anchor. It is
- * not a dialog, so keep interactive content out of it.
+ * not a dialog, so keep interactive content out of it. It unmounts while
+ * hidden, unless `unmountOnHide` is `false`.
  * @example
  * <TooltipProvider>
  *   <TooltipAnchor render={<button type="button" />}>Save</TooltipAnchor>
  *   <TooltipPopover>Save changes</TooltipPopover>
  * </TooltipProvider>
  */
-export function TooltipPopover(props: TooltipPopoverProps) {
+export function TooltipPopover({
+  unmountOnHide = true,
+  ...props
+}: TooltipPopoverProps) {
   const [variantProps, rest] = splitProps(props, tooltip);
-  return <ak.Tooltip {...tooltip.jsx(variantProps)} {...rest} />;
+  return (
+    <ak.Tooltip
+      unmountOnHide={unmountOnHide}
+      {...tooltip.jsx(variantProps)}
+      {...rest}
+    />
+  );
 }
 
 export interface TooltipArrowProps extends ak.TooltipArrowProps {}

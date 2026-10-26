@@ -7,21 +7,30 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { query } from "@ariakit/test/playwright";
+import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { gotoAndSettle } from "#app/test-utils/preview.ts";
-
-type Query = ReturnType<typeof query>;
+import { hoverPastShowTimeout, SHOW_TIMEOUT } from "#app/test-utils/tooltip.ts";
 
 const recipePath = "/react/recipes/tooltip/";
 
 /**
- * Waits until the island of a tooltip button hydrates. Its tooltip renders,
- * hidden, only in the browser.
+ * Hovers an anchor until its tooltip shows. A hidden tooltip isn't in the DOM,
+ * so the shown tooltip is what proves that the island hydrated. A hover that
+ * arrives before React hydrates the island shows nothing, so it repeats.
  */
-async function waitForTooltipButton(q: Query, name: string) {
-  await expect(q.tooltip(name, { includeHidden: true })).toBeAttached();
+async function hoverUntilTooltip(
+  page: Page,
+  anchor: Locator,
+  tooltip: Locator,
+) {
+  await expect(async () => {
+    await page.mouse.move(0, 0);
+    await anchor.hover();
+    // Each attempt waits past the show timeout of the first tooltip.
+    await expect(tooltip).toBeVisible({ timeout: SHOW_TIMEOUT * 2 });
+  }).toPass();
 }
 
 test("names the header buttons with tooltips on hover and focus", async ({
@@ -31,9 +40,7 @@ test("names the header buttons with tooltips on hover and focus", async ({
   await page.setViewportSize({ width: 1280, height: 800 });
   await gotoAndSettle(page, recipePath);
   const toggle = q.button("Toggle navigation");
-  await waitForTooltipButton(q, "Toggle navigation");
-  await toggle.hover();
-  await expect(q.tooltip("Toggle navigation")).toBeVisible();
+  await hoverUntilTooltip(page, toggle, q.tooltip("Toggle navigation"));
   await page.mouse.move(0, 0);
   await expect(q.tooltip("Toggle navigation")).toBeHidden();
   // A Tab press makes the focus visible, which shows the tooltip.
@@ -52,9 +59,9 @@ test("keeps the layout script wiring on the tooltip buttons", async ({
 }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await gotoAndSettle(page, recipePath);
-  await waitForTooltipButton(q, "Toggle navigation");
   // The layout script added the click listener before the island hydrated.
   const toggle = q.button("Toggle navigation");
+  await hoverUntilTooltip(page, toggle, q.tooltip("Toggle navigation"));
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await expect(q.navigation("Site")).not.toBeVisible();
@@ -66,15 +73,20 @@ test("keeps the layout script wiring on the tooltip buttons", async ({
 test("renders the theme buttons without tooltips", async ({ page, q }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await gotoAndSettle(page, recipePath);
-  // The tooltip button islands hydrate together, so the hidden tooltip of
-  // another button shows that a theme button tooltip would have rendered.
-  await waitForTooltipButton(q, "Toggle navigation");
-  await q.button("Theme").click();
-  await expect(q.complementary("Theme")).toBeVisible();
-  await expect(q.tooltip("Theme", { includeHidden: true })).toHaveCount(0);
-  await expect(q.tooltip("Close theme", { includeHidden: true })).toHaveCount(
-    0,
+  // The tooltip button islands hydrate together, so a theme button tooltip
+  // would show on hover after this one shows.
+  await hoverUntilTooltip(
+    page,
+    q.button("Toggle navigation"),
+    q.tooltip("Toggle navigation"),
   );
+  const theme = q.button("Theme");
+  await hoverPastShowTimeout(page, theme);
+  await expect(q.tooltip()).toHaveCount(0);
+  await theme.click();
+  await expect(q.complementary("Theme")).toBeVisible();
+  await hoverPastShowTimeout(page, q.button("Close theme"));
+  await expect(q.tooltip()).toHaveCount(0);
 });
 
 test("keeps the header controls at the start of the header", async ({
@@ -102,11 +114,7 @@ test("names the preview card buttons with tooltips", async ({ page, q }) => {
   await gotoAndSettle(page, recipePath);
   const open = q.link("Open preview in a new tab").first();
   await open.scrollIntoViewIfNeeded();
-  await expect(
-    q.tooltip("Open preview in a new tab", { includeHidden: true }).first(),
-  ).toBeAttached();
-  await open.hover();
-  await expect(q.tooltip("Open preview in a new tab")).toBeVisible();
+  await hoverUntilTooltip(page, open, q.tooltip("Open preview in a new tab"));
   await q.button("Reload preview").first().hover();
   await expect(q.tooltip("Reload preview")).toBeVisible();
 });

@@ -97,9 +97,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   });
 
   // Without the popup's own enter animation, Ariakit adds data-enter in the
-  // same update as data-open on a reopen, which can let a reopened popup slide
-  // from its previous anchor. The first open still waits for the popup to be in
-  // place, and a move between anchors still slides.
+  // same update as data-open when a popup that stays mounted reopens, which can
+  // let it slide from its previous anchor. The first open still waits for the
+  // popup to be in place, and a move between anchors still slides.
   test("opens in place without the popup motion", async ({ page, q }) => {
     const section = q.region("No popup motion");
     await hoverAnchor(query(section).button("One"));

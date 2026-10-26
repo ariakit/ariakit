@@ -319,14 +319,12 @@ export default function TooltipExamples() {
             Publish
           </TooltipAnchor>
           {/*
-            Unmounted on hide: this sandbox holds other tooltips open, and a
-            live tooltip that already exists when they open is marked as outside
-            them and ignores Escape.
+            TooltipPopover unmounts while hidden: this sandbox holds other
+            tooltips open, and a live tooltip that already exists when they open
+            is marked as outside them and ignores Escape.
             https://github.com/ariakit/ariakit/issues/7463
           */}
-          <TooltipPopover unmountOnHide>
-            Publish to the public site
-          </TooltipPopover>
+          <TooltipPopover>Publish to the public site</TooltipPopover>
         </TooltipProvider>
       </Example>
     </ExampleGrid>
