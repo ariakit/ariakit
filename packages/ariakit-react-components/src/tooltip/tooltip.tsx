@@ -11,6 +11,7 @@ import type { ElementType } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
+import { globalStore } from "./__global-store.ts";
 import {
   TooltipScopedContextProvider,
   useTooltipProviderContext,
@@ -64,7 +65,13 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
       state.type === "description" ? "tooltip" : "none",
     );
 
-    props = { role, ...props };
+    // Marks the tooltip while it shows at once because another tooltip is
+    // active, or while it hides because another tooltip replaces it.
+    const instant = useStoreState(globalStore, ["instantStores"], (state) =>
+      store ? state.instantStores.has(store) : false,
+    );
+
+    props = { role, "data-instant": instant || undefined, ...props };
 
     props = useHovercard({
       ...props,

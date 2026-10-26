@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { StrictMode } from "react";
+import "./style.css";
 
 const tooltipProps = {
   showTimeout: 500,
@@ -22,6 +23,23 @@ function DelayedTooltip({ anchor, tooltip }: DelayedTooltipProps) {
   );
 }
 
+interface TransitionTooltipProps {
+  tool: string;
+}
+
+function TransitionTooltip({ tool }: TransitionTooltipProps) {
+  return (
+    <Ariakit.TooltipProvider>
+      <Ariakit.TooltipAnchor render={<button type="button" />}>
+        {tool}
+      </Ariakit.TooltipAnchor>
+      <Ariakit.Tooltip className="transition-tooltip">
+        {tool} tooltip
+      </Ariakit.Tooltip>
+    </Ariakit.TooltipProvider>
+  );
+}
+
 export default function Example() {
   return (
     <StrictMode>
@@ -34,6 +52,11 @@ export default function Example() {
       >
         <DelayedTooltip anchor="First anchor" tooltip="First tooltip" />
         <DelayedTooltip anchor="Second anchor" tooltip="Second tooltip" />
+      </div>
+      <div role="toolbar" aria-label="Format" className="toolbar">
+        <TransitionTooltip tool="Bold" />
+        <TransitionTooltip tool="Italic" />
+        <TransitionTooltip tool="Underline" />
       </div>
     </StrictMode>
   );

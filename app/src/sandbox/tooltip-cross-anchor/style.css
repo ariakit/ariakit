@@ -1,0 +1,22 @@
+.toolbar {
+  display: flex;
+  gap: 40px;
+  padding: 80px;
+}
+
+/* The transition is long so tests can tell an exit transition that runs from
+   one that the data-instant rule below skips. */
+.transition-tooltip {
+  opacity: 0;
+  transition: opacity 2s;
+}
+
+.transition-tooltip[data-enter] {
+  opacity: 1;
+}
+
+/* Hide the tooltip that another tooltip replaced at once, so their contents
+   don't overlap. The tooltip that shows at once keeps its enter transition. */
+.transition-tooltip[data-instant]:not([data-open]) {
+  transition: none;
+}
