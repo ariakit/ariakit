@@ -1,17 +1,19 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { CheckIcon } from "lucide-react";
+import { CheckIcon, CircleAlertIcon } from "lucide-react";
 import type * as React from "react";
 import {
   createOptionalRender,
   createRender,
+  hasContent,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
 import {
   comboboxDescription,
   comboboxEmpty,
   comboboxError,
+  comboboxErrorIcon,
   comboboxField,
   comboboxFieldContent,
   comboboxGroup,
@@ -198,13 +200,24 @@ export function ComboboxDescription(props: ComboboxDescriptionProps) {
   return <ak.Role.div {...comboboxDescription.jsx(variantProps)} {...rest} />;
 }
 
+// The error renders the icon before its children, so it can't take
+// dangerouslySetInnerHTML. HTML goes in a child element instead.
 export interface ComboboxErrorProps
-  extends ak.RoleProps<"div">, VariantProps<typeof comboboxError> {}
+  extends
+    Omit<ak.RoleProps<"div">, "dangerouslySetInnerHTML">,
+    VariantProps<typeof comboboxError> {
+  /**
+   * Icon before the error text, hidden from assistive technology. Defaults to a
+   * circle alert icon, which shows only while the error has content. Set
+   * `false` to remove it.
+   */
+  icon?: React.ReactNode;
+}
 
 /**
- * Error text for a combobox or select in a `ComboboxField`. While it shows,
- * list its `id` first in the control's `aria-describedby` and set
- * `aria-invalid` on the control.
+ * Error text for a combobox or select in a `ComboboxField`, marked with an
+ * icon. While it shows, list its `id` first in the control's `aria-describedby`
+ * and set `aria-invalid` on the control.
  * @example
  * <ComboboxField>
  *   <ComboboxLabel>Fruit</ComboboxLabel>
@@ -212,9 +225,21 @@ export interface ComboboxErrorProps
  *   <ComboboxError id="fruit-error">Choose a fruit.</ComboboxError>
  * </ComboboxField>
  */
-export function ComboboxError(props: ComboboxErrorProps) {
+export function ComboboxError({
+  icon = <CircleAlertIcon />,
+  ...props
+}: ComboboxErrorProps) {
   const [variantProps, rest] = splitProps(props, comboboxError);
-  return <ak.Role.div {...comboboxError.jsx(variantProps)} {...rest} />;
+  return (
+    <ak.Role.div {...comboboxError.jsx(variantProps)} {...rest}>
+      {isRenderable(icon) && hasContent(rest.children) && (
+        <span {...comboboxErrorIcon.jsx()} aria-hidden>
+          {icon}
+        </span>
+      )}
+      {rest.children}
+    </ak.Role.div>
+  );
 }
 
 export interface ComboboxPopoverProps

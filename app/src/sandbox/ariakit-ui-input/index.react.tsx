@@ -18,6 +18,7 @@ import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Input,
   InputDescription,
+  InputError,
   InputField,
   InputFieldContent,
   InputFieldGrid,
@@ -25,18 +26,96 @@ import {
   InputLabel,
   InputSlot,
 } from "@ariakit/ui/components/input.ariakit.react";
+import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import {
   Popover,
   PopoverDisclosure,
   PopoverProvider,
 } from "@ariakit/ui/components/popover.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
-import { inputPlaceholder } from "@ariakit/ui/styles/input";
-import { ListFilter, Search } from "lucide-react";
+import {
+  inputError,
+  inputErrorIcon,
+  inputPlaceholder,
+} from "@ariakit/ui/styles/input";
+import { CircleAlert, ListFilter, Lock, Search } from "lucide-react";
+import { useState } from "react";
 import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+
+const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
+
+function ErrorThatClears() {
+  const [value, setValue] = useState("ada.lovelace");
+  const invalid = !EMAIL_PATTERN.test(value);
+  return (
+    <InputField className="w-full">
+      <InputLabel htmlFor="input-error-clears">Work email</InputLabel>
+      <Input
+        id="input-error-clears"
+        type="email"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        aria-invalid={invalid || undefined}
+        aria-describedby="input-error-clears-error"
+      />
+      {/* The error stays in place and holds an empty string once the value is
+          valid. */}
+      <InputError id="input-error-clears-error">
+        {invalid ? "Enter an email address like ada@example.com." : ""}
+      </InputError>
+    </InputField>
+  );
+}
+
+function ErrorThatKeepsItsLine() {
+  const [value, setValue] = useState("555 01");
+  const invalid = value.replace(/\D/g, "").length < 7;
+  return (
+    <InputField className="w-full">
+      <InputLabel htmlFor="input-error-line">Phone</InputLabel>
+      <Input
+        id="input-error-line"
+        type="tel"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        aria-invalid={invalid || undefined}
+        aria-describedby="input-error-line-error"
+      />
+      {/* A non-breaking space keeps the line of the error, so the content
+          below does not move when the error clears. */}
+      <InputError id="input-error-line-error">
+        {invalid ? "Enter at least 7 digits." : "\u00a0"}
+      </InputError>
+    </InputField>
+  );
+}
+
+function ErrorThatShowsOnBlur() {
+  const [value, setValue] = useState("ada lovelace");
+  const [touched, setTouched] = useState(false);
+  const error = touched && /\s/.test(value) ? "Remove the spaces." : null;
+  return (
+    <InputField className="w-full">
+      <InputLabel htmlFor="input-error-blur">Username</InputLabel>
+      <Input
+        id="input-error-blur"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        onBlur={() => setTouched(true)}
+        aria-invalid={!!error || undefined}
+        aria-describedby="input-error-blur-error"
+      />
+      {/* The error appears when focus leaves the field, so the live region is
+          there before its text. */}
+      <InputError id="input-error-blur-error" role="alert">
+        {error}
+      </InputError>
+    </InputField>
+  );
+}
 
 export default function InputExamples() {
   return (
@@ -104,6 +183,167 @@ export default function InputExamples() {
             Enter a valid email address.
           </Text>
         </div>
+      </Example>
+
+      <Example
+        title="Error with a long message"
+        description="An error icon sits on the first line, and the wrapped lines start under the text, not under the icon. The link stays in the line of text."
+        code={`
+          <InputError>
+            Another account uses this address. <Link /> or use…
+          </InputError>
+        `}
+      >
+        <InputField className="w-56 max-w-full">
+          <InputLabel htmlFor="input-error-long">Email</InputLabel>
+          <Input
+            id="input-error-long"
+            type="email"
+            defaultValue="ada@engine.org"
+            aria-invalid
+            aria-describedby="input-error-long-error"
+          />
+          <InputError id="input-error-long-error">
+            Another account uses this address.{" "}
+            <Link href="#sign-in">Sign in</Link> or use a different address.
+          </InputError>
+        </InputField>
+      </Example>
+
+      <Example
+        title="Error in right-to-left text"
+        description="In a right-to-left language, the error icon moves to the right of the first line, and the wrapped lines start under the text."
+        code={`
+          <InputField dir="rtl" lang="ar">
+            <InputError>…</InputError>
+          </InputField>
+        `}
+      >
+        <InputField dir="rtl" lang="ar" className="w-56 max-w-full">
+          <InputLabel htmlFor="input-error-rtl">البريد الإلكتروني</InputLabel>
+          <Input
+            id="input-error-rtl"
+            type="email"
+            defaultValue="ada.lovelace"
+            aria-invalid
+            aria-describedby="input-error-rtl-error"
+          />
+          <InputError id="input-error-rtl-error">
+            أدخل عنوان بريد إلكتروني يحتوي على الرمز @ واسم النطاق.
+          </InputError>
+        </InputField>
+      </Example>
+
+      <Example
+        title="Error with another icon"
+        description="A lock icon replaces the alert icon. The icon has a label, but the error hides its icon from screen readers, so the field reads only the error text."
+        code={`
+          <InputError icon={<Lock aria-label="Locked" />}>…</InputError>
+        `}
+      >
+        <InputField className="w-full">
+          <InputLabel htmlFor="input-error-icon">Account email</InputLabel>
+          <Input
+            id="input-error-icon"
+            type="email"
+            defaultValue="ada@engine.org"
+            aria-invalid
+            aria-describedby="input-error-icon-error"
+          />
+          <InputError
+            id="input-error-icon-error"
+            icon={<Lock aria-label="Locked" />}
+          >
+            This account is locked.
+          </InputError>
+        </InputField>
+      </Example>
+
+      <Example
+        title="Error without an icon"
+        description="An error with its icon removed starts at the same edge as the hint below it."
+        code={`
+          <InputError icon={false}>…</InputError>
+          <InputDescription>…</InputDescription>
+        `}
+      >
+        <InputField className="w-full">
+          <InputLabel htmlFor="input-error-no-icon">
+            Verification code
+          </InputLabel>
+          <Input
+            id="input-error-no-icon"
+            defaultValue="481 2"
+            aria-invalid
+            aria-describedby="input-error-no-icon-error input-error-no-icon-hint"
+          />
+          <InputError id="input-error-no-icon-error" icon={false}>
+            The code has 6 digits.
+          </InputError>
+          <InputDescription id="input-error-no-icon-hint">
+            We sent it to your phone.
+          </InputDescription>
+        </InputField>
+      </Example>
+
+      <Example
+        title="Error from style recipes"
+        description="An error built from the inputError and inputErrorIcon style recipes, without the InputError component. The icon part comes first and is hidden from screen readers."
+        code={`
+          <div {...inputError.jsx()}>
+            <span {...inputErrorIcon.jsx()} aria-hidden="true">
+              <CircleAlert />
+            </span>
+            …
+          </div>
+        `}
+      >
+        <InputField className="w-full">
+          <InputLabel htmlFor="input-error-recipe">Billing email</InputLabel>
+          <Input
+            id="input-error-recipe"
+            type="email"
+            defaultValue="billing"
+            aria-invalid
+            aria-describedby="input-error-recipe-error"
+          />
+          <div id="input-error-recipe-error" {...inputError.jsx()}>
+            <span {...inputErrorIcon.jsx()} aria-hidden="true">
+              <CircleAlert />
+            </span>
+            Enter an email address like billing@example.com.
+          </div>
+        </InputField>
+      </Example>
+
+      <Example
+        title="Error that clears"
+        description="The error stays in place and holds an empty string once the value is valid. The icon goes away with the text."
+        code={`
+          <InputError>{invalid ? "Enter an email…" : ""}</InputError>
+        `}
+      >
+        <ErrorThatClears />
+      </Example>
+
+      <Example
+        title="Error that keeps its line"
+        description="A non-breaking space keeps the line of the error after it clears, so the content below does not move. The icon goes away with the text."
+        code={`
+          <InputError>{invalid ? "Enter at least 7 digits." : "\\u00a0"}</InputError>
+        `}
+      >
+        <ErrorThatKeepsItsLine />
+      </Example>
+
+      <Example
+        title="Error that shows on blur"
+        description="The error holds null until focus leaves the field with an invalid value. Then the text and the icon show, and the alert role announces the text."
+        code={`
+          <InputError role="alert">{error}</InputError>
+        `}
+      >
+        <ErrorThatShowsOnBlur />
       </Example>
 
       <Example

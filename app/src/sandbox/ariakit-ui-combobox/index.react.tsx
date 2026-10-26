@@ -39,6 +39,7 @@ import {
   ExampleStage,
 } from "#app/components/ariakit-ui-example.react.tsx";
 import {
+  SelectErrorThatClearsExample,
   StatusSelectExample,
   CountryComboboxExample,
   FieldBoundariesExample,
@@ -793,6 +794,75 @@ export default function ComboboxExamples() {
             </ComboboxPopover>
           </ComboboxProvider>
         </div>
+      </Example>
+
+      <Example
+        title="Select error with another icon"
+        description="A lock icon replaces the alert icon of a select error. The icon has a label, but the error hides its icon from screen readers, so the select reads only the error text."
+        code={`
+          <ComboboxError icon={<Lock aria-label="Locked" />}>…</ComboboxError>
+        `}
+      >
+        <ComboboxProvider defaultSelectedValue="Free">
+          <ComboboxField className="w-full">
+            <ComboboxSelectLabel>Billing plan</ComboboxSelectLabel>
+            <ComboboxSelect
+              aria-invalid
+              aria-describedby="select-error-icon-error"
+              className="w-full"
+            />
+            <ComboboxError
+              id="select-error-icon-error"
+              icon={<icons.Lock aria-label="Locked" />}
+            >
+              Only an owner can change the plan.
+            </ComboboxError>
+          </ComboboxField>
+          <ComboboxPopover>
+            <ComboboxItem value="Free" checkmark="before" />
+            <ComboboxItem value="Team" checkmark="before" />
+          </ComboboxPopover>
+        </ComboboxProvider>
+      </Example>
+
+      <Example
+        title="Select error without an icon"
+        description="A select error with its icon removed starts at the same edge as the hint below it."
+        code={`
+          <ComboboxError icon={false}>…</ComboboxError>
+          <ComboboxDescription>…</ComboboxDescription>
+        `}
+      >
+        <ComboboxProvider defaultSelectedValue="Weekly">
+          <ComboboxField className="w-full">
+            <ComboboxSelectLabel>Report frequency</ComboboxSelectLabel>
+            <ComboboxSelect
+              aria-invalid
+              aria-describedby="select-error-no-icon-error select-error-no-icon-hint"
+              className="w-full"
+            />
+            <ComboboxError id="select-error-no-icon-error" icon={false}>
+              Weekly reports need a team plan.
+            </ComboboxError>
+            <ComboboxDescription id="select-error-no-icon-hint">
+              Reports go to every admin.
+            </ComboboxDescription>
+          </ComboboxField>
+          <ComboboxPopover>
+            <ComboboxItem value="Weekly" checkmark="before" />
+            <ComboboxItem value="Monthly" checkmark="before" />
+          </ComboboxPopover>
+        </ComboboxProvider>
+      </Example>
+
+      <Example
+        title="Select error that clears"
+        description="The error of a select stays in place and holds an empty string once a country is chosen. The icon goes away with the text."
+        code={`
+          <ComboboxError>{invalid ? "Choose the country…" : ""}</ComboboxError>
+        `}
+      >
+        <SelectErrorThatClearsExample />
       </Example>
 
       <Example

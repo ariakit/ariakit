@@ -8,13 +8,19 @@ import {
 } from "@ariakit/utils";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import type { MouseEvent } from "react";
+import { CircleAlertIcon } from "lucide-react";
+import type { MouseEvent, ReactNode } from "react";
 import { useRef } from "react";
+import {
+  hasContent,
+  isRenderable,
+} from "../react-utils/create-render.react.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   input,
   inputDescription,
   inputError,
+  inputErrorIcon,
   inputField,
   inputFieldContent,
   inputFieldGrid,
@@ -225,14 +231,25 @@ export function InputDescription(props: InputDescriptionProps) {
   return <ak.Role.div {...inputDescription.jsx(variantProps)} {...rest} />;
 }
 
+// The error renders the icon before its children, so it can't take
+// dangerouslySetInnerHTML. HTML goes in a child element instead.
 export interface InputErrorProps
-  extends ak.RoleProps<"div">, VariantProps<typeof inputError> {}
+  extends
+    Omit<ak.RoleProps<"div">, "dangerouslySetInnerHTML">,
+    VariantProps<typeof inputError> {
+  /**
+   * Icon before the error text, hidden from assistive technology. Defaults to a
+   * circle alert icon, which shows only while the error has content. Set
+   * `false` to remove it.
+   */
+  icon?: ReactNode;
+}
 
 /**
- * Error text for an input in an `InputField`. While it shows, list its `id`
- * first in the input's `aria-describedby` and set `aria-invalid` on the input.
- * It has no live region role; add `role="alert"` when the error appears without
- * a focus change.
+ * Error text for an input in an `InputField`, marked with an icon. While it
+ * shows, list its `id` first in the input's `aria-describedby` and set
+ * `aria-invalid` on the input. It has no live region role; add `role="alert"`
+ * when the error appears without a focus change.
  * @example
  * <InputField>
  *   <InputLabel htmlFor="email">Email</InputLabel>
@@ -240,7 +257,19 @@ export interface InputErrorProps
  *   <InputError id="email-error">Enter an email address.</InputError>
  * </InputField>
  */
-export function InputError(props: InputErrorProps) {
+export function InputError({
+  icon = <CircleAlertIcon />,
+  ...props
+}: InputErrorProps) {
   const [variantProps, rest] = splitProps(props, inputError);
-  return <ak.Role.div {...inputError.jsx(variantProps)} {...rest} />;
+  return (
+    <ak.Role.div {...inputError.jsx(variantProps)} {...rest}>
+      {isRenderable(icon) && hasContent(rest.children) && (
+        <span {...inputErrorIcon.jsx()} aria-hidden>
+          {icon}
+        </span>
+      )}
+      {rest.children}
+    </ak.Role.div>
+  );
 }

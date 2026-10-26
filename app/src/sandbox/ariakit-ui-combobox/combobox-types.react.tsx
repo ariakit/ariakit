@@ -1,9 +1,14 @@
 import type {
+  ComboboxErrorProps,
   ComboboxInputProps,
   ComboboxProps,
 } from "@ariakit/ui/components/combobox.ariakit.react";
-import { ComboboxProvider } from "@ariakit/ui/components/combobox.ariakit.react";
-import type { Dispatch, SetStateAction } from "react";
+import {
+  ComboboxError,
+  ComboboxProvider,
+} from "@ariakit/ui/components/combobox.ariakit.react";
+import { Lock } from "lucide-react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { expectTypeOf } from "vitest";
 
 // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001152369
@@ -35,3 +40,16 @@ declare const setCurrencies: Dispatch<SetStateAction<string[]>>;
     expectTypeOf(value).toEqualTypeOf<string | readonly string[]>();
   }}
 />;
+
+// https://github.com/ariakit/ariakit/issues/8053
+expectTypeOf<ComboboxErrorProps["icon"]>().toEqualTypeOf<ReactNode>();
+<ComboboxError icon={<Lock />}>Choose a country.</ComboboxError>;
+<ComboboxError icon={false}>Choose a country.</ComboboxError>;
+<ComboboxError icon={null}>Choose a country.</ComboboxError>;
+// @ts-expect-error The icon is an element, not a component.
+<ComboboxError icon={Lock}>Choose a country.</ComboboxError>;
+// @ts-expect-error The error renders its own children, so HTML goes in a child.
+<ComboboxError dangerouslySetInnerHTML={{ __html: "<b>Required</b>" }} />;
+<ComboboxError>
+  <span dangerouslySetInnerHTML={{ __html: "<b>Required</b>" }} />
+</ComboboxError>;

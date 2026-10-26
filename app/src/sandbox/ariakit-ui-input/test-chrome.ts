@@ -68,4 +68,71 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const trigger = query(q.article("Search trigger")).button("Search docs");
     await test.expect(trigger).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/issues/8053
+  test("marks an error with an icon unless the icon is removed", async ({
+    q,
+  }) => {
+    const marked = query(q.article("Error with a long message")).text(
+      "Another account uses this address. Sign in or use a different address.",
+    );
+    await test.expect(marked.locator("svg")).toHaveCount(1);
+    const unmarked = query(q.article("Error without an icon")).text(
+      "The code has 6 digits.",
+    );
+    // No icon part either, so the text starts at the edge, like the hint.
+    await test.expect(unmarked.locator("*")).toHaveCount(0);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8053
+  test("replaces the error icon and keeps its label out of the description", async ({
+    q,
+  }) => {
+    const box = query(q.article("Error with another icon"));
+    const error = box.text("This account is locked.");
+    await test.expect(error.locator("svg")).toHaveCount(1);
+    await test.expect(error.locator("svg[aria-label='Locked']")).toHaveCount(1);
+    await test
+      .expect(box.textbox("Account email"))
+      .toHaveAccessibleDescription("This account is locked.");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8053
+  test("removes the error icon when the error text clears", async ({
+    page,
+    q,
+  }) => {
+    for (const [title, name, value] of [
+      ["Error that clears", "Work email", "ada.lovelace@example.com"],
+      ["Error that keeps its line", "Phone", "555 0123"],
+    ] as const) {
+      const field = query(q.article(title)).textbox(name);
+      // The error keeps its element, so the text query would no longer find it
+      // once the text clears.
+      const errorId = await field.getAttribute("aria-describedby");
+      const error = page.locator(`[id="${errorId}"]`);
+      await test.expect(error.locator("svg")).toHaveCount(1);
+      await field.fill(value);
+      await test.expect(field).not.toHaveAttribute("aria-invalid");
+      await test.expect(error).toBeAttached();
+      await test.expect(error.locator("svg")).toHaveCount(0);
+    }
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8053
+  test("shows the error icon when an error appears on blur", async ({
+    page,
+    q,
+  }) => {
+    const box = query(q.article("Error that shows on blur"));
+    const field = box.textbox("Username");
+    const error = box.alert();
+    await test.expect(error).toBeEmpty();
+    await test.expect(error.locator("svg")).toHaveCount(0);
+    await field.focus();
+    await page.keyboard.press("Tab");
+    await test.expect(error).toHaveText("Remove the spaces.");
+    await test.expect(error.locator("svg")).toHaveCount(1);
+    await test.expect(field).toHaveAccessibleDescription("Remove the spaces.");
+  });
 });

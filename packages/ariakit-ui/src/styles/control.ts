@@ -636,14 +636,45 @@ export const controlFieldDescription = cv({
 
 /**
  * Error text for a field's control. While it has text, list its id first in the
- * control's `aria-describedby` and set `aria-invalid` on the control.
+ * control's `aria-describedby` and set `aria-invalid` on the control. Put a
+ * `controlFieldErrorIcon` part first to mark it with an icon. Set
+ * `--field-error-icon-size` and `--field-error-icon-gap` on the error or an
+ * ancestor to change the icon size and the space after it.
  */
 export const controlFieldError = cv({
   extend: [text],
-  class: "control-field-error [:where(&)]:text-[0.875em]",
+  class: [
+    "control-field-error [:where(&)]:text-[0.875em]",
+    // Hanging indent: wrapped lines start under the first line's text. An
+    // absolute icon keeps links and other inline children in the text flow.
+    // :where() lets a caller position class win. The padding keeps its
+    // specificity, because the icon sits at the padding edge and a caller
+    // padding would put the text under it.
+    "[:where(&:has(>.control-field-error-icon))]:relative",
+    // The custom properties are read with fallbacks and never set here, so a
+    // value on the error or an ancestor always wins.
+    "has-[>.control-field-error-icon]:ps-[calc(var(--field-error-icon-size,1.125em)+var(--field-error-icon-gap,0.375em))]",
+  ],
   defaultVariants: {
     $text: "danger",
   },
+});
+
+/**
+ * An icon at the start of the first line of a field error. Hide it from
+ * assistive technology, because the error text tells the same thing.
+ */
+export const controlFieldErrorIcon = cv({
+  class: [
+    // The size fallbacks match the one in the error's padding.
+    "control-field-error-icon absolute start-0 size-[var(--field-error-icon-size,1.125em)]",
+    // Center the icon on the first line box at any font size and line height.
+    "top-[calc((1lh-var(--field-error-icon-size,1.125em))/2)]",
+    "[&>svg]:block [&>svg]:size-full",
+    // Chromium paints an inline SVG in the system text color already. The
+    // system color keeps currentColor right where SVG colors aren't forced.
+    "forced-colors:text-[CanvasText]",
+  ],
 });
 
 // Reduce opacity as stroke width grows. Chevrons need a stronger edge; both

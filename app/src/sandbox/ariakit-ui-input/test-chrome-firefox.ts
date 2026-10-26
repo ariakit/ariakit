@@ -88,4 +88,29 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       }
     });
   });
+
+  // Chromium paints an inline SVG in the system text color by itself. The icon
+  // part sets the system color for engines that do not force SVG colors.
+  // https://github.com/ariakit/ariakit/issues/8053
+  test("paints the error icon in the system text color in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
+      for (const [key, title] of [
+        ["error-long-message", "Error with a long message"],
+        ["error-another-icon", "Error with another icon"],
+      ] as const) {
+        await captureInView({
+          visual,
+          box: q.article(title),
+          colorScheme,
+          item: `ariakit-ui-input/forced-colors/${key}`,
+        });
+      }
+    });
+  });
 });
