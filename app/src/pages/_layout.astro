@@ -11,7 +11,6 @@
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
 import {
-  Button,
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
@@ -40,6 +39,7 @@ import {
   AppThemeReset,
 } from "#app/components/app-theme-options.react.tsx";
 import ThemeScript from "#app/components/theme-script.astro";
+import { TooltipButton } from "#app/components/tooltip-button.react.tsx";
 import { LogoIcon, Logotype } from "#app/icons/logo.react.tsx";
 import type {
   AppHeading,
@@ -206,27 +206,38 @@ const hasSidebar = sidebar && navigation.length > 0;
     <Shell>
       <Shell>
         <ShellHeader $height="sm" $blur className="text-sm">
-          <ShellHeaderStart>
-            <Button
+          {/* The global styles give islands the display of their parent, so a
+              hidden button would leave an empty flex item and its gap. */}
+          <ShellHeaderStart className="[&>astro-island]:contents!">
+            {/* Tooltip buttons are islands, which the layout script wires before
+                they hydrate. The script restores aria-expanded, so hydration
+                ignores that difference. */}
+            <TooltipButton
+              client:load
+              tooltip="Open menu"
               aria-label="Open menu"
               aria-expanded="false"
               aria-controls={APP_DRAWER_ID}
               data-shell-toggle
+              suppressHydrationWarning
               className="@3xl/shell:hidden"
             >
               <ButtonSlot><Menu /></ButtonSlot>
-            </Button>
+            </TooltipButton>
             {
               hasSidebar && (
-                <Button
+                <TooltipButton
+                  client:load
+                  tooltip="Toggle navigation"
                   aria-label="Toggle navigation"
                   aria-expanded="true"
                   aria-controls={APP_NAVIGATION_ID}
                   data-shell-toggle
+                  suppressHydrationWarning
                   className="@max-3xl/shell:hidden"
                 >
                   <ButtonSlot><PanelLeft /></ButtonSlot>
-                </Button>
+                </TooltipButton>
               )
             }
             <a href="/" aria-label="Ariakit" class="flex items-center gap-2 px-1">
@@ -255,21 +266,25 @@ const hasSidebar = sidebar && navigation.length > 0;
               }
             </Nav>
           </ShellHeaderCenter>
-          <ShellHeaderEnd>
+          <ShellHeaderEnd className="[&>astro-island]:contents!">
             {/* The phone menu holds the theme options below 48rem. A viewport
                 query matches the outer shell, which spans the viewport. */}
             {/* The label hides when the open panel narrows the inner shell, so
-                the button names itself. */}
-            <Button
+                the button names itself, and the tooltip shows only then. */}
+            <TooltipButton
+              client:load
+              tooltip="Theme"
+              tooltipWhenIconOnly
               aria-label="Theme"
               aria-expanded="false"
               aria-controls={THEME_PANEL_ID}
               data-shell-toggle
+              suppressHydrationWarning
               className="max-md:hidden"
             >
               <ButtonSlot><SwatchBook /></ButtonSlot>
               <ButtonLabel className="@max-lg/shell:hidden">Theme</ButtonLabel>
-            </Button>
+            </TooltipButton>
           </ShellHeaderEnd>
         </ShellHeader>
         {
@@ -306,13 +321,15 @@ const hasSidebar = sidebar && navigation.length > 0;
         >
           <ShellSidebarHeader $height="sm" className="justify-between">
             <span class="font-medium">Menu</span>
-            <Button
+            <TooltipButton
+              client:load
+              tooltip="Close menu"
               aria-label="Close menu"
               aria-controls={APP_DRAWER_ID}
               data-shell-close
             >
               <ButtonSlot><X /></ButtonSlot>
-            </Button>
+            </TooltipButton>
           </ShellSidebarHeader>
           <ShellSidebarBody>
             <AppNavigation
@@ -412,13 +429,15 @@ const hasSidebar = sidebar && navigation.length > 0;
       >
         <ShellSidebarHeader $height="sm" className="justify-between">
           <span class="font-medium">Theme</span>
-          <Button
+          <TooltipButton
+            client:load
+            tooltip="Close theme"
             aria-label="Close theme"
             aria-controls={THEME_PANEL_ID}
             data-shell-close
           >
             <ButtonSlot><X /></ButtonSlot>
-          </Button>
+          </TooltipButton>
         </ShellSidebarHeader>
         <ShellSidebarBody>
           <AppThemeOptions client:load idPrefix={THEME_PANEL_ID} />

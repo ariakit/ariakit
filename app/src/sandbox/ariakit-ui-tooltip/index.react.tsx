@@ -11,12 +11,12 @@ import {
   Button,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
-import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import {
-  Tooltip,
   TooltipAnchor,
   TooltipArrow,
+  TooltipPopover,
   TooltipProvider,
+  TooltipShortcut,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { Bold } from "lucide-react";
 import {
@@ -35,11 +35,11 @@ export default function TooltipExamples() {
     <ExampleGrid>
       <Example
         title="Default"
-        description="Small text on a raised surface with an adaptive edge and a medium shadow."
+        description="Small text on an inverted surface with a medium shadow. The inverted surface stands out from the page, so it has no edge."
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Save</TooltipAnchor>
-            <Tooltip>Save changes</Tooltip>
+            <TooltipPopover>Save changes</TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -48,21 +48,21 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>
               Save
             </TooltipAnchor>
-            <Tooltip {...openTooltipProps}>Save changes</Tooltip>
+            <TooltipPopover {...openTooltipProps}>Save changes</TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
       </Example>
 
       <Example
         title="With an arrow"
-        description="The arrow takes the fill and the edge of the tooltip, so it reads as part of the same surface."
+        description="The arrow takes the fill of the tooltip, so it reads as part of the same surface."
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Share</TooltipAnchor>
-            <Tooltip>
+            <TooltipPopover>
               <TooltipArrow />
               Copy a link to this page
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -71,10 +71,10 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>
               Share
             </TooltipAnchor>
-            <Tooltip {...openTooltipProps}>
+            <TooltipPopover {...openTooltipProps}>
               <TooltipArrow />
               Copy a link to this page
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
       </Example>
@@ -85,10 +85,10 @@ export default function TooltipExamples() {
         code={`
           <TooltipProvider open placement="bottom">
             <TooltipAnchor render={<Button $kind="bevel" />}>Filters</TooltipAnchor>
-            <Tooltip>
+            <TooltipPopover>
               <TooltipArrow />
               Show filter options
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -97,10 +97,10 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>
               Filters
             </TooltipAnchor>
-            <Tooltip {...openTooltipProps}>
+            <TooltipPopover {...openTooltipProps}>
               <TooltipArrow />
               Show filter options
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
       </Example>
@@ -111,7 +111,7 @@ export default function TooltipExamples() {
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Sync</TooltipAnchor>
-            <Tooltip>…</Tooltip>
+            <TooltipPopover>…</TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -120,17 +120,17 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>
               Sync
             </TooltipAnchor>
-            <Tooltip {...openTooltipProps}>
+            <TooltipPopover {...openTooltipProps}>
               Sync pulls the latest changes from the remote branch and then
               pushes your local commits to it
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
       </Example>
 
       <Example
         title="Icon button with a shortcut"
-        description="An icon button named by its label, with key caps in the tooltip. The caps take their color from the tooltip surface."
+        description="An icon button named by its label, with its shortcut after the tooltip text. The keys are muted and use the UI font, like the shortcut slot of a button."
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>
@@ -138,11 +138,13 @@ export default function TooltipExamples() {
                 <Bold />
               </ButtonSlot>
             </TooltipAnchor>
-            <Tooltip>
+            <TooltipPopover>
               Bold
-              <Kbd>⌘</Kbd>
-              <Kbd>B</Kbd>
-            </Tooltip>
+              <TooltipShortcut>
+                <kbd>⌘</kbd>
+                <kbd>B</kbd>
+              </TooltipShortcut>
+            </TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -161,9 +163,47 @@ export default function TooltipExamples() {
                 <Bold />
               </ButtonSlot>
             </TooltipAnchor>
-            <Tooltip {...openTooltipProps}>
-              Bold <Kbd>⌘</Kbd> <Kbd>B</Kbd>
-            </Tooltip>
+            <TooltipPopover {...openTooltipProps}>
+              Bold
+              <TooltipShortcut>
+                <kbd>⌘</kbd>
+                <kbd>B</kbd>
+              </TooltipShortcut>
+            </TooltipPopover>
+          </TooltipProvider>
+        </ExampleStage>
+      </Example>
+
+      <Example
+        title="Boxed shortcut"
+        description="A border draws a box around the shortcut keys, which get smaller to fit it, as in the shortcut slot of a button."
+        code={`
+          <TooltipProvider open>
+            <TooltipAnchor render={<Button $kind="bevel" />}>Search</TooltipAnchor>
+            <TooltipPopover>
+              Search
+              <TooltipShortcut $border>
+                <kbd>⌘</kbd>
+                <kbd>K</kbd>
+              </TooltipShortcut>
+            </TooltipPopover>
+          </TooltipProvider>
+        `}
+      >
+        <ExampleStage anchor="end" height={22}>
+          <TooltipProvider open>
+            <TooltipAnchor
+              render={<Button $kind="bevel" aria-keyshortcuts="Meta+K" />}
+            >
+              Search
+            </TooltipAnchor>
+            <TooltipPopover {...openTooltipProps}>
+              Search
+              <TooltipShortcut $border>
+                <kbd>⌘</kbd>
+                <kbd>K</kbd>
+              </TooltipShortcut>
+            </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
       </Example>
@@ -174,7 +214,7 @@ export default function TooltipExamples() {
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Like</TooltipAnchor>
-            <Tooltip $rounded="full">Like this post</Tooltip>
+            <TooltipPopover $rounded="full">Like this post</TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -183,9 +223,9 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>
               Like
             </TooltipAnchor>
-            <Tooltip {...openTooltipProps} $rounded="full">
+            <TooltipPopover {...openTooltipProps} $rounded="full">
               Like this post
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
       </Example>
@@ -196,7 +236,7 @@ export default function TooltipExamples() {
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Export</TooltipAnchor>
-            <Tooltip $p={2}>Download as CSV</Tooltip>
+            <TooltipPopover $p={2}>Download as CSV</TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -205,23 +245,23 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>
               Export
             </TooltipAnchor>
-            <Tooltip {...openTooltipProps} $p={2}>
+            <TooltipPopover {...openTooltipProps} $p={2}>
               Download as CSV
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
       </Example>
 
       <Example
         title="Brand"
-        description="A brand-colored tooltip. The ink turns light, and the arrow takes the brand fill."
+        description="A brand-colored tooltip keeps its hue instead of inverting. The ink turns light, and the arrow takes the brand fill and the edge."
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Upgrade</TooltipAnchor>
-            <Tooltip $layer="brand">
+            <TooltipPopover $layer="brand">
               <TooltipArrow />
               New in Pro
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -230,24 +270,24 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>
               Upgrade
             </TooltipAnchor>
-            <Tooltip {...openTooltipProps} $layer="brand">
+            <TooltipPopover {...openTooltipProps} $layer="brand">
               <TooltipArrow />
               New in Pro
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
       </Example>
 
       <Example
-        title="Inverted"
-        description="The classic contrasting tooltip: dark on a light page and light on a dark page. The arrow follows the fill."
+        title="Surface"
+        description="A tooltip on the popover surface instead of the inverted one, with an adaptive edge. The arrow follows the fill and the edge."
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Delete</TooltipAnchor>
-            <Tooltip $invert>
+            <TooltipPopover $invert={false}>
               <TooltipArrow />
               Delete permanently
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -256,10 +296,10 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>
               Delete
             </TooltipAnchor>
-            <Tooltip {...openTooltipProps} $invert>
+            <TooltipPopover {...openTooltipProps} $invert={false}>
               <TooltipArrow />
               Delete permanently
-            </Tooltip>
+            </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
       </Example>
@@ -270,7 +310,7 @@ export default function TooltipExamples() {
         code={`
           <TooltipProvider>
             <TooltipAnchor render={<Button $kind="bevel" />}>Publish</TooltipAnchor>
-            <Tooltip>…</Tooltip>
+            <TooltipPopover>…</TooltipPopover>
           </TooltipProvider>
         `}
       >
@@ -284,7 +324,9 @@ export default function TooltipExamples() {
             them and ignores Escape.
             https://github.com/ariakit/ariakit/issues/7463
           */}
-          <Tooltip unmountOnHide>Publish to the public site</Tooltip>
+          <TooltipPopover unmountOnHide>
+            Publish to the public site
+          </TooltipPopover>
         </TooltipProvider>
       </Example>
     </ExampleGrid>

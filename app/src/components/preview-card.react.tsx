@@ -21,6 +21,7 @@ import {
   InputSlot,
 } from "@ariakit/ui/components/input.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
+import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -81,6 +82,11 @@ export interface PreviewCardProps {
    */
   fullscreen?: boolean;
   /**
+   * Gives the iframe the minimum height of an inline preview, for a small
+   * example.
+   */
+  compact?: boolean;
+  /**
    * Renders browser chrome with navigation buttons and the address of the
    * preview page above the iframe.
    */
@@ -106,6 +112,7 @@ export function PreviewCard({
   href,
   inline,
   fullscreen,
+  compact,
   browser,
   children,
   code,
@@ -173,17 +180,19 @@ export function PreviewCard({
                   Get code
                 </ButtonLabel>
               </ak.Disclosure>
-              <Button
-                render={
-                  <a href={frame.location} target="_blank" rel="noreferrer" />
-                }
-                aria-label="Open preview in a new tab"
-                $ink={80}
-              >
-                <ButtonSlot>
-                  <ExternalLinkIcon />
-                </ButtonSlot>
-              </Button>
+              <Tooltip content="Open preview in a new tab">
+                <Button
+                  render={
+                    <a href={frame.location} target="_blank" rel="noreferrer" />
+                  }
+                  aria-label="Open preview in a new tab"
+                  $ink={80}
+                >
+                  <ButtonSlot>
+                    <ExternalLinkIcon />
+                  </ButtonSlot>
+                </Button>
+              </Tooltip>
             </ButtonGroup>
           </Frame>
           {inline ? (
@@ -196,6 +205,7 @@ export function PreviewCard({
               // Browser chrome frames a page that navigates between routes, so
               // it gets the same full page height as fullscreen previews.
               fullscreen={fullscreen || browser}
+              compact={compact}
             />
           )}
         </Frame>
@@ -380,34 +390,40 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
         $gap="xs"
         $layer="transparent"
       >
-        <Button
-          aria-label="Back"
-          // Keeps focus when going back reaches the first entry.
-          accessibleWhenDisabled
-          disabled={!history.canGoBack}
-          onClick={() => send("back")}
-          $ink={80}
-        >
-          <ButtonSlot>
-            <ArrowLeftIcon />
-          </ButtonSlot>
-        </Button>
-        <Button
-          aria-label="Forward"
-          accessibleWhenDisabled
-          disabled={!history.canGoForward}
-          onClick={() => send("forward")}
-          $ink={80}
-        >
-          <ButtonSlot>
-            <ArrowRightIcon />
-          </ButtonSlot>
-        </Button>
-        <Button aria-label="Reload" onClick={() => send("reload")} $ink={80}>
-          <ButtonSlot>
-            <RotateCwIcon />
-          </ButtonSlot>
-        </Button>
+        <Tooltip content="Back">
+          <Button
+            aria-label="Back"
+            // Keeps focus when going back reaches the first entry.
+            accessibleWhenDisabled
+            disabled={!history.canGoBack}
+            onClick={() => send("back")}
+            $ink={80}
+          >
+            <ButtonSlot>
+              <ArrowLeftIcon />
+            </ButtonSlot>
+          </Button>
+        </Tooltip>
+        <Tooltip content="Forward">
+          <Button
+            aria-label="Forward"
+            accessibleWhenDisabled
+            disabled={!history.canGoForward}
+            onClick={() => send("forward")}
+            $ink={80}
+          >
+            <ButtonSlot>
+              <ArrowRightIcon />
+            </ButtonSlot>
+          </Button>
+        </Tooltip>
+        <Tooltip content="Reload">
+          <Button aria-label="Reload" onClick={() => send("reload")} $ink={80}>
+            <ButtonSlot>
+              <RotateCwIcon />
+            </ButtonSlot>
+          </Button>
+        </Tooltip>
       </ButtonGroup>
       <InputGroup $rounded="full" $border={false} className="min-w-0 flex-1">
         <InputSlot aria-hidden $ink={60}>
@@ -428,6 +444,20 @@ interface PreviewCardViewportProps {
   title: string;
   href: string;
   fullscreen?: boolean;
+  compact?: boolean;
+}
+
+function getFrameHeight({
+  fullscreen,
+  compact,
+}: Pick<PreviewCardViewportProps, "fullscreen" | "compact">) {
+  // The Ariakit UI spacing scale follows the font size, so the heights are in
+  // rem.
+  if (fullscreen) return "h-[40rem]";
+  // Outside a preview grid, an inline preview has no minimum height, so a
+  // compact frame keeps the default height there.
+  if (compact) return "h-(--preview-card-min-height,25rem)";
+  return "h-[25rem]";
 }
 
 function PreviewCardViewport({
@@ -435,6 +465,7 @@ function PreviewCardViewport({
   title,
   href,
   fullscreen,
+  compact,
 }: PreviewCardViewportProps) {
   const { ref, viewportRef, ready, setLoaded, activate } = frame;
   const near = useNearViewport(ref);
@@ -467,9 +498,7 @@ function PreviewCardViewport({
               onLoad={() => setLoaded(true)}
               className={[
                 "block w-full border-0 bg-transparent transition-opacity",
-                // The Ariakit UI spacing scale follows the font size, so the
-                // heights are in rem.
-                fullscreen ? "h-[40rem]" : "h-[25rem]",
+                getFrameHeight({ fullscreen, compact }),
                 "group-data-loading/preview:opacity-0",
                 // Without scripts, nothing reports the load, so the frame shows
                 // right away.
