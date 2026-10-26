@@ -229,7 +229,7 @@ Treat hue as information. Keep most of the scene in one family, then spend stron
 </div>
 ```
 
-A finish can be fixed or contextual. The primary action keeps one recognizable pigment but lets its tone move away from its support when needed. The default parent-directed contrast amount is usually a useful starting point, but it does not guarantee a particular contrast ratio. The badge softens its warning pigment into the surrounding material.
+A finish can be fixed or contextual. The primary action keeps one recognizable pigment but lets its tone move away from its support when needed. The default parent-directed contrast amount also keeps it at 3:1 or more against its support, as the [layer contrast floor](#layer-contrast-floor) describes. The badge softens its warning pigment into the surrounding material.
 
 When belonging to the local material matters more than preserving one global swatch, derive the finish from the parent:
 
@@ -518,18 +518,39 @@ Custom backgrounds can read the resolved `--ak-layer` color and `var(--ak-layer-
 
 ### Lightness adjustments
 
-| Utility                      | Description                                                                                                                                                                                        |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%, useful for intentionally raised or exposed surfaces. Arbitrary values are raw (`ak-layer-lighten-[0.05]`).                                                      |
-| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%, useful for intentionally recessed or pressed surfaces. Arbitrary values are raw (`ak-layer-darken-[0.05]`).                                                      |
-| `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                                                         |
-| `ak-layer-contrast`          | Applies a parent-directed tonal target (preset `25`), preserving hue and chroma. Lightness stays unchanged when it is already farther in that direction. This does not guarantee a contrast ratio. |
-| `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `25`). Sets the amount only. Pair it with `ak-layer-contrast`, which is what reads the amount.                                                          |
-| `ak-layer-l-<value>`         | Sets absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                                                                                            |
-| `ak-layer-max-<value>`       | Caps lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values) or caps chroma with a named chroma preset (`ak-layer-max-muted`).                                    |
-| `ak-layer-min-<value>`       | Floors lightness or chroma, same form as `max-*`.                                                                                                                                                  |
-| `ak-layer-max-l-<value>`     | Caps lightness specifically. Useful for custom properties without a typed arbitrary value hint (`ak-layer-max-l-(--max-l)`). Arbitrary/custom-property values are raw.                             |
-| `ak-layer-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                                                                                                           |
+| Utility                      | Description                                                                                                                                                                                                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%, useful for intentionally raised or exposed surfaces. Arbitrary values are raw (`ak-layer-lighten-[0.05]`).                                                                                                                 |
+| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%, useful for intentionally recessed or pressed surfaces. Arbitrary values are raw (`ak-layer-darken-[0.05]`).                                                                                                                 |
+| `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                                                                                                                    |
+| `ak-layer-contrast`          | Applies a parent-directed tonal target (preset `30`), preserving hue and chroma, then keeps at least 3:1 against the parent layer. Lightness stays unchanged when it is already farther in that direction. See [Layer contrast floor](#layer-contrast-floor). |
+| `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `30`). `30` keeps 3:1, and each further `30` multiplies the ratio by 3, so lower amounts don't guarantee 3:1. Sets the amount only. Pair it with `ak-layer-contrast`, which is what reads the amount.              |
+| `ak-layer-l-<value>`         | Sets absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                                                                                                                                                       |
+| `ak-layer-max-<value>`       | Caps lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values) or caps chroma with a named chroma preset (`ak-layer-max-muted`).                                                                                               |
+| `ak-layer-min-<value>`       | Floors lightness or chroma, same form as `max-*`.                                                                                                                                                                                                             |
+| `ak-layer-max-l-<value>`     | Caps lightness specifically. Useful for custom properties without a typed arbitrary value hint (`ak-layer-max-l-(--max-l)`). Arbitrary/custom-property values are raw.                                                                                        |
+| `ak-layer-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                                                                                                                                                                      |
+
+### Layer contrast floor
+
+`ak-layer-contrast` keeps the layer at 3:1 or more against the parent layer, which is the contrast that [WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) asks for a fill that identifies a control or its state, such as a checked checkbox. It first moves the lightness by the contrast amount, then moves only a color that is still short of the ratio, like the [edge contrast floor](#contrast-floor). The floor aims 2.5% over the ratio, and a color that already reaches that keeps its color.
+
+```html
+<div class="ak-layer ak-layer-primary">
+  <input
+    type="checkbox"
+    class="ak-layer ak-layer-primary ak-layer-contrast ak-frame ak-frame-field/field"
+  />
+</div>
+```
+
+- The amount sets the ratio. The default, `30`, keeps 3:1, and each further `30` multiplies the ratio by 3, so `41` keeps about 4.5:1 and `53` about 7:1. Lower amounts, such as `ak-layer-contrast-10` at about 1.44:1, separate a surface without the 3:1 guarantee.
+- The [`contrast-more`](#accessibility) variant raises the ratio by half, so the default keeps 4.5:1. [`ak-disabled`](#ak-disabled) lowers it with `--ak-disabled-contrast-scale`, to 1.5:1 by default.
+- The floor moves the color in the same direction as the lightness shift, away from the parent layer, and it follows [`ak-outset`](#ak-outset). A ratio that this direction can't reach, such as 7:1 against a mid-tone parent layer, ends at black or white.
+- A layer stays out of the forbidden mid-lightness range, so a color that the floor moves into that range continues to its far side and can land well over the ratio.
+- A color that moves keeps its chroma and hue where the sRGB gamut allows, and it is clipped to sRGB. A color that passes keeps its color, even outside sRGB. The result is opaque, so a translucent layer becomes opaque.
+- The floor applies to the resting color. State utilities, such as `hover:ak-state-6`, apply on top of it and can move it under the ratio.
+- Like the edge floor, it measures colors clipped to the sRGB gamut, and in Firefox it can land slightly under the ratio on a few parent layers. A layer without a parent layer keeps its color.
 
 ### Hue adjustments
 

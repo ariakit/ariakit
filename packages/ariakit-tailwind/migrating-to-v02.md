@@ -85,7 +85,7 @@ Compound contrast layer utilities are decomposed into color + parent-relative co
 
 In v0.1, `ak-layer-contrast-<color>` adjusted the color's lightness to contrast against the **parent** layer. A trailing number set the selected color's lightness level before automatic parent contrast. The `0` level kept the theme color unchanged, but it did not set or disable contrast.
 
-In v0.2, this is handled by `ak-layer-contrast` (base) + optionally `ak-layer-contrast-N` (amount). The base utility uses container queries to derive contrast direction from the parent layer's lightness and includes a default contrast amount of 25, matching the old numerical default. This is a parent-directed lightness amount, not a guaranteed contrast ratio.
+In v0.2, this is handled by `ak-layer-contrast` (base) + optionally `ak-layer-contrast-N` (amount). The base utility uses container queries to derive contrast direction from the parent layer's lightness and includes a default contrast amount of 30. The amount sets a minimum contrast ratio against the parent layer: the default keeps 3:1.
 
 ```diff
 - ak-layer-contrast-primary

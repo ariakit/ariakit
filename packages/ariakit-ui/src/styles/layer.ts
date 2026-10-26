@@ -12,7 +12,7 @@ import {
 import type { ChromaValues, HueValues, ColorValues } from "../utils/styles.ts";
 
 const DEFAULT_MIX_AMOUNT = 50;
-const DEFAULT_CONTRAST_AMOUNT = 25;
+const DEFAULT_CONTRAST_AMOUNT = 30;
 
 /**
  * Checks whether `$layer` supplies a color rather than a boolean or
@@ -294,8 +294,9 @@ export const layer = cv({
       };
     },
     /**
-     * Increases the contrast between the current layer and its parent. Setting
-     * it to `true` usually means a 3:1 contrast ratio.
+     * Increases the contrast between the current layer and its parent. `true`
+     * (30) keeps at least a 3:1 contrast ratio, and each further 30 multiplies
+     * the ratio by 3. Lower values give a separation without that guarantee.
      */
     $contrast(value?: string | number | boolean) {
       return getScaledStyleClass({

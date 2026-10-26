@@ -111,7 +111,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
           // Read this before the loop starts moving `--contrast`. The contrast
           // pair converges at a high enough `--contrast`, where `50` and the
-          // `25` default resolve to the same color.
+          // `30` default resolve to the same color.
           const baselineColor = await getBackgroundColor(
             q.region(longhand.baseline),
           );
