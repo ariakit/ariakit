@@ -68,8 +68,11 @@ export const tooltipShortcut = cv({
   },
 });
 
-/** The positioned wrapper of a tooltip popup that several anchors share. */
-export const tooltipGroupWrapper = cv({
+/**
+ * The positioned wrapper of a tooltip popup, through the `wrapperProps` of
+ * `TooltipPopover`. Use it for a popup that several anchors share.
+ */
+export const tooltipWrapper = cv({
   variants: {
     /**
      * Slides the popup when it moves to another anchor. Ariakit adds

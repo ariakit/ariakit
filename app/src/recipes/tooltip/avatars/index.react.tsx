@@ -1,9 +1,12 @@
+import * as ak from "@ariakit/react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
-  Tooltip,
-  TooltipGroup,
+  TooltipAnchor,
+  TooltipPopover,
+  TooltipProvider,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { focus } from "@ariakit/ui/styles/focus";
+import { tooltipWrapper } from "@ariakit/ui/styles/tooltip";
 
 interface Person {
   name: string;
@@ -47,28 +50,41 @@ interface AvatarLinkProps {
 
 function AvatarLink({ href, label, children, hue }: AvatarLinkProps) {
   return (
-    <Tooltip content={label}>
-      <Frame
-        render={<a href={href} />}
-        aria-label={label}
-        $layer={hue ? "brand" : true}
-        $hue={hue}
-        // A neutral avatar needs a surface that differs from the page.
-        $lightnessOffset={hue ? undefined : true}
-        $rounded="full"
-        $p="none"
-        className={avatarClass}
-      >
-        <span aria-hidden>{children}</span>
-      </Frame>
-    </Tooltip>
+    <TooltipAnchor
+      render={
+        <Frame
+          render={<a href={href} />}
+          aria-label={label}
+          $layer={hue ? "brand" : true}
+          $hue={hue}
+          // A neutral avatar needs a surface that differs from the page.
+          $lightnessOffset={hue ? undefined : true}
+          $rounded="full"
+          $p="none"
+          className={avatarClass}
+        />
+      }
+    >
+      <span aria-hidden>{children}</span>
+    </TooltipAnchor>
+  );
+}
+
+// The avatars share this tooltip, which names the avatar that it shows for. The
+// wrapper style slides it from name to name.
+function SharedTooltip() {
+  const store = ak.useTooltipContext();
+  const anchor = ak.useStoreState(store, "anchorElement");
+  return (
+    <TooltipPopover wrapperProps={tooltipWrapper.jsx()}>
+      {anchor?.getAttribute("aria-label")}
+    </TooltipPopover>
   );
 }
 
 export default function Example() {
   return (
-    // The avatars share one tooltip, which slides from name to name.
-    <TooltipGroup>
+    <TooltipProvider>
       <div role="group" aria-label="Project members" className="flex">
         {people.map((person) => (
           <AvatarLink
@@ -84,6 +100,7 @@ export default function Example() {
           {`+${MORE_COUNT}`}
         </AvatarLink>
       </div>
-    </TooltipGroup>
+      <SharedTooltip />
+    </TooltipProvider>
   );
 }

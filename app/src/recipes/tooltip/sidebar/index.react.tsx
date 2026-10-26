@@ -1,3 +1,4 @@
+import * as ak from "@ariakit/react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Nav,
@@ -5,9 +6,11 @@ import {
   NavSlot,
 } from "@ariakit/ui/components/nav.ariakit.react";
 import {
-  Tooltip,
-  TooltipGroup,
+  TooltipAnchor,
+  TooltipPopover,
+  TooltipProvider,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
+import { tooltipWrapper } from "@ariakit/ui/styles/tooltip";
 import type { LucideIcon } from "lucide-react";
 import {
   CalendarIcon,
@@ -32,6 +35,18 @@ const sections: Section[] = [
   { id: "settings", label: "Settings", icon: SettingsIcon },
 ];
 
+// The links share this tooltip, which names the link that it shows for. The
+// wrapper style slides it from link to link.
+function SharedTooltip() {
+  const store = ak.useTooltipContext();
+  const anchor = ak.useStoreState(store, "anchorElement");
+  return (
+    <TooltipPopover wrapperProps={tooltipWrapper.jsx()}>
+      {anchor?.getAttribute("aria-label")}
+    </TooltipPopover>
+  );
+}
+
 export default function Example() {
   const [current, setCurrent] = useState("inbox");
   const currentSection = sections.find((section) => section.id === current);
@@ -45,10 +60,9 @@ export default function Example() {
       $orientation="horizontal"
       className="flex w-[26rem] max-w-full overflow-hidden"
     >
-      {/* The links share one tooltip, which slides from link to link. The
-          tooltips name icons, so they show at once, and they stay for a moment
-          while the pointer crosses the gap to the next link. */}
-      <TooltipGroup placement="right" showTimeout={0} hideTimeout={300}>
+      {/* The tooltip names icons, so it shows at once, and it stays for a
+          moment while the pointer crosses the gap to the next link. */}
+      <TooltipProvider placement="right" showTimeout={0} hideTimeout={300}>
         <Nav
           aria-label="Main"
           bar
@@ -59,21 +73,25 @@ export default function Example() {
           className="shrink-0 border-e"
         >
           {sections.map((section) => (
-            <Tooltip key={section.id} content={section.label}>
-              <NavLink
-                href={`#${section.id}`}
-                aria-label={section.label}
-                aria-current={current === section.id ? "page" : undefined}
-                onClick={() => setCurrent(section.id)}
-              >
-                <NavSlot>
-                  <section.icon />
-                </NavSlot>
-              </NavLink>
-            </Tooltip>
+            <TooltipAnchor
+              key={section.id}
+              render={
+                <NavLink
+                  href={`#${section.id}`}
+                  aria-label={section.label}
+                  aria-current={current === section.id ? "page" : undefined}
+                  onClick={() => setCurrent(section.id)}
+                />
+              }
+            >
+              <NavSlot>
+                <section.icon />
+              </NavSlot>
+            </TooltipAnchor>
           ))}
         </Nav>
-      </TooltipGroup>
+        <SharedTooltip />
+      </TooltipProvider>
       <div className="grid content-start gap-2 p-6">
         <h2 className="text-lg font-medium">{currentSection?.label}</h2>
         <p className="ak-ink-70 text-sm">

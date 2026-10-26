@@ -104,7 +104,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const section = q.region("No popup motion");
     await hoverAnchor(query(section).button("One"));
     await test.expect(q.tooltip("One tooltip")).toBeVisible();
-    // The class of the group reaches the popup and removes its motion.
+    // The class removes the motion of the popup.
     await test
       .expect(q.tooltip("One tooltip"))
       .toHaveCSS("transition-property", "none");
