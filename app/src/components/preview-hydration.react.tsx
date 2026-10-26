@@ -7,13 +7,23 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { ComponentType } from "react";
-import { markPreviewHydrated } from "#app/lib/preview-hydration.ts";
+import {
+  markPreviewHydrated,
+  subscribePreviewReload,
+} from "#app/lib/preview-hydration.ts";
 
-export function withPreviewHydration(Preview: ComponentType) {
+export function withPreviewHydration(Preview: ComponentType, id: string) {
   return function PreviewHydration() {
+    const [reloadCount, setReloadCount] = useState(0);
     useEffect(markPreviewHydrated, []);
-    return <Preview />;
+    useEffect(() => {
+      return subscribePreviewReload(id, () => {
+        setReloadCount((count) => count + 1);
+      });
+    }, []);
+    // A new key mounts the example again, which resets its state.
+    return <Preview key={reloadCount} />;
   };
 }

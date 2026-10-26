@@ -15,23 +15,26 @@ test("preview grid cards of similar heights line up", async ({ page, q }) => {
     q.region(title, { exact: true }).first().locator(":scope > *");
   const getHeight = (locator: Locator) =>
     locator.evaluate((element) => element.getBoundingClientRect().height);
-  const settings = q.region("Settings Form", { exact: true });
+  const timing = q.region("Timing", { exact: true });
   const article = q.region("Article", { exact: true });
   // Cards hydrate when they scroll into view. Each of these cards shares its
   // row with a card that the test measures too.
-  await settings.scrollIntoViewIfNeeded();
-  await expect(query(settings).status()).toHaveText("Account loaded");
+  await timing.scrollIntoViewIfNeeded();
+  await expect(query(timing).status()).toHaveText("Contact loaded");
+  await expect(
+    query(getCard("Skeleton")).status().filter({ hasText: "Profile loaded" }),
+  ).toBeVisible();
   await article.scrollIntoViewIfNeeded();
   await expect(query(article).status()).toHaveText("Article loaded");
 
-  // The settings card is a little shorter than the feed card, so it grows to
+  // The timing card is a little shorter than the skeleton card, so it grows to
   // the row. The thumbnails card is much shorter than the article card, so it
   // keeps its height.
   await expect
     .poll(
       async () =>
-        (await getHeight(getCard("Settings Form"))) -
-        (await getHeight(getCard("Feed"))),
+        (await getHeight(getCard("Timing"))) -
+        (await getHeight(getCard("Skeleton"))),
     )
     .toBeCloseTo(0, 0);
   expect(await getHeight(getCard("Thumbnails"))).toBeLessThan(

@@ -132,6 +132,22 @@ test("combobox preview cards work in their iframes", async ({ page, q }) => {
   );
 });
 
+test("preview cards reload the page in their frame", async ({ page, q }) => {
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  const preview = query(await waitForFrameHydration(iframe));
+  const combobox = preview.combobox("Find records");
+  await combobox.fill("annual");
+  await preview.option(/annual_report\.pdf/).click();
+  await expect(combobox).toHaveValue("annual_report.pdf");
+
+  const card = query(q.region("Combobox Group"));
+  await card.button("Reload preview").click();
+  // The locator follows the new document, which starts the example from its
+  // initial state.
+  await expect(combobox).toHaveValue("");
+});
+
 test("preview card frames do not scroll or take focus until activated", async ({
   page,
 }) => {

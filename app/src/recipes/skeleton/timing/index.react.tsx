@@ -1,8 +1,4 @@
-import {
-  Button,
-  ButtonLabel,
-  ButtonSlot,
-} from "@ariakit/ui/components/button.ariakit.react";
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   RadioDescription,
@@ -18,7 +14,6 @@ import {
   SkeletonLine,
   useSkeletonState,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
-import { RotateCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useRequest } from "../use-request.ts";
 
@@ -99,12 +94,6 @@ export default function Example() {
           <Timeline />
         </Skeleton>
       </Frame>
-      <Button onClick={reload} className="justify-self-center">
-        <ButtonSlot aria-hidden>
-          <RotateCw />
-        </ButtonSlot>
-        <ButtonLabel>Reload</ButtonLabel>
-      </Button>
     </div>
   );
 }

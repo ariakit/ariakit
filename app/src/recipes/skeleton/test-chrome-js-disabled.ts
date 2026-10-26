@@ -13,8 +13,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/7993#discussion_r4317370417
-  test("skips the filled button before hydration", async ({ page, q }) => {
+  test("skips the filled button before hydration", async ({ page }) => {
+    // The filled button is the only control in the example.
     await page.keyboard.press("Tab");
-    await test.expect(q.button("Reload profile")).toBeFocused();
+    await test.expect(page.locator(":focus")).toHaveCount(0);
   });
 });

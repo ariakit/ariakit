@@ -72,3 +72,34 @@ test("Next.js preview cards keep their history after fragment links", async ({
   await expect(preview.tabpanel("Hot")).toBeVisible();
   await expect(page).toHaveURL(/\/react\/recipes\/tab-nextjs\/$/);
 });
+
+test("inline preview cards reload their example from its initial state", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/skeleton/");
+  const card = query(q.region("Timing", { exact: true }));
+  const status = card.status();
+  await card.radio("Medium").scrollIntoViewIfNeeded();
+  // The server HTML only shows the loading status, so the loaded status means
+  // the example hydrated.
+  await expect(status).toHaveText("Contact loaded");
+  await card.radio("Slow").click();
+  await expect(card.radio("Slow")).toBeChecked();
+  await expect(status).toHaveText("Loading contact");
+
+  await card.button("Reload preview").click();
+  await expect(card.radio("Medium")).toBeChecked();
+  await expect(card.button("Reload preview")).toBeFocused();
+  await expect(status).toHaveText("Contact loaded");
+});
+
+test("browser preview cards keep the reload button in their navigation", async ({
+  page,
+  q,
+}) => {
+  await gotoNextjsCard(page);
+  const card = query(q.region("Tab with Next.js App Router"));
+  await expect(card.button("Reload")).toBeVisible();
+  await expect(card.button("Reload preview")).toHaveCount(0);
+});

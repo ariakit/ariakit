@@ -28,7 +28,7 @@ interface PreviewCodegenResult {
 
 interface PreviewHydrationAdapter {
   fileExtension: string;
-  generate(importPath: string): string;
+  generate(importPath: string, id: string): string;
 }
 
 const previewCodegenDirs = new Map<string, string>();
@@ -54,8 +54,8 @@ export function getRelativeImportPath(fromFile: string, toFile: string) {
 }
 
 function createWrappedPreviewClientGenerator(hydrationModule: string) {
-  return (importPath: string) =>
-    `import { withPreviewHydration } from ${JSON.stringify(hydrationModule)};\nimport Preview from ${JSON.stringify(importPath)};\n\nexport default withPreviewHydration(Preview);\n`;
+  return (importPath: string, id: string) =>
+    `import { withPreviewHydration } from ${JSON.stringify(hydrationModule)};\nimport Preview from ${JSON.stringify(importPath)};\n\nexport default withPreviewHydration(Preview, ${JSON.stringify(id)});\n`;
 }
 
 const previewHydrationAdapters: Partial<
@@ -238,8 +238,10 @@ export async function writePreviewCodegen({
       const importPath = getRelativeImportPath(clientFile, entryFile);
       generatedFiles.add(clientFile);
       changed =
-        (await writeFileIfChanged(clientFile, adapter.generate(importPath))) ||
-        changed;
+        (await writeFileIfChanged(
+          clientFile,
+          adapter.generate(importPath, preview.id),
+        )) || changed;
     }
     changed =
       (await writeFileIfChanged(file, generatePreviewWrapper(preview, file))) ||

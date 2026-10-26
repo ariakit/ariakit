@@ -13,12 +13,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // The placeholders can stay after the data arrives, so wait for the
     // content.
     await test.expect(q.button("Message")).toBeVisible();
+    const times = q.definition();
+    // A fast request (50 ms) skips the placeholders, so the times below can
+    // only come from the medium request that follows.
+    await q.radio("Fast").click();
+    await test.expect(times.nth(0)).toHaveText("Skipped");
+    await test.expect(times.nth(1)).toHaveText(/^\d+ ms$/);
     // A medium request (250 ms) shows the placeholders at 150 ms and keeps them
     // until 350 ms, after the data arrives.
-    await q.button("Reload").click();
+    await q.radio("Medium").click();
     await test.expect(q.status()).toHaveText("Loading contact");
     await test.expect(q.status()).toHaveText("Contact loaded");
-    const times = q.definition();
     await test.expect(times.nth(1)).toHaveText(/^\d+ ms$/);
     const [placeholders = "", content = ""] = await times.allTextContents();
     const placeholdersTime = Number.parseInt(placeholders, 10);
@@ -30,17 +35,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(contentTime).toBeGreaterThanOrEqual(150 + 200);
   });
 
+  test("hides the previous contact while it reloads", async ({ q }) => {
+    await test.expect(q.button("Message")).toBeVisible();
+    await q.radio("Slow").click();
+    await test.expect(q.status()).toHaveText("Loading contact");
+    await test.expect(q.button("Message")).toHaveCount(0);
+    await test.expect(q.status()).toHaveText("Contact loaded");
+    await test.expect(q.button("Message")).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/pull/7993#discussion_r4317370427
   test("shows the placeholders for a reload right after the content", async ({
     page,
     q,
   }) => {
     await test.expect(q.button("Message")).toBeVisible();
-    await q.button("Reload").click();
+    await q.radio("Slow").click();
     await test.expect(q.status()).toHaveText("Loading contact");
-    // Reload again in the same task that shows the content, so the reload
-    // starts right after it. A locator click waits for its own checks first,
-    // which can take longer than the delay.
+    // Switch to the medium speed in the same task that shows the content, so
+    // the reload starts right after it. A locator click waits for its own
+    // checks first, which can take longer than the delay.
     await page.evaluate(
       () =>
         new Promise<void>((resolve) => {
@@ -53,7 +67,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
             );
             if (!message) return;
             observer.disconnect();
-            buttons.find((button) => button.textContent === "Reload")?.click();
+            const medium = document.querySelector<HTMLInputElement>(
+              "input[type='radio'][value='250']",
+            );
+            medium?.click();
             resolve();
           };
           const observer = new MutationObserver(reloadOnContent);

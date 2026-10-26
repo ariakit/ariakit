@@ -15,3 +15,29 @@ export function isPreviewHydrated() {
 export function markPreviewHydrated() {
   document.documentElement.dataset.previewHydrated = "";
 }
+
+const PREVIEW_RELOAD_EVENT = "ariakit-preview-reload";
+
+/**
+ * Asks the inline examples of the preview with the given id to render again
+ * from their initial state.
+ */
+export function reloadPreview(id: string) {
+  document.dispatchEvent(
+    new CustomEvent(PREVIEW_RELOAD_EVENT, { detail: { id } }),
+  );
+}
+
+/**
+ * Calls `callback` when a preview card reloads the preview with the given id.
+ * Returns a function that unsubscribes.
+ */
+export function subscribePreviewReload(id: string, callback: () => void) {
+  const onReload = (event: Event) => {
+    if (!(event instanceof CustomEvent)) return;
+    if (event.detail?.id !== id) return;
+    callback();
+  };
+  document.addEventListener(PREVIEW_RELOAD_EVENT, onReload);
+  return () => document.removeEventListener(PREVIEW_RELOAD_EVENT, onReload);
+}
