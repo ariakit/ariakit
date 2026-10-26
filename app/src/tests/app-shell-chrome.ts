@@ -306,16 +306,33 @@ test("theme panel follows choices from another tab", async ({
   await expect(mode.radio("System")).toHaveAttribute("aria-checked", "true");
 });
 
-test("theme panel returns focus to the Theme button when it closes", async ({
+test("theme panel moves focus to Close theme and back when it closes", async ({
   page,
   q,
 }) => {
   await gotoAndSettle(page, recipePath);
   const themeButton = q.button("Theme", { exact: true });
+  const closeButton = query(q.complementary("Theme")).button("Close theme");
   await themeButton.click();
-  await query(q.complementary("Theme")).button("Close theme").press("Enter");
+  await expect(closeButton).toBeFocused();
+  await closeButton.press("Enter");
   await expect(q.complementary("Theme")).not.toBeVisible();
   await expect(themeButton).toBeFocused();
+});
+
+test("theme panel keeps focus on the page when it opens on load", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, recipePath);
+  await q.button("Theme", { exact: true }).click();
+  await expect(q.complementary("Theme")).toBeVisible();
+  // The reload restores the open panel. The layout script runs before the load
+  // event, so focus has its final place when the reload resolves.
+  await page.reload();
+  await expect(q.complementary("Theme")).toBeVisible();
+  const focused = await page.evaluate(() => document.activeElement?.tagName);
+  expect(focused).toBe("BODY");
 });
 
 test("theme panel applies a mode when storage is blocked", async ({

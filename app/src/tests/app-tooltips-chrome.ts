@@ -11,8 +11,7 @@ import { query } from "@ariakit/test/playwright";
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
-import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
-import { SHOW_TIMEOUT } from "#app/test-utils/tooltip.ts";
+import { gotoAndSettle } from "#app/test-utils/preview.ts";
 
 type Query = ReturnType<typeof query>;
 
@@ -71,7 +70,7 @@ test("keeps the layout script wiring on the tooltip buttons", async ({
   await expect(q.navigation("Site")).toBeVisible();
 });
 
-test("shows the Theme tooltip only while the label is hidden", async ({
+test("keeps the Theme button wired when the open panel hides its label", async ({
   page,
   q,
 }) => {
@@ -81,20 +80,17 @@ test("shows the Theme tooltip only while the label is hidden", async ({
   await gotoAndSettle(page, recipePath);
   const theme = q.button("Theme");
   const label = query(theme).text("Theme");
-  await expect(label).toBeVisible();
-  await waitForTooltipButton(q, "Close theme");
-  await hoverAgain(page, q, "Theme");
-  // No state tracks a tooltip that doesn't show. Cross Ariakit's show timeout,
-  // then the frames that would render the tooltip.
-  await page.waitForTimeout(SHOW_TIMEOUT);
-  await flushFrames(page);
-  await expect(q.tooltip("Theme")).toHaveCount(0);
   await theme.click();
   await expect(theme).toHaveAttribute("aria-expanded", "true");
   await expect(label).toBeHidden();
   await waitForTooltipButton(q, "Theme");
   await hoverAgain(page, q, "Theme");
   await expect(q.tooltip("Theme")).toBeVisible();
+  // The layout script wired the button element before the island hydrated, so
+  // the hidden label must leave the same element in place to close the panel.
+  await theme.click();
+  await expect(theme).toHaveAttribute("aria-expanded", "false");
+  await expect(q.complementary("Theme")).not.toBeVisible();
 });
 
 test("keeps the gap between the Theme icon and its label", async ({
