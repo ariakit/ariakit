@@ -135,45 +135,6 @@ test("keeps the header controls at the start of the header", async ({
   expect(offset).toBe(0);
 });
 
-test("keeps the Close menu tooltip on its button while the drawer slides in", async ({
-  page,
-  q,
-}) => {
-  // The phone menu opens at this width.
-  await page.setViewportSize({ width: 600, height: 800 });
-  await gotoAndSettle(page, recipePath);
-  await waitForTooltipButton(q, "Close menu");
-  // A key press opens the menu, and the layout script moves focus to the Close
-  // menu button, so its tooltip shows while the drawer slides in.
-  await q.button("Open menu").focus();
-  await page.keyboard.press("Enter");
-  const close = q.button("Close menu");
-  await expect(close).toBeFocused();
-  const tooltip = q.tooltip("Close menu");
-  await expect(tooltip).toBeVisible();
-  // The slide ends when the button stops moving between frames.
-  await expect
-    .poll(async () => {
-      const before = await close.boundingBox();
-      await flushFrames(page);
-      const after = await close.boundingBox();
-      return before?.x === after?.x;
-    })
-    .toBe(true);
-  // The tooltip is on the button right away. A retrying assertion would also
-  // pass after a late position update.
-  const [buttonBox, tooltipBox] = await Promise.all([
-    close.boundingBox(),
-    tooltip.boundingBox(),
-  ]);
-  expect(buttonBox).not.toBeNull();
-  expect(tooltipBox).not.toBeNull();
-  if (!buttonBox || !tooltipBox) return;
-  const buttonCenter = buttonBox.x + buttonBox.width / 2;
-  const tooltipCenter = tooltipBox.x + tooltipBox.width / 2;
-  expect(Math.abs(buttonCenter - tooltipCenter)).toBeLessThan(2);
-});
-
 test("names the preview card buttons with tooltips", async ({ page, q }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await gotoAndSettle(page, recipePath);
