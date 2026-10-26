@@ -1,4 +1,4 @@
-import { tabTo } from "#app/test-utils/ariakit-ui.ts";
+import { tabInto } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
@@ -12,7 +12,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const anchor = q.button("Publish");
-    await tabTo(page, anchor);
+    // Tabs in from the previous stop. Focusing the anchor first, as tabTo does,
+    // opens the tooltip and Shift+Tab closes it. The tooltip then stays visible
+    // in its exit transition, so the visibility check below could pass before
+    // the Tab opened it, and the late open would follow Escape.
+    // https://github.com/ariakit/ariakit/issues/8109
+    await tabInto(page, q.article("Hover or focus"));
     await test.expect(anchor).toBeFocused();
     const tooltip = q.tooltip("Publish to the public site");
     await test.expect(tooltip).toBeVisible();
