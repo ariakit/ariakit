@@ -125,10 +125,14 @@ export default function Example() {
           from its previous place. */}
       <SlideSection name="Slide" unmountOnHide={false} />
       <SlideSection name="No slide" $slide={false} />
-      {/* Without the popup's enter animation, Ariakit adds data-enter in the
-          same update as data-open when a popup that stays mounted reopens,
-          before the popup is in place. */}
-      <SlideSection name="No popup motion" className="transition-none" />
+      {/* The popup stays mounted while hidden. Without its own enter animation,
+          Ariakit adds data-enter in the same update as data-open when it
+          reopens, before the popup is in place. */}
+      <SlideSection
+        name="No popup motion"
+        className="transition-none"
+        unmountOnHide={false}
+      />
       <div className="flex gap-24">
         <ScrollSection name="Scroll" />
         <ScrollSection name="Scroll without slide" $slide={false} />
