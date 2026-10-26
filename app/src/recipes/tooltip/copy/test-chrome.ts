@@ -23,4 +23,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.tooltip("Copy link")).toBeVisible({ timeout: 4000 });
     await test.expect(q.status()).toHaveText("");
   });
+
+  test("shows the feedback for the full duration after each copy", async ({
+    page,
+    q,
+  }) => {
+    const copy = q.button("Copy link");
+    await copy.click();
+    await test.expect(q.status()).toHaveText("Link copied to the clipboard.");
+    // The example shows the feedback for 2 seconds, so the second copy comes
+    // while the feedback of the first one shows.
+    await page.waitForTimeout(1500);
+    await copy.click();
+    // The feedback of the first copy would end 0.5 seconds after the second
+    // copy, and the feedback of the second copy ends 2 seconds after it. This
+    // wait ends between them.
+    await page.waitForTimeout(1000);
+    // The feedback still shows. A single read checks it at this point.
+    test
+      .expect(await q.status().textContent())
+      .toBe("Link copied to the clipboard.");
+    await test.expect(q.status()).toHaveText("", { timeout: 4000 });
+  });
 });

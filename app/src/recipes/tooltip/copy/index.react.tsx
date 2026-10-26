@@ -12,7 +12,7 @@ import {
 } from "@ariakit/ui/components/input.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 const INVITE_LINK = "https://ariakit.com/invite/7f3k2";
 
@@ -30,12 +30,9 @@ const messages: Record<CopyState, string> = {
 export default function Example() {
   const id = useId();
   const [state, setState] = useState<CopyState>("idle");
+  const timeoutRef = useRef(0);
 
-  useEffect(() => {
-    if (state === "idle") return;
-    const timeout = setTimeout(() => setState("idle"), FEEDBACK_DURATION);
-    return () => clearTimeout(timeout);
-  }, [state]);
+  useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
   const copy = async () => {
     try {
@@ -44,6 +41,13 @@ export default function Example() {
     } catch {
       setState("failed");
     }
+    // Each copy restarts the timer, so a copy while the feedback of an earlier
+    // copy shows gets the full duration too.
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = window.setTimeout(
+      () => setState("idle"),
+      FEEDBACK_DURATION,
+    );
   };
 
   return (
