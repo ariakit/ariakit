@@ -92,4 +92,50 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       });
     });
   });
+
+  // Focus kept the selected offset of flat and bevel tabs, so the brand fill
+  // fell under 3:1 against a dark strip, also while hovered. Without the
+  // offset, a selected push alone lightens the fill under 3:1 in light mode.
+  // https://github.com/ariakit/ariakit/issues/8101
+  test("removes the selected lift from a focused tab @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorScheme(page, async (colorScheme) => {
+      const placement = q.article("Bar placement");
+      const pushed = query(placement).tab("Preview");
+      // Firefox makes this overflowing strip a tab stop, and focusing it clears
+      // the active tab, so the Tab back from it would skip the tabs. Arrow keys
+      // reach the tab with the keyboard.
+      await pushed.focus();
+      await page.keyboard.press("ArrowRight");
+      await page.keyboard.press("ArrowLeft");
+      await expectFocusVisible(pushed);
+      await test.expect(pushed).toHaveAttribute("aria-selected", "true");
+      await captureInView({
+        visual,
+        box: placement,
+        colorScheme,
+        item: "ariakit-ui-tabs/focused-pushed-tab",
+      });
+      const box = q.article("Flat tabs");
+      const code = query(box).tab("Code");
+      await tabTo(page, code);
+      await expectFocusVisible(code);
+      await test.expect(code).toHaveAttribute("aria-selected", "true");
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-tabs/focused-selected-tab",
+      });
+      await hoverOver(code);
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-tabs/focused-hovered-selected-tab",
+        }),
+      );
+    });
+  });
 });
