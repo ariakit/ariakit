@@ -182,6 +182,10 @@ function EdgeTooltip() {
           ★
         </Ariakit.TooltipAnchor>
         <Ariakit.Tooltip
+          // TODO: Remove when https://github.com/ariakit/ariakit/issues/8090 is
+          // fixed. The pill is 36px tall (20px line height plus 8px padding on
+          // each side), so its rounded ends span 18px.
+          arrowPadding={shape === "pill" ? 18 : undefined}
           style={{
             padding: "8px 12px",
             lineHeight: "20px",
