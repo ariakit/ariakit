@@ -11,7 +11,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import { invariant } from "@ariakit/utils";
+import { getWindow, invariant } from "@ariakit/utils";
 import {
   arrow,
   autoUpdate,
@@ -45,6 +45,9 @@ type TagName = typeof TagName;
  * does anyone still own it once the deferred reset runs?
  */
 const placingWriters = new WeakMap<PopoverStore, number>();
+
+// The arrow padding next to corners that aren't rounded.
+const minArrowPadding = 4;
 
 interface AnchorRect {
   x?: number;
@@ -221,16 +224,104 @@ function getSizeMiddleware(
   });
 }
 
+interface CornerRadius {
+  x: number;
+  y: number;
+}
+
+function getRadiusLength(value: string, reference: number) {
+  const length = Number.parseFloat(value);
+  // Values that don't resolve to a single length or percentage, such as a
+  // calc() that mixes both, count as square corners.
+  if (Number.isNaN(length)) return 0;
+  if (value.endsWith("%")) return (length * reference) / 100;
+  return length;
+}
+
+function getCornerRadius(
+  value: string,
+  width: number,
+  height: number,
+): CornerRadius {
+  // A computed corner radius is either one value for both axes or a horizontal
+  // value followed by a vertical value.
+  const [x = "", y = x] = value.split(" ");
+  return { x: getRadiusLength(x, width), y: getRadiusLength(y, height) };
+}
+
+function getRadiusScale(length: number, start: number, end: number) {
+  const sum = start + end;
+  if (sum <= length) return 1;
+  return length / sum;
+}
+
+/**
+ * Returns the arrow padding that keeps the arrow off the rounded corners of the
+ * element on the side where the arrow renders. Each end of that side gets its
+ * own padding of at least 4px.
+ */
+function getCornerArrowPadding(element: HTMLElement, placement: Placement) {
+  const style = getWindow(element).getComputedStyle(element);
+  const width = element.offsetWidth;
+  const height = element.offsetHeight;
+  const getRadius = (property: string) =>
+    getCornerRadius(style.getPropertyValue(property), width, height);
+  const topLeft = getRadius("border-top-left-radius");
+  const topRight = getRadius("border-top-right-radius");
+  const bottomRight = getRadius("border-bottom-right-radius");
+  const bottomLeft = getRadius("border-bottom-left-radius");
+  // When the radii on a side add up to more than its length, browsers scale all
+  // radii down by the same factor. That's how a 9999px radius draws a pill
+  // whose ends span half of its height.
+  // https://drafts.csswg.org/css-backgrounds/#corner-overlap
+  const scale = Math.min(
+    getRadiusScale(width, topLeft.x, topRight.x),
+    getRadiusScale(width, bottomLeft.x, bottomRight.x),
+    getRadiusScale(height, topLeft.y, bottomLeft.y),
+    getRadiusScale(height, topRight.y, bottomRight.y),
+  );
+  const getPadding = (radius: number) =>
+    Math.max(minArrowPadding, radius * scale);
+  // The arrow renders on the side that faces the anchor, which is opposite to
+  // the placement.
+  switch (getBasePlacement(placement)) {
+    case "top":
+      return {
+        left: getPadding(bottomLeft.x),
+        right: getPadding(bottomRight.x),
+      };
+    case "bottom":
+      return { left: getPadding(topLeft.x), right: getPadding(topRight.x) };
+    case "left":
+      return {
+        top: getPadding(topRight.y),
+        bottom: getPadding(bottomRight.y),
+      };
+    case "right":
+      return { top: getPadding(topLeft.y), bottom: getPadding(bottomLeft.y) };
+  }
+}
+
 function getArrowMiddleware(
   arrowElement: HTMLElement | null,
   props: Pick<PopoverOptions, "arrowPadding">,
+  // The element whose rounded corners the arrow must stay off.
+  cornerElement?: HTMLElement | null,
 ) {
   if (!arrowElement) return;
   // https://floating-ui.com/docs/arrow
-  return arrow({
+  if (props.arrowPadding != null || !cornerElement) {
+    return arrow({
+      element: arrowElement,
+      padding: props.arrowPadding ?? minArrowPadding,
+    });
+  }
+  // The corners depend on the final placement, which is only known once the
+  // middleware runs, after flip.
+  return arrow(({ placement }) => ({
     element: arrowElement,
-    padding: props.arrowPadding,
-  });
+    padding: getCornerArrowPadding(cornerElement, placement),
+  }));
 }
 
 /**
@@ -259,7 +350,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     sameWidth = false,
     fitViewport = false,
     gutter,
-    arrowPadding = 4,
+    arrowPadding,
     overflowPadding = 8,
     getAnchorRect,
     updatePosition,
@@ -438,7 +529,13 @@ export const usePopover = createHook<TagName, PopoverOptions>(
             overlap,
             overflowPadding: positioningPadding,
           }),
-          getArrowMiddleware(arrow, { arrowPadding }),
+          getArrowMiddleware(
+            arrow,
+            { arrowPadding },
+            // The default arrow element is never rendered, so it can't reach
+            // a corner. It only places the transform origin.
+            arrowElement && store?.getState().contentElement,
+          ),
           getSizeMiddleware(
             {
               sameWidth,
@@ -823,7 +920,10 @@ export interface PopoverOptions<
   fitViewport?: boolean;
   /**
    * The minimum padding, in pixels, between the arrow and the popover corner.
-   * @default 4
+   *
+   * By default, the padding matches the popover's corner radius on the side
+   * where the arrow renders, so the arrow stays on the straight part of that
+   * side. The default is never less than 4 pixels.
    */
   arrowPadding?: number;
   /**

@@ -22,6 +22,36 @@ async function isAbove(locator: Locator, reference: Locator) {
   return box.y + box.height <= referenceBox.y;
 }
 
+/**
+ * Returns the distance between the left edge of the popup and the left edge of
+ * its arrow.
+ */
+async function getArrowLeftInset(popup: Locator) {
+  const popupBox = await getBox(popup);
+  const arrowBox = await getBox(popup.locator(".arrow"));
+  return arrowBox.x - popupBox.x;
+}
+
+/**
+ * Returns the distance between the top edge of the popup and the top edge of
+ * its arrow.
+ */
+async function getArrowTopInset(popup: Locator) {
+  const popupBox = await getBox(popup);
+  const arrowBox = await getBox(popup.locator(".arrow"));
+  return arrowBox.y - popupBox.y;
+}
+
+/**
+ * Returns the horizontal extent of each rounded end of a pill. A pill wider
+ * than it is tall ends in semicircles with a radius of half its height, so its
+ * top and bottom sides are straight only between those ends.
+ */
+async function getPillRadius(tooltip: Locator) {
+  const box = await getBox(tooltip);
+  return box.height / 2;
+}
+
 withFramework(import.meta.dirname, async ({ test }) => {
   // See https://github.com/ariakit/ariakit/issues/6320
   test("arrow keeps pointing at the anchor after the popover flips on scroll in RTL", async ({
@@ -122,6 +152,109 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(arrow).toHaveCSS("fill", "rgb(15, 23, 42)");
     await test.expect(arrow).toHaveCSS("stroke", "rgb(250, 204, 21)");
     await test.expect(arrow).toHaveCSS("stroke-width", "4px");
+  });
+
+  // See https://github.com/ariakit/ariakit/issues/8090
+  test("arrow stays clear of the rounded end of a pill tooltip near the viewport side", async ({
+    q,
+  }) => {
+    const anchor = q.button("Star");
+    await anchor.hover();
+    const tooltip = q.tooltip("Add to favorites");
+    await test.expect(tooltip).toBeVisible();
+    await test.expect.poll(() => isAbove(tooltip, anchor)).toBe(true);
+
+    // The anchor is too close to the viewport side for the tooltip to center on
+    // it, so the arrow moves toward the bottom-left corner. It must stop where
+    // the curved end of the pill meets the straight bottom side.
+    const radius = await getPillRadius(tooltip);
+    await test.expect
+      .poll(() => getArrowLeftInset(tooltip))
+      .toBeCloseTo(radius, 0);
+  });
+
+  // See https://github.com/ariakit/ariakit/issues/8090
+  test("arrow follows the new corner radius when the tooltip opens after a shape change", async ({
+    page,
+    q,
+  }) => {
+    await q.radio("Square").check();
+    const anchor = q.button("Star");
+    await anchor.hover();
+    const tooltip = q.tooltip("Add to favorites");
+    await test.expect(tooltip).toBeVisible();
+
+    // Square corners leave the whole bottom side straight, so the arrow can
+    // move up to the minimum 4px padding next to the corner.
+    await test.expect.poll(() => getArrowLeftInset(tooltip)).toBeCloseTo(4, 0);
+
+    await page.mouse.move(0, 0);
+    await test.expect(tooltip).toBeHidden();
+    await q.radio("Pill").check();
+
+    await anchor.hover();
+    await test.expect(tooltip).toBeVisible();
+    const radius = await getPillRadius(tooltip);
+    await test.expect
+      .poll(() => getArrowLeftInset(tooltip))
+      .toBeCloseTo(radius, 0);
+  });
+
+  // See https://github.com/ariakit/ariakit/issues/8090
+  test("arrow reaches a square corner next to it when the other corners are rounded", async ({
+    q,
+  }) => {
+    await q.radio("Bubble").check();
+    const anchor = q.button("Star");
+    await anchor.hover();
+    const tooltip = q.tooltip("Add to favorites");
+    await test.expect(tooltip).toBeVisible();
+    // The bubble rounds every corner but the bottom-left one. The arrow renders
+    // on the bottom side, so neither the rounded top corners nor the rounded
+    // bottom-right corner keep it from the minimum 4px padding on the left.
+    await test.expect.poll(() => getArrowLeftInset(tooltip)).toBeCloseTo(4, 0);
+  });
+
+  // See https://github.com/ariakit/ariakit/issues/8090
+  test("explicit arrowPadding takes precedence over the corner radius", async ({
+    q,
+  }) => {
+    await q.checkbox("Zero arrow padding").check();
+    const anchor = q.button("Star");
+    await anchor.hover();
+    const tooltip = q.tooltip("Add to favorites");
+    await test.expect(tooltip).toBeVisible();
+    // With an explicit zero padding, the arrow can move up to the corner of the
+    // pill, even under its curved end.
+    await test.expect.poll(() => getArrowLeftInset(tooltip)).toBeCloseTo(0, 0);
+  });
+
+  // See https://github.com/ariakit/ariakit/issues/8090
+  test("arrow keeps off the vertical extent of the corners on a vertical side", async ({
+    q,
+  }) => {
+    await q.button("Filters").click();
+    const popover = q.dialog("Filters");
+    await test.expect(popover).toBeVisible();
+    // The popover on the right of the anchor slides down to stay inside the
+    // viewport, so the arrow moves toward the top-left corner. That corner's
+    // elliptical radius is 20px tall, so the arrow stops 20px from the top
+    // edge.
+    await test.expect.poll(() => getArrowTopInset(popover)).toBeCloseTo(20, 0);
+  });
+
+  // See https://github.com/ariakit/ariakit/issues/8090
+  test("arrow keeps off the horizontal extent of the corners on a horizontal side", async ({
+    q,
+  }) => {
+    await q.radio("Below").check();
+    await q.button("Filters").click();
+    const popover = q.dialog("Filters");
+    await test.expect(popover).toBeVisible();
+    // The popover below the anchor slides right to stay inside the viewport, so
+    // the arrow moves toward the top-left corner. That corner's elliptical
+    // radius is 8px wide, so the arrow stops 8px from the left edge.
+    await test.expect.poll(() => getArrowLeftInset(popover)).toBeCloseTo(8, 0);
   });
 
   const cases = [
