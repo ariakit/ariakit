@@ -109,6 +109,27 @@ async function createCustomer(options: AuthOptions = {}) {
   return customer;
 }
 
+// Price and checkout requests list every Stripe coupon, so a leaked coupon
+// slows down later tests. The helpers delete their coupon, and a hook deletes
+// it when a helper fails or its test times out before that.
+// https://github.com/ariakit/ariakit/issues/8097
+const freeCoupons = new Set<string>();
+
+async function createFreeCoupon(stripe: Stripe) {
+  const coupon = await stripe.coupons.create({
+    percent_off: 100,
+    duration: "forever",
+    max_redemptions: 1,
+  });
+  freeCoupons.add(coupon.id);
+  return coupon;
+}
+
+async function deleteFreeCoupon(stripe: Stripe, id: string) {
+  await stripe.coupons.del(id);
+  freeCoupons.delete(id);
+}
+
 async function createCustomerWithOneTimePurchase(
   lookupKey: string,
   options: AuthOptions = {},
@@ -122,11 +143,7 @@ async function createCustomerWithOneTimePurchase(
     throw new Error(`No price found for lookup key ${lookupKey}`);
   }
 
-  const coupon = await stripe.coupons.create({
-    percent_off: 100,
-    duration: "forever",
-    max_redemptions: 1,
-  });
+  const coupon = await createFreeCoupon(stripe);
 
   await stripe.invoiceItems.create({
     customer: customer.id,
@@ -140,7 +157,7 @@ async function createCustomerWithOneTimePurchase(
     pending_invoice_items_behavior: "include",
   });
   await stripe.invoices.pay(invoice.id);
-  await stripe.coupons.del(coupon.id);
+  await deleteFreeCoupon(stripe, coupon.id);
 
   return customer;
 }
@@ -181,11 +198,7 @@ async function createCustomerWithSubscription(
     throw new Error(`No ${interval}ly recurring price found`);
   }
 
-  const coupon = await stripe.coupons.create({
-    percent_off: 100,
-    duration: "forever",
-    max_redemptions: 1,
-  });
+  const coupon = await createFreeCoupon(stripe);
 
   await stripe.subscriptions.create({
     customer: customer.id,
@@ -194,7 +207,7 @@ async function createCustomerWithSubscription(
     backdate_start_date: Math.round(new Date("2023-11-01").getTime() / 1000),
   });
 
-  await stripe.coupons.del(coupon.id);
+  await deleteFreeCoupon(stripe, coupon.id);
 
   return customer;
 }
@@ -242,6 +255,14 @@ async function fillCheckout(page: Page, assertEmail?: string) {
 }
 
 test.skip(() => !process.env.CLERK_SECRET_KEY);
+
+test.afterEach(async () => {
+  if (!freeCoupons.size) return;
+  const stripe = getStripeClient();
+  const ids = Array.from(freeCoupons);
+  freeCoupons.clear();
+  await Promise.all(ids.map((id) => stripe.coupons.del(id)));
+});
 
 test.afterEach(async ({ page }) => {
   const id = await page.evaluate(async () => {
