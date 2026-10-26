@@ -16,8 +16,8 @@ export const globalStore = createStore<TooltipGlobalState>({
 });
 
 /**
- * Sets whether the tooltip store shows or hides at once because another tooltip
- * is active.
+ * Sets whether the tooltip store shows or hides at once because of the skip
+ * window.
  */
 export function setInstant(store: TooltipStore, instant: boolean) {
   globalStore.setState("instantStores", (stores) => {

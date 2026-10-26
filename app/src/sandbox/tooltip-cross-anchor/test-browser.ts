@@ -187,4 +187,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(boldTooltip).toHaveAttribute("data-open");
     await test.expect(boldTooltip).not.toHaveAttribute("data-instant");
   });
+
+  // https://github.com/ariakit/ariakit/issues/8093
+  // https://github.com/ariakit/ariakit/pull/8098#discussion_r4373818540
+  test("marks a tooltip that reopens at once on its own anchor", async ({
+    page,
+    q,
+  }) => {
+    await page.mouse.move(0, 0);
+    const bold = q.button("Bold");
+    const boldTooltip = q.tooltip("Bold tooltip");
+
+    await bold.scrollIntoViewIfNeeded();
+    await bold.hover();
+    await test.expect(boldTooltip).toHaveCSS("opacity", "1");
+    await test.expect(boldTooltip).not.toHaveAttribute("data-instant");
+
+    // Bold hides on its own in the gap, so it's still the active tooltip and
+    // reopens at once when the pointer returns within the skip window.
+    const box = await bold.boundingBox();
+    test.expect(box).not.toBeNull();
+    if (!box) return;
+    await page.mouse.move(box.x + box.width + 20, box.y + box.height / 2);
+    await test.expect(boldTooltip).toHaveAttribute("data-leave");
+    await test.expect(boldTooltip).not.toHaveAttribute("data-instant");
+    await bold.hover();
+    await test.expect(boldTooltip).toHaveAttribute("data-open");
+    await test.expect(boldTooltip).toHaveAttribute("data-instant");
+  });
 });

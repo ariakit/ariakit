@@ -65,8 +65,8 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
       state.type === "description" ? "tooltip" : "none",
     );
 
-    // Marks the tooltip while it shows at once because another tooltip is
-    // active, or while it hides because another tooltip replaces it.
+    // Marks the tooltip while it shows at once because of the skip window, or
+    // while it hides because another tooltip replaces it.
     const instant = useStoreState(globalStore, ["instantStores"], (state) =>
       store ? state.instantStores.has(store) : false,
     );

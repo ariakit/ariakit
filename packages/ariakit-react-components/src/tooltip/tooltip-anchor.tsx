@@ -268,11 +268,15 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         const { open, mounted } = store.getState();
         store.setAnchorElement(event.currentTarget);
         store.show();
+        if (open) return false;
         // A tooltip that reopens during its exit transition stays mounted, so
         // the mounted sync above doesn't activate it.
-        if (!open && mounted) {
+        if (mounted) {
           activateStore(store);
         }
+        // Activating a store only marks it when another tooltip is active, but
+        // a tooltip that reopens within its own skip window shows at once too.
+        setInstant(store, true);
         return false;
       },
       ...props,
