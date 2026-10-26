@@ -105,7 +105,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await forEachColorScheme(page, async (colorScheme) => {
       const placement = q.article("Bar placement");
       const pushed = query(placement).tab("Preview");
-      await tabTo(page, pushed);
+      // Firefox makes this overflowing strip a tab stop, and focusing it clears
+      // the active tab, so the Tab back from it would skip the tabs. Arrow keys
+      // reach the tab with the keyboard.
+      await pushed.focus();
+      await page.keyboard.press("ArrowRight");
+      await page.keyboard.press("ArrowLeft");
       await expectFocusVisible(pushed);
       await test.expect(pushed).toHaveAttribute("aria-selected", "true");
       await captureInView({
