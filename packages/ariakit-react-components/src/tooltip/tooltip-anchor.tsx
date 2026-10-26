@@ -7,7 +7,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { createStore, sync } from "@ariakit/store";
+import { sync } from "@ariakit/store";
 import {
   chain,
   hasFocusWithin,
@@ -23,6 +23,7 @@ import type {
 import { useEffect, useRef } from "react";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
+import { globalStore, hidingStores, setInstant } from "./__global-store.ts";
 import { useTooltipProviderContext } from "./tooltip-context.tsx";
 import type { TooltipStore } from "./tooltip-store.ts";
 
@@ -30,20 +31,41 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-// Create a global store to keep track of the active tooltip store so we can
-// show other tooltips without a delay when there's already an active tooltip.
-const globalStore = createStore<{ activeStore: TooltipStore | null }>({
-  activeStore: null,
-});
-
-const hidingStores = new WeakSet<TooltipStore>();
-
 function createRemoveStoreCallback(store: TooltipStore) {
   return () => {
     const { activeStore } = globalStore.getState();
     if (activeStore !== store) return;
     globalStore.setState("activeStore", null);
   };
+}
+
+// Sets the store as the active tooltip store and hides the previous one. If a
+// tooltip we just hid gets forced open again, we leave the current active store
+// in place to avoid a re-entrant loop between forced open tooltips.
+function activateStore(store: TooltipStore) {
+  const { activeStore } = globalStore.getState();
+  if (activeStore !== store) {
+    if (hidingStores.has(store)) return;
+    // Focus and other shows reach this too, so the store that becomes active
+    // has no mark here. Only the skip window path in the showOnHover method of
+    // useTooltipAnchor marks it, after activating it.
+    setInstant(store, false);
+    hideStore(activeStore);
+  }
+  globalStore.setState("activeStore", store);
+}
+
+// Shows the store and returns whether it was closed. A tooltip that reopens
+// during its exit transition stays mounted, so the mounted sync in
+// useTooltipAnchor doesn't activate it, and this does instead.
+function showStore(store: TooltipStore) {
+  const { open, mounted } = store.getState();
+  store.show();
+  if (open) return false;
+  if (mounted) {
+    activateStore(store);
+  }
+  return true;
 }
 
 function isEscapeKeyEvent(event: Event) {
@@ -55,9 +77,22 @@ function hideStore(store: TooltipStore | null) {
   if (!store) return;
   hidingStores.add(store);
   store.hide();
+  // Another tooltip replaces this one, so mark it while it's still mounted for
+  // its exit transition, including one that already started. This lets CSS skip
+  // that transition. Marking it before hide() made Escape flaky on a tooltip
+  // shown while others are held open with a controlled open prop (see the
+  // ariakit-ui-tooltip sandbox), so the mark comes after hide().
+  if (store.getState().mounted) {
+    setInstant(store, true);
+  }
   // Cleanup runs after `hide()` so controlled `open` props still see this store
   // in `hidingStores` when their batch microtask forces them open again.
-  queueMicrotask(() => hidingStores.delete(store));
+  queueMicrotask(() => {
+    hidingStores.delete(store);
+    // A controlled open prop forced the tooltip open again, so it isn't hiding.
+    if (!store.getState().open) return;
+    setInstant(store, false);
+  });
 }
 
 /**
@@ -137,17 +172,10 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         sync(store, ["mounted"], (state) => {
           if (!store) return;
           // If the current tooltip is open, we should immediately hide the
-          // active one and set the current one as the active tooltip. If a
-          // tooltip we just hid gets forced open again, we leave the current
-          // active store in place to avoid a re-entrant loop between forced
-          // open tooltips.
+          // active one and set the current one as the active tooltip.
           if (state.mounted) {
-            const { activeStore } = globalStore.getState();
-            if (activeStore !== store) {
-              if (hidingStores.has(store)) return;
-              hideStore(activeStore);
-            }
-            return globalStore.setState("activeStore", store);
+            activateStore(store);
+            return;
           }
           // Otherwise, if the current tooltip is closed, we should set a
           // timeout to hide the active tooltip in the global store. This is so
@@ -178,8 +206,9 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       // https://github.com/ariakit/ariakit/issues/7622
       if (isEscapeKeyEvent(event.nativeEvent)) return;
       if (event.nativeEvent === returnedFocusRef.current) return;
-      store?.setAnchorElement(event.currentTarget);
-      store?.show();
+      if (!store) return;
+      store.setAnchorElement(event.currentTarget);
+      showStore(store);
     });
 
     const onBlurProp = props.onBlur;
@@ -224,6 +253,7 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       showOnHover(event) {
         if (!canShowOnHoverRef.current) return false;
         if (isFalsyBooleanCallback(showOnHover, event)) return false;
+        if (!store) return false;
         const { activeStore } = globalStore.getState();
         if (!activeStore) return true;
         // Show the tooltip immediately if there's an active tooltip instead of
@@ -231,8 +261,12 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         // anchor element, so set it here: the hovercard has already scheduled a
         // hide, which it skips only if the last mousemove was on the anchor.
         // https://github.com/ariakit/ariakit/issues/8089
-        store?.setAnchorElement(event.currentTarget);
-        store?.show();
+        store.setAnchorElement(event.currentTarget);
+        // The tooltip shows at once because of the skip window. Activating it
+        // clears its mark, so mark it after showing it.
+        if (showStore(store)) {
+          setInstant(store, true);
+        }
         return false;
       },
       ...props,

@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import { StrictMode } from "react";
+import { StrictMode, useState } from "react";
+import "./style.css";
 
 const tooltipProps = {
   showTimeout: 500,
@@ -54,6 +55,49 @@ function SharedTooltipAnchors() {
   );
 }
 
+interface TransitionTooltipProps {
+  tool: string;
+}
+
+function TransitionTooltip({ tool }: TransitionTooltipProps) {
+  return (
+    <Ariakit.TooltipProvider>
+      <Ariakit.TooltipAnchor render={<button type="button" />}>
+        {tool}
+      </Ariakit.TooltipAnchor>
+      <Ariakit.Tooltip className="transition-tooltip">
+        {tool} tooltip
+      </Ariakit.Tooltip>
+    </Ariakit.TooltipProvider>
+  );
+}
+
+// The anchor can unmount while its tooltip stays mounted. Clicking the anchor
+// or the remove button unmounts it.
+function RemovableAnchorTooltip() {
+  const [anchorShown, setAnchorShown] = useState(true);
+  return (
+    <>
+      <Ariakit.TooltipProvider>
+        {anchorShown && (
+          <Ariakit.TooltipAnchor
+            render={<button type="button" />}
+            onClick={() => setAnchorShown(false)}
+          >
+            Strikethrough
+          </Ariakit.TooltipAnchor>
+        )}
+        <Ariakit.Tooltip className="transition-tooltip">
+          Strikethrough tooltip
+        </Ariakit.Tooltip>
+      </Ariakit.TooltipProvider>
+      <button type="button" onClick={() => setAnchorShown(false)}>
+        Remove strikethrough
+      </button>
+    </>
+  );
+}
+
 export default function Example() {
   return (
     <StrictMode>
@@ -63,6 +107,12 @@ export default function Example() {
       </div>
       <div style={rowStyle}>
         <SharedTooltipAnchors />
+      </div>
+      <div role="toolbar" aria-label="Format" className="toolbar">
+        <TransitionTooltip tool="Bold" />
+        <TransitionTooltip tool="Italic" />
+        <TransitionTooltip tool="Underline" />
+        <RemovableAnchorTooltip />
       </div>
     </StrictMode>
   );
