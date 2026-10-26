@@ -139,6 +139,83 @@ function ThemeSwitchPopover() {
   );
 }
 
+// See https://github.com/ariakit/ariakit/issues/8090
+//
+// A tooltip near the side of the viewport slides to stay inside it, and its
+// arrow moves toward a corner to keep pointing at the anchor. The default 4px
+// `arrowPadding` lets the arrow reach the corner, so on a pill-shaped tooltip
+// the arrow hangs under the curved end instead of sitting on the straight
+// bottom side. The shape changes while the tooltip is closed, so the arrow must
+// follow the corner radius of each opening.
+type TooltipShape = "pill" | "square";
+
+const tooltipRadius: Record<TooltipShape, CSSProperties["borderRadius"]> = {
+  pill: 9999,
+  square: 0,
+};
+
+function EdgeTooltip() {
+  const [shape, setShape] = useState<TooltipShape>("pill");
+  return (
+    <div
+      // Pin the anchor 4px from the left side of the viewport, like the issue's
+      // screenshot, so the tooltip above it must slide to stay inside.
+      style={{
+        position: "fixed",
+        left: 4,
+        bottom: 4,
+        display: "flex",
+        alignItems: "center",
+        gap: 16,
+      }}
+    >
+      <Ariakit.TooltipProvider>
+        <Ariakit.TooltipAnchor
+          render={
+            <button
+              type="button"
+              aria-label="Star"
+              style={{ width: 24, height: 24, padding: 0 }}
+            />
+          }
+        >
+          ★
+        </Ariakit.TooltipAnchor>
+        <Ariakit.Tooltip
+          style={{
+            padding: "8px 12px",
+            lineHeight: "20px",
+            background: "rgb(15, 23, 42)",
+            color: "rgb(248, 250, 252)",
+            borderRadius: tooltipRadius[shape],
+          }}
+        >
+          <Ariakit.TooltipArrow className="arrow" />
+          Add to favorites
+        </Ariakit.Tooltip>
+      </Ariakit.TooltipProvider>
+      <div
+        role="radiogroup"
+        aria-label="Tooltip shape"
+        style={{ display: "flex", gap: 8 }}
+      >
+        {(["pill", "square"] as const).map((value) => (
+          <label key={value}>
+            <input
+              type="radio"
+              name="tooltip-shape"
+              value={value}
+              checked={shape === value}
+              onChange={() => setShape(value)}
+            />
+            {value === "pill" ? "Pill" : "Square"}
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -178,6 +255,7 @@ export default function Example() {
           }}
         />
       </div>
+      <EdgeTooltip />
     </>
   );
 }
