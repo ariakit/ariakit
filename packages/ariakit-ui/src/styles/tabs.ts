@@ -93,6 +93,13 @@ const tabBox = cx(
   "ui-focus-visible:ak-layer-brand ui-focus-visible:ak-layer-contrast",
   "not-ui-selected:ui-focus-visible:ak-layer-brand",
   "ui-focus-visible:ak-layer-offset-0",
+  // The selected lift is a state offset or push, which the idle offset reset
+  // above leaves. A lifted focus fill can fall under 3:1 against the strip.
+  // The hover rule that keeps the selected offset needs its own reset.
+  // https://github.com/ariakit/ariakit/issues/8101
+  "ui-selected:ui-focus-visible:ak-state-0",
+  "ui-selected:ui-focus-visible:ui-hover:ak-state-0",
+  "ui-selected:ui-focus-visible:ak-state-push-0",
   "not-ui-selected:ui-focus-visible:bg-(--ak-layer)",
 );
 
