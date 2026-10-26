@@ -182,7 +182,7 @@ Typically, when using [CSS transitions](/tags/css-transitions/), [`data-enter`](
 
 ### `[data-instant]`
 
-The `data-instant` attribute is applied to the [Tooltip](/components/tooltip/) component when it shows at once because of the [`skipTimeout`](/reference/use-tooltip-store/#skiptimeout) window, without waiting for the [`showTimeout`](/reference/use-tooltip-store/#showtimeout) delay. This happens when another tooltip is active, or when the same tooltip reopens shortly after it hides. It's also applied to the tooltip that another tooltip replaces, while it hides. A tooltip that shows after the normal delay doesn't have this attribute.
+The `data-instant` attribute is applied to the [Tooltip](/components/tooltip/) component when it shows at once because of the [`skipTimeout`](/reference/use-tooltip-store/#skiptimeout) window, without waiting for the [`showTimeout`](/reference/use-tooltip-store/#showtimeout) delay. This happens when the pointer moves to its anchor while another tooltip is active, or back to one of its anchors shortly after it hides. It's also applied to the tooltip that another tooltip replaces, while it hides. A tooltip that shows after the normal delay doesn't have this attribute.
 
 This works across tooltips with separate stores. Use it to skip the exit transition of the replaced tooltip, so its content doesn't overlap the next tooltip. Use `transition: none` instead of a zero duration, because the replaced tooltip can already be in its exit transition, which only `transition: none` stops.
 

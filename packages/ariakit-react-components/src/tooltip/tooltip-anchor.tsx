@@ -49,12 +49,26 @@ function activateStore(store: TooltipStore) {
   const { activeStore } = globalStore.getState();
   if (activeStore !== store) {
     if (hidingStores.has(store)) return;
-    // The store shows at once when another tooltip is still active (see the
-    // showOnHover method in useTooltipAnchor).
-    setInstant(store, !!activeStore);
+    // Focus and other shows reach this too, so the store that becomes active
+    // has no mark here. Only the skip window path in the showOnHover method of
+    // useTooltipAnchor marks it, after activating it.
+    setInstant(store, false);
     hideStore(activeStore);
   }
   globalStore.setState("activeStore", store);
+}
+
+// Shows the store and returns whether it was closed. A tooltip that reopens
+// during its exit transition stays mounted, so the mounted sync in
+// useTooltipAnchor doesn't activate it, and this does instead.
+function showStore(store: TooltipStore) {
+  const { open, mounted } = store.getState();
+  store.show();
+  if (open) return false;
+  if (mounted) {
+    activateStore(store);
+  }
+  return true;
 }
 
 function isEscapeKeyEvent(event: Event) {
@@ -211,8 +225,9 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       // https://github.com/ariakit/ariakit/issues/7622
       if (isEscapeKeyEvent(event.nativeEvent)) return;
       if (event.nativeEvent === returnedFocusRef.current) return;
-      store?.setAnchorElement(event.currentTarget);
-      store?.show();
+      if (!store) return;
+      store.setAnchorElement(event.currentTarget);
+      showStore(store);
     });
 
     const onBlurProp = props.onBlur;
@@ -265,18 +280,12 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         // anchor element, so set it here: the hovercard has already scheduled a
         // hide, which it skips only if the last mousemove was on the anchor.
         // https://github.com/ariakit/ariakit/issues/8089
-        const { open, mounted } = store.getState();
         store.setAnchorElement(event.currentTarget);
-        store.show();
-        if (open) return false;
-        // A tooltip that reopens during its exit transition stays mounted, so
-        // the mounted sync above doesn't activate it.
-        if (mounted) {
-          activateStore(store);
+        // The tooltip shows at once because of the skip window. Activating it
+        // clears its mark, so mark it after showing it.
+        if (showStore(store)) {
+          setInstant(store, true);
         }
-        // Activating a store only marks it when another tooltip is active, but
-        // a tooltip that reopens within its own skip window shows at once too.
-        setInstant(store, true);
         return false;
       },
       ...props,

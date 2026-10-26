@@ -215,4 +215,81 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(boldTooltip).toHaveAttribute("data-open");
     await test.expect(boldTooltip).toHaveAttribute("data-instant");
   });
+
+  // https://github.com/ariakit/ariakit/issues/8093
+  // https://github.com/ariakit/ariakit/pull/8098#discussion_r4373888333
+  test("replaces the active tooltip when a leaving tooltip reopens on focus", async ({
+    page,
+    q,
+  }) => {
+    await page.mouse.move(0, 0);
+    const bold = q.button("Bold");
+    const boldTooltip = q.tooltip("Bold tooltip");
+    const italicTooltip = q.tooltip("Italic tooltip");
+
+    await bold.scrollIntoViewIfNeeded();
+    await bold.hover();
+    await test.expect(boldTooltip).toHaveCSS("opacity", "1");
+
+    // Bold starts its normal 2s exit transition in the gap, and Italic replaces
+    // it. Bold stays mounted until that exit transition would have ended.
+    const box = await bold.boundingBox();
+    test.expect(box).not.toBeNull();
+    if (!box) return;
+    await page.mouse.move(box.x + box.width + 20, box.y + box.height / 2);
+    await test.expect(boldTooltip).toHaveAttribute("data-leave");
+    await q.button("Italic").hover();
+    await test.expect(italicTooltip).toHaveAttribute("data-instant");
+    // An unmounted Italic counts as hidden.
+    const italicOpacity = () =>
+      italicTooltip
+        .evaluate(
+          (element) => Number(getComputedStyle(element).opacity),
+          undefined,
+          { timeout: 100 },
+        )
+        .catch(() => 0);
+    // Italic's 2s enter transition must be well underway, so a normal exit
+    // transition would take a while to hide it.
+    await test.expect
+      .poll(italicOpacity, { intervals: [50] })
+      .toBeGreaterThan(0.5);
+
+    // Without a pointer press, focus is still visible, so focusing Bold reopens
+    // its tooltip while it's still mounted, and it replaces Italic.
+    await test.expect(boldTooltip).toHaveAttribute("data-leave");
+    await bold.focus();
+    await test.expect(boldTooltip).toHaveAttribute("data-open");
+    // Focus moving to Bold can start Italic's normal exit transition first.
+    // Either way, the style rule for data-instant hides Italic at once.
+    await test.expect
+      .poll(italicOpacity, { intervals: [50], timeout: 400 })
+      .toBe(0);
+    // Focus shows tooltips at once anyway, so this isn't the skip window.
+    await test.expect(boldTooltip).not.toHaveAttribute("data-instant");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8093
+  // https://github.com/ariakit/ariakit/pull/8098#discussion_r4373888338
+  test("keeps a delayed tooltip unmarked when another tooltip shows during the delay", async ({
+    page,
+    q,
+  }) => {
+    await page.mouse.move(0, 0);
+    const bold = q.button("Bold");
+    const boldTooltip = q.tooltip("Bold tooltip");
+    const italicTooltip = q.tooltip("Italic tooltip");
+
+    await bold.scrollIntoViewIfNeeded();
+    await bold.hover();
+    // Without a pointer press, focus is still visible, so focusing Italic shows
+    // its tooltip at once while Bold still waits for its show delay.
+    await q.button("Italic").focus();
+    await test.expect(italicTooltip).toHaveAttribute("data-open");
+    await test.expect(boldTooltip).toHaveAttribute("data-open");
+    await test.expect(boldTooltip).not.toHaveAttribute("data-instant");
+    // Bold still replaces Italic, so the style rule for data-instant skips the
+    // 2s exit transition of Italic.
+    await test.expect(italicTooltip).toBeHidden({ timeout: 1000 });
+  });
 });
