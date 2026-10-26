@@ -27,8 +27,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.tooltip()).toHaveCount(0);
   });
 
-  // Empty content keeps the anchor, which can still get focus and hover, but it
-  // must not open a tooltip that the next tooltip skips its delay for.
+  // Focus and hover on a link without a tooltip must not open a tooltip that
+  // the next tooltip skips its delay for.
   test("keeps the show delay after a link without a tooltip", async ({
     page,
     q,

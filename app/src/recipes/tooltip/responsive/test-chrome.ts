@@ -14,13 +14,10 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const share = q.button("Share");
-    await share.focus();
     // A narrow viewport narrows the bar, and the container query hides the
     // labels.
     await page.setViewportSize({ width: 360, height: 600 });
     await test.expect(query(share).text("Share")).toBeHidden();
-    // The button keeps focus when its tooltip turns on.
-    await test.expect(share).toBeFocused();
     await page.mouse.move(0, 0);
     // Ariakit resets hover intent on scroll, so the anchor must be in view
     // before the pointer moves over it.

@@ -35,7 +35,8 @@ export interface TooltipProps
    * The tooltip content, as text or other nodes. Unlike the `content` prop of
    * `Disclosure`, it does not take an element or props for the popup. Empty
    * content, such as `null`, `false`, a blank string, or an empty list, renders
-   * no popup and keeps the anchor mounted.
+   * only the anchor. The anchor remounts when its content becomes empty or
+   * stops being empty, so it loses focus and its state at that time.
    */
   content?: React.ReactNode;
   /**
@@ -71,7 +72,7 @@ export function Tooltip({
   skipTimeout,
   ...props
 }: TooltipProps) {
-  const empty = !hasContent(content);
+  if (!hasContent(content)) return children;
   const arrowElement = createOptionalRender(
     TooltipArrow,
     arrow === true ? {} : arrow,
@@ -88,13 +89,11 @@ export function Tooltip({
       hideTimeout={hideTimeout}
       skipTimeout={skipTimeout}
     >
-      <TooltipChildAnchor empty={empty}>{children}</TooltipChildAnchor>
-      {!empty && (
-        <TooltipPopover {...props}>
-          {arrowElement}
-          {content}
-        </TooltipPopover>
-      )}
+      <ak.TooltipAnchor render={children} />
+      <TooltipPopover {...props}>
+        {arrowElement}
+        {content}
+      </TooltipPopover>
     </ak.TooltipProvider>
   );
 }
@@ -194,53 +193,5 @@ export function TooltipShortcut(props: TooltipShortcutProps) {
         rest.children
       )}
     </ak.Role.span>
-  );
-}
-
-// A tooltip that closes starts the skip window, where the next tooltip shows
-// without its delay. A tooltip without content showed nothing, so it closes
-// without the window. The anchor reads the skip timeout as the tooltip
-// unmounts. No popup renders without content, so a store without the deprecated
-// animated option doesn't animate, and the tooltip unmounts as it hides, before
-// the timeout comes back.
-function hideWithoutSkip(store: ak.TooltipStore) {
-  const { skipTimeout } = store.getState();
-  store.setState("skipTimeout", 0);
-  store.hide();
-  store.setState("skipTimeout", skipTimeout);
-}
-
-interface TooltipChildAnchorProps {
-  children: React.ReactElement;
-  empty: boolean;
-}
-
-function TooltipChildAnchor({ children, empty }: TooltipChildAnchorProps) {
-  const store = ak.useTooltipContext();
-
-  // The popup hides the tooltip on blur, Escape, and hover outside. Empty
-  // content renders no popup, so close the tooltip when the content empties.
-  // Otherwise, it would show by itself when content arrives.
-  React.useEffect(() => {
-    if (!empty) return;
-    if (!store) return;
-    hideWithoutSkip(store);
-  }, [empty, store]);
-
-  // Focus opens the tooltip also without content. Close it right after the
-  // anchor opens it, so it doesn't stay open without a popup.
-  const onFocusVisible = () => {
-    queueMicrotask(() => {
-      if (!store) return;
-      hideWithoutSkip(store);
-    });
-  };
-
-  return (
-    <ak.TooltipAnchor
-      render={children}
-      showOnHover={!empty}
-      onFocusVisible={empty ? onFocusVisible : undefined}
-    />
   );
 }

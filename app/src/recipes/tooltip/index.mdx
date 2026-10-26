@@ -14,7 +14,7 @@ The gallery starts with an icon button, where the tooltip names the button. Then
 
 Other props go to the tooltip popup, a `TooltipPopover`. So `className`, `$invert`, `$layer`, `$rounded`, and the other style props change the tooltip, not the anchor. Provider props, such as `placement`, `showTimeout`, `open`, and `store`, go to the `TooltipProvider`. The `arrow` prop adds an arrow that points to the anchor. It stays clear of the rounded corners of the tooltip.
 
-Empty content, such as `null`, `false`, a blank string, or an empty list, turns the tooltip off and keeps the anchor mounted, so the anchor keeps focus when its tooltip turns on or off. The Disabled Action example has a tooltip only while the button is disabled. The Truncated Text example shows the full text only when the link cuts it off, and the Collapsing Labels example shows a label only while it is hidden.
+Empty content, such as `null`, `false`, a blank string, or an empty list, turns the tooltip off. The anchor remounts when its tooltip turns on or off, so it loses focus and its state at that time. The Disabled Action example has a tooltip only while the button is disabled. The Truncated Text example shows the full text only when the link cuts it off, and the Collapsing Labels example shows a label only while it is hidden.
 
 `TooltipShortcut` shows a keyboard shortcut after the tooltip text, with muted keys like the shortcut slot of a button. Wrap each key in a `kbd` element. The Keyboard Shortcuts example only shows the keys. An app handles them in its editor.
 
