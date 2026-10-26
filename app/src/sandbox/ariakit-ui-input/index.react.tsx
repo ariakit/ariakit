@@ -8,6 +8,12 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  ComboboxItem,
+  ComboboxPopover,
+  ComboboxProvider,
+  ComboboxSelect,
+} from "@ariakit/ui/components/combobox.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Input,
@@ -593,6 +599,43 @@ export default function InputExamples() {
       >
         <Frame $layer="brand" $rounded="xl" $p={4} className="grid w-full">
           <Input aria-label="Invite email" placeholder="teammate@example.com" />
+        </Frame>
+      </Example>
+
+      <Example
+        title="On a tinted layer"
+        description="Fields and select fields lighten to white on a light tinted surface instead of a brighter tint of it. A disabled field matches the surface."
+        code={`
+          <Frame $hue="blue" $chroma="balanced" $rounded="xl" $p={4}>
+            <Input />
+            <Input disabled />
+            <ComboboxProvider>
+              <ComboboxSelect />
+              <ComboboxPopover>…</ComboboxPopover>
+            </ComboboxProvider>
+          </Frame>
+        `}
+      >
+        <Frame
+          $hue="blue"
+          $chroma="balanced"
+          $rounded="xl"
+          $p={4}
+          className="grid w-full gap-3"
+        >
+          <Input aria-label="Workspace name" placeholder="Acme Inc." />
+          <Input
+            aria-label="Workspace URL"
+            placeholder="acme.example.com"
+            disabled
+          />
+          <ComboboxProvider defaultSelectedValue="Owner">
+            <ComboboxSelect aria-label="Workspace role" />
+            <ComboboxPopover unmountOnHide>
+              <ComboboxItem value="Owner" checkmark="before" />
+              <ComboboxItem value="Member" checkmark="before" />
+            </ComboboxPopover>
+          </ComboboxProvider>
         </Frame>
       </Example>
 

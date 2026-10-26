@@ -704,7 +704,7 @@ importers:
         specifier: workspace:*
         version: link:../ariakit-utils
       '@floating-ui/dom':
-        specifier: ^1.0.0
+        specifier: ^1.3.0
         version: 1.8.0
     devDependencies:
       '@ariakit/scripts':

@@ -191,6 +191,12 @@ export const comboboxSelect = cv({
       // Match the raised input surface.
       return defaultValue ?? true;
     },
+    $chromaMax(defaultValue, variants) {
+      if (!isSelectField(variants)) return defaultValue;
+      if (variants.$disabled) return defaultValue;
+      // Match the input's white surface on tinted light layers.
+      return defaultValue ?? "auto";
+    },
     $border(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
       return defaultValue ?? true;
