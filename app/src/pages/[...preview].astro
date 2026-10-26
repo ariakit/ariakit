@@ -35,12 +35,14 @@ Astro.locals.framework = framework;
 
 const title = entry.data.title;
 const fullscreen = entry.data.fullscreen;
-// The embed script opens the popup of the preview when a card embeds it.
+// The embed script opens the popup of the preview when a card embeds it. An
+// empty value opens it with a click.
 const open = entry.data.open;
+const openMode = open === "hover" ? "hover" : open ? "" : undefined;
 ---
 
 <!doctype html>
-<html lang="en" data-preview-open={open ? "" : undefined}>
+<html lang="en" data-preview-open={openMode}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />

@@ -52,10 +52,17 @@ export interface ResolvedPreviewRoot {
   idPrefix?: string;
 }
 
+/**
+ * How an embedded preview opens the popup of its example: `true` clicks its
+ * trigger, and `"hover"` hovers it, for a tooltip or a hovercard.
+ */
+type PreviewOpen = boolean | "hover";
+
 interface PreviewMetadata {
   title?: string;
   fullscreen?: boolean;
-  open?: boolean;
+  open?: PreviewOpen;
+  compact?: boolean;
   frameworks?: Framework[];
 }
 
@@ -63,6 +70,7 @@ const PREVIEW_METADATA_KEYS = [
   "title",
   "fullscreen",
   "open",
+  "compact",
   "frameworks",
 ] as const;
 
@@ -82,7 +90,8 @@ export interface DiscoveredPreview {
 export const PreviewDataSchema = z.object({
   title: z.string(),
   fullscreen: z.boolean().optional(),
-  open: z.boolean().optional(),
+  open: z.union([z.boolean(), z.literal("hover")]).optional(),
+  compact: z.boolean().optional(),
   frameworks: FrameworkSchema.array(),
   source: z.string(),
 });
@@ -143,7 +152,7 @@ function parsePreviewMetadata(value: unknown, id: string) {
     );
   }
   const metadata: PreviewMetadata = {};
-  const { title, fullscreen, open } = value;
+  const { title, fullscreen, open, compact } = value;
   if (title !== undefined) {
     invariant(typeof title === "string", `Invalid title metadata for ${id}`);
     metadata.title = title;
@@ -156,8 +165,18 @@ function parsePreviewMetadata(value: unknown, id: string) {
     metadata.fullscreen = fullscreen;
   }
   if (open !== undefined) {
-    invariant(typeof open === "boolean", `Invalid open metadata for ${id}`);
+    invariant(
+      typeof open === "boolean" || open === "hover",
+      `Invalid open metadata for ${id}`,
+    );
     metadata.open = open;
+  }
+  if (compact !== undefined) {
+    invariant(
+      typeof compact === "boolean",
+      `Invalid compact metadata for ${id}`,
+    );
+    metadata.compact = compact;
   }
   const frameworks = parseFrameworks(value.frameworks, id);
   if (frameworks) {
@@ -387,6 +406,7 @@ async function updatePreviewStore(
       title: preview.title,
       fullscreen: preview.metadata.fullscreen,
       open: preview.metadata.open,
+      compact: preview.metadata.compact,
       frameworks: preview.frameworks,
       source: preview.source,
     };

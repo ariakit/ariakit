@@ -420,6 +420,50 @@ test("preview cards show a static example that opens its popup", async ({
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
 });
 
+test("preview cards hover the trigger of an example that opens on hover", async ({
+  page,
+}) => {
+  await page.goto("/react/recipes/tooltip/", { waitUntil: "commit" });
+  const iframe = await waitForShownFrame(page, "Tooltip");
+  await iframe.scrollIntoViewIfNeeded();
+  const preview = query(iframe.contentFrame());
+  // The tooltip shows after its own delay, which the card does not wait for.
+  await expect(preview.tooltip("Notifications")).toBeVisible();
+  // The frame stays inactive, so the hover does not move focus into it.
+  await expect(preview.button("Notifications")).not.toBeFocused();
+  // The pointer over the docs page does not reach the frame, so the tooltip
+  // stays open. A move in the frame would hide it in a 0ms timer, and the
+  // tooltip would stay displayed for its 250ms exit transition and its 250ms
+  // display transition, so the wait crosses the timer and both transitions.
+  await page.mouse.move(0, 0, { steps: 4 });
+  await flushFrames(page);
+  await page.waitForTimeout(500);
+  // A retrying assertion would also pass if the tooltip hid and showed again.
+  expect(await preview.tooltip("Notifications").isVisible()).toBe(true);
+});
+
+test("compact preview cards take the minimum height of inline previews", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/tooltip/");
+  const iframe = page.locator('iframe[title="Tooltip"]');
+  // The next card in the grid renders its example inline, in a viewport that
+  // takes the minimum height of the grid. The viewport is the first element in
+  // the card that a click can focus.
+  const inlineViewport = q
+    .region("Keyboard Shortcuts", { exact: true })
+    .locator("[tabindex='-1']")
+    .first();
+  const minHeight = await inlineViewport.evaluate((element) => {
+    return Number.parseFloat(getComputedStyle(element).minHeight);
+  });
+  const frameBox = await iframe.boundingBox();
+  expect(frameBox).not.toBeNull();
+  if (!frameBox) return;
+  expect(frameBox.height).toBe(minHeight);
+});
+
 test("preview cards show an example that throws", async ({ page }) => {
   // A broken example throws as it renders, so it never mounts.
   const routedFrames = await routeExampleModules(page, (route) =>

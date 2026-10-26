@@ -370,6 +370,53 @@ test("rejects invalid open metadata", async () => {
   await expect(promise).rejects.toThrow("Invalid open metadata for menu");
 });
 
+test("supports hover open metadata", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "recipes/tooltip/index.react.tsx"));
+  await writeFile(
+    join(dir, "recipes/tooltip/preview.json"),
+    JSON.stringify({ title: "Tooltip", open: "hover" }),
+  );
+
+  const previews = await discoverPreviews({
+    roots: [getRecipesRoot(dir)],
+  });
+
+  expect(previews).toMatchObject([
+    { id: "tooltip", metadata: { open: "hover" } },
+  ]);
+});
+
+test("supports compact metadata", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "recipes/tooltip/index.react.tsx"));
+  await writeFile(
+    join(dir, "recipes/tooltip/preview.json"),
+    JSON.stringify({ title: "Tooltip", compact: true }),
+  );
+
+  const previews = await discoverPreviews({
+    roots: [getRecipesRoot(dir)],
+  });
+
+  expect(previews).toMatchObject([
+    { id: "tooltip", metadata: { compact: true } },
+  ]);
+});
+
+test("rejects invalid compact metadata", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "recipes/tooltip/index.react.tsx"));
+  await writeFile(
+    join(dir, "recipes/tooltip/preview.json"),
+    JSON.stringify({ title: "Tooltip", compact: "true" }),
+  );
+
+  const promise = discoverPreviews({ roots: [getRecipesRoot(dir)] });
+
+  await expect(promise).rejects.toThrow("Invalid compact metadata for tooltip");
+});
+
 test("supports metadata-only sandbox previews", async () => {
   const dir = await createDir();
   await writeFile(

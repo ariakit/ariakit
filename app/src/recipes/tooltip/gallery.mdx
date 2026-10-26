@@ -1,0 +1,51 @@
+import PreviewCard from "#app/components/preview-card.astro";
+import PreviewGrid from "#app/components/preview-grid.astro";
+import { source as s0 } from "./preview.astro";
+import P1, { source as s1 } from "./shortcuts/preview.astro";
+import P2, { source as s2 } from "./disabled/preview.astro";
+import P3, { source as s3 } from "./truncated/preview.astro";
+import P4, { source as s4 } from "./sidebar/preview.astro";
+import P5, { source as s5 } from "./responsive/preview.astro";
+import P6, { source as s6 } from "./copy/preview.astro";
+import P7, { source as s7 } from "./toggle/preview.astro";
+import P8, { source as s8 } from "./time/preview.astro";
+import P9, { source as s9 } from "./avatars/preview.astro";
+import P10, { source as s10 } from "./appearance/preview.astro";
+import P11, { source as s11 } from "./placement/preview.astro";
+
+<PreviewGrid>
+  <PreviewCard source={s0} />
+  <PreviewCard source={s1}>
+    <P1 />
+  </PreviewCard>
+  <PreviewCard source={s2}>
+    <P2 />
+  </PreviewCard>
+  <PreviewCard source={s3}>
+    <P3 />
+  </PreviewCard>
+  <PreviewCard source={s4}>
+    <P4 />
+  </PreviewCard>
+  <PreviewCard source={s5}>
+    <P5 />
+  </PreviewCard>
+  <PreviewCard source={s6}>
+    <P6 />
+  </PreviewCard>
+  <PreviewCard source={s7}>
+    <P7 />
+  </PreviewCard>
+  <PreviewCard source={s8}>
+    <P8 />
+  </PreviewCard>
+  <PreviewCard source={s9}>
+    <P9 />
+  </PreviewCard>
+  <PreviewCard source={s10}>
+    <P10 />
+  </PreviewCard>
+  <PreviewCard source={s11}>
+    <P11 />
+  </PreviewCard>
+</PreviewGrid>

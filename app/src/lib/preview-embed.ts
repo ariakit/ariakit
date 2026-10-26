@@ -88,7 +88,8 @@ export type PreviewFrameMessage = PreviewLocationMessage | PreviewScrollMessage;
  *   scroll while the person resizes it, until they interact with the docs page.
  * - Interactions on the docs page do not close popups in the page. A page with
  *   `data-preview-open` on its root opens its popup once it hydrates, so the
- *   card presents the popup and not only its trigger.
+ *   card presents the popup and not only its trigger. The value `hover` opens
+ *   it with a hover instead of a click, as a tooltip opens.
  * - The page reports its location and history state, and follows navigation
  *   commands from the card.
  * - The page applies the site theme and the viewport radius that the card
@@ -103,6 +104,7 @@ export function setupPreviewEmbed() {
   const root = document.documentElement;
   root.dataset.previewEmbedded = "";
   let opening = root.hasAttribute("data-preview-open");
+  const openOnHover = root.getAttribute("data-preview-open") === "hover";
 
   // A touch on the docs page can scroll it without taking focus from the page.
   // The card reports it, and the page waits until the person comes back.
@@ -304,6 +306,43 @@ export function setupPreviewEmbed() {
     const popup = getPopup(trigger);
     if (!popup) return;
     await scrollToPopup(trigger, popup);
+  };
+
+  // Hovers the trigger, as a person would, for a popup that opens on hover. The
+  // events are not trusted, so the page stays inactive. The popup opens after
+  // its own show delay, like after a hover by a person, so the card shows the
+  // page without waiting for it.
+  const hoverTrigger = () => {
+    const trigger = getTrigger();
+    if (!trigger) return;
+    const rect = trigger.getBoundingClientRect();
+    const mouseInit = {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      view: window,
+      clientX: rect.left + rect.width / 2,
+      clientY: rect.top + rect.height / 2,
+    };
+    const pointerInit = { ...mouseInit, pointerType: "mouse", isPrimary: true };
+    // Enter events don't bubble.
+    trigger.dispatchEvent(new PointerEvent("pointerover", pointerInit));
+    trigger.dispatchEvent(
+      new PointerEvent("pointerenter", { ...pointerInit, bubbles: false }),
+    );
+    trigger.dispatchEvent(new MouseEvent("mouseover", mouseInit));
+    trigger.dispatchEvent(
+      new MouseEvent("mouseenter", { ...mouseInit, bubbles: false }),
+    );
+    // Ariakit opens hover popups only after the mouse moves, which it reads
+    // from a change of the screen position.
+    const moved = { screenX: 1, screenY: 1 };
+    trigger.dispatchEvent(
+      new PointerEvent("pointermove", { ...pointerInit, ...moved }),
+    );
+    trigger.dispatchEvent(
+      new MouseEvent("mousemove", { ...mouseInit, ...moved }),
+    );
   };
 
   // The preview island marks the root once the example has mounted, so the
@@ -661,7 +700,11 @@ export function setupPreviewEmbed() {
 
   if (opening) {
     onHydrated(async () => {
-      await openPopup();
+      if (openOnHover) {
+        hoverTrigger();
+      } else {
+        await openPopup();
+      }
       finishOpening();
     });
     // A page that fails to hydrate, such as one whose example throws, stops

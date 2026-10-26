@@ -1,0 +1,37 @@
+---
+title: Tooltip
+---
+
+## Overview
+
+These examples build tooltips with the Ariakit UI `Tooltip` components. A tooltip is a short label or description of an element. It shows when the pointer rests on the element or when the element gets keyboard focus, and it hides when the pointer leaves, when focus moves away, or on Escape.
+
+The gallery starts with an icon button, where the tooltip names the button. Then it shows a formatting toolbar, where tooltips show the keyboard shortcuts of the buttons. After the first tooltip shows, the next ones show at once while the pointer moves along the toolbar, and the previous tooltip hides at once, so the two don't overlap. The other examples show the reason that a button is disabled, text that is cut off, a collapsed sidebar, button labels that hide at narrow widths, copy feedback, toggle buttons, relative times, an avatar stack, colors and shapes, and the four placements.
+
+## Components
+
+`Tooltip` wraps the element that it describes, and that element becomes the anchor. The `content` prop holds the tooltip text or other nodes. The anchor must be one element that passes the props it gets to the DOM and forwards its ref, as `Button`, `Link`, and `NavLink` do. Otherwise, the tooltip never shows, and no warning tells why. A disabled button needs `accessibleWhenDisabled`, so it can still get focus and hover.
+
+Other props go to the tooltip popup, a `TooltipPopover`. So `className`, `$invert`, `$layer`, `$rounded`, and the other style props change the tooltip, not the anchor. Provider props, such as `placement`, `showTimeout`, `open`, and `store`, go to the `TooltipProvider`. The `arrow` prop adds an arrow that points to the anchor. It stays clear of the rounded corners of the tooltip.
+
+Empty content, such as `null`, `false`, a blank string, or an empty list, turns the tooltip off. The anchor remounts when its tooltip turns on or off, so it loses focus and its state at that time. The Disabled Action example has a tooltip only while the button is disabled. The Truncated Text example shows the full text only when the link cuts it off, and the Collapsing Labels example shows a label only while it is hidden.
+
+`TooltipShortcut` shows a keyboard shortcut after the tooltip text, with muted keys like the shortcut slot of a button. Wrap each key in a `kbd` element. The Keyboard Shortcuts example only shows the keys. An app handles them in its editor.
+
+By default, a tooltip inverts the page colors: it is dark on a light page and light on a dark page, and it has no edge. `$invert={false}` puts it on the popover surface, with an edge. A layer color, such as `$layer="brand"`, keeps its hue and the edge. The Colors and Shapes example shows each one.
+
+Several anchors can share one tooltip, as in the Collapsed Sidebar and the Avatar Stack examples. Put the `TooltipAnchor` elements and one `TooltipPopover` in a `TooltipProvider`. The popover reads the active anchor from the `anchorElement` state of the store and shows its content, such as its `aria-label`. An attribute that the popover reads has its value from the previous render, so this suits content that doesn't change. Keep content that changes while the tooltip shows, such as a zoom level, in React state, and find it with a stable attribute of the anchor, such as `id`. When the pointer or focus moves to the next anchor, the tooltip changes its content and moves to that anchor. The `tooltipWrapper` style recipe in the `wrapperProps` of the popover makes it slide there. Reduced motion turns the slide off. In a scroll container, an open tooltip trails its anchor while the container scrolls, so use `tooltipWrapper.jsx({ $slide: false })` there. The Collapsed Sidebar sets `showTimeout={0}` on the provider, so its tooltip shows at once, and `hideTimeout={300}`, so the tooltip stays while the pointer crosses to the next link.
+
+The parts are also available for a shared tooltip, a custom store, or another special case: `TooltipProvider`, `TooltipAnchor`, `TooltipPopover`, and `TooltipArrow`.
+
+## Accessibility
+
+Tooltips are visual. The tooltip does not name or describe its anchor for screen readers, so the anchor needs its own accessible name, such as `aria-label` on an icon button. When a tooltip has information that users need, give the anchor the same information as accessible text. The Publish button of the Disabled Action example uses `aria-describedby` for it, and so do the links of the Relative Time example. The anchors with shortcuts have `aria-keyshortcuts`.
+
+Touch screens don't show tooltips, so a tooltip must not have the only copy of important information. The Disabled Action example also shows its reason below the field, and the Copy Feedback example also reports the copy in a status message.
+
+The content of a tooltip stays until the user dismisses it, and the pointer can move over it without hiding it, as WCAG requires for content that shows on hover or focus ([Content on Hover or Focus](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html)). Escape hides the tooltip and keeps focus on the anchor.
+
+A toggle button keeps its name and tells its state with `aria-pressed`. In the Toggle Buttons example, the tooltip names the action that a click takes, such as Mute or Unmute.
+
+Keep tooltips short, and keep links and buttons out of them, since keyboard focus can't reach them. For long help or for interactive content, use a toggletip or a popover, which a click or a tap opens. A long tooltip wraps at its maximum width, as the last link of the Truncated Text example shows.

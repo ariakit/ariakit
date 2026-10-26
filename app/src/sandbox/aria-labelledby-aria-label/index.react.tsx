@@ -28,8 +28,8 @@ import {
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import {
-  Tooltip,
   TooltipAnchor,
+  TooltipPopover,
   TooltipProvider,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
 
@@ -89,7 +89,7 @@ export default function Example() {
         <TooltipAnchor aria-label="Custom anchor label" render={<Button />}>
           Tooltip anchor
         </TooltipAnchor>
-        <Tooltip>Tooltip label</Tooltip>
+        <TooltipPopover>Tooltip label</TooltipPopover>
       </TooltipProvider>
 
       <TagProvider>

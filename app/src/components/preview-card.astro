@@ -81,6 +81,7 @@ const files = Object.entries(source.files);
       {inline}
       {browser}
       fullscreen={preview?.data.fullscreen}
+      compact={preview?.data.compact}
     >
       {inline && <slot />}
       <div slot="code" class="grid grid-cols-1 gap-2">
