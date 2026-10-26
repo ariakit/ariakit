@@ -1,4 +1,10 @@
+import { randomUUID } from "node:crypto";
 import { defineConfig, devices } from "@playwright/test";
+
+// The web server and the test workers inherit this value. Plus tests tag their
+// sale coupons with it so that concurrent runs sharing the same Stripe account
+// don't apply each other's sales. See website/lib/stripe.ts.
+process.env.STRIPE_SALE_SCOPE ||= randomUUID();
 
 if (process.argv.includes("--headed")) {
   process.env.PWHEADED = "true";
