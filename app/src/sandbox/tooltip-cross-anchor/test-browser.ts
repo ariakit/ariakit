@@ -29,6 +29,34 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.tooltip("First tooltip")).toBeVisible();
   });
 
+  // https://github.com/ariakit/ariakit/issues/8089
+  test("moves a shared tooltip to the next anchor while it is active", async ({
+    page,
+    q,
+  }) => {
+    await page.mouse.move(0, 0);
+
+    await q.button("Shared first anchor").hover();
+    await test.expect(q.tooltip("Shared first tooltip")).toBeVisible();
+
+    const secondAnchor = q.button("Shared second anchor");
+    await secondAnchor.hover();
+    const secondTooltip = q.tooltip("Shared second tooltip");
+    await test
+      .expect(secondTooltip)
+      .toBeVisible({ timeout: midwayToShowTimeout });
+    await test.expect
+      .poll(async () => {
+        const anchorBox = await secondAnchor.boundingBox();
+        const tooltipBox = await secondTooltip.boundingBox();
+        if (!anchorBox || !tooltipBox) return null;
+        const anchorCenterX = anchorBox.x + anchorBox.width / 2;
+        const tooltipCenterX = tooltipBox.x + tooltipBox.width / 2;
+        return Math.abs(tooltipCenterX - anchorCenterX);
+      })
+      .toBeLessThan(1);
+  });
+
   // https://github.com/ariakit/ariakit/issues/8093
   test("marks tooltips that show or hide at once because of the skip window", async ({
     page,

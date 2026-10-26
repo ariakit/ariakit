@@ -45,6 +45,8 @@ export const choice = cv({
     "not-ui-choice-disabled:ui-choice-on:ak-layer-brand",
     "not-ui-choice-disabled:ui-choice-on:ak-layer-contrast",
     "ui-choice-on:ak-layer-lighten-0 ui-choice-on:ak-edge-raw",
+    // The selected fill keeps its color; the chroma cap is for the raised box.
+    "ui-choice-on:ak-layer-max-c-[initial]",
     // Keep disabled marks and empty boxes distinct on light surfaces.
     "ui-choice-disabled:ui-choice-on:ak-layer-15",
     "ui-choice-disabled:ak-ink-0 ui-choice-disabled:ak-edge-20",
@@ -81,6 +83,9 @@ export const choice = cv({
     $borderType: "border",
     $edgeContrast: true,
     $lighten: true,
+    // Like the input, read white instead of a brighter tint on light tinted
+    // layers.
+    $chromaMax: "auto",
     $hoverOffset: true,
     $layer(defaultValue) {
       // Replace only the slot's transparent default; explicit colors still

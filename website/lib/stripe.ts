@@ -20,6 +20,11 @@ const PLUS_PRICES = [PLUS_MONTHLY, PLUS_YEARLY, PLUS_ONE_TIME];
 const key = process.env.STRIPE_SECRET_KEY;
 const stripe = key ? new Stripe(key) : null;
 
+// Plus test runs share one Stripe test account. When set, only sales whose
+// coupon metadata has the same scope apply, so runs with different scopes,
+// such as separate CI runs, don't change each other's prices.
+const saleScope = process.env.STRIPE_SALE_SCOPE;
+
 export function getStripeClient() {
   return stripe;
 }
@@ -277,6 +282,7 @@ export async function getDiscount({
     }
     coupons.push(coupon);
     if (coupon.metadata?.type !== "sale") continue;
+    if (saleScope && coupon.metadata.scope !== saleScope) continue;
     promises.push(
       stripe.promotionCodes.list({
         coupon: coupon.id,
