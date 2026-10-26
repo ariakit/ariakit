@@ -34,38 +34,21 @@ function SharedTooltip() {
   return <Ariakit.Tooltip>{anchorElement?.dataset.tooltip}</Ariakit.Tooltip>;
 }
 
-// TODO: Remove this workaround after the fix for
-// https://github.com/ariakit/ariakit/issues/8089 is released.
-function SharedTooltipAnchor(props: Ariakit.TooltipAnchorProps) {
-  const store = Ariakit.useTooltipContext();
-  return (
-    <Ariakit.TooltipAnchor
-      {...props}
-      onMouseEnter={(event) => {
-        props.onMouseEnter?.(event);
-        if (event.defaultPrevented) return;
-        if (store?.getState().anchorElement === event.currentTarget) return;
-        store?.setAnchorElement(event.currentTarget);
-      }}
-    />
-  );
-}
-
 function SharedTooltipAnchors() {
   return (
     <Ariakit.TooltipProvider {...tooltipProps}>
-      <SharedTooltipAnchor
+      <Ariakit.TooltipAnchor
         data-tooltip="Shared first tooltip"
         render={<button type="button" />}
       >
         Shared first anchor
-      </SharedTooltipAnchor>
-      <SharedTooltipAnchor
+      </Ariakit.TooltipAnchor>
+      <Ariakit.TooltipAnchor
         data-tooltip="Shared second tooltip"
         render={<button type="button" />}
       >
         Shared second anchor
-      </SharedTooltipAnchor>
+      </Ariakit.TooltipAnchor>
       <SharedTooltip />
     </Ariakit.TooltipProvider>
   );

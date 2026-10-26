@@ -227,7 +227,11 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         const { activeStore } = globalStore.getState();
         if (!activeStore) return true;
         // Show the tooltip immediately if there's an active tooltip instead of
-        // waiting for the showTimeout delay.
+        // waiting for the showTimeout delay. Returning false skips setting the
+        // anchor element, so set it here: the hovercard has already scheduled a
+        // hide, which it skips only if the last mousemove was on the anchor.
+        // https://github.com/ariakit/ariakit/issues/8089
+        store?.setAnchorElement(event.currentTarget);
         store?.show();
         return false;
       },
