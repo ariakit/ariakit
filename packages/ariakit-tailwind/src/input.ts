@@ -101,8 +101,13 @@ const LAYER_CONTRAST_FORBIDDEN_MARGIN = 0.005;
 // and Firefox lands slightly under the ratio. The readme documents this.
 const CONTRAST_FLOOR_MARGIN = 1.025;
 // Luminance plus the WCAG flare term spans 0.05..1.05, a factor of 21. Its log
-// fills the alpha range evenly in contrast terms.
-const CONTRAST_FLOOR_LOG_RANGE = roundToDecimals(Math.log(21), 6);
+// fills the alpha range evenly in contrast terms. The production CSS build
+// keeps six significant digits, so round here to avoid dev/prod drift.
+const CONTRAST_FLOOR_LOG_RANGE = roundToDecimals(Math.log(21), 5);
+// The exponents that turn luminance into LCH lightness and into an encoded sRGB
+// channel, rounded the same way.
+const CONTRAST_FLOOR_CUBE_ROOT = roundToDecimals(1 / 3, 6);
+const CONTRAST_FLOOR_SRGB_EXPONENT = roundToDecimals(1 / 2.4, 6);
 // The colored stage alpha for a color that passes. A pack alpha is 0.5 or more,
 // so the LCH step tells them apart halfway.
 const CONTRAST_FLOOR_PASSING_ALPHA = 0.25;
@@ -1502,7 +1507,10 @@ function getEncodedSrgb(luminance: Value) {
   return fn.max(
     0,
     fn.sub(
-      fn.mul(1.055, fn.exp`pow(${fn.max(luminance, 0)}, ${1 / 2.4})`),
+      fn.mul(
+        1.055,
+        fn.exp`pow(${fn.max(luminance, 0)}, ${CONTRAST_FLOOR_SRGB_EXPONENT})`,
+      ),
       0.055,
     ),
   );
@@ -1551,7 +1559,13 @@ function getLayerContrastTarget(encodedReference: Value) {
  * Returns the LCH lightness of a gray with the target luminance.
  */
 function getContrastTargetLchLightness(target: Value) {
-  return fn.sub(fn.mul(116, fn.exp`pow(${fn.clamp01(target)}, ${1 / 3})`), 16);
+  return fn.sub(
+    fn.mul(
+      116,
+      fn.exp`pow(${fn.clamp01(target)}, ${CONTRAST_FLOOR_CUBE_ROOT})`,
+    ),
+    16,
+  );
 }
 
 /**
@@ -1780,12 +1794,12 @@ function getLayerContrastFloorDeclarations() {
   // color that passes gets a scale of 1 and a tint of 0 either way.
   const darker = fn.relu(fn.neg(direction));
   const lighter = fn.relu(direction);
-  // A moved color is already in sRGB, so the floor always keeps the part that
-  // sRGB clips, which only a color that passes has.
+  // Only a color that passes keeps the part that sRGB clips. A moved color is
+  // already in sRGB, and the packing adds float noise outside of it.
   const getChannel = (channel: Value) =>
     getContrastFloorChannel({
       channel,
-      kept: 1,
+      kept: passes,
       scale: fn.sub(
         1,
         fn.mul(darker, fn.sub(1, getContrastFloorScale(target, clippedY))),
