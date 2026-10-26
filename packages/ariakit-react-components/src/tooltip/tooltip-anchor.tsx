@@ -23,7 +23,7 @@ import type {
 import { useEffect, useRef } from "react";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
-import { globalStore, setInstant } from "./__global-store.ts";
+import { globalStore, hidingStores, setInstant } from "./__global-store.ts";
 import { useTooltipProviderContext } from "./tooltip-context.tsx";
 import type { TooltipStore } from "./tooltip-store.ts";
 
@@ -31,11 +31,8 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-const hidingStores = new WeakSet<TooltipStore>();
-
 function createRemoveStoreCallback(store: TooltipStore) {
   return () => {
-    setInstant(store, false);
     const { activeStore } = globalStore.getState();
     if (activeStore !== store) return;
     globalStore.setState("activeStore", null);
@@ -79,12 +76,15 @@ function isEscapeKeyEvent(event: Event) {
 function hideStore(store: TooltipStore | null) {
   if (!store) return;
   hidingStores.add(store);
-  // Another tooltip replaces this one, so mark it before it hides, including
-  // when it's still in its exit transition. This lets CSS skip that transition.
+  store.hide();
+  // Another tooltip replaces this one, so mark it while it's still mounted for
+  // its exit transition, including one that already started. This lets CSS skip
+  // that transition. Marking it before hide() made Escape flaky on a tooltip
+  // shown while others are held open with a controlled open prop (see the
+  // ariakit-ui-tooltip sandbox), so the mark comes after hide().
   if (store.getState().mounted) {
     setInstant(store, true);
   }
-  store.hide();
   // Cleanup runs after `hide()` so controlled `open` props still see this store
   // in `hidingStores` when their batch microtask forces them open again.
   queueMicrotask(() => {
@@ -152,24 +152,6 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       });
     }, [store]);
 
-    // A tooltip that hides on its own, not because another tooltip replaces it,
-    // runs its normal exit transition. So the mark goes away in the same update
-    // that closes the tooltip. A tooltip that opens while no tooltip is active
-    // has no mark either, even if it reopens during an exit transition that
-    // another tooltip interrupted.
-    useEffect(() => {
-      return sync(store, ["open"], (state) => {
-        if (!store) return;
-        if (state.open) {
-          if (globalStore.getState().activeStore) return;
-          setInstant(store, false);
-          return;
-        }
-        if (hidingStores.has(store)) return;
-        setInstant(store, false);
-      });
-    }, [store]);
-
     const onFocusProp = props.onFocus;
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
@@ -200,7 +182,6 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
           // we can show other tooltips without a delay when there's already an
           // active tooltip (see the showOnHover method below). Read skipTimeout
           // lazily because this sync only subscribes to mounted.
-          setInstant(store, false);
           const id = setTimeout(removeStore, store.getState().skipTimeout);
           return () => clearTimeout(id);
         }),

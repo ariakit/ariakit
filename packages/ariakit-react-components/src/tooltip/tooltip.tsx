@@ -6,12 +6,19 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
+import { sync } from "@ariakit/store";
 import { contains, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { ElementType } from "react";
+import { useEffect } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
-import { globalStore } from "./__global-store.ts";
+import {
+  globalStore,
+  hidingStores,
+  isInstant,
+  setInstant,
+} from "./__global-store.ts";
 import {
   TooltipScopedContextProvider,
   useTooltipProviderContext,
@@ -67,9 +74,29 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
 
     // Marks the tooltip while it shows at once because of the skip window, or
     // while it hides because another tooltip replaces it.
-    const instant = useStoreState(globalStore, ["instantStores"], (state) =>
-      store ? state.instantStores.has(store) : false,
+    const instant = useStoreState(globalStore, ["instantVersion"], () =>
+      store ? isInstant(store) : false,
     );
+
+    // The tooltip, not its anchors, clears the mark, so this works even after
+    // its anchors unmount. A tooltip that hides on its own, not because another
+    // tooltip replaces it, runs its normal exit transition, so the mark goes
+    // away in the same update that closes the tooltip. A replaced tooltip keeps
+    // it until it finishes hiding. A tooltip that opens while no tooltip is
+    // active has no mark either, even if it reopens during an exit transition
+    // that another tooltip interrupted.
+    useEffect(() => {
+      return sync(store, ["open", "mounted"], (state) => {
+        if (!store) return;
+        if (state.open) {
+          if (globalStore.getState().activeStore) return;
+          setInstant(store, false);
+          return;
+        }
+        if (state.mounted && hidingStores.has(store)) return;
+        setInstant(store, false);
+      });
+    }, [store]);
 
     props = { role, "data-instant": instant || undefined, ...props };
 

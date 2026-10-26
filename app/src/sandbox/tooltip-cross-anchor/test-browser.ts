@@ -292,4 +292,75 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // 2s exit transition of Italic.
     await test.expect(italicTooltip).toBeHidden({ timeout: 1000 });
   });
+
+  // https://github.com/ariakit/ariakit/issues/8093
+  // https://github.com/ariakit/ariakit/pull/8098#discussion_r4374041355
+  test("keeps the mark on a replaced tooltip when its anchor unmounts", async ({
+    page,
+    q,
+  }) => {
+    await page.mouse.move(0, 0);
+    const strikethrough = q.button("Strikethrough");
+    // The accessible role query stops matching this tooltip once its anchor
+    // unmounts, although the tooltip element stays mounted while it leaves.
+    const strikethroughTooltip = page.locator("[role=tooltip]", {
+      hasText: "Strikethrough tooltip",
+    });
+
+    await strikethrough.scrollIntoViewIfNeeded();
+    await strikethrough.hover();
+    await test.expect(strikethroughTooltip).toHaveCSS("opacity", "1");
+
+    // Strikethrough starts its normal 2s exit transition in the gap, and
+    // Underline replaces it. Strikethrough stays mounted until that exit
+    // transition would have ended.
+    const box = await strikethrough.boundingBox();
+    test.expect(box).not.toBeNull();
+    if (!box) return;
+    await page.mouse.move(box.x - 20, box.y + box.height / 2);
+    await test.expect(strikethroughTooltip).toHaveAttribute("data-leave");
+    await q.button("Underline").hover();
+    await test.expect(strikethroughTooltip).toHaveAttribute("data-instant");
+
+    // Removing the anchor with the keyboard doesn't hide the tooltip, which is
+    // still leaving because Underline replaced it.
+    await q.button("Remove strikethrough").focus();
+    await page.keyboard.press("Enter");
+    await test.expect(strikethrough).toHaveCount(0);
+    await test.expect(strikethroughTooltip).toHaveAttribute("data-leave");
+    await test.expect(strikethroughTooltip).toHaveAttribute("data-instant");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8093
+  test("unmarks a tooltip that hides on its own after its anchor unmounts", async ({
+    page,
+    q,
+  }) => {
+    await page.mouse.move(0, 0);
+    const strikethrough = q.button("Strikethrough");
+    // The accessible role query stops matching this tooltip once its anchor
+    // unmounts, although the tooltip element stays mounted while it leaves.
+    const strikethroughTooltip = page.locator("[role=tooltip]", {
+      hasText: "Strikethrough tooltip",
+    });
+
+    await q.button("Underline").scrollIntoViewIfNeeded();
+    await q.button("Underline").hover();
+    await test.expect(q.tooltip("Underline tooltip")).toBeVisible();
+    await strikethrough.hover();
+    await test.expect(strikethroughTooltip).toHaveAttribute("data-instant");
+
+    // Clicking the anchor unmounts it, and the tooltip stays open until the
+    // pointer moves away. Then it hides on its own and runs its exit
+    // transition.
+    await strikethrough.click();
+    await test.expect(strikethrough).toHaveCount(0);
+    await test.expect(strikethroughTooltip).toHaveAttribute("data-open");
+    await page.mouse.move(0, 0);
+    await test.expect(strikethroughTooltip).toHaveAttribute("data-leave");
+    // A skipped exit transition would hide the tooltip at once, and its mark
+    // would only go away after that.
+    await test.expect(strikethroughTooltip).toBeVisible();
+    await test.expect(strikethroughTooltip).not.toHaveAttribute("data-instant");
+  });
 });
