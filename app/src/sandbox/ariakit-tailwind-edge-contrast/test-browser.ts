@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import type { Locator } from "@playwright/test";
+import { getContrastRatio } from "#app/test-utils/contrast.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 const SURFACES = [
@@ -30,16 +31,6 @@ const COLORED_FIELDS = ["Danger edge", "Vivid edge", "Near edge"];
 
 // The floor aims 2.5% over its ratio, so an edge under that margin moves.
 const EDGE_CONTRAST_MARGIN = 1.025;
-
-function getRelativeLuminance([red, green, blue]: number[]) {
-  const linearize = (value = 0) =>
-    value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
-  return (
-    0.2126 * linearize(red) +
-    0.7152 * linearize(green) +
-    0.0722 * linearize(blue)
-  );
-}
 
 /**
  * Returns the painted edge of the field and the background of the surface
@@ -79,12 +70,7 @@ async function getPaintedColors(field: Locator) {
 }
 
 function getContrast({ edge, surface }: { edge: number[]; surface: number[] }) {
-  const edgeLuminance = getRelativeLuminance(edge);
-  const surfaceLuminance = getRelativeLuminance(surface);
-  return (
-    (Math.max(edgeLuminance, surfaceLuminance) + 0.05) /
-    (Math.min(edgeLuminance, surfaceLuminance) + 0.05)
-  );
+  return getContrastRatio(edge, surface);
 }
 
 /**

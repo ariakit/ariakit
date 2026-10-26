@@ -81,22 +81,38 @@ const TEXT_CONTRAST_CHROMA_HUE_MIN = 150;
 const TEXT_CONTRAST_CHROMA_HUE_MAX = 220;
 const TEXT_CONTRAST_CYAN_LIGHTNESS_START = 0.45;
 
-// WCAG 1.4.11 asks for 3:1 against the adjacent color. `contrast-more` raises
-// the edge floor by up to half, to 4.5:1.
+// WCAG 1.4.11 asks for 3:1 against the adjacent color. `contrast-more` raises a
+// contrast floor by up to half, so the edge floor reaches 4.5:1.
 const EDGE_CONTRAST_RATIO = 3;
-const EDGE_CONTRAST_PREFERENCE_SCALE = 0.5;
-// The floor carries the parent luminance in a color alpha, which Firefox rounds
+const CONTRAST_FLOOR_PREFERENCE_SCALE = 0.5;
+// `ak-layer-contrast-30` keeps 3:1 against the parent layer, and each further
+// 30 multiplies the ratio by 3. This roughly follows the OKLCH lightness shift
+// of the same amount, so lower amounts stay a decorative separation.
+// https://github.com/ariakit/ariakit/issues/8080
+const LAYER_CONTRAST_RATIO_BASE = 3;
+const LAYER_CONTRAST_RATIO_STEP = 0.3;
+// A floored layer that passes keeps its lightness at a forbidden boundary, but
+// the floor stages add float noise, and Firefox rounds the packed alpha. Only a
+// lightness this far inside the forbidden interval moves away from the parent.
+const LAYER_CONTRAST_FORBIDDEN_MARGIN = 0.005;
+// A floor carries the parent luminance in a color alpha, which Firefox rounds
 // to 8 bits at each stage. The margin keeps Chrome and Safari at or over the
 // ratio, and most Firefox cases too, but on a few layers the rounding adds up
 // and Firefox lands slightly under the ratio. The readme documents this.
-const EDGE_CONTRAST_MARGIN = 1.025;
+const CONTRAST_FLOOR_MARGIN = 1.025;
 // Luminance plus the WCAG flare term spans 0.05..1.05, a factor of 21. Its log
-// fills the alpha range evenly in contrast terms.
-const EDGE_CONTRAST_LOG_RANGE = roundToDecimals(Math.log(21), 6);
+// fills the alpha range evenly in contrast terms. The production CSS build
+// keeps six significant digits, so round here to avoid dev/prod drift.
+const CONTRAST_FLOOR_LOG_RANGE = roundToDecimals(Math.log(21), 5);
+// The exponents that turn luminance into LCH lightness and into an encoded sRGB
+// channel, rounded the same way.
+const CONTRAST_FLOOR_CUBE_ROOT = roundToDecimals(1 / 3, 6);
+const CONTRAST_FLOOR_SRGB_EXPONENT = roundToDecimals(1 / 2.4, 6);
 // The colored stage alpha for a color that passes. A pack alpha is 0.5 or more,
 // so the LCH step tells them apart halfway.
-const EDGE_CONTRAST_PASSING_ALPHA = 0.25;
-const EDGE_CONTRAST_PASSING_THRESHOLD = (0.5 + EDGE_CONTRAST_PASSING_ALPHA) / 2;
+const CONTRAST_FLOOR_PASSING_ALPHA = 0.25;
+const CONTRAST_FLOOR_PASSING_THRESHOLD =
+  (0.5 + CONTRAST_FLOOR_PASSING_ALPHA) / 2;
 
 const CONTRAST_SCALE = 0.3334;
 const DISABLED_CONTRAST_SCALE = 0.25;
@@ -697,10 +713,12 @@ const textMathVars = {
 // elements skip the math. The stages are registered colors, so each one is
 // computed once per element.
 const edgeContrastVars = {
+  // The parent luminance that both contrast floors compare with. An element
+  // with both floors sets it twice to the same value.
+  contrastReference: _ak.prop.color("ecf", { initial: "transparent" }),
   edgeContrastRatio: _ak.prop.number("ecr", {
     initial: EDGE_CONTRAST_RATIO,
   }),
-  edgeContrastReference: _ak.prop.color("ecf", { initial: "transparent" }),
   edgeContrastNeutralPack: _ak.prop.color("ecnp", { initial: "transparent" }),
   edgeContrastNeutral: _ak.prop.color("ecn", { initial: "transparent" }),
   edgeContrastNeutralEdge: _ak.prop.color("ecne", { initial: "transparent" }),
@@ -715,6 +733,19 @@ const edgeContrastVars = {
   edgeFloor: _ak.prop("edge-floor"),
   edgeFloorNeutral: _ak.prop("edge-floor-neutral"),
   edgeFloorColored: _ak.prop("edge-floor-colored"),
+};
+
+// Stages of the layer contrast floor. Only ak-layer-contrast sets them, and
+// they reuse the packing of the edge floor.
+const layerContrastFloorVars = {
+  layerContrastRatio: _ak.prop.number("lcr", { initial: 1 }),
+  layerContrastPack: _ak.prop.color("lcp", { initial: "transparent" }),
+  layerContrastColored: _ak.prop.color("lcc", { initial: "transparent" }),
+  layerContrastMoved: _ak.prop.color("lcm", { initial: "transparent" }),
+  layerContrastRepack: _ak.prop.color("lcrp", { initial: "transparent" }),
+  // Unset unless ak-layer-contrast applies, so ak-layer keeps its idle color.
+  // It doesn't inherit, so nested layers keep their own idle color.
+  layerIdleFloor: _ak.prop("layer-idle-floor"),
 };
 
 const frameVars = {
@@ -756,6 +787,7 @@ const vars = {
   ...outlineMathVars,
   ...textMathVars,
   ...edgeContrastVars,
+  ...layerContrastFloorVars,
   ...frameVars,
 };
 
@@ -1353,7 +1385,8 @@ const layerMathDeclarations = [
 const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
   set(vars.layerIdleOffset, layerIdleOffset),
-  set(vars.layerIdle, layerIdle),
+  // ak-layer-contrast sets the floor; other elements keep the idle color.
+  set(vars.layerIdle, fn.var(vars.layerIdleFloor, layerIdle)),
   set(vars.layerBase, layerState),
   set(vars.layerOffset, layerOffset),
 ];
@@ -1396,26 +1429,39 @@ function getEdgeColor(baseColor: string) {
 
 const edge = getEdgeColor(edgeBaseColor);
 
-// The edge contrast floor compares the edge with the parent layer. CSS can't
-// read a channel of one color as a number in another color in every engine, so
-// the floor packs the parent luminance into the alpha of a color-mix(). Mixing
-// an opaque color 50% with black at alpha `a` divides its channels by `1 + a`
-// and sets alpha to `(1 + a) / 2`, which a relative color decodes.
-const edgeContrastRatio = fn.mul(
-  fn.add(
-    1,
-    fn.mul(
-      fn.sub(
-        fn.mul(
-          EDGE_CONTRAST_RATIO,
-          fn.add(1, fn.mul(vars.contrastT, EDGE_CONTRAST_PREFERENCE_SCALE)),
+// The contrast floors compare a color with the parent layer. CSS can't read a
+// channel of one color as a number in another color in every engine, so a floor
+// packs the parent luminance into the alpha of a color-mix(). Mixing an opaque
+// color 50% with black at alpha `a` divides its channels by `1 + a` and sets
+// alpha to `(1 + a) / 2`, which a relative color decodes.
+
+/**
+ * Applies the contrast preference, the disabled scale, and the rounding margin
+ * to the ratio of a contrast floor.
+ */
+function getContrastFloorRatio(baseRatio: Value) {
+  return fn.mul(
+    fn.add(
+      1,
+      fn.mul(
+        fn.sub(
+          fn.mul(
+            baseRatio,
+            fn.add(1, fn.mul(vars.contrastT, CONTRAST_FLOOR_PREFERENCE_SCALE)),
+          ),
+          1,
         ),
-        1,
+        vars.contrastScale,
       ),
-      vars.contrastScale,
     ),
-  ),
-  EDGE_CONTRAST_MARGIN,
+    CONTRAST_FLOOR_MARGIN,
+  );
+}
+
+const edgeContrastRatio = getContrastFloorRatio(EDGE_CONTRAST_RATIO);
+
+const layerContrastRatio = getContrastFloorRatio(
+  fn.exp`pow(${LAYER_CONTRAST_RATIO_BASE}, ${fn.div(inputs.layerIdleContrastL, LAYER_CONTRAST_RATIO_STEP)})`,
 );
 
 /**
@@ -1433,16 +1479,16 @@ function getClippedLuminance(red: Value, green: Value, blue: Value) {
 }
 
 // Black whose alpha is the log-encoded luminance of the parent layer.
-const edgeContrastReference = fn.exp`color(from ${vars.layerParent} srgb-linear 0 0 0 / ${fn.div(
+const contrastReference = fn.exp`color(from ${vars.layerParent} srgb-linear 0 0 0 / ${fn.div(
   fn.exp`log(${fn.div(fn.add(getClippedLuminance(r, g, b), 0.05), 0.05)})`,
-  EDGE_CONTRAST_LOG_RANGE,
+  CONTRAST_FLOOR_LOG_RANGE,
 )})`;
 
 /**
- * Packs an opaque copy of a color with the edge contrast reference.
+ * Packs an opaque copy of a color with the contrast reference.
  */
-function getEdgeContrastPack(color: Value) {
-  return fn.exp`color-mix(in xyz-d65, color(from ${color} srgb-linear ${r} ${g} ${b} / 1) 50%, ${vars.edgeContrastReference} 50%)`;
+function getContrastPack(color: Value) {
+  return fn.exp`color-mix(in xyz-d65, color(from ${color} srgb-linear ${r} ${g} ${b} / 1) 50%, ${vars.contrastReference} 50%)`;
 }
 
 /**
@@ -1461,7 +1507,10 @@ function getEncodedSrgb(luminance: Value) {
   return fn.max(
     0,
     fn.sub(
-      fn.mul(1.055, fn.exp`pow(${fn.max(luminance, 0)}, ${1 / 2.4})`),
+      fn.mul(
+        1.055,
+        fn.exp`pow(${fn.max(luminance, 0)}, ${CONTRAST_FLOOR_SRGB_EXPONENT})`,
+      ),
       0.055,
     ),
   );
@@ -1471,10 +1520,10 @@ function getEncodedSrgb(luminance: Value) {
  * Returns the luminance plus the 0.05 WCAG flare term from a log-encoded
  * reference value.
  */
-function getEdgeContrastFlaredReference(encodedReference: Value) {
+function getContrastFlaredReference(encodedReference: Value) {
   return fn.mul(
     0.05,
-    fn.exp`exp(${fn.mul(encodedReference, EDGE_CONTRAST_LOG_RANGE)})`,
+    fn.exp`exp(${fn.mul(encodedReference, CONTRAST_FLOOR_LOG_RANGE)})`,
   );
 }
 
@@ -1483,11 +1532,61 @@ function getEdgeContrastFlaredReference(encodedReference: Value) {
  * Light parents need darker edges, and dark parents need lighter edges.
  */
 function getEdgeContrastTarget(encodedReference: Value, lighter: boolean) {
-  const flaredReference = getEdgeContrastFlaredReference(encodedReference);
+  const flaredReference = getContrastFlaredReference(encodedReference);
   const flaredTarget = lighter
     ? fn.mul(flaredReference, vars.edgeContrastRatio)
     : fn.div(flaredReference, vars.edgeContrastRatio);
   return fn.sub(flaredTarget, 0.05);
+}
+
+/**
+ * Returns the luminance that reaches the layer contrast ratio against the
+ * reference, in the direction of the ak-layer-contrast shift. The ratio raised
+ * to the direction multiplies on dark parents, divides on light parents, and is
+ * 1 without a parent layer.
+ */
+function getLayerContrastTarget(encodedReference: Value) {
+  return fn.sub(
+    fn.mul(
+      getContrastFlaredReference(encodedReference),
+      fn.exp`pow(${vars.layerContrastRatio}, ${vars.layerContrastDirection})`,
+    ),
+    0.05,
+  );
+}
+
+/**
+ * Returns the LCH lightness of a gray with the target luminance.
+ */
+function getContrastTargetLchLightness(target: Value) {
+  return fn.sub(
+    fn.mul(
+      116,
+      fn.exp`pow(${fn.clamp01(target)}, ${CONTRAST_FLOOR_CUBE_ROOT})`,
+    ),
+    16,
+  );
+}
+
+/**
+ * Returns the factor that darkens a clipped color to the target luminance in
+ * linear light.
+ */
+function getContrastFloorScale(target: Value, clippedLuminance: Value) {
+  return fn.clamp01(fn.div(target, fn.max(clippedLuminance, 1e-6)));
+}
+
+/**
+ * Returns the amount that tints a clipped color toward white to reach the
+ * target luminance.
+ */
+function getContrastFloorTint(target: Value, clippedLuminance: Value) {
+  return fn.clamp01(
+    fn.div(
+      fn.sub(target, clippedLuminance),
+      fn.max(fn.sub(1, clippedLuminance), 1e-6),
+    ),
+  );
 }
 
 // Inside an srgb-linear relative color from a pack, the channels scaled by
@@ -1498,6 +1597,57 @@ const packedRed = fn.mul(r, 2, alpha);
 const packedGreen = fn.mul(g, 2, alpha);
 const packedBlue = fn.mul(b, 2, alpha);
 const packedReference = fn.sub(fn.mul(2, alpha), 1);
+
+/**
+ * Returns the colored stage of a contrast floor from a pack. The stage keeps
+ * the pack alpha, which is 0.5 or more, for a color that moves, and sets it to
+ * 0.25 for a color that passes. The LCH step reads both the flag and the
+ * encoded reference from it.
+ */
+function getContrastStage(pack: Value, passes: Value) {
+  return fn.exp`color(from ${pack} srgb-linear ${packedRed} ${packedGreen} ${packedBlue} / ${fn.sub(alpha, fn.mul(passes, fn.sub(alpha, CONTRAST_FLOOR_PASSING_ALPHA)))})`;
+}
+
+/**
+ * Returns the LCH step of a contrast floor. A color that moves keeps its LCH
+ * chroma and hue, takes the moved lightness, and is clipped to sRGB. A color
+ * that passes skips the step, which would clamp its lightness to the LCH range.
+ */
+function getContrastMovedColor(stage: string | VarProperty, movedL: Value) {
+  const moved = fn.binary(fn.sub(alpha, CONTRAST_FLOOR_PASSING_THRESHOLD));
+  const clippedMoved = fn.exp`color(from ${fn.lch(stage, { l: movedL, a: moved })} srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / alpha)`;
+  const unmoved = fn.exp`color(from ${stage} srgb-linear ${r} ${g} ${b} / ${fn.sub(1, moved)})`;
+  return fn.exp`color-mix(in xyz-d65, ${clippedMoved} 50%, ${unmoved} 50%)`;
+}
+
+interface ContrastFloorChannelParams {
+  // A packed channel of the repacked color.
+  channel: Value;
+  // Whether the repacked color keeps the part of the channel that sRGB clips.
+  kept: Value;
+  scale: Value;
+  tint: Value;
+}
+
+/**
+ * Returns a channel of the final stage of a contrast floor. The LCH step lands
+ * within a few percent, because LCH lightness uses the D50 white point and
+ * clipping moves luminance. This stage darkens the clipped channel in linear
+ * light or tints it toward white to reach the target.
+ */
+function getContrastFloorChannel({
+  channel,
+  kept,
+  scale,
+  tint,
+}: ContrastFloorChannelParams) {
+  const clipped = fn.clamp01(channel);
+  return fn.add(
+    fn.mul(clipped, scale),
+    fn.mul(tint, fn.sub(1, clipped)),
+    fn.mul(kept, fn.sub(channel, clipped)),
+  );
+}
 
 /**
  * Returns the declarations of the edge contrast floor for one parent scheme.
@@ -1536,7 +1686,7 @@ function getEdgeContrastDeclarations(lighter: boolean) {
   // That holds for black rings and neutral parents, but a white ring on a
   // saturated dark parent can stay under the floor.
   const ringBackdrop = getEncodedSrgb(
-    fn.sub(getEdgeContrastFlaredReference(packedReference), 0.05),
+    fn.sub(getContrastFlaredReference(packedReference), 0.05),
   );
   const neutralAlpha = fn.max(
     getNeutralAlpha(fillBackdrop),
@@ -1548,43 +1698,21 @@ function getEdgeContrastDeclarations(lighter: boolean) {
   const passes = fn.binary(
     lighter ? fn.sub(clippedY, target) : fn.sub(target, clippedY),
   );
-  // The colored stage keeps the pack alpha, which is 0.5 or more, for a color
-  // that moves, and sets it to 0.25 for a color that passes. The LCH step reads
-  // both the flag and the encoded reference from it.
-  const coloredStageValue = fn.exp`color(from ${gateColoredEdge(vars.edgeContrastColoredPack)} srgb-linear ${packedRed} ${packedGreen} ${packedBlue} / ${fn.sub(alpha, fn.mul(passes, fn.sub(alpha, EDGE_CONTRAST_PASSING_ALPHA)))})`;
   // Colored edges keep their LCH chroma and hue, and their lightness moves to
-  // the target. The moved color is clipped to sRGB. A color that passes skips
-  // the LCH step, which would clamp its lightness to the LCH range.
-  const coloredStage = gateColoredEdge(vars.edgeContrastColored);
-  const moved = fn.binary(fn.sub(alpha, EDGE_CONTRAST_PASSING_THRESHOLD));
-  const targetL = fn.sub(
-    fn.mul(116, fn.exp`pow(${fn.clamp01(target)}, ${1 / 3})`),
-    16,
-  );
+  // the target.
+  const targetL = getContrastTargetLchLightness(target);
   const movedL = lighter ? fn.max(l, targetL) : fn.min(l, targetL);
-  const clippedMoved = fn.exp`color(from ${fn.lch(coloredStage, { l: movedL, a: moved })} srgb clamp(0, r, 1) clamp(0, g, 1) clamp(0, b, 1) / alpha)`;
-  const unmoved = fn.exp`color(from ${coloredStage} srgb-linear ${r} ${g} ${b} / ${fn.sub(1, moved)})`;
-  // The LCH step lands within a few percent, because LCH lightness uses the D50
-  // white point and clipping moves luminance. The final stage packs the color
-  // again, keeps a color that passes, and darkens the clipped color in linear
-  // light or tints it toward white to reach the target.
+  // The final stage packs the color again, keeps a color that passes, and moves
+  // the clipped color to the target.
+  const getChannel = (channel: Value) =>
+    getContrastFloorChannel({
+      channel,
+      kept: passes,
+      scale: lighter ? 1 : getContrastFloorScale(target, clippedY),
+      tint: lighter ? getContrastFloorTint(target, clippedY) : 0,
+    });
   const repack = gateColoredEdge(vars.edgeContrastColoredRepack);
-  const coloredFloor = (() => {
-    const scale = fn.clamp01(fn.div(target, fn.max(clippedY, 1e-6)));
-    const tint = fn.clamp01(
-      fn.div(fn.sub(target, clippedY), fn.max(fn.sub(1, clippedY), 1e-6)),
-    );
-    const getChannel = (channel: Value) => {
-      const clipped = fn.clamp01(channel);
-      // Adds back the unclipped part of a color that passes.
-      const kept = fn.mul(passes, fn.sub(channel, clipped));
-      if (!lighter) {
-        return fn.add(fn.mul(clipped, scale), kept);
-      }
-      return fn.add(clipped, fn.mul(tint, fn.sub(1, clipped)), kept);
-    };
-    return fn.exp`color(from ${repack} srgb-linear ${getChannel(packedRed)} ${getChannel(packedGreen)} ${getChannel(packedBlue)} / 1)`;
-  })();
+  const coloredFloor = fn.exp`color(from ${repack} srgb-linear ${getChannel(packedRed)} ${getChannel(packedGreen)} ${getChannel(packedBlue)} / 1)`;
   return [
     set(
       vars.edgeContrastNeutral,
@@ -1600,12 +1728,113 @@ function getEdgeContrastDeclarations(lighter: boolean) {
         c: fn.min(c, fn.mul(4, l, fn.sub(1, l))),
       }),
     ),
-    set(vars.edgeContrastColored, coloredStageValue),
+    set(
+      vars.edgeContrastColored,
+      getContrastStage(gateColoredEdge(vars.edgeContrastColoredPack), passes),
+    ),
     set(
       vars.edgeContrastColoredMoved,
-      fn.exp`color-mix(in xyz-d65, ${clippedMoved} 50%, ${unmoved} 50%)`,
+      getContrastMovedColor(gateColoredEdge(vars.edgeContrastColored), movedL),
     ),
     set(vars.edgeFloorColored, coloredFloor),
+  ];
+}
+
+/**
+ * Moves a floored layer lightness that is inside the forbidden interval to the
+ * boundary in the direction of ak-layer-contrast. The closer boundary that the
+ * state stage would pick can be the one toward the parent layer.
+ */
+function getLayerContrastSafeLightness(currentLightness: Value) {
+  const lowerBoundary = vars.forbiddenLa;
+  const upperBoundary = vars.forbiddenLb;
+  const forbiddenRangeMask = fn.binary(
+    fn.sub(
+      fn.min(
+        fn.sub(currentLightness, lowerBoundary),
+        fn.sub(upperBoundary, currentLightness),
+      ),
+      LAYER_CONTRAST_FORBIDDEN_MARGIN,
+    ),
+  );
+  const forbiddenBoundary = fn.add(
+    lowerBoundary,
+    fn.mul(
+      fn.relu(vars.layerContrastDirection),
+      fn.sub(upperBoundary, lowerBoundary),
+    ),
+  );
+  return fn.add(
+    currentLightness,
+    fn.mul(forbiddenRangeMask, fn.sub(forbiddenBoundary, currentLightness)),
+  );
+}
+
+/**
+ * Returns the declarations of the layer contrast floor. It moves the idle color
+ * like the colored edge floor, but in the direction of the ak-layer-contrast
+ * shift instead of the parent scheme, so it also follows ak-outset.
+ */
+function getLayerContrastFloorDeclarations() {
+  const direction = vars.layerContrastDirection;
+  const target = getLayerContrastTarget(packedReference);
+  const clippedY = getClippedLuminance(packedRed, packedGreen, packedBlue);
+  // A color that reaches the target passes, and so does every color without a
+  // parent layer, where the direction is 0.
+  const passes = fn.sub(
+    1,
+    fn.binary(fn.mul(direction, fn.sub(target, clippedY))),
+  );
+  const movedL = getDirectionalLightness(
+    l,
+    getContrastTargetLchLightness(target),
+    direction,
+  );
+  // Light parents darken the color, and dark parents tint it toward white. A
+  // color that passes gets a scale of 1 and a tint of 0 either way.
+  const darker = fn.relu(fn.neg(direction));
+  const lighter = fn.relu(direction);
+  // Only a color that passes keeps the part that sRGB clips. A moved color is
+  // already in sRGB, and the packing adds float noise outside of it.
+  const getChannel = (channel: Value) =>
+    getContrastFloorChannel({
+      channel,
+      kept: passes,
+      scale: fn.sub(
+        1,
+        fn.mul(darker, fn.sub(1, getContrastFloorScale(target, clippedY))),
+      ),
+      tint: fn.mul(lighter, getContrastFloorTint(target, clippedY)),
+    });
+  return [
+    set(vars.layerContrastRatio, layerContrastRatio),
+    set(vars.contrastReference, contrastReference),
+    // The floor measures the idle color after the state stage would move it out
+    // of the forbidden interval, as it paints without a state utility.
+    set(
+      vars.layerContrastPack,
+      getContrastPack(
+        fn.oklch(layerIdle, {
+          l: getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb),
+        }),
+      ),
+    ),
+    set(
+      vars.layerContrastColored,
+      getContrastStage(vars.layerContrastPack, passes),
+    ),
+    set(
+      vars.layerContrastMoved,
+      getContrastMovedColor(vars.layerContrastColored, movedL),
+    ),
+    set(vars.layerContrastRepack, getContrastPack(vars.layerContrastMoved)),
+    set(
+      vars.layerIdleFloor,
+      fn.oklch(
+        fn.exp`color(from ${vars.layerContrastRepack} srgb-linear ${getChannel(packedRed)} ${getChannel(packedGreen)} ${getChannel(packedBlue)} / 1)`,
+        { l: getLayerContrastSafeLightness(l) },
+      ),
+    ),
   ];
 }
 
@@ -1863,9 +2092,14 @@ utility(
   ),
 );
 
+// Shifts the idle color away from the parent layer, then keeps a minimum WCAG
+// ratio against it: 3:1 at the default amount, raised by the contrast
+// preference and lowered by ak-disabled. Only an idle color that is still short
+// of the ratio moves, so state utilities still apply on top of it.
+// https://github.com/ariakit/ariakit/issues/8080
 utility(
   "layer-contrast",
-  set(inputs.layerIdleContrastL, 0.25),
+  set(inputs.layerIdleContrastL, 0.3),
   mapLayerLightnessSteps((parentL, isDark) => [
     set(
       vars.layerContrastDirection,
@@ -1873,6 +2107,7 @@ utility(
     ),
     set(vars.layerContrastParentL, fn.var(vars.outsetParentL, parentL)),
   ]),
+  getLayerContrastFloorDeclarations(),
 );
 
 utility(
@@ -2137,8 +2372,8 @@ utility(
 utility(
   "edge-contrast",
   set(vars.edgeContrastRatio, edgeContrastRatio),
-  set(vars.edgeContrastReference, edgeContrastReference),
-  set(vars.edgeContrastNeutralPack, getEdgeContrastPack(vars.layer)),
+  set(vars.contrastReference, contrastReference),
+  set(vars.edgeContrastNeutralPack, getContrastPack(vars.layer)),
   // The neutral edge from the fill channels, with the requested alpha raised to
   // the floor alpha that the scheme branch stores in the stage below.
   set(
@@ -2150,11 +2385,11 @@ utility(
   ),
   set(
     vars.edgeContrastColoredPack,
-    getEdgeContrastPack(getEdgeColor(fn.var(inputs.edgeColor))),
+    getContrastPack(getEdgeColor(fn.var(inputs.edgeColor))),
   ),
   set(
     vars.edgeContrastColoredRepack,
-    getEdgeContrastPack(gateColoredEdge(vars.edgeContrastColoredMoved)),
+    getContrastPack(gateColoredEdge(vars.edgeContrastColoredMoved)),
   ),
   set(vars.edgeFloor, fn.var(vars.edgeFloorColored, vars.edgeFloorNeutral)),
   // The parent scheme decides the direction, as it does for the regular edge

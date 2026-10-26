@@ -1,3 +1,4 @@
+import { getBackgroundContrast } from "#app/test-utils/contrast.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
@@ -105,5 +106,29 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     await test.expect(q.group("Optional role")).toBeVisible();
+  });
+
+  // The fill of a checked box is its boundary, so it keeps 3:1 against the
+  // brand surface around it, as WCAG 1.4.11 asks for the state of a control.
+  // https://github.com/ariakit/ariakit/issues/8080
+  test("keeps a checked box at 3:1 against a brand layer", async ({
+    page,
+    q,
+  }) => {
+    for (const colorScheme of ["light", "dark"] as const) {
+      await page.emulateMedia({ colorScheme });
+      for (const example of [
+        "Fields on a brand layer",
+        "Bordered fields on a brand layer",
+      ]) {
+        const checkbox = query(q.article(example)).checkbox("Email me");
+        await test.expect(checkbox).toBeChecked();
+        await test.expect
+          .poll(() => getBackgroundContrast(checkbox), {
+            message: `${example} in ${colorScheme}`,
+          })
+          .toBeGreaterThanOrEqual(3);
+      }
+    }
   });
 });
