@@ -34,6 +34,21 @@ runs:
           playwright-${{ runner.os }}-${{ inputs.workspace }}-${{ steps.engines.outputs.cache-key }}-
           playwright-${{ runner.os }}-${{ inputs.workspace }}-
 
+    # Some Azure apt mirror nodes serve packages at tens of kB/s, and apt
+    # doesn't fail over from a slow mirror, only from a failing one. Keep the
+    # Azure mirror as the last fallback for the Playwright system dependencies.
+    # TODO: Remove this step once the upstream issue is fixed:
+    # https://github.com/actions/runner-images/issues/14823
+    - name: Prefer the Ubuntu archive over the Azure apt mirror
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        mirrors=/etc/apt/apt-mirrors.txt
+        if [[ -f "$mirrors" ]]; then
+          sudo sed -i -E '/^https?:\/\/azure\.archive\.ubuntu\.com\//s/priority:[0-9]+/priority:99/' "$mirrors"
+          cat "$mirrors"
+        fi
+
     - name: Install Playwright
       if: steps.cache-playwright.outputs.cache-hit != 'true'
       shell: bash
