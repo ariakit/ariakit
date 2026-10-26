@@ -82,3 +82,54 @@ test("keeps a decorative default check when the custom icon is false", async () 
   expect(email.querySelector("svg")).not.toBeInTheDocument();
   expect(q.combobox("Notifications")).toHaveTextContent("SMS");
 });
+
+// https://github.com/ariakit/ariakit/issues/8053
+test("marks the select error with an icon that the description leaves out", () => {
+  const box = q.within(q.article("Select fields"));
+  const error = box.text("Choose a country.");
+  expect(error.querySelectorAll("svg")).toHaveLength(1);
+  expect(box.combobox("Delivery country")).toHaveAccessibleDescription(
+    "Choose a country.",
+  );
+});
+
+// The browser test also checks that the icon label stays out of the select
+// description. The description here leaves out SVG labels even when the icon is
+// not hidden, so it can't catch that.
+// https://github.com/ariakit/ariakit/issues/8053
+test("replaces the select error icon with another icon", () => {
+  const error = q
+    .within(q.article("Select error with another icon"))
+    .text("Only an owner can change the plan.");
+  expect(error.querySelectorAll("svg")).toHaveLength(1);
+  expect(error.querySelector("svg[aria-label='Locked']")).toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/8053
+test("removes the select error icon with icon false", () => {
+  const box = q.within(q.article("Select error without an icon"));
+  const error = box.text("Weekly reports need a team plan.");
+  // No icon part either, so the text starts at the edge, like the hint.
+  expect(error.children).toHaveLength(0);
+  expect(box.combobox("Report frequency")).toHaveAccessibleDescription(
+    "Weekly reports need a team plan. Reports go to every admin.",
+  );
+});
+
+// https://github.com/ariakit/ariakit/issues/8053
+test("removes the select error icon when the error text clears", async () => {
+  const select = q
+    .within(q.article("Select error that clears"))
+    .combobox("Billing country");
+  // The error keeps its element, so the text query would no longer find it once
+  // the text clears.
+  const error = document.getElementById(
+    select.getAttribute("aria-describedby") ?? "",
+  );
+  expect(error?.querySelectorAll("svg")).toHaveLength(1);
+  await click(select);
+  await click(q.within(q.listbox("Billing country")).option("Spain"));
+  expect(select).not.toHaveAttribute("aria-invalid");
+  expect(error).toBeInTheDocument();
+  expect(error?.querySelector("svg")).not.toBeInTheDocument();
+});

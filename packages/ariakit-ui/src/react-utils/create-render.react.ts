@@ -10,6 +10,17 @@ export function isRenderable(value: unknown) {
   return value != null && value !== false;
 }
 
+/**
+ * Whether children have content, such as text, a number, or an element. Unlike
+ * `isRenderable`, a blank string and a list of only nullish values or booleans
+ * have none. An element always counts, even one that renders nothing.
+ */
+export function hasContent(children: React.ReactNode) {
+  return React.Children.toArray(children).some((child) =>
+    typeof child === "string" ? child.trim() !== "" : true,
+  );
+}
+
 /** Like `createRender`, but nullish values and `false` omit the element. */
 export function createOptionalRender<P extends object>(
   Component: React.ElementType<P> | React.ExoticComponent<P>,

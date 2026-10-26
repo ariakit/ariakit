@@ -1,8 +1,15 @@
 import type {
+  InputErrorProps,
   InputGroupProps,
   InputProps,
 } from "@ariakit/ui/components/input.ariakit.react";
-import { Input, InputGroup } from "@ariakit/ui/components/input.ariakit.react";
+import {
+  Input,
+  InputError,
+  InputGroup,
+} from "@ariakit/ui/components/input.ariakit.react";
+import { Lock } from "lucide-react";
+import type { ReactNode } from "react";
 import { expectTypeOf } from "vitest";
 
 // https://github.com/ariakit/ariakit/pull/7491#discussion_r4000904483
@@ -39,3 +46,16 @@ const nativeProps = {
 >
   <input />
 </InputGroup>;
+
+// https://github.com/ariakit/ariakit/issues/8053
+expectTypeOf<InputErrorProps["icon"]>().toEqualTypeOf<ReactNode>();
+<InputError icon={<Lock />}>This account is locked.</InputError>;
+<InputError icon={false}>This account is locked.</InputError>;
+<InputError icon={null}>This account is locked.</InputError>;
+// @ts-expect-error The icon is an element, not a component.
+<InputError icon={Lock}>This account is locked.</InputError>;
+// @ts-expect-error The error renders its own children, so HTML goes in a child.
+<InputError dangerouslySetInnerHTML={{ __html: "Enter an <b>email</b>." }} />;
+<InputError>
+  <span dangerouslySetInnerHTML={{ __html: "Enter an <b>email</b>." }} />
+</InputError>;

@@ -10,6 +10,8 @@
 import {
   Combobox,
   ComboboxEmpty,
+  ComboboxError,
+  ComboboxField,
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
@@ -123,6 +125,39 @@ export function CountryComboboxExample() {
         {matches.length ? "" : "No results found"}
       </div>
     </div>
+  );
+}
+
+/** A select whose error holds an empty string once a country is chosen. */
+export function SelectErrorThatClearsExample() {
+  const [value, setValue] = useState("");
+  const invalid = !value;
+  return (
+    <ComboboxProvider
+      selectedValue={value}
+      setSelectedValue={(next) => {
+        // A single select only ever reports one string.
+        if (typeof next !== "string") return;
+        setValue(next);
+      }}
+    >
+      <ComboboxField className="w-full">
+        <ComboboxSelectLabel>Billing country</ComboboxSelectLabel>
+        <ComboboxSelect
+          placeholder="Choose a country"
+          aria-invalid={invalid || undefined}
+          aria-describedby="select-error-clears-error"
+          className="w-full"
+        />
+        <ComboboxError id="select-error-clears-error">
+          {invalid ? "Choose the country on your bill." : ""}
+        </ComboboxError>
+      </ComboboxField>
+      <ComboboxPopover unmountOnHide>
+        <ComboboxItem value="Spain" checkmark="before" />
+        <ComboboxItem value="Kenya" checkmark="before" />
+      </ComboboxPopover>
+    </ComboboxProvider>
   );
 }
 

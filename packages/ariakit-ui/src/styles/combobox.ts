@@ -6,6 +6,7 @@ import {
   controlFieldContent,
   controlFieldDescription,
   controlFieldError,
+  controlFieldErrorIcon,
   controlFieldLabel,
 } from "./control.ts";
 import { frameBase } from "./frame.ts";
@@ -48,8 +49,17 @@ export const comboboxLabel = controlFieldLabel;
 /** Hint text for a combobox or select. */
 export const comboboxDescription = controlFieldDescription;
 
-/** Error text for a combobox or select. */
+/**
+ * Error text for a combobox or select. Put a `comboboxErrorIcon` part first to
+ * mark it with an icon.
+ */
 export const comboboxError = controlFieldError;
+
+/**
+ * An icon at the start of the first line of a combobox or select error. Put it
+ * first in the error, and hide it from assistive technology.
+ */
+export const comboboxErrorIcon = controlFieldErrorIcon;
 
 /** A scrollable combobox popup constrained to its available space. */
 export const comboboxPopover = cv({
