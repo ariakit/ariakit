@@ -1148,6 +1148,22 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Disabled canvas"
+        description="A canvas button keeps its neutral fill on a colored surface while disabled, so its boundary stays visible."
+        code={`
+          <Frame $layer="brand" $p={3}>
+            <Button $layer="canvas" disabled>Invite</Button>
+          </Frame>
+        `}
+      >
+        <Frame $layer="brand" $p={3}>
+          <Button $layer="canvas" disabled>
+            Invite
+          </Button>
+        </Frame>
+      </Example>
+
+      <Example
         title="Focusable disabled"
         description="It stays in the tab order, and assistive technology announces it as disabled. It looks like the disabled bevel."
         code={`
