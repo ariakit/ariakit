@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { defineConfig, devices } from "@playwright/test";
 
 if (process.argv.includes("--headed")) {
@@ -6,6 +7,12 @@ if (process.argv.includes("--headed")) {
 
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
+
+// The web server and the test workers inherit this scope, and the server only
+// applies sales tagged with it (website/lib/stripe.ts). CI never reuses a
+// server, so each CI run gets its own scope. A local run can reuse another
+// local run's server, so local runs share one scope.
+process.env.STRIPE_SALE_SCOPE ||= CI ? randomUUID() : "local";
 
 // Workaround: Playwright 1.59 syncs navigator.platform with the user agent,
 // causing "Win32" on macOS (since Desktop Chrome has a Windows UA). This breaks

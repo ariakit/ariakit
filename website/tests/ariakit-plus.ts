@@ -34,6 +34,15 @@ function generateUserEmail() {
   return `${Math.random().toString(36).slice(2)}+clerk_test@example.com`;
 }
 
+// Stripe Adaptive Pricing picks the checkout currency from the runner's IP
+// address, and a free checkout shows only the local amount, such as MX$0.00.
+// Stripe treats customers with a +location_US email as US customers, but only
+// when no other subaddress, such as +clerk_test, is present.
+// https://docs.stripe.com/payments/currencies/localize-prices/adaptive-pricing
+function getStripeCustomerEmail(email: string) {
+  return email.replace("+clerk_test@", "+location_US@");
+}
+
 function getCurrentUser(page: Page) {
   return page.evaluate(() => window.Clerk?.user || null);
 }
@@ -85,7 +94,7 @@ async function createCustomer(options: AuthOptions = {}) {
   const password = options.password || DEFAULT_PASSWORD;
 
   const customer = await stripe.customers.create(
-    { email },
+    { email: getStripeCustomerEmail(email) },
     { idempotencyKey: email },
   );
 
@@ -147,7 +156,7 @@ async function createCustomerWithSubscription(
   const password = options.password || DEFAULT_PASSWORD;
 
   const customer = await stripe.customers.create(
-    { email },
+    { email: getStripeCustomerEmail(email) },
     { idempotencyKey: email },
   );
 
@@ -210,15 +219,19 @@ async function fillCheckout(page: Page, assertEmail?: string) {
   if (assertEmail) {
     await expect(frame.getByText(assertEmail)).toBeVisible();
   }
-  await q
-    .textbox("Card number")
-    .pressSequentially("4242424242424242", { delay: 50 });
-  await q.textbox("Expiration").fill("12/40");
-  await q.textbox("CVC").fill("123");
-  await q.textbox("Cardholder name").fill("John Doe");
-  await q.combobox("Country or region").selectOption("Spain");
+  const cardNumber = q.textbox("Card number");
   const payButton = q.button(/^Pay$/);
-  await expect(payButton).toHaveClass(/SubmitButton--complete/);
+  // Stripe can clear the card number while the checkout is still loading, so
+  // fill the form again until Stripe considers it complete.
+  await expect(async () => {
+    await cardNumber.clear();
+    await cardNumber.pressSequentially("4242424242424242", { delay: 50 });
+    await q.textbox("Expiration").fill("12/40");
+    await q.textbox("CVC").fill("123");
+    await q.textbox("Cardholder name").fill("John Doe");
+    await q.combobox("Country or region").selectOption("Spain");
+    await expect(payButton).toHaveClass(/SubmitButton--complete/);
+  }).toPass({ timeout: 30_000 });
   await payButton.hover();
   await expect(async () => {
     const boundingBox = await payButton.boundingBox();
@@ -290,7 +303,7 @@ for (const plan of ["month", "year"] as const) {
     const checkoutPrice = await getDisplayedPrice(frame);
     expect(checkoutPrice).toBe(nextPrice);
 
-    await fillCheckout(page, email);
+    await fillCheckout(page, getStripeCustomerEmail(email));
     await fq.button(/^Pay$/).click();
     await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
@@ -434,8 +447,10 @@ test.describe("with coupon", () => {
     coupon = await stripe.coupons.create({
       percent_off: 100,
       duration: "forever",
-      redeem_by: Math.round(Date.now() / 1000) + 60,
-      metadata: { type: "sale" },
+      // The afterEach hook deletes the coupon. The expiration only cleans up
+      // after an interrupted run, so it must outlast the test timeout.
+      redeem_by: Math.round(Date.now() / 1000) + 5 * 60,
+      metadata: { type: "sale", scope: process.env.STRIPE_SALE_SCOPE ?? null },
     });
   });
 
@@ -450,7 +465,8 @@ test.describe("with coupon", () => {
 
     const q = query(page);
     const stripe = getStripeClient();
-    const customer = await createCustomer();
+    const email = generateUserEmail();
+    await createCustomer({ email });
 
     await stripe.promotionCodes.create({
       coupon: coupon!.id,
@@ -465,7 +481,7 @@ test.describe("with coupon", () => {
 
     // Check price with authenticated user
     await page.goto("/sign-in", { waitUntil: "networkidle" });
-    await fillSignIn(page, { email: customer.email });
+    await fillSignIn(page, { email });
     await page.goto("/plus");
     const price = await getDisplayedPrice(page);
     expect(price).toBe(0);
@@ -484,8 +500,12 @@ test.describe("with coupon", () => {
     const q = query(page);
     const stripe = getStripeClient();
 
-    const customerWithoutDiscount = await createCustomer();
-    const customerWithDiscount = await createCustomer();
+    const emailWithoutDiscount = generateUserEmail();
+    const emailWithDiscount = generateUserEmail();
+    await createCustomer({ email: emailWithoutDiscount });
+    const customerWithDiscount = await createCustomer({
+      email: emailWithDiscount,
+    });
 
     await stripe.promotionCodes.create({
       coupon: coupon!.id,
@@ -499,7 +519,7 @@ test.describe("with coupon", () => {
 
     // Check price with authenticated user without discount
     await page.goto("/sign-in", { waitUntil: "networkidle" });
-    await fillSignIn(page, { email: customerWithoutDiscount.email });
+    await fillSignIn(page, { email: emailWithoutDiscount });
     await page.goto("/plus");
     const price = await getDisplayedPrice(page);
     expect(price).toBeGreaterThan(0);
@@ -515,7 +535,7 @@ test.describe("with coupon", () => {
 
     // Check price with authenticated user with discount
     await page.goto("/sign-in", { waitUntil: "networkidle" });
-    await fillSignIn(page, { email: customerWithDiscount.email });
+    await fillSignIn(page, { email: emailWithDiscount });
     await page.goto("/plus");
     const nextPrice = await getDisplayedPrice(page);
     expect(nextPrice).toBe(0);

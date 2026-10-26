@@ -54,6 +54,9 @@ export const input = cv({
     "ui-field-disabled:ak-ink-0 ui-field-disabled:not-forced-colors:**:ak-ink-0",
     "ui-field-disabled:ak-edge-10",
     "ui-field-disabled:ak-layer-lighten-0",
+    // Drop the chroma cap too, or a field on a tinted layer stays
+    // nearly white instead of matching the surface around it.
+    "ui-field-disabled:ak-layer-max-c-[initial]",
     // Forced colors replace the ink and edge with the normal text color. Use
     // the system disabled color instead. An enabled action button and its
     // content keep their system colors, so the button does not look disabled:
@@ -152,6 +155,9 @@ export const input = cv({
     // Raise the writing surface like other materials above their support: white
     // on light layers and lighter on dark layers, never a dark well.
     $lighten: true,
+    // Lose chroma as the lightened surface nears white, so a field on a tinted
+    // light layer reads white instead of a brighter tint of that layer.
+    $chromaMax: "auto",
     $edgeRaw: getInputEdgeRaw,
     $focus: true,
     $focusOffset: "inset",
