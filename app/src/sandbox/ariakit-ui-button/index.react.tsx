@@ -1115,7 +1115,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled brand"
-        description="The color stays and the text fades."
+        description="The color mixes into the surface around the button, and the text fades."
         code={`
           <Button $layer="brand" disabled>Publish</Button>
         `}
@@ -1123,6 +1123,28 @@ export default function ButtonExamples() {
         <Button $layer="brand" disabled>
           Publish
         </Button>
+      </Example>
+
+      <Example
+        title="Disabled colors"
+        description="Other colors and colored bevels mix the same way. A disabled fieldset mixes a colored button without the disabled prop."
+        code={`
+          <Button $layer="danger" disabled>Delete</Button>
+          <Button $layer="brand" $kind="bevel" disabled>Deploy</Button>
+          <fieldset disabled>
+            <Button $layer="brand">Save</Button>
+          </fieldset>
+        `}
+      >
+        <Button $layer="danger" disabled>
+          Delete
+        </Button>
+        <Button $layer="brand" $kind="bevel" disabled>
+          Deploy
+        </Button>
+        <fieldset disabled>
+          <Button $layer="brand">Save</Button>
+        </fieldset>
       </Example>
 
       <Example

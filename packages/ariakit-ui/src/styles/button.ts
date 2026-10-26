@@ -105,7 +105,19 @@ export const button = cv({
     ) {
       addClass("forced-colors:ak-frame-border");
     }
+    // A colored surface keeps its full fill while only its text fades, so it
+    // still looks enabled. Mix it into the parent like disabled slots before
+    // calculating text contrast. Neutral surfaces keep their fill as a
+    // boundary.
+    const mutesSurface = isLayerColor(variants.$layer);
+    if (mutesSurface) {
+      // DOM disabled state can change without rerendering the recipe.
+      addClass("ui-disabled:ak-layer-mix-20");
+    }
     if (!variants.$disabled) return;
+    if (mutesSurface) {
+      setVariants({ $mix: 20 });
+    }
     // Label-based controls never match :disabled, so remove their hover and
     // press variants explicitly.
     setVariants({
