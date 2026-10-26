@@ -52,6 +52,7 @@ import {
   PREVIEW_MESSAGE_TYPE,
 } from "#app/lib/preview-embed.ts";
 import { PREVIEW_FRAME_MARGIN } from "#app/lib/preview-frames.ts";
+import { reloadPreview } from "#app/lib/preview-hydration.ts";
 
 // Chrome scrolls about 40 pixels for each line of a line-based wheel event.
 const WHEEL_LINE_HEIGHT = 40;
@@ -68,6 +69,10 @@ export interface PreviewCardProps {
    * The id of the heading that labels the section around the card.
    */
   headingId: string;
+  /**
+   * The id of the preview, such as `skeleton/timing`.
+   */
+  previewId: string;
   title: string;
   /**
    * The URL of the preview page.
@@ -104,10 +109,12 @@ export interface PreviewCardProps {
 /**
  * A card that renders a preview in a window-like chrome. The top bar shows the
  * title, or browser controls for previews that navigate between routes, and
- * buttons to reveal the code and to open the preview page in a new tab.
+ * buttons to reveal the code, to reload the preview, and to open the preview
+ * page in a new tab.
  */
 export function PreviewCard({
   headingId,
+  previewId,
   title,
   href,
   inline,
@@ -118,6 +125,15 @@ export function PreviewCard({
   code,
 }: PreviewCardProps) {
   const frame = usePreviewFrame(href);
+  // An inline example renders again from its initial state, and a frame loads
+  // its current page again.
+  const reload = () => {
+    if (inline) {
+      reloadPreview(previewId);
+      return;
+    }
+    frame.send("reload");
+  };
   return (
     // A card that grows to its grid row gives the extra height to the window,
     // not to the code below it.
@@ -180,6 +196,20 @@ export function PreviewCard({
                   Get code
                 </ButtonLabel>
               </ak.Disclosure>
+              {/* Browser chrome has its own reload button. */}
+              {!browser && (
+                <Tooltip content="Reload preview">
+                  <Button
+                    aria-label="Reload preview"
+                    onClick={reload}
+                    $ink={80}
+                  >
+                    <ButtonSlot>
+                      <RotateCwIcon />
+                    </ButtonSlot>
+                  </Button>
+                </Tooltip>
+              )}
               <Tooltip content="Open preview in a new tab">
                 <Button
                   render={

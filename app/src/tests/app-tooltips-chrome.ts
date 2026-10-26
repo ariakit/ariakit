@@ -107,4 +107,6 @@ test("names the preview card buttons with tooltips", async ({ page, q }) => {
   ).toBeAttached();
   await open.hover();
   await expect(q.tooltip("Open preview in a new tab")).toBeVisible();
+  await q.button("Reload preview").first().hover();
+  await expect(q.tooltip("Reload preview")).toBeVisible();
 });

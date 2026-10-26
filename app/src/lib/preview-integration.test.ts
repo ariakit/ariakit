@@ -152,14 +152,14 @@ test("wraps preview entries with framework hydration markers", async () => {
     "import { withPreviewHydration } from "#app/components/preview-hydration.react.tsx";
     import Preview from "../../../sandbox/menu/index.react.tsx";
 
-    export default withPreviewHydration(Preview);
+    export default withPreviewHydration(Preview, "menu");
     "
   `);
   expect(solid).toMatchInlineSnapshot(`
     "import { withPreviewHydration } from "#app/components/preview-hydration.solid.tsx";
     import Preview from "../../../sandbox/menu/index.solid.tsx";
 
-    export default withPreviewHydration(Preview);
+    export default withPreviewHydration(Preview, "menu");
     "
   `);
 });

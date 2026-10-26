@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // The simulated request takes 1.5 seconds.
@@ -18,18 +18,12 @@ test("hides the follow button until the profile loads", async () => {
 // https://github.com/ariakit/ariakit/pull/7993#discussion_r4317370417
 test("skips the filled button while the profile loads", async () => {
   expect(q.status()).toHaveTextContent("Loading profile");
+  // The filled button is the only control in the example.
   await press.Tab();
-  expect(q.button("Reload profile")).toHaveFocus();
-});
-
-test("hides the previous profile while it reloads", async () => {
+  expect(document.body).toHaveFocus();
   await expect
-    .poll(() => q.heading.maybe("Maya Chen"), { timeout })
+    .poll(() => q.button.maybe("Follow"), { timeout })
     .toBeInTheDocument();
-  await click(q.button("Reload profile"));
-  expect(q.status()).toHaveTextContent("Loading profile");
-  expect(q.heading.maybe("Maya Chen")).not.toBeInTheDocument();
-  await expect
-    .poll(() => q.heading.maybe("Maya Chen"), { timeout })
-    .toBeInTheDocument();
+  await press.Tab();
+  expect(q.button("Follow")).toHaveFocus();
 });
