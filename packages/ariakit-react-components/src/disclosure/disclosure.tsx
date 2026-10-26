@@ -25,6 +25,11 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 const symbol = Symbol("disclosure");
 
+// The element whose ref last cleared each store's disclosure element. It's
+// forgotten when a Disclosure assigns the store again, not at the end of a
+// task, because a view transition can delay the phase that reattaches refs.
+const releasedElements = new WeakMap<DisclosureStore, HTMLElement>();
+
 /**
  * Returns props to create a `Disclosure` component.
  * @see https://ariakit.com/components/disclosure
@@ -61,12 +66,24 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
         ref.current = element;
         if (element) {
           const disclosureElement = store?.getState().disclosureElement;
-          if (!disclosureElement?.isConnected) {
-            store.setDisclosureElement(element);
+          if (disclosureElement?.isConnected) return;
+          // React detaches all changed refs before it reattaches any, so a
+          // sibling can get here before the owner that just released the store.
+          // A released element that is still connected usually reattaches in
+          // this commit, so leave the store for it. If it doesn't, such as when
+          // Activity hides it, the effect below assigns the store.
+          // https://github.com/ariakit/ariakit/issues/8088
+          const releasedElement = releasedElements.get(store);
+          if (releasedElement !== element && releasedElement?.isConnected) {
+            return;
           }
+          releasedElements.delete(store);
+          store.setDisclosureElement(element);
           return;
         }
+        if (!previousElement) return;
         if (store?.getState().disclosureElement !== previousElement) return;
+        releasedElements.set(store, previousElement);
         store.setDisclosureElement(null);
       },
       [store],
@@ -79,6 +96,7 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     useEffect(() => {
       let isCurrentDisclosure = disclosureElement === ref.current;
       if (!disclosureElement?.isConnected) {
+        releasedElements.delete(store);
         store?.setDisclosureElement(ref.current);
         isCurrentDisclosure = true;
       }
