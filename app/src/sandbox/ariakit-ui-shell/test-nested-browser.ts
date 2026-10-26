@@ -14,8 +14,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const shells = ["Outer", "Middle", "Inner"].map((name) =>
-      page.locator(`[aria-label="${name} shell"]`),
+    const shells = ["outer", "middle", "inner"].map((id) =>
+      page.locator(`#${id}-shell`),
     );
     const headers = shells.map((shell) =>
       shell.locator(":scope > .shell-header"),
@@ -80,7 +80,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Close overlay").click();
     await expect(overlay).toHaveCount(0);
     await page.evaluate(() => window.scrollTo(0, 500));
-    const header = page.locator('[aria-label="Outer shell"] > .shell-header');
+    const header = page.locator("#outer-shell > .shell-header");
     expect(
       await header.evaluate((node) =>
         node.contains(document.elementFromPoint(20, 20)),
@@ -92,10 +92,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("slides an inner header under its parent when the inner shell ends", async ({
     page,
   }) => {
-    const inner = page.locator('[aria-label="Inner shell"]');
-    const middleHeader = page.locator(
-      '[aria-label="Middle shell"] > .shell-header',
-    );
+    const inner = page.locator("#inner-shell");
+    const middleHeader = page.locator("#middle-shell > .shell-header");
     const innerHeader = inner.locator(":scope > .shell-header");
     await page.evaluate(() => window.scrollTo(0, 500));
     const middleBox = await getBox(middleHeader);

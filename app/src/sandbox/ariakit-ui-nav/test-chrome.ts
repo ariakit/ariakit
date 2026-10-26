@@ -377,4 +377,21 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(styling).toHaveAttribute("aria-expanded", "false");
     await test.expect(bar).toHaveCount(0);
   });
+
+  test("renders nested Nav rows without a landmark unless they have a name", async ({
+    q,
+  }) => {
+    const workspace = query(q.navigation("Workspace"));
+    await test.expect(workspace.link("Drafts")).toBeVisible();
+    await test.expect(workspace.navigation()).toHaveCount(1);
+    await test.expect(workspace.navigation("Pinned")).toBeVisible();
+  });
+
+  test("skips the landmark of a Nav with landmark set to false", async ({
+    q,
+  }) => {
+    const link = q.link("Recent search");
+    await test.expect(link).toBeVisible();
+    await test.expect(q.navigation().filter({ has: link })).toHaveCount(0);
+  });
 });

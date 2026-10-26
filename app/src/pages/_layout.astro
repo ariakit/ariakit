@@ -60,7 +60,6 @@ import {
 } from "#app/lib/app.ts";
 import { getCollection } from "astro:content";
 import { Menu, PanelLeft, SwatchBook, X } from "lucide-react";
-import { createElement } from "react";
 
 type Section = "components" | "recipes";
 
@@ -290,7 +289,7 @@ const hasSidebar = sidebar && navigation.length > 0;
           hasSidebar && (
             <ShellSidebar
               id={APP_NAVIGATION_ID}
-              render={createElement("nav")}
+              landmark="nav"
               aria-label="Site"
               className="text-sm"
             >
@@ -313,7 +312,7 @@ const hasSidebar = sidebar && navigation.length > 0;
           id={APP_DRAWER_ID}
           open={false}
           $show="max-3xl"
-          render={createElement("nav")}
+          landmark="nav"
           aria-label="Menu"
           data-shell-transient
           className="text-sm"
@@ -370,7 +369,7 @@ const hasSidebar = sidebar && navigation.length > 0;
               $show="6xl"
               $border={false}
               $layer="transparent"
-              render={createElement("nav")}
+              landmark="nav"
               aria-label="On this page"
               className="text-sm"
             >
@@ -381,11 +380,13 @@ const hasSidebar = sidebar && navigation.length > 0;
                 {/* The layout script marks the link of the section in view. */}
                 {/* The bar follows the scroll position, so it stays out of
                     page load transitions. */}
+                {/* Astro renders the sidebar landmark around it separately,
+                    so the navigation skips its own. */}
                 <Nav
+                  landmark={false}
                   $cover
                   $gap={0.5}
                   $barTransitionName="none"
-                  render={createElement("div")}
                   data-app-toc
                 >
                   {tocHeadings.map((heading) => (
@@ -422,7 +423,7 @@ const hasSidebar = sidebar && navigation.length > 0;
         open={false}
         $side="end"
         $width="lg"
-        render={createElement("aside")}
+        landmark="aside"
         aria-label="Theme"
         className="text-sm"
       >

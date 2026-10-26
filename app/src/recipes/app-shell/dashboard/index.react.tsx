@@ -63,7 +63,7 @@ export default function Example() {
         $width="sm"
         $show={true}
         aria-label="Primary"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarHeader>
           <TextFrame $p={2} className="flex items-center gap-2 font-semibold">
@@ -72,7 +72,7 @@ export default function Example() {
           </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav $cover render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav $cover bar={{ $offset: "halfway" }}>
             {navigationLinks.map((link, index) => (
               <NavLink
                 key={link.title}

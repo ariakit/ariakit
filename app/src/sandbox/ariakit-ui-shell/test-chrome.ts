@@ -178,4 +178,29 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await expect(q.button("Toggle sidebar")).toHaveCount(0);
     });
   });
+
+  test("keeps a navigation sidebar as the only landmark around its Nav rows", async ({
+    q,
+  }) => {
+    const navigation = query(q.navigation("Documentation"));
+    await test.expect(navigation.link("Introduction")).toBeVisible();
+    await test.expect(navigation.navigation()).toHaveCount(0);
+  });
+
+  test("keeps Nav rows a navigation inside a complementary sidebar", async ({
+    q,
+  }) => {
+    await selectScenario(q, "static");
+    const sidebar = query(q.complementary("Sections"));
+    const rows = query(sidebar.navigation());
+    await test.expect(rows.link("Profile")).toBeVisible();
+  });
+
+  test("keeps one main landmark across nested shells", async ({ q }) => {
+    await selectScenario(q, "nested");
+    await test.expect(q.main()).toHaveCount(1);
+    const main = query(q.main());
+    await test.expect(main.text("Middle introduction")).toBeVisible();
+    await test.expect(main.navigation("Inner navigation")).toBeVisible();
+  });
 });

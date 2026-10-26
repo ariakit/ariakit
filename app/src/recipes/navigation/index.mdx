@@ -20,6 +20,6 @@ Set `aria-current="page"` on the current `NavLink`, or pass `currentUrl` to comp
 
 ## Accessibility
 
-Give each `Nav` a name with `aria-label` or `aria-labelledby`, because a page can have more than one navigation landmark. When the element around the navigation is already the landmark, such as a sidebar rendered as `nav`, render the `Nav` as a `div`.
+Give each `Nav` a name with `aria-label` or `aria-labelledby`, because a page can have more than one navigation landmark. A `Nav` inside a `Nav` landmark or a `ShellSidebar` with `landmark="nav"` renders a `div`, so the rows don't repeat the landmark around them. Leave that `Nav` without a name, because a name keeps its own landmark. When the landmark around it renders outside the React tree, such as an Astro sidebar around an island, set `landmark={false}` on the `Nav`.
 
 A `NavLinkDescription` becomes the accessible description of its link, so the label and the slots name the link and the description adds detail. A link that shows only an icon still needs a name.

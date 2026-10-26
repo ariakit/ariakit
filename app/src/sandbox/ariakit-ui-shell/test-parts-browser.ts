@@ -48,9 +48,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await q.checkbox("Second end sidebar").check();
       await q.combobox("Main header visibility").selectOption("5xl");
       const header = page.locator(".shell-main-header");
-      const nestedHeader = page.locator(
-        '[aria-label="Nested parts shell"] > .shell-header',
-      );
+      const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
       await expect(header).toBeVisible();
       await q.checkbox("Narrow shell").check();
       await expect(header).toBeHidden();
@@ -95,9 +93,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await q.checkbox("Second end sidebar").check();
       await q.combobox("Main header visibility").selectOption("max-5xl");
       const header = page.locator(".shell-main-header");
-      const nestedHeader = page.locator(
-        '[aria-label="Nested parts shell"] > .shell-header',
-      );
+      const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
       await expect(header).toBeHidden();
       for (const width of [1023, 1024, 1440]) {
         await page.setViewportSize({ width, height: 900 });
@@ -141,9 +137,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await q.combobox("End sidebar starts at").selectOption(from);
       await q.checkbox("Second end sidebar").check();
       const header = page.locator(".shell-main-header");
-      const nestedHeader = page.locator(
-        '[aria-label="Nested parts shell"] > .shell-header',
-      );
+      const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
       for (const width of [1440, 1000]) {
         await page.setViewportSize({ width, height: 900 });
         await q.combobox("Main header visibility").selectOption("never");
@@ -282,9 +276,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     const mainHeader = page.locator(".shell-main-header");
     const sidebarHeader = page.locator(".shell-sidebar-header");
-    const nestedHeader = page.locator(
-      '[aria-label="Nested parts shell"] > .shell-header',
-    );
+    const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
     for (const header of [mainHeader, sidebarHeader]) {
       await expect(header).toHaveCSS("height", "64px");
       await expect(header).toHaveCSS("border-bottom-width", "5px");
@@ -329,8 +321,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
   }) => {
     await q.checkbox("Nested main headers").check();
-    const middle = page.locator('[aria-label="Nested parts shell"]');
-    const inner = page.locator('[aria-label="Inner parts shell"]');
+    const middle = page.locator("#nested-parts-shell");
+    const inner = page.locator("#inner-parts-shell");
     const middleHeader = middle.locator(
       ":scope > .shell-main > .shell-main-header",
     );
@@ -401,9 +393,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const sidebarHeader = page.locator(".shell-sidebar-header");
       const actions = page.locator('[aria-label="Main actions"]');
       const content = q.region("Main content");
-      const nestedHeader = page.locator(
-        '[aria-label="Nested parts shell"] > .shell-header',
-      );
+      const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
       for (const size of ["text-sm", "text-lg"]) {
         await q.combobox("Local text size").selectOption(size);
         for (const header of [mainHeader, sidebarHeader]) {
@@ -564,7 +554,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.checkbox("Open end sidebar").uncheck();
     await expect(getSidebar(q, "Part details")).toHaveCSS("width", "0px");
     expect((await getBox(body)).x - mainBox.x).toBeCloseTo(32, 0);
-    const nested = page.locator('[aria-label="Nested parts shell"]');
+    const nested = page.locator("#nested-parts-shell");
     const nestedBox = await getBox(nested);
     expect((await getBox(nested.locator("p"))).x - nestedBox.x).toBeCloseTo(
       16,

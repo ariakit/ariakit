@@ -74,18 +74,13 @@ export default function Example() {
         $chroma="muted"
         $darken={1}
         aria-label="Library"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarHeader className="gap-2 px-4 text-lg font-semibold">
           <Music className="size-5" /> Wavelength
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav
-            $cover
-            render={<div />}
-            list={false}
-            bar={{ $offset: "halfway" }}
-          >
+          <Nav $cover list={false} bar={{ $offset: "halfway" }}>
             <NavGroup>
               <NavGroupLabel>Library</NavGroupLabel>
               <NavList>

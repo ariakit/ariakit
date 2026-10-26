@@ -1,6 +1,11 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import * as React from "react";
+import {
+  LandmarkContext,
+  useNestedLandmarks,
+} from "../react-utils/landmark.react.ts";
 import {
   shell,
   shellMainContent,
@@ -217,12 +222,22 @@ export function ShellMainIntro(props: ShellMainIntroProps) {
 }
 
 export interface ShellMainProps
-  extends ak.RoleProps<"main">, VariantProps<typeof shellMain> {}
+  extends ak.RoleProps<"main">, VariantProps<typeof shellMain> {
+  /**
+   * Whether the part renders a `main` landmark. When omitted, it does unless it
+   * is inside another `ShellMain`, in which case it renders a `div`. A name on
+   * a nested part stays on the `div`, although ARIA doesn't allow names there.
+   * Set `false` where the outer `ShellMain` is outside this React tree, such as
+   * in an Astro island. Forcing `true` inside another main breaks the HTML rule
+   * of one `main` per document.
+   */
+  landmark?: boolean;
+}
 
 /**
  * Contains optional `ShellMainHeader`, `ShellMainIntro`, and `ShellMainBody`
- * parts. Uses subgrid; do not add size containment. Render nested mains as
- * `div` elements to keep one main landmark.
+ * parts. Uses subgrid; do not add size containment. A nested shell's main part
+ * renders a `div`, so the page keeps one main landmark.
  *
  * `$p` sets a shared gutter. Use a CSS length for responsive padding, such as
  * `$p="var(--page-gutter)"` with
@@ -240,9 +255,23 @@ export interface ShellMainProps
  *   </ShellMain>
  * </Shell>
  */
-export function ShellMain(props: ShellMainProps) {
+export function ShellMain({ landmark, ...props }: ShellMainProps) {
   const [variantProps, rest] = splitProps(props, shellMain);
-  return <ak.Role.main {...shellMain.jsx(variantProps)} {...rest} />;
+  const landmarks = React.useContext(LandmarkContext);
+  // Parts inside are nested even when this one skips the landmark, because the
+  // main landmark then lives outside this React tree.
+  const nestedLandmarks = useNestedLandmarks(landmarks, { main: true });
+  const isLandmark = landmark ?? !landmarks.main;
+  return (
+    <LandmarkContext.Provider value={nestedLandmarks}>
+      <ak.Role.main
+        // A render prop from the caller still decides the element.
+        render={isLandmark ? undefined : <div />}
+        {...shellMain.jsx(variantProps)}
+        {...rest}
+      />
+    </LandmarkContext.Provider>
+  );
 }
 
 export interface ShellMainHeaderProps
@@ -396,14 +425,29 @@ export interface ShellSidebarProps
    * Opens the sidebar when its `$show` condition matches. Defaults to `true`.
    */
   open?: boolean;
+  /**
+   * Renders the panel as a `nav` or `aside` landmark. Name it with `aria-label`
+   * or `aria-labelledby`. Renders a `div` when omitted. A `"nav"` value also
+   * makes nested `Nav` components skip their own landmark; `render` changes the
+   * element but not that.
+   */
+  landmark?: "nav" | "aside";
+}
+
+function getSidebarPanelRender(landmark: ShellSidebarProps["landmark"]) {
+  if (landmark === "nav") return <nav />;
+  if (landmark === "aside") return <aside />;
+  return;
 }
 
 /**
  * A drawer panel. Receives `render`, ID, ARIA attributes, classes, and frame
- * variants. Use a named `nav` or `aside` landmark. Closed panels leave the tab
- * order and accessibility tree. The border faces main. Use `ShellSidebarBody`
- * for scrolling; the panel does not scroll. It starts beside the main header;
- * use `$from="intro"` or `$from="body"` to start below it.
+ * variants. Set `landmark` to `"nav"` or `"aside"` and name the panel; a
+ * `"nav"` panel holds its `Nav` rows without a second navigation landmark.
+ * Closed panels leave the tab order and accessibility tree. The border faces
+ * main. Use `ShellSidebarBody` for scrolling; the panel does not scroll. It
+ * starts beside the main header; use `$from="intro"` or `$from="body"` to start
+ * below it.
  *
  * `open` controls state. `$show` selects shell widths: `"3xl"` (default) means
  * at least 48rem, `"max-3xl"` means below 48rem, `true` means all widths, and
@@ -434,7 +478,7 @@ export interface ShellSidebarProps
  *         id="docs-nav"
  *         open={open}
  *         $show={true}
- *         render={<nav />}
+ *         landmark="nav"
  *         aria-label="Docs"
  *       >
  *         <ShellSidebarBody><a href="/install">Install</a></ShellSidebarBody>
@@ -443,20 +487,32 @@ export interface ShellSidebarProps
  *   );
  * }
  */
-export function ShellSidebar({ open = true, ...props }: ShellSidebarProps) {
+export function ShellSidebar({
+  open = true,
+  landmark,
+  ...props
+}: ShellSidebarProps) {
   // The first recipe receives className and style, which belong to the panel.
   const [variantProps, columnProps, rest] = splitProps(
     props,
     shellSidebarPanel,
     shellSidebar,
   );
+  const landmarks = React.useContext(LandmarkContext);
+  const nestedLandmarks = useNestedLandmarks(landmarks, {
+    navigation: landmark === "nav",
+  });
   return (
     <div {...shellSidebar.jsx(columnProps)}>
-      <ak.Role.div
-        data-open={open ? "" : undefined}
-        {...shellSidebarPanel.jsx(variantProps)}
-        {...rest}
-      />
+      <LandmarkContext.Provider value={nestedLandmarks}>
+        <ak.Role.div
+          // A render prop from the caller still decides the element.
+          render={getSidebarPanelRender(landmark)}
+          data-open={open ? "" : undefined}
+          {...shellSidebarPanel.jsx(variantProps)}
+          {...rest}
+        />
+      </LandmarkContext.Provider>
     </div>
   );
 }
@@ -469,7 +525,7 @@ export interface ShellSidebarHeaderProps
  * height by default; a local `$height` includes the local border.
  * @example
  * <Shell>
- *   <ShellSidebar render={<nav />} aria-label="Docs">
+ *   <ShellSidebar landmark="nav" aria-label="Docs">
  *     <ShellSidebarHeader>Getting started</ShellSidebarHeader>
  *     <ShellSidebarBody><a href="/install">Install</a></ShellSidebarBody>
  *   </ShellSidebar>
@@ -487,7 +543,7 @@ export interface ShellSidebarBodyProps
  * The scrollable center between a sidebar's optional header and footer.
  * @example
  * <Shell>
- *   <ShellSidebar render={<nav />} aria-label="Docs">
+ *   <ShellSidebar landmark="nav" aria-label="Docs">
  *     <ShellSidebarBody><a href="/install">Install</a></ShellSidebarBody>
  *   </ShellSidebar>
  * </Shell>
@@ -504,7 +560,7 @@ export interface ShellSidebarFooterProps
  * A fixed footer after the sidebar's scrollable body.
  * @example
  * <Shell>
- *   <ShellSidebar render={<nav />} aria-label="Docs">
+ *   <ShellSidebar landmark="nav" aria-label="Docs">
  *     <ShellSidebarBody><a href="/install">Install</a></ShellSidebarBody>
  *     <ShellSidebarFooter><a href="/help">Help</a></ShellSidebarFooter>
  *   </ShellSidebar>

@@ -265,7 +265,7 @@ export default function Example() {
         $lightnessMax={23}
         $border={false}
         aria-label="Workspace"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarHeader $height="sm" $p={4}>
           <div className="flex items-center gap-2 font-semibold">
@@ -274,12 +274,7 @@ export default function Example() {
           </div>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav
-            $cover
-            list={false}
-            render={<div />}
-            bar={{ $offset: "halfway" }}
-          >
+          <Nav $cover list={false} bar={{ $offset: "halfway" }}>
             <NavGroup>
               <NavList>
                 <NavLink href="#inbox">

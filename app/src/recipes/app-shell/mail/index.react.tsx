@@ -231,7 +231,7 @@ export default function Example() {
         $layer
         $darken={1}
         aria-label="Mailboxes"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarHeader $p={2}>
           <Button $layer="brand" $kind="bevel" className="w-full">
@@ -242,7 +242,7 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody $p={2}>
-          <Nav $cover render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav $cover bar={{ $offset: "halfway" }}>
             {folders.map((item) => (
               <NavLink
                 key={item.id}
@@ -273,10 +273,12 @@ export default function Example() {
         $width="lg"
         $show="4xl"
         aria-label="Messages"
-        render={<aside />}
+        landmark="aside"
       >
         <ShellSidebarBody $p={2}>
-          <Nav $cover render={<div />} bar={{ $offset: "halfway" }}>
+          {/* The message list borrows the navigation rows but is not a
+              navigation landmark. */}
+          <Nav landmark={false} $cover bar={{ $offset: "halfway" }}>
             {folderMessages.map((message) => (
               <NavLink
                 key={message.id}

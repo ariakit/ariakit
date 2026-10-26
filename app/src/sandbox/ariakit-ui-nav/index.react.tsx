@@ -1766,6 +1766,42 @@ export default function NavExamples() {
       >
         <NavOptionalHeadings />
       </Example>
+
+      <Example
+        title="Nested navigation"
+        description="A Nav inside another navigation renders its rows without a second landmark, unless it has its own name. landmark={false} skips the landmark anywhere, such as for rows that are not navigation."
+        code={`
+          <Nav aria-label="Workspace" list={false}>
+            <NavList>
+              <NavLink href="#inbox">Inbox</NavLink>
+            </NavList>
+            <Nav $p="none">
+              <NavLink href="#drafts">Drafts</NavLink>
+            </Nav>
+            <Nav aria-label="Pinned" $p="none">
+              <NavLink href="#roadmap">Roadmap</NavLink>
+            </Nav>
+          </Nav>
+          <Nav landmark={false}>
+            <NavLink href="#recent">Recent search</NavLink>
+          </Nav>
+        `}
+      >
+        <Nav aria-label="Workspace" list={false} className="w-full">
+          <NavList>
+            <NavLink href="#nested-inbox">Inbox</NavLink>
+          </NavList>
+          <Nav $p="none">
+            <NavLink href="#nested-drafts">Drafts</NavLink>
+          </Nav>
+          <Nav aria-label="Pinned" $p="none">
+            <NavLink href="#nested-roadmap">Roadmap</NavLink>
+          </Nav>
+        </Nav>
+        <Nav landmark={false} className="w-full">
+          <NavLink href="#nested-recent">Recent search</NavLink>
+        </Nav>
+      </Example>
       <Example
         title="Horizontal navigation"
         description="One scrolling row with an independently styled bar."

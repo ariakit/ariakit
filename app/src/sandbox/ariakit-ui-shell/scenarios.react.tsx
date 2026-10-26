@@ -82,7 +82,8 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         id={startId}
         aria-label="Layout navigation"
         aria-describedby="navigation-description"
-        render={<nav title="Navigation body" />}
+        landmark="nav"
+        title="Navigation body"
         className="layout-navigation"
         dir={sidebarDirection === "inherit" ? undefined : sidebarDirection}
         $edge={customSidebarColor ? "var(--sidebar-edge)" : undefined}
@@ -315,7 +316,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         $show
         $border={border}
         $borderType={borderType}
-        render={<nav />}
+        landmark="nav"
         aria-label="Layout contents"
       >
         <ShellSidebarBody>
@@ -343,7 +344,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
   const [updates, setUpdates] = useState(0);
   return (
     <>
-      <Shell $size="md" aria-label="Outer shell">
+      <Shell id="outer-shell" $size="md">
         <ShellHeader $height="sm">
           <ShellHeaderStart>
             <span>Outer header</span>
@@ -354,7 +355,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
           $width="xs"
           $show
           aria-label="Outer navigation"
-          render={<nav />}
+          landmark="nav"
         >
           <ShellSidebarBody>
             <a href="#nested-content" tabIndex={0}>
@@ -365,7 +366,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
         <ShellMain>
           <ShellMainBody $p={0}>
             <div className="h-40">Outer introduction</div>
-            <Shell $size="md" aria-label="Middle shell">
+            <Shell id="middle-shell" $size="md">
               <ShellHeader $height={largeHeader ? "lg" : "md"}>
                 <ShellHeaderStart>
                   <span>Middle header</span>
@@ -375,7 +376,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
                 $width="sm"
                 $show
                 aria-label="Middle navigation"
-                render={<nav />}
+                landmark="nav"
               >
                 <ShellSidebarBody>
                   <a href="#nested-content" tabIndex={0}>
@@ -383,10 +384,10 @@ export function NestedScenario({ controls }: ScenarioProps) {
                   </a>
                 </ShellSidebarBody>
               </ShellSidebar>
-              <ShellMain render={<div />}>
+              <ShellMain>
                 <ShellMainBody $p={0}>
                   <div className="h-40">Middle introduction</div>
-                  <Shell $size="md" aria-label="Inner shell">
+                  <Shell id="inner-shell" $size="md">
                     <ShellHeader $height="lg">
                       <ShellHeaderStart>
                         <span>Inner header</span>
@@ -396,7 +397,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
                       $width="xs"
                       $show
                       aria-label="Inner navigation"
-                      render={<nav />}
+                      landmark="nav"
                     >
                       <ShellSidebarBody>
                         <a href="#nested-content" tabIndex={0}>
@@ -404,7 +405,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
                         </a>
                       </ShellSidebarBody>
                     </ShellSidebar>
-                    <ShellMain render={<div />}>
+                    <ShellMain>
                       <ShellMainBody>
                         <div id="nested-content" className="grid gap-4">
                           <label>

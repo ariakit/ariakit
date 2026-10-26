@@ -139,15 +139,10 @@ export default function Example() {
           id={navigationId}
           open={navigationOpen}
           aria-label="Documentation"
-          render={<nav />}
+          landmark="nav"
         >
           <ShellSidebarBody>
-            <Nav
-              $cover
-              list={false}
-              render={<div />}
-              bar={{ $offset: "halfway" }}
-            >
+            <Nav $cover list={false} bar={{ $offset: "halfway" }}>
               {navigationGroups.map((group) => (
                 <NavGroup key={group.label}>
                   <NavGroupLabel>{group.label}</NavGroupLabel>
@@ -298,10 +293,10 @@ export default function Example() {
           $border={false}
           $show="5xl"
           aria-label="On this page"
-          render={<nav />}
+          landmark="nav"
         >
           <ShellSidebarBody>
-            <Nav $cover render={<div />} list={false}>
+            <Nav $cover list={false}>
               <NavGroup>
                 <NavGroupLabel>On this page</NavGroupLabel>
                 <NavList>
@@ -332,7 +327,7 @@ export default function Example() {
         $side="end"
         $width="lg"
         aria-label="Customize"
-        render={<aside />}
+        landmark="aside"
       >
         <ShellSidebarHeader>
           <div className="flex w-full items-center justify-between gap-2">

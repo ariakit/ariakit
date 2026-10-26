@@ -155,7 +155,7 @@ export default function Example() {
         id={pagesId}
         open={pagesOpen}
         aria-label="Notebook"
-        render={<nav />}
+        landmark="nav"
         $borderType="dashed"
         $hue="yellow"
         $chroma="muted"
@@ -174,12 +174,7 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav
-            $cover
-            render={<div />}
-            list={false}
-            bar={{ $offset: "halfway" }}
-          >
+          <Nav $cover list={false} bar={{ $offset: "halfway" }}>
             <NavGroup>
               <NavGroupLabel>Pages</NavGroupLabel>
               <NavList>
@@ -216,7 +211,7 @@ export default function Example() {
           </Nav>
         </ShellSidebarBody>
         <ShellSidebarFooter $borderType="dashed">
-          <Nav $cover render={<div />}>
+          <Nav $cover>
             <NavLink href="#trash">
               <NavSlot>
                 <Trash strokeWidth={1.5} />
@@ -306,7 +301,7 @@ export default function Example() {
         $side="end"
         $width="sm"
         aria-label="Context"
-        render={<aside />}
+        landmark="aside"
         $borderType="dashed"
         $hue="yellow"
         $chroma="muted"
