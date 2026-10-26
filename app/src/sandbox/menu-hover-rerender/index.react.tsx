@@ -24,7 +24,7 @@ function SingleMenu() {
 }
 
 // Both menu buttons share one menu, and each pointer move re-attaches both
-// inline refs, which can hand the menu over to the other button.
+// inline refs while the menu is open.
 function SharedMenu() {
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const menu = Ariakit.useMenuStore({ showTimeout: 0, hideTimeout: 300 });
