@@ -42,6 +42,21 @@ function createRemoveStoreCallback(store: TooltipStore) {
   };
 }
 
+// Sets the store as the active tooltip store and hides the previous one. If a
+// tooltip we just hid gets forced open again, we leave the current active store
+// in place to avoid a re-entrant loop between forced open tooltips.
+function activateStore(store: TooltipStore) {
+  const { activeStore } = globalStore.getState();
+  if (activeStore !== store) {
+    if (hidingStores.has(store)) return;
+    // The store shows at once when another tooltip is still active (see the
+    // showOnHover method in useTooltipAnchor).
+    setInstant(store, !!activeStore);
+    hideStore(activeStore);
+  }
+  globalStore.setState("activeStore", store);
+}
+
 function isEscapeKeyEvent(event: Event) {
   if (!("key" in event)) return false;
   return event.key === "Escape";
@@ -125,11 +140,17 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
 
     // A tooltip that hides on its own, not because another tooltip replaces it,
     // runs its normal exit transition. So the mark goes away in the same update
-    // that closes the tooltip.
+    // that closes the tooltip. A tooltip that opens while no tooltip is active
+    // has no mark either, even if it reopens during an exit transition that
+    // another tooltip interrupted.
     useEffect(() => {
       return sync(store, ["open"], (state) => {
-        if (state.open) return;
         if (!store) return;
+        if (state.open) {
+          if (globalStore.getState().activeStore) return;
+          setInstant(store, false);
+          return;
+        }
         if (hidingStores.has(store)) return;
         setInstant(store, false);
       });
@@ -155,20 +176,10 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         sync(store, ["mounted"], (state) => {
           if (!store) return;
           // If the current tooltip is open, we should immediately hide the
-          // active one and set the current one as the active tooltip. If a
-          // tooltip we just hid gets forced open again, we leave the current
-          // active store in place to avoid a re-entrant loop between forced
-          // open tooltips.
+          // active one and set the current one as the active tooltip.
           if (state.mounted) {
-            const { activeStore } = globalStore.getState();
-            if (activeStore !== store) {
-              if (hidingStores.has(store)) return;
-              // The current tooltip shows at once when another tooltip is still
-              // active (see the showOnHover method below).
-              setInstant(store, !!activeStore);
-              hideStore(activeStore);
-            }
-            return globalStore.setState("activeStore", store);
+            activateStore(store);
+            return;
           }
           // Otherwise, if the current tooltip is closed, we should set a
           // timeout to hide the active tooltip in the global store. This is so
@@ -246,11 +257,18 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       showOnHover(event) {
         if (!canShowOnHoverRef.current) return false;
         if (isFalsyBooleanCallback(showOnHover, event)) return false;
+        if (!store) return false;
         const { activeStore } = globalStore.getState();
         if (!activeStore) return true;
         // Show the tooltip immediately if there's an active tooltip instead of
         // waiting for the showTimeout delay.
-        store?.show();
+        const { open, mounted } = store.getState();
+        store.show();
+        // A tooltip that reopens during its exit transition stays mounted, so
+        // the mounted sync above doesn't activate it.
+        if (!open && mounted) {
+          activateStore(store);
+        }
         return false;
       },
       ...props,
