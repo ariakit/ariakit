@@ -528,6 +528,18 @@ test("phone menu holds the theme options", async ({ page, q }) => {
   await expect(page.locator("html")).not.toHaveAttribute("data-theme");
 });
 
+test("site sidebars hold one navigation landmark each", async ({ page, q }) => {
+  await gotoAndSettle(page, recipePath);
+  // Astro renders the sidebars, and their Nav rows hydrate as separate islands
+  // or static HTML, so each Nav opts out of its own landmark.
+  const site = query(q.navigation("Site"));
+  await expect(site.link("App Shell")).toBeVisible();
+  await expect(site.navigation()).toHaveCount(0);
+  const toc = query(q.navigation("On this page"));
+  await expect(toc.link("Overview")).toBeVisible();
+  await expect(toc.navigation()).toHaveCount(0);
+});
+
 test("table of contents marks the section in view", async ({ page, q }) => {
   await gotoAndSettle(page, recipePath);
   const toc = query(q.navigation("On this page"));

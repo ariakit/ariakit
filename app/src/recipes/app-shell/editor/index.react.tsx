@@ -168,7 +168,7 @@ export default function Example() {
         open={layersOpen}
         $width="sm"
         aria-label="Layers"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarHeader>
           <TextFrame $p={2} className="font-medium">
@@ -176,7 +176,7 @@ export default function Example() {
           </TextFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav $cover render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav $cover bar={{ $offset: "halfway" }}>
             {layers.map((layer) => (
               <NavLink
                 key={layer.id}
@@ -285,7 +285,7 @@ export default function Example() {
         $side="end"
         $width="md"
         aria-label="Properties"
-        render={<aside />}
+        landmark="aside"
       >
         <ShellSidebarHeader>
           <span className="font-medium">Properties</span>
@@ -342,7 +342,7 @@ export default function Example() {
         $side="end"
         $width="3xs"
         aria-label="Tools"
-        render={<aside />}
+        landmark="aside"
       >
         <ShellSidebarBody>
           <ak.RadioProvider

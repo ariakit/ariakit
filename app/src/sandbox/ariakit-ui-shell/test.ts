@@ -96,3 +96,24 @@ test("accepts data-open directly on the sidebar panel", async () => {
   await click(q.button("Toggle layout contents"));
   expect(contents).not.toHaveAttribute("data-open");
 });
+
+test("keeps a navigation sidebar as the only landmark around its Nav rows", () => {
+  const navigation = q.navigation("Documentation");
+  expect(q.within(navigation).link("Introduction")).toBeInTheDocument();
+  expect(q.within(navigation).navigation.all()).toHaveLength(0);
+});
+
+test("keeps Nav rows a navigation inside a complementary sidebar", async () => {
+  await selectScenario("static");
+  const sidebar = q.complementary("Sections");
+  const rows = q.within(sidebar).navigation();
+  expect(q.within(rows).link("Profile")).toBeInTheDocument();
+});
+
+test("keeps one main landmark across nested shells", async () => {
+  await selectScenario("nested");
+  expect(q.main.all()).toHaveLength(1);
+  const main = q.main();
+  expect(q.within(main).text("Middle introduction")).toBeInTheDocument();
+  expect(q.within(main).navigation("Inner navigation")).toBeInTheDocument();
+});

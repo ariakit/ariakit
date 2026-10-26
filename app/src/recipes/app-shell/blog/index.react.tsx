@@ -144,10 +144,10 @@ export default function Example() {
         $layer="transparent"
         $show="5xl"
         aria-label="On this page"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarBody>
-          <Nav $cover render={<div />} list={false}>
+          <Nav $cover list={false}>
             <NavGroup>
               <NavGroupLabel>On this page</NavGroupLabel>
               <NavList>

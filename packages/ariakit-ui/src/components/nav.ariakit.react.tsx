@@ -9,6 +9,10 @@ import {
   isRenderable,
 } from "../react-utils/create-render.react.ts";
 import {
+  LandmarkContext,
+  useNestedLandmarks,
+} from "../react-utils/landmark.react.ts";
+import {
   DescriptionContext,
   useDescription,
   useDescriptionRegistry,
@@ -77,10 +81,22 @@ export interface NavProps
    * or props. A link's own `bar` prop overrides it. Omitted by default.
    */
   bar?: NavLinkBarValue;
+  /**
+   * Whether the navigation renders a `nav` landmark. When omitted, it does
+   * unless an ancestor `Nav` or a `ShellSidebar` with `landmark="nav"` already
+   * renders one, in which case it renders a `div`. A name from `aria-label` or
+   * `aria-labelledby` keeps the landmark. Set `false` where that ancestor is
+   * outside this React tree, such as in an Astro island, or for rows that are
+   * not navigation. A `Nav` set to `false` doesn't count as an ancestor
+   * landmark, so a nested `Nav` without a name needs `false` too.
+   */
+  landmark?: boolean;
 }
 
 /**
- * A navigation landmark that wraps its rows in a `NavList` by default.
+ * A navigation landmark that wraps its rows in a `NavList` by default. Inside a
+ * `Nav` landmark or a `ShellSidebar` with `landmark="nav"`, it renders the rows
+ * without a second landmark unless it has a name.
  * @example
  * <Nav aria-label="Main" bar>
  *   <NavLink href="/" currentUrl="/">Home</NavLink>
@@ -94,21 +110,33 @@ export interface NavProps
  *   </NavGroup>
  * </Nav>
  */
-export function Nav({ list, bar, children, ...props }: NavProps) {
+export function Nav({ list, bar, landmark, children, ...props }: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
   // Each navigation names its bar by default, so view transitions can move it
   // between links. React 18 ids contain colons, which CSS names can't hold.
   const id = React.useId().replace(/[^\w-]/g, "");
   const $barTransitionName = variantProps.$barTransitionName ?? `nav-bar-${id}`;
+  const landmarks = React.useContext(LandmarkContext);
+  const named = rest["aria-label"] != null || rest["aria-labelledby"] != null;
+  const isLandmark = landmark ?? (!landmarks.navigation || named);
+  const nestedLandmarks = useNestedLandmarks(landmarks, {
+    navigation: isLandmark,
+  });
   return (
-    <NavBarContext.Provider value={bar}>
-      <ak.Role.nav
-        {...nav.jsx({ ...variantProps, $barTransitionName })}
-        {...rest}
-      >
-        {list === false ? children : createRender(NavList, list, { children })}
-      </ak.Role.nav>
-    </NavBarContext.Provider>
+    <LandmarkContext.Provider value={nestedLandmarks}>
+      <NavBarContext.Provider value={bar}>
+        <ak.Role.nav
+          // A render prop from the caller still decides the element.
+          render={isLandmark ? undefined : <div />}
+          {...nav.jsx({ ...variantProps, $barTransitionName })}
+          {...rest}
+        >
+          {list === false
+            ? children
+            : createRender(NavList, list, { children })}
+        </ak.Role.nav>
+      </NavBarContext.Provider>
+    </LandmarkContext.Provider>
   );
 }
 

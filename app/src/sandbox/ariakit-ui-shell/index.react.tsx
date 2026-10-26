@@ -157,23 +157,15 @@ function Brand({ children = "Ariakit UI" }: { children?: ReactNode }) {
 }
 
 interface SectionLinksProps {
-  label: string;
   sections: readonly { id: string; title: string }[];
   current?: string;
   onSelect?: (id: string) => void;
 }
 
 /** The rows of a sidebar: links to the page's sections, in a Nav list. */
-function SectionLinks({
-  label,
-  sections,
-  current,
-  onSelect,
-}: SectionLinksProps) {
+function SectionLinks({ sections, current, onSelect }: SectionLinksProps) {
   return (
-    // The sidebar already renders the landmark around the content, so the nav
-    // recipe goes on a plain element.
-    <Nav $cover render={<div aria-label={label} />}>
+    <Nav $cover>
       {sections.map((section) => (
         <NavLink
           key={section.id}
@@ -305,11 +297,10 @@ function DocsScenario() {
         id={navigationId}
         open={navigationOpen}
         aria-label="Documentation"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarBody>
           <SectionLinks
-            label="Documentation sections"
             sections={docsSections}
             current={current}
             onSelect={setCurrent}
@@ -354,10 +345,10 @@ function DocsScenario() {
         $width="sm"
         $from="body"
         aria-label="On this page"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarBody>
-          <SectionLinks label="Page sections" sections={docsSections} />
+          <SectionLinks sections={docsSections} />
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellFooter>
@@ -415,11 +406,11 @@ function DashboardScenario() {
         $width="sm"
         $show
         aria-label="Workspace"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarBody>
           <Brand>Acme</Brand>
-          <Nav $cover render={<div aria-label="Workspace pages" />}>
+          <Nav $cover>
             {workspaceLinks.map((link, index) => (
               <NavLink
                 key={link.title}
@@ -499,7 +490,7 @@ function DashboardScenario() {
           $side="end"
           $width="lg"
           aria-label="Details"
-          render={<aside />}
+          landmark="aside"
         >
           <ShellSidebarBody>
             <HeadingLevel level={2}>
@@ -567,7 +558,7 @@ function ChatScenario() {
           <ScenarioControls />
         </ShellHeaderEnd>
       </ShellHeader>
-      <ShellSidebar $width="xs" $show aria-label="Workspaces" render={<nav />}>
+      <ShellSidebar $width="xs" $show aria-label="Workspaces" landmark="nav">
         <ShellSidebarBody $p={2}>
           <ul className="grid gap-2">
             {["Acme", "Ariakit", "Bakery"].map((workspace) => (
@@ -589,10 +580,10 @@ function ChatScenario() {
         open={channelsOpen}
         $width="md"
         aria-label="Channels"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarBody>
-          <Nav $cover render={<div aria-label="Channel list" />}>
+          <Nav $cover>
             {channels.map((channel, index) => (
               <NavLink
                 key={channel}
@@ -643,7 +634,7 @@ function ChatScenario() {
         $side="end"
         $width="sm"
         aria-label="Members"
-        render={<aside />}
+        landmark="aside"
       >
         <ShellSidebarBody>
           <HeadingLevel level={2}>
@@ -724,11 +715,10 @@ function SettingsScenario() {
         open={open}
         $width="sm"
         aria-label="Settings sections"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarBody>
           <SectionLinks
-            label="Sections"
             sections={settingsSections}
             current={current}
             onSelect={setCurrent}
@@ -921,9 +911,9 @@ function StaticScenario() {
           <ScenarioControls />
         </ShellHeaderEnd>
       </ShellHeader>
-      <ShellSidebar $show aria-label="Sections" render={<aside />}>
+      <ShellSidebar $show aria-label="Sections" landmark="aside">
         <ShellSidebarBody>
-          <SectionLinks label="Section list" sections={settingsSections} />
+          <SectionLinks sections={settingsSections} />
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellMain>

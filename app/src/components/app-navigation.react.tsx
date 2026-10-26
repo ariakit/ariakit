@@ -62,8 +62,9 @@ export function AppNavigation({
   return (
     <Nav
       list={false}
-      // The surrounding sidebar is already the navigation landmark.
-      render={<div />}
+      // Astro renders the surrounding sidebar, which is already the navigation
+      // landmark, outside this island's React tree, so it can't skip it.
+      landmark={false}
       // Span the sidebar body padding, so bars meet the sidebar edge.
       $cover
       $fill={fill}

@@ -89,7 +89,7 @@ export default function Example() {
         open={channelsOpen}
         $width="sm"
         aria-label="Workspace"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarHeader>
           <Button className="w-full justify-start">
@@ -103,12 +103,7 @@ export default function Example() {
           </Button>
         </ShellSidebarHeader>
         <ShellSidebarBody>
-          <Nav
-            $cover
-            list={false}
-            render={<div />}
-            bar={{ $offset: "halfway" }}
-          >
+          <Nav $cover list={false} bar={{ $offset: "halfway" }}>
             <NavGroup>
               <NavGroupLabel>Channels</NavGroupLabel>
               <NavList>
@@ -207,7 +202,7 @@ export default function Example() {
           $side="end"
           $width="sm"
           aria-label="Members"
-          render={<aside />}
+          landmark="aside"
         >
           <ShellSidebarBody $p={3}>
             <p className="font-semibold">Members</p>

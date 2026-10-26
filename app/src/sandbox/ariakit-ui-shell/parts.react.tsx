@@ -135,7 +135,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
         $width="xs"
         $show={visibilityValues[startVisibility]}
         aria-label="Part navigation"
-        render={<nav />}
+        landmark="nav"
       >
         <ShellSidebarHeader $height={height} $border={5} className={textSize}>
           Navigation
@@ -156,7 +156,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
           $width="xs"
           $show={visibilityValues[startVisibility]}
           aria-label="More navigation"
-          render={<nav />}
+          landmark="nav"
         >
           <ShellSidebarBody>More navigation</ShellSidebarBody>
         </ShellSidebar>
@@ -393,16 +393,11 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
               Second start sidebar
             </label>
           </section>
-          <Shell
-            $size="md"
-            aria-label="Nested parts shell"
-            className="mt-4 max-w-3xl"
-          >
+          <Shell id="nested-parts-shell" $size="md" className="mt-4 max-w-3xl">
             <ShellHeader>
               <ShellHeaderStart>Nested header</ShellHeaderStart>
             </ShellHeader>
             <ShellMain
-              render={<div />}
               $p="var(--nested-gutter)"
               className="[--nested-gutter:1rem] @5xl/shell:[--nested-gutter:2rem]"
             >
@@ -414,11 +409,11 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
               <ShellMainBody>
                 <p>Nested body</p>
                 {nestedHeaders && (
-                  <Shell $size="md" aria-label="Inner parts shell">
+                  <Shell id="inner-parts-shell" $size="md">
                     <ShellHeader>
                       <ShellHeaderStart>Inner header</ShellHeaderStart>
                     </ShellHeader>
-                    <ShellMain render={<div />}>
+                    <ShellMain>
                       <ShellMainHeader $height="lg">
                         <div>Inner actions</div>
                       </ShellMainHeader>
@@ -443,7 +438,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
         $width="xs"
         open={endOpen}
         aria-label="Part details"
-        render={<aside />}
+        landmark="aside"
       >
         <ShellSidebarBody>Details start at {from}.</ShellSidebarBody>
       </ShellSidebar>
@@ -454,7 +449,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
           $from="body"
           $width="xs"
           aria-label="More details"
-          render={<aside />}
+          landmark="aside"
         >
           <ShellSidebarBody>More details start at the body.</ShellSidebarBody>
         </ShellSidebar>

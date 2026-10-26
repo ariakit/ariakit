@@ -55,6 +55,7 @@
     "./components/tooltip.ariakit.react": "./src/components/tooltip.ariakit.react.tsx",
     "./react-utils/create-render.react": "./src/react-utils/create-render.react.ts",
     "./react-utils/is-iterable": "./src/react-utils/is-iterable.ts",
+    "./react-utils/landmark.react": "./src/react-utils/landmark.react.ts",
     "./react-utils/use-description.react": "./src/react-utils/use-description.react.ts",
     "./react-utils/use-perceptible-value.react": "./src/react-utils/use-perceptible-value.react.ts",
     "./styles/active": "./src/styles/active.ts",

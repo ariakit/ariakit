@@ -56,11 +56,11 @@ export default function Example() {
       <ShellSidebar
         id={sidebarId}
         open={open}
-        render={<nav />}
+        landmark="nav"
         aria-label="Guides"
       >
         <ShellSidebarBody>
-          <Nav $cover render={<div />} bar={{ $offset: "halfway" }}>
+          <Nav $cover bar={{ $offset: "halfway" }}>
             {sections.map((section, index) => (
               <NavLink
                 key={section.id}

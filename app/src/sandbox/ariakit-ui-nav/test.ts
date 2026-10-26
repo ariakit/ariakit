@@ -145,3 +145,16 @@ test("keeps anchor props, events, and refs on a wrapped link", async () => {
   expect(q.text("Last activated element: A")).toBeVisible();
   expect(q.within(q.navigation("Single link")).listitem.all()).toHaveLength(0);
 });
+
+test("renders nested Nav rows without a landmark unless they have a name", () => {
+  const workspace = q.navigation("Workspace");
+  const nested = q.within(workspace).navigation.all();
+  expect(nested).toEqual([q.within(workspace).navigation("Pinned")]);
+  expect(q.within(workspace).link("Drafts").closest("nav")).toBe(workspace);
+});
+
+test("skips the landmark of a Nav with landmark set to false", () => {
+  const link = q.link("Recent search");
+  expect(link.closest("nav, [role='navigation']")).toBeNull();
+  expect(link.closest(".nav")).toBeInTheDocument();
+});
