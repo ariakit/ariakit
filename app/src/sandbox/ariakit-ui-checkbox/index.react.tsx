@@ -711,6 +711,42 @@ export default function CheckboxExamples() {
       </Example>
 
       <Example
+        title="Fields on a tinted layer"
+        description="An empty box lightens to white on a light tinted surface, like an input, while a checked box keeps its brand fill."
+        code={`
+          <Frame $hue="blue" $chroma="balanced" $rounded="xl" $p={4} className="grid gap-2">
+            <CheckboxField defaultChecked>
+              <CheckboxLabel>Email me</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField>
+              <CheckboxLabel>Push notifications</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField disabled>
+              <CheckboxLabel>Text messages</CheckboxLabel>
+            </CheckboxField>
+          </Frame>
+        `}
+      >
+        <Frame
+          $hue="blue"
+          $chroma="balanced"
+          $rounded="xl"
+          $p={4}
+          className="grid w-full gap-2"
+        >
+          <CheckboxField defaultChecked>
+            <CheckboxLabel>Email me</CheckboxLabel>
+          </CheckboxField>
+          <CheckboxField>
+            <CheckboxLabel>Push notifications</CheckboxLabel>
+          </CheckboxField>
+          <CheckboxField disabled>
+            <CheckboxLabel>Text messages</CheckboxLabel>
+          </CheckboxField>
+        </Frame>
+      </Example>
+
+      <Example
         title="Bordered fields on a brand layer"
         description="The edge takes its color from the surface, like the edge of a card, and the row stays transparent."
         code={`
