@@ -21,6 +21,7 @@ import {
   inputDescription,
   inputError,
   inputErrorIcon,
+  inputErrorText,
   inputField,
   inputFieldContent,
   inputFieldGrid,
@@ -249,27 +250,35 @@ export interface InputErrorProps
  * Error text for an input in an `InputField`, marked with an icon. While it
  * shows, list its `id` first in the input's `aria-describedby` and set
  * `aria-invalid` on the input. It has no live region role; add `role="alert"`
- * when the error appears without a focus change.
+ * when the error appears without a focus change. Frame variants, such as
+ * `$layer` and `$rounded`, show it on a panel.
  * @example
  * <InputField>
  *   <InputLabel htmlFor="email">Email</InputLabel>
  *   <Input id="email" aria-invalid aria-describedby="email-error" />
  *   <InputError id="email-error">Enter an email address.</InputError>
  * </InputField>
+ * @example
+ * <InputError $layer="danger" $mix={15}>Choose an answer.</InputError>
  */
 export function InputError({
   icon = <CircleAlertIcon />,
   ...props
 }: InputErrorProps) {
   const [variantProps, rest] = splitProps(props, inputError);
+  const filled = hasContent(rest.children);
   return (
     <ak.Role.div {...inputError.jsx(variantProps)} {...rest}>
-      {isRenderable(icon) && hasContent(rest.children) && (
+      {isRenderable(icon) && filled && (
         <span {...inputErrorIcon.jsx()} aria-hidden>
           {icon}
         </span>
       )}
-      {rest.children}
+      {filled ? (
+        <span {...inputErrorText.jsx()}>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
     </ak.Role.div>
   );
 }

@@ -1,6 +1,13 @@
 import { click, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// A text query finds the text part inside an error, so find the error from the
+// first id in the description of its field.
+function getFieldError(field: HTMLElement) {
+  const [errorId] = field.getAttribute("aria-describedby")?.split(" ") ?? [];
+  return document.getElementById(errorId ?? "");
+}
+
 // https://github.com/ariakit/ariakit/issues/7473
 test("updates a persistent empty-result status outside the options", async () => {
   const input = q.combobox("Destination");
@@ -86,8 +93,9 @@ test("keeps a decorative default check when the custom icon is false", async () 
 // https://github.com/ariakit/ariakit/issues/8053
 test("marks the select error with an icon that the description leaves out", () => {
   const box = q.within(q.article("Select fields"));
-  const error = box.text("Choose a country.");
-  expect(error.querySelectorAll("svg")).toHaveLength(1);
+  const error = getFieldError(box.combobox("Delivery country"));
+  expect(error).toHaveTextContent("Choose a country.");
+  expect(error?.querySelectorAll("svg")).toHaveLength(1);
   expect(box.combobox("Delivery country")).toHaveAccessibleDescription(
     "Choose a country.",
   );
@@ -98,19 +106,24 @@ test("marks the select error with an icon that the description leaves out", () =
 // not hidden, so it can't catch that.
 // https://github.com/ariakit/ariakit/issues/8053
 test("replaces the select error icon with another icon", () => {
-  const error = q
-    .within(q.article("Select error with another icon"))
-    .text("Only an owner can change the plan.");
-  expect(error.querySelectorAll("svg")).toHaveLength(1);
-  expect(error.querySelector("svg[aria-label='Locked']")).toBeInTheDocument();
+  const error = getFieldError(
+    q
+      .within(q.article("Select error with another icon"))
+      .combobox("Billing plan"),
+  );
+  expect(error).toHaveTextContent("Only an owner can change the plan.");
+  expect(error?.querySelectorAll("svg")).toHaveLength(1);
+  expect(error?.querySelector("svg[aria-label='Locked']")).toBeInTheDocument();
 });
 
 // https://github.com/ariakit/ariakit/issues/8053
 test("removes the select error icon with icon false", () => {
   const box = q.within(q.article("Select error without an icon"));
-  const error = box.text("Weekly reports need a team plan.");
-  // No icon part either, so the text starts at the edge, like the hint.
-  expect(error.children).toHaveLength(0);
+  const error = getFieldError(box.combobox("Report frequency"));
+  expect(error).toHaveTextContent("Weekly reports need a team plan.");
+  // No hidden icon part either, so the text starts at the edge, like the hint.
+  expect(error?.querySelector("[aria-hidden]")).not.toBeInTheDocument();
+  expect(error?.querySelector("svg")).not.toBeInTheDocument();
   expect(box.combobox("Report frequency")).toHaveAccessibleDescription(
     "Weekly reports need a team plan. Reports go to every admin.",
   );
@@ -123,9 +136,7 @@ test("removes the select error icon when the error text clears", async () => {
     .combobox("Billing country");
   // The error keeps its element, so the text query would no longer find it once
   // the text clears.
-  const error = document.getElementById(
-    select.getAttribute("aria-describedby") ?? "",
-  );
+  const error = getFieldError(select);
   expect(error?.querySelectorAll("svg")).toHaveLength(1);
   await click(select);
   await click(q.within(q.listbox("Billing country")).option("Spain"));

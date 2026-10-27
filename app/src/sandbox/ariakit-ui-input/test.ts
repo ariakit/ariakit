@@ -1,6 +1,13 @@
 import { click, focus, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// A text query finds the text part inside an error, so find the error from the
+// first id in the description of its field.
+function getFieldError(field: HTMLElement) {
+  const [errorId] = field.getAttribute("aria-describedby")?.split(" ") ?? [];
+  return document.getElementById(errorId ?? "");
+}
+
 // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001176828
 test("skips a leading action when focusing the field from group padding", async () => {
   const field = q.textbox("Draft message");
@@ -60,16 +67,20 @@ test("does not focus a disabled field from its wrapper", async () => {
 
 // https://github.com/ariakit/ariakit/issues/8053
 test("marks an error with an icon unless the icon is removed", () => {
-  const marked = q.within(q.article("Error with a long message")).text(
-    // The link splits the text, so only the first sentence is matched.
-    /^Another account uses this address\./,
+  const marked = getFieldError(
+    q.within(q.article("Error with a long message")).textbox("Email"),
   );
-  expect(marked.querySelectorAll("svg")).toHaveLength(1);
-  const unmarked = q
-    .within(q.article("Error without an icon"))
-    .text("The code has 6 digits.");
-  // No icon part either, so the text starts at the edge, like the hint.
-  expect(unmarked.children).toHaveLength(0);
+  expect(marked).toHaveTextContent(
+    "Another account uses this address. Sign in or use a different address.",
+  );
+  expect(marked?.querySelectorAll("svg")).toHaveLength(1);
+  const unmarked = getFieldError(
+    q.within(q.article("Error without an icon")).textbox("Verification code"),
+  );
+  expect(unmarked).toHaveTextContent("The code has 6 digits.");
+  // No hidden icon part either, so the text starts at the edge, like the hint.
+  expect(unmarked?.querySelector("[aria-hidden]")).not.toBeInTheDocument();
+  expect(unmarked?.querySelector("svg")).not.toBeInTheDocument();
 });
 
 // The browser test also checks that the icon label stays out of the field
@@ -77,11 +88,12 @@ test("marks an error with an icon unless the icon is removed", () => {
 // not hidden, so it can't catch that.
 // https://github.com/ariakit/ariakit/issues/8053
 test("replaces the error icon with another icon", () => {
-  const error = q
-    .within(q.article("Error with another icon"))
-    .text("This account is locked.");
-  expect(error.querySelectorAll("svg")).toHaveLength(1);
-  expect(error.querySelector("svg[aria-label='Locked']")).toBeInTheDocument();
+  const error = getFieldError(
+    q.within(q.article("Error with another icon")).textbox("Account email"),
+  );
+  expect(error).toHaveTextContent("This account is locked.");
+  expect(error?.querySelectorAll("svg")).toHaveLength(1);
+  expect(error?.querySelector("svg[aria-label='Locked']")).toBeInTheDocument();
 });
 
 // https://github.com/ariakit/ariakit/issues/8053
@@ -93,9 +105,7 @@ test("removes the error icon when the error text clears", async () => {
     const field = q.within(q.article(title)).textbox(name);
     // The error keeps its element, so the text query would no longer find it
     // once the text clears.
-    const error = document.getElementById(
-      field.getAttribute("aria-describedby") ?? "",
-    );
+    const error = getFieldError(field);
     expect(error?.querySelectorAll("svg")).toHaveLength(1);
     await type(text, field);
     expect(field).not.toHaveAttribute("aria-invalid");

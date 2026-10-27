@@ -1,4 +1,13 @@
+import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
+
+// A text query finds the text part inside an error, so find the error from the
+// first id in the description of its field.
+async function getFieldError(field: Locator) {
+  const description = await field.getAttribute("aria-describedby");
+  const [errorId] = description?.split(" ") ?? [];
+  return field.page().locator(`[id="${errorId}"]`);
+}
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7473
@@ -252,7 +261,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const box = query(q.article("Select fields"));
-    const error = box.text("Choose a country.");
+    const error = await getFieldError(box.combobox("Delivery country"));
+    await test.expect(error).toHaveText("Choose a country.");
     await test.expect(error.locator("svg")).toHaveCount(1);
     await test
       .expect(box.combobox("Delivery country"))
@@ -264,7 +274,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const box = query(q.article("Select error with another icon"));
-    const error = box.text("Only an owner can change the plan.");
+    const error = await getFieldError(box.combobox("Billing plan"));
+    await test.expect(error).toHaveText("Only an owner can change the plan.");
     await test.expect(error.locator("svg")).toHaveCount(1);
     await test.expect(error.locator("svg[aria-label='Locked']")).toHaveCount(1);
     await test
@@ -275,9 +286,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/8053
   test("removes the select error icon with icon false", async ({ q }) => {
     const box = query(q.article("Select error without an icon"));
-    const error = box.text("Weekly reports need a team plan.");
-    // No icon part either, so the text starts at the edge, like the hint.
-    await test.expect(error.locator("*")).toHaveCount(0);
+    const error = await getFieldError(box.combobox("Report frequency"));
+    await test.expect(error).toHaveText("Weekly reports need a team plan.");
+    // No hidden icon part either, so the text starts at the edge, like the
+    // hint.
+    await test.expect(error.locator("[aria-hidden]")).toHaveCount(0);
+    await test.expect(error.locator("svg")).toHaveCount(0);
     await test
       .expect(box.combobox("Report frequency"))
       .toHaveAccessibleDescription(
@@ -287,7 +301,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
   // https://github.com/ariakit/ariakit/issues/8053
   test("removes the select error icon when the error text clears", async ({
-    page,
     q,
   }) => {
     const select = query(q.article("Select error that clears")).combobox(
@@ -295,8 +308,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     );
     // The error keeps its element, so the text query would no longer find it
     // once the text clears.
-    const errorId = await select.getAttribute("aria-describedby");
-    const error = page.locator(`[id="${errorId}"]`);
+    const error = await getFieldError(select);
     await test.expect(error.locator("svg")).toHaveCount(1);
     await select.click();
     await query(q.listbox("Billing country")).option("Spain").click();
