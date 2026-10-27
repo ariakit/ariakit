@@ -50,6 +50,22 @@ async function getViewportEdge(viewport: Locator) {
   });
 }
 
+// The brand token and the computed edge write the same color in different
+// formats, so an element with the brand color resolves the token as the browser
+// writes the edge. The site theme can change the brand color.
+async function hasBrandViewportEdge(viewport: Locator) {
+  return viewport.evaluate((element) => {
+    const doc = element.ownerDocument;
+    const probe = doc.createElement("div");
+    probe.style.color = "var(--color-brand)";
+    doc.body.append(probe);
+    const brand = getComputedStyle(probe).color;
+    probe.remove();
+    const style = getComputedStyle(element);
+    return style.borderTopColor === brand || style.boxShadow.includes(brand);
+  });
+}
+
 // The card shows the frame once the popup of its example has opened and the
 // frame has scrolled to it, so the frame does not show the closed combobox and
 // then jump. A retrying assertion would also pass if the popup opened after the
@@ -360,6 +376,7 @@ test("preview card frames scroll after a click on the card", async ({
     return card.evaluate((element) => element.getBoundingClientRect().height);
   };
   const inactiveEdge = await getViewportEdge(viewport);
+  expect(await hasBrandViewportEdge(viewport)).toBe(false);
   const inactiveHeight = await getHeight();
 
   // A click on the title in the top bar moves focus to the card, which lets the
@@ -367,7 +384,7 @@ test("preview card frames scroll after a click on the card", async ({
   await query(region).heading("Combobox Group").click();
   await expect(card).toBeFocused();
   await expect(root).toHaveAttribute("data-preview-active", "");
-  await expect.poll(() => getViewportEdge(viewport)).not.toBe(inactiveEdge);
+  await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
   // The brand border does not resize the card.
   expect(await getHeight()).toBe(inactiveHeight);
 
@@ -393,7 +410,7 @@ test("preview card frames scroll after a click on the card", async ({
   // A click in the frame also gives the viewport a brand border.
   await page.mouse.click(box.x + 8, box.y + 8);
   await expect(root).toHaveAttribute("data-preview-active", "");
-  await expect.poll(() => getViewportEdge(viewport)).not.toBe(inactiveEdge);
+  await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
 
   // A click in another preview frame sends no event to the docs page, but the
   // card loses its brand border, even after a click on its top bar.
@@ -774,12 +791,13 @@ test("inline previews scroll after a click on their card", async ({
     .poll(() => viewport.evaluate((el) => el.scrollHeight > el.clientHeight))
     .toBe(true);
   const inactiveEdge = await getViewportEdge(viewport);
+  expect(await hasBrandViewportEdge(viewport)).toBe(false);
 
   // A click on the title in the top bar moves focus to the card, which lets the
   // example scroll and gives the viewport a brand border.
   await query(article).heading("Article", { level: 2 }).click();
   await expect(card).toBeFocused();
-  await expect.poll(() => getViewportEdge(viewport)).not.toBe(inactiveEdge);
+  await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
   // The click scrolls the title into view, which can leave the example below
   // the window.
   await viewport.evaluate((element) => element.scrollIntoView());
