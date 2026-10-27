@@ -396,6 +396,34 @@ export default function CheckboxExamples() {
       </Example>
 
       <Example
+        title="Cards without a mark"
+        description="Without a mark, checked and mixed cards draw a second edge pixel inside their border, so their state does not rest on color alone."
+        code={`
+          <CheckboxCard value="analytics" defaultChecked>
+            <CheckboxCardLabel>Analytics</CheckboxCardLabel>
+          </CheckboxCard>
+          <CheckboxCard value="all" checked="mixed">
+            <CheckboxCardLabel>All features</CheckboxCardLabel>
+          </CheckboxCard>
+          <CheckboxCard value="alerts">
+            <CheckboxCardLabel>Alerts</CheckboxCardLabel>
+          </CheckboxCard>
+        `}
+      >
+        <div className="grid gap-3">
+          <CheckboxCard value="analytics" defaultChecked>
+            <CheckboxCardLabel>Analytics</CheckboxCardLabel>
+          </CheckboxCard>
+          <CheckboxCard value="all" checked="mixed" onChange={() => {}}>
+            <CheckboxCardLabel>All features</CheckboxCardLabel>
+          </CheckboxCard>
+          <CheckboxCard value="alerts">
+            <CheckboxCardLabel>Alerts</CheckboxCardLabel>
+          </CheckboxCard>
+        </div>
+      </Example>
+
+      <Example
         title="Card with description"
         description="Descriptions truncate by default. This one wraps, and the check stays on the first line."
         code={`
@@ -554,7 +582,7 @@ export default function CheckboxExamples() {
 
       <Example
         title="Floating check"
-        description="The check becomes a stamp in the card's top-end corner and shows only while the card is checked."
+        description="The check becomes a stamp in the card's top-end corner, takes its colors from the surface around the card, and shows only while the card is checked."
         code={`
           <CheckboxCardGrid>
             <CheckboxCard value="analytics" defaultChecked>

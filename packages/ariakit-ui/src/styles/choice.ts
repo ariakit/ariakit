@@ -29,14 +29,15 @@ export const choice = cv({
     // Restore text-line alignment for bare inputs; flex and grid parents still
     // control placement.
     "inline-flex align-middle",
-    // Use the layer's readable text color for the mark in checked and disabled
-    // states.
-    "after:bg-current after:scale-0 ui-choice-on:after:scale-100",
+    "after:scale-0 ui-choice-on:after:scale-100",
     "after:transition-transform after:duration-100 after:ease-out",
     "motion-reduce:after:transition-none",
     // Keep forced colors from replacing the mark background with the system
     // canvas.
     "after:forced-color-adjust-none",
+    // The mark then inherits the box's text color from before forced colors,
+    // which can match the canvas. Set the system text color for it to inherit.
+    "forced-colors:text-[CanvasText]",
     // A custom child replaces the drawn mark and uses the same size and state.
     "[--slot-icon-size:calc(var(--size)*0.7)] [&>svg]:stroke-[2.5]",
     "has-[>*]:after:hidden not-ui-choice-on:*:hidden!",
@@ -60,20 +61,49 @@ export const choice = cv({
   variants: {
     /**
      * The mark drawn inside the box while the choice is on. `check` draws a
-     * check mark and, in the mixed state, a dash. `dot` draws a filled disc.
+     * check mark and, in the mixed state, a dash. `dot` draws an outlined dot:
+     * a rim and a center dot in the checked fill with the surface between them.
      * @default "check"
      */
     $mark: {
       check: [
+        // Use the layer's readable text color for the mark in checked and
+        // disabled states.
+        "after:bg-current",
         "after:size-(--slot-icon-size) after:mask-(--choice-mark-check)",
         "after:mask-contain after:mask-center after:mask-no-repeat",
         "ui-choice-mixed:after:mask-(--choice-mark-dash)",
       ],
-      dot: "after:size-1/2 after:rounded-full",
+      dot: [
+        // The center dot and the rim, which includes the border, take the
+        // box's fill, so both keep its contrast against the surface ring
+        // between them. The ring is 14% of the box's inner width.
+        "[--choice-mark-gap:calc((var(--size)-2*var(--border-width))*0.14)]",
+        "after:size-[calc(100%-2*(var(--choice-mark-rim)-var(--border-width)+var(--choice-mark-gap)))]",
+        "after:rounded-full after:bg-(--ak-layer)",
+        "after:ring-(length:--choice-mark-gap) after:ring-(--ak-layer-parent)",
+        // Forced colors replace the fill with the system canvas, so the border
+        // is the rim. Draw the dot in the text color without the ring.
+        "forced-colors:after:bg-current forced-colors:after:ring-0",
+      ],
+    },
+    /**
+     * Sets the rim width of the `dot` mark, including the box border. Numbers
+     * are pixels; other values are CSS lengths. A thinner rim leaves more room
+     * for the center dot. Defaults to 2px for the `dot` mark.
+     */
+    $markRim(value?: number | (string & {})) {
+      if (value == null) return;
+      const width = typeof value === "number" ? `${value}px` : value;
+      return { style: { "--choice-mark-rim": width } };
     },
   },
   defaultVariants: {
     $mark: "check",
+    $markRim(defaultValue, variants) {
+      if (variants.$mark !== "dot") return defaultValue;
+      return defaultValue ?? 2;
+    },
     $rounded: "sm",
     // Preserve the box shape independently of the surrounding card or row.
     $forceRounded: true,
@@ -104,6 +134,9 @@ export const choiceInput = cv({
   extend: [choice, focusHighlight],
   class: [
     "not-ui-choice-disabled:group-hover/choice-field:ak-state-(--hover-offset,0)",
+    // A click can't change a checked radio, so hover doesn't light it.
+    "ui-settled:ui-hover:ak-state-0",
+    "ui-settled:group-hover/choice-field:ak-state-0",
     "forced-colors:appearance-auto forced-colors:after:hidden",
   ],
   defaultVariants: {
@@ -194,6 +227,16 @@ export const choiceCard = cv({
     // contrast pipeline's ambiguous range.
     "not-ui-disabled-within:ui-checked-within:ak-layer-push-1",
     "not-ui-disabled-within:ui-mixed-within:ak-layer-push-1",
+    // Without a mark, an inset ring adds a second edge pixel to the selected
+    // card, so its state doesn't rest on color alone. The ring takes no space.
+    "inset-ring-(--ak-edge)",
+    "not-has-[.choice-card-check]:ui-checked-within:inset-ring",
+    "not-has-[.choice-card-check]:ui-mixed-within:inset-ring",
+    // Forced colors remove shadows. Use a real border one pixel wider instead.
+    "not-has-[.choice-card-check]:ui-checked-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
+    "not-has-[.choice-card-check]:ui-mixed-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
+    // A click can't change a checked radio card, so hover doesn't light it.
+    "ui-settled:ui-hover:ak-state-0",
     // Group-disabled cards may not receive $disabled. Read the input state and
     // suppress hover and press on the label too.
     "ui-disabled-within:ak-disabled",
@@ -273,12 +316,19 @@ export const choiceCard = cv({
  */
 export const choiceCardCheck = cv({
   extend: [choice],
+  // Cards without this mark draw a second edge pixel when selected.
+  class: "choice-card-check",
   variants: {
     /**
      * Places the check in the card's top-end corner and hides it when
      * unchecked.
      */
-    $floating: "not-ui-choice-on:invisible",
+    $floating: [
+      "not-ui-choice-on:invisible",
+      // The check paints outside the card, so it takes its colors from the
+      // surface around the card.
+      "ak-outset",
+    ],
   },
   defaultVariants: {
     $size: "lg",
