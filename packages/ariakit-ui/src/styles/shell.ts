@@ -600,13 +600,15 @@ const compensation = cx(
   "[--shell-comp-start:max(0px,calc(var(--shell-end-total)-var(--shell-start-total)))]",
 );
 
-// Limit sidebar compensation to free space, but keep the minimum gutter. `auto`
-// tracks grow by equal amounts, preserving the offset; `1fr` loses it.
+// Limit sidebar compensation to free space, but keep the minimum gutter. The
+// offsets sit outside the wide lines, so the wide span stays centered on the
+// content. `auto` tracks grow by equal amounts, preserving that center; `1fr`
+// loses it.
 const centered = cx(
   "[--shell-free:calc(100%-var(--shell-content-end-space)-var(--shell-main-max-width)-var(--shell-gutter)-2*var(--shell-popout)-2*var(--shell-feature))]",
-  "[--shell-track-start:clamp(var(--shell-gutter),var(--shell-free),calc(var(--shell-gutter)+var(--shell-comp-start)))]",
-  "[--shell-track-end:calc(var(--shell-content-end-space)+clamp(var(--shell-gutter),var(--shell-free),calc(var(--shell-gutter)+var(--shell-comp-end))))]",
-  "grid-cols-[[full-start]_minmax(var(--shell-track-start),auto)_[feature-start]_minmax(0,var(--shell-feature))_[popout-start]_minmax(0,var(--shell-popout))_[content-start]_minmax(min(var(--shell-main-max-width),max(0px,calc(100%-var(--shell-content-end-space)-2*var(--shell-gutter)))),var(--shell-main-max-width))_[content-end]_minmax(0,var(--shell-popout))_[popout-end]_minmax(0,var(--shell-feature))_[feature-end]_minmax(var(--shell-track-end),auto)_[full-end]]",
+  "[--shell-offset-start:clamp(0px,calc(var(--shell-free)-var(--shell-gutter)),var(--shell-comp-start))]",
+  "[--shell-offset-end:calc(var(--shell-content-end-space)+clamp(0px,calc(var(--shell-free)-var(--shell-gutter)),var(--shell-comp-end)))]",
+  "grid-cols-[[full-start]_var(--shell-offset-start)_[wide-start]_minmax(var(--shell-gutter),auto)_[feature-start]_minmax(0,var(--shell-feature))_[popout-start]_minmax(0,var(--shell-popout))_[content-start]_minmax(min(var(--shell-main-max-width),max(0px,calc(100%-var(--shell-content-end-space)-2*var(--shell-gutter)))),var(--shell-main-max-width))_[content-end]_minmax(0,var(--shell-popout))_[popout-end]_minmax(0,var(--shell-feature))_[feature-end]_minmax(var(--shell-gutter),auto)_[wide-end]_var(--shell-offset-end)_[full-end]]",
 );
 
 /**
@@ -625,9 +627,10 @@ const content = cx(
   "[:where(&)_*]:[scroll-margin-block-end:var(--shell-foot)]",
   // Keep controls at their content width instead of stretching to the column.
   "[&>.control]:justify-self-start",
-  // A leading or trailing full band touches the bars around the section.
-  "[&:has(>.shell-main-full:first-child)]:pbs-0",
-  "[&:has(>.shell-main-full:last-child)]:pbe-0",
+  // A leading or trailing wide or full band touches the bars around the
+  // section.
+  "[&:has(>:is(.shell-main-wide,.shell-main-full):first-child)]:pbs-0",
+  "[&:has(>:is(.shell-main-wide,.shell-main-full):last-child)]:pbe-0",
   // Publish gutter spacing as frame padding so nested frame corners remain
   // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
@@ -848,6 +851,17 @@ export const shellMainFeature = cv({
   extend: [mainBand],
   class:
     "shell-main-feature [.shell-content>&]:col-[feature] [.shell-main-band>&]:col-[feature]",
+});
+
+/**
+ * Extends beyond the feature column to the widest span centered on the content
+ * column. Sidebar compensation stays outside it, so it matches the full band
+ * when no sidebar offsets the content.
+ */
+export const shellMainWide = cv({
+  extend: [mainBand],
+  class:
+    "shell-main-wide [.shell-content>&]:col-[wide] [.shell-main-band>&]:col-[wide]",
 });
 
 /** Fills the main section width, including its outer gutters. */

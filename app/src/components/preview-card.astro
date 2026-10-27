@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
+import { ShellMainWide } from "@ariakit/ui/components/shell.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { PreviewCard } from "#app/components/preview-card.react.tsx";
 import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
@@ -58,7 +58,7 @@ const files = Object.entries(source.files);
   setupPreviewFrames();
 </script>
 
-<ShellMainFull
+<ShellMainWide
   render={createElement("section", { "aria-labelledby": headingId })}
   {className}
 >
@@ -66,7 +66,7 @@ const files = Object.entries(source.files);
       they drop the band gutter and align with the surrounding content. */}
   <Frame
     $p="var(--app-gutter)"
-    className="grid grid-cols-1 py-0! [.prose>.shell-main-full>&]:px-0! [.preview-grid>.shell-main-full>&]:px-0!"
+    className="grid grid-cols-1 py-0! [.prose>.shell-main-wide>&]:px-0! [.preview-grid>.shell-main-wide>&]:px-0!"
   >
     {/* The code renders on the server and reaches the island as a static
         slot. A card hydrates as it comes near the viewport, so an inline
@@ -111,4 +111,4 @@ const files = Object.entries(source.files);
       </div>
     </PreviewCard>
   </Frame>
-</ShellMainFull>
+</ShellMainWide>

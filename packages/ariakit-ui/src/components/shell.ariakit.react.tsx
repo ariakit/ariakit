@@ -11,6 +11,7 @@ import {
   shellMainContent,
   shellMainPopout,
   shellMainFeature,
+  shellMainWide,
   shellMainFull,
   shellFooter,
   shellFooterCenter,
@@ -307,9 +308,9 @@ export interface ShellMainBodyProps
  * The main content grid. Direct element children use the centered content
  * column. Content that adapts to its width can declare its own query container,
  * so a sidebar fold restyles only that content in WebKit. Use
- * `ShellMainPopout`, `ShellMainFeature`, or `ShellMainFull` as a direct child
- * to select a wider span. Children are grid items; use `Prose` for text with
- * collapsing margins.
+ * `ShellMainPopout`, `ShellMainFeature`, `ShellMainWide`, or `ShellMainFull` as
+ * a direct child to select a wider span. Children are grid items; use `Prose`
+ * for text with collapsing margins.
  *
  * Fragment links clear the configured sticky headers. For keyboard focus, also
  * set scroll padding on the page's scroll port to their total height, for
@@ -377,8 +378,8 @@ export interface ShellMainFeatureProps
 /**
  * Extends past the popout tracks into the feature tracks. Direct element
  * children fill its width. Use a narrower main band inside to select its
- * columns. It must be a direct child of a main header, intro, body, or full
- * band.
+ * columns. It must be a direct child of a main header, intro, body, or wide or
+ * full band.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -391,6 +392,33 @@ export interface ShellMainFeatureProps
 export function ShellMainFeature(props: ShellMainFeatureProps) {
   const [variantProps, rest] = splitProps(props, shellMainFeature);
   return <ak.Role.div {...shellMainFeature.jsx(variantProps)} {...rest} />;
+}
+
+export interface ShellMainWideProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellMainWide> {}
+
+/**
+ * Extends past the feature tracks to the widest span centered on the content
+ * column. An open sidebar shifts the content to keep it centered in the shell;
+ * this band leaves that offset out, while `ShellMainFull` covers it. Without
+ * the offset, both bands match. Direct element children fill its width. Use a
+ * narrower main band inside to select its columns. It must be a direct child of
+ * a main header, intro, body, or full band.
+ * @example
+ * <Shell>
+ *   <ShellSidebar>
+ *     <ShellSidebarBody>Navigation</ShellSidebarBody>
+ *   </ShellSidebar>
+ *   <ShellMain>
+ *     <ShellMainBody>
+ *       <ShellMainWide><p>Centered wide content</p></ShellMainWide>
+ *     </ShellMainBody>
+ *   </ShellMain>
+ * </Shell>
+ */
+export function ShellMainWide(props: ShellMainWideProps) {
+  const [variantProps, rest] = splitProps(props, shellMainWide);
+  return <ak.Role.div {...shellMainWide.jsx(variantProps)} {...rest} />;
 }
 
 export interface ShellMainFullProps

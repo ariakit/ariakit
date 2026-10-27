@@ -1,6 +1,11 @@
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
+import {
+  expectCentered,
+  getBox,
+  getSidebar,
+  selectScenario,
+} from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
@@ -134,7 +139,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await page.setViewportSize({ width, height: 900 });
       const content = await getBox(q.main().locator("#layout-content"));
       const bands = [];
-      for (const name of ["Popout", "Feature", "Full"]) {
+      for (const name of ["Popout", "Feature", "Wide", "Full"]) {
         const band = page.locator(`[aria-label="${name} band"]`);
         const text = await getBox(
           query(band).text(`${name} text`, { exact: true }),
@@ -153,8 +158,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await expect(band).toHaveCSS("container-type", "normal");
         bands.push(await getBox(band));
       }
-      const [popout, feature, full] = bands;
-      if (!popout || !feature || !full) {
+      const [popout, feature, wide, full] = bands;
+      if (!popout || !feature || !wide || !full) {
         throw new Error("Missing main band");
       }
       expect(popout.width).toBeGreaterThanOrEqual(content.width);
@@ -163,9 +168,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
         0,
       );
+      // Without an open sidebar, nothing offsets the content.
+      expect(wide.x).toBeCloseTo(full.x, 0);
+      expect(wide.width).toBeCloseTo(full.width, 0);
       for (const [name, outer] of [
         ["popout", popout],
         ["feature", feature],
+        ["wide", wide],
       ] as const) {
         const nested = await getBox(
           page.locator(`[aria-label="Nested ${name} band"]`),
@@ -187,6 +196,50 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       }
     });
   }
+
+  test("keeps the wide band centered on the content beside an open start sidebar while the full band fills the main body", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Toggle layout navigation").click();
+    await expect(getSidebar(q, "Layout navigation")).toHaveCSS(
+      "width",
+      "192px",
+    );
+    const body = q.main().locator(":scope > .shell-main-body");
+    const content = q.main().locator("#layout-content");
+    const wide = page.locator('[aria-label="Wide band"]');
+    const full = page.locator('[aria-label="Full band"]');
+    // The body starts after the sidebar, and the content stays centered in the
+    // 1440px shell, so the wide band ends 192px before the shell edge.
+    await expect.poll(async () => (await getBox(body)).x).toBeCloseTo(192, 0);
+    // The wide band stays centered on the content on every frame of the fold,
+    // so its width carries the wait for the fold to end.
+    await expect
+      .poll(async () => (await getBox(wide)).width)
+      .toBeCloseTo(1056, 0);
+    await expectCentered(wide, content);
+    expect((await getBox(wide)).x).toBeCloseTo(192, 0);
+    // A wide band inside a full band selects the same columns.
+    const nestedWide = await getBox(
+      page.locator('[aria-label="Nested wide band"]'),
+    );
+    expect(nestedWide.x).toBeCloseTo(192, 0);
+    expect(nestedWide.width).toBeCloseTo(1056, 0);
+    const fullBox = await getBox(full);
+    expect(fullBox.x).toBeCloseTo(192, 0);
+    expect(fullBox.width).toBeCloseTo(1248, 0);
+    // At 1100px, the 908px body has 100px left for compensation after the
+    // content, popout, feature, and gutter tracks. The wide band gives the rest
+    // of the sidebar width back and stays centered on the content.
+    await page.setViewportSize({ width: 1100, height: 900 });
+    await expect
+      .poll(async () => (await getBox(wide)).width)
+      .toBeCloseTo(808, 0);
+    await expectCentered(wide, content);
+    expect((await getBox(wide)).x).toBeCloseTo(192, 0);
+    expect((await getBox(full)).width).toBeCloseTo(908, 0);
+  });
 
   // https://github.com/ariakit/ariakit/issues/7532
   test("collapses an open sidebar at 3xl with the fold and compensation together", async ({
