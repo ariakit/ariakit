@@ -4,7 +4,6 @@ import {
   Shell,
   ShellMain,
   ShellMainBody,
-  ShellMainIntro,
   ShellSidebar,
   ShellSidebarBody,
 } from "@ariakit/ui/components/shell.ariakit.react";
@@ -19,24 +18,14 @@ const releases = Array.from({ length: 24 }, (_, index) => {
   };
 });
 
-// The article text gets smaller in a narrow frame, so the sidebar keeps its
-// room beside it.
-const articleClass = "text-[length:clamp(0.625rem,2.5cqi,1rem)]";
-
 export default function Example() {
   return (
     <Shell>
       <ShellMain>
-        <ShellMainIntro>
-          {/* The intro ends with the space that the first heading of the body
-              drops from its top margin, as the other sections have. */}
-          <Prose className={`${articleClass} pb-[1.75em]`}>
-            <Heading render={<h1 />}>Changelog</Heading>
-            <p>Every release of the library, from the newest.</p>
-          </Prose>
-        </ShellMainIntro>
         <ShellMainBody>
-          <Prose className={articleClass}>
+          {/* The article text gets smaller in a narrow frame, so the sidebar
+              keeps its room beside it. */}
+          <Prose className="text-[length:clamp(0.625rem,2.5cqi,1rem)]">
             {releases.map((release) => (
               <Fragment key={release.slug}>
                 <Heading id={release.slug} render={<h2 />}>

@@ -5,7 +5,6 @@ import {
   Shell,
   ShellMain,
   ShellMainBody,
-  ShellMainIntro,
   ShellSidebar,
   ShellSidebarBody,
 } from "@ariakit/ui/components/shell.ariakit.react";
@@ -16,30 +15,17 @@ import {
   TocList,
 } from "@ariakit/ui/components/toc.ariakit.react";
 
-// The article text gets smaller in a narrow frame, so the sidebar keeps its
-// room beside it.
-const articleClass = "text-[length:clamp(0.625rem,2.5cqi,1rem)]";
-
 export default function Example() {
   return (
     <Shell>
       <ShellMain>
-        <ShellMainIntro>
-          {/* The intro ends with the space that the first heading of the body
-              drops from its top margin, as the other sections have. */}
-          <Prose className={`${articleClass} pb-[1.75em]`}>
-            <Heading render={<h1 />}>Combobox</Heading>
-            <p>
-              A text input with a list of options that filters as the user
-              types.
-            </p>
-          </Prose>
-        </ShellMainIntro>
         {/* The shell gives the headings a scroll margin, which sets where a
             clicked heading lands. That is where its link becomes current. Each
             heading also links to itself, as on documentation pages. */}
         <ShellMainBody>
-          <Prose className={articleClass}>
+          {/* The article text gets smaller in a narrow frame, so the sidebar
+              keeps its room beside it. */}
+          <Prose className="text-[length:clamp(0.625rem,2.5cqi,1rem)]">
             <Heading id="overview" render={<h2 />}>
               <a href="#overview">Overview</a>
             </Heading>

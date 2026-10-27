@@ -115,6 +115,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.addStyleTag({
       content: "html { zoom: 1.5; scroll-padding-top: 16px; }",
     });
+    // In a short window, the second heading is on screen at the top without the
+    // zoom.
+    await page.setViewportSize({ width: 1280, height: 320 });
     const nav = q.navigation("On this page");
     // At the top, the zoom pushes the second heading below the viewport.
     const top = await getSectionsOnScreen(page, "Overview");

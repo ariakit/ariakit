@@ -2,14 +2,12 @@ import PreviewCard from "#app/components/preview-card.astro";
 import PreviewGrid from "#app/components/preview-grid.astro";
 import { source as s0 } from "./preview.astro";
 import { source as s1 } from "./long-list/preview.astro";
-import { source as s2 } from "./dialog/preview.astro";
-import { source as s3 } from "./phone/preview.astro";
-import { source as s4 } from "./chapters/preview.astro";
+import { source as s2 } from "./phone/preview.astro";
+import { source as s3 } from "./chapters/preview.astro";
 
 <PreviewGrid>
   <PreviewCard source={s0} />
   <PreviewCard source={s1} />
-  <PreviewCard source={s2} class="col-span-full" />
+  <PreviewCard source={s2} />
   <PreviewCard source={s3} />
-  <PreviewCard source={s4} />
 </PreviewGrid>
