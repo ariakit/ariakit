@@ -28,8 +28,9 @@ export default function Example() {
         <RadioField value="social">Social media</RadioField>
         <RadioField value="other">Other</RadioField>
       </RadioGroup>
-      {/* A radio group holds only radios, so the field comes after it. Other is
-          the last option, so Tab moves from it into the field. */}
+      {/* The field is not one of the options, and the arrow keys would skip it
+          inside the group, so it comes after the group. Other is the last
+          option, so the field shows right below it. */}
       {source === "other" && (
         <InputField>
           <InputLabel htmlFor={id}>Where did you hear about us?</InputLabel>
