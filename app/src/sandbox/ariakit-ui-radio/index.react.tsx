@@ -17,6 +17,7 @@ import {
   RadioCardDescription,
   RadioCardGrid,
   RadioCardLabel,
+  RadioCardLabelRow,
   RadioCardSlot,
   RadioDescription,
   RadioField,
@@ -430,6 +431,68 @@ export default function RadioExamples() {
             </RadioCard>
           ))}
         </RadioCardGrid>
+      </Example>
+
+      <Example
+        title="Label rows"
+        description="The badge shares a row with the label, so the description takes the full width below them. In the narrow card, the badge wraps below the label."
+        wide
+        code={`
+          <RadioGroup aria-label="Framework" defaultValue="react">
+            <RadioCard value="react">
+              <RadioCardCheck />
+              <RadioCardContent>
+                <RadioCardLabelRow>
+                  <RadioCardLabel>React</RadioCardLabel>
+                  <RadioCardSlot $kind="badge">Recommended</RadioCardSlot>
+                </RadioCardLabelRow>
+                <RadioCardDescription $truncate={false}>…</RadioCardDescription>
+              </RadioCardContent>
+            </RadioCard>
+            <RadioCard value="none" className="w-56">
+              <RadioCardCheck />
+              <RadioCardContent>
+                <RadioCardLabelRow>
+                  <RadioCardLabel>No framework</RadioCardLabel>
+                  <RadioCardSlot $kind="badge">Lightest</RadioCardSlot>
+                </RadioCardLabelRow>
+                <RadioCardDescription $truncate={false}>…</RadioCardDescription>
+              </RadioCardContent>
+            </RadioCard>
+          </RadioGroup>
+        `}
+      >
+        <RadioGroup
+          aria-label="Framework"
+          defaultValue="react"
+          className="grid w-full justify-items-start gap-2"
+        >
+          <RadioCard value="react" className="w-full">
+            <RadioCardCheck />
+            <RadioCardContent>
+              <RadioCardLabelRow>
+                <RadioCardLabel>React</RadioCardLabel>
+                <RadioCardSlot $kind="badge">Recommended</RadioCardSlot>
+              </RadioCardLabelRow>
+              <RadioCardDescription $truncate={false}>
+                Most examples and the widest ecosystem, with server rendering
+                and a large set of libraries for forms, data, and tests
+              </RadioCardDescription>
+            </RadioCardContent>
+          </RadioCard>
+          <RadioCard value="none" className="w-56">
+            <RadioCardCheck />
+            <RadioCardContent>
+              <RadioCardLabelRow>
+                <RadioCardLabel>No framework</RadioCardLabel>
+                <RadioCardSlot $kind="badge">Lightest</RadioCardSlot>
+              </RadioCardLabelRow>
+              <RadioCardDescription $truncate={false}>
+                Plain HTML and a little JavaScript
+              </RadioCardDescription>
+            </RadioCardContent>
+          </RadioCard>
+        </RadioGroup>
       </Example>
 
       <Example

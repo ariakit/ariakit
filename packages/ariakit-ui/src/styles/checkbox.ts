@@ -6,6 +6,7 @@ import {
   choiceCardDescription,
   choiceCardGrid,
   choiceCardLabel,
+  choiceCardLabelRow,
   choiceCardSlot,
   choiceField,
   choiceFieldContent,
@@ -51,6 +52,12 @@ export const checkboxCardSlot = choiceCardSlot;
 
 /** A flexible wrapper for a checkbox card's label and description. */
 export const checkboxCardContent = choiceCardContent;
+
+/**
+ * A row in a checkbox card's content for the label and the slots that go with
+ * it, such as a badge. The description takes the full width below the row.
+ */
+export const checkboxCardLabelRow = choiceCardLabelRow;
 
 /** A checkbox card label that fills the space between its slots. */
 export const checkboxCardLabel = choiceCardLabel;

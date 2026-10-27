@@ -14,6 +14,7 @@ import {
   checkboxCardDescription,
   checkboxCardGrid,
   checkboxCardLabel,
+  checkboxCardLabelRow,
   checkboxCardSlot,
   checkboxContent,
   checkboxDescription,
@@ -221,6 +222,29 @@ export interface CheckboxCardContentProps
 export function CheckboxCardContent(props: CheckboxCardContentProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardContent);
   return <ak.Role.span {...checkboxCardContent.jsx(variantProps)} {...rest} />;
+}
+
+export interface CheckboxCardLabelRowProps
+  extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardLabelRow> {}
+
+/**
+ * Row that puts the card's label and slots, such as a badge, on one line, so
+ * the description takes the full width below them. A slot wraps below the label
+ * when the row runs out of room. Must be nested inside a `CheckboxCardContent`.
+ * @example
+ * <CheckboxCard>
+ *   <CheckboxCardContent>
+ *     <CheckboxCardLabelRow>
+ *       <CheckboxCardLabel>Email updates</CheckboxCardLabel>
+ *       <CheckboxCardSlot $kind="badge">New</CheckboxCardSlot>
+ *     </CheckboxCardLabelRow>
+ *     <CheckboxCardDescription>Receive product news.</CheckboxCardDescription>
+ *   </CheckboxCardContent>
+ * </CheckboxCard>
+ */
+export function CheckboxCardLabelRow(props: CheckboxCardLabelRowProps) {
+  const [variantProps, rest] = splitProps(props, checkboxCardLabelRow);
+  return <ak.Role.span {...checkboxCardLabelRow.jsx(variantProps)} {...rest} />;
 }
 
 export interface CheckboxCardLabelProps

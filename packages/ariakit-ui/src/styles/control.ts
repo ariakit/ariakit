@@ -415,13 +415,30 @@ export const controlContent = cv({
   },
 });
 
+/**
+ * A row in a control's content for the label and the slots that go with it,
+ * such as a badge. The description then takes the full width below the row, and
+ * a slot wraps below the label when the row runs out of room.
+ */
+export const controlLabelRow = cv({
+  class: [
+    "control-label-row flex flex-wrap items-start",
+    // A wrapped slot sits as far below the label as the description does.
+    "gap-x-(--gap) gap-y-(--gap-y)",
+    // Slots pull into the control's side padding. In the row, only the end
+    // margin can reach it, so a wrapped slot stays in line with the label.
+    "[&>.control-slot]:ms-0",
+  ],
+});
+
 /** Control label text with optional single-line truncation. */
 export const controlLabel = cv({
   extend: [text],
   class: [
     // Content already fills the row, so a description stays beside or below
-    // the label text.
-    "group-[.flex-col]/control-content:flex-none group-[.flex-wrap]/control-content:grow-0",
+    // the label text. Only direct children, so a label in a label row can
+    // still grow.
+    "[.control-content.flex-col>&]:flex-none [.control-content.flex-wrap>&]:grow-0",
     "group-[.disabled]/control:ak-ink-0",
   ],
   variants: {

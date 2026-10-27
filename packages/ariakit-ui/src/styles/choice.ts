@@ -12,6 +12,7 @@ import {
   controlContent,
   controlDescription,
   controlLabel,
+  controlLabelRow,
   controlSlot,
 } from "./control.ts";
 import { focusHighlight, focusWithin } from "./focus.ts";
@@ -346,6 +347,12 @@ export const choiceCardSlot = buttonSlot;
 
 /** A flexible wrapper for a choice card's label and description. */
 export const choiceCardContent = buttonContent;
+
+/**
+ * A row in a choice card's content for the label and the slots that go with it,
+ * such as a badge. The description takes the full width below the row.
+ */
+export const choiceCardLabelRow = controlLabelRow;
 
 /** A card label that fills the space between its slots. */
 export const choiceCardLabel = cv({
