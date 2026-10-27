@@ -24,6 +24,7 @@ useRadioContext()
 
 <RadioProvider>
   <RadioGroup>
+    <RadioGroupLabel />
     <Radio />
   </RadioGroup>
 </RadioProvider>

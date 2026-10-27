@@ -221,6 +221,7 @@
     "./radio/radio": "./src/radio/radio.tsx",
     "./radio/radio-context": "./src/radio/radio-context.tsx",
     "./radio/radio-group": "./src/radio/radio-group.tsx",
+    "./radio/radio-group-label": "./src/radio/radio-group-label.tsx",
     "./radio/radio-provider": "./src/radio/radio-provider.tsx",
     "./radio/radio-store": "./src/radio/radio-store.ts",
     "./role/role": "./src/role/role.tsx",

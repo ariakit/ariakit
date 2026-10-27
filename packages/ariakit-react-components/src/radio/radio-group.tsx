@@ -15,6 +15,7 @@ import type { ElementType, FocusEvent } from "react";
 import { useContext } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
+import { useGroup } from "../group/group.tsx";
 import {
   RadioGroupDisabledContext,
   RadioScopedContextProvider,
@@ -52,6 +53,7 @@ function getCheckedRadioId(store: RadioStore) {
  * const store = useRadioStore();
  * const props = useRadioGroup({ store });
  * <Role {...props}>
+ *   <RadioGroupLabel>Fruit</RadioGroupLabel>
  *   <Radio value="Apple" />
  *   <Radio value="Orange" />
  * </Role>
@@ -99,6 +101,10 @@ export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
       onBlurCapture,
     };
 
+    // Call useGroup before useComposite. When RadioGroupLabel registers with a
+    // group passed to the render prop, useFocusable then drops the empty
+    // aria-labelledby here so it can't override that group's label id.
+    props = useGroup(props);
     props = useComposite({ store, ...props });
 
     return props;
@@ -108,11 +114,15 @@ export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
 /**
  * Renders a [`radiogroup`](https://w3c.github.io/aria/#radiogroup) element that
  * manages a group of [`Radio`](https://ariakit.com/reference/radio) elements.
+ * The [`RadioGroupLabel`](https://ariakit.com/reference/radio-group-label)
+ * component can be used inside this component so the `aria-labelledby` prop is
+ * properly set on the radio group element.
  * @see https://ariakit.com/components/radio
  * @example
- * ```jsx
+ * ```jsx {3}
  * <RadioProvider>
  *   <RadioGroup>
+ *     <RadioGroupLabel>Fruit</RadioGroupLabel>
  *     <Radio value="Apple" />
  *     <Radio value="Orange" />
  *   </RadioGroup>

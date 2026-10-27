@@ -9,6 +9,11 @@ export type {
   RadioGroupProps,
 } from "@ariakit/react-components/radio/radio-group";
 export { RadioGroup } from "@ariakit/react-components/radio/radio-group";
+export type {
+  RadioGroupLabelOptions,
+  RadioGroupLabelProps,
+} from "@ariakit/react-components/radio/radio-group-label";
+export { RadioGroupLabel } from "@ariakit/react-components/radio/radio-group-label";
 export type { RadioProviderProps } from "@ariakit/react-components/radio/radio-provider";
 export { RadioProvider } from "@ariakit/react-components/radio/radio-provider";
 export type {
