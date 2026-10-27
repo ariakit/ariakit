@@ -28,75 +28,28 @@ import {
 export interface RadioProviderProps extends ak.RadioProviderProps {}
 
 /**
- * Provides a radio store to `RadioGroup` and `Radio` descendants. A group owns
- * its state, so use the provider only when radios or other components outside
- * the group read the same value.
+ * Provides a radio store to `Radio` descendants. `RadioGroup` and
+ * `RadioCardGrid` render their own provider, so a provider around them does not
+ * reach their radios. Use their `value`, `setValue`, and `store` props instead.
  * @example
  * <RadioProvider defaultValue="email">
- *   <RadioGroup label="Contact method">
+ *   <ak.RadioGroup aria-label="Contact method">
  *     <RadioField value="email">Email</RadioField>
  *     <RadioField value="phone">Phone</RadioField>
- *   </RadioGroup>
+ *   </ak.RadioGroup>
  * </RadioProvider>
  */
 export function RadioProvider(props: RadioProviderProps) {
   return <ak.RadioProvider {...props} />;
 }
 
-type RadioGroupStateProps = Pick<
-  ak.RadioProviderProps,
-  "value" | "defaultValue" | "setValue"
->;
-
-// The store of the nearest Ariakit UI radio group. A group passes its store to
-// its radios through the radio context, so a nested group would otherwise take
-// the store of the group around it for a provider.
-const RadioGroupStoreContext = React.createContext<ak.RadioStore | undefined>(
-  undefined,
-);
-
-/**
- * Returns the store that owns the group state: the `store` prop, then an outer
- * `RadioProvider`. Returns `undefined` when the group owns its state.
- */
-function useOwnerStore(store?: ak.RadioStore) {
-  const context = ak.useRadioContext();
-  const enclosingGroupStore = React.useContext(RadioGroupStoreContext);
-  if (store) return store;
-  if (context === enclosingGroupStore) return;
-  return context;
-}
-
-/**
- * Warns in development about state props that a group ignores because a `store`
- * prop or an outer `RadioProvider` owns its state.
- */
-function useIgnoredStateWarning(
-  ownerStore: ak.RadioStore | undefined,
-  { value, defaultValue, setValue }: RadioGroupStateProps,
-) {
-  const hasOwner = !!ownerStore;
-  const ignoredProps = [
-    value !== undefined && "value",
-    defaultValue !== undefined && "defaultValue",
-    setValue !== undefined && "setValue",
-  ]
-    .filter(Boolean)
-    .join(", ");
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === "production") return;
-    if (!hasOwner) return;
-    if (!ignoredProps) return;
-    console.warn(
-      `A radio group ignores ${ignoredProps} because a \`store\` prop or an outer RadioProvider owns its state. Pass these props to that owner instead.`,
-    );
-  }, [hasOwner, ignoredProps]);
-}
-
 export interface RadioGroupProps
   extends
-    Omit<ak.RadioGroupProps, "value" | "defaultValue">,
-    RadioGroupStateProps {
+    Omit<ak.RadioGroupProps, "store" | "value" | "defaultValue">,
+    Pick<
+      ak.RadioProviderProps,
+      "store" | "value" | "defaultValue" | "setValue"
+    > {
   /**
    * Label content, a custom element, or `RadioGroupLabel` props. The label
    * names the group. Omitted by default; use `aria-label` or `aria-labelledby`
@@ -106,9 +59,9 @@ export interface RadioGroupProps
 }
 
 /**
- * Groups `Radio` components and owns their selected value through `value`,
- * `defaultValue`, and `setValue`. A `store` prop or an outer `RadioProvider`
- * owns the state instead, and the group then ignores those props.
+ * Groups `Radio` components and provides their store, which holds the selected
+ * value. Pass `value` and `setValue` to control it, or `store` to sync it with
+ * a store from `useRadioStore`.
  * @example
  * <RadioGroup label="Contact method" defaultValue="email">
  *   <RadioField value="email">Email</RadioField>
@@ -116,6 +69,7 @@ export interface RadioGroupProps
  * </RadioGroup>
  */
 export function RadioGroup({
+  store,
   value,
   defaultValue,
   setValue,
@@ -123,12 +77,6 @@ export function RadioGroup({
   children,
   ...props
 }: RadioGroupProps) {
-  const ownerStore = useOwnerStore(props.store);
-  useIgnoredStateWarning(ownerStore, { value, defaultValue, setValue });
-  // Creating the store unconditionally keeps the tree stable if an owner
-  // appears later. The store stays unused while another owner exists.
-  const ownStore = ak.useRadioStore({ value, defaultValue, setValue });
-  const store = ownerStore ?? ownStore;
   const defaultLabelId = React.useId();
   const labelElement = createOptionalRender(RadioGroupLabel, label, {
     id: defaultLabelId,
@@ -138,12 +86,17 @@ export function RadioGroup({
   const labelId =
     props["aria-label"] != null ? undefined : labelElement?.props.id;
   return (
-    <ak.RadioGroup aria-labelledby={labelId} {...props} store={store}>
-      <RadioGroupStoreContext.Provider value={store}>
+    <ak.RadioProvider
+      store={store}
+      value={value}
+      defaultValue={defaultValue}
+      setValue={setValue}
+    >
+      <ak.RadioGroup aria-labelledby={labelId} {...props}>
         {labelElement}
         {children}
-      </RadioGroupStoreContext.Provider>
-    </ak.RadioGroup>
+      </ak.RadioGroup>
+    </ak.RadioProvider>
   );
 }
 
@@ -429,8 +382,8 @@ export interface RadioCardGridProps
 
 /**
  * The radio group of a set of `RadioCard`s, laid out as a grid of equal rows.
- * Like `RadioGroup`, it owns its selected value unless a `store` prop or an
- * outer `RadioProvider` owns it. A `label` takes a full row above the cards.
+ * Like `RadioGroup`, it provides the store of its cards. A `label` takes a full
+ * row above the cards.
  * @example
  * <RadioCardGrid label="Contact method" defaultValue="email">
  *   <RadioCard value="email">Email</RadioCard>

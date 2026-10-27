@@ -1,11 +1,5 @@
 import { click, focus, press, q } from "@ariakit/test";
-import { render } from "@ariakit/test/react";
-import { createElement } from "react";
-import { expect, test, vi } from "vitest";
-import {
-  ProviderGroupWithDefaultValue,
-  StoreGroupWithValue,
-} from "./index.react.tsx";
+import { expect, test } from "vitest";
 
 test("names a group by its label and starts from its default value", async () => {
   const group = q.within(q.radiogroup("Plan"));
@@ -31,15 +25,12 @@ test("controls a group through value and setValue", async () => {
   expect(group.radio("Small")).toBeChecked();
 });
 
-test("shares the state of an outer provider", async () => {
-  const group = q.within(q.radiogroup("Contact method"));
+test("names a group by a fragment label", () => {
+  const group = q.within(q.radiogroup("Notifications (optional)"));
   expect(group.radio("Email")).toBeChecked();
-  expect(q.text("Contact by: email")).toBeInTheDocument();
-  await click(group.radio("Phone"));
-  expect(q.text("Contact by: phone")).toBeInTheDocument();
 });
 
-test("labels a card grid that a store prop owns", async () => {
+test("labels a card grid synced with a store prop", async () => {
   const grid = q.within(q.radiogroup("Billing"));
   expect(grid.radio("Monthly")).toBeChecked();
   // The card hides its input, so click the card text.
@@ -70,38 +61,4 @@ test("keeps toolbar items on the toolbar around a group", async () => {
   await press.ArrowRight();
   expect(group.radio("End")).toHaveFocus();
   expect(group.radio("End")).toBeChecked();
-});
-
-test("ignores and warns about state props when a provider owns the state", async () => {
-  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-  try {
-    await render(createElement(ProviderGroupWithDefaultValue));
-    const group = q.within(q.radiogroup("Reply method"));
-    expect(group.radio("Email")).toBeChecked();
-    expect(group.radio("Phone")).not.toBeChecked();
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining("ignores defaultValue"),
-    );
-  } finally {
-    warn.mockRestore();
-  }
-});
-
-test("ignores and warns about state props when a store prop owns the state", async () => {
-  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-  try {
-    await render(createElement(StoreGroupWithValue));
-    const group = q.within(q.radiogroup("Follow-up method"));
-    expect(group.radio("Email")).toBeChecked();
-    await click(group.radio("Phone"));
-    await click(group.radio("Email"));
-    expect(group.radio("Email")).toBeChecked();
-    // setValue is not called, so the app state keeps its initial value.
-    expect(q.text("Follow-up state: phone")).toBeInTheDocument();
-    expect(warn).toHaveBeenCalledWith(
-      expect.stringContaining("ignores value, setValue"),
-    );
-  } finally {
-    warn.mockRestore();
-  }
 });

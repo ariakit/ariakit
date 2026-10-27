@@ -27,15 +27,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(group.radio("Small")).toBeChecked();
   });
 
-  test("shares the state of an outer provider", async ({ q }) => {
-    const group = query(q.radiogroup("Contact method"));
+  test("names a group by a fragment label", async ({ q }) => {
+    const group = query(q.radiogroup("Notifications (optional)"));
     await test.expect(group.radio("Email")).toBeChecked();
-    await test.expect(q.text("Contact by: email")).toBeVisible();
-    await group.radio("Phone").click();
-    await test.expect(q.text("Contact by: phone")).toBeVisible();
   });
 
-  test("labels a card grid that a store prop owns", async ({ q }) => {
+  test("labels a card grid synced with a store prop", async ({ q }) => {
     const grid = query(q.radiogroup("Billing"));
     await test.expect(grid.radio("Monthly")).toBeChecked();
     // The card hides its input, so click the card text.

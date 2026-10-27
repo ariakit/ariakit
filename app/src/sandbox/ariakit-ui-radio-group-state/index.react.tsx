@@ -15,48 +15,8 @@ import {
   RadioCardLabel,
   RadioField,
   RadioGroup,
-  RadioProvider,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { useState } from "react";
-
-function ContactSummary() {
-  const store = ak.useRadioContext();
-  const value = ak.useStoreState(store, "value");
-  return <p>Contact by: {value}</p>;
-}
-
-// The groups below receive state props that their owner overrides. They warn in
-// development, so the tests render them apart from the page.
-
-export function ProviderGroupWithDefaultValue() {
-  return (
-    <RadioProvider defaultValue="email">
-      <RadioGroup label="Reply method" defaultValue="phone">
-        <RadioField value="email">Email</RadioField>
-        <RadioField value="phone">Phone</RadioField>
-      </RadioGroup>
-    </RadioProvider>
-  );
-}
-
-export function StoreGroupWithValue() {
-  const store = ak.useRadioStore({ defaultValue: "email" });
-  const [value, setValue] = useState<ak.RadioStoreState["value"]>("phone");
-  return (
-    <>
-      <RadioGroup
-        label="Follow-up method"
-        store={store}
-        value={value}
-        setValue={setValue}
-      >
-        <RadioField value="email">Email</RadioField>
-        <RadioField value="phone">Phone</RadioField>
-      </RadioGroup>
-      <p>Follow-up state: {value}</p>
-    </>
-  );
-}
 
 export default function Example() {
   const [size, setSize] = useState<ak.RadioStoreState["value"]>("m");
@@ -68,6 +28,19 @@ export default function Example() {
         <RadioField value="hobby">Hobby</RadioField>
         <RadioField value="pro">Pro</RadioField>
         <RadioField value="enterprise">Enterprise</RadioField>
+      </RadioGroup>
+
+      <RadioGroup
+        label={
+          <>
+            Notifications <small>(optional)</small>
+          </>
+        }
+        defaultValue="email"
+        className="flex gap-4"
+      >
+        <RadioField value="email">Email</RadioField>
+        <RadioField value="none">None</RadioField>
       </RadioGroup>
 
       <RadioGroup
@@ -94,14 +67,6 @@ export default function Example() {
         <p>Selected size: {size}</p>
         <Button onClick={() => setSize("s")}>Reset size</Button>
       </div>
-
-      <RadioProvider defaultValue="email">
-        <RadioGroup label="Contact method" className="grid gap-2">
-          <RadioField value="email">Email</RadioField>
-          <RadioField value="phone">Phone</RadioField>
-        </RadioGroup>
-        <ContactSummary />
-      </RadioProvider>
 
       <div className="grid gap-2">
         <RadioCardGrid label="Billing" store={billingStore}>

@@ -20,4 +20,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const group = query(q.radiogroup("Color theme"));
     await test.expect(group.radio("Light")).toBeChecked();
   });
+
+  test("names a group by a fragment label before hydration", async ({ q }) => {
+    const group = query(q.radiogroup("Notifications (optional)"));
+    await test.expect(group.radio("Email")).toBeChecked();
+  });
 });
