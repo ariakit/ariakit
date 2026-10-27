@@ -88,6 +88,7 @@
     "./styles/separator": "./src/styles/separator.ts",
     "./styles/shell": "./src/styles/shell.ts",
     "./styles/skeleton": "./src/styles/skeleton.ts",
+    "./styles/slot-frame": "./src/styles/slot-frame.ts",
     "./styles/table": "./src/styles/table.ts",
     "./styles/tabs": "./src/styles/tabs.ts",
     "./styles/text": "./src/styles/text.ts",

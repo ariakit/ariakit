@@ -14,6 +14,7 @@ import {
   comboboxEmpty,
   comboboxError,
   comboboxErrorIcon,
+  comboboxErrorText,
   comboboxField,
   comboboxFieldContent,
   comboboxGroup,
@@ -217,7 +218,8 @@ export interface ComboboxErrorProps
 /**
  * Error text for a combobox or select in a `ComboboxField`, marked with an
  * icon. While it shows, list its `id` first in the control's `aria-describedby`
- * and set `aria-invalid` on the control.
+ * and set `aria-invalid` on the control. Frame variants, such as `$layer` and
+ * `$rounded`, show it on a panel.
  * @example
  * <ComboboxField>
  *   <ComboboxLabel>Fruit</ComboboxLabel>
@@ -230,14 +232,19 @@ export function ComboboxError({
   ...props
 }: ComboboxErrorProps) {
   const [variantProps, rest] = splitProps(props, comboboxError);
+  const filled = hasContent(rest.children);
   return (
     <ak.Role.div {...comboboxError.jsx(variantProps)} {...rest}>
-      {isRenderable(icon) && hasContent(rest.children) && (
+      {isRenderable(icon) && filled && (
         <span {...comboboxErrorIcon.jsx()} aria-hidden>
           {icon}
         </span>
       )}
-      {rest.children}
+      {filled ? (
+        <span {...comboboxErrorText.jsx()}>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
     </ak.Role.div>
   );
 }

@@ -90,7 +90,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   // Chromium paints an inline SVG in the system text color by itself. The icon
-  // part sets the system color for engines that do not force SVG colors.
+  // part sets the system color for engines that do not force SVG colors. The
+  // panel loses its fill, so it keeps a system border.
   // https://github.com/ariakit/ariakit/issues/8053
   test("paints the error icon in the system text color in forced colors @visual", async ({
     page,
@@ -103,6 +104,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       for (const [key, title] of [
         ["error-long-message", "Error with a long message"],
         ["error-another-icon", "Error with another icon"],
+        ["error-panel", "Error on a panel"],
       ] as const) {
         await captureInView({
           visual,

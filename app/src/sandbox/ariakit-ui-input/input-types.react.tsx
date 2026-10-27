@@ -8,6 +8,7 @@ import {
   InputError,
   InputGroup,
 } from "@ariakit/ui/components/input.ariakit.react";
+import { inputErrorIcon } from "@ariakit/ui/styles/input";
 import { Lock } from "lucide-react";
 import type { ReactNode } from "react";
 import { expectTypeOf } from "vitest";
@@ -59,3 +60,13 @@ expectTypeOf<InputErrorProps["icon"]>().toEqualTypeOf<ReactNode>();
 <InputError>
   <span dangerouslySetInnerHTML={{ __html: "Enter an <b>email</b>." }} />
 </InputError>;
+
+// Frame variants show the error on a panel.
+<InputError $layer="danger" $mix={15} $rounded="lg" $p={3}>
+  Choose an answer.
+</InputError>;
+
+// The error icon takes its size from --field-error-icon-size, so the inherited
+// slot size variant would have no effect.
+// @ts-expect-error The icon part has no $size variant.
+inputErrorIcon.jsx({ $size: "lg" });

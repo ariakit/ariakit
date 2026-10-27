@@ -15,6 +15,7 @@ import {
   ComboboxSelect,
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import type { InputErrorProps } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Input,
   InputDescription,
@@ -36,6 +37,7 @@ import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import {
   inputError,
   inputErrorIcon,
+  inputErrorText,
   inputPlaceholder,
 } from "@ariakit/ui/styles/input";
 import { CircleAlert, ListFilter, Lock, Search } from "lucide-react";
@@ -93,24 +95,28 @@ function ErrorThatKeepsItsLine() {
   );
 }
 
-function ErrorThatShowsOnBlur() {
+interface ErrorThatShowsOnBlurProps extends InputErrorProps {
+  id: string;
+}
+
+function ErrorThatShowsOnBlur({ id, ...props }: ErrorThatShowsOnBlurProps) {
   const [value, setValue] = useState("ada lovelace");
   const [touched, setTouched] = useState(false);
   const error = touched && /\s/.test(value) ? "Remove the spaces." : null;
   return (
     <InputField className="w-full">
-      <InputLabel htmlFor="input-error-blur">Username</InputLabel>
+      <InputLabel htmlFor={id}>Username</InputLabel>
       <Input
-        id="input-error-blur"
+        id={id}
         value={value}
         onChange={(event) => setValue(event.target.value)}
         onBlur={() => setTouched(true)}
         aria-invalid={!!error || undefined}
-        aria-describedby="input-error-blur-error"
+        aria-describedby={`${id}-error`}
       />
       {/* The error appears when focus leaves the field, so the live region is
           there before its text. */}
-      <InputError id="input-error-blur-error" role="alert">
+      <InputError {...props} id={`${id}-error`} role="alert">
         {error}
       </InputError>
     </InputField>
@@ -288,13 +294,13 @@ export default function InputExamples() {
 
       <Example
         title="Error from style recipes"
-        description="An error built from the inputError and inputErrorIcon style recipes, without the InputError component. The icon part comes first and is hidden from screen readers."
+        description="An error built from the inputError, inputErrorIcon, and inputErrorText style recipes, without the InputError component. The icon part comes first and is hidden from screen readers. The text part takes the danger color."
         code={`
           <div {...inputError.jsx()}>
             <span {...inputErrorIcon.jsx()} aria-hidden="true">
               <CircleAlert />
             </span>
-            …
+            <span {...inputErrorText.jsx()}>…</span>
           </div>
         `}
       >
@@ -311,8 +317,90 @@ export default function InputExamples() {
             <span {...inputErrorIcon.jsx()} aria-hidden="true">
               <CircleAlert />
             </span>
-            Enter an email address like billing@example.com.
+            <span {...inputErrorText.jsx()}>
+              Enter an email address like billing@example.com.
+            </span>
           </div>
+        </InputField>
+      </Example>
+
+      <Example
+        title="Error on a panel"
+        description="Frame variants put the error on a danger panel, which gets padding and rounded corners. The icon moves into the side padding, like the icon of a button, and the text keeps the danger color on the panel."
+        code={`
+          <InputError $layer="danger" $mix={15}>
+            Another account uses this address. <Link /> or use…
+          </InputError>
+        `}
+      >
+        <InputField className="w-56 max-w-full">
+          <InputLabel htmlFor="input-error-panel">Email</InputLabel>
+          <Input
+            id="input-error-panel"
+            type="email"
+            defaultValue="ada@engine.org"
+            aria-invalid
+            aria-describedby="input-error-panel-error"
+          />
+          <InputError id="input-error-panel-error" $layer="danger" $mix={15}>
+            Another account uses this address.{" "}
+            <Link href="#sign-in">Sign in</Link> or use a different address.
+          </InputError>
+        </InputField>
+      </Example>
+
+      <Example
+        title="Error on a panel with a custom icon size and gap"
+        description="The icon size and gap properties work on a panel too. The gap is the whole space after the icon, also where the icon moves into the side padding."
+        code={`
+          <InputField className="[--field-error-icon-size:1em] [--field-error-icon-gap:0.25em]">
+            <InputError $layer="danger" $mix={15}>…</InputError>
+          </InputField>
+        `}
+      >
+        <InputField className="w-56 max-w-full [--field-error-icon-size:1em] [--field-error-icon-gap:0.25em]">
+          <InputLabel htmlFor="input-error-panel-gap">Promo code</InputLabel>
+          <Input
+            id="input-error-panel-gap"
+            defaultValue="SPRING"
+            aria-invalid
+            aria-describedby="input-error-panel-gap-error"
+          />
+          <InputError
+            id="input-error-panel-gap-error"
+            $layer="danger"
+            $mix={15}
+          >
+            This code expired in March.
+          </InputError>
+        </InputField>
+      </Example>
+
+      <Example
+        title="Error in centered text"
+        description="In a centered field, the error text centers in the space after the icon, like the label and the hint."
+        code={`
+          <InputField className="text-center">
+            <InputError>…</InputError>
+          </InputField>
+        `}
+      >
+        <InputField className="w-full text-center">
+          <InputLabel htmlFor="input-error-centered">
+            Verification code
+          </InputLabel>
+          <Input
+            id="input-error-centered"
+            defaultValue="481 2"
+            aria-invalid
+            aria-describedby="input-error-centered-error input-error-centered-hint"
+          />
+          <InputError id="input-error-centered-error">
+            The code has 6 digits.
+          </InputError>
+          <InputDescription id="input-error-centered-hint">
+            We sent it to your phone.
+          </InputDescription>
         </InputField>
       </Example>
 
@@ -343,7 +431,23 @@ export default function InputExamples() {
           <InputError role="alert">{error}</InputError>
         `}
       >
-        <ErrorThatShowsOnBlur />
+        <ErrorThatShowsOnBlur id="input-error-blur" />
+      </Example>
+
+      <Example
+        title="Error on a panel that shows on blur"
+        description="While the error holds null, the panel is visually hidden, so no empty box shows, but the alert stays in the accessibility tree. When focus leaves the field with an invalid value, the panel shows with the text and the icon."
+        code={`
+          <InputError $layer="danger" $mix={15} role="alert">
+            {error}
+          </InputError>
+        `}
+      >
+        <ErrorThatShowsOnBlur
+          id="input-error-panel-blur"
+          $layer="danger"
+          $mix={15}
+        />
       </Example>
 
       <Example
