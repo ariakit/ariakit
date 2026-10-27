@@ -1,8 +1,8 @@
 import type { Page } from "@playwright/test";
 import {
+  captureInView,
   expectMedia,
   forEachColorScheme,
-  getCapture,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -36,12 +36,16 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
       await test
         .expect(nav.link("With pnpm"))
         .toHaveAttribute("aria-current", "location");
+      // The tables of contents wrap below the viewport. The headings scroll in
+      // their own box, so the window scroll that centers each capture keeps the
+      // current heading and the rows on screen.
       for (const [item, name] of Object.entries(tocs)) {
-        await visual(
-          getCapture(q.navigation(name), colorScheme, {
-            item: `${id}/${item}`,
-          }),
-        );
+        await captureInView({
+          visual,
+          box: q.navigation(name),
+          colorScheme,
+          item: `${id}/${item}`,
+        });
       }
     });
   });
@@ -57,17 +61,23 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
       await test
         .expect(query(nav).link("Chapter 10"))
         .toHaveAttribute("aria-current", "location");
-      await visual(
-        getCapture(nav, colorScheme, { item: `${id}/twelve-chapters-lit` }),
-      );
+      await captureInView({
+        visual,
+        box: nav,
+        colorScheme,
+        item: `${id}/twelve-chapters-lit`,
+      });
       // Without rings, the markers sit over the thumb.
       const plain = q.navigation("Numbers over the thumb");
       await test
         .expect(query(plain).link("Chapter 10"))
         .toHaveAttribute("aria-current", "location");
-      await visual(
-        getCapture(plain, colorScheme, { item: `${id}/numbers-over-thumb` }),
-      );
+      await captureInView({
+        visual,
+        box: plain,
+        colorScheme,
+        item: `${id}/numbers-over-thumb`,
+      });
     });
   });
 
@@ -85,11 +95,12 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
       await test
         .expect(query(nav).link("الاستخدام"))
         .toHaveAttribute("aria-current", "location");
-      await visual(
-        getCapture(nav, colorScheme, {
-          item: `${id}/right-to-left-forced-colors`,
-        }),
-      );
+      await captureInView({
+        visual,
+        box: nav,
+        colorScheme,
+        item: `${id}/right-to-left-forced-colors`,
+      });
     });
   });
 });
