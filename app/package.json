@@ -91,7 +91,7 @@
     "ts-morph": "28.0.0",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "unified": "11.0.5",
-    "unist-util-visit": "5.1.0",
+    "unist-util-visit": "5.2.0",
     "zod": "4.6.7"
   },
   "devDependencies": {
