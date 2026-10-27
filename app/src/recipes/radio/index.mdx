@@ -1,0 +1,43 @@
+---
+title: Radio
+---
+
+## Overview
+
+These examples build radio groups with the Ariakit UI `Radio` components. A radio group shows a set of options, and a person picks exactly one of them. A visible label names the group, and the checked radio shows the current pick.
+
+The gallery starts with a plain group that sorts comments. Then it shows options with descriptions, a text field that shows while Other is checked, and a poll that disables its group after the vote. The examples with cards show ratings without marks, theme pictures with a floating check, plans with a badge, times that depend on the picked day, feedback on a quiz answer, color swatches with a sold-out size, and a shipping option that is not available, with a right-to-left version. The last example asks the questions of an assistant in steps.
+
+## Components
+
+`RadioGroup` groups the radios and keeps the selected value. Set `defaultValue` to start with a checked radio, or set `value` and `setValue` to control the value. Set `store` to use a store from `useRadioStore`. The group makes its own store, so a `RadioProvider` around it does not reach its radios.
+
+The `label` prop shows a label first in the group, and the label names the group. It takes text, a `RadioGroupLabel` element, or `RadioGroupLabel` props. The Color Swatches example puts the name of the picked color in the label. The label names the group after hydration. To name a group without a visible label, use `aria-label` or `aria-labelledby`.
+
+`RadioField` is a row with a native radio before its text. Put a `RadioLabel` and a `RadioDescription` in it to show a second line, as in the Descriptions example. The description is the accessible description of the radio, so it is not part of its name.
+
+`RadioCard` is a card with a hidden native radio, and its content names the radio. `RadioCardContent` stacks a `RadioCardLabel` and a `RadioCardDescription`. `RadioCardSlot` holds other content, such as a price, a badge, or a color. A slot with `$kind="badge"` and `$floating` sits on the top-end corner of the card, as in the Dependent Groups example.
+
+`RadioCardCheck` draws the mark of a card. With `$floating`, a check shows on the top-end corner of the checked card only, as in the Floating Check example. A card without a mark shows its checked state with the brand fill and a second edge pixel, as in the Cards Without Marks example.
+
+`RadioCardGrid` is a `RadioGroup` that puts its cards in columns of equal width, with rows of equal height. `$minItemSize` sets the narrowest width of a card before the grid drops a column. A `label` takes a full row above the cards.
+
+Set `disabled` on a radio or a card to disable it, for example when an option is not available. Set `disabled` on the group to disable all of its radios, as in the Disabled Group example after the vote.
+
+A checked radio does not change on hover, because a click on it does nothing. A click also cannot clear the pick. To let a person remove an answer, add a button that sets the value to `null`, like Clear in the Step by Step example.
+
+## Accessibility
+
+A radio group is one Tab stop. Tab moves to the checked radio, or to the first radio when none was ever checked. After a pick is cleared, as with Clear in the Step by Step example, Tab moves to the radio that had focus last. The arrow keys move to the next or previous radio and check it, and they skip disabled radios. This is the [radio group pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) of the ARIA Authoring Practices Guide.
+
+The label of the group tells what the options are for. A screen reader reads it when focus moves into the group. A placeholder, a `title` attribute, or a tooltip does not do this for every person, as the Answer Feedback example tells.
+
+Color alone does not show the checked radio ([Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)). A radio shows a dot, and a floating mark shows a check. A card without a mark gets a second edge pixel, and in forced colors mode, such as a Windows contrast theme, its border gets wider. Words tell the other states: the badges of the Answer Feedback example tell the correct answer and the wrong pick, and a sold-out size in the Color Swatches example has a line through it and a description with the same text as its tooltip.
+
+A screen reader reads a description after the name of its radio. The description of a disabled card can tell why the option is not available, as in the Disabled Option example. A badge in a card is part of the name, so the Card Badges example reads "Pro Popular." The faces of the Cards Without Marks example and the pictures of the Floating Check example are hidden from screen readers, because each option has a word that names it. The color swatches of the Color Swatches example have `aria-label`.
+
+In the Conditional Field example, the text field comes right after the group, not inside it. The field is not one of the options, and the arrow keys move only between the radios of a group, so they would skip a field inside it ([radiogroup role](https://www.w3.org/TR/wai-aria-1.3/#radiogroup)). When Other is checked, focus stays on the radio, because a change of focus on input can confuse people ([On Input](https://www.w3.org/WAI/WCAG22/Understanding/on-input.html)). Other is the last option, so the field shows right below it, and Tab moves from the group into the field.
+
+In the Step by Step example, Back and Next move focus into the new question, because the button that has focus replaces the question. A button press makes this change, so it is not a change on input.
+
+The Disabled Group and Answer Feedback examples show their result in a live region with `role="status"`, so screen readers read it without a change of focus. Their buttons stay focusable while disabled, so focus does not go back to the start of the page.
