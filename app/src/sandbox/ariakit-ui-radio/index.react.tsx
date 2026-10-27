@@ -217,24 +217,20 @@ export default function RadioExamples() {
         title="Rim width"
         description="The rim of the checked dot, including the border, is 2px by default. A thinner rim leaves more room for the dot, and a thicker one less."
         code={`
-          <RadioProvider>
-            <RadioGroup>
-              <label>
-                <Radio value="thin" $markRim={1} /> 1px
-              </label>
-            </RadioGroup>
-          </RadioProvider>
+          <RadioGroup>
+            <label>
+              <Radio value="thin" $markRim={1} /> 1px
+            </label>
+          </RadioGroup>
         `}
       >
         <div className="flex flex-wrap gap-x-6 gap-y-2">
           {[1, 2, 3].map((rim) => (
-            <RadioProvider key={rim} defaultValue="on">
-              <RadioGroup aria-label={`${rim}px rim`}>
-                <label>
-                  <Radio value="on" $markRim={rim} /> {rim}px
-                </label>
-              </RadioGroup>
-            </RadioProvider>
+            <RadioGroup key={rim} defaultValue="on" aria-label={`${rim}px rim`}>
+              <label>
+                <Radio value="on" $markRim={rim} /> {rim}px
+              </label>
+            </RadioGroup>
           ))}
         </div>
       </Example>
@@ -556,50 +552,47 @@ export default function RadioExamples() {
         description="The mark becomes a check in the card's top-end corner, takes its colors from the surface around the card, and shows only while the card is checked."
         wide
         code={`
-          <RadioProvider>
-            <RadioCardGrid $minItemSize="16rem">
-              <RadioCard value="card">
-                <RadioCardSlot>
-                  <CreditCard />
-                </RadioCardSlot>
-                <RadioCardLabel>Card</RadioCardLabel>
-                <RadioCardCheck $floating />
-              </RadioCard>
-              <RadioCard value="wallet">
-                <RadioCardSlot>
-                  <Wallet />
-                </RadioCardSlot>
-                <RadioCardLabel>Wallet</RadioCardLabel>
-                <RadioCardCheck $floating />
-              </RadioCard>
-              <RadioCard value="bank">
-                <RadioCardSlot>
-                  <Landmark />
-                </RadioCardSlot>
-                <RadioCardLabel>Bank transfer</RadioCardLabel>
-                <RadioCardCheck $floating />
-              </RadioCard>
-            </RadioCardGrid>
-          </RadioProvider>
+          <RadioCardGrid $minItemSize="16rem">
+            <RadioCard value="card">
+              <RadioCardSlot>
+                <CreditCard />
+              </RadioCardSlot>
+              <RadioCardLabel>Card</RadioCardLabel>
+              <RadioCardCheck $floating />
+            </RadioCard>
+            <RadioCard value="wallet">
+              <RadioCardSlot>
+                <Wallet />
+              </RadioCardSlot>
+              <RadioCardLabel>Wallet</RadioCardLabel>
+              <RadioCardCheck $floating />
+            </RadioCard>
+            <RadioCard value="bank">
+              <RadioCardSlot>
+                <Landmark />
+              </RadioCardSlot>
+              <RadioCardLabel>Bank transfer</RadioCardLabel>
+              <RadioCardCheck $floating />
+            </RadioCard>
+          </RadioCardGrid>
         `}
       >
-        <RadioProvider defaultValue="card">
-          <RadioCardGrid
-            aria-label="Payment method"
-            $minItemSize="16rem"
-            className="w-full"
-          >
-            {paymentMethods.map((method) => (
-              <RadioCard key={method.value} value={method.value}>
-                <RadioCardSlot>
-                  <method.icon />
-                </RadioCardSlot>
-                <RadioCardLabel>{method.label}</RadioCardLabel>
-                <RadioCardCheck $floating />
-              </RadioCard>
-            ))}
-          </RadioCardGrid>
-        </RadioProvider>
+        <RadioCardGrid
+          defaultValue="card"
+          aria-label="Payment method"
+          $minItemSize="16rem"
+          className="w-full"
+        >
+          {paymentMethods.map((method) => (
+            <RadioCard key={method.value} value={method.value}>
+              <RadioCardSlot>
+                <method.icon />
+              </RadioCardSlot>
+              <RadioCardLabel>{method.label}</RadioCardLabel>
+              <RadioCardCheck $floating />
+            </RadioCard>
+          ))}
+        </RadioCardGrid>
       </Example>
 
       <Example
@@ -607,46 +600,43 @@ export default function RadioExamples() {
         description="Without a mark, the checked card draws a second edge pixel inside its border, so its state does not rest on color alone."
         wide
         code={`
-          <RadioProvider>
-            <RadioCardGrid $minItemSize="16rem">
-              <RadioCard value="card">
-                <RadioCardSlot>
-                  <CreditCard />
-                </RadioCardSlot>
-                <RadioCardLabel>Card</RadioCardLabel>
-              </RadioCard>
-              <RadioCard value="wallet">
-                <RadioCardSlot>
-                  <Wallet />
-                </RadioCardSlot>
-                <RadioCardLabel>Wallet</RadioCardLabel>
-              </RadioCard>
-              <RadioCard value="bank">
-                <RadioCardSlot>
-                  <Landmark />
-                </RadioCardSlot>
-                <RadioCardLabel>Bank transfer</RadioCardLabel>
-              </RadioCard>
-            </RadioCardGrid>
-          </RadioProvider>
+          <RadioCardGrid $minItemSize="16rem">
+            <RadioCard value="card">
+              <RadioCardSlot>
+                <CreditCard />
+              </RadioCardSlot>
+              <RadioCardLabel>Card</RadioCardLabel>
+            </RadioCard>
+            <RadioCard value="wallet">
+              <RadioCardSlot>
+                <Wallet />
+              </RadioCardSlot>
+              <RadioCardLabel>Wallet</RadioCardLabel>
+            </RadioCard>
+            <RadioCard value="bank">
+              <RadioCardSlot>
+                <Landmark />
+              </RadioCardSlot>
+              <RadioCardLabel>Bank transfer</RadioCardLabel>
+            </RadioCard>
+          </RadioCardGrid>
         `}
       >
-        <RadioProvider defaultValue="card">
-          <RadioCardGrid
-            aria-label="Payment method"
-            $minItemSize="16rem"
-            className="w-full"
-          >
-            {paymentMethods.map((method) => (
-              <RadioCard key={method.value} value={method.value}>
-                <RadioCardSlot>
-                  <method.icon />
-                </RadioCardSlot>
-                <RadioCardLabel>{method.label}</RadioCardLabel>
-              </RadioCard>
-            ))}
-          </RadioCardGrid>
-        </RadioProvider>
+        <RadioCardGrid
+          defaultValue="card"
+          aria-label="Payment method"
+          $minItemSize="16rem"
+          className="w-full"
+        >
+          {paymentMethods.map((method) => (
+            <RadioCard key={method.value} value={method.value}>
+              <RadioCardSlot>
+                <method.icon />
+              </RadioCardSlot>
+              <RadioCardLabel>{method.label}</RadioCardLabel>
+            </RadioCard>
+          ))}
+        </RadioCardGrid>
       </Example>
 
       <Example
@@ -654,34 +644,31 @@ export default function RadioExamples() {
         description="With a 2px border, the checked card still adds an edge pixel inside it. Forced colors draw a 3px border on the checked card."
         wide
         code={`
-          <RadioProvider>
-            <RadioCardGrid $minItemSize="16rem">
-              <RadioCard value="card" $border={2}>
-                <RadioCardLabel>Card</RadioCardLabel>
-              </RadioCard>
-              <RadioCard value="wallet" $border={2}>
-                <RadioCardLabel>Wallet</RadioCardLabel>
-              </RadioCard>
-              <RadioCard value="bank" $border={2}>
-                <RadioCardLabel>Bank transfer</RadioCardLabel>
-              </RadioCard>
-            </RadioCardGrid>
-          </RadioProvider>
+          <RadioCardGrid $minItemSize="16rem">
+            <RadioCard value="card" $border={2}>
+              <RadioCardLabel>Card</RadioCardLabel>
+            </RadioCard>
+            <RadioCard value="wallet" $border={2}>
+              <RadioCardLabel>Wallet</RadioCardLabel>
+            </RadioCard>
+            <RadioCard value="bank" $border={2}>
+              <RadioCardLabel>Bank transfer</RadioCardLabel>
+            </RadioCard>
+          </RadioCardGrid>
         `}
       >
-        <RadioProvider defaultValue="card">
-          <RadioCardGrid
-            aria-label="Payment method"
-            $minItemSize="16rem"
-            className="w-full"
-          >
-            {paymentMethods.map((method) => (
-              <RadioCard key={method.value} value={method.value} $border={2}>
-                <RadioCardLabel>{method.label}</RadioCardLabel>
-              </RadioCard>
-            ))}
-          </RadioCardGrid>
-        </RadioProvider>
+        <RadioCardGrid
+          defaultValue="card"
+          aria-label="Payment method"
+          $minItemSize="16rem"
+          className="w-full"
+        >
+          {paymentMethods.map((method) => (
+            <RadioCard key={method.value} value={method.value} $border={2}>
+              <RadioCardLabel>{method.label}</RadioCardLabel>
+            </RadioCard>
+          ))}
+        </RadioCardGrid>
       </Example>
 
       <Example
