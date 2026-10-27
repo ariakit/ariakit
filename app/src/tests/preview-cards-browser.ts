@@ -356,7 +356,9 @@ test("preview card frames scroll after a click on the card", async ({
   const viewport = page.locator(`[id="${viewportId}"]`);
   const getPageScroll = () => page.evaluate(() => window.scrollY);
   const getFrameScroll = () => root.evaluate((html) => html.scrollTop);
-  const getHeight = () => card.evaluate((element) => element.offsetHeight);
+  const getHeight = () => {
+    return card.evaluate((element) => element.getBoundingClientRect().height);
+  };
   const inactiveEdge = await getViewportEdge(viewport);
   const inactiveHeight = await getHeight();
 
