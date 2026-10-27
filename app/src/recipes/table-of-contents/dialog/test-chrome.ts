@@ -38,6 +38,15 @@ function getHiddenThumbLinks(dialog: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
+  test("outlines the terms below the dialog title", async ({ q }) => {
+    await q.button("Read the terms").click();
+    const dialog = query(q.dialog("Terms of service"));
+    await test
+      .expect(dialog.heading("Terms of service", { level: 1 }))
+      .toBeVisible();
+    await test.expect(dialog.heading("Accounts", { level: 2 })).toBeVisible();
+  });
+
   test("follows the scroll container of the dialog", async ({ q }) => {
     await q.button("Read the terms").click();
     const dialog = query(q.dialog("Terms of service"));

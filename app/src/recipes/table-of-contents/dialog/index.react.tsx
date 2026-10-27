@@ -98,9 +98,11 @@ export default function Example() {
               <ShellMain $p={6}>
                 <ShellMainBody>
                   <Prose className={articleClass}>
+                    {/* The dialog title is the first heading level, so the
+                        terms come next, at a smaller size. */}
                     {terms.map((term) => (
                       <Fragment key={term.slug}>
-                        <Heading id={term.slug} render={<h3 />}>
+                        <Heading id={term.slug} render={<h2 />} $level={3}>
                           <a href={`#${term.slug}`}>{term.title}</a>
                         </Heading>
                         <p>{term.body}</p>
