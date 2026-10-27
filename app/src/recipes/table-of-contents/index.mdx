@@ -1,0 +1,29 @@
+---
+title: Table of Contents
+---
+
+## Overview
+
+These examples build tables of contents with the Ariakit UI `Toc` components. A table of contents lists the headings of a page and shows where the reader is. The link of the section being read is current, and a thumb on the guide covers the rows whose sections are on the screen. The links stay plain links, so the browser scrolls to the heading, updates the URL, and moves the focus starting point.
+
+Each example is a full page that uses the `Shell` components. The gallery starts with a documentation page, with the table of contents in a sidebar beside the article. Then it shows a long list that scrolls by itself, terms in a dialog, a phone layout with a popover, and numbered chapters. In these examples, the sidebar stays at every width, and the article text gets smaller in a narrow frame, so the table of contents stays in view. On a real phone, keep the text readable and put the table of contents in a popover, as the Phone Popover example does.
+
+## Components
+
+`Toc` renders a navigation landmark with a list of `TocLink` rows. A `TocLink` renders its own list item. For nested rows, put the link and a `TocList` in a `TocItem`. The link in a `TocItem` renders only the link, and the links in the nested `TocList` render their own list items again. So a recursive component can map a tree of headings. The `label` prop shows a title above the rows and names the landmark with it. `$size` sets the size of the label and the rows. It defaults to `sm`.
+
+One guide runs along the rows and bends into each nested list. The indent and the bends stop at the third level, and deeper rows line up with the third level. Set `$guide="diagonal"` for slanted bends, `$guide="rail"` for one straight line, or `$guide={false}` for the indent only. Without a guide, there is no thumb, and only the current link shows.
+
+The current link gets a lighter surface and full ink, and keeps the normal weight, so long labels don't wrap differently while the page scrolls. Set `$selectedBold` on the links to also show it in bold. `$parentInk` and `$parentBold` mark the links whose nested rows hold the current link. Set `ordered` on the `Toc` to number the top-level rows with markers on the guide. A ring around a marker lights up where the thumb passes, unless `$markerRing={false}`.
+
+The current link is the last heading above the activation line: where a click on its link puts the heading. CSS sets this line, with the `scroll-padding-top` of the scroll container and the `scroll-margin-top` of the heading. The `Shell` components set the scroll margin of the headings below the sticky headers, so a heading becomes current where it lands. Near the end of the page, the line slides down to the bottom, so short final sections become current in turn. So a click on a heading near the end can make a later one current. Before the first heading reaches the line, no link is current.
+
+The table of contents watches the nearest scroll container around its first heading, or the page. The Terms Dialog example watches the scroll viewport of the dialog, which lays out the terms with its own `Shell`. Inside the dialog, the shell rounds its corners to match. The viewport also scrolls smoothly with the `scroll-behavior` CSS property, and the table of contents follows the scroll as it glides. When the list is taller than its own scroll box, as in the Long List example, the box scrolls by itself to keep the rows of the sections on screen in view, and the page keeps its place. When those rows don't fit, the current link stays in view. At the first link, the box also shows the label above the list. The box keeps its `scroll-padding` around the rows, so a sticky label above them needs a matching `scroll-padding-top`. `onCurrentChange` receives the `href` of the current link, or `null`. The Phone Popover example shows the current section in its button with it.
+
+{/* The Terms Dialog example is the one that scrolls smoothly. If the site turns on smooth scrolling for every page, make that example scroll instantly, so the gallery still shows both. */}
+
+## Accessibility
+
+Give each `Toc` a name with `label`, `aria-label`, or `aria-labelledby`, such as "On this page", because a page can have more than one navigation landmark. Inside a `Nav` landmark or a `ShellSidebar` with `landmark="nav"`, a `Toc` without a name renders a `div`. When that landmark renders outside the React tree, such as an Astro sidebar around an island, set `landmark={false}`.
+
+The current link has `aria-current="location"`. The guide, the thumb, and the number markers are hidden from assistive technology, and an ordered `Toc` gives the order with an ordered list. The thumb over the sections on the screen is visual only, and changes of the current link aren't announced, so they don't interrupt reading. Links keep the native focus behavior: the `Toc` moves no focus and adds no `tabindex` to the headings.

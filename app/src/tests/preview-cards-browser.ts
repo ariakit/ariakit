@@ -867,3 +867,30 @@ for (const framework of ["react", "solid"]) {
     );
   });
 }
+
+test("preview cards keep the docs page in place when a link in the frame scrolls to a heading", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await gotoAndSettle(page, "/react/recipes/table-of-contents/");
+  const iframe = page.locator('iframe[title="Table of Contents"]');
+  const frame = await waitForFrameHydration(iframe);
+  const toc = query(query(frame).navigation("On this page"));
+  const pageScroll = await page.evaluate(() => window.scrollY);
+  // The link scrolls every box around its heading into view, including the docs
+  // page, which would move the card away.
+  await toc.link("Styling").click();
+  await expect(toc.link("Styling")).toHaveAttribute("aria-current", "location");
+  await expect(frame.locator("html")).not.toHaveJSProperty("scrollTop", 0);
+  expect(await page.evaluate(() => window.scrollY)).toBe(pageScroll);
+  await expect(iframe).toBeInViewport({ ratio: 0.9 });
+  // A link to the heading in the URL scrolls to it again.
+  await frame.locator("html").evaluate((element) => {
+    element.scrollTop = 0;
+  });
+  await expect(toc.link("Styling")).not.toHaveAttribute("aria-current");
+  await toc.link("Styling").click();
+  await expect(toc.link("Styling")).toHaveAttribute("aria-current", "location");
+  await expect(frame.locator("html")).not.toHaveJSProperty("scrollTop", 0);
+  expect(await page.evaluate(() => window.scrollY)).toBe(pageScroll);
+});

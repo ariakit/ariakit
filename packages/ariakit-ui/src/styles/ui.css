@@ -273,6 +273,20 @@ body > * {
   initial-value: 0px;
 }
 
+/* Registration lets the table of contents animate its thumb range. Every guide
+   piece reads the same animated values, so the thumb moves as one bar. */
+@property --toc-thumb-start {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --toc-thumb-end {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Resolve cell padding in the table's font to align header and body text. */
 @property --table-py {
   syntax: "<length>";

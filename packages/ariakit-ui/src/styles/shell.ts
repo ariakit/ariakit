@@ -16,6 +16,12 @@ export const shell = cv({
     // https://bugs.webkit.org/show_bug.cgi?id=320439
     "shell shell-state isolate grid @container/shell rounded-none!",
     "min-h-[100cqb]",
+    // A page shell keeps its radius for the frames inside it but paints square
+    // corners, and fills the viewport or a size container. Inside another
+    // frame, such as a dialog, a shell paints its concentric radius and fills
+    // only a frame with a definite height.
+    "[.ak-frame_&:not(.shell_*)]:rounded-(--ak-frame-radius)!",
+    "[.ak-frame_&:not(.shell_*)]:min-h-[min(100cqb,100%)]",
     "grid-cols-[[shell-start]_auto_auto_[main-start]_minmax(0,1fr)_[main-end]_auto_auto_[shell-end]]",
     "grid-rows-[[shell-start_header-start]_auto_[header-end_main-start_main-header-start]_auto_[main-header-end_intro-start]_auto_[intro-end_body-start]_minmax(0,1fr)_[body-end_footer-start]_auto_[footer-end_shell-end]]",
     "[--shell-start-1-width:0px] [--shell-start-2-width:0px]",
