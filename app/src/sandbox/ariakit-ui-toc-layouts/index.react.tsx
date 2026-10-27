@@ -103,6 +103,14 @@ const zoomed: Entry[] = Array.from({ length: 8 }, (_, index) => ({
   text: `Part ${index + 1}`,
 }));
 
+// The middle sections are hidden and can't become current.
+const collapsed: Entry[] = [
+  { slug: "collapsed-before", text: "Before" },
+  { slug: "collapsed-hidden", text: "Collapsed" },
+  { slug: "collapsed-details", text: "In details" },
+  { slug: "collapsed-after", text: "After" },
+];
+
 type LinkProps = Omit<TocLinkProps, "href">;
 
 function Entries({ entries, link }: { entries: Entry[]; link?: LinkProps }) {
@@ -271,6 +279,49 @@ function Zoomed() {
   );
 }
 
+// The middle sections keep their boxes while they hide: one collapses like a
+// panel that animates its height and hides with the visibility property, and
+// one is in closed details.
+function CollapsedSection() {
+  return (
+    <div className="flex flex-wrap items-start gap-6">
+      <Frame
+        render={<article aria-label="Article with a collapsed section" />}
+        $layer
+        $border
+        $rounded="xl"
+        $p={5}
+        className="h-48 w-80 overflow-auto scroll-pt-5"
+      >
+        <Prose>
+          <Heading id="collapsed-before" render={<h2 />} $level={5}>
+            Before
+          </Heading>
+          <p>The next section is collapsed.</p>
+          <div className="invisible h-0 overflow-clip">
+            <Heading id="collapsed-hidden" render={<h2 />} $level={5}>
+              Collapsed
+            </Heading>
+            <p>This section shows when the panel opens.</p>
+          </div>
+          <details>
+            <summary>Show the details</summary>
+            <Heading id="collapsed-details" render={<h2 />} $level={5}>
+              In details
+            </Heading>
+            <p>This section shows when the details open.</p>
+          </details>
+          <Heading id="collapsed-after" render={<h2 />} $level={5}>
+            After
+          </Heading>
+          <p className="h-64">The last section is long enough to scroll.</p>
+        </Prose>
+      </Frame>
+      <Contents label="Collapsed section" entries={collapsed} />
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <div className="grid w-full max-w-5xl gap-6">
@@ -350,6 +401,7 @@ export default function Example() {
         <ShownLater />
       </div>
       <Zoomed />
+      <CollapsedSection />
     </div>
   );
 }

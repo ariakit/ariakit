@@ -102,6 +102,16 @@ function isVisible(element: Element) {
   return element.getClientRects().length > 0;
 }
 
+// Hidden content can keep its boxes, such as closed details, or a panel that
+// collapses with a transition and hides with the visibility property.
+function isTargetVisible(target: Element) {
+  if (typeof target.checkVisibility === "function") {
+    return target.checkVisibility({ visibilityProperty: true });
+  }
+  if (!isVisible(target)) return false;
+  return getWindow(target).getComputedStyle(target).visibility === "visible";
+}
+
 // Event targets can come from another realm, so this checks the node type
 // instead of the Element constructor.
 function isElementNode(target: EventTarget | null): target is Element {
@@ -190,7 +200,7 @@ function getSections({ doc, entries, container }: GetSectionsParams) {
     if (!target) return null;
     if (seen.has(target)) return null;
     seen.add(target);
-    if (!isVisible(target)) return null;
+    if (!isTargetVisible(target)) return null;
     const top = (target.getBoundingClientRect().top - viewTop) / zoom;
     // The scroll margin is in the CSS pixels of the heading, which can zoom
     // more than the scroll container, such as in a zoomed page.

@@ -196,6 +196,39 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toHaveAttribute("aria-current", "location");
   });
 
+  test("skips headings in hidden content that keeps its boxes", async ({
+    page,
+    q,
+  }) => {
+    const nav = query(q.navigation("Collapsed section"));
+    // A panel that the visibility property hides, and closed details.
+    for (const id of ["collapsed-hidden", "collapsed-details"]) {
+      await q.heading("After").evaluate((element) => {
+        element.scrollIntoView({ block: "start" });
+      });
+      await test
+        .expect(nav.link("After"))
+        .toHaveAttribute("aria-current", "location");
+      // The hidden heading reaches the activation line while the next heading
+      // is still below it, so the section before it stays current. A heading in
+      // closed details doesn't scroll into view, so the article scrolls it to
+      // the scroll padding, as a wheel would.
+      await page.evaluate((id) => {
+        const heading = document.getElementById(id);
+        const article = heading?.closest("article");
+        if (!heading) return;
+        if (!article) return;
+        const top = article.getBoundingClientRect().top + article.clientTop;
+        const padding = getComputedStyle(article).scrollPaddingTop;
+        const offset = heading.getBoundingClientRect().top - top;
+        article.scrollTop += offset - Number.parseFloat(padding);
+      }, id);
+      await test
+        .expect(nav.link("Before"))
+        .toHaveAttribute("aria-current", "location");
+    }
+  });
+
   test("follows the headings of a zoomed article", async ({ q }) => {
     const link = query(q.navigation("Zoomed parts")).link("Part 3");
     await q.heading("Part 3").evaluate((element) => {
