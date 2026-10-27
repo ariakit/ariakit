@@ -77,14 +77,6 @@ export function RadioGroup({
   children,
   ...props
 }: RadioGroupProps) {
-  const defaultLabelId = React.useId();
-  const labelElement = createOptionalRender(RadioGroupLabel, label, {
-    id: defaultLabelId,
-  });
-  // The label registers with the group only after hydration, so reference it in
-  // the server markup too. Like the core group, let aria-label win.
-  const labelId =
-    props["aria-label"] != null ? undefined : labelElement?.props.id;
   return (
     <ak.RadioProvider
       store={store}
@@ -92,8 +84,8 @@ export function RadioGroup({
       defaultValue={defaultValue}
       setValue={setValue}
     >
-      <ak.RadioGroup aria-labelledby={labelId} {...props}>
-        {labelElement}
+      <ak.RadioGroup {...props}>
+        {createOptionalRender(RadioGroupLabel, label)}
         {children}
       </ak.RadioGroup>
     </ak.RadioProvider>
