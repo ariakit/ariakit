@@ -6,6 +6,7 @@ import {
   choiceCardDescription,
   choiceCardGrid,
   choiceCardLabel,
+  choiceCardLabelRow,
   choiceCardSlot,
   choiceField,
   choiceFieldContent,
@@ -66,6 +67,12 @@ export const radioCardSlot = choiceCardSlot;
 
 /** Arranges a radio card's label and description. */
 export const radioCardContent = choiceCardContent;
+
+/**
+ * A row in a radio card's content for the label and the slots that go with it,
+ * such as a badge. The description takes the full width below the row.
+ */
+export const radioCardLabelRow = choiceCardLabelRow;
 
 /** Primary label text for a radio card. */
 export const radioCardLabel = choiceCardLabel;

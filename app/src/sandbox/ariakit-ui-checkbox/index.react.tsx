@@ -20,6 +20,7 @@ import {
   CheckboxCardDescription,
   CheckboxCardGrid,
   CheckboxCardLabel,
+  CheckboxCardLabelRow,
   CheckboxCardSlot,
   CheckboxDescription,
   CheckboxField,
@@ -553,6 +554,81 @@ export default function CheckboxExamples() {
             </CheckboxCard>
           ))}
         </CheckboxCardGrid>
+      </Example>
+
+      <Example
+        title="Tiles with label rows"
+        description="The badge shares a row with the label, so the description takes the full width below them. In the narrow tile, the badge wraps below the label."
+        wide
+        code={`
+          <CheckboxCard value="reports" $orientation="vertical" $p={4}>
+            <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+              <FileChartColumn />
+            </CheckboxCardSlot>
+            <CheckboxCardContent>
+              <CheckboxCardLabelRow>
+                <CheckboxCardLabel>Reports</CheckboxCardLabel>
+                <CheckboxCardSlot $kind="badge">Beta</CheckboxCardSlot>
+              </CheckboxCardLabelRow>
+              <CheckboxCardDescription $truncate={false}>…</CheckboxCardDescription>
+            </CheckboxCardContent>
+            <CheckboxCardCheck />
+          </CheckboxCard>
+        `}
+      >
+        <div className="flex w-full flex-wrap items-start gap-3">
+          <CheckboxCard
+            value="reports"
+            defaultChecked
+            $orientation="vertical"
+            $p={4}
+            className="w-80"
+          >
+            <CheckboxCardSlot
+              $size="2xl"
+              $layer="brand"
+              $mix={20}
+              $rounded="lg"
+            >
+              <icons.FileChartColumn />
+            </CheckboxCardSlot>
+            <CheckboxCardContent>
+              <CheckboxCardLabelRow>
+                <CheckboxCardLabel>Reports</CheckboxCardLabel>
+                <CheckboxCardSlot $kind="badge">Beta</CheckboxCardSlot>
+              </CheckboxCardLabelRow>
+              <CheckboxCardDescription $truncate={false}>
+                A summary of usage and retention in your inbox every Monday
+              </CheckboxCardDescription>
+            </CheckboxCardContent>
+            <CheckboxCardCheck />
+          </CheckboxCard>
+          <CheckboxCard
+            value="audit"
+            $orientation="vertical"
+            $p={4}
+            className="w-48"
+          >
+            <CheckboxCardSlot
+              $size="2xl"
+              $layer="brand"
+              $mix={20}
+              $rounded="lg"
+            >
+              <icons.ShieldCheck />
+            </CheckboxCardSlot>
+            <CheckboxCardContent>
+              <CheckboxCardLabelRow>
+                <CheckboxCardLabel>Audit log</CheckboxCardLabel>
+                <CheckboxCardSlot $kind="badge">Enterprise</CheckboxCardSlot>
+              </CheckboxCardLabelRow>
+              <CheckboxCardDescription $truncate={false}>
+                Every change, with who made it
+              </CheckboxCardDescription>
+            </CheckboxCardContent>
+            <CheckboxCardCheck />
+          </CheckboxCard>
+        </div>
       </Example>
 
       <Example

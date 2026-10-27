@@ -17,6 +17,7 @@ import {
   radioCardDescription,
   radioCardGrid,
   radioCardLabel,
+  radioCardLabelRow,
   radioCardSlot,
   radioContent,
   radioDescription,
@@ -315,6 +316,31 @@ export interface RadioCardContentProps
 export function RadioCardContent(props: RadioCardContentProps) {
   const [variantProps, rest] = splitProps(props, radioCardContent);
   return <ak.Role.span {...radioCardContent.jsx(variantProps)} {...rest} />;
+}
+
+export interface RadioCardLabelRowProps
+  extends ak.RoleProps<"span">, VariantProps<typeof radioCardLabelRow> {}
+
+/**
+ * Row that puts the card's label and slots, such as a badge, on one line, so
+ * the description takes the full width below them. A slot wraps below the label
+ * when the row runs out of room. Must be nested inside a `RadioCardContent`.
+ * @example
+ * <RadioCardGrid aria-label="Plan">
+ *   <RadioCard value="pro">
+ *     <RadioCardContent>
+ *       <RadioCardLabelRow>
+ *         <RadioCardLabel>Pro</RadioCardLabel>
+ *         <RadioCardSlot $kind="badge">Popular</RadioCardSlot>
+ *       </RadioCardLabelRow>
+ *       <RadioCardDescription>For growing teams.</RadioCardDescription>
+ *     </RadioCardContent>
+ *   </RadioCard>
+ * </RadioCardGrid>
+ */
+export function RadioCardLabelRow(props: RadioCardLabelRowProps) {
+  const [variantProps, rest] = splitProps(props, radioCardLabelRow);
+  return <ak.Role.span {...radioCardLabelRow.jsx(variantProps)} {...rest} />;
 }
 
 export interface RadioCardLabelProps
