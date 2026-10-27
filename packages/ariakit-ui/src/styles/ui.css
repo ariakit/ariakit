@@ -287,6 +287,14 @@ body > * {
   initial-value: 0px;
 }
 
+/* Resolve the guide gutter at the table of contents root to align the smaller
+   label with the rows. */
+@property --toc-gutter {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Resolve cell padding in the table's font to align header and body text. */
 @property --table-py {
   syntax: "<length>";
