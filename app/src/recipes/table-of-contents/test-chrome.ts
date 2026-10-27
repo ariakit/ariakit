@@ -1,4 +1,4 @@
-import type { Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
@@ -18,14 +18,42 @@ function getThumbLinks(nav: Locator) {
       const top = Number.parseFloat(
         thumb.style.getPropertyValue("--toc-piece-top"),
       );
+      // Rects include the CSS zoom of the page, unlike the lengths of the
+      // pieces.
+      const zoom = link.currentCSSZoom || 1;
       const linkRect = link.getBoundingClientRect();
-      const joint = linkRect.bottom - thumb.getBoundingClientRect().bottom;
+      const thumbRect = thumb.getBoundingClientRect();
+      const joint = (linkRect.bottom - thumbRect.bottom) / zoom;
       const lineBottom = top + thumb.offsetHeight;
-      const lineTop = lineBottom - (linkRect.height - 2 * joint);
+      const lineTop = lineBottom - (linkRect.height / zoom - 2 * joint);
       const covered = Math.min(end, lineBottom) - Math.max(start, lineTop);
       return covered > 1 ? [link.textContent] : [];
     });
   });
+}
+
+const sections = [
+  "Overview",
+  "Installation",
+  "Usage",
+  "Basic example",
+  "Controlled state",
+  "Styling",
+];
+
+// Returns the sections from the given one to the last heading that starts above
+// the bottom of the viewport.
+async function getSectionsOnScreen(page: Page, from: string) {
+  const last = await page.evaluate(() => {
+    const headings = [...document.querySelectorAll("main :is(h2, h3)")];
+    return headings.findLast((heading) => {
+      return heading.getBoundingClientRect().top < window.innerHeight;
+    })?.textContent;
+  });
+  return sections.slice(
+    sections.indexOf(from),
+    sections.indexOf(last ?? "") + 1,
+  );
 }
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
@@ -56,16 +84,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
     // The short final sections become current in turn as the activation line
     // slides down at the end of the page.
-    test
-      .expect(seen)
-      .toEqual([
-        "Overview",
-        "Installation",
-        "Usage",
-        "Basic example",
-        "Controlled state",
-        "Styling",
-      ]);
+    test.expect(seen).toEqual(sections);
     await test
       .expect(query(nav).link("Styling"))
       .toHaveAttribute("aria-current", "location");
@@ -82,22 +101,30 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toHaveAttribute("aria-current", "location");
     // The run of visible rows starts at the current row and ends at the last
     // heading above the bottom of the viewport.
-    const lastVisible = await page.evaluate(() => {
-      const headings = [...document.querySelectorAll("main :is(h2, h3)")];
-      return headings.findLast((heading) => {
-        return heading.getBoundingClientRect().top < window.innerHeight;
-      })?.textContent;
-    });
-    const names = [
-      "Overview",
-      "Installation",
-      "Usage",
-      "Basic example",
-      "Controlled state",
-      "Styling",
-    ];
-    const expected = names.slice(2, names.indexOf(lastVisible ?? "") + 1);
+    const expected = await getSectionsOnScreen(page, "Usage");
     test.expect(expected.length).toBeGreaterThan(1);
+    await test.expect.poll(() => getThumbLinks(nav)).toEqual(expected);
+  });
+
+  test("follows the page of a site that zooms its root element", async ({
+    page,
+    q,
+  }) => {
+    // A site can scale its UI with a zoom on the root element, which also
+    // scales the scroll padding that keeps room for a sticky header there.
+    await page.addStyleTag({
+      content: "html { zoom: 1.5; scroll-padding-top: 16px; }",
+    });
+    const nav = q.navigation("On this page");
+    // At the top, the zoom pushes the second heading below the viewport.
+    const top = await getSectionsOnScreen(page, "Overview");
+    test.expect(top).toEqual(["Overview"]);
+    await test.expect.poll(() => getThumbLinks(nav)).toEqual(top);
+    await query(nav).link("Installation").click();
+    await test
+      .expect(query(nav).link("Installation"))
+      .toHaveAttribute("aria-current", "location");
+    const expected = await getSectionsOnScreen(page, "Installation");
     await test.expect.poll(() => getThumbLinks(nav)).toEqual(expected);
   });
 

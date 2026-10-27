@@ -97,6 +97,12 @@ const steps: Entry[] = [
   { slug: "step-third", text: "Third step" },
 ];
 
+// Sections of an article that zooms, with more rows than its list shows.
+const zoomed: Entry[] = Array.from({ length: 8 }, (_, index) => ({
+  slug: `zoomed-${index + 1}`,
+  text: `Part ${index + 1}`,
+}));
+
 type LinkProps = Omit<TocLinkProps, "href">;
 
 function Entries({ entries, link }: { entries: Entry[]; link?: LinkProps }) {
@@ -235,6 +241,36 @@ function ShownLater() {
   );
 }
 
+// The article and the table of contents zoom, and the content of the article
+// zooms again, so the rects they measure are larger than the CSS lengths of the
+// border and scroll padding of the article, the scroll margin of its headings,
+// and the scroll positions. The frame paints its edge as a ring or a 1px border
+// that a border utility can't replace, so the article sets its border inline.
+function Zoomed() {
+  return (
+    <div className="flex flex-wrap items-start gap-6 [zoom:1.5]">
+      <Frame
+        render={<article aria-label="Zoomed article" />}
+        $layer
+        $border
+        $rounded="xl"
+        $p={5}
+        className="h-48 w-80 overflow-auto scroll-pt-5"
+        style={{ borderTop: "12px solid transparent" }}
+      >
+        <Prose className="[zoom:1.2] [&>h2]:scroll-mt-4">
+          <Sections entries={zoomed} />
+        </Prose>
+      </Frame>
+      <Contents
+        label="Zoomed parts"
+        entries={zoomed}
+        list={{ className: "max-h-16 overflow-y-auto" }}
+      />
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <div className="grid w-full max-w-5xl gap-6">
@@ -313,6 +349,7 @@ export default function Example() {
         <MissingTargets />
         <ShownLater />
       </div>
+      <Zoomed />
     </div>
   );
 }

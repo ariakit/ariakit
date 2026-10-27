@@ -147,12 +147,13 @@ function getScrollContainer(element: Element) {
 }
 
 // Resolves a computed scroll padding, which keeps percentages as written, so
-// they resolve against the height of the scroll container here.
-function getScrollPadding(value: string, height: number) {
+// they resolve against the height of the scroll container here. A length is in
+// the CSS pixels of its element, which the zoom converts.
+function getScrollPadding(value: string, height: number, zoom = 1) {
   if (value.endsWith("%")) {
     return (Number.parseFloat(value) / 100) * height;
   }
-  return Number.parseFloat(value) || 0;
+  return (Number.parseFloat(value) || 0) * zoom;
 }
 
 interface GetSectionsParams {
@@ -166,8 +167,11 @@ interface GetSectionsParams {
 function getSections({ doc, entries, container }: GetSectionsParams) {
   const win = getWindow(doc);
   const scroller = container ?? doc.scrollingElement ?? doc.documentElement;
+  // Rects are in viewport pixels, like the scroll lengths of the page. An
+  // element scrolls in its own CSS pixels, which its CSS zoom scales.
+  const zoom = container?.currentCSSZoom || 1;
   const viewTop = container
-    ? container.getBoundingClientRect().top + container.clientTop
+    ? container.getBoundingClientRect().top + container.clientTop * zoom
     : 0;
   const height = container
     ? container.clientHeight
@@ -176,7 +180,10 @@ function getSections({ doc, entries, container }: GetSectionsParams) {
   const maxScroll = scrollHeight - clientHeight;
   const remaining = maxScroll - scrollTop;
   const style = win.getComputedStyle(container ?? doc.documentElement);
-  const padding = getScrollPadding(style.scrollPaddingTop, height);
+  // The scroll padding of the root is in its own CSS pixels, which a zoom on
+  // the root scales to the viewport pixels of the page.
+  const paddingZoom = container ? 1 : doc.documentElement.currentCSSZoom || 1;
+  const padding = getScrollPadding(style.scrollPaddingTop, height, paddingZoom);
   const seen = new Set<Element>();
   const sections = entries.map((entry): TocSection | null => {
     const target = getTarget(doc, entry.href);
@@ -184,9 +191,13 @@ function getSections({ doc, entries, container }: GetSectionsParams) {
     if (seen.has(target)) return null;
     seen.add(target);
     if (!isVisible(target)) return null;
-    const top = target.getBoundingClientRect().top - viewTop;
-    const margin = win.getComputedStyle(target).scrollMarginTop;
-    const base = padding + (Number.parseFloat(margin) || 0);
+    const top = (target.getBoundingClientRect().top - viewTop) / zoom;
+    // The scroll margin is in the CSS pixels of the heading, which can zoom
+    // more than the scroll container, such as in a zoomed page.
+    const targetZoom = (target.currentCSSZoom || 1) / zoom;
+    const { scrollMarginTop } = win.getComputedStyle(target);
+    const margin = Number.parseFloat(scrollMarginTop) || 0;
+    const base = padding + margin * targetZoom;
     if (maxScroll <= 0) {
       return { top, base, line: base };
     }
@@ -291,7 +302,10 @@ function keepInView({ box, link, start, end }: KeepInViewParams) {
     SCROLL_MARGIN,
     getScrollPadding(style.scrollPaddingBottom, height),
   );
-  const boxTop = box.getBoundingClientRect().top + box.clientTop;
+  // Rects include the CSS zoom of the box, unlike its scroll position and
+  // lengths, so row positions divide by it.
+  const zoom = box.currentCSSZoom || 1;
+  const boxTop = box.getBoundingClientRect().top + box.clientTop * zoom;
   const linkRect = link.getBoundingClientRect();
   // A sticky start element stays at the top of the box, so the link can be
   // above it.
@@ -300,8 +314,8 @@ function keepInView({ box, link, start, end }: KeepInViewParams) {
     end.getBoundingClientRect().bottom,
     linkRect.bottom,
   );
-  const top = startTop - boxTop;
-  const bottom = endBottom - boxTop;
+  const top = (startTop - boxTop) / zoom;
+  const bottom = (endBottom - boxTop) / zoom;
   let delta = 0;
   if (top < marginTop) {
     delta = top - marginTop;

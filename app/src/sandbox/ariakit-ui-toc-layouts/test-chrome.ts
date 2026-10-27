@@ -196,6 +196,23 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toHaveAttribute("aria-current", "location");
   });
 
+  test("follows the headings of a zoomed article", async ({ q }) => {
+    const link = query(q.navigation("Zoomed parts")).link("Part 3");
+    await q.heading("Part 3").evaluate((element) => {
+      element.scrollIntoView({ block: "start" });
+    });
+    await test.expect(link).toHaveAttribute("aria-current", "location");
+  });
+
+  test("keeps the current link in view in zoomed rows", async ({ q }) => {
+    const link = query(q.navigation("Zoomed parts")).link("Part 6");
+    await q.heading("Part 6").evaluate((element) => {
+      element.scrollIntoView({ block: "start" });
+    });
+    await test.expect(link).toHaveAttribute("aria-current", "location");
+    await test.expect.poll(() => isInList(link)).toBe(true);
+  });
+
   test("follows content that grows in a panel without a scroll", async ({
     q,
   }) => {
