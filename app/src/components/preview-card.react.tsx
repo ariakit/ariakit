@@ -124,7 +124,9 @@ export function PreviewCard({
   children,
   code,
 }: PreviewCardProps) {
-  const frame = usePreviewFrame(href);
+  // Whether the preview scrolls with the wheel and touches instead of the page.
+  const [active, setActive] = useState(false);
+  const frame = usePreviewFrame(href, setActive);
   // An inline example renders again from its initial state, and a frame loads
   // its current page again.
   const reload = () => {
@@ -140,6 +142,11 @@ export function PreviewCard({
     <div className="grid grid-cols-1 grid-rows-[1fr_auto] gap-2">
       <ak.DisclosureProvider>
         <Frame
+          // An interaction anywhere in the window, such as a click on its top
+          // bar, lets the preview scroll. A click on the window moves focus to
+          // it, so focus stays in the window.
+          data-preview-card
+          tabIndex={-1}
           // Between the 3xl and 4xl steps, so the window corner reads a little
           // rounder than the macOS browser window while following the theme.
           $rounded="calc(var(--radius)*7)"
@@ -226,9 +233,12 @@ export function PreviewCard({
             </ButtonGroup>
           </Frame>
           {inline ? (
-            <PreviewCardInline>{children}</PreviewCardInline>
+            <PreviewCardInline active={active} onActiveChange={setActive}>
+              {children}
+            </PreviewCardInline>
           ) : (
             <PreviewCardViewport
+              active={active}
               frame={frame}
               title={title}
               href={href}
@@ -251,9 +261,13 @@ type PreviewFrame = ReturnType<typeof usePreviewFrame>;
 
 /**
  * Follows the location and history of the preview page in the iframe, and sends
- * it the site theme, the viewport radius, and navigation commands.
+ * it the site theme, the viewport radius, and navigation commands. Reports
+ * whether the page scrolls to `onActiveChange`.
  */
-function usePreviewFrame(href: string) {
+function usePreviewFrame(
+  href: string,
+  onActiveChange: (active: boolean) => void,
+) {
   const ref = useRef<HTMLIFrameElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const [location, setLocation] = useState(href);
@@ -263,10 +277,12 @@ function usePreviewFrame(href: string) {
     canGoBack: false,
     canGoForward: false,
   });
-  // A resize with the handle lets the page scroll, as a click in it does. The
-  // page cannot see clicks and focus on the docs page, so the card tells it
-  // when the person moves on.
+  // An interaction with the card, such as a resize with the handle, lets the
+  // page scroll, as a click in it does. The page cannot see clicks and focus on
+  // the docs page, so the card tells it when the person moves on.
   const activatedRef = useRef(false);
+  // Lets the returned function activate the frame as the card does.
+  const activateRef = useRef<() => void>(undefined);
 
   useEffect(() => {
     const iframe = ref.current;
@@ -287,9 +303,9 @@ function usePreviewFrame(href: string) {
         radius: getInnerRadius(viewport),
       });
     };
-    const isFocusInStage = () => {
-      const stage = iframe.closest("[data-preview-stage]") ?? iframe;
-      return stage.contains(iframe.ownerDocument.activeElement);
+    const isFocusInCard = () => {
+      const card = iframe.closest("[data-preview-card]") ?? iframe;
+      return card.contains(iframe.ownerDocument.activeElement);
     };
     const onMessage = (event: MessageEvent) => {
       if (event.source !== iframe.contentWindow) return;
@@ -298,6 +314,8 @@ function usePreviewFrame(href: string) {
         scrollPage(iframe, event.data);
         return;
       }
+      // The card effect below follows the activity of the page.
+      if (event.data.action === "active") return;
       // Each new document in the frame reports its location while it parses, so
       // it gets the theme before it renders.
       postTheme();
@@ -313,7 +331,7 @@ function usePreviewFrame(href: string) {
       setOpening(event.data.opening ?? false);
       // A new document starts inactive, and it could not receive an activation
       // sent while it loaded. Focus in another frame means the person moved on.
-      if (!event.data.loaded && activatedRef.current && isFocusInStage()) {
+      if (!event.data.loaded && activatedRef.current && isFocusInCard()) {
         postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action: "activate" });
       }
     };
@@ -328,69 +346,108 @@ function usePreviewFrame(href: string) {
   }, []);
 
   const send = (action: PreviewCommandMessage["action"]) => {
-    const iframe = ref.current;
-    if (!iframe) return;
-    postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action });
+    sendToFrame(ref.current, action);
   };
 
   useEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
     const doc = viewport.ownerDocument;
-    const stage = viewport.closest("[data-preview-stage]") ?? viewport;
-    const isInStage = (target: EventTarget | null) => {
-      return target instanceof Node && stage.contains(target);
+    const card = viewport.closest("[data-preview-card]") ?? viewport;
+    const isInCard = (target: EventTarget | null) => {
+      return target instanceof Node && card.contains(target);
     };
+    let frameActive = false;
+    // The card shows an interaction with it before the page reports that it
+    // scrolls, so the brand border does not flicker as focus leaves the page.
+    const updateActive = () => {
+      onActiveChange(activatedRef.current || frameActive);
+    };
+    const onMessage = (event: MessageEvent) => {
+      if (event.source !== ref.current?.contentWindow) return;
+      if (!isPreviewFrameMessage(event.data)) return;
+      if (event.data.action !== "active") return;
+      frameActive = event.data.active;
+      // Focus can move from the frame to another preview frame without an event
+      // in this document, which also means the person moved on from the card.
+      if (!frameActive && !isInCard(doc.activeElement)) {
+        activatedRef.current = false;
+      }
+      updateActive();
+    };
+    const activate = () => {
+      activatedRef.current = true;
+      updateActive();
+      sendToFrame(ref.current, "activate");
+    };
+    activateRef.current = activate;
     const postDeactivate = () => {
-      const iframe = ref.current;
-      if (!iframe) return;
-      postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action: "deactivate" });
+      activatedRef.current = false;
+      updateActive();
+      sendToFrame(ref.current, "deactivate");
     };
     const deactivate = () => {
       if (!activatedRef.current) return;
-      activatedRef.current = false;
       postDeactivate();
     };
-    const onInteraction = (event: Event) => {
-      if (isInStage(event.target)) return;
+    const onFocusIn = (event: FocusEvent) => {
+      if (isInCard(event.target)) {
+        activate();
+        return;
+      }
       deactivate();
     };
     // A touch on the docs page can scroll it without taking focus from the
-    // frame, which would keep the frame active.
+    // frame, which would keep the frame active. A touch on the card can also
+    // scroll the page, so only its click activates the frame.
     const onPointerDown = (event: PointerEvent) => {
-      if (isInStage(event.target)) return;
-      if (event.pointerType !== "mouse" && doc.activeElement === ref.current) {
-        activatedRef.current = false;
+      if (isInCard(event.target)) return;
+      if (event.pointerType !== "mouse" && isInCard(doc.activeElement)) {
         postDeactivate();
         return;
       }
       deactivate();
     };
+    // A touch on the card that scrolls the page cancels the pointer instead of
+    // clicking, so the person moved on as with a touch on the docs page.
+    const onPointerCancel = (event: PointerEvent) => {
+      if (event.pointerType === "mouse") return;
+      if (!isInCard(event.target)) return;
+      postDeactivate();
+    };
+    // A click on an element that already has focus moves no focus.
+    const onClick = () => activate();
     // A click in another preview frame moves focus to it without a pointer or
-    // focus event in this document. Switching apps keeps focus on the handle.
+    // focus event in this document. Switching apps keeps focus in the card.
     let blurTimeout = 0;
     const onBlur = () => {
       clearTimeout(blurTimeout);
       blurTimeout = window.setTimeout(() => {
-        if (isInStage(doc.activeElement)) return;
+        if (isInCard(doc.activeElement)) return;
         deactivate();
       });
     };
+    window.addEventListener("message", onMessage);
     doc.addEventListener("pointerdown", onPointerDown, true);
-    doc.addEventListener("focusin", onInteraction, true);
+    doc.addEventListener("pointercancel", onPointerCancel, true);
+    doc.addEventListener("focusin", onFocusIn, true);
     window.addEventListener("blur", onBlur);
+    // iOS Safari clicks on a tap only when an ancestor of the target below the
+    // body listens to clicks, so the listener is on the card.
+    card.addEventListener("click", onClick);
     return () => {
       clearTimeout(blurTimeout);
+      activateRef.current = undefined;
+      window.removeEventListener("message", onMessage);
       doc.removeEventListener("pointerdown", onPointerDown, true);
-      doc.removeEventListener("focusin", onInteraction, true);
+      doc.removeEventListener("pointercancel", onPointerCancel, true);
+      doc.removeEventListener("focusin", onFocusIn, true);
       window.removeEventListener("blur", onBlur);
+      card.removeEventListener("click", onClick);
     };
-  }, []);
+  }, [onActiveChange]);
 
-  const activate = () => {
-    activatedRef.current = true;
-    send("activate");
-  };
+  const activate = () => activateRef.current?.();
 
   // A page can open its popup after the frame loads, so the card waits for
   // both.
@@ -470,6 +527,10 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
 }
 
 interface PreviewCardViewportProps {
+  /**
+   * Whether the preview scrolls instead of the page.
+   */
+  active: boolean;
   frame: PreviewFrame;
   title: string;
   href: string;
@@ -491,6 +552,7 @@ function getFrameHeight({
 }
 
 function PreviewCardViewport({
+  active,
   frame,
   title,
   href,
@@ -506,6 +568,9 @@ function PreviewCardViewport({
           ref={viewportRef}
           id={viewportId}
           $border
+          // The brand border shows that the preview scrolls, not the page.
+          $edge={active ? "brand" : undefined}
+          $edgeRaw={active}
           $layer="canvas"
           $p="none"
           className="grid grid-cols-1 overflow-clip"
@@ -587,13 +652,25 @@ function PreviewCardLoader() {
 }
 
 interface PreviewCardInlineProps {
+  /**
+   * Whether the example scrolls instead of the page.
+   */
+  active: boolean;
   children?: ReactNode;
+  /**
+   * Called when the example starts or stops scrolling instead of the page.
+   */
+  onActiveChange: (active: boolean) => void;
 }
 
 /** Renders an example directly in the card, without an iframe. */
-function PreviewCardInline({ children }: PreviewCardInlineProps) {
+function PreviewCardInline({
+  active,
+  children,
+  onActiveChange,
+}: PreviewCardInlineProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
-  const activate = useInactiveScroll(viewportRef);
+  const activate = useInactiveScroll(viewportRef, onActiveChange);
   return (
     <PreviewCardStage onResize={activate}>
       {({ viewportId }) => (
@@ -609,6 +686,9 @@ function PreviewCardInline({ children }: PreviewCardInlineProps) {
             // it scroll, like a click in a preview frame.
             tabIndex={-1}
             $border
+            // The brand border shows that the example scrolls, not the page.
+            $edge={active ? "brand" : undefined}
+            $edgeRaw={active}
             $layer="canvas"
             $p={8}
             className={[
@@ -913,6 +993,14 @@ function postToFrame(
   iframe.contentWindow?.postMessage(message, "*");
 }
 
+function sendToFrame(
+  iframe: HTMLIFrameElement | null,
+  action: PreviewCommandMessage["action"],
+) {
+  if (!iframe) return;
+  postToFrame(iframe, { type: PREVIEW_MESSAGE_TYPE, action });
+}
+
 function isWebUrl(href: string) {
   if (!URL.canParse(href)) return false;
   const { protocol } = new URL(href);
@@ -1005,28 +1093,33 @@ function hasScrollOverflow(element: Element) {
 
 /**
  * Lets an inline preview scroll only after a click, a tap, or focus moves into
- * it, as a preview frame does. Until then, wheel events and touches over its
- * scroll containers scroll the page, so scrolling the page over the card does
- * not get stuck in it. Returns a function that activates the preview, such as
- * when the person resizes it with the handle.
+ * its card, as a preview frame does. Until then, wheel events and touches over
+ * its scroll containers scroll the page, so scrolling the page over the card
+ * does not get stuck in it. Reports whether the preview scrolls to
+ * `onActiveChange`. Returns a function that activates the preview, such as when
+ * the person resizes it with the handle.
  */
-function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
+function useInactiveScroll(
+  ref: RefObject<HTMLElement | null>,
+  onActiveChange: (active: boolean) => void,
+) {
   const activeRef = useRef(false);
-  // Lets the returned function update the touch scroll lock.
+  // Lets the returned function update the touch scroll lock and the card.
   const activeChangeRef = useRef<() => void>(undefined);
 
   useEffect(() => {
     const viewport = ref.current;
     if (!viewport) return;
     const doc = viewport.ownerDocument;
-    // The resize handle keeps focus while it resizes an active preview.
-    const stage = viewport.closest("[data-preview-stage]") ?? viewport;
+    // Controls in the card, such as the resize handle, keep focus while the
+    // preview is active.
+    const card = viewport.closest("[data-preview-card]") ?? viewport;
     // The preview stays active until a click or focus moves elsewhere. Focus
     // can also fall back to the body, such as when a focused button becomes
     // disabled, which keeps a preview frame active too.
-    activeRef.current = viewport.contains(doc.activeElement);
-    const isInViewport = (target: EventTarget | null) => {
-      return target instanceof Node && viewport.contains(target);
+    activeRef.current = card.contains(doc.activeElement);
+    const isInCard = (target: EventTarget | null) => {
+      return target instanceof Node && card.contains(target);
     };
     const isActive = () => {
       if (!activeRef.current) return false;
@@ -1035,7 +1128,7 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
       // event in this document.
       if (!focused) return true;
       if (focused === doc.body) return true;
-      return stage.contains(focused);
+      return card.contains(focused);
     };
 
     // A touch cannot pass its scrolling to the page like the wheel. On a touch
@@ -1068,23 +1161,24 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
       }
     };
     // Waits for focus to settle, and lets a burst of changes update the lock
-    // once.
-    let scrollLockFrame = 0;
-    const scheduleScrollLock = () => {
-      if (scrollLockFrame) return;
-      scrollLockFrame = requestAnimationFrame(() => {
-        scrollLockFrame = 0;
+    // and the card once.
+    let updateFrame = 0;
+    const scheduleUpdate = () => {
+      if (updateFrame) return;
+      updateFrame = requestAnimationFrame(() => {
+        updateFrame = 0;
         updateScrollLock();
+        onActiveChange(isActive());
       });
     };
-    activeChangeRef.current = scheduleScrollLock;
+    activeChangeRef.current = scheduleUpdate;
     // Scroll containers, such as popups, can appear in the example.
     const scrollLockObserver = new MutationObserver((records) => {
       const changed = records.some(
         (record) => record.attributeName !== "data-preview-scroll-lock",
       );
       if (!changed) return;
-      scheduleScrollLock();
+      scheduleUpdate();
     });
     const observeScrollLock = () => {
       scrollLockObserver.disconnect();
@@ -1101,21 +1195,33 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
 
     // Runs in the capture phase, before the handle activates the preview.
     const updateActive = (event: Event) => {
-      activeRef.current = isInViewport(event.target);
-      scheduleScrollLock();
+      activeRef.current = isInCard(event.target);
+      scheduleUpdate();
     };
-    // A touch or pen in the example can start a scroll of the page, so only the
+    // A touch or pen in the card can start a scroll of the page, so only the
     // click of a tap activates the preview. A tap that stops a scrolling page
     // does not click.
     const onPointerDown = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse" && isInViewport(event.target)) return;
+      if (event.pointerType !== "mouse" && isInCard(event.target)) return;
       updateActive(event);
     };
+    // A touch on the card outside the example that scrolls the page cancels the
+    // pointer instead of clicking, so the person moved on as with a touch on
+    // the docs page. A touch that scrolls the example keeps it active.
+    const onPointerCancel = (event: PointerEvent) => {
+      if (event.pointerType === "mouse") return;
+      if (!isInCard(event.target)) return;
+      if (event.target instanceof Node && viewport.contains(event.target)) {
+        return;
+      }
+      activeRef.current = false;
+      scheduleUpdate();
+    };
     // iOS Safari clicks on a tap only when an ancestor of the target below the
-    // body listens to clicks, so the listener is on the viewport.
+    // body listens to clicks, so the listener is on the card.
     const onClick = () => {
       activeRef.current = true;
-      scheduleScrollLock();
+      scheduleUpdate();
     };
     const isInScrollContainer = (target: EventTarget | null) => {
       // The listener is on the viewport, so the target is in its document.
@@ -1136,17 +1242,21 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
       scrollPage(viewport, event);
     };
     observeScrollLock();
+    // Focus can already be in the card, such as when a person tabbed into it
+    // before it hydrated.
+    onActiveChange(isActive());
     touchScreen.addEventListener("change", observeScrollLock);
     doc.addEventListener("pointerdown", onPointerDown, true);
+    doc.addEventListener("pointercancel", onPointerCancel, true);
     doc.addEventListener("focusin", updateActive, true);
     // Focus that moves to a preview frame blurs the window.
-    window.addEventListener("blur", scheduleScrollLock);
+    window.addEventListener("blur", scheduleUpdate);
     // A media query can make an element a scroll container.
-    window.addEventListener("resize", scheduleScrollLock);
-    viewport.addEventListener("click", onClick, true);
+    window.addEventListener("resize", scheduleUpdate);
+    card.addEventListener("click", onClick, true);
     viewport.addEventListener("wheel", onWheel, { passive: false });
     return () => {
-      cancelAnimationFrame(scrollLockFrame);
+      cancelAnimationFrame(updateFrame);
       scrollLockObserver.disconnect();
       activeChangeRef.current = undefined;
       for (const element of scrollLocked) {
@@ -1154,13 +1264,14 @@ function useInactiveScroll(ref: RefObject<HTMLElement | null>) {
       }
       touchScreen.removeEventListener("change", observeScrollLock);
       doc.removeEventListener("pointerdown", onPointerDown, true);
+      doc.removeEventListener("pointercancel", onPointerCancel, true);
       doc.removeEventListener("focusin", updateActive, true);
-      window.removeEventListener("blur", scheduleScrollLock);
-      window.removeEventListener("resize", scheduleScrollLock);
-      viewport.removeEventListener("click", onClick, true);
+      window.removeEventListener("blur", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      card.removeEventListener("click", onClick, true);
       viewport.removeEventListener("wheel", onWheel);
     };
-  }, [ref]);
+  }, [ref, onActiveChange]);
 
   return () => {
     activeRef.current = true;

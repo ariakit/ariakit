@@ -74,7 +74,21 @@ export interface PreviewScrollMessage {
   deltaMode: number;
 }
 
-export type PreviewFrameMessage = PreviewLocationMessage | PreviewScrollMessage;
+/**
+ * Reports to the card whether a preview frame scrolls, so the card can show it.
+ * Frames deployed before this message, such as a Next.js preview from an older
+ * deploy, do not send it.
+ */
+export interface PreviewActiveMessage {
+  type: typeof PREVIEW_MESSAGE_TYPE;
+  action: "active";
+  active: boolean;
+}
+
+export type PreviewFrameMessage =
+  | PreviewLocationMessage
+  | PreviewScrollMessage
+  | PreviewActiveMessage;
 
 /**
  * Prepares a preview page that a preview card embeds. It runs before the page
@@ -85,7 +99,9 @@ export type PreviewFrameMessage = PreviewLocationMessage | PreviewScrollMessage;
  *   the docs page over a preview or hovering a component that moves focus on
  *   hover does not trap the docs page. A touch on the docs page makes the page
  *   inactive again, even when focus stays in it. The card also lets the page
- *   scroll while the person resizes it, until they interact with the docs page.
+ *   scroll while the person interacts with the card, such as its top bar or its
+ *   resize handle, until they interact with the docs page. The page reports to
+ *   the card whether it is active.
  * - Interactions on the docs page do not close popups in the page. A page with
  *   `data-preview-open` on its root opens its popup once it hydrates, so the
  *   card presents the popup and not only its trigger. The value `hover` opens
@@ -114,11 +130,24 @@ export function setupPreviewEmbed() {
   // components move focus from those handlers.
   let pointerDown = false;
   const isActive = () => hasFocus() || pointerDown;
-  // A resize from the card lets the page scroll, but focus stays on the resize
-  // handle, so programmatic focus still waits for a person in the page.
-  let resized = false;
+  // An interaction with the card lets the page scroll, but focus stays in the
+  // card, so programmatic focus still waits for a person in the page.
+  let activated = false;
+  // An active page scrolls.
+  const isScrollable = () => hasFocus() || activated;
+  const postActive = () => {
+    const active = isScrollable();
+    window.parent.postMessage({ type, action: "active", active }, "*");
+  };
+  // A new document reports its first state, which replaces the state of the
+  // previous document in the card.
+  let reportedActive: boolean | undefined;
   const updateActive = () => {
-    root.toggleAttribute("data-preview-active", hasFocus() || resized);
+    const active = isScrollable();
+    root.toggleAttribute("data-preview-active", active);
+    if (active === reportedActive) return;
+    reportedActive = active;
+    postActive();
   };
   updateActive();
   const comeBack = (event: Event) => {
@@ -133,11 +162,11 @@ export function setupPreviewEmbed() {
   // keys, which an inactive page would ignore.
   window.addEventListener("click", comeBack, true);
   window.addEventListener("keydown", comeBack, true);
-  // Once the page had focus, the person moved on from the resize, so focus
+  // Once the page had focus, the person moved on from the card, so focus
   // decides again.
   window.addEventListener("blur", () => {
     pointerDown = false;
-    resized = false;
+    activated = false;
     updateActive();
   });
   // Only a person activates the page, not the click that opens its popup.
@@ -647,6 +676,7 @@ export function setupPreviewEmbed() {
     switch (data.action) {
       case "sync":
         postLocation();
+        postActive();
         break;
       case "back":
         if (!canGoBack()) break;
@@ -668,11 +698,11 @@ export function setupPreviewEmbed() {
         location.reload();
         break;
       case "activate":
-        resized = true;
+        activated = true;
         updateActive();
         break;
       case "deactivate":
-        resized = false;
+        activated = false;
         movedOn = true;
         updateActive();
         break;
@@ -770,6 +800,9 @@ export function isPreviewFrameMessage(
       deltaY: "number",
       deltaMode: "number",
     });
+  }
+  if (data.action === "active") {
+    return hasTypes(data, { active: "boolean" });
   }
   return false;
 }

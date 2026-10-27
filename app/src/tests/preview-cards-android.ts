@@ -2,7 +2,7 @@ import { query } from "@ariakit/test/playwright";
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
-import { gotoAndSettle } from "#app/test-utils/preview.ts";
+import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
 
 interface Point {
   x: number;
@@ -264,6 +264,11 @@ test("inline previews pass touch scrolling to the page until tapped", async ({
   await expect(viewport).toHaveCSS("overflow-y", "auto");
   await swipe({ page, from: await getCenter(viewport), distance: 100 });
   await expect.poll(() => getScrollTop(viewport)).toBeGreaterThan(0);
+  // A swipe that scrolls the example also cancels the pointer, and the card
+  // updates the scroll lock on the next animation frame, so the example keeps
+  // scrolling only if the cancel left it active.
+  await flushFrames(page);
+  await expect(viewport).toHaveCSS("overflow-y", "auto");
 
   // A swipe on the card outside the example makes it inactive again. Focus
   // stays in the example, so only the click of a tap activates it again. The

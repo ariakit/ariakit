@@ -41,6 +41,15 @@ async function waitForShownFrame(page: Page, title: string) {
   return iframe;
 }
 
+// The viewport edge is a border or a ring, depending on the theme and the
+// lightness of the window around it.
+async function getViewportEdge(viewport: Locator) {
+  return viewport.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return `${style.borderTopColor} ${style.boxShadow}`;
+  });
+}
+
 // The card shows the frame once the popup of its example has opened and the
 // frame has scrolled to it, so the frame does not show the closed combobox and
 // then jump. A retrying assertion would also pass if the popup opened after the
@@ -324,6 +333,84 @@ test("preview card frames scroll after a resize with the handle", async ({
   await expect(root).not.toHaveAttribute("data-preview-active", "");
 });
 
+test("preview card frames scroll after a click on the card", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
+  const region = q.region("Combobox Group", { exact: true });
+  const card = region.locator("[data-preview-card]");
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  const frame = await waitForFrameHydration(iframe);
+  const root = frame.locator("html");
+  // The frame scrolls to the popup that it opens before the card shows it.
+  await expect(iframe.locator("xpath=..")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
+  // The handle names the viewport it resizes.
+  const handle = query(region).separator("Resize preview", {
+    includeHidden: true,
+  });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  const getPageScroll = () => page.evaluate(() => window.scrollY);
+  const getFrameScroll = () => root.evaluate((html) => html.scrollTop);
+  const getHeight = () => card.evaluate((element) => element.offsetHeight);
+  const inactiveEdge = await getViewportEdge(viewport);
+  const inactiveHeight = await getHeight();
+
+  // A click on the title in the top bar moves focus to the card, which lets the
+  // frame scroll and gives the viewport a brand border.
+  await query(region).heading("Combobox Group").click();
+  await expect(card).toBeFocused();
+  await expect(root).toHaveAttribute("data-preview-active", "");
+  await expect.poll(() => getViewportEdge(viewport)).not.toBe(inactiveEdge);
+  // The brand border does not resize the card.
+  expect(await getHeight()).toBe(inactiveHeight);
+
+  const box = await iframe.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  // The corner of the frame is clear of the popup, which scrolls on its own.
+  await page.mouse.move(box.x + 8, box.y + 8);
+  const frameScroll = await getFrameScroll();
+  const pageScroll = await getPageScroll();
+  // WebKit applies the new root overflow to wheel scrolling on a later
+  // rendering update, which no page state reports.
+  await flushFrames(page);
+  await page.mouse.wheel(0, 200);
+  await expect.poll(getFrameScroll).toBeGreaterThan(frameScroll);
+  expect(await getPageScroll()).toBe(pageScroll);
+
+  // A click on the docs page makes the frame inactive again.
+  await q.heading("Combobox Group", { level: 1 }).click();
+  await expect(root).not.toHaveAttribute("data-preview-active", "");
+  await expect.poll(() => getViewportEdge(viewport)).toBe(inactiveEdge);
+
+  // A click in the frame also gives the viewport a brand border.
+  await page.mouse.click(box.x + 8, box.y + 8);
+  await expect(root).toHaveAttribute("data-preview-active", "");
+  await expect.poll(() => getViewportEdge(viewport)).not.toBe(inactiveEdge);
+
+  // A click in another preview frame sends no event to the docs page, but the
+  // card loses its brand border, even after a click on its top bar.
+  await query(region).heading("Combobox Group").click();
+  const frameBox = await iframe.boundingBox();
+  expect(frameBox).not.toBeNull();
+  if (!frameBox) return;
+  await page.mouse.click(frameBox.x + 8, frameBox.y + 8);
+  await expect(root).toHaveAttribute("data-preview-active", "");
+  const otherFrame = page.locator('iframe[title="Custom Items"]');
+  await otherFrame.scrollIntoViewIfNeeded();
+  const otherBox = await otherFrame.boundingBox();
+  expect(otherBox).not.toBeNull();
+  if (!otherBox) return;
+  await page.mouse.click(otherBox.x + 8, otherBox.y + 8);
+  await expect(root).not.toHaveAttribute("data-preview-active", "");
+  await expect.poll(() => getViewportEdge(viewport)).toBe(inactiveEdge);
+});
+
 test("preview cards show the popup of their example open", async ({
   page,
   q,
@@ -465,12 +552,12 @@ test("compact preview cards take the minimum height of inline previews", async (
   await gotoAndSettle(page, "/react/recipes/tooltip/");
   const iframe = page.locator('iframe[title="Tooltip"]');
   // The next card in the grid renders its example inline, in a viewport that
-  // takes the minimum height of the grid. The viewport is the first element in
-  // the card that a click can focus.
-  const inlineViewport = q
-    .region("Keyboard Shortcuts", { exact: true })
-    .locator("[tabindex='-1']")
-    .first();
+  // takes the minimum height of the grid. The card shares a row, so it hides
+  // its handle, which still names the viewport it resizes.
+  const card = query(q.region("Keyboard Shortcuts", { exact: true }));
+  const handle = card.separator("Resize preview", { includeHidden: true });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const inlineViewport = page.locator(`[id="${viewportId}"]`);
   const minHeight = await inlineViewport.evaluate((element) => {
     return Number.parseFloat(getComputedStyle(element).minHeight);
   });
@@ -663,6 +750,47 @@ test("inline previews scroll only after focus moves into them", async ({
   await expect(viewport).toBeFocused();
   await page.mouse.wheel(0, 100);
   await expect.poll(getViewportScroll).toBeGreaterThan(0);
+});
+
+test("inline previews scroll after a click on their card", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await gotoAndSettle(page, "/react/recipes/skeleton/");
+  const article = q.region("Article", { exact: true });
+  await waitForArticle(article);
+  const card = article.locator("[data-preview-card]");
+  const handle = query(article).separator("Resize preview", {
+    includeHidden: true,
+  });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  const getViewportScroll = () =>
+    viewport.evaluate((element) => element.scrollTop);
+  await expect
+    .poll(() => viewport.evaluate((el) => el.scrollHeight > el.clientHeight))
+    .toBe(true);
+  const inactiveEdge = await getViewportEdge(viewport);
+
+  // A click on the title in the top bar moves focus to the card, which lets the
+  // example scroll and gives the viewport a brand border.
+  await query(article).heading("Article", { level: 2 }).click();
+  await expect(card).toBeFocused();
+  await expect.poll(() => getViewportEdge(viewport)).not.toBe(inactiveEdge);
+  // The click scrolls the title into view, which can leave the example below
+  // the window.
+  await viewport.evaluate((element) => element.scrollIntoView());
+  const box = await viewport.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  await page.mouse.move(box.x + 24, box.y + 120);
+  await page.mouse.wheel(0, 100);
+  await expect.poll(getViewportScroll).toBeGreaterThan(0);
+
+  // A click on the docs page makes the example inactive again.
+  await q.heading("Skeleton", { level: 1 }).click();
+  await expect.poll(() => getViewportEdge(viewport)).toBe(inactiveEdge);
 });
 
 test("inline previews stay active when focus falls back to the page", async ({
