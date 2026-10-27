@@ -93,10 +93,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       window.scrollTo(0, root.scrollHeight - root.clientHeight);
     });
     await test.expect(label).not.toBeInViewport();
-    // The first section comes before the activation line, so no link is
-    // current, and the list shows its start with the label above it.
+    // The first link is current at the top, and the list shows its start with
+    // the label above it.
     await page.evaluate(() => window.scrollTo(0, 0));
-    await test.expect(first).not.toHaveAttribute("aria-current");
+    await test.expect(first).toHaveAttribute("aria-current", "location");
     await test.expect
       .poll(() =>
         label.evaluate((element) => {

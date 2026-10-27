@@ -4,7 +4,6 @@ import {
   Shell,
   ShellMain,
   ShellMainBody,
-  ShellMainIntro,
   ShellSidebar,
   ShellSidebarBody,
 } from "@ariakit/ui/components/shell.ariakit.react";
@@ -54,24 +53,14 @@ const chapters: Chapter[] = [
 const text =
   "Read the lesson, then try the exercise at the end. Each lesson builds on the one before it, so take them in order.";
 
-// The article text gets smaller in a narrow frame, so the sidebar keeps its
-// room beside it.
-const articleClass = "text-[length:clamp(0.625rem,2.5cqi,1rem)]";
-
 export default function Example() {
   return (
     <Shell>
       <ShellMain>
-        <ShellMainIntro>
-          {/* The intro ends with the space that the first heading of the body
-              drops from its top margin, as the other sections have. */}
-          <Prose className={`${articleClass} pb-[1.75em]`}>
-            <Heading render={<h1 />}>React for designers</Heading>
-            <p>A course in four chapters, from components to forms.</p>
-          </Prose>
-        </ShellMainIntro>
         <ShellMainBody>
-          <Prose className={articleClass}>
+          {/* The article text gets smaller in a narrow frame, so the sidebar
+              keeps its room beside it. */}
+          <Prose className="text-[length:clamp(0.625rem,2.5cqi,1rem)]">
             {chapters.map((chapter, index) => (
               <Fragment key={chapter.slug}>
                 <Heading id={chapter.slug} render={<h2 />}>
