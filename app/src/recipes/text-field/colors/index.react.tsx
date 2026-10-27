@@ -1,9 +1,11 @@
 import {
   Input,
   InputDescription,
+  InputError,
   InputField,
   InputLabel,
 } from "@ariakit/ui/components/input.ariakit.react";
+import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import { useId } from "react";
 
 export default function Example() {
@@ -46,6 +48,25 @@ export default function Example() {
         />
         <InputDescription id={`${id}-address-hint`}>
           Filled from your last order.
+        </InputDescription>
+      </InputField>
+      <InputField className="col-span-full">
+        <InputLabel htmlFor={`${id}-email`}>Email</InputLabel>
+        <Input
+          id={`${id}-email`}
+          type="email"
+          defaultValue="ada@example.com"
+          aria-invalid
+          aria-describedby={`${id}-email-error ${id}-email-hint`}
+        />
+        {/* The danger layer puts the error on a panel with padding and rounded
+            corners. The text keeps the danger color on it. */}
+        <InputError id={`${id}-email-error`} $layer="danger" $mix={15}>
+          Another account uses this address.{" "}
+          <Link href="#sign-in">Sign in</Link> or use a different address.
+        </InputError>
+        <InputDescription id={`${id}-email-hint`}>
+          We send a confirmation link to this address.
         </InputDescription>
       </InputField>
     </div>
