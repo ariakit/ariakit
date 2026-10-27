@@ -1,6 +1,8 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import * as React from "react";
+import { createOptionalRender } from "../react-utils/create-render.react.ts";
 import {
   DescriptionContext,
   useDescription,
@@ -19,16 +21,19 @@ import {
   radioContent,
   radioDescription,
   radioField,
+  radioGroupLabel,
   radioLabel,
 } from "../styles/radio.ts";
 
 export interface RadioProviderProps extends ak.RadioProviderProps {}
 
 /**
- * Provides a radio store to `RadioGroup` and `Radio` descendants.
+ * Provides a radio store to `RadioGroup` and `Radio` descendants. A group owns
+ * its state, so use the provider only when radios or other components outside
+ * the group read the same value.
  * @example
  * <RadioProvider defaultValue="email">
- *   <RadioGroup aria-label="Contact method">
+ *   <RadioGroup label="Contact method">
  *     <RadioField value="email">Email</RadioField>
  *     <RadioField value="phone">Phone</RadioField>
  *   </RadioGroup>
@@ -38,21 +43,127 @@ export function RadioProvider(props: RadioProviderProps) {
   return <ak.RadioProvider {...props} />;
 }
 
-export interface RadioGroupProps extends ak.RadioGroupProps {}
+type RadioGroupStateProps = Pick<
+  ak.RadioProviderProps,
+  "value" | "defaultValue" | "setValue"
+>;
+
+// The store of the nearest Ariakit UI radio group. A group passes its store to
+// its radios through the radio context, so a nested group would otherwise take
+// the store of the group around it for a provider.
+const RadioGroupStoreContext = React.createContext<ak.RadioStore | undefined>(
+  undefined,
+);
 
 /**
- * Groups `Radio` components. Requires a `store` prop or a `RadioProvider`
- * ancestor.
- * @example
- * <RadioProvider>
- *   <RadioGroup aria-label="Contact method">
- *     <RadioField value="email">Email</RadioField>
- *     <RadioField value="phone">Phone</RadioField>
- *   </RadioGroup>
- * </RadioProvider>
+ * Returns the store that owns the group state: the `store` prop, then an outer
+ * `RadioProvider`. Returns `undefined` when the group owns its state.
  */
-export function RadioGroup(props: RadioGroupProps) {
-  return <ak.RadioGroup {...props} />;
+function useOwnerStore(store?: ak.RadioStore) {
+  const context = ak.useRadioContext();
+  const enclosingGroupStore = React.useContext(RadioGroupStoreContext);
+  if (store) return store;
+  if (context === enclosingGroupStore) return;
+  return context;
+}
+
+/**
+ * Warns in development about state props that a group ignores because a `store`
+ * prop or an outer `RadioProvider` owns its state.
+ */
+function useIgnoredStateWarning(
+  ownerStore: ak.RadioStore | undefined,
+  { value, defaultValue, setValue }: RadioGroupStateProps,
+) {
+  const hasOwner = !!ownerStore;
+  const ignoredProps = [
+    value !== undefined && "value",
+    defaultValue !== undefined && "defaultValue",
+    setValue !== undefined && "setValue",
+  ]
+    .filter(Boolean)
+    .join(", ");
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    if (!hasOwner) return;
+    if (!ignoredProps) return;
+    console.warn(
+      `A radio group ignores ${ignoredProps} because a \`store\` prop or an outer RadioProvider owns its state. Pass these props to that owner instead.`,
+    );
+  }, [hasOwner, ignoredProps]);
+}
+
+export interface RadioGroupProps
+  extends
+    Omit<ak.RadioGroupProps, "value" | "defaultValue">,
+    RadioGroupStateProps {
+  /**
+   * Label content, a custom element, or `RadioGroupLabel` props. The label
+   * names the group. Omitted by default; use `aria-label` or `aria-labelledby`
+   * to name a group without a visible label.
+   */
+  label?: React.ReactNode | RadioGroupLabelProps;
+}
+
+/**
+ * Groups `Radio` components and owns their selected value through `value`,
+ * `defaultValue`, and `setValue`. A `store` prop or an outer `RadioProvider`
+ * owns the state instead, and the group then ignores those props.
+ * @example
+ * <RadioGroup label="Contact method" defaultValue="email">
+ *   <RadioField value="email">Email</RadioField>
+ *   <RadioField value="phone">Phone</RadioField>
+ * </RadioGroup>
+ */
+export function RadioGroup({
+  value,
+  defaultValue,
+  setValue,
+  label,
+  children,
+  ...props
+}: RadioGroupProps) {
+  const ownerStore = useOwnerStore(props.store);
+  useIgnoredStateWarning(ownerStore, { value, defaultValue, setValue });
+  // Creating the store unconditionally keeps the tree stable if an owner
+  // appears later. The store stays unused while another owner exists.
+  const ownStore = ak.useRadioStore({ value, defaultValue, setValue });
+  const store = ownerStore ?? ownStore;
+  const defaultLabelId = React.useId();
+  const labelElement = createOptionalRender(RadioGroupLabel, label, {
+    id: defaultLabelId,
+  });
+  // The label registers with the group only after hydration, so reference it in
+  // the server markup too. Like the core group, let aria-label win.
+  const labelId =
+    props["aria-label"] != null ? undefined : labelElement?.props.id;
+  return (
+    <ak.RadioGroup aria-labelledby={labelId} {...props} store={store}>
+      <RadioGroupStoreContext.Provider value={store}>
+        {labelElement}
+        {children}
+      </RadioGroupStoreContext.Provider>
+    </ak.RadioGroup>
+  );
+}
+
+export interface RadioGroupLabelProps
+  extends ak.RadioGroupLabelProps, VariantProps<typeof radioGroupLabel> {}
+
+/**
+ * Visible label of a radio group. It names the group. Must be nested inside a
+ * `RadioGroup` or `RadioCardGrid`; their `label` prop puts it first.
+ * @example
+ * <RadioGroup label={<RadioGroupLabel>Contact method</RadioGroupLabel>}>
+ *   <RadioField value="email">Email</RadioField>
+ *   <RadioField value="phone">Phone</RadioField>
+ * </RadioGroup>
+ */
+export function RadioGroupLabel(props: RadioGroupLabelProps) {
+  const [variantProps, rest] = splitProps(props, radioGroupLabel);
+  return (
+    <ak.RadioGroupLabel {...radioGroupLabel.jsx(variantProps)} {...rest} />
+  );
 }
 
 export interface RadioProps extends ak.RadioProps, VariantProps<typeof radio> {}
@@ -61,12 +172,10 @@ export interface RadioProps extends ak.RadioProps, VariantProps<typeof radio> {}
  * A native radio input with a circular selection mark. Use it inside a
  * `RadioGroup` to share selection and keyboard navigation.
  * @example
- * <RadioProvider>
- *   <RadioGroup aria-label="Contact method">
- *     <label><Radio value="email" /> Email</label>
- *     <label><Radio value="phone" /> Phone</label>
- *   </RadioGroup>
- * </RadioProvider>
+ * <RadioGroup aria-label="Contact method">
+ *   <label><Radio value="email" /> Email</label>
+ *   <label><Radio value="phone" /> Phone</label>
+ * </RadioGroup>
  */
 export function Radio(props: RadioProps) {
   const [variantProps, rest] = splitProps(props, radio);
@@ -83,12 +192,10 @@ export interface RadioFieldProps
  * to the field. Variant props style the row; every other prop reaches the
  * input.
  * @example
- * <RadioProvider>
- *   <RadioGroup aria-label="Contact method">
- *     <RadioField value="email">Email</RadioField>
- *     <RadioField value="phone">Phone</RadioField>
- *   </RadioGroup>
- * </RadioProvider>
+ * <RadioGroup aria-label="Contact method">
+ *   <RadioField value="email">Email</RadioField>
+ *   <RadioField value="phone">Phone</RadioField>
+ * </RadioGroup>
  */
 export function RadioField({ children, ...props }: RadioFieldProps) {
   const [variantProps, rest] = splitProps(props, radioField);
@@ -117,13 +224,11 @@ export interface RadioLabelProps
 /**
  * Label text of a `RadioField`. Must be nested inside a `RadioField`.
  * @example
- * <RadioProvider>
- *   <RadioGroup aria-label="Contact method">
- *     <RadioField value="email">
- *       <RadioLabel>Email</RadioLabel>
- *     </RadioField>
- *   </RadioGroup>
- * </RadioProvider>
+ * <RadioGroup aria-label="Contact method">
+ *   <RadioField value="email">
+ *     <RadioLabel>Email</RadioLabel>
+ *   </RadioField>
+ * </RadioGroup>
  */
 export function RadioLabel(props: RadioLabelProps) {
   const [variantProps, rest] = splitProps(props, radioLabel);
@@ -142,14 +247,12 @@ export interface RadioDescriptionProps
  * links and other interactive content outside the field. Must be nested inside
  * a `RadioField`.
  * @example
- * <RadioProvider>
- *   <RadioGroup aria-label="Contact method">
- *     <RadioField value="email">
- *       <RadioLabel>Email</RadioLabel>
- *       <RadioDescription>Receive a message in your inbox.</RadioDescription>
- *     </RadioField>
- *   </RadioGroup>
- * </RadioProvider>
+ * <RadioGroup aria-label="Contact method">
+ *   <RadioField value="email">
+ *     <RadioLabel>Email</RadioLabel>
+ *     <RadioDescription>Receive a message in your inbox.</RadioDescription>
+ *   </RadioField>
+ * </RadioGroup>
  */
 export function RadioDescription(props: RadioDescriptionProps) {
   const [variantProps, rest] = splitProps(props, radioDescription);
@@ -174,12 +277,10 @@ export interface RadioCardProps
  * `RadioCardDescription` describes it before any `aria-describedby` passed to
  * the card. Use it inside a `RadioGroup` or `RadioCardGrid`.
  * @example
- * <RadioProvider>
- *   <RadioCardGrid aria-label="Contact method">
- *     <RadioCard value="email">Email</RadioCard>
- *     <RadioCard value="phone">Phone</RadioCard>
- *   </RadioCardGrid>
- * </RadioProvider>
+ * <RadioCardGrid aria-label="Contact method">
+ *   <RadioCard value="email">Email</RadioCard>
+ *   <RadioCard value="phone">Phone</RadioCard>
+ * </RadioCardGrid>
  */
 export function RadioCard({ children, ...props }: RadioCardProps) {
   const [variantProps, rest] = splitProps(props, radioCard);
@@ -208,14 +309,12 @@ export interface RadioCardCheckProps
  * The drawn check of a card, reflecting the input's state. Pass a child element
  * to replace the drawn mark. Must be nested inside a `RadioCard`.
  * @example
- * <RadioProvider defaultValue="email">
- *   <RadioCardGrid aria-label="Contact method">
- *     <RadioCard value="email">
- *       <RadioCardCheck />
- *       <RadioCardLabel>Email</RadioCardLabel>
- *     </RadioCard>
- *   </RadioCardGrid>
- * </RadioProvider>
+ * <RadioCardGrid defaultValue="email" aria-label="Contact method">
+ *   <RadioCard value="email">
+ *     <RadioCardCheck />
+ *     <RadioCardLabel>Email</RadioCardLabel>
+ *   </RadioCard>
+ * </RadioCardGrid>
  */
 export function RadioCardCheck(props: RadioCardCheckProps) {
   const [variantProps, rest] = splitProps(props, radioCardCheck);
@@ -231,14 +330,12 @@ export interface RadioCardSlotProps
 /**
  * Slot for icons or other adornments. Must be nested inside a `RadioCard`.
  * @example
- * <RadioProvider>
- *   <RadioCardGrid aria-label="Plan">
- *     <RadioCard value="premium">
- *       <RadioCardSlot aria-hidden>★</RadioCardSlot>
- *       <RadioCardLabel>Premium</RadioCardLabel>
- *     </RadioCard>
- *   </RadioCardGrid>
- * </RadioProvider>
+ * <RadioCardGrid aria-label="Plan">
+ *   <RadioCard value="premium">
+ *     <RadioCardSlot aria-hidden>★</RadioCardSlot>
+ *     <RadioCardLabel>Premium</RadioCardLabel>
+ *   </RadioCard>
+ * </RadioCardGrid>
  */
 export function RadioCardSlot(props: RadioCardSlotProps) {
   const [variantProps, rest] = splitProps(props, radioCardSlot);
@@ -261,16 +358,14 @@ export interface RadioCardContentProps
  * Wrapper that stacks the card's label and description. Must be nested inside a
  * `RadioCard`.
  * @example
- * <RadioProvider>
- *   <RadioCardGrid aria-label="Contact method">
- *     <RadioCard value="email">
- *       <RadioCardContent>
- *         <RadioCardLabel>Email</RadioCardLabel>
- *         <RadioCardDescription>Use your inbox.</RadioCardDescription>
- *       </RadioCardContent>
- *     </RadioCard>
- *   </RadioCardGrid>
- * </RadioProvider>
+ * <RadioCardGrid aria-label="Contact method">
+ *   <RadioCard value="email">
+ *     <RadioCardContent>
+ *       <RadioCardLabel>Email</RadioCardLabel>
+ *       <RadioCardDescription>Use your inbox.</RadioCardDescription>
+ *     </RadioCardContent>
+ *   </RadioCard>
+ * </RadioCardGrid>
  */
 export function RadioCardContent(props: RadioCardContentProps) {
   const [variantProps, rest] = splitProps(props, radioCardContent);
@@ -284,13 +379,11 @@ export interface RadioCardLabelProps
  * Main text of the card. Must be nested inside a `RadioCard`. Truncates to one
  * line by default; set `$truncate={false}` to let it wrap.
  * @example
- * <RadioProvider>
- *   <RadioCardGrid aria-label="Contact method">
- *     <RadioCard value="email">
- *       <RadioCardLabel>Email</RadioCardLabel>
- *     </RadioCard>
- *   </RadioCardGrid>
- * </RadioProvider>
+ * <RadioCardGrid aria-label="Contact method">
+ *   <RadioCard value="email">
+ *     <RadioCardLabel>Email</RadioCardLabel>
+ *   </RadioCard>
+ * </RadioCardGrid>
  */
 export function RadioCardLabel(props: RadioCardLabelProps) {
   const [variantProps, rest] = splitProps(props, radioCardLabel);
@@ -308,16 +401,14 @@ export interface RadioCardDescriptionProps
  * so keep interactive content out of it. Must be nested inside a `RadioCard`.
  * Truncates to one line by default; set `$truncate={false}` to let it wrap.
  * @example
- * <RadioProvider>
- *   <RadioCardGrid aria-label="Contact method">
- *     <RadioCard value="email">
- *       <RadioCardContent>
- *         <RadioCardLabel>Email</RadioCardLabel>
- *         <RadioCardDescription>Use your inbox.</RadioCardDescription>
- *       </RadioCardContent>
- *     </RadioCard>
- *   </RadioCardGrid>
- * </RadioProvider>
+ * <RadioCardGrid aria-label="Contact method">
+ *   <RadioCard value="email">
+ *     <RadioCardContent>
+ *       <RadioCardLabel>Email</RadioCardLabel>
+ *       <RadioCardDescription>Use your inbox.</RadioCardDescription>
+ *     </RadioCardContent>
+ *   </RadioCard>
+ * </RadioCardGrid>
  */
 export function RadioCardDescription(props: RadioCardDescriptionProps) {
   const [variantProps, rest] = splitProps(props, radioCardDescription);
@@ -334,20 +425,19 @@ export function RadioCardDescription(props: RadioCardDescriptionProps) {
 }
 
 export interface RadioCardGridProps
-  extends ak.RadioGroupProps, VariantProps<typeof radioCardGrid> {}
+  extends RadioGroupProps, VariantProps<typeof radioCardGrid> {}
 
 /**
  * The radio group of a set of `RadioCard`s, laid out as a grid of equal rows.
- * Requires a `store` prop or a `RadioProvider` ancestor.
+ * Like `RadioGroup`, it owns its selected value unless a `store` prop or an
+ * outer `RadioProvider` owns it. A `label` takes a full row above the cards.
  * @example
- * <RadioProvider>
- *   <RadioCardGrid aria-label="Contact method">
- *     <RadioCard value="email">Email</RadioCard>
- *     <RadioCard value="phone">Phone</RadioCard>
- *   </RadioCardGrid>
- * </RadioProvider>
+ * <RadioCardGrid label="Contact method" defaultValue="email">
+ *   <RadioCard value="email">Email</RadioCard>
+ *   <RadioCard value="phone">Phone</RadioCard>
+ * </RadioCardGrid>
  */
 export function RadioCardGrid(props: RadioCardGridProps) {
   const [variantProps, rest] = splitProps(props, radioCardGrid);
-  return <ak.RadioGroup {...radioCardGrid.jsx(variantProps)} {...rest} />;
+  return <RadioGroup {...radioCardGrid.jsx(variantProps)} {...rest} />;
 }
