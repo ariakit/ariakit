@@ -5,63 +5,19 @@ import { getSpacingValue } from "../utils/styles.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
 import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
-import { textFrame } from "./text-frame.ts";
+import { fontSizeVariants, slotFrame } from "./slot-frame.ts";
 import { text } from "./text.ts";
-
-// Controls and groups share font-relative sizing; textFrame supplies --px and
-// --py.
-const fontSizeVariants = {
-  /**
-   * Sets the font size used by padding, gaps, and icons. `auto` inherits the
-   * parent font size.
-   * @default "auto"
-   */
-  $size: {
-    auto: "",
-    xs: "text-xs",
-    sm: "text-sm",
-    md: "text-base",
-    lg: "text-lg",
-    xl: "text-xl",
-  },
-};
 
 /** Shared layout, text spacing, and disabled styles for controls. */
 export const control = cv({
-  extend: [textFrame, text],
+  extend: [slotFrame],
   class: [
-    "control ak-frame-join-item group/control relative flex justify-center",
+    "control ak-frame-join-item group/control relative justify-center",
     "ui-hover:ak-frame-join-active ui-selected:ak-frame-join-active ui-focus-visible:ak-frame-join-active",
-    // Subtract glyph side bearings from gaps for optical text alignment.
-    "[--sidebearing:0.15em]",
-    // Reset stacked-card spacing on nested controls' parts while preserving the
-    // control's own inherited alignment.
-    "[&>*]:[--control-inline:initial]",
     // Bars measure from the border edge, but frame borders do not inherit.
     "[--control-border:var(--ak-frame-border)]",
   ],
   variants: {
-    ...fontSizeVariants,
-    /**
-     * Sets the gap between the element's content and its siblings.
-     * @default "md"
-     */
-    $gap: {
-      none: "",
-      sm: "[--gap:var(--py)] gap-(--gap)",
-      // Keep content apart in rows with little or no side padding.
-      md: "[--gap:max(var(--spacing),calc(var(--px)-var(--sidebearing)))] gap-(--gap)",
-      lg: "[--gap:max(var(--spacing),var(--px))] gap-(--gap)",
-      xl: "[--gap:max(var(--spacing),calc(var(--px)+var(--sidebearing)))] gap-(--gap)",
-    },
-    /**
-     * Sets the vertical gap between the element's label and description.
-     * @default "auto"
-     */
-    $gapY: {
-      none: "",
-      auto: "[--gap-y:calc(var(--gap)/4)] gap-y-(--gap-y)",
-    },
     /** Sets the element’s disabled state. */
     $disabled: [
       "disabled ak-disabled cursor-not-allowed!",
@@ -80,17 +36,10 @@ export const control = cv({
     ],
   },
   defaultVariants: {
-    $size: "auto",
     $rounded: "md",
-    $gap: "md",
-    $gapY: "auto",
     $p: 2,
   },
-  refine({ variants, setVariants, addClass }) {
-    // Forced colors remove a control's fill, which may be its only boundary.
-    if (variants.$border == null && hasLayerBackground(variants)) {
-      addClass("forced-colors:ak-frame-border");
-    }
+  refine({ variants, setVariants }) {
     if (!variants.$disabled) return;
     setVariants({ $invert: false });
   },
@@ -636,45 +585,110 @@ export const controlFieldDescription = cv({
 
 /**
  * Error text for a field's control. While it has text, list its id first in the
- * control's `aria-describedby` and set `aria-invalid` on the control. Put a
- * `controlFieldErrorIcon` part first to mark it with an icon. Set
+ * control's `aria-describedby` and set `aria-invalid` on the control. Put the
+ * text in a `controlFieldErrorText` part, which takes the danger color, and put
+ * a `controlFieldErrorIcon` part before it to mark the error with an icon.
+ * Frame variants, such as `$layer`, `$rounded`, and `$p`, show the error on a
+ * panel. A fill or a border pads and rounds the panel by default. While the
+ * error is empty, with no child nodes, the panel is visually hidden, but it
+ * stays in the accessibility tree, so a live region keeps working. Set
  * `--field-error-icon-size` and `--field-error-icon-gap` on the error or an
  * ancestor to change the icon size and the space after it.
  */
 export const controlFieldError = cv({
-  extend: [text],
-  class: [
-    "control-field-error [:where(&)]:text-[0.875em]",
-    // Hanging indent: wrapped lines start under the first line's text. An
-    // absolute icon keeps links and other inline children in the text flow.
-    // :where() lets a caller position class win. The padding keeps its
-    // specificity, because the icon sits at the padding edge and a caller
-    // padding would put the text under it.
-    "[:where(&:has(>.control-field-error-icon))]:relative",
-    // The custom properties are read with fallbacks and never set here, so a
-    // value on the error or an ancestor always wins.
-    "has-[>.control-field-error-icon]:ps-[calc(var(--field-error-icon-size,1.125em)+var(--field-error-icon-gap,0.375em))]",
-  ],
+  extend: [slotFrame],
+  class: "control-field-error [:where(&)]:text-[0.875em]",
+  variants: {
+    /**
+     * Sets the gap between the icon and the text. `auto` uses
+     * `--field-error-icon-gap`, or `0.375em`. With padding, the fallback grows
+     * to the icon's distance from the top edge, minus the side bearing, like
+     * the space after the icon of a control.
+     */
+    $gap: {
+      // The refine picks the gap for the padding.
+      auto: "",
+    },
+  },
   defaultVariants: {
     $text: "danger",
+    $gap: "auto",
+    $p(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      // A fill or a border draws a panel, which needs space around the text.
+      if (hasSlotSurface(variants)) return 2;
+      return "none";
+    },
+    $rounded(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (!hasSlotSurface(variants)) return defaultValue;
+      // Match the corners of the field above.
+      return "lg";
+    },
+  },
+  refine({ variants, addClass }) {
+    const padded = variants.$p !== "none";
+    // An empty panel would still paint its box, for example while an alert
+    // waits for its text. sr-only keeps the alert in the accessibility tree,
+    // where display: none would remove it.
+    if (hasSlotSurface(variants)) {
+      addClass("empty:sr-only");
+    }
+    // The custom property is read with a fallback and never set here, so a
+    // value on the error or an ancestor always wins. The fallback size matches
+    // the one in the icon part.
+    if (variants.$gap === "auto" && padded) {
+      addClass(
+        "[--gap:var(--field-error-icon-gap,max(0.375em,calc(var(--py)+(1lh-var(--field-error-icon-size,1.125em))/2-var(--sidebearing))))] gap-(--gap)",
+      );
+    }
+    if (variants.$gap === "auto" && !padded) {
+      addClass("[--gap:var(--field-error-icon-gap,0.375em)] gap-(--gap)");
+    }
+    if (padded) return;
+    // Without padding, the icon starts at the edge, like a list bullet, so it
+    // lines up with the field label and hints. A panel moves the icon into its
+    // side padding, like the slots of a control.
+    addClass("[&>.control-field-error-icon]:[--slot-pull:0]");
   },
 });
 
 /**
- * An icon at the start of the first line of a field error. Hide it from
- * assistive technology, because the error text tells the same thing.
+ * An icon before the text of a field error, centered on its first line. Hide it
+ * from assistive technology, because the error text tells the same thing.
  */
 export const controlFieldErrorIcon = cv({
+  extend: [controlSlot],
   class: [
-    // The size fallbacks match the one in the error's padding.
-    "control-field-error-icon absolute start-0 size-[var(--field-error-icon-size,1.125em)]",
-    // Center the icon on the first line box at any font size and line height.
-    "top-[calc((1lh-var(--field-error-icon-size,1.125em))/2)]",
-    "[&>svg]:block [&>svg]:size-full",
+    // The custom property is read with a fallback and never set here, so a
+    // value on the error or an ancestor always wins.
+    "control-field-error-icon [--size:var(--field-error-icon-size,1.125em)]",
+    // A panel pulls the icon into its side padding only at the start, so the
+    // error's gap is the whole space after the icon. Tailwind emits me-* after
+    // mx-*, so this margin wins.
+    "me-0",
     // Chromium paints an inline SVG in the system text color already. The
     // system color keeps currentColor right where SVG colors aren't forced.
     "forced-colors:text-[CanvasText]",
   ],
+  variants: {
+    /**
+     * Disables the inherited variant; `--field-error-icon-size` sets the icon
+     * size.
+     */
+    $size: null,
+  },
+});
+
+/**
+ * The text of a field error, after its icon. Wrapped lines start under the
+ * first line's text, and links and other inline children stay in its line of
+ * text.
+ */
+export const controlFieldErrorText = cv({
+  extend: [text],
+  // Fill the row, so an inherited text-align still moves the text.
+  class: "control-field-error-text min-w-0 grow",
 });
 
 // Reduce opacity as stroke width grows. Chevrons need a stronger edge; both

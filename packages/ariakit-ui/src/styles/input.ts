@@ -7,6 +7,7 @@ import {
   controlFieldDescription,
   controlFieldError,
   controlFieldErrorIcon,
+  controlFieldErrorText,
   controlFieldLabel,
   controlSlot,
 } from "./control.ts";
@@ -184,16 +185,23 @@ export const inputLabel = controlFieldLabel;
 export const inputDescription = controlFieldDescription;
 
 /**
- * Error text for an input. Put an `inputErrorIcon` part first to mark it with
- * an icon.
+ * Error text for an input. Put the text in an `inputErrorText` part, and put an
+ * `inputErrorIcon` part before it to mark the error with an icon. Frame
+ * variants show the error on a panel.
  */
 export const inputError = controlFieldError;
 
 /**
- * An icon at the start of the first line of an input error. Put it first in the
- * error, and hide it from assistive technology.
+ * An icon before the text of an input error, centered on its first line. Put it
+ * first in the error, and hide it from assistive technology.
  */
 export const inputErrorIcon = controlFieldErrorIcon;
+
+/**
+ * The text of an input error. It takes the danger color, also on a colored
+ * panel.
+ */
+export const inputErrorText = controlFieldErrorText;
 
 /** Placeholder-colored text for an empty control styled as an input. */
 export const inputPlaceholder = cv({

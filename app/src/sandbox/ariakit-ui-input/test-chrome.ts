@@ -1,4 +1,13 @@
+import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
+
+// A text query finds the text part inside an error, so find the error from the
+// first id in the description of its field.
+async function getFieldError(field: Locator) {
+  const description = await field.getAttribute("aria-describedby");
+  const [errorId] = description?.split(" ") ?? [];
+  return field.page().locator(`[id="${errorId}"]`);
+}
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001106872
@@ -73,15 +82,23 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   test("marks an error with an icon unless the icon is removed", async ({
     q,
   }) => {
-    const marked = query(q.article("Error with a long message")).text(
-      "Another account uses this address. Sign in or use a different address.",
+    const marked = await getFieldError(
+      query(q.article("Error with a long message")).textbox("Email"),
     );
+    await test
+      .expect(marked)
+      .toHaveText(
+        "Another account uses this address. Sign in or use a different address.",
+      );
     await test.expect(marked.locator("svg")).toHaveCount(1);
-    const unmarked = query(q.article("Error without an icon")).text(
-      "The code has 6 digits.",
+    const unmarked = await getFieldError(
+      query(q.article("Error without an icon")).textbox("Verification code"),
     );
-    // No icon part either, so the text starts at the edge, like the hint.
-    await test.expect(unmarked.locator("*")).toHaveCount(0);
+    await test.expect(unmarked).toHaveText("The code has 6 digits.");
+    // No hidden icon part either, so the text starts at the edge, like the
+    // hint.
+    await test.expect(unmarked.locator("[aria-hidden]")).toHaveCount(0);
+    await test.expect(unmarked.locator("svg")).toHaveCount(0);
   });
 
   // https://github.com/ariakit/ariakit/issues/8053
@@ -89,7 +106,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const box = query(q.article("Error with another icon"));
-    const error = box.text("This account is locked.");
+    const error = await getFieldError(box.textbox("Account email"));
+    await test.expect(error).toHaveText("This account is locked.");
     await test.expect(error.locator("svg")).toHaveCount(1);
     await test.expect(error.locator("svg[aria-label='Locked']")).toHaveCount(1);
     await test
@@ -98,10 +116,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/8053
-  test("removes the error icon when the error text clears", async ({
-    page,
-    q,
-  }) => {
+  test("removes the error icon when the error text clears", async ({ q }) => {
     for (const [title, name, value] of [
       ["Error that clears", "Work email", "ada.lovelace@example.com"],
       ["Error that keeps its line", "Phone", "555 0123"],
@@ -109,8 +124,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       const field = query(q.article(title)).textbox(name);
       // The error keeps its element, so the text query would no longer find it
       // once the text clears.
-      const errorId = await field.getAttribute("aria-describedby");
-      const error = page.locator(`[id="${errorId}"]`);
+      const error = await getFieldError(field);
       await test.expect(error.locator("svg")).toHaveCount(1);
       await field.fill(value);
       await test.expect(field).not.toHaveAttribute("aria-invalid");
@@ -129,6 +143,23 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const error = box.alert();
     await test.expect(error).toBeEmpty();
     await test.expect(error.locator("svg")).toHaveCount(0);
+    await field.focus();
+    await page.keyboard.press("Tab");
+    await test.expect(error).toHaveText("Remove the spaces.");
+    await test.expect(error.locator("svg")).toHaveCount(1);
+    await test.expect(field).toHaveAccessibleDescription("Remove the spaces.");
+  });
+
+  // The page capture shows that the empty panel paints no box.
+  test("keeps the alert of an empty error panel until its text shows", async ({
+    page,
+    q,
+  }) => {
+    const box = query(q.article("Error on a panel that shows on blur"));
+    const field = box.textbox("Username");
+    // The live region is in the accessibility tree before its text.
+    const error = box.alert();
+    await test.expect(error).toBeEmpty();
     await field.focus();
     await page.keyboard.press("Tab");
     await test.expect(error).toHaveText("Remove the spaces.");
