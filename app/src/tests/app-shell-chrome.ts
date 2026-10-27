@@ -530,8 +530,8 @@ test("phone menu holds the theme options", async ({ page, q }) => {
 
 test("site sidebars hold one navigation landmark each", async ({ page, q }) => {
   await gotoAndSettle(page, recipePath);
-  // Astro renders the sidebars, and their Nav rows hydrate as separate islands
-  // or static HTML, so each Nav opts out of its own landmark.
+  // Astro renders the sidebars, and their rows hydrate as separate islands, so
+  // the Nav and the Toc in them opt out of their own landmarks.
   const site = query(q.navigation("Site"));
   await expect(site.link("App Shell")).toBeVisible();
   await expect(site.navigation()).toHaveCount(0);
@@ -543,21 +543,38 @@ test("site sidebars hold one navigation landmark each", async ({ page, q }) => {
 test("table of contents marks the section in view", async ({ page, q }) => {
   await gotoAndSettle(page, recipePath);
   const toc = query(q.navigation("On this page"));
+  // The table of contents marks the current section after its island hydrates.
+  const island = q.navigation("On this page").locator("astro-island");
+  await expect(island).not.toHaveAttribute("ssr");
   // The gallery comes before the first heading, so no section is current yet.
   await expect(toc.link("Overview")).not.toHaveAttribute("aria-current");
-  await toc.link("Overview").click();
-  await expect(toc.link("Overview")).toHaveAttribute(
-    "aria-current",
-    "location",
-  );
-  // The last section is too short to reach the top, so the end of the page
-  // marks it.
+  // The sections after the gallery are too short to reach the top. At the end
+  // of the page, the activation line has slid down past the last heading.
   await toc.link("Components").click();
   await expect(toc.link("Components")).toHaveAttribute(
     "aria-current",
     "location",
   );
   await expect(toc.link("Overview")).not.toHaveAttribute("aria-current");
+  // A click on the earlier section also scrolls to the end, so the current
+  // section follows the scroll and stays the last one.
+  await toc.link("Overview").click();
+  await expect(toc.link("Components")).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  // Scrolling up from the end slides the line back up, past the earlier
+  // heading.
+  await expect
+    .poll(
+      async () => {
+        await page.mouse.wheel(0, -40);
+        return toc.link("Overview").getAttribute("aria-current");
+      },
+      { intervals: [50] },
+    )
+    .toBe("location");
+  await expect(toc.link("Components")).not.toHaveAttribute("aria-current");
 });
 
 test("app shells in preview cards keep corners concentric with the card", async ({

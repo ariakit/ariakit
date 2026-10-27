@@ -35,6 +35,7 @@ import {
 } from "@ariakit/ui/components/shell.ariakit.react";
 import Meta from "#app/components/meta.astro";
 import { AppNavigation } from "#app/components/app-navigation.react.tsx";
+import { AppToc } from "#app/components/app-toc.react.tsx";
 import {
   AppThemeOptions,
   AppThemeReset,
@@ -364,7 +365,6 @@ const hasSidebar = sidebar && navigation.length > 0;
           tocHeadings.length > 0 && (
             <ShellSidebar
               $side="end"
-              $width="sm"
               $from="body"
               $show="6xl"
               $border={false}
@@ -374,31 +374,10 @@ const hasSidebar = sidebar && navigation.length > 0;
               className="text-sm"
             >
               <ShellSidebarBody>
-                <p class="ak-ink-70 px-3 pb-2 text-xs font-medium uppercase">
-                  On this page
-                </p>
-                {/* The layout script marks the link of the section in view. */}
-                {/* The bar follows the scroll position, so it stays out of
-                    page load transitions. */}
-                {/* Astro renders the sidebar landmark around it separately,
-                    so the navigation skips its own. */}
-                <Nav
-                  landmark={false}
-                  $cover
-                  $gap={0.5}
-                  $barTransitionName="none"
-                  data-app-toc
-                >
-                  {tocHeadings.map((heading) => (
-                    <NavLink
-                      href={`#${heading.slug}`}
-                      bar
-                      className={heading.depth > 2 ? "ps-6" : undefined}
-                    >
-                      {heading.text}
-                    </NavLink>
-                  ))}
-                </Nav>
+                {/* The island marks the link of the section being read. The
+                    server renders the links and the guide before it
+                    hydrates. */}
+                <AppToc client:load headings={tocHeadings} />
               </ShellSidebarBody>
             </ShellSidebar>
           )
@@ -448,7 +427,7 @@ const hasSidebar = sidebar && navigation.length > 0;
     </Shell>
     <script is:inline>
       // The shell renders without hydration. This script restores the panel
-      // choices and wires the panels and the table of contents.
+      // choices and wires the panels.
       (() => {
         /** @param {string} key */
         const read = (key) => {
@@ -536,60 +515,6 @@ const hasSidebar = sidebar && navigation.length > 0;
           const panel = getControlled(close);
           if (!panel) continue;
           close.addEventListener("click", () => setOpen(panel, false));
-        }
-
-        // Table of contents. The link of the last heading that scrolled to its
-        // scroll margin below the sticky headers is current. No link is current
-        // before the first heading, and the last link is current at the end of
-        // the page, where short final sections cannot reach the margin.
-        const toc = document.querySelector("[data-app-toc]");
-        if (toc) {
-          const targets = queryAll(toc, "a[href^='#']").flatMap((link) => {
-            if (!(link instanceof HTMLAnchorElement)) return [];
-            const id = decodeURIComponent(link.hash.slice(1));
-            const target = document.getElementById(id);
-            return target ? [{ link, target }] : [];
-          });
-          // At the end of the page, a heading that a link just scrolled into
-          // view stays current instead of the last one.
-          const getEndTarget = () => {
-            const hashed = targets.find(
-              ({ link }) => link.hash === window.location.hash,
-            );
-            if (!hashed) return targets.at(-1);
-            const { top } = hashed.target.getBoundingClientRect();
-            if (top < 0) return targets.at(-1);
-            if (top > window.innerHeight) return targets.at(-1);
-            return hashed;
-          };
-          const update = () => {
-            const root = document.documentElement;
-            const atEnd =
-              window.scrollY > 0 &&
-              window.innerHeight + window.scrollY >= root.scrollHeight - 1;
-            let current = atEnd ? getEndTarget() : undefined;
-            if (!atEnd) {
-              for (const item of targets) {
-                const { top } = item.target.getBoundingClientRect();
-                const margin = parseFloat(
-                  getComputedStyle(item.target).scrollMarginTop,
-                );
-                // One pixel of tolerance absorbs subpixel scroll positions.
-                if (top > margin + 1) break;
-                current = item;
-              }
-            }
-            for (const { link } of targets) {
-              if (link === current?.link) {
-                link.setAttribute("aria-current", "location");
-              } else {
-                link.removeAttribute("aria-current");
-              }
-            }
-          };
-          update();
-          window.addEventListener("scroll", update, { passive: true });
-          window.addEventListener("hashchange", update);
         }
       })();
     </script>

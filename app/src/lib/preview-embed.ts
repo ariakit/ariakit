@@ -212,6 +212,79 @@ export function setupPreviewEmbed() {
   patchFocus(HTMLElement.prototype);
   patchFocus(SVGElement.prototype);
 
+  // A link to a heading in the page, such as in a table of contents, scrolls
+  // every box around the heading into view, including the docs page and the
+  // card around a same-origin frame, which moves the card away. The page
+  // follows the link as usual, so the URL and the focus starting point change,
+  // and the boxes outside the page go back to where they were.
+  const frame = window.frameElement;
+  const keepOuterScroll = () => {
+    const restores: Array<() => void> = [];
+    const windows: Window[] = [];
+    for (let element = frame; element; element = element.parentElement) {
+      const target = element;
+      const { scrollLeft: left, scrollTop: top } = target;
+      restores.push(() => target.scrollTo({ left, top, behavior: "instant" }));
+    }
+    for (let outer: Window = window; outer !== outer.parent;) {
+      const parent: Window = outer.parent;
+      try {
+        const { scrollX: left, scrollY: top } = parent;
+        restores.push(() =>
+          parent.scrollTo({ left, top, behavior: "instant" }),
+        );
+        windows.push(parent);
+      } catch {
+        // A docs page from another origin can't be read, and a frame can't
+        // scroll it with a link either.
+        break;
+      }
+      outer = parent;
+    }
+    const restore = () => {
+      for (const restoreScroll of restores) {
+        restoreScroll();
+      }
+    };
+    return { restore, windows };
+  };
+  document.addEventListener("click", (event) => {
+    if (event.defaultPrevented) return;
+    if (event.button !== 0) return;
+    if (event.metaKey) return;
+    if (event.ctrlKey) return;
+    if (event.shiftKey) return;
+    if (event.altKey) return;
+    if (!frame) return;
+    if (!(event.target instanceof Element)) return;
+    const link = event.target.closest("a[href]");
+    if (!(link instanceof HTMLAnchorElement)) return;
+    if (link.target && link.target !== "_self") return;
+    const url = new URL(link.href);
+    if (!url.hash) return;
+    if (url.href.replace(/#.*$/, "") !== location.href.replace(/#.*$/, "")) {
+      return;
+    }
+    const { restore, windows } = keepOuterScroll();
+    // The docs page scrolls a frame after the link, so its scroll events put
+    // the boxes back before they paint. Scroll events on elements don't bubble,
+    // so the listeners capture them.
+    for (const outer of windows) {
+      outer.addEventListener("scroll", restore, true);
+    }
+    let frames = 3;
+    const stop = () => {
+      if (frames-- > 0) {
+        requestAnimationFrame(stop);
+        return;
+      }
+      for (const outer of windows) {
+        outer.removeEventListener("scroll", restore, true);
+      }
+    };
+    requestAnimationFrame(stop);
+  });
+
   // Ariakit dialogs and popovers listen for outside interactions in the highest
   // document they can read, which is the docs page for a same-origin preview.
   // Without its frame element, the page is the highest document, as in a
