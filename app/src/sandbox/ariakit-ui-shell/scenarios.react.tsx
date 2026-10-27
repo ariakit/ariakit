@@ -14,6 +14,7 @@ import {
   ShellMainContent,
   ShellMainPopout,
   ShellMainFeature,
+  ShellMainWide,
   ShellMainFull,
   ShellFooter,
   ShellFooterStart,
@@ -271,6 +272,12 @@ export function GeometryScenario({ controls }: ScenarioProps) {
               <p>Content inside feature</p>
             </ShellMainContent>
           </ShellMainFeature>
+          <ShellMainWide $p={4} aria-label="Wide band">
+            <p>Wide text</p>
+            <ShellMainContent>
+              <p>Content inside wide</p>
+            </ShellMainContent>
+          </ShellMainWide>
           <ShellMainFull $p={4} aria-label="Full band">
             <p>Full text</p>
             <ShellMainContent>
@@ -282,6 +289,9 @@ export function GeometryScenario({ controls }: ScenarioProps) {
             <ShellMainFeature aria-label="Nested feature band">
               <p>Nested feature text</p>
             </ShellMainFeature>
+            <ShellMainWide aria-label="Nested wide band">
+              <p>Nested wide text</p>
+            </ShellMainWide>
             <table className="w-[1200px]">
               <caption>Wide data table</caption>
               <tbody>

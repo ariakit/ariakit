@@ -9,13 +9,13 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
+import { ShellMainWide } from "@ariakit/ui/components/shell.ariakit.react";
 ---
 
 {/* Lays out preview cards in up to two columns, or one when two would be
     narrower than 24rem. A card with class="col-span-full" takes the whole
     row, and so does a card that would otherwise sit alone in its row. */}
-<ShellMainFull>
+<ShellMainWide>
   <Frame
     $p="var(--app-gutter)"
     className={[
@@ -58,4 +58,4 @@ import { ShellMainFull } from "@ariakit/ui/components/shell.ariakit.react";
   >
     <slot />
   </Frame>
-</ShellMainFull>
+</ShellMainWide>
