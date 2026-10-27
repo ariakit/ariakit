@@ -32,6 +32,31 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     });
   });
 
+  // Forced colors replace the card's fill with the system canvas and remove
+  // shadows. The check takes the system text color, and a card without a mark
+  // draws a thicker border.
+  test("shows the checked state of cards in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
+      for (const [key, title] of [
+        ["floating-check", "Floating check"],
+        ["cards-without-a-mark", "Cards without a mark"],
+      ] as const) {
+        await captureInView({
+          visual,
+          box: q.article(title),
+          colorScheme,
+          item: `ariakit-ui-checkbox/forced-colors/${key}`,
+        });
+      }
+    });
+  });
+
   // An adaptive text color targets nested text directly, so the disabled fields
   // and the disabled card need the system color on the same targets.
   // https://github.com/ariakit/ariakit/issues/7869

@@ -43,11 +43,19 @@ export const radioCard = cv({
   extend: [choiceCard],
 });
 
-/** A circular selection mark for a radio card. */
+/**
+ * A circular selection mark for a radio card. It draws a dot, or a check when
+ * floating.
+ */
 export const radioCardCheck = cv({
   extend: [choiceCardCheck],
   defaultVariants: {
-    $mark: "dot",
+    $mark(_defaultValue, variants) {
+      // A floating mark is a badge on the card's corner. Like a checkbox
+      // card's, it draws a check.
+      if (variants.$floating) return "check";
+      return "dot";
+    },
     $rounded: "full",
   },
 });
