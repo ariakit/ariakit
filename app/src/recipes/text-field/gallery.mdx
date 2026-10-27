@@ -2,18 +2,15 @@ import PreviewCard from "#app/components/preview-card.astro";
 import PreviewGrid from "#app/components/preview-grid.astro";
 import P0, { source as s0 } from "./preview.astro";
 import P1, { source as s1 } from "./error/preview.astro";
-import P2, { source as s2 } from "./error-panel/preview.astro";
-import P3, { source as s3 } from "./error-panel-blur/preview.astro";
-import P4, { source as s4 } from "./states/preview.astro";
-import P5, { source as s5 } from "./colors/preview.astro";
-import P6, { source as s6 } from "./backgrounds/preview.astro";
-import P7, { source as s7 } from "./error-panel-backgrounds/preview.astro";
-import P8, { source as s8 } from "./controls/preview.astro";
-import P9, { source as s9 } from "./shapes-sizes/preview.astro";
-import { source as s10 } from "./horizontal/preview.astro";
-import P11, { source as s11 } from "./password/preview.astro";
-import P12, { source as s12 } from "./slots/preview.astro";
-import P13, { source as s13 } from "./composer/preview.astro";
+import P2, { source as s2 } from "./states/preview.astro";
+import P3, { source as s3 } from "./colors/preview.astro";
+import P4, { source as s4 } from "./backgrounds/preview.astro";
+import P5, { source as s5 } from "./controls/preview.astro";
+import P6, { source as s6 } from "./shapes-sizes/preview.astro";
+import { source as s7 } from "./horizontal/preview.astro";
+import P8, { source as s8 } from "./password/preview.astro";
+import P9, { source as s9 } from "./slots/preview.astro";
+import P10, { source as s10 } from "./composer/preview.astro";
 
 <PreviewGrid>
   <PreviewCard source={s0}>
@@ -28,37 +25,28 @@ import P13, { source as s13 } from "./composer/preview.astro";
   <PreviewCard source={s3}>
     <P3 />
   </PreviewCard>
-  <PreviewCard source={s4}>
+  <PreviewCard source={s4} class="col-span-full">
     <P4 />
   </PreviewCard>
   <PreviewCard source={s5}>
     <P5 />
   </PreviewCard>
-  <PreviewCard source={s6} class="col-span-full">
+  <PreviewCard source={s6}>
     <P6 />
-  </PreviewCard>
-  <PreviewCard source={s7} class="col-span-full">
-    <P7 />
-  </PreviewCard>
-  <PreviewCard source={s8}>
-    <P8 />
-  </PreviewCard>
-  <PreviewCard source={s9}>
-    <P9 />
   </PreviewCard>
   {/* TODO: Render this example inline again once Chrome Stable fixes row
       subgrid layout. Inline, its container query flip under the Shell
       subgrids blocks the docs layout for seconds in Chrome.
       https://issues.chromium.org/issues/578117951
       https://github.com/ariakit/ariakit/issues/8122 */}
-  <PreviewCard source={s10} />
-  <PreviewCard source={s11}>
-    <P11 />
+  <PreviewCard source={s7} />
+  <PreviewCard source={s8}>
+    <P8 />
   </PreviewCard>
-  <PreviewCard source={s12}>
-    <P12 />
+  <PreviewCard source={s9}>
+    <P9 />
   </PreviewCard>
-  <PreviewCard source={s13}>
-    <P13 />
+  <PreviewCard source={s10}>
+    <P10 />
   </PreviewCard>
 </PreviewGrid>
