@@ -13,6 +13,7 @@ import {
   choiceFieldLabel,
   choiceInput,
 } from "./choice.ts";
+import { text } from "./text.ts";
 
 /** A native radio input with a circular mark and keyboard focus ring. */
 export const radio = cv({
@@ -64,5 +65,25 @@ export const radioCardLabel = choiceCardLabel;
 /** Secondary text for a radio card. */
 export const radioCardDescription = choiceCardDescription;
 
+/**
+ * Visible label of a radio group, placed first in the group. It takes a full
+ * row when the group is a grid.
+ */
+export const radioGroupLabel = cv({
+  extend: [text],
+  class: [
+    // :where() lets caller font classes win.
+    "radio-group-label [:where(&)]:text-[0.875em] [:where(&)]:font-medium",
+    "col-span-full",
+    "in-[[aria-disabled=true]]:ak-ink-0",
+    "in-[[aria-disabled=true]]:forced-colors:text-[GrayText]",
+  ],
+});
+
 /** A responsive grid of radio cards. */
-export const radioCardGrid = choiceCardGrid;
+export const radioCardGrid = cv({
+  extend: [choiceCardGrid],
+  // The grid makes its rows equal. Size a label row to the label instead, so
+  // the cards keep their own height.
+  class: "has-[>.radio-group-label]:grid-rows-[auto]",
+});

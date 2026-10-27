@@ -63,6 +63,10 @@ export function createRender<P extends object>(
   if (props == null || (typeof props === "object" && "then" in props)) {
     return React.createElement(Component, defaultProps);
   }
+  // A fragment can't take props, so it becomes the component's children.
+  if (React.isValidElement(props) && props.type === React.Fragment) {
+    return React.createElement(Component, defaultProps, props);
+  }
   if (React.isValidElement<any>(props)) {
     const element = props as React.ReactElement<P>;
     if (defaultProps) {
