@@ -1,3 +1,17 @@
+.radio-group {
+  @apply
+    flex
+    flex-col
+    gap-2
+  ;
+}
+
+.radio-group-label {
+  @apply
+    font-medium
+  ;
+}
+
 .label {
   @apply
     flex

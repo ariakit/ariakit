@@ -4,7 +4,10 @@ import "./style.css";
 export default function Example() {
   return (
     <Ariakit.RadioProvider>
-      <Ariakit.RadioGroup>
+      <Ariakit.RadioGroup className="radio-group">
+        <Ariakit.RadioGroupLabel className="radio-group-label">
+          Favorite fruit
+        </Ariakit.RadioGroupLabel>
         <label className="label">
           <Ariakit.Radio className="radio" value="apple" />
           apple
