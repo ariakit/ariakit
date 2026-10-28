@@ -108,6 +108,27 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     expect(Math.abs(hovered.surface - rest.surface)).toBeGreaterThan(0.03);
   });
 
+  // A negative amount moves the state against the appearance-aware direction of
+  // the rest color, which points back to the layer, so the state already moves
+  // away from the layer.
+  test("keeps a hovered offset with a negative amount away from its layer", async ({
+    q,
+  }) => {
+    const button = query(q.region("Darker rest")).button("Negative");
+    const rest = await getColors(button);
+    await button.hover();
+    await expect
+      .poll(async () => (await getColors(button)).surface)
+      .not.toBe(rest.surface);
+    const hovered = await getColors(button);
+    expect(Math.sign(hovered.surface - hovered.parent)).toBe(
+      Math.sign(rest.surface - rest.parent),
+    );
+    expect(Math.abs(hovered.surface - hovered.parent)).toBeGreaterThan(
+      Math.abs(rest.surface - rest.parent),
+    );
+  });
+
   // The offset moves from the lightened color, so a state that crossed that
   // color would land on the layer color.
   test("keeps a hovered offset on a lightened color away from its layer", async ({

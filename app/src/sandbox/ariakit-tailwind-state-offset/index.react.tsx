@@ -28,6 +28,12 @@ export default function Example() {
         >
           Push
         </button>
+        <button
+          type="button"
+          className="ak-layer ak-layer-6 hover:ak-state-[-0.06] rounded-md p-2"
+        >
+          Negative
+        </button>
       </section>
 
       {/* A light color just over the upper boundary. The offset at rest flips

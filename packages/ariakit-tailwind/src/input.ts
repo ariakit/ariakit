@@ -2354,7 +2354,7 @@ function getStateOffsetDeclarations() {
     fn.binary(fn.sub(reversedRoom, fn.half(amount))),
   );
   const getDeclarations = (tokenValue: Value) => [
-    set(vars.stateOffsetAmount, fn.abs(tokenValue)),
+    set(vars.stateOffsetAmount, fn.calc`${tokenValue}`),
     set(
       inputs.layerLOffsetDelta,
       fn.mul(tokenValue, vars.lightnessOffsetDirection),
@@ -2392,13 +2392,16 @@ function getStateOffsetDeclarations() {
     // The decision takes the color that the offset moves from as the parent
     // layer, and the rest color as the color that the state moves from. Any
     // utility that moves the color away from the parent, or moves the rest or
-    // state color in its own direction, must turn the decision off here. Then
-    // the state moves as it does without an idle offset.
+    // state color in its own direction, must turn the decision off here. So
+    // does a negative amount, which already moves the state against the
+    // appearance-aware direction. Then the state moves as it does without an
+    // idle offset.
     set(
       hasIdleOffset,
       fn.add(
         fn.mul(
           fn.binary(fn.abs(vars.layerIdleOffsetValue)),
+          fn.binary(vars.stateOffsetAmount),
           fn.invert(vars.layerIdlePushEnabled),
           layerContrastInactive,
           fn.invert(fn.binary(fn.abs(vars.layerPushValue))),
