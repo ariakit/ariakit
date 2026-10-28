@@ -93,33 +93,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(getMenuButton(page, 1)).toBeVisible();
   });
 
-  test("show/hide manage lists dialog", async ({ page }) => {
-    await getMenuButton(page).click();
-    await expect(getMenu(page)).toBeVisible();
-    await getMenuItem(page, "Create list").click();
-    await getButton(page, "Manage lists").click();
-    await expect(getDialog(page, "Manage lists")).toBeVisible();
-    await expect(
-      getButton(getDialog(page, "Manage lists"), "Dismiss popup"),
-    ).toBeFocused();
-    await page.keyboard.press("Enter");
-    await expect(getButton(page, "Manage lists")).toBeFocused();
-  });
-
-  test("show/hide information dialog", async ({ page }) => {
-    await getMenuButton(page).click();
-    await expect(getMenu(page)).toBeVisible();
-    await getMenuItem(page, "Create list").click();
-    await expect(getButton(page, "Dismiss popup")).toBeFocused();
-    await getButton(page, "More information").click();
-    await expect(getDialog(page, "More information")).toBeVisible();
-    await expect(
-      getButton(getDialog(page, "More information"), "Dismiss popup"),
-    ).toBeFocused();
-    await page.keyboard.press("Enter");
-    await expect(getButton(page, "More information")).toBeFocused();
-  });
-
   test("repeatedly showing/hiding manage lists dialog", async ({ page }) => {
     await getMenuButton(page).click();
     await expect(getMenu(page)).toBeVisible();

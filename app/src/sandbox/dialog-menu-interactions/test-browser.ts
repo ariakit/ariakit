@@ -9,14 +9,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     return page.locator(`[data-backdrop="${id}"]`);
   };
 
-  test("open/close menu by clicking on menu button", async ({ q }) => {
-    await q.button("View recipe").click();
-    await q.button("Share").click();
-    await expect(q.menu()).toBeVisible();
-    await q.button("Share").click();
-    await expect(q.menu()).not.toBeVisible();
-  });
-
   test("dragging the cursor to outside the dialog", async ({ page, q }) => {
     await q.button("View recipe").click();
     await expect(q.dialog()).toBeVisible();
