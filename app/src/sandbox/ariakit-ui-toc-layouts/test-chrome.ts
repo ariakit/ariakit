@@ -1,5 +1,41 @@
-import type { Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+
+// Scrolls to the heading and pauses the thumb glides as soon as each table of
+// contents sets its range. A slow frame can outlast the glide, which then
+// starts and ends between two frame callbacks.
+async function pauseGlides(page: Page, navs: Locator[], id: string) {
+  const elements = await Promise.all(navs.map((nav) => nav.elementHandle()));
+  await page.evaluate(
+    ({ elements, id }) => {
+      const navs = elements.filter((element) => element != null);
+      return new Promise<void>((resolve) => {
+        const observer = new MutationObserver(() => {
+          let waiting = false;
+          for (const nav of navs) {
+            // Reading the animations applies the new range, which starts the
+            // glide.
+            const animations = nav.getAnimations({ subtree: true });
+            for (const animation of animations) {
+              animation.pause();
+            }
+            if (!animations.length) {
+              waiting = true;
+            }
+          }
+          if (waiting) return;
+          observer.disconnect();
+          resolve();
+        });
+        for (const nav of navs) {
+          observer.observe(nav, { subtree: true, attributeFilter: ["style"] });
+        }
+        document.getElementById(id)?.scrollIntoView({ block: "start" });
+      });
+    },
+    { elements, id },
+  );
+}
 
 // Returns the names of the links whose rows the thumb covers. A row counts when
 // the thumb range covers more than one pixel of the line along it, which ends
@@ -40,18 +76,16 @@ function isInList(link: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
-  test("glides the thumb as one bar through every piece", async ({ q }) => {
-    // Jump from the top to the end, so the range moves far, then pause the
-    // glide at several times, as a frame-by-frame review does.
-    const frames = await q.navigation("Five levels").evaluate(async (nav) => {
-      document.getElementById("deep-faq")?.scrollIntoView({ block: "start" });
-      while (!nav.getAnimations({ subtree: true }).length) {
-        await new Promise(requestAnimationFrame);
-      }
-      const animations = nav.getAnimations({ subtree: true });
-      for (const animation of animations) {
-        animation.pause();
-      }
+  test("glides the thumb as one bar through every piece", async ({
+    page,
+    q,
+  }) => {
+    // Jump from the top to the end, so the range moves far, then read the
+    // paused glide at several times.
+    const nav = q.navigation("Five levels");
+    await pauseGlides(page, [nav], "deep-faq");
+    const frames = await nav.evaluate((element) => {
+      const animations = element.getAnimations({ subtree: true });
       const read = (target: Element) => {
         const style = getComputedStyle(target);
         return [
@@ -63,7 +97,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         for (const animation of animations) {
           animation.currentTime = time;
         }
-        const thumbs = [...nav.querySelectorAll(".toc-link-thumb")];
+        const thumbs = [...element.querySelectorAll(".toc-link-thumb")];
         return {
           animations: animations.length,
           pieces: [...new Set(thumbs.map(read))],
@@ -81,61 +115,58 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/8141
-  test("glides the thumb on its pieces, not on the rows", async ({ q }) => {
+  test("glides the thumb on its pieces, not on the rows", async ({
+    page,
+    q,
+  }) => {
     // A glide on the root restyles every row in each frame, so only the thumb
-    // pieces and the number markers with rings animate. Pause the glide halfway
-    // to read the range on the pieces and the rings.
-    const unringed = await q
-      .navigation("Numbers over the thumb")
-      .elementHandle();
-    const glide = await q
-      .navigation("Twelve chapters")
-      .evaluate(async (nav, other) => {
-        const navs = [nav, other].filter((element) => element != null);
-        const getAnimations = () =>
-          navs.flatMap((element) => element.getAnimations({ subtree: true }));
-        document.getElementById("chapter-12")?.scrollIntoView();
-        while (!getAnimations().length) {
-          await new Promise(requestAnimationFrame);
-        }
-        const animations = getAnimations();
-        for (const animation of animations) {
-          animation.pause();
-          animation.currentTime = 100;
-        }
-        const getTargets = (element: Element) => {
-          const targets = element
-            .getAnimations({ subtree: true })
-            .map((animation) => {
-              const { effect } = animation;
-              const target = effect instanceof KeyframeEffect && effect.target;
-              if (!target) return "none";
-              if (target.matches(".toc-link-thumb")) return "thumb";
-              if (target.matches(".toc-link-marker")) return "marker";
-              return target.tagName.toLowerCase();
-            });
-          return [...new Set(targets)].sort();
-        };
-        const read = (target: Element, pseudo?: string) => {
-          const style = getComputedStyle(target, pseudo);
-          return [
-            style.getPropertyValue("--toc-thumb-start"),
-            style.getPropertyValue("--toc-thumb-end"),
-          ].join(" ");
-        };
-        const thumbs = [...nav.querySelectorAll(".toc-link-thumb")];
-        const markers = [...nav.querySelectorAll(".toc-link-marker")];
-        const rings = markers.map((marker) => read(marker, "::after"));
-        return {
-          targets: getTargets(nav),
-          unringedTargets: other ? getTargets(other) : null,
-          markers: markers.length,
-          ranges: [
-            ...new Set([...thumbs, ...markers].map((piece) => read(piece))),
-          ],
-          rings: [...new Set(rings)],
-        };
-      }, unringed);
+    // pieces and the number markers with rings animate. Read the paused glide
+    // halfway to compare the range on the pieces and the rings.
+    const chapters = q.navigation("Twelve chapters");
+    const numbers = q.navigation("Numbers over the thumb");
+    await pauseGlides(page, [chapters, numbers], "chapter-12");
+    const unringed = await numbers.elementHandle();
+    const glide = await chapters.evaluate((nav, other) => {
+      const navs = [nav, other].filter((element) => element != null);
+      const animations = navs.flatMap((element) =>
+        element.getAnimations({ subtree: true }),
+      );
+      for (const animation of animations) {
+        animation.currentTime = 100;
+      }
+      const getTargets = (element: Element) => {
+        const targets = element
+          .getAnimations({ subtree: true })
+          .map((animation) => {
+            const { effect } = animation;
+            const target = effect instanceof KeyframeEffect && effect.target;
+            if (!target) return "none";
+            if (target.matches(".toc-link-thumb")) return "thumb";
+            if (target.matches(".toc-link-marker")) return "marker";
+            return target.tagName.toLowerCase();
+          });
+        return [...new Set(targets)].sort();
+      };
+      const read = (target: Element, pseudo?: string) => {
+        const style = getComputedStyle(target, pseudo);
+        return [
+          style.getPropertyValue("--toc-thumb-start"),
+          style.getPropertyValue("--toc-thumb-end"),
+        ].join(" ");
+      };
+      const thumbs = [...nav.querySelectorAll(".toc-link-thumb")];
+      const markers = [...nav.querySelectorAll(".toc-link-marker")];
+      const rings = markers.map((marker) => read(marker, "::after"));
+      return {
+        targets: getTargets(nav),
+        unringedTargets: other ? getTargets(other) : null,
+        markers: markers.length,
+        ranges: [
+          ...new Set([...thumbs, ...markers].map((piece) => read(piece))),
+        ],
+        rings: [...new Set(rings)],
+      };
+    }, unringed);
     test.expect(glide.targets).toEqual(["marker", "thumb"]);
     // Markers without rings don't read the range.
     test.expect(glide.unringedTargets).toEqual(["thumb"]);
