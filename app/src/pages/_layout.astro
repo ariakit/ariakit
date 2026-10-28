@@ -343,24 +343,10 @@ const hasSidebar = sidebar && navigation.length > 0;
             </div>
           </ShellSidebarBody>
         </ShellSidebar>
-        <ShellMain
-          $p="var(--app-gutter)"
-          $maxWidth={maxWidth}
-          className="[--app-gutter:--spacing(4)] @3xl/shell:[--app-gutter:--spacing(8)]"
-        >
-          {/* Page content renders as direct grid items, so preview cards can
-              use main bands. */}
-          {
-            Astro.slots.has("intro") && (
-              <ShellMainIntro className="gap-y-4 pt-10 pb-6">
-                <slot name="intro" />
-              </ShellMainIntro>
-            )
-          }
-          <ShellMainBody className="gap-y-8 pb-16">
-            <slot />
-          </ShellMainBody>
-        </ShellMain>
+        {/* The browser can paint a long page before it parses the end.
+            Before the main content, the sidebar is in place at the first
+            paint, so the content doesn't narrow and shift when it arrives.
+            The shell places it in the end column either way. */}
         {
           tocHeadings.length > 0 && (
             <ShellSidebar
@@ -382,6 +368,24 @@ const hasSidebar = sidebar && navigation.length > 0;
             </ShellSidebar>
           )
         }
+        <ShellMain
+          $p="var(--app-gutter)"
+          $maxWidth={maxWidth}
+          className="[--app-gutter:--spacing(4)] @3xl/shell:[--app-gutter:--spacing(8)]"
+        >
+          {/* Page content renders as direct grid items, so preview cards can
+              use main bands. */}
+          {
+            Astro.slots.has("intro") && (
+              <ShellMainIntro className="gap-y-4 pt-10 pb-6">
+                <slot name="intro" />
+              </ShellMainIntro>
+            )
+          }
+          <ShellMainBody className="gap-y-8 pb-16">
+            <slot />
+          </ShellMainBody>
+        </ShellMain>
         <ShellFooter className="text-sm">
           <ShellFooterStart>
             <span class="ak-ink-70">© Ariakit FZ-LLC</span>

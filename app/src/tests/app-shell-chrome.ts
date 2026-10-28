@@ -11,7 +11,7 @@ import { query } from "@ariakit/test/playwright";
 import type { FrameLocator, Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
-import { gotoAndSettle } from "#app/test-utils/preview.ts";
+import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
 
 const recipePath = "/react/recipes/app-shell/";
 
@@ -575,6 +575,56 @@ test("table of contents marks the section in view", async ({ page, q }) => {
     )
     .toBe("location");
   await expect(toc.link("Components")).not.toHaveAttribute("aria-current");
+});
+
+test("table of contents keeps the page content in place while the page loads", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  // Without motion, the shell changes the layout at once, so the counts below
+  // show only where the content lands. A parse that pauses inside a sidebar can
+  // also start its open transition, which this test doesn't cover.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  // A slow download lets the browser paint the page before it parses the end of
+  // the document, as on a real network.
+  const session = await page.context().newCDPSession(page);
+  await session.send("Network.emulateNetworkConditions", {
+    offline: false,
+    latency: 50,
+    downloadThroughput: 1_000_000,
+    uploadThroughput: 1_000_000,
+  });
+  // Counts the distinct title positions and first preview card widths on the
+  // frames from the first paint.
+  await page.addInitScript(() => {
+    const layouts = new Set<string>();
+    const counter = document.createElement("output");
+    counter.id = "layout-count";
+    counter.hidden = true;
+    const record = () => {
+      const title = document.querySelector("main h1");
+      const card = document.querySelector("[data-preview-card]");
+      if (title && card) {
+        const titleX = title.getBoundingClientRect().x;
+        const cardWidth = card.getBoundingClientRect().width;
+        layouts.add(`${titleX} ${cardWidth}`);
+        counter.value = String(layouts.size);
+        if (!counter.isConnected) {
+          document.body.append(counter);
+        }
+      }
+      requestAnimationFrame(record);
+    };
+    requestAnimationFrame(record);
+  });
+  // The page content shifts during the download, so the test needs no more.
+  await page.goto("/react/recipes/text-field/", { waitUntil: "commit" });
+  await expect(q.navigation("On this page")).toBeVisible();
+  // A table of contents that arrives after the content narrows it in the frame
+  // that renders the table, which the counter records on the next frame.
+  await flushFrames(page);
+  await expect(page.locator("#layout-count")).toHaveText("1");
 });
 
 test("app shells in preview cards keep corners concentric with the card", async ({
