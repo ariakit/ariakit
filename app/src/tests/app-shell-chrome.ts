@@ -82,6 +82,56 @@ test("site navigation collapses and stays collapsed after reload", async ({
   await expect(q.navigation("Site")).not.toBeVisible();
 });
 
+test("saved panel states apply before the panels render", async ({ page }) => {
+  // Long pages paint while they parse, so a saved state that applies after a
+  // panel has content can paint the panel in its default state, animate it, and
+  // move the painted content.
+  // https://github.com/ariakit/ariakit/issues/8146
+  await page.addInitScript(() => {
+    localStorage.setItem("app-panel:app-navigation", "false");
+    localStorage.setItem("app-panel:app-theme", "true");
+    const ids = ["app-navigation", "app-theme"];
+    const states: Record<string, boolean | string | null> = {};
+    // Records each panel state when the first element other than a script
+    // enters the panel, or null when the panel comes after the main content.
+    const observer = new MutationObserver(() => {
+      for (const id of ids) {
+        if (id in states) continue;
+        const panel = document.getElementById(id);
+        if (!panel?.querySelector(":scope > :not(script)")) continue;
+        const main = document.querySelector("main");
+        const position = main?.compareDocumentPosition(panel) ?? 0;
+        const afterMain = !!(position & Node.DOCUMENT_POSITION_FOLLOWING);
+        states[id] = afterMain ? null : panel.hasAttribute("data-open");
+      }
+      if (Object.keys(states).length < ids.length) return;
+      // The toggles must follow the restored panels before the main content.
+      if (!document.querySelector("main")) return;
+      for (const id of ids) {
+        const selector = `[data-shell-toggle][aria-controls="${id}"]`;
+        const toggle = document.querySelector(selector);
+        states[`${id}-toggle`] = toggle?.getAttribute("aria-expanded") ?? null;
+      }
+      observer.disconnect();
+      const keys = ids.flatMap((id) => [id, `${id}-toggle`]);
+      const entries = keys.map((key) => [key, states[key]]);
+      const json = JSON.stringify(Object.fromEntries(entries));
+      document.documentElement.dataset.panelStates = json;
+    });
+    observer.observe(document, { childList: true, subtree: true });
+  });
+  await page.goto(recipePath);
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-panel-states",
+    JSON.stringify({
+      "app-navigation": false,
+      "app-navigation-toggle": "false",
+      "app-theme": true,
+      "app-theme-toggle": "true",
+    }),
+  );
+});
+
 test("site navigation marks the page without a trailing slash", async ({
   page,
   q,
@@ -327,8 +377,9 @@ test("theme panel keeps focus on the page when it opens on load", async ({
   await gotoAndSettle(page, recipePath);
   await q.button("Theme", { exact: true }).click();
   await expect(q.complementary("Theme")).toBeVisible();
-  // The reload restores the open panel. The layout script runs before the load
-  // event, so focus has its final place when the reload resolves.
+  // The reload restores the open panel while the page parses, and the layout
+  // script runs before the load event, so focus has its final place when the
+  // reload resolves.
   await page.reload();
   await expect(q.complementary("Theme")).toBeVisible();
   const focused = await page.evaluate(() => document.activeElement?.tagName);
