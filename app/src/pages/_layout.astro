@@ -349,6 +349,21 @@ const hasSidebar = sidebar && navigation.length > 0;
             </Button>
           </ShellHeaderEnd>
         </ShellHeader>
+        {/* The theme panel restores its state before the header parses, so
+            the header toggles sync with it here instead of at the end of the
+            body. Panels after the header sync their own toggles. */}
+        <script is:inline>
+          (() => {
+            const toggles = document.querySelectorAll("[data-shell-toggle]");
+            for (const toggle of toggles) {
+              const id = toggle.getAttribute("aria-controls");
+              const panel = id ? document.getElementById(id) : null;
+              if (!panel) continue;
+              const open = panel.hasAttribute("data-open");
+              toggle.setAttribute("aria-expanded", String(open));
+            }
+          })();
+        </script>
         {
           hasSidebar && (
             <ShellSidebar

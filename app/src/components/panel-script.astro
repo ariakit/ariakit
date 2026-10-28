@@ -24,7 +24,13 @@
       saved = localStorage.getItem(`app-panel:${panel.id}`);
     } catch {}
     if (saved == null) return;
-    // The layout script syncs the toggles, which can come after the panel.
-    panel.toggleAttribute("data-open", saved === "true");
+    const open = saved === "true";
+    panel.toggleAttribute("data-open", open);
+    // Toggles parsed before the panel follow it now. A script after the header
+    // syncs the toggles that come after the panel.
+    const selector = `[data-shell-toggle][aria-controls="${panel.id}"]`;
+    for (const toggle of document.querySelectorAll(selector)) {
+      toggle.setAttribute("aria-expanded", String(open));
+    }
   })();
 </script>

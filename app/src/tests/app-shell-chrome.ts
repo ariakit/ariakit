@@ -91,7 +91,7 @@ test("saved panel states apply before the panels render", async ({ page }) => {
     localStorage.setItem("app-panel:app-navigation", "false");
     localStorage.setItem("app-panel:app-theme", "true");
     const ids = ["app-navigation", "app-theme"];
-    const states: Record<string, boolean | null> = {};
+    const states: Record<string, boolean | string | null> = {};
     // Records each panel state when the first element other than a script
     // enters the panel, or null when the panel comes after the main content.
     const observer = new MutationObserver(() => {
@@ -105,8 +105,16 @@ test("saved panel states apply before the panels render", async ({ page }) => {
         states[id] = afterMain ? null : panel.hasAttribute("data-open");
       }
       if (Object.keys(states).length < ids.length) return;
+      // The toggles must follow the restored panels before the main content.
+      if (!document.querySelector("main")) return;
+      for (const id of ids) {
+        const selector = `[data-shell-toggle][aria-controls="${id}"]`;
+        const toggle = document.querySelector(selector);
+        states[`${id}-toggle`] = toggle?.getAttribute("aria-expanded") ?? null;
+      }
       observer.disconnect();
-      const entries = ids.map((id) => [id, states[id]]);
+      const keys = ids.flatMap((id) => [id, `${id}-toggle`]);
+      const entries = keys.map((key) => [key, states[key]]);
       const json = JSON.stringify(Object.fromEntries(entries));
       document.documentElement.dataset.panelStates = json;
     });
@@ -115,7 +123,12 @@ test("saved panel states apply before the panels render", async ({ page }) => {
   await page.goto(recipePath);
   await expect(page.locator("html")).toHaveAttribute(
     "data-panel-states",
-    JSON.stringify({ "app-navigation": false, "app-theme": true }),
+    JSON.stringify({
+      "app-navigation": false,
+      "app-navigation-toggle": "false",
+      "app-theme": true,
+      "app-theme-toggle": "true",
+    }),
   );
 });
 
