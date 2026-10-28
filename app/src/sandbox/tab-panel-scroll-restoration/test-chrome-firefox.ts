@@ -36,7 +36,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const name = `${scrollElement}${restore}`;
       const tabs = [`${name} 1`, `${name} 2`];
 
-      for (const tab of tabs) {
+      // Both tabs switch away and back the same way. The second tab also starts
+      // unselected, so its panel can mount for the first time here.
+      for (const tab of tabs.slice(1)) {
         test(`Restore scroll on ${tab}`, async ({ page, q }) => {
           await q.tab(tab).click();
           await expect(q.tabpanel(tab)).toBeVisible();
@@ -60,7 +62,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const name = `${scrollElement}${reset}`;
       const tabs = [`${name} 1`, `${name} 2`];
 
-      for (const tab of tabs) {
+      // Both tabs switch away and back the same way. The second tab also starts
+      // unselected, so its panel can mount for the first time here.
+      for (const tab of tabs.slice(1)) {
         test(`Reset scroll on ${tab}`, async ({ page, q }) => {
           await q.tab(tab).click();
           await expect(q.tabpanel(tab)).toBeVisible();

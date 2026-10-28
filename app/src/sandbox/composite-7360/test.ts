@@ -1,7 +1,7 @@
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// `test-browser.ts` is authoritative for the page movement that the replayed
+// `test-chrome.ts` is authoritative for the page movement that the replayed
 // focus request causes. happy-dom has no layout, so only the focus half is
 // observable here.
 

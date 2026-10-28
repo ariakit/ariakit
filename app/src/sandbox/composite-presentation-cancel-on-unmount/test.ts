@@ -1,14 +1,14 @@
 import { click, focus, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// `test-browser.ts` is authoritative for which dismissal strands a
-// presentation. When the panel is dismissed in the same task that focused it,
-// Chromium commits a batched unmount after the microtask the composite queued
-// and a `flushSync` unmount before it, while the simulated events here commit
-// both before that microtask, so those two dismissals are not split the same
-// way. A dismissal in a later task behaves alike in both. The outcome asserted
-// in both files is the same either way: nothing may move focus on its own after
-// the panel is dismissed.
+// `test-chrome.ts` is authoritative for which dismissal strands a presentation.
+// When the panel is dismissed in the same task that focused it, Chromium
+// commits a batched unmount after the microtask the composite queued and a
+// `flushSync` unmount before it, while the simulated events here commit both
+// before that microtask, so those two dismissals are not split the same way. A
+// dismissal in a later task behaves alike in both. The outcome asserted in both
+// files is the same either way: nothing may move focus on its own after the
+// panel is dismissed.
 // https://github.com/ariakit/ariakit/issues/7024
 
 /**

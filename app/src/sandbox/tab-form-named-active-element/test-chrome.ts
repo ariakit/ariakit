@@ -1,8 +1,8 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 // happy-dom implements no document named getter, so only a real browser makes
-// the form answer the `activeElement` read. The three desktop projects all
-// reproduce it.
+// the form answer the `activeElement` read. The getter is standard, so Chrome
+// alone reproduces it.
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/7230
   test("follows the selected tab with focus past a named activeElement form", async ({

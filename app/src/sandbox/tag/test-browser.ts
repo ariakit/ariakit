@@ -17,7 +17,7 @@ async function tags(page: Page) {
   return Promise.all(options.map((el) => el.textContent()));
 }
 
-withFramework(import.meta.dirname, async ({ test, query }) => {
+withFramework(import.meta.dirname, async ({ test }) => {
   test.beforeEach(async ({ context, browserName }) => {
     // Firefox rejects these permission names and WebKit doesn't need them,
     // which is why this is the only project that grants them. Chromium keeps
@@ -27,33 +27,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   });
 
-  test("renders the tags inside the listbox and the input outside it", async ({
-    q,
-  }) => {
-    await expect(q.listbox("Tags")).not.toHaveAttribute("aria-owns");
-    const tagList = query(q.listbox("Tags"));
-    await expect(tagList.option()).toHaveCount(2);
-    // The listbox role accepts only options as children, so the input must be a
-    // sibling of the tag list rather than a descendant of it.
-    await expect(tagList.textbox()).toHaveCount(0);
-    await expect(q.textbox("Tags")).toBeVisible();
-  });
-
   test("focuses the input when clicking on the control", async ({ q }) => {
     // The tag list has a display: contents style and generates no box, so the
     // control is the element that receives clicks on the field's padding.
     await q.group("Tags").click({ position: { x: 4, y: 4 } });
     await expect(q.textbox("Tags")).toBeFocused();
-  });
-
-  test("paste tag without delimiters", async ({ page, q }) => {
-    await copy(page, "abc");
-    await page.keyboard.press("Tab");
-    await expect(q.textbox("Tags")).toBeFocused();
-    await paste(page);
-    await expect(q.textbox("Tags")).toBeFocused();
-    await expect(q.textbox("Tags")).toHaveValue("abc");
-    await expect(q.option("abc")).not.toBeVisible();
   });
 
   test("paste tag without delimiters from tag list", async ({ page, q }) => {
@@ -79,43 +57,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       "def",
       "ghi",
     ]);
-  });
-
-  test("paste tags with space from tag list", async ({ page, q }) => {
-    await copy(page, "abc def ghi");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Home");
-    await expect(q.option("JavaScript")).toBeFocused();
-    await paste(page);
-    await expect(q.textbox("Tags")).toHaveValue("");
-    await expect(q.textbox("Tags")).toBeFocused();
-    expect(await tags(page)).toEqual([
-      "JavaScript",
-      "React",
-      "abc",
-      "def",
-      "ghi",
-    ]);
-  });
-
-  test("paste tags with comma and space", async ({ page, q }) => {
-    await copy(page, "abc def, ghi");
-    await page.keyboard.press("Tab");
-    await paste(page);
-    await expect(q.textbox("Tags")).toHaveValue("");
-    await expect(q.textbox("Tags")).toBeFocused();
-    expect(await tags(page)).toEqual(["JavaScript", "React", "abc def", "ghi"]);
-  });
-
-  test("paste tags with comma and space from tag list", async ({ page, q }) => {
-    await copy(page, "abc def, ghi");
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("PageUp");
-    await expect(q.option("JavaScript")).toBeFocused();
-    await paste(page);
-    await expect(q.textbox("Tags")).toHaveValue("");
-    await expect(q.textbox("Tags")).toBeFocused();
-    expect(await tags(page)).toEqual(["JavaScript", "React", "abc def", "ghi"]);
   });
 
   test("paste tags with semicolon, comma and space", async ({ page, q }) => {

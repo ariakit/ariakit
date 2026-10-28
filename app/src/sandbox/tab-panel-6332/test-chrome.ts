@@ -26,8 +26,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toHaveAttribute("tabindex", "0");
     await section.tab("Link").click();
     await test.expect(section.tabpanel("Link")).not.toHaveAttribute("tabindex");
-    // Safari skips links when tabbing, so assert that focus skips the panel
-    // element rather than asserting it lands on the link inside it.
+    // The contract is that the panel element itself is skipped, not where focus
+    // lands next.
     await page.keyboard.press("Tab");
     await test.expect(section.tabpanel("Link")).not.toBeFocused();
   });
