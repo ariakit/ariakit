@@ -227,7 +227,7 @@ test("preview card frames pass the wheel to the page over contained scroll areas
   // The example sidebar shows at this width.
   await page.setViewportSize({ width: 1600, height: 900 });
   await gotoAndSettle(page, "/react/recipes/navigation/");
-  const iframe = page.locator('iframe[title="Sidebar Sections"]');
+  const iframe = page.locator('iframe[title="Accordion Sections"]');
   const frame = await waitForFrameHydration(iframe);
   const link = query(frame).link(/Combobox/);
   await expect(link).toBeVisible();
@@ -680,20 +680,19 @@ test("preview grid cards keep their heights and stick within their row", async (
   await page.setViewportSize({ width: 1440, height: 700 });
   await gotoAndSettle(page, "/react/recipes/skeleton/");
   // Each card region stretches to its grid row, and the card inside it keeps
-  // its own height. An example can name its own region like its card, and the
-  // card region comes first.
-  const getRow = (title: string) => q.region(title, { exact: true }).first();
+  // its own height.
+  const getRow = (title: string) => q.region(title, { exact: true });
   const getCard = (title: string) => getRow(title).locator(":scope > *");
   const getRect = (locator: Locator) =>
     locator.evaluate((element) => {
       const { top, bottom, width, height } = element.getBoundingClientRect();
       return { top, bottom, width, height };
     });
-  const article = q.region("Article", { exact: true });
+  const article = q.region("Paragraph Lines", { exact: true });
   await waitForArticle(article);
 
-  const articleCard = await getRect(getCard("Article"));
-  const thumbnailsCard = await getRect(getCard("Thumbnails"));
+  const articleCard = await getRect(getCard("Paragraph Lines"));
+  const thumbnailsCard = await getRect(getCard("Static Shapes"));
   expect(thumbnailsCard.height).toBeLessThan(articleCard.height);
   // The article card fits on the screen, so its example scrolls instead.
   expect(articleCard.height).toBeLessThanOrEqual(700);
@@ -708,22 +707,22 @@ test("preview grid cards keep their heights and stick within their row", async (
   await page.evaluate(() => window.scrollBy(0, 200));
   await expect
     .poll(async () => {
-      const thumbnails = await getRect(getCard("Thumbnails"));
-      const article = await getRect(getCard("Article"));
+      const thumbnails = await getRect(getCard("Static Shapes"));
+      const article = await getRect(getCard("Paragraph Lines"));
       return thumbnails.top - article.top;
     })
     .toBeGreaterThan(100);
 
   // Once the next row comes up, the cards of the previous row leave with their
   // row instead of sticking over the next one.
-  const nextRow = getRow("Data Table");
+  const nextRow = getRow("Reload on Filter");
   await nextRow.evaluate((element) => {
     const { top } = element.getBoundingClientRect();
     window.scrollBy(0, top - 300);
   });
   await expect.poll(async () => (await getRect(nextRow)).top).toBeLessThan(350);
   const nextRowTop = (await getRect(nextRow)).top;
-  for (const title of ["Feed", "Settings Form"]) {
+  for (const title of ["Load More", "Form Controls"]) {
     expect((await getRect(getCard(title))).bottom).toBeLessThanOrEqual(
       nextRowTop,
     );
@@ -736,7 +735,7 @@ test("inline previews scroll only after focus moves into them", async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 700 });
   await gotoAndSettle(page, "/react/recipes/skeleton/");
-  const article = q.region("Article", { exact: true });
+  const article = q.region("Paragraph Lines", { exact: true });
   await waitForArticle(article);
   // The handle names the viewport it resizes.
   const handle = query(article).separator("Resize preview", {
@@ -777,7 +776,7 @@ test("inline previews scroll after a click on their card", async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 700 });
   await gotoAndSettle(page, "/react/recipes/skeleton/");
-  const article = q.region("Article", { exact: true });
+  const article = q.region("Paragraph Lines", { exact: true });
   await waitForArticle(article);
   const card = article.locator("[data-preview-card]");
   const handle = query(article).separator("Resize preview", {
@@ -795,7 +794,7 @@ test("inline previews scroll after a click on their card", async ({
 
   // A click on the title in the top bar moves focus to the card, which lets the
   // example scroll and gives the viewport a brand border.
-  await query(article).heading("Article", { level: 2 }).click();
+  await query(article).heading("Paragraph Lines", { level: 2 }).click();
   await expect(card).toBeFocused();
   await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
   // The click scrolls the title into view, which can leave the example below
@@ -819,9 +818,7 @@ test("inline previews stay active when focus falls back to the page", async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 700 });
   await gotoAndSettle(page, "/react/recipes/skeleton/");
-  // The feed example names its own region like its card, and the card region
-  // comes first.
-  const card = query(q.region("Feed", { exact: true }).first());
+  const card = query(q.region("Load More", { exact: true }));
   const handle = card.separator("Resize preview", { includeHidden: true });
   const viewportId = await handle.getAttribute("aria-controls");
   const viewport = page.locator(`[id="${viewportId}"]`);
