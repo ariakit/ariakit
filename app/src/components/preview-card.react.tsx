@@ -66,9 +66,19 @@ const RESIZE_STEP = 16;
 
 export interface PreviewCardProps {
   /**
+   * The id of the section around the card, which the title links to.
+   */
+  sectionId: string;
+  /**
    * The id of the heading that labels the section around the card.
    */
   headingId: string;
+  /**
+   * The level of the heading, such as 3 for an example under the examples
+   * heading of a page.
+   * @default 2
+   */
+  headingLevel?: 2 | 3;
   /**
    * The id of the preview, such as `skeleton/timing`.
    */
@@ -113,7 +123,9 @@ export interface PreviewCardProps {
  * page in a new tab.
  */
 export function PreviewCard({
+  sectionId,
   headingId,
+  headingLevel = 2,
   previewId,
   title,
   href,
@@ -176,13 +188,24 @@ export function PreviewCard({
           >
             <TextFrame
               id={headingId}
-              render={<h2 />}
+              render={headingLevel === 3 ? <h3 /> : <h2 />}
               $p={2}
               $layer="transparent"
               // Browser controls replace the visible title.
               className={browser ? "sr-only" : "flex-1 font-medium"}
             >
-              {title}
+              {/* A hidden title has no link, which would take focus without
+                  showing it. */}
+              {browser ? (
+                title
+              ) : (
+                <a
+                  href={`#${sectionId}`}
+                  className="hover:underline hover:decoration-1 hover:underline-offset-[0.25em]"
+                >
+                  {title}
+                </a>
+              )}
             </TextFrame>
             {browser && <PreviewCardBrowserControls frame={frame} />}
             <ButtonGroup
@@ -427,6 +450,11 @@ function usePreviewFrame(
         deactivate();
       });
     };
+    // Focus can already be in the card, such as when a link to it moved focus
+    // there before it hydrated.
+    if (isInCard(doc.activeElement)) {
+      activate();
+    }
     window.addEventListener("message", onMessage);
     doc.addEventListener("pointerdown", onPointerDown, true);
     doc.addEventListener("pointercancel", onPointerCancel, true);

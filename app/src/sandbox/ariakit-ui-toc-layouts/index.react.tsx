@@ -111,6 +111,16 @@ const collapsed: Entry[] = [
   { slug: "collapsed-after", text: "After" },
 ];
 
+// Headings side by side in the rows of a grid.
+const sideBySide: Entry[] = [
+  { slug: "side-apples", text: "Apples" },
+  { slug: "side-bananas", text: "Bananas" },
+  { slug: "side-cherries", text: "Cherries" },
+  { slug: "side-dates", text: "Dates" },
+  { slug: "side-figs", text: "Figs" },
+  { slug: "side-grapes", text: "Grapes" },
+];
+
 type LinkProps = Omit<TocLinkProps, "href">;
 
 function Entries({ entries, link }: { entries: Entry[]; link?: LinkProps }) {
@@ -322,6 +332,36 @@ function CollapsedSection() {
   );
 }
 
+// The headings of a row reach the activation line together, like the titles of
+// cards in a gallery grid.
+function SideBySide() {
+  return (
+    <div className="flex flex-wrap items-start gap-6">
+      <Frame
+        render={<article aria-label="Article with headings side by side" />}
+        $layer
+        $border
+        $rounded="xl"
+        $p={5}
+        className="h-48 w-96 overflow-auto scroll-pt-5"
+      >
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+          {sideBySide.map((entry) => (
+            <Prose key={entry.slug}>
+              <Heading id={entry.slug} render={<h2 />} $level={5}>
+                {entry.text}
+              </Heading>
+              <p className="h-24">A card in a row of two.</p>
+            </Prose>
+          ))}
+        </div>
+        <p className="h-64">The article ends below the rows.</p>
+      </Frame>
+      <Contents label="Side by side" entries={sideBySide} />
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <div className="grid w-full max-w-5xl gap-6">
@@ -402,6 +442,7 @@ export default function Example() {
       </div>
       <Zoomed />
       <CollapsedSection />
+      <SideBySide />
     </div>
   );
 }

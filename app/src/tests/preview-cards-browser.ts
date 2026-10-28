@@ -229,6 +229,9 @@ test("preview card frames pass the wheel to the page over contained scroll areas
   await gotoAndSettle(page, "/react/recipes/navigation/");
   const iframe = page.locator('iframe[title="Sidebar Sections"]');
   const frame = await waitForFrameHydration(iframe);
+  // The card passes the wheel from the frame to the page, so it waits for the
+  // card to hydrate too, which can come after the frame.
+  await waitForShownFrame(page, "Sidebar Sections");
   const link = query(frame).link(/Combobox/);
   await expect(link).toBeVisible();
   // Contain the overscroll of the open section, as an app could, so it keeps
@@ -795,7 +798,7 @@ test("inline previews scroll after a click on their card", async ({
 
   // A click on the title in the top bar moves focus to the card, which lets the
   // example scroll and gives the viewport a brand border.
-  await query(article).heading("Article", { level: 2 }).click();
+  await query(article).heading("Article", { level: 3 }).click();
   await expect(card).toBeFocused();
   await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
   // The click scrolls the title into view, which can leave the example below

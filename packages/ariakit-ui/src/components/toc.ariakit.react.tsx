@@ -70,6 +70,8 @@ interface TocSection {
   base: number;
   // The base line, slid down near the end of the page.
   line: number;
+  // Whether the URL hash points to the heading.
+  hashed: boolean;
 }
 
 interface TocSpyState {
@@ -194,6 +196,7 @@ function getSections({ doc, entries, container }: GetSectionsParams) {
   // the root scales to the viewport pixels of the page.
   const paddingZoom = container ? 1 : doc.documentElement.currentCSSZoom || 1;
   const padding = getScrollPadding(style.scrollPaddingTop, height, paddingZoom);
+  const hashTarget = getTarget(doc, win.location.hash);
   const seen = new Set<Element>();
   const sections = entries.map((entry): TocSection | null => {
     const target = getTarget(doc, entry.href);
@@ -208,15 +211,16 @@ function getSections({ doc, entries, container }: GetSectionsParams) {
     const { scrollMarginTop } = win.getComputedStyle(target);
     const margin = Number.parseFloat(scrollMarginTop) || 0;
     const base = padding + margin * targetZoom;
+    const hashed = target === hashTarget;
     if (maxScroll <= 0) {
-      return { top, base, line: base };
+      return { top, base, line: base, hashed };
     }
     // Over the last screen of scrolling, the line slides down to the bottom, so
     // short final sections become current in turn.
     const range = Math.max(1, Math.min(height - base, maxScroll));
     const progress = Math.min(1, Math.max(0, 1 - remaining / range));
     const line = base + (height - END_LINE_INSET - base) * progress;
-    return { top, base, line };
+    return { top, base, line, hashed };
   });
   // The last section ends at the end of the scrollable content.
   const contentEnd = scrollHeight - scrollTop;
@@ -236,9 +240,15 @@ function getSpyState({ sections, contentEnd, height }: GetSpyStateParams) {
     const section = sections[i];
     if (!section) continue;
     // The current item is the last heading above its activation line, with one
-    // pixel of tolerance for subpixel scroll positions.
+    // pixel of tolerance for subpixel scroll positions. Headings side by side,
+    // such as titles of cards in a grid row, pass the line together. The first
+    // one stays current, unless a link scrolled to another one.
     if (!passed && section.top <= section.line + 1) {
-      state.current = i;
+      const current = sections[state.current];
+      const sameRow = current && Math.abs(section.top - current.top) <= 1;
+      if (!sameRow || section.hashed) {
+        state.current = i;
+      }
     } else {
       passed = true;
     }

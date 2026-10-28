@@ -10,7 +10,14 @@
 import { readdirSync } from "node:fs";
 import type { Dirent } from "node:fs";
 import fs from "node:fs/promises";
-import { basename, join, relative } from "node:path";
+import {
+  basename,
+  dirname,
+  isAbsolute,
+  join,
+  relative,
+  resolve,
+} from "node:path";
 import { fileURLToPath } from "node:url";
 import { invariant } from "@ariakit/utils";
 import type { Loader } from "astro/loaders";
@@ -288,6 +295,27 @@ export function getPreviewIdFromDir(roots: ResolvedPreviewRoot[], dir: string) {
     return getPreviewId(root, dir) || undefined;
   }
   return undefined;
+}
+
+/**
+ * Returns the file that an import specifier points to when it is an absolute
+ * path, an `#app/*` path in `srcDir`, or a path relative to the importer. A
+ * package specifier has no file here. Query strings, such as `?source`, are
+ * dropped.
+ */
+export function resolvePreviewModuleFile(
+  id: string,
+  importer: string | undefined,
+  srcDir: string,
+) {
+  const specifier = id.split("?")[0] ?? id;
+  if (isAbsolute(specifier)) return specifier;
+  if (specifier.startsWith("#app/")) {
+    return join(srcDir, specifier.slice("#app/".length));
+  }
+  if (!importer) return;
+  if (!specifier.startsWith(".")) return;
+  return resolve(dirname(importer), specifier);
 }
 
 interface AddPreviewParams {

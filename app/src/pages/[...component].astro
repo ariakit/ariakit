@@ -11,6 +11,7 @@
 import Meta from "#app/components/meta.astro";
 import ApiReference from "#app/components/api-reference.astro";
 import { getReferencePath } from "#app/lib/url.ts";
+import { getGalleryExamples } from "#app/lib/gallery.ts";
 import { descriptionToText } from "#app/lib/content.ts";
 import PageIntro from "#app/components/page-intro.astro";
 import { mdxComponents } from "#app/components/mdx-components.react.tsx";
@@ -80,14 +81,16 @@ const {
   main,
 } = Astro.props;
 const { Content, headings } = await render(entry);
-const { Content: Gallery } = gallery ? await render(gallery) : {};
+const { Content: Gallery, remarkPluginFrontmatter } =
+  main && gallery ? await render(gallery) : {};
+const examples = await getGalleryExamples(remarkPluginFrontmatter, framework);
 const { Content: Description } = description ? await render(description) : {};
 Astro.locals.framework = framework;
 const title = entry.data.title;
 const descriptionText = await descriptionToText(description?.body, framework);
 ---
 
-<Layout {title} {headings} section="components">
+<Layout {title} {headings} {examples} section="components">
   <Meta
     slot="meta"
     id={entry.id}
@@ -99,7 +102,7 @@ const descriptionText = await descriptionToText(description?.body, framework);
   <PageIntro slot="intro" {title}>
     {Description && <Description {framework} />}
   </PageIntro>
-  {main && Gallery && <Gallery {framework} />}
+  {Gallery && <Gallery slot="gallery" {framework} />}
   <nav aria-label="API reference">
     <ul>
       {

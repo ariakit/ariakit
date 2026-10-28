@@ -229,6 +229,47 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
+  test("keeps the first of the headings side by side current", async ({
+    page,
+    q,
+  }) => {
+    const nav = query(q.navigation("Side by side"));
+    // A link to the second heading of a row makes it current.
+    await nav.link("Dates").click();
+    await test
+      .expect(nav.link("Dates"))
+      .toHaveAttribute("aria-current", "location");
+    // Scrolling on starts from that heading, without going back to the first
+    // one of its row. Read the current link after the frame that updates it.
+    const seen = await q.navigation("Side by side").evaluate(async (nav) => {
+      const article = document.getElementById("side-dates")?.closest("article");
+      const names: string[] = [];
+      if (!article) return names;
+      const end = article.scrollTop + 160;
+      for (let top = article.scrollTop; top <= end; top += 8) {
+        article.scrollTop = top;
+        await new Promise(requestAnimationFrame);
+        await new Promise(requestAnimationFrame);
+        const name = nav.querySelector("[aria-current]")?.textContent;
+        if (name && names.at(-1) !== name) {
+          names.push(name);
+        }
+      }
+      return names;
+    });
+    test.expect(seen).toEqual(["Dates", "Figs"]);
+    // Without a link to a heading of the row, the first one is current.
+    await page.evaluate(() => {
+      history.replaceState(null, "", location.pathname);
+    });
+    await q.heading("Cherries").evaluate((element) => {
+      element.scrollIntoView({ block: "start" });
+    });
+    await test
+      .expect(nav.link("Cherries"))
+      .toHaveAttribute("aria-current", "location");
+  });
+
   test("follows the headings of a zoomed article", async ({ q }) => {
     const link = query(q.navigation("Zoomed parts")).link("Part 3");
     await q.heading("Part 3").evaluate((element) => {

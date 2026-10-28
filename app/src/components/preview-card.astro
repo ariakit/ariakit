@@ -30,6 +30,11 @@ interface Props {
   browser?: boolean;
   /** Classes for the card band, such as `col-span-full` in a `PreviewGrid`. */
   class?: string;
+  /**
+   * Whether the card is in the page gallery. `remarkGalleryExamples` sets it
+   * on the cards in `gallery.mdx` files.
+   */
+  gallery?: boolean;
 }
 
 const {
@@ -40,10 +45,24 @@ const {
 invariant(framework, "Framework is required");
 const source = "files" in sources ? sources : sources[framework];
 if (!source) return null;
+// A card in the page gallery is an example under the examples heading, and
+// the table of contents links to it with the id that the layout picked.
+// The section around the card takes the id, and the title links to it. A
+// shorter card sticks below the headers while its grid row scrolls, so its
+// title would leave the row, while the sections of a row share their top.
+const galleryId = Astro.props.gallery
+  ? Astro.locals.galleryIds?.get(source.name)
+  : undefined;
+// The table of contents would link to a missing id otherwise.
+invariant(
+  !Astro.props.gallery || galleryId,
+  `The layout has no id for the gallery card ${source.name}`,
+);
 const preview = await getEntry("previews", source.name);
 const title = preview?.data.title ?? source.name;
 const href = "/" + framework + "/previews/" + source.name + "/";
-const headingId = "preview-card-" + source.name.replaceAll("/", "-") + "-title";
+const id = galleryId ?? "preview-card-" + source.name.replaceAll("/", "-");
+const headingId = id + "-title";
 const inline = Astro.slots.has("default");
 const browser = !inline && (Astro.props.browser ?? isNextjsPreviewId(source.name));
 const files = Object.entries(source.files);
@@ -53,13 +72,15 @@ const files = Object.entries(source.files);
     it stays out of the run of sibling cards that preview grid selectors
     match. */}
 <script>
+  import { setupPreviewCardLinks } from "#app/lib/preview-card-links.ts";
   import { setupPreviewFrames } from "#app/lib/preview-frames.ts";
 
   setupPreviewFrames();
+  setupPreviewCardLinks();
 </script>
 
 <ShellMainWide
-  render={createElement("section", { "aria-labelledby": headingId })}
+  render={createElement("section", { id, "aria-labelledby": headingId })}
   {className}
 >
   {/* Preview cards inside MDX prose or a preview grid are not main bands, so
@@ -75,7 +96,9 @@ const files = Object.entries(source.files);
         hydrated show as the card scrolls into view, not after a loader. */}
     <PreviewCard
       client:visible={{ rootMargin: PREVIEW_FRAME_MARGIN }}
+      sectionId={id}
       {headingId}
+      headingLevel={galleryId ? 3 : 2}
       previewId={source.name}
       {title}
       {href}
