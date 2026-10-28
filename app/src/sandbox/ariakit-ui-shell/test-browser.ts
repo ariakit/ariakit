@@ -201,6 +201,19 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await selectScenario(q, scenario);
         const sidebar = getSidebar(q, name);
         await expect(sidebar).toHaveCSS("width", sidebarWidth);
+        // Firefox transitions the main body's slot space when the scenario
+        // select remounts the shell. Let it settle so the probe below only sees
+        // the transitions that it starts.
+        await expect
+          .poll(() =>
+            sidebar.evaluate((column) => {
+              const body = document.querySelector("main > .shell-main-body");
+              return [column, body].flatMap(
+                (element) => element?.getAnimations() ?? [],
+              ).length;
+            }),
+          )
+          .toBe(0);
         const transitions = await sidebar.evaluate((column) => {
           const shell = column.parentElement;
           const panel = column.firstElementChild;
