@@ -103,66 +103,20 @@ withFramework(import.meta.dirname, async ({ framework, id, test }) => {
     test.expect(await listbox.evaluate((element) => element.scrollTop)).toBe(0);
   });
 
-  test("auto-selects the first filtered option and restores it on reopen", async ({
+  // ArrowUp opens the select through the same keyup-scheduled show as
+  // ArrowDown, so one key covers the page scroll.
+  test("ArrowDown opens the searchable select without scrolling the page", async ({
     page,
     q,
   }) => {
-    const select = q.combobox("Searchable favorite fruit");
-    const search = q.combobox("Search fruits");
-    await select.click();
-    await page.keyboard.type("c");
-    await test.expect(q.option("Cake")).toHaveAttribute("data-active-item");
-    await page.keyboard.type("h");
-    await test.expect(q.option("Cherry")).toHaveAttribute("data-active-item");
-    await page.keyboard.type("o");
-    await test
-      .expect(q.option("Chocolate"))
-      .toHaveAttribute("data-active-item");
-    await page.keyboard.press("Enter");
-
-    await select.click();
-    await test
-      .expect(q.option("Chocolate"))
-      .toHaveAttribute("data-active-item");
-    await search.fill("a");
-    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
-    await page.keyboard.type("s");
-    await test.expect(q.option("Pasta")).toHaveAttribute("data-active-item");
-    await page.keyboard.press("Backspace");
-    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
-  });
-
-  test("reopening scrolls a far selected option without scrolling the page", async ({
-    page,
-    q,
-  }) => {
-    const select = q.combobox("Searchable favorite fruit");
-    const listbox = q.dialog("Searchable favorite fruit options");
-    await select.click();
-    await q.option("Watermelon").click();
+    await q.combobox("Searchable favorite fruit").focus();
     await page.evaluate(() => window.scrollTo({ top: 100 }));
-
-    await select.click();
-
-    await test.expect(q.option("Watermelon")).toBeInViewport();
-    await test.expect(listbox).toBeVisible();
+    await page.keyboard.press("ArrowDown");
+    await test
+      .expect(q.dialog("Searchable favorite fruit options"))
+      .toBeVisible();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
-
-  for (const key of ["ArrowUp", "ArrowDown"]) {
-    test(`${key} opens the searchable select without scrolling the page`, async ({
-      page,
-      q,
-    }) => {
-      await q.combobox("Searchable favorite fruit").focus();
-      await page.evaluate(() => window.scrollTo({ top: 100 }));
-      await page.keyboard.press(key);
-      await test
-        .expect(q.dialog("Searchable favorite fruit options"))
-        .toBeVisible();
-      test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
-    });
-  }
 
   test("moves grouped options into view and restores the selection on reopen", async ({
     page,

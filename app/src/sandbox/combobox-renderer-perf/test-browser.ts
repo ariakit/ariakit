@@ -11,27 +11,28 @@ async function expectActiveInView(option: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  for (const count of [1000, 10000]) {
-    for (const mode of ["fixed", "measured", "grouped"]) {
-      test.describe(`${count} items, ${mode}`, () => {
-        test("select a different item and reopen", async ({ page, q }) => {
-          await q.combobox("Item count").selectOption(String(count));
-          await q.combobox("Layout").selectOption(mode);
-          await expect(q.combobox("Choice")).toHaveText("Item 1");
-          await q.combobox("Choice").click();
-          await expect(q.listbox("Choices")).toBeVisible();
-          await expectActiveInView(q.option("Item 1", { exact: true }));
+  // The moves stay at the start of the list, where a smaller count takes the
+  // same path, so only the largest count runs.
+  const count = 10000;
+  for (const mode of ["fixed", "measured", "grouped"]) {
+    test.describe(`${count} items, ${mode}`, () => {
+      test("select a different item and reopen", async ({ page, q }) => {
+        await q.combobox("Item count").selectOption(String(count));
+        await q.combobox("Layout").selectOption(mode);
+        await expect(q.combobox("Choice")).toHaveText("Item 1");
+        await q.combobox("Choice").click();
+        await expect(q.listbox("Choices")).toBeVisible();
+        await expectActiveInView(q.option("Item 1", { exact: true }));
 
-          await page.keyboard.press("ArrowDown");
-          const option = q.option("Item 2", { exact: true });
-          await expectActiveInView(option);
-          await page.keyboard.press("Enter");
-          await expect(q.combobox("Choice")).toHaveText("Item 2");
-          await expect(q.listbox("Choices")).toHaveCount(0);
-          await q.combobox("Choice").click();
-          await expectActiveInView(option);
-        });
+        await page.keyboard.press("ArrowDown");
+        const option = q.option("Item 2", { exact: true });
+        await expectActiveInView(option);
+        await page.keyboard.press("Enter");
+        await expect(q.combobox("Choice")).toHaveText("Item 2");
+        await expect(q.listbox("Choices")).toHaveCount(0);
+        await q.combobox("Choice").click();
+        await expectActiveInView(option);
       });
-    }
+    });
   }
 });

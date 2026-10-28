@@ -22,6 +22,26 @@ export async function expectVerticallyCentered(
   }).toPass();
 }
 
+/**
+ * Expects the item to be fully inside the vertical scrollport of the listbox,
+ * excluding its borders.
+ */
+export async function expectInScrollport(listbox: Locator, item: Locator) {
+  await expect(async () => {
+    const itemBox = await item.boundingBox();
+    if (!itemBox) throw new Error("The item has no bounding box.");
+    const edges = await listbox.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        bottom: rect.top + element.clientTop + element.clientHeight,
+        top: rect.top + element.clientTop,
+      };
+    });
+    expect(itemBox.y).toBeGreaterThanOrEqual(edges.top);
+    expect(itemBox.y + itemBox.height).toBeLessThanOrEqual(edges.bottom);
+  }).toPass();
+}
+
 declare global {
   interface Window {
     __scrollEvents?: string[];
