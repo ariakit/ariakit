@@ -530,13 +530,20 @@ export function ShellSidebar({
   const nestedLandmarks = useNestedLandmarks(landmarks, {
     navigation: landmark === "nav",
   });
+  // A data-open prop replaces open on the panel. The column mirrors it so it
+  // renders in place before its panel arrives in streamed HTML.
+  const dataOpen: unknown = Object.hasOwn(rest, "data-open")
+    ? Reflect.get(rest, "data-open")
+    : open
+      ? ""
+      : undefined;
   return (
-    <div {...shellSidebar.jsx(columnProps)}>
+    <div data-open={dataOpen} {...shellSidebar.jsx(columnProps)}>
       <LandmarkContext.Provider value={nestedLandmarks}>
         <ak.Role.div
           // A render prop from the caller still decides the element.
           render={getSidebarPanelRender(landmark)}
-          data-open={open ? "" : undefined}
+          data-open={dataOpen}
           {...shellSidebarPanel.jsx(variantProps)}
           {...rest}
         />
