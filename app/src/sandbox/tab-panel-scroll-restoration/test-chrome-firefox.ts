@@ -36,9 +36,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const name = `${scrollElement}${restore}`;
       const tabs = [`${name} 1`, `${name} 2`];
 
-      // Both tabs switch away and back the same way. The second tab also starts
-      // unselected, so its panel can mount for the first time here.
-      for (const tab of tabs.slice(1)) {
+      for (const tab of tabs) {
         test(`Restore scroll on ${tab}`, async ({ page, q }) => {
           await q.tab(tab).click();
           await expect(q.tabpanel(tab)).toBeVisible();
@@ -62,8 +60,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const name = `${scrollElement}${reset}`;
       const tabs = [`${name} 1`, `${name} 2`];
 
-      // Both tabs switch away and back the same way. The second tab also starts
-      // unselected, so its panel can mount for the first time here.
+      // The reset path doesn't read the tab id, so the first tab would repeat
+      // what the second tab does when it switches away and back.
       for (const tab of tabs.slice(1)) {
         test(`Reset scroll on ${tab}`, async ({ page, q }) => {
           await q.tab(tab).click();

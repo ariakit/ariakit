@@ -59,6 +59,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     ]);
   });
 
+  test("paste tags with comma and space", async ({ page, q }) => {
+    await copy(page, "abc def, ghi");
+    await page.keyboard.press("Tab");
+    await paste(page);
+    await expect(q.textbox("Tags")).toHaveValue("");
+    await expect(q.textbox("Tags")).toBeFocused();
+    expect(await tags(page)).toEqual(["JavaScript", "React", "abc def", "ghi"]);
+  });
+
   test("paste tags with semicolon, comma and space", async ({ page, q }) => {
     await copy(page, "abc def, ghi; jkl");
     await page.keyboard.press("Tab");
