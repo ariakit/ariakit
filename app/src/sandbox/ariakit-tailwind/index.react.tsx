@@ -234,6 +234,36 @@ function Layers() {
           <Cell className="ak-layer-mix-100 ak-layer-orange-600" />
         </Layer>
       </Layer>
+      {/* The fade applies after the lightness push and bounds. The push cells
+       * mirror an inverted surface, whose push always reaches its bound. With
+       * an offset or push, a fade that lands in the forbidden range stays on
+       * the far side from the parent; a plain colored fade keeps the nearest
+       * side.
+       * https://github.com/ariakit/ariakit/issues/8154
+       */}
+      <Layer
+        label="ak-layer-fade-<number>"
+        className="ak-layer ak-frame ak-frame-cover ak-frame-border flex-col"
+      >
+        <Layer className="ak-layer ak-frame ak-frame-cover ak-frame-border ak-frame-row">
+          <Cell
+            label="push"
+            className="ak-layer-push-100 ak-layer-min-l-23 ak-layer-max-l-96 *:ak-text"
+          />
+          <Cell
+            label="push fade"
+            className="ak-layer-push-100 ak-layer-min-l-23 ak-layer-max-l-96 ak-layer-fade-80 *:ak-text"
+          />
+          <Cell
+            label="offset fade"
+            className="ak-layer-orange-600 ak-layer-10 ak-layer-fade-80 *:ak-text"
+          />
+          <Cell
+            label="color fade"
+            className="ak-layer-orange-600 ak-layer-fade-50 *:ak-text"
+          />
+        </Layer>
+      </Layer>
       <Layer
         label="ak-layer-saturate-<number>"
         className="ak-layer ak-frame ak-frame-2xl/1 ak-frame-m-4 ak-frame-border flex-col"
@@ -672,6 +702,62 @@ export default function Example() {
                 />
               </Layer>
             </div>
+          </Layer>
+          {/* A fade that lands in the forbidden range keeps the side away from
+           * the lightness of the parent layer. The text scheme of a vivid cyan
+           * layer turns light earlier, so it can't give that side. With
+           * ak-outset, the side comes from the outer layer. A nested fade reads
+           * its own parent, not the side of the fade around it.
+           * https://github.com/ariakit/ariakit/issues/8154
+           */}
+          <Layer
+            label="ak-layer-fade side"
+            className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-wrap items-start"
+          >
+            <Layer
+              label="neon cyan"
+              className="ak-layer ak-layer-[oklch(0.48_0.32_195)] ak-frame ak-frame-p-1 ak-frame-border"
+            >
+              <Cell
+                label="push fade"
+                className="ak-layer-push-100 ak-layer-min-l-23 ak-layer-max-l-96 ak-layer-fade-80 *:ak-text"
+              />
+            </Layer>
+            <Layer
+              label="outset"
+              className="ak-layer ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border"
+            >
+              <div className="pb-10">
+                <Layer
+                  label="light parent"
+                  className="ak-layer ak-layer-[#e2e8f0] ak-frame ak-frame-p-1 ak-frame-border relative"
+                >
+                  <Cell
+                    label="push fade"
+                    className="ak-layer-push-100 ak-layer-min-l-23 ak-layer-max-l-96 ak-layer-fade-80 ak-outset absolute top-full start-0 mt-1"
+                  />
+                </Layer>
+              </div>
+            </Layer>
+            <Layer
+              label="nested"
+              className="ak-layer ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border"
+            >
+              <Layer
+                label="outer fade"
+                className="ak-layer ak-layer-push-100 ak-layer-min-l-23 ak-layer-max-l-96 ak-layer-fade-80 ak-frame ak-frame-p-1 ak-frame-border"
+              >
+                <Layer
+                  label="light layer"
+                  className="ak-layer ak-layer-[oklch(0.78_0.02_250)] ak-frame ak-frame-p-1 ak-frame-border"
+                >
+                  <Cell
+                    label="push fade"
+                    className="ak-layer-push-100 ak-layer-min-l-23 ak-layer-max-l-96 ak-layer-fade-80 *:ak-text"
+                  />
+                </Layer>
+              </Layer>
+            </Layer>
           </Layer>
           <Cell
             label="raw mix"

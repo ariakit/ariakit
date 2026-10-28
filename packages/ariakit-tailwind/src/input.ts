@@ -629,6 +629,7 @@ const layerMathVars = {
   layerPushL: _ak.prop("lpl", { initial: l }),
   edgeContrastValue: _ak.prop.zero("ecv", { inherits: true }),
   edgePushDirection: _ak.var("epd", -1),
+  layerFadeDirection: _ak.var("lfd", -1),
 };
 
 // Theme-level tokens consumed by --value(--chroma-*) and --value(--hue-*).
@@ -815,6 +816,8 @@ const inputs = {
   layerLOffsetL: _ak.prop("layer-lightness-offset-resolved"),
   layerPushL: _ak.prop("layer-push-lightness", { initial: 0 }),
   layerMix: _ak.prop("layer-mix"),
+  layerFade: _ak.prop("layer-fade"),
+  layerFadeAmount: _ak.prop("layer-fade-amount", "50%"),
   layerMixMethod: _ak.prop("layer-mix-method", "oklab"),
   layerMixAmount: _ak.prop("layer-mix-amount", "50%"),
   layerMixColor: _ak.prop("layer-mix-color", vars.layerParent),
@@ -994,9 +997,14 @@ function withUtilityTokenGate(value: Value, tokenValue: Value) {
 
 /**
  * Moves push values out of the forbidden band only when the target lightness
- * lands inside it. Targets already outside the band stay untouched.
+ * lands inside it. Targets already outside the band stay untouched. An
+ * `enabled` mask of 0 turns the jump off.
  */
-function getPushL(baseLightness: Value, directionToLight: Value) {
+function getPushL(
+  baseLightness: Value,
+  directionToLight: Value,
+  enabled: Value = 1,
+) {
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
   // Only values that land inside the forbidden range need a jump. Values that
@@ -1014,7 +1022,11 @@ function getPushL(baseLightness: Value, directionToLight: Value) {
   return fn.clamp01(
     fn.add(
       baseLightness,
-      fn.mul(baseLightnessInForbidden, fn.sub(escapeBoundary, baseLightness)),
+      fn.mul(
+        enabled,
+        baseLightnessInForbidden,
+        fn.sub(escapeBoundary, baseLightness),
+      ),
     ),
   );
 }
@@ -1262,6 +1274,13 @@ const layerIdleOffset = fn.oklch(layerIdleMixed, {
   l: fn.var(vars.layerIdlePushResolvedL, getLayerIdleOffsetL()),
 });
 
+// The fade stage follows the lightness offset, push, and bounds, so it fades
+// the color that they produce. The mix comes before them and can't fade a push
+// that always reaches its bound, such as on an inverted layer. Like the mix,
+// the fade feeds the next stage as a plain var fallback.
+// https://github.com/ariakit/ariakit/issues/8154
+const layerIdleFaded = fn.var(inputs.layerFade, vars.layerIdleOffset);
+
 /**
  * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
  * active (layerContrastDirection !== 0), derives the target lightness from the
@@ -1296,7 +1315,7 @@ const layerIdleContrastBias = fn.mul(
   vars.layerContrastBiasMask,
 );
 
-const layerIdle = fn.oklch(vars.layerIdleOffset, {
+const layerIdle = fn.oklch(layerIdleFaded, {
   l: fn.add(
     getContrastL(l, getPushValue(inputs.layerIdleContrastL)),
     fn.mul(layerIdleContrastBias, fn.sub(1, vars.layerIdlePushEnabled)),
@@ -2031,6 +2050,51 @@ utility(
 );
 
 utility("layer-mix-method-*", set(inputs.layerMixMethod, fn.value(mix, "[*]")));
+
+/**
+ * Fades the color after the lightness offset, push, and bounds toward the
+ * parent layer. An offset or push puts the color on the far side of the
+ * forbidden range from the parent, so a fade that lands in the range leaves it
+ * on that side, like ak-layer-push. The nearest boundary can be the lightness
+ * of a mid-tone parent itself, which would hide the faded surface.
+ */
+function getLayerFadeDeclaration() {
+  const faded = fn.colorMix(
+    "oklab",
+    vars.layerIdleOffset,
+    vars.layerParent,
+    inputs.layerFadeAmount,
+  );
+  const moved = fn.max(
+    vars.layerIdlePushEnabled,
+    fn.binary(fn.abs(inputs.layerIdleLOffset)),
+  );
+  // The offset direction would read the lightness of the faded color here, so
+  // take the side away from the parent from the parent's lightness instead,
+  // with the same threshold as the push. ak-outset reads the outer layer.
+  const awayFromParent = fn.clamp01(
+    fn.var(vars.outsetDirection, vars.layerFadeDirection),
+  );
+  return [
+    // The direction inherits, so reset it for a fade inside another fade. Then
+    // only dark parents need a rule.
+    set(vars.layerFadeDirection, -1),
+    ...mapLayerLightnessSteps((_, isDark) =>
+      isDark ? [set(vars.layerFadeDirection, 1)] : [],
+    ),
+    set(
+      inputs.layerFade,
+      fn.oklch(faded, { l: getPushL(l, awayFromParent, moved) }),
+    ),
+  ];
+}
+
+utility(
+  "layer-fade-*",
+  set(inputs.layerFadeAmount, fn.toPercent(getBareNumericTokenValue())),
+  set(inputs.layerFadeAmount, fn.value("[*]")),
+  getLayerFadeDeclaration(),
+);
 
 const layerLighten = utility(
   "layer-lighten-*",

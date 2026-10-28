@@ -588,6 +588,16 @@ Combine freely: `ak-layer ak-layer-primary ak-layer-mix-30 ak-layer-mix-oklch` m
 
 The explicit `ak-layer-mix-color-*`, `ak-layer-mix-amount-*`, and `ak-layer-mix-method-*` longhands configure the mix color, amount, and method, but don't enable mixing by themselves. Pair them with `ak-layer-mix` when setting any of these values independently. Because they leave the color where it was, they also don't count as a color change for `ak-layer-transparent`. The same applies to `ak-layer-contrast-*`, which needs `ak-layer-contrast`.
 
+### Fading toward the parent layer
+
+| Utility                  | Description                                                                                                                                                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-fade-<number>` | Fades the layer toward the parent layer by `<number>` (`0`–`100`) after the lightness offset, push, and bounds. Arbitrary and custom-property values are raw CSS percentages (`ak-layer-fade-[35%]`, `ak-layer-fade-(--fade)`). |
+
+`ak-layer-mix-*` applies before the lightness offset, push, and bounds, so it can't fade a surface whose push always reaches its bound, such as an inverted surface. `ak-layer-fade-*` fades the color that they produce. For example, `ak-layer ak-layer-push-100 ak-layer-min-l-23 ak-layer-max-l-96 ak-layer-fade-80` keeps 20% of the pushed surface over the parent layer. `ak-layer-contrast` and the `ak-state-*` utilities apply after the fade.
+
+When a layer with a lightness offset or push fades into the forbidden mid-lightness range, it stays on the far side of the range from the parent layer, like `ak-layer-push-*`. Otherwise, a fade on a mid-tone parent layer could end at the lightness of the parent layer and disappear. Other faded colors move to the nearest side of the range.
+
 ## `ak-state`
 
 `ak-state-*` utilities are companions to `ak-layer-*` that target interactive states (hover, active, focus). They shift the state layer's lightness, chroma, and hue separately from the idle layer setup. Descendant text and edges still respond to the resulting layer color.
