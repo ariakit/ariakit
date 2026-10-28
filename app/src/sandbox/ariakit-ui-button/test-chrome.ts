@@ -152,4 +152,53 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(firstSlash).toHaveCSS("border-right-color", transparent);
     await test.expect(secondSlash).toHaveCSS("border-right-color", transparent);
   });
+
+  // https://github.com/ariakit/ariakit/issues/7806
+  test("follows a native checkbox's checked state", async ({ q }) => {
+    const example = q.article("Native checkbox selection");
+    const checkbox = query(example).checkbox("Pin this item");
+    const getBackground = () =>
+      checkbox.evaluate((node) => getComputedStyle(node).backgroundColor);
+    const idle = await getBackground();
+    await checkbox.press("Space");
+    await test.expect(checkbox).toBeChecked();
+    await test.expect.poll(getBackground).not.toBe(idle);
+    await checkbox.press("Space");
+    await test.expect(checkbox).not.toBeChecked();
+    await test.expect.poll(getBackground).toBe(idle);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023546236
+  test("keeps horizontal bar groups and their focus outline unclipped", async ({
+    q,
+    page,
+  }) => {
+    const group = q.radiogroup("Horizontal size");
+    const small = query(group).radio("Small");
+    const large = query(group).radio("Large");
+    await small.click();
+    await page.keyboard.press("ArrowRight");
+    await test.expect(large).toBeFocused();
+    await test.expect(large).toHaveCSS("outline-style", "solid");
+    await test.expect(group).not.toHaveCSS("box-shadow", "none");
+    await test.expect(group).toHaveCSS("clip-path", "none");
+  });
+
+  test("shows the bar only beside the checked row of a vertical group", async ({
+    q,
+  }) => {
+    const example = q.article("Vertical bar");
+    const system = query(example).radio("System");
+    const dark = query(example).radio("Dark");
+    const systemBar = system.locator(".control-bar");
+    const darkBar = dark.locator(".control-bar");
+    await example.scrollIntoViewIfNeeded();
+    await test.expect(system).toBeChecked();
+    await test.expect(systemBar).toBeVisible();
+    await test.expect(darkBar).toBeHidden();
+    await dark.click();
+    await test.expect(dark).toBeChecked();
+    await test.expect(darkBar).toBeVisible();
+    await test.expect(systemBar).toBeHidden();
+  });
 });

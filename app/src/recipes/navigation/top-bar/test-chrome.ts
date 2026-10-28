@@ -25,4 +25,26 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(overviewLabel).toHaveCSS("font-weight", "400");
     test.expect(await getWidths()).toEqual(widths);
   });
+
+  test("keeps the current link still while pressed", async ({ page, q }) => {
+    const nav = query(q.navigation("Main"));
+    const getScale = (name: string) =>
+      nav.link(name).evaluate((element) => getComputedStyle(element).scale);
+    const press = async (name: string) => {
+      await nav.link(name).hover();
+      await page.mouse.down();
+    };
+    await press("Projects");
+    await test.expect.poll(() => getScale("Projects")).not.toBe("none");
+    await page.mouse.up();
+    await test
+      .expect(nav.link("Projects"))
+      .toHaveAttribute("aria-current", "page");
+    await press("Projects");
+    // The press scale eases in over 100ms, so the current link must stay at
+    // full size past that.
+    await page.waitForTimeout(150);
+    test.expect(await getScale("Projects")).toBe("none");
+    await page.mouse.up();
+  });
 });

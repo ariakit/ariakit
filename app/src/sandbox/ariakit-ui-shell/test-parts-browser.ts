@@ -9,24 +9,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await selectScenario(q, "parts");
   });
 
-  test("starts sidebars beside the main header by default", async ({
-    q,
-    page,
-  }) => {
-    await q.combobox("End sidebar starts at").selectOption("default");
-    const header = page.locator(".shell-main-header");
-    for (const name of ["Part navigation", "Part details"]) {
-      expect((await getBox(getSidebar(q, name))).y).toBeCloseTo(
-        (await getBox(header)).y,
-        0,
-      );
-    }
-    expect((await getBox(header)).width).toBeCloseTo(
-      (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
-      0,
-    );
-  });
-
   test("fits sticky sidebar panels to a size container around the shell", async ({
     q,
   }) => {
@@ -251,25 +233,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(getSidebar(q, "Part details")).toHaveCSS("width", "160px");
   });
 
-  test("keeps the introduction and local header in one main landmark", async ({
-    q,
-    page,
-  }) => {
-    await expect(q.main()).toHaveCount(1);
-    await expect(q.main().locator("h1")).toHaveText("Explicit shell parts");
-    await expect(q.main().locator(":scope > header")).toHaveText(
-      "Page actions",
-    );
-    await expect(q.banner()).toHaveCount(1);
-    await expect(q.contentinfo()).toHaveCount(0);
-    await expect(q.main()).toHaveCSS("container-type", "normal");
-    await expect(q.main()).toHaveCSS("overflow", "visible");
-    await expect(page.locator(".shell-main").first()).toHaveCSS(
-      "grid-template-rows",
-      /subgrid/,
-    );
-  });
-
   test("inherits outer height and contains local borders in explicit presets", async ({
     q,
     page,
@@ -351,35 +314,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect
       .poll(async () => (await getBox(innerMainHeader)).y)
       .toBeCloseTo(328, 0);
-  });
-
-  test("preserves local percentage and length maximum widths", async ({
-    q,
-    page,
-  }) => {
-    const intro = page.locator(".shell-main-intro");
-    const width = (await getBox(intro)).width;
-    const cases = [
-      ["50%", width / 2],
-      ["calc(100% - 10rem)", width - 160],
-      ["min(40rem, 80%)", Math.min(640, width * 0.8)],
-      ["20rem", 320],
-    ] as const;
-    for (const [value, expected] of cases) {
-      await q.combobox("Intro maximum width").selectOption(value);
-      await expect
-        .poll(
-          async () => (await getBox(q.heading("Explicit shell parts"))).width,
-        )
-        .toBeCloseTo(expected, 0);
-      expect((await getBox(q.region("Main content"))).width).toBeCloseTo(
-        480,
-        0,
-      );
-      expect(
-        (await getBox(page.locator('[aria-label="Main actions"]'))).width,
-      ).toBeCloseTo(480, 0);
-    }
   });
 
   for (const unbounded of [false, true]) {

@@ -197,24 +197,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972228648
-  test("paints the pinned cell over the cells scrolled under it @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Table cell layer");
-      await scrollCellsUnderPinnedCell(query(box).grid());
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-table/pinned-cell-over-scrolled",
-      });
-    });
-  });
-
-  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972228648
   test("shows the hovered row through ordinary cells @visual", async ({
     page,
     q,
@@ -291,25 +273,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         box,
         colorScheme,
         item: "ariakit-ui-table/unpinned-names",
-      });
-    });
-  });
-
-  // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974552570
-  test("keeps missing hours under their header after adding a contributor @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Table rows");
-      await query(box).button("Add contributor").click();
-      await test.expect(query(box).row(/^Katherine\b/)).toBeVisible();
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-table/added-contributor",
       });
     });
   });

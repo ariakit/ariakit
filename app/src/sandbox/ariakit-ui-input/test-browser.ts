@@ -59,43 +59,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await test.expect(field).toBeFocused();
   });
 
-  // https://github.com/ariakit/ariakit/pull/7491#discussion_r4001176828
-  test("skips a leading action when focusing the field from group padding", async ({
-    q,
-  }) => {
-    const field = q.textbox("Draft message");
-    await field.locator("xpath=..").click({ position: { x: 4, y: 4 } });
-    await test.expect(field).toBeFocused();
-    await q.button("Clear").click();
-    await test.expect(q.button("Clear")).toBeFocused();
-    await test.expect(field).not.toBeFocused();
-  });
-
-  // https://github.com/ariakit/ariakit/pull/7491#discussion_r3997757472
-  test("focuses the share link from the padded field surface", async ({
-    q,
-  }) => {
-    const input = q.textbox("Share link");
-    const field = input.locator("xpath=../..");
-    const copy = q.button("Copy");
-    const box = await field.boundingBox();
-    test.expect(box).not.toBeNull();
-    if (!box) return;
-    for (const position of [
-      { x: box.width / 2, y: 2 },
-      { x: box.width / 2, y: box.height - 2 },
-      { x: 2, y: box.height / 2 },
-    ]) {
-      await copy.click();
-      await test.expect(copy).toBeFocused();
-      await field.click({ position });
-      await test.expect(input).toBeFocused();
-    }
-    await copy.click();
-    await test.expect(copy).toBeFocused();
-    await test.expect(input).not.toBeFocused();
-  });
-
   // Flips the disabled state the way application code does after render, which
   // is why the recipe draws the disabled look from CSS state instead of a prop.
   const setDisabled = (element: Locator, attribute = "disabled") =>

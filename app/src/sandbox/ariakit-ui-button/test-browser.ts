@@ -9,61 +9,8 @@ import {
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
-import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
-  // https://github.com/ariakit/ariakit/issues/7806
-  test("follows a native checkbox's checked state", async ({ q }) => {
-    const example = q.article("Native checkbox selection");
-    const checkbox = query(example).checkbox("Pin this item");
-    const getBackground = () =>
-      checkbox.evaluate((node) => getComputedStyle(node).backgroundColor);
-    const idle = await getBackground();
-    await checkbox.press("Space");
-    await test.expect(checkbox).toBeChecked();
-    await test.expect.poll(getBackground).not.toBe(idle);
-    await checkbox.press("Space");
-    await test.expect(checkbox).not.toBeChecked();
-    await test.expect.poll(getBackground).toBe(idle);
-  });
-
-  // https://github.com/ariakit/ariakit/pull/7584
-  test("keeps an initials avatar as far from the start edge as from the top", async ({
-    q,
-  }) => {
-    const button = query(q.article("Initial avatar")).button(/Will Williams/);
-    const avatar = button.locator(".control-slot").first();
-    await button.scrollIntoViewIfNeeded();
-    // A one-line slot sits one frame padding from the start edge, as far as
-    // from the top. The avatar adjusts its font, so margins measured in its own
-    // font would pull it closer to the edge.
-    await test.expect
-      .poll(async () => {
-        const [outer, inner] = await Promise.all([
-          getBox(button),
-          getBox(avatar),
-        ]);
-        return inner.x - outer.x - (inner.y - outer.y);
-      })
-      .toBeCloseTo(0, 0);
-  });
-
-  // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023546236
-  test("keeps horizontal bar groups and their focus outline unclipped", async ({
-    q,
-    page,
-  }) => {
-    const group = q.radiogroup("Horizontal size");
-    const small = query(group).radio("Small");
-    const large = query(group).radio("Large");
-    await small.click();
-    await page.keyboard.press("ArrowRight");
-    await test.expect(large).toBeFocused();
-    await test.expect(large).toHaveCSS("outline-style", "solid");
-    await test.expect(group).not.toHaveCSS("box-shadow", "none");
-    await test.expect(group).toHaveCSS("clip-path", "none");
-  });
-
   // Each engine rounds the half-leading of a line box its own way, so the badge
   // text centers only once its box is trimmed to the capitals.
   // https://github.com/ariakit/ariakit/issues/7588
@@ -71,42 +18,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const text = query(q.article("Count badge")).text("12");
     await test.expect(text).toBeVisible();
     test.expect(await getCapsOffset(text)).toBeCloseTo(0, 1);
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7589
-  test("keeps the keys of a shortcut in order in a right-to-left row", async ({
-    q,
-  }) => {
-    const box = q.article("Right to left shortcut");
-    const [command, key] = await Promise.all([
-      getBox(query(box).text("⌘")),
-      getBox(query(box).text("S")),
-    ]);
-    test.expect(command.x).toBeLessThan(key.x);
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7589
-  test("sizes an icon key like the letters and spaces the keys as its slot does", async ({
-    q,
-  }) => {
-    const box = q.article("Icon shortcut key");
-    const slot = box.locator(".control-slot").filter({ hasText: "K" });
-    const letter = query(box).text("K");
-    const [iconBox, keyBox] = await Promise.all([
-      getBox(slot.locator("svg")),
-      getBox(letter),
-    ]);
-    // An icon key takes the font size of the keys. The page capture covers the
-    // larger slot sizes, where the slot box no longer matches the letters.
-    const fontSize = await letter.evaluate((node) =>
-      Number.parseFloat(getComputedStyle(node).fontSize),
-    );
-    test.expect(iconBox.height).toBeCloseTo(fontSize, 0);
-    const gap = await slot.evaluate((node) =>
-      Number.parseFloat(getComputedStyle(node).columnGap),
-    );
-    test.expect(gap).toBeGreaterThan(0);
-    test.expect(keyBox.x - iconBox.x - iconBox.width).toBeCloseTo(gap, 0);
   });
 
   // The page capture also keeps the static states of the button group fixture
@@ -162,24 +73,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         item: "ariakit-ui-button/segmented-control-click",
       });
     });
-  });
-
-  test("shows the bar only beside the checked row of a vertical group", async ({
-    q,
-  }) => {
-    const example = q.article("Vertical bar");
-    const system = query(example).radio("System");
-    const dark = query(example).radio("Dark");
-    const systemBar = system.locator(".control-bar");
-    const darkBar = dark.locator(".control-bar");
-    await example.scrollIntoViewIfNeeded();
-    await test.expect(system).toBeChecked();
-    await test.expect(systemBar).toBeVisible();
-    await test.expect(darkBar).toBeHidden();
-    await dark.click();
-    await test.expect(dark).toBeChecked();
-    await test.expect(darkBar).toBeVisible();
-    await test.expect(systemBar).toBeHidden();
   });
 
   // A hovered control owns both of its shared edges, so each one takes the

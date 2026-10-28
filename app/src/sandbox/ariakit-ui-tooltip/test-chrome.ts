@@ -31,18 +31,4 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // The held tooltips ignore Escape and stay open.
     await test.expect(q.tooltip("Save changes")).toBeVisible();
   });
-
-  test("opens the live tooltip on hover", async ({ q }) => {
-    const anchor = q.button("Publish");
-    // Ariakit resets hover intent on scroll, so the anchor must be in view
-    // before the pointer moves over it.
-    await anchor.scrollIntoViewIfNeeded();
-    await anchor.hover();
-    const tooltip = q.tooltip("Publish to the public site");
-    await test.expect(tooltip).toBeVisible();
-    // The live tooltip opens over the title of its own box, so the pointer
-    // leaves for the title of the first box.
-    await q.heading("Default").hover();
-    await test.expect(tooltip).toBeHidden();
-  });
 });

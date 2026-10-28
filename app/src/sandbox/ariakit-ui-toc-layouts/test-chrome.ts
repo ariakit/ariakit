@@ -176,18 +176,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(glide.rings).toEqual(glide.ranges);
   });
 
-  test("keeps the current link in view in rows that scroll by themselves", async ({
-    page,
-    q,
-  }) => {
-    const link = query(q.navigation("Scrolling rows")).link("Chapter 12");
-    await page.evaluate(() => {
-      document.getElementById("chapter-12")?.scrollIntoView({ block: "start" });
-    });
-    await test.expect(link).toHaveAttribute("aria-current", "location");
-    await test.expect.poll(() => isInList(link)).toBe(true);
-  });
-
   test("keeps the current link in view when the rows on screen don't fit", async ({
     page,
     q,

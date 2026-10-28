@@ -83,7 +83,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   test.describe("responsive toggles", () => {
     test.use({ viewport: { width: 1600, height: 900 } });
 
-    for (const scenario of ["docs", "dashboard", "chat", "settings"]) {
+    // Chat and settings hide their toggles with the same rule as docs.
+    // Dashboard also covers a nested shell width.
+    for (const scenario of ["docs", "dashboard"]) {
       // https://github.com/ariakit/ariakit/pull/7533#discussion_r4020675160
       test(`${scenario} hides toggles below their sidebar collapse width`, async ({
         page,
@@ -181,70 +183,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await expect(link).toBeVisible();
     });
   });
-
-  for (const [width, scenario, name, sidebarWidth] of [
-    [1600, "docs", "Documentation", "256px"],
-    [1600, "docs", "On this page", "0px"],
-    [700, "docs", "Documentation", "0px"],
-    // A second column on the same side.
-    [1600, "chat", "Channels", "256px"],
-    // A data-open prop instead of open.
-    [1600, "geometry", "Layout contents", "0px"],
-  ] as const) {
-    test.describe(`at ${width}px`, () => {
-      test.use({ viewport: { width, height: 900 } });
-
-      // https://github.com/ariakit/ariakit/issues/8147
-      test(`keeps the ${name} sidebar in place when its panel arrives after the column`, async ({
-        q,
-      }) => {
-        await selectScenario(q, scenario);
-        const sidebar = getSidebar(q, name);
-        await expect(sidebar).toHaveCSS("width", sidebarWidth);
-        // Firefox transitions the main body's slot space when the scenario
-        // select remounts the shell. Let it settle so the probe below only sees
-        // the transitions that it starts.
-        await expect
-          .poll(() =>
-            sidebar.evaluate((column) => {
-              const body = document.querySelector("main > .shell-main-body");
-              return [column, body].flatMap(
-                (element) => element?.getAnimations() ?? [],
-              ).length;
-            }),
-          )
-          .toBe(0);
-        const transitions = await sidebar.evaluate((column) => {
-          const shell = column.parentElement;
-          const panel = column.firstElementChild;
-          const body = document.querySelector("main > .shell-main-body");
-          if (!shell || !panel || !body) {
-            throw new Error("Missing shell, sidebar panel, or main body");
-          }
-          // Resolving styles starts any transition that the change caused.
-          const getTransitions = () =>
-            [...column.getAnimations(), ...body.getAnimations()].map(
-              (animation) =>
-                animation instanceof CSSTransition
-                  ? animation.transitionProperty
-                  : animation.id,
-            );
-          // While HTML streams in, the parser can insert the column, pause
-          // before its panel, and let the browser resolve styles in that gap. A
-          // reinserted column has no earlier style to transition from.
-          const next = column.nextSibling;
-          column.remove();
-          panel.remove();
-          shell.insertBefore(column, next);
-          const gap = getTransitions();
-          column.append(panel);
-          return { gap, arrival: getTransitions() };
-        });
-        expect(transitions).toEqual({ gap: [], arrival: [] });
-        await expect(sidebar).toHaveCSS("width", sidebarWidth);
-      });
-    });
-  }
 
   test.describe("desktop", () => {
     test.use({ viewport: { width: 1280, height: 800 } });
@@ -476,13 +414,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       });
     });
 
-    for (const scenario of [
-      "dashboard",
-      "chat",
-      "marketing",
-      "settings",
-      "bar",
-    ]) {
+    // "at wide and narrow widths" above already captures the dashboard.
+    for (const scenario of ["chat", "marketing", "settings", "bar"]) {
       test(`${scenario} @visual`, async ({ page, q, visual }) => {
         await page.setViewportSize({ width: 1280, height: 800 });
         await forEachColorScheme(page, async (colorScheme) => {

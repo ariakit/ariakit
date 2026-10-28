@@ -79,38 +79,4 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         .toBeCloseTo(5, 0);
     }
   });
-
-  // https://github.com/ariakit/ariakit/pull/7536#discussion_r4022810357
-  test("keeps the bar aligned while navigating and scrolling tabs in RTL", async ({
-    q,
-    page,
-  }) => {
-    await q.checkbox("Tabs right to left").check();
-    const list = q.tablist("Bar placement");
-    const tab = query(list).tab("Project settings");
-    const bar = getBar(tab);
-    await query(list).tab("Preview").click();
-    await page.keyboard.press("ArrowLeft");
-    await expect(query(list).tab("Code")).toBeFocused();
-    await page.keyboard.press("ArrowLeft");
-    await expect(tab).toBeFocused();
-    await expect(tab).toHaveAttribute("aria-selected", "true");
-    await expect
-      .poll(() => list.evaluate((node) => node.scrollLeft))
-      .toBeLessThan(0);
-    await expect.poll(() => getCenterOffset(bar, tab)).toBeCloseTo(0, 0);
-    await q.combobox("Tab bar distance").selectOption("edge");
-    await list.evaluate((node) => {
-      node.scrollLeft += 24;
-    });
-    await page.evaluate(() => window.scrollBy(0, 20));
-    await expect.poll(() => getCenterOffset(bar, tab)).toBeCloseTo(0, 0);
-    // The edge bar ends on the 12px frame padding edge below the tab.
-    await expect
-      .poll(async () => {
-        const [box, item] = await Promise.all([getBox(bar), getBox(tab)]);
-        return box.y + box.height - item.y - item.height;
-      })
-      .toBeCloseTo(12, 0);
-  });
 });

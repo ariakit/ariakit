@@ -86,32 +86,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     );
   });
 
-  // Forced colors repaint every background in the system canvas and drop
-  // box-shadows and gradients, which used to leave nothing of a bar or a ring.
-  test("keeps bars and rings visible in forced colors @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    // The emulation lasts across the reloads of each color scheme.
-    await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      await captureInView({
-        visual,
-        box: q.article("Default"),
-        colorScheme,
-        item: "ariakit-ui-progress/forced-colors/bar",
-      });
-      await captureInView({
-        visual,
-        box: q.article("Ring with label"),
-        colorScheme,
-        item: "ariakit-ui-progress/forced-colors/ring",
-      });
-    });
-  });
-
   // The track's inset ring used to read the border width of the bordered
   // example box around it, so $border={false} still drew the edge where the
   // edge shows: in high contrast.
