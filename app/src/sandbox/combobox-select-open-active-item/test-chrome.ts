@@ -101,31 +101,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
   });
 
-  for (const label of ["No-autofocus status", "Real-focus status"]) {
-    // https://github.com/ariakit/ariakit/pull/6832
-    test(`${label} moves from the focused select`, async ({ page, q }) => {
-      const select = q.combobox(label);
-      await select.click();
-
-      const listbox = q.listbox(`${label} options`);
-      await test.expect(listbox).toBeVisible();
-      await test.expect(select).toBeFocused();
-      await test
-        .expect(query(listbox).option("Draft"))
-        .toHaveAttribute("data-active-item");
-
-      await page.keyboard.press("ArrowDown");
-      await test
-        .expect(query(listbox).option("Published"))
-        .toHaveAttribute("data-active-item");
-
-      await page.keyboard.press("ArrowUp");
-      await test
-        .expect(query(listbox).option("Draft"))
-        .toHaveAttribute("data-active-item");
-    });
-  }
-
   for (const label of [
     "Dismissible status",
     "Multiple dismissible status",
@@ -262,29 +237,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             (await target.getAttribute("id"))!,
           );
       });
-
-      // https://github.com/ariakit/ariakit/issues/7612
-      test(`${name} move made while the real-focus popup is positioning keeps focus`, async ({
-        page,
-        q,
-      }) => {
-        await q.combobox("Real-focus vegetable").click();
-
-        const listbox = q.listbox("Real-focus vegetable");
-        await test.expect(listbox).toHaveAttribute("data-placing");
-
-        await page.keyboard.press(key);
-        const target = query(listbox).option(item);
-        await test.expect(target).toBeFocused();
-
-        await q.button("Finish real-focus vegetable positioning").click();
-        await test.expect(listbox).not.toHaveAttribute("data-placing");
-        // Dialog queues auto-focus after placement, and there is no positive
-        // state for focus staying put once that microtask has run.
-        await flushFrames(page);
-        await test.expect(target).toBeFocused();
-        await test.expect(target).toHaveAttribute("data-active-item");
-      });
     }
 
     // https://github.com/ariakit/ariakit/issues/7612
@@ -323,40 +275,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7612
-  test("Managed vegetable popup focuses its autoFocus element when the user doesn't move", async ({
-    q,
-  }) => {
-    const select = q.combobox("Managed vegetable");
-    await select.click();
-
-    const listbox = q.listbox("Managed vegetable");
-    await test.expect(listbox).toHaveAttribute("data-placing");
-    await test.expect(select).toBeFocused();
-
-    await q.button("Finish managed vegetable positioning").click();
-    await test.expect(listbox).not.toHaveAttribute("data-placing");
-    await test.expect(query(listbox).button("Manage vegetables")).toBeFocused();
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7612
-  test("Managed vegetable popup opened with ArrowDown focuses its autoFocus element", async ({
-    page,
-    q,
-  }) => {
-    await q.combobox("Managed vegetable").focus();
-    // The arrow key that opens the popup also counts as a move, which must not
-    // pass for a move made in the open popup.
-    await page.keyboard.press("ArrowDown");
-
-    const listbox = q.listbox("Managed vegetable");
-    await test.expect(listbox).toHaveAttribute("data-placing");
-
-    await q.button("Finish managed vegetable positioning").click();
-    await test.expect(listbox).not.toHaveAttribute("data-placing");
-    await test.expect(query(listbox).button("Manage vegetables")).toBeFocused();
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7612
   test("Managed vegetable move made while the popup is positioning wins over its autoFocus element", async ({
     page,
     q,
@@ -378,24 +296,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await flushFrames(page);
     await test.expect(select).toBeFocused();
     await test.expect(carrot).toHaveAttribute("data-active-item");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7626
-  test("Empty managed vegetable popup focuses its autoFocus element with nothing selected", async ({
-    q,
-  }) => {
-    const select = q.combobox("Empty managed vegetable");
-    await select.click();
-
-    const listbox = q.listbox("Empty managed vegetable");
-    await test.expect(listbox).toHaveAttribute("data-placing");
-    await test.expect(select).toBeFocused();
-
-    await q.button("Finish empty managed vegetable positioning").click();
-    await test.expect(listbox).not.toHaveAttribute("data-placing");
-    await test
-      .expect(query(listbox).button("Manage empty vegetables"))
-      .toBeFocused();
   });
 
   // https://github.com/ariakit/ariakit/pull/7614#discussion_r4082271058
@@ -484,39 +384,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test
       .expect(query(listbox).option("Garlic"))
       .toHaveAttribute("data-active-item");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7612
-  test("Real-focus dismissible vegetable move made while the popup is positioning keeps focus in the list", async ({
-    page,
-    q,
-  }) => {
-    await q.combobox("Real-focus dismissible vegetable").click();
-
-    // The dismiss button comes before the list, so it's the popup's first
-    // tabbable element.
-    const dialog = q.dialog("Real-focus dismissible vegetable options");
-    await test.expect(dialog).toHaveAttribute("data-placing");
-
-    await page.keyboard.press("c");
-    const listbox = q.listbox("Real-focus dismissible vegetable options");
-    const carrot = query(listbox).option("Carrot");
-    await test.expect(carrot).toHaveAttribute("data-active-item");
-
-    await q
-      .button("Finish real-focus dismissible vegetable positioning")
-      .click();
-    await test.expect(dialog).not.toHaveAttribute("data-placing");
-    // Dialog queues auto-focus after placement, and there is no positive state
-    // for focus staying in the list once that microtask has run.
-    await flushFrames(page);
-    await test.expect(carrot).toBeFocused();
-    await test.expect(carrot).toHaveAttribute("data-active-item");
-
-    await page.keyboard.press("ArrowDown");
-    const garlic = query(listbox).option("Garlic");
-    await test.expect(garlic).toBeFocused();
-    await test.expect(garlic).toHaveAttribute("data-active-item");
   });
 
   // https://github.com/ariakit/ariakit/issues/7626

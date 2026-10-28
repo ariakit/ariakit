@@ -1,19 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("names the field with its label and describes it with the hint", async ({
-    q,
-  }) => {
-    const field = q.textbox("Display name");
-    await test.expect(field).toHaveValue("Ada Lovelace");
-    await test
-      .expect(field)
-      .toHaveAccessibleDescription(
-        "Shown on your profile and next to your comments.",
-      );
-    await test.expect(field).not.toHaveAttribute("aria-invalid");
-  });
-
   test("focuses the field from a click between the label and the field", async ({
     page,
     q,

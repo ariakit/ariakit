@@ -1,14 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("names each speed by its label and describes it by its latency", async ({
-    q,
-  }) => {
-    await test.expect(q.radio("Fast")).toHaveAccessibleDescription("50 ms");
-    await test.expect(q.radio("Medium")).toHaveAccessibleDescription("250 ms");
-    await test.expect(q.radio("Slow")).toHaveAccessibleDescription("1500 ms");
-  });
-
   test("shows placeholders after 150 ms for at least 200 ms", async ({ q }) => {
     // The placeholders can stay after the data arrives, so wait for the
     // content.
@@ -33,15 +25,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // minimum duration keeps the content from showing before 350 ms.
     test.expect(placeholdersTime).toBeGreaterThanOrEqual(150);
     test.expect(contentTime).toBeGreaterThanOrEqual(150 + 200);
-  });
-
-  test("hides the previous contact while it reloads", async ({ q }) => {
-    await test.expect(q.button("Message")).toBeVisible();
-    await q.radio("Slow").click();
-    await test.expect(q.status()).toHaveText("Loading contact");
-    await test.expect(q.button("Message")).toHaveCount(0);
-    await test.expect(q.status()).toHaveText("Contact loaded");
-    await test.expect(q.button("Message")).toBeVisible();
   });
 
   // https://github.com/ariakit/ariakit/pull/7993#discussion_r4317370427

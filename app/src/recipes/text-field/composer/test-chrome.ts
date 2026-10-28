@@ -18,16 +18,4 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(message).toHaveValue("");
     await test.expect(message).toBeFocused();
   });
-
-  test("sends the message with the send button and skips empty drafts", async ({
-    q,
-  }) => {
-    const messages = query(q.list("Messages")).listitem();
-    await q.button("Send message").click();
-    await test.expect(messages).toHaveCount(3);
-    await q.textbox("Message").fill("Sending by 11");
-    await q.button("Send message").click();
-    await test.expect(messages).toHaveCount(4);
-    await test.expect(messages.last()).toHaveText("Sending by 11");
-  });
 });

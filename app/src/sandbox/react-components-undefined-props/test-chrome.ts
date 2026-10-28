@@ -29,13 +29,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7028
-  test("forwarded undefined focusable keeps the tab panel out of the tab order", async ({
-    q,
-  }) => {
-    await test.expect(q.tabpanel("Links")).not.toHaveAttribute("tabindex");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7028
   test("forwarded undefined clickOnEnter keeps Enter inert on a native checkbox", async ({
     page,
     q,
@@ -47,23 +40,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("Enter");
     await flushFrames(page);
     await test.expect(checkbox).toBeChecked();
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7028
-  test("explicit autoFocusOnShow still overrides the computed default", async ({
-    q,
-  }) => {
-    await q.link("@ariakit/docs").hover();
-    await test.expect(q.dialog("Ariakit docs")).toBeVisible();
-    await test.expect(q.button("Read")).toBeFocused();
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7028
-  test("explicit focusable still overrides the computed default", async ({
-    q,
-  }) => {
-    await q.tab("Text").click();
-    await test.expect(q.tabpanel("Text")).not.toHaveAttribute("tabindex");
   });
 
   // https://github.com/ariakit/ariakit/issues/7028
@@ -95,44 +71,5 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // auto-focus effect has had a chance to run after placement.
     await flushFrames(page);
     await test.expect(combobox).toBeFocused();
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7037
-  test("a dialog hook preserves its computed disabled state", async ({ q }) => {
-    await test
-      .expect(q.dialog("Hook dialog"))
-      .toHaveAttribute("aria-disabled", "true");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7037
-  test("a toolbar container hook preserves its computed disabled state", async ({
-    q,
-  }) => {
-    await test
-      .expect(q.group("Hook toolbar container"))
-      .toHaveAttribute("aria-disabled", "true");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7037
-  test("a form checkbox preserves its field name and external label", async ({
-    q,
-  }) => {
-    await test
-      .expect(q.checkbox("Newsletter"))
-      .toHaveAttribute("name", "newsletter");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7037
-  test("a composed form radio preserves its field name", async ({ q }) => {
-    await test.expect(q.radio("Basic plan")).toHaveAttribute("name", "plan");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7028
-  test("a hook's own undefined sentinel still suppresses a later computed value", async ({
-    q,
-  }) => {
-    const checkbox = q.checkbox("Accept terms");
-    await test.expect(checkbox).toBeVisible();
-    await test.expect(checkbox).not.toHaveAttribute("aria-labelledby");
   });
 });

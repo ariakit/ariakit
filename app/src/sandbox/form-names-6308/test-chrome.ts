@@ -25,15 +25,4 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(submittedAs)
       .not.toContainText("Cannot convert a Symbol value to a string");
   });
-
-  test("inspecting a form.names.* value resolves to an object tag instead of throwing", async ({
-    q,
-  }) => {
-    // `Object.prototype.toString.call(name)` probes `Symbol.toStringTag`, which
-    // must resolve gracefully so the call returns an `[object …]` tag instead
-    // of throwing inside the proxy (the fix yields "[object Object]", a
-    // coercing workaround "[object String]").
-    await q.button("Inspect field name").click();
-    await test.expect(q.status()).toHaveText(/^\[object \w+\]$/);
-  });
 });

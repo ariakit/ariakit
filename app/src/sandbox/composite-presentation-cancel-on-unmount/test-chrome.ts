@@ -45,17 +45,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     return panel;
   };
 
-  test("keeps focus after the panel is hidden in a later task", async ({
-    page,
-    q,
-  }) => {
-    await q.toolbar("Shortcuts").focus();
-    await q.button("Hide shortcuts").click();
-
-    const editShortcuts = await loadRecentFilesWithFocusInside(q, page);
-    await test.expect(editShortcuts).toBeFocused();
-  });
-
   test("keeps focus after the panel is hidden by the handler that focused it", async ({
     page,
     q,

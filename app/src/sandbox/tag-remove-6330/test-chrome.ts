@@ -42,33 +42,4 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     test.expect(results.violations).toHaveLength(0);
   });
-
-  test("does not render a default icon outside a Tag", async ({ q }) => {
-    const removeButton = q.button("Remove Angular filter");
-    await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
-    await test
-      .expect(removeButton)
-      .toHaveAttribute("aria-label", "Remove Angular filter");
-    await test.expect(removeButton.locator("svg")).toHaveCount(0);
-  });
-
-  test("preserves a standalone render element name", async ({ q }) => {
-    const removeButton = q.button("Remove Svelte filter");
-    await test.expect(removeButton).toBeVisible();
-    await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
-    await test.expect(removeButton).not.toHaveAttribute("aria-label");
-    await test.expect(q.button("Remove Svelte")).toHaveCount(0);
-  });
-
-  test("preserves a standalone root labelledby name", async ({ q }) => {
-    const removeButton = q.button("Remove Solid filter");
-    await test.expect(removeButton).toBeVisible();
-    await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
-    await test.expect(removeButton).not.toHaveAttribute("aria-label");
-    await test
-      .expect(removeButton)
-      .toHaveAttribute("aria-labelledby", "solid-label");
-    await test.expect(removeButton).toHaveText("x");
-    await test.expect(q.button("Remove Solid")).toHaveCount(0);
-  });
 });

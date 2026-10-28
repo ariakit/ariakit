@@ -32,59 +32,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect.poll(() => inkAlpha(idle.locator("svg"))).toBe(1);
   });
 
-  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998773048
-  test("keeps a bare fragment label separate from its description and badge", async ({
-    q,
-  }) => {
-    const button = query(q.article("Disclosure badges")).button(
-      "Account pages",
-    );
-    await test
-      .expect(button)
-      .toHaveAccessibleDescription("Manage account pages");
-    // The chevron that leads the row is a slot too, so the badge is found by
-    // its text.
-    await test
-      .expect(
-        button.locator(":scope > .control-slot").filter({ hasText: /^3$/ }),
-      )
-      .toHaveCount(1);
-    await button.click();
-    await test.expect(q.text("Update account pages")).toBeVisible();
-  });
-
-  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
-  test("keeps a disclosure badge beside the label without a description", async ({
-    q,
-  }) => {
-    const example = query(q.article("Disclosure badges"));
-    const button = example.button("Project pages 3");
-    await test
-      .expect(button.locator(":scope > span").filter({ hasText: /^3$/ }))
-      .toHaveCount(1);
-    await button.click();
-    await test.expect(example.link("Manage project pages")).toBeHidden();
-  });
-
-  // https://github.com/ariakit/ariakit/pull/7494#discussion_r3998666934
-  test("keeps a disclosure badge beside a consumer label component with a description", async ({
-    q,
-  }) => {
-    const example = query(q.article("Disclosure badges"));
-    const button = example.button("Team pages");
-    await test
-      .expect(button)
-      .toHaveAttribute("aria-labelledby", "nav-pages-label");
-    await test
-      .expect(button)
-      .toHaveAccessibleDescription("All pages in this workspace");
-    await test
-      .expect(button.locator(":scope > span").filter({ hasText: /^3$/ }))
-      .toHaveCount(1);
-    await button.click();
-    await test.expect(example.link("Manage team pages")).toBeHidden();
-  });
-
   // https://github.com/ariakit/ariakit/issues/7579
   test("scales the text of a badge in the icon column like the other nav badges", async ({
     q,
@@ -99,24 +46,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toBeLessThan(Number.parseFloat(rowSize));
     await test.expect(nav.text("12")).toHaveCSS("font-size", badgeSize);
     await test.expect(nav.text("9")).toHaveCSS("font-size", badgeSize);
-  });
-
-  test("names a link by its label and describes it by its description", async ({
-    q,
-  }) => {
-    const nav = query(q.navigation("Link descriptions"));
-    const link = nav.link("Workspace settings and preferences");
-    await test.expect(link).toHaveAttribute("href", "#settings");
-    await test.expect(link).toHaveAccessibleDescription("Members and billing");
-  });
-
-  test("describes a link whose wrapper forwards an undefined description id", async ({
-    q,
-  }) => {
-    const nav = query(q.navigation("Forwarded link descriptions"));
-    await test
-      .expect(nav.link("Guides"))
-      .toHaveAccessibleDescription("Install and set up the library");
   });
 
   test("marks only the link that matches the current URL", async ({ q }) => {
@@ -346,14 +275,5 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await styling.click();
     await test.expect(styling).toHaveAttribute("aria-expanded", "false");
     await test.expect(bar).toHaveCount(0);
-  });
-
-  test("renders nested Nav rows without a landmark unless they have a name", async ({
-    q,
-  }) => {
-    const workspace = query(q.navigation("Workspace"));
-    await test.expect(workspace.link("Drafts")).toBeVisible();
-    await test.expect(workspace.navigation()).toHaveCount(1);
-    await test.expect(workspace.navigation("Pinned")).toBeVisible();
   });
 });

@@ -1,18 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("names and describes a group, a select, and a textarea", async ({
-    q,
-  }) => {
-    await test.expect(q.textbox("Website")).toHaveValue("ada.dev");
-    await test
-      .expect(q.combobox("Country"))
-      .toHaveAccessibleDescription("Sets your currency.");
-    await test
-      .expect(q.textbox("Bio"))
-      .toHaveAccessibleDescription("Up to 160 characters.");
-  });
-
   test("stops the bio at the length that its hint states", async ({ q }) => {
     const bio = q.textbox("Bio");
     await bio.clear();

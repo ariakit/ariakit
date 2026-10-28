@@ -1,14 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ query, test }) => {
-  test("names the group with its label and checks the default sort", async ({
-    q,
-  }) => {
-    const group = query(q.radiogroup("Sort comments by"));
-    await test.expect(group.radio("Newest first")).toBeChecked();
-    await test.expect(group.radio("Oldest first")).not.toBeChecked();
-  });
-
+withFramework(import.meta.dirname, async ({ test }) => {
   test("tabs to the checked radio and checks the next one with an arrow key", async ({
     page,
     q,

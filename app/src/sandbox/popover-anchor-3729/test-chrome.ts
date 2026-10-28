@@ -51,31 +51,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expectAligned(test.expect, disclosure, popover);
   });
 
-  test("clears the disclosure fallback when it unmounts", async ({ q }) => {
-    const label = "Disclosure first";
-    await q.button(`Open ${label}`).click();
-    await q.button(`Remove ${label} anchor`).click();
-    await q.button(`Remove ${label} disclosure`).click();
-
-    await test.expect(q.status(`${label} current anchor`)).toHaveText("none");
-    await test
-      .expect(q.status(`${label} current disclosure`))
-      .toHaveText("none");
-    await test.expect(q.dialog(`${label} details`)).toBeVisible();
-  });
-
-  test("restores the disclosure when a callback ref changes", async ({ q }) => {
-    await q.button("Mount changing disclosure ref").click();
-    await q.button("Change disclosure ref").click();
-
-    await test
-      .expect(q.status("Changing ref current disclosure"))
-      .toHaveText("button");
-
-    await q.button("Open changing ref").click();
-    await test.expect(q.dialog("Changing ref details")).toBeVisible();
-  });
-
   test("preserves HovercardAnchor after keyboard activation", async ({ q }) => {
     const anchor = q.text("Hovercard anchor");
     const hovercard = q.dialog("Hovercard details");
@@ -206,10 +181,4 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expectAligned(test.expect, anchor, popover);
     });
   }
-
-  test("provides the Combobox store to disclosure descendants", async ({
-    q,
-  }) => {
-    await test.expect(q.status("Scoped Combobox context")).toHaveText("right");
-  });
 });

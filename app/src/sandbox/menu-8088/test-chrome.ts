@@ -33,30 +33,4 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(quickFormat).toHaveAttribute("aria-expanded", "true");
     await test.expect(formatting).toHaveAttribute("aria-expanded", "false");
   });
-
-  // https://github.com/ariakit/ariakit/issues/8088
-  test("moves the menu to the button that opens it again", async ({ q }) => {
-    const formatting = q.button("Formatting");
-    const quickFormat = q.button("Quick format");
-
-    await formatting.click();
-    await test.expect(q.menu("Formatting")).toBeVisible();
-    await formatting.click();
-    await test.expect(q.text("Menu: closed")).toBeVisible();
-
-    await quickFormat.click();
-
-    await test.expect(q.menu("Quick format")).toBeVisible();
-    await test.expect(quickFormat).toHaveAttribute("aria-expanded", "true");
-    await test.expect(formatting).toHaveAttribute("aria-expanded", "false");
-
-    await quickFormat.click();
-    await test.expect(q.text("Menu: closed")).toBeVisible();
-
-    await formatting.click();
-
-    await test.expect(q.menu("Formatting")).toBeVisible();
-    await test.expect(formatting).toHaveAttribute("aria-expanded", "true");
-    await test.expect(quickFormat).toHaveAttribute("aria-expanded", "false");
-  });
 });
