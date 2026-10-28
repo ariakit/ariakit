@@ -14,6 +14,7 @@ import {
   controlLabel,
   controlLabelRow,
   controlSlot,
+  fadesDisabledSurface,
 } from "./control.ts";
 import { focusHighlight, focusWithin } from "./focus.ts";
 import { hover } from "./hover.ts";
@@ -188,6 +189,11 @@ export const choiceField = cv({
       return "none";
     },
   },
+  refine({ variants, addClass }) {
+    // Fade the row while its input is disabled, as control does for $disabled.
+    if (!fadesDisabledSurface(variants)) return;
+    addClass("ui-disabled-within:ak-layer-fade-80");
+  },
 });
 
 /** A flexible wrapper for a choice field's label and description. */
@@ -241,7 +247,7 @@ export const choiceCard = cv({
     // the disabled color on the same targets.
     // https://github.com/ariakit/ariakit/issues/7869
     "ui-disabled-within:not-forced-colors:ui-text:ak-ink-0",
-    "ui-disabled-within:ak-edge-5 ui-disabled-within:ak-layer-mix-20",
+    "ui-disabled-within:ak-edge-5 ui-disabled-within:ak-layer-fade-80",
     // Forced colors replace the ink with the normal text color. Use the system
     // disabled color instead; the label's edge follows the text color.
     "ui-disabled-within:forced-colors:text-[GrayText]",
@@ -279,10 +285,7 @@ export const choiceCard = cv({
       card: "[--gap-y:calc(var(--py)/2)] gap-y-(--gap-y)",
     },
     /** Applies disabled styles while keeping a faint card boundary. */
-    $disabled: [
-      "[--disabled-border:var(--ak-edge)]",
-      "ak-edge-5 ak-layer-mix-20",
-    ],
+    $disabled: ["[--disabled-border:var(--ak-edge)]", "ak-edge-5"],
   },
   defaultVariants: {
     $rounded: "xl",
@@ -301,6 +304,12 @@ export const choiceCard = cv({
       if (variants.$orientation === "vertical") return "sm";
       return defaultValue;
     },
+  },
+  refine({ variants, setVariants }) {
+    // Fade every disabled card, including the neutral cards that button keeps
+    // as the boundary.
+    if (!variants.$disabled) return;
+    setVariants({ $fade: 80 });
   },
 });
 

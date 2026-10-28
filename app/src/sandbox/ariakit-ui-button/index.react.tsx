@@ -973,7 +973,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled"
-        description="The badge fill mixes into the button's surface while its text keeps adaptive contrast. The button stops responding to the pointer."
+        description="The badge fill fades into the button's surface while its text keeps adaptive contrast. The button stops responding to the pointer."
         code={`
           <Button disabled>
             <ButtonSlot>
@@ -1115,7 +1115,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled brand"
-        description="The color mixes into the surface around the button, and the text fades."
+        description="The color fades into the surface around the button, and the text fades."
         code={`
           <Button $layer="brand" disabled>Publish</Button>
         `}
@@ -1127,7 +1127,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled colors"
-        description="Other colors and colored bevels mix the same way. A disabled fieldset mixes a colored button without the disabled prop."
+        description="Other colors and colored bevels fade the same way. A disabled fieldset fades a colored button without the disabled prop."
         code={`
           <Button $layer="danger" disabled>Delete</Button>
           <Button $layer="brand" $kind="bevel" disabled>Deploy</Button>

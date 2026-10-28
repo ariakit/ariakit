@@ -639,8 +639,9 @@ const content = cx(
   "gap-y-(--shell-content-gap) [--shell-content-gap:--spacing(6)]",
   // Keep focused content above a sticky footer when it scrolls into view.
   "[:where(&)_*]:[scroll-margin-block-end:var(--shell-foot)]",
-  // Keep controls at their content width instead of stretching to the column.
-  "[&>.control]:justify-self-start",
+  // Keep controls and badges at their content width instead of stretching to
+  // the column.
+  "[&>:is(.control,.badge)]:justify-self-start",
   // A leading or trailing wide or full band touches the bars around the
   // section.
   "[&:has(>:is(.shell-main-wide,.shell-main-full):first-child)]:pbs-0",

@@ -12,6 +12,7 @@ import {
 import type { ChromaValues, HueValues, ColorValues } from "../utils/styles.ts";
 
 const DEFAULT_MIX_AMOUNT = 50;
+const DEFAULT_FADE_AMOUNT = 50;
 const DEFAULT_CONTRAST_AMOUNT = 30;
 
 /**
@@ -335,6 +336,21 @@ export const layer = cv({
         unit: "%",
         property: "--layer-mix",
         class: "ak-layer-mix ak-layer-mix-amount-(--layer-mix)",
+      });
+    },
+    /**
+     * Fades the background color toward the parent layer, as a percentage.
+     * Unlike `$mix`, it applies after the lightness offset, push, and bounds,
+     * so it can fade an inverted surface. Setting it to `true` means a 50%
+     * fade.
+     */
+    $fade: (value?: string | number | boolean) => {
+      return getScaledStyleClass({
+        value,
+        defaultValue: DEFAULT_FADE_AMOUNT,
+        unit: "%",
+        property: "--layer-fade",
+        class: "ak-layer-fade-(--layer-fade)",
       });
     },
   },
