@@ -157,9 +157,6 @@ export const input = cv({
     // Raise the writing surface like other materials above their support: white
     // on light layers and lighter on dark layers, never a dark well.
     $lighten: true,
-    // Lose chroma as the lightened surface nears white, so a field on a tinted
-    // light layer reads white instead of a brighter tint of that layer.
-    $chromaMax: "auto",
     $edgeRaw: getInputEdgeRaw,
     $focus: true,
     $focusOffset: "inset",

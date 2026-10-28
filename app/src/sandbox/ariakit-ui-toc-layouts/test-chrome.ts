@@ -6,14 +6,15 @@ import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 // the same distance from both edges of the row.
 function getThumbLinks(nav: Locator) {
   return nav.evaluate((element) => {
-    const style = getComputedStyle(element);
-    const start = Number.parseFloat(
-      style.getPropertyValue("--toc-thumb-start"),
-    );
-    const end = Number.parseFloat(style.getPropertyValue("--toc-thumb-end"));
     return [...element.querySelectorAll("a")].flatMap((link) => {
       const thumb = link.querySelector<HTMLElement>(".toc-link-thumb");
       if (!thumb) return [];
+      // Each thumb piece holds the range that glides on it.
+      const style = getComputedStyle(thumb);
+      const start = Number.parseFloat(
+        style.getPropertyValue("--toc-thumb-start"),
+      );
+      const end = Number.parseFloat(style.getPropertyValue("--toc-thumb-end"));
       const top = Number.parseFloat(
         thumb.style.getPropertyValue("--toc-piece-top"),
       );
@@ -44,10 +45,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // glide at several times, as a frame-by-frame review does.
     const frames = await q.navigation("Five levels").evaluate(async (nav) => {
       document.getElementById("deep-faq")?.scrollIntoView({ block: "start" });
-      while (!nav.getAnimations().length) {
+      while (!nav.getAnimations({ subtree: true }).length) {
         await new Promise(requestAnimationFrame);
       }
-      const animations = nav.getAnimations();
+      const animations = nav.getAnimations({ subtree: true });
       for (const animation of animations) {
         animation.pause();
       }
@@ -65,7 +66,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         const thumbs = [...nav.querySelectorAll(".toc-link-thumb")];
         return {
           animations: animations.length,
-          range: read(nav),
           pieces: [...new Set(thumbs.map(read))],
         };
       });
@@ -73,11 +73,76 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(frames).toHaveLength(5);
     for (const frame of frames) {
       test.expect(frame.animations).toBeGreaterThan(0);
-      // Every piece reads the same animated range, so no piece moves ahead of
+      // Every piece glides through the same range, so no piece moves ahead of
       // the others and splits the thumb.
-      test.expect(frame.pieces).toEqual([frame.range]);
+      test.expect(frame.pieces).toHaveLength(1);
     }
-    test.expect(frames[0]?.range).not.toBe(frames[4]?.range);
+    test.expect(frames[0]?.pieces).not.toEqual(frames[4]?.pieces);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8141
+  test("glides the thumb on its pieces, not on the rows", async ({ q }) => {
+    // A glide on the root restyles every row in each frame, so only the thumb
+    // pieces and the number markers with rings animate. Pause the glide halfway
+    // to read the range on the pieces and the rings.
+    const unringed = await q
+      .navigation("Numbers over the thumb")
+      .elementHandle();
+    const glide = await q
+      .navigation("Twelve chapters")
+      .evaluate(async (nav, other) => {
+        const navs = [nav, other].filter((element) => element != null);
+        const getAnimations = () =>
+          navs.flatMap((element) => element.getAnimations({ subtree: true }));
+        document.getElementById("chapter-12")?.scrollIntoView();
+        while (!getAnimations().length) {
+          await new Promise(requestAnimationFrame);
+        }
+        const animations = getAnimations();
+        for (const animation of animations) {
+          animation.pause();
+          animation.currentTime = 100;
+        }
+        const getTargets = (element: Element) => {
+          const targets = element
+            .getAnimations({ subtree: true })
+            .map((animation) => {
+              const { effect } = animation;
+              const target = effect instanceof KeyframeEffect && effect.target;
+              if (!target) return "none";
+              if (target.matches(".toc-link-thumb")) return "thumb";
+              if (target.matches(".toc-link-marker")) return "marker";
+              return target.tagName.toLowerCase();
+            });
+          return [...new Set(targets)].sort();
+        };
+        const read = (target: Element, pseudo?: string) => {
+          const style = getComputedStyle(target, pseudo);
+          return [
+            style.getPropertyValue("--toc-thumb-start"),
+            style.getPropertyValue("--toc-thumb-end"),
+          ].join(" ");
+        };
+        const thumbs = [...nav.querySelectorAll(".toc-link-thumb")];
+        const markers = [...nav.querySelectorAll(".toc-link-marker")];
+        const rings = markers.map((marker) => read(marker, "::after"));
+        return {
+          targets: getTargets(nav),
+          unringedTargets: other ? getTargets(other) : null,
+          markers: markers.length,
+          ranges: [
+            ...new Set([...thumbs, ...markers].map((piece) => read(piece))),
+          ],
+          rings: [...new Set(rings)],
+        };
+      }, unringed);
+    test.expect(glide.targets).toEqual(["marker", "thumb"]);
+    // Markers without rings don't read the range.
+    test.expect(glide.unringedTargets).toEqual(["thumb"]);
+    test.expect(glide.markers).toBe(12);
+    // The rings glide with the thumb.
+    test.expect(glide.ranges).toHaveLength(1);
+    test.expect(glide.rings).toEqual(glide.ranges);
   });
 
   test("keeps the current link in view in rows that scroll by themselves", async ({
@@ -240,11 +305,15 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .expect(nav.link("Dates"))
       .toHaveAttribute("aria-current", "location");
     // The thumb covers both headings of the row. A heading beside the first one
-    // doesn't end its section. The thumb glides through the rows above, so the
-    // range counts only once the glide ends.
+    // doesn't end its section. The thumb glides through the rows above on its
+    // pieces, so the range counts only once the glide ends.
     const sideNav = q.navigation("Side by side");
     await test.expect
-      .poll(() => sideNav.evaluate((element) => element.getAnimations().length))
+      .poll(() =>
+        sideNav.evaluate((element) => {
+          return element.getAnimations({ subtree: true }).length;
+        }),
+      )
       .toBe(0);
     test
       .expect(await getThumbLinks(sideNav))

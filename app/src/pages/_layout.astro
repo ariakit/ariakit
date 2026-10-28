@@ -265,7 +265,10 @@ const hasSidebar = sidebar && navigation.length > 0;
           <AppThemeReset client:load />
         </ShellSidebarFooter>
       </ShellSidebar>
-      <Shell>
+      {/* The table of contents comes before the main content, but it starts
+          below the intro. It shows once the main body starts, after the intro,
+          instead of moving down when the intro arrives. */}
+      <Shell className="[&>.shell-sidebar-end:not(:has(~.shell-main>.shell-main-body))]:invisible">
         <ShellHeader $height="sm" $blur className="text-sm">
           {/* The global styles give islands the display of their parent, so a
               hidden button would leave an empty flex item and its gap. */}
@@ -404,6 +407,31 @@ const hasSidebar = sidebar && navigation.length > 0;
             </div>
           </ShellSidebarBody>
         </ShellSidebar>
+        {/* The browser can paint a long page before it parses the end.
+            Before the main content, the sidebar is in place at the first
+            paint, so the content doesn't narrow and shift when it arrives.
+            The shell places it in the end column either way. */}
+        {
+          tocHeadings.length > 0 && (
+            <ShellSidebar
+              $side="end"
+              $from="body"
+              $show="6xl"
+              $border={false}
+              $layer="transparent"
+              landmark="nav"
+              aria-label="On this page"
+              className="text-sm"
+            >
+              <ShellSidebarBody>
+                {/* The island marks the link of the section being read. The
+                    server renders the links and the guide before it
+                    hydrates. */}
+                <AppToc client:load {title} headings={tocHeadings} />
+              </ShellSidebarBody>
+            </ShellSidebar>
+          )
+        }
         <ShellMain
           $p="var(--app-gutter)"
           $maxWidth={maxWidth}
@@ -438,27 +466,6 @@ const hasSidebar = sidebar && navigation.length > 0;
             <slot />
           </ShellMainBody>
         </ShellMain>
-        {
-          tocHeadings.length > 0 && (
-            <ShellSidebar
-              $side="end"
-              $from="body"
-              $show="6xl"
-              $border={false}
-              $layer="transparent"
-              landmark="nav"
-              aria-label="On this page"
-              className="text-sm"
-            >
-              <ShellSidebarBody>
-                {/* The island marks the link of the section being read. The
-                    server renders the links and the guide before it
-                    hydrates. */}
-                <AppToc client:load {title} headings={tocHeadings} />
-              </ShellSidebarBody>
-            </ShellSidebar>
-          )
-        }
         <ShellFooter className="text-sm">
           <ShellFooterStart>
             <span class="ak-ink-70">© Ariakit FZ-LLC</span>

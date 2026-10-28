@@ -13,13 +13,17 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // CSS draws the guide from the list structure. The thumb range stays empty
     // until the script measures the visible rows.
     await test.expect(nav.locator(".toc-link-guide").first()).toBeVisible();
-    const range = await nav.evaluate((element) => {
-      const style = getComputedStyle(element);
-      return [
-        style.getPropertyValue("--toc-thumb-start"),
-        style.getPropertyValue("--toc-thumb-end"),
-      ];
+    const ranges = await nav.evaluate((element) => {
+      const thumbs = element.querySelectorAll(".toc-link-thumb");
+      return [...thumbs].map((thumb) => {
+        const style = getComputedStyle(thumb);
+        return [
+          style.getPropertyValue("--toc-thumb-start"),
+          style.getPropertyValue("--toc-thumb-end"),
+        ].join(" ");
+      });
     });
-    test.expect(range).toEqual(["0px", "0px"]);
+    test.expect(ranges.length).toBeGreaterThan(0);
+    test.expect(new Set(ranges)).toEqual(new Set(["0px 0px"]));
   });
 });

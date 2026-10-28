@@ -10,17 +10,18 @@ function getHiddenThumbLinks(dialog: Locator) {
     const viewport = element.firstElementChild;
     if (!nav) return null;
     if (!viewport) return null;
-    const style = getComputedStyle(nav);
-    const start = Number.parseFloat(
-      style.getPropertyValue("--toc-thumb-start"),
-    );
-    const end = Number.parseFloat(style.getPropertyValue("--toc-thumb-end"));
     const bottom = viewport.getBoundingClientRect().bottom;
     let covered = 0;
     const hidden: string[] = [];
     for (const link of nav.querySelectorAll("a")) {
       const thumb = link.querySelector<HTMLElement>(".toc-link-thumb");
       if (!thumb) continue;
+      // Each thumb piece holds the range that glides on it.
+      const style = getComputedStyle(thumb);
+      const start = Number.parseFloat(
+        style.getPropertyValue("--toc-thumb-start"),
+      );
+      const end = Number.parseFloat(style.getPropertyValue("--toc-thumb-end"));
       const top = Number.parseFloat(
         thumb.style.getPropertyValue("--toc-piece-top"),
       );
