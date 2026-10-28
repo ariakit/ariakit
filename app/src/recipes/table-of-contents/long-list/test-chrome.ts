@@ -51,18 +51,18 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           const box = element.closest(".shell-sidebar-body");
           if (!box) return null;
           const boxRect = box.getBoundingClientRect();
-          // The inline range is where the thumb glides to.
-          const { style } = element;
-          const start = Number.parseFloat(
-            style.getPropertyValue("--toc-thumb-start"),
-          );
-          const end = Number.parseFloat(
-            style.getPropertyValue("--toc-thumb-end"),
-          );
           const rows = { covered: 0, outside: [] as string[] };
           for (const link of element.querySelectorAll("a")) {
             const thumb = link.querySelector<HTMLElement>(".toc-link-thumb");
             if (!thumb) continue;
+            // The inline range is where the thumb glides to.
+            const { style } = thumb;
+            const start = Number.parseFloat(
+              style.getPropertyValue("--toc-thumb-start"),
+            );
+            const end = Number.parseFloat(
+              style.getPropertyValue("--toc-thumb-end"),
+            );
             const top = Number.parseFloat(
               thumb.style.getPropertyValue("--toc-piece-top"),
             );

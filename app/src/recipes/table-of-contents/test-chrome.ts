@@ -7,14 +7,15 @@ import { withFramework } from "#app/test-utils/preview.ts";
 // the same distance from both edges of the row.
 function getThumbLinks(nav: Locator) {
   return nav.evaluate((element) => {
-    const style = getComputedStyle(element);
-    const start = Number.parseFloat(
-      style.getPropertyValue("--toc-thumb-start"),
-    );
-    const end = Number.parseFloat(style.getPropertyValue("--toc-thumb-end"));
     return [...element.querySelectorAll("a")].flatMap((link) => {
       const thumb = link.querySelector<HTMLElement>(".toc-link-thumb");
       if (!thumb) return [];
+      // Each thumb piece holds the range that glides on it.
+      const style = getComputedStyle(thumb);
+      const start = Number.parseFloat(
+        style.getPropertyValue("--toc-thumb-start"),
+      );
+      const end = Number.parseFloat(style.getPropertyValue("--toc-thumb-end"));
       const top = Number.parseFloat(
         thumb.style.getPropertyValue("--toc-piece-top"),
       );
@@ -133,10 +134,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   test("keeps the thumb still with reduced motion", async ({ page, q }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    const nav = q.navigation("On this page");
-    await test.expect(nav).toHaveCSS("transition-property", "none");
+    // The thumb glides on its pieces.
+    const thumb = q.navigation("On this page").locator(".toc-link-thumb");
+    await test.expect(thumb.first()).toHaveCSS("transition-property", "none");
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await test.expect(nav).not.toHaveCSS("transition-property", "none");
+    await test
+      .expect(thumb.first())
+      .not.toHaveCSS("transition-property", "none");
   });
 
   test("lets the next Tab reach the link of a clicked heading", async ({
