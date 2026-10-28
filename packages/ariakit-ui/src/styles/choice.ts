@@ -221,10 +221,6 @@ export const choiceCard = cv({
     // channel.
     "not-ui-disabled-within:ui-checked-within:ak-layer-lighten-0",
     "not-ui-disabled-within:ui-mixed-within:ak-layer-lighten-0",
-    // Keep selected cards distinct on brand surfaces, including colors in the
-    // contrast pipeline's ambiguous range.
-    "not-ui-disabled-within:ui-checked-within:ak-layer-push-1",
-    "not-ui-disabled-within:ui-mixed-within:ak-layer-push-1",
     // Without a mark, an inset ring adds a second edge pixel to the selected
     // card, so its state doesn't rest on color alone. The ring takes no space.
     "inset-ring-(--ak-edge)",

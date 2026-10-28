@@ -883,7 +883,7 @@ export default function CheckboxExamples() {
 
       <Example
         title="Cards on a brand layer"
-        description="A checked card moves its tint away from the brand surface, so it still stands apart from the unchecked card."
+        description="On a brand surface, a checked card's tint can blend in, so the check marks show which card is checked."
         code={`
           <Frame $layer="brand" $rounded="xl" $p={4}>
             <CheckboxCardGrid>
