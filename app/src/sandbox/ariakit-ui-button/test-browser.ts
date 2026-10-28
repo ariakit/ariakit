@@ -1,3 +1,4 @@
+import type { Locator } from "@playwright/test";
 import {
   captureInView,
   capturePage,
@@ -10,6 +11,25 @@ import {
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
+
+/**
+ * Reads the OKLCH lightness of an element's background and of the layer it sits
+ * on, which `--ak-layer-parent` holds.
+ */
+function getLightness(element: Locator) {
+  return element.evaluate((node) => {
+    const style = getComputedStyle(node);
+    const parse = (color: string) => {
+      const lightness = /^oklch\(([\d.]+)/.exec(color.trim())?.[1];
+      if (!lightness) throw new Error(`Not an OKLCH color: ${color}`);
+      return Number(lightness);
+    };
+    return {
+      surface: parse(style.backgroundColor),
+      parent: parse(style.getPropertyValue("--ak-layer-parent")),
+    };
+  });
+}
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/issues/7806
@@ -161,6 +181,37 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         colorScheme,
         item: "ariakit-ui-button/segmented-control-click",
       });
+    });
+  });
+
+  // Each layer sits next to the mid-lightness range that colors avoid. The
+  // offset at rest turns the other way to avoid it, or the hover would enter
+  // it, so a hover that kept the appearance-aware direction would go back to
+  // the layer color. The state passes how it moves through the color alpha,
+  // which each engine stores with its own precision, so this runs in every
+  // engine.
+  test("moves a lifted button further from a colored layer on hover", async ({
+    page,
+    q,
+  }) => {
+    await forEachColorScheme(page, async () => {
+      const example = query(q.article("Lifted on colored layers"));
+      for (const name of ["Vote", "Delete", "Retry"]) {
+        const button = example.button(name);
+        const rest = await getLightness(button);
+        await hoverOver(button);
+        await test.expect
+          .poll(async () => (await getLightness(button)).surface)
+          .not.toBe(rest.surface);
+        const hovered = await getLightness(button);
+        test.expect(hovered.parent).toBe(rest.parent);
+        test
+          .expect(Math.sign(hovered.surface - hovered.parent), name)
+          .toBe(Math.sign(rest.surface - rest.parent));
+        test
+          .expect(Math.abs(hovered.surface - hovered.parent), name)
+          .toBeGreaterThan(Math.abs(rest.surface - rest.parent));
+      }
     });
   });
 

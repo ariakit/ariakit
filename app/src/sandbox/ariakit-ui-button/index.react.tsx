@@ -184,6 +184,32 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Lifted on colored layers"
+        description="A lifted surface on colored surfaces. On hover, it moves further from the surface, also when the offset turns the other way to avoid mid lightness."
+        code={`
+          <Frame $layer="brand" $p={4}>
+            <Button $lightnessOffset>Vote</Button>
+          </Frame>
+          <Frame $layer="danger" $p={4}>
+            <Button $lightnessOffset>Delete</Button>
+          </Frame>
+          <Frame $layer="warning" $p={4}>
+            <Button $lightnessOffset>Retry</Button>
+          </Frame>
+        `}
+      >
+        <Frame $layer="brand" $p={4}>
+          <Button $lightnessOffset>Vote</Button>
+        </Frame>
+        <Frame $layer="danger" $p={4}>
+          <Button $lightnessOffset>Delete</Button>
+        </Frame>
+        <Frame $layer="warning" $p={4}>
+          <Button $lightnessOffset>Retry</Button>
+        </Frame>
+      </Example>
+
+      <Example
         title="Pushed"
         description="A neutral surface with a minimum lightness shift, which grows when the user asks for more contrast."
         code={`
