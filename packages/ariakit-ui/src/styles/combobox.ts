@@ -203,7 +203,7 @@ export const comboboxSelect = cv({
       if (!isSelectField(variants)) return defaultValue;
       if (!variants.$disabled) return defaultValue;
       // Like a disabled input, match the surrounding surface without a cap.
-      return null;
+      return defaultValue ?? null;
     },
     $border(defaultValue, variants) {
       if (!isSelectField(variants)) return defaultValue;
