@@ -60,6 +60,19 @@ import s3 from "nextjs/pages/tab-nextjs?source";
   expect(code.match(/gallery: true/g)).toHaveLength(4);
 });
 
+test("reads galleries with Windows paths", async () => {
+  const code = await compile(
+    `
+import PreviewCard from "#app/components/preview-card.astro";
+import s0 from "nextjs/pages/tab-nextjs?source";
+
+<PreviewCard source={s0} />
+`,
+    "C:\\ariakit\\app\\src\\recipes\\tab-nextjs\\gallery.mdx",
+  );
+  expect(getFrontmatter(code)).toEqual({ examples: ["tab-nextjs"] });
+});
+
 test("fails on a card without a source import", async () => {
   await expect(
     compile(`

@@ -98,7 +98,8 @@ export function remarkGalleryExamples({
 }: RemarkGalleryExamplesOptions) {
   return (tree: MdxNode, file: GalleryFile) => {
     const filePath = file.path;
-    if (!filePath?.endsWith("/gallery.mdx")) return;
+    // Paths can use backslashes on Windows.
+    if (filePath?.split(/[/\\]/).pop() !== "gallery.mdx") return;
     const imports = getImports(tree.children ?? []);
 
     const getPreviewId = (name: string) => {

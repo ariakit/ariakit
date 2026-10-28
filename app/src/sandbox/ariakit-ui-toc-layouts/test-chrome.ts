@@ -240,9 +240,14 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .expect(nav.link("Dates"))
       .toHaveAttribute("aria-current", "location");
     // The thumb covers both headings of the row. A heading beside the first one
-    // doesn't end its section.
+    // doesn't end its section. The thumb glides through the rows above, so the
+    // range counts only once the glide ends.
+    const sideNav = q.navigation("Side by side");
     await test.expect
-      .poll(() => getThumbLinks(q.navigation("Side by side")))
+      .poll(() => sideNav.evaluate((element) => element.getAnimations().length))
+      .toBe(0);
+    test
+      .expect(await getThumbLinks(sideNav))
       .toEqual(test.expect.arrayContaining(["Cherries", "Dates"]));
     // Scrolling on starts from that heading, without going back to the first
     // one of its row. Read the current link after the frame that updates it.
