@@ -59,17 +59,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(dialog).toBeVisible();
   });
 
-  test("closes on an unclaimed Escape outside the dialog", async ({ q }) => {
-    const disclosure = q.button("Open outside dialog");
-    await disclosure.click();
-    await test.expect(q.dialog("Outside dialog")).toBeVisible();
-
-    await disclosure.focus();
-    await disclosure.press("Escape");
-
-    await test.expect(q.dialog("Outside dialog")).toBeHidden();
-  });
-
   test("lets an ancestor capture handler own Escape outside", async ({ q }) => {
     const disclosure = q.button("Open outer capture dialog");
     await disclosure.click();

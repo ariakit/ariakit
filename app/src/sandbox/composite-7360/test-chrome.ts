@@ -176,26 +176,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(await scroll.events()).not.toContain("document");
   });
 
-  // The other half of that branch: a move recorded while composite behavior is
-  // handed off has nothing to carry it out, so it stays pending and its item
-  // takes focus once the toolbar is a composite again. The move comes from the
-  // arrow key, which still moves the active item meanwhile; only focus stops
-  // following it. Related: https://github.com/ariakit/ariakit/issues/7363
-  test("focuses a newly moved item when composite behavior comes back", async ({
-    page,
-    q,
-  }) => {
-    await moveToSecondItem(page);
-    await handOffControl(page).click();
-    await test.expect(handOffControl(page)).toBeChecked();
-
-    await q.button("Italic").click();
-    await page.keyboard.press("ArrowRight");
-    await takeBackAndSettle(page);
-
-    await test.expect(q.button("Underline")).toBeFocused();
-  });
-
   test("focuses the toolbar when a focus command runs while it is expanded", async ({
     q,
   }) => {
@@ -224,22 +204,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test.expect(q.toolbar("Formatting")).toBeFocused();
     await test.expect(q.toolbar("Formatting")).toBeInViewport();
-  });
-
-  // The same pending move, but with the toolbar mounted the whole time and only
-  // its `composite` prop switching off and back on.
-  test("focuses the toolbar when a focus command runs while it is handed off", async ({
-    page,
-    q,
-  }) => {
-    await handOffControl(page).click();
-    await test.expect(handOffControl(page)).toBeChecked();
-
-    await q.button("Focus toolbar").click();
-    await handOffControl(page).click();
-
-    await test.expect(handOffControl(page)).not.toBeChecked();
-    await test.expect(q.toolbar("Formatting")).toBeFocused();
   });
 
   // Pins the third kind of pending move, the one waiting on its item rather

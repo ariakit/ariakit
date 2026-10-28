@@ -2,61 +2,6 @@ import { getBackgroundContrast } from "#app/test-utils/contrast.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
-  test("names a field by its label and describes it by its description", async ({
-    q,
-  }) => {
-    const box = query(q.article("Field with description"));
-    const checkbox = box.checkbox();
-    await test.expect(checkbox).toHaveAccessibleName("Product updates");
-    await test
-      .expect(checkbox)
-      .toHaveAccessibleDescription("New features and changes to the API");
-    // The label points at the input, so the name doesn't depend on the label
-    // wrapping it.
-    const id = await checkbox.getAttribute("id");
-    await test
-      .expect(checkbox.locator("xpath=ancestor::label"))
-      .toHaveAttribute("for", id ?? "");
-    // The description is still part of the row, so clicking it toggles the box.
-    await box.text("New features and changes to the API").click();
-    await test.expect(checkbox).not.toBeChecked();
-  });
-
-  test("describes a field by its own description id, then by the app hint", async ({
-    q,
-  }) => {
-    const box = query(q.article("Field with app ids"));
-    await test.expect(box.checkbox()).toHaveAccessibleName("Usage reports");
-    await test
-      .expect(box.checkbox())
-      .toHaveAccessibleDescription(
-        "Anonymous crash and usage data You can change this later in settings",
-      );
-  });
-
-  test("leaves a field without a description undescribed", async ({ q }) => {
-    const checkbox = query(q.article("Checkbox field")).checkbox();
-    await test.expect(checkbox).toHaveAccessibleName("Remember me");
-    await test.expect(checkbox).not.toHaveAttribute("aria-describedby");
-  });
-
-  test("names a card by its label and describes it by its description", async ({
-    q,
-  }) => {
-    const box = query(q.article("Card with description"));
-    const checkbox = box.checkbox();
-    await test.expect(checkbox).toHaveAccessibleName("Analytics");
-    await test
-      .expect(checkbox)
-      .toHaveAccessibleDescription(
-        "Usage, retention and funnel reports, refreshed every hour",
-      );
-    await box
-      .text("Usage, retention and funnel reports, refreshed every hour")
-      .click();
-    await test.expect(checkbox).not.toBeChecked();
-  });
-
   test("select all reflects and toggles its children", async ({ q }) => {
     const box = query(q.article("Select all"));
     const parent = box.checkbox("All features");

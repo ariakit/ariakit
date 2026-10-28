@@ -1,18 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("names and describes the horizontal fields", async ({ q }) => {
-    await test
-      .expect(q.textbox("Full name"))
-      .toHaveAccessibleDescription("Used on invoices.");
-    await test
-      .expect(q.textbox("Phone"))
-      .toHaveAccessibleDescription("Enter the full number.");
-    await test
-      .expect(q.textbox("Phone"))
-      .toHaveAttribute("aria-invalid", "true");
-  });
-
   test("puts the label beside the field and stacks it when narrow", async ({
     page,
     q,

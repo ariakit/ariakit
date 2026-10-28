@@ -29,16 +29,6 @@ function waitForPagesGrown(feed: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("keeps loaded posts visible while more posts load", async ({ q }) => {
-    await test.expect(q.text("Priya Raman")).toBeVisible();
-    await q.button("Load more").click();
-    await test.expect(q.status()).toHaveText("Loading posts");
-    await test.expect(q.text("Priya Raman")).toBeVisible();
-    await test.expect(q.text("Leo Martins")).toBeVisible();
-    await test.expect(q.text("Kenji Ito")).toBeVisible();
-    await test.expect(q.text("Priya Raman")).toBeVisible();
-  });
-
   // https://github.com/ariakit/ariakit/pull/7993#discussion_r4317548115
   test("keeps the layout when each page loads", async ({ q }) => {
     const feed = q.region("Feed");

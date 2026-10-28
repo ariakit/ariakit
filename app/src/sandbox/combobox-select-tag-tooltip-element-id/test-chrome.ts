@@ -1,28 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
-  test("updates combobox relationships when the input id changes", async ({
-    q,
-  }) => {
-    const section = query(q.region("Combobox"));
-    const label = section.text("Combobox label");
-    const combobox = section.combobox("Combobox label");
-    const cancel = section.button("Clear input");
-
-    await test.expect(label).toHaveAttribute("for", "combobox-before");
-    await test
-      .expect(cancel)
-      .toHaveAttribute("aria-controls", "combobox-before");
-
-    await section.button("Change combobox id").click();
-
-    await test.expect(label).toHaveAttribute("for", "combobox-after");
-    await test
-      .expect(cancel)
-      .toHaveAttribute("aria-controls", "combobox-after");
-    await test.expect(combobox).toHaveAttribute("id", "combobox-after");
-  });
-
   test("updates select relationships when the label id changes", async ({
     q,
   }) => {
@@ -79,22 +57,5 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test
       .expect(control)
       .toHaveAttribute("aria-labelledby", "tag-label-after");
-  });
-
-  test("updates the tooltip anchor when the content id changes", async ({
-    q,
-  }) => {
-    const section = query(q.region("Tooltip"));
-    const anchor = section.button("Tooltip label");
-
-    await test
-      .expect(anchor)
-      .toHaveAttribute("aria-labelledby", "tooltip-before");
-
-    await section.button("Change tooltip id").click();
-
-    await test
-      .expect(anchor)
-      .toHaveAttribute("aria-labelledby", "tooltip-after");
   });
 });

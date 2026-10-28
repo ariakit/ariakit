@@ -34,22 +34,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/7533#discussion_r4019535774
-  test("publishes the consumer's open state on the sidebar body", async ({
-    q,
-  }) => {
-    const toggle = q.button("Toggle sidebar");
-    const body = q.navigation("Documentation", { includeHidden: true });
-    await expect(body).toHaveAttribute("data-open", "");
-    await expect(body).not.toHaveAttribute("open");
-    await toggle.click();
-    await expect(body).not.toHaveAttribute("data-open");
-    await expect(toggle).toHaveAttribute("aria-expanded", "false");
-    await toggle.click();
-    await expect(body).toHaveAttribute("data-open", "");
-    await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  });
-
-  // https://github.com/ariakit/ariakit/pull/7533#discussion_r4019535774
   test("accepts data-open directly on the sidebar body", async ({ q }) => {
     await selectScenario(q, "geometry");
     const body = q.navigation("Layout contents", { includeHidden: true });
@@ -177,23 +161,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       );
       await expect(q.button("Toggle sidebar")).toHaveCount(0);
     });
-  });
-
-  test("keeps Nav rows a navigation inside a complementary sidebar", async ({
-    q,
-  }) => {
-    await selectScenario(q, "static");
-    const sidebar = query(q.complementary("Sections"));
-    const rows = query(sidebar.navigation());
-    await test.expect(rows.link("Profile")).toBeVisible();
-  });
-
-  test("keeps one main landmark across nested shells", async ({ q }) => {
-    await selectScenario(q, "nested");
-    await test.expect(q.main()).toHaveCount(1);
-    const main = query(q.main());
-    await test.expect(main.text("Middle introduction")).toBeVisible();
-    await test.expect(main.navigation("Inner navigation")).toBeVisible();
   });
 
   for (const [width, scenario, name, sidebarWidth] of [

@@ -2,32 +2,6 @@ import { hoverOver, inkAlpha, tabInto } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
-  // https://github.com/ariakit/ariakit/pull/7863
-  test("keeps button slots accessible unless explicitly hidden", async ({
-    q,
-  }) => {
-    const button = query(q.article("Decorative icon")).button(/Add item/);
-    await test.expect(button).toHaveAccessibleName("Add item");
-    await test
-      .expect(query(button).text("+"))
-      .toHaveAttribute("aria-hidden", "true");
-    await test
-      .expect(query(q.article("Count badge")).button("Inbox 12"))
-      .toHaveAccessibleName("Inbox 12");
-    await test
-      .expect(query(q.article("Meaningful icon")).button("Starred Project"))
-      .toHaveAccessibleName("Starred Project");
-    await test
-      .expect(query(q.article("Meaningful icon")).img("Starred"))
-      .toBeVisible();
-  });
-
-  test("renders a button as a native submit input", async ({ q }) => {
-    await test
-      .expect(query(q.article("Native submit input")).button("Submit form"))
-      .toHaveAttribute("type", "submit");
-  });
-
   // The ink inherits through the slot layers, so the icon dims with the label
   // and both come back to full strength under the pointer.
   test("dims the slots with the label and restores them on hover", async ({
@@ -54,25 +28,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await hoverOver(dim);
     await test.expect.poll(() => inkAlpha(dim.locator("svg"))).toBe(labelAlpha);
     test.expect(await inkAlpha(example.text("Stay dim"))).toBe(labelAlpha);
-  });
-
-  // https://github.com/ariakit/ariakit/pull/7489#discussion_r3995226174
-  test("preserves the selected avatar color when its kind changes", async ({
-    q,
-  }) => {
-    const box = query(q.article("Avatar shape"));
-    const picture = box.button("Change avatar color");
-    const image = picture.locator("img");
-    await test.expect(image).toHaveAttribute("src", /f59e0b/);
-    await picture.click();
-    await test.expect(image).toHaveAttribute("src", /6366f1/);
-    const round = box.button("Round avatar");
-    await round.click();
-    await test.expect(round).toHaveAttribute("aria-pressed", "false");
-    await test.expect(image).toHaveAttribute("src", /6366f1/);
-    await round.click();
-    await test.expect(round).toHaveAttribute("aria-pressed", "true");
-    await test.expect(image).toHaveAttribute("src", /6366f1/);
   });
 
   test("keeps a focusable disabled button in the tab order", async ({

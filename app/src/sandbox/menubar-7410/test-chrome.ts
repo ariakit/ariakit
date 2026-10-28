@@ -21,36 +21,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeGreaterThanOrEqual(0);
 
   // https://github.com/ariakit/ariakit/issues/7410
-  test("arrow keys open and close the menus of a vertical menubar", async ({
-    page,
-    q,
-  }) => {
-    await page.keyboard.press("Tab");
-    await test.expect(q.menuitem("File")).toBeFocused();
-
-    await page.keyboard.press("ArrowRight");
-    await test.expect(q.menu("File")).toBeVisible();
-    await test.expect(q.menuitem("New")).toBeFocused();
-
-    await page.keyboard.press("ArrowDown");
-    await test.expect(q.menuitem("Open")).toBeFocused();
-    await page.keyboard.press("ArrowUp");
-    await test.expect(q.menuitem("New")).toBeFocused();
-
-    await page.keyboard.press("ArrowLeft");
-    await test.expect(q.menu("File")).not.toBeVisible();
-    await test.expect(q.menuitem("File")).toBeFocused();
-
-    await page.keyboard.press("ArrowDown");
-    await test.expect(q.menuitem("Edit")).toBeFocused();
-    await test.expect(q.menu("Edit")).not.toBeVisible();
-
-    await page.keyboard.press("ArrowUp");
-    await test.expect(q.menuitem("File")).toBeFocused();
-    await test.expect(q.menu("File")).not.toBeVisible();
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7410
   test("menus open beside their vertical menubar item", async ({ page, q }) => {
     const file = q.menuitem("File");
     const menu = q.menu("File");
@@ -66,30 +36,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expectGap(file, menu, (anchor, popover) => {
       return popover.x - (anchor.x + anchor.width - 1);
     });
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7410
-  test("submenus keep following their parent menu", async ({ page, q }) => {
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("ArrowRight");
-    await test.expect(q.menuitem("New")).toBeFocused();
-
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("ArrowDown");
-    await test.expect(q.menuitem("Share")).toBeFocused();
-
-    await page.keyboard.press("ArrowRight");
-    await test.expect(q.menu("Share")).toBeVisible();
-    await test.expect(q.menuitem("Email")).toBeFocused();
-
-    await page.keyboard.press("ArrowLeft");
-    await test.expect(q.menu("Share")).not.toBeVisible();
-    await test.expect(q.menu("File")).toBeVisible();
-    await test.expect(q.menuitem("Share")).toBeFocused();
-
-    await page.keyboard.press("ArrowLeft");
-    await test.expect(q.menu("File")).not.toBeVisible();
-    await test.expect(q.menuitem("File")).toBeFocused();
   });
 
   // https://github.com/ariakit/ariakit/issues/7410

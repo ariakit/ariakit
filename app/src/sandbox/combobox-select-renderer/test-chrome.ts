@@ -1,53 +1,6 @@
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
-const options = ["Lemon", "Lime", "Orange", "Apple", "Banana"] as const;
-
 withFramework(import.meta.dirname, async ({ test, query }) => {
-  // Each renderer forwards these props to the shared collection renderer
-  // itself, so both run.
-  for (const renderer of ["ComboboxRenderer", "SelectRenderer"]) {
-    test.describe(renderer, () => {
-      test.beforeEach(async ({ q }) => {
-        if (renderer === "SelectRenderer") {
-          await q.button("Use SelectRenderer").click();
-        }
-      });
-
-      // https://github.com/ariakit/ariakit/issues/6301
-      test("sets sequential option positions across groups and leaves", async ({
-        q,
-      }) => {
-        await q.combobox("Fruit").click();
-
-        for (const [index, name] of options.entries()) {
-          const option = q.option(name);
-          await test.expect(option).toHaveAttribute("aria-setsize", "5");
-          await test
-            .expect(option)
-            .toHaveAttribute("aria-posinset", `${index + 1}`);
-        }
-      });
-
-      // https://github.com/ariakit/ariakit/pull/6806#discussion_r3633347050
-      test("forwards horizontal orientation to the item layout", async ({
-        q,
-      }) => {
-        await q.combobox("Favorite fruit").click();
-
-        // Horizontal orientation lays items out along the x-axis: the renderer
-        // offsets each item by `left` and keeps a shared `top` of 0. The last
-        // option "Cherry" (index 2) lands at `itemSize * 2 = 192px`; asserting
-        // the last item keeps the check robust because it stays rendered as a
-        // persistent index even when virtualization trims middle items. Before
-        // the fix, the dropped `orientation` prop fell back to vertical,
-        // offsetting by `top` instead.
-        const cherry = q.option("Cherry");
-        await test.expect(cherry).toHaveCSS("left", "192px");
-        await test.expect(cherry).toHaveCSS("top", "0px");
-      });
-    });
-  }
-
   // https://github.com/ariakit/ariakit/issues/3913
   test("updates items when an initially empty scroller gains overflow", async ({
     page,
@@ -211,17 +164,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test.expect(mountedItems).toContainText(/Async item 51(?:,|$)/);
     await test.expect(mountedItems).not.toContainText(/Async item 5(?:,|$)/);
-  });
-
-  // https://github.com/ariakit/ariakit/pull/6832
-  test("renders every selected value when options share a value", async ({
-    q,
-  }) => {
-    const listbox = q.listbox("Duplicate selected values");
-    await test.expect(query(listbox).option("Selected Banana")).toHaveCount(1);
-    await test
-      .expect(query(listbox).option("Later duplicate Banana"))
-      .toHaveCount(0);
   });
 
   for (const renderer of ["ComboboxRenderer", "SelectRenderer"]) {

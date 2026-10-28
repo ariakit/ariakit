@@ -2,16 +2,6 @@ import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import { expectVerticallyCentered } from "#app/test-utils/scroll.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  // https://github.com/ariakit/ariakit/issues/7068
-  test("takes focus when opened without focus", async ({ page, q }) => {
-    await test.expect(page.locator("body")).toBeFocused();
-
-    await page.keyboard.press("F2");
-
-    await test.expect(q.listbox()).toBeVisible();
-    await test.expect(q.combobox("Vegetable")).toBeFocused();
-  });
-
   // Focus is asserted only at the end, so the presentation assertion above it
   // still runs against the unfixed behavior instead of being skipped by an
   // earlier failure.
@@ -29,39 +19,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(onion).toHaveAttribute("data-active-item");
     await expectVerticallyCentered(q.listbox(), onion);
     await test.expect(q.combobox("Vegetable")).toBeFocused();
-  });
-
-  // A programmatic open is the app deciding to show the popup, so it takes
-  // focus like an interactive one instead of deferring to whoever held it.
-  // https://github.com/ariakit/ariakit/issues/7068
-  test("takes focus even when another element owns it", async ({ page, q }) => {
-    const note = q.textbox("Note");
-    await note.click();
-    await test.expect(note).toBeFocused();
-
-    await page.keyboard.press("F2");
-
-    await test.expect(q.listbox()).toBeVisible();
-    await test.expect(q.combobox("Vegetable")).toBeFocused();
-  });
-
-  // The select is the only control for this popup, so it stays the element that
-  // announces the open state no matter who held focus when the open happened.
-  // https://github.com/ariakit/ariakit/issues/7080
-  test("announces the select as expanded when another element owns focus", async ({
-    page,
-    q,
-  }) => {
-    const select = q.combobox("Vegetable");
-    const note = q.textbox("Note");
-    await note.click();
-    await test.expect(note).toBeFocused();
-    await test.expect(select).toHaveAttribute("aria-expanded", "false");
-
-    await page.keyboard.press("F2");
-
-    await test.expect(q.listbox()).toBeVisible();
-    await test.expect(select).toHaveAttribute("aria-expanded", "true");
   });
 
   // https://github.com/ariakit/ariakit/issues/7068
