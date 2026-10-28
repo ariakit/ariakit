@@ -6,6 +6,7 @@ import {
   RadioCardContent,
   RadioCardDescription,
   RadioCardLabel,
+  RadioCardLabelRow,
   RadioCardSlot,
   RadioGroup,
 } from "@ariakit/ui/components/radio.ariakit.react";
@@ -168,17 +169,20 @@ export default function Example() {
                 autoFocus={moveFocus && option.value === focusValue}
               >
                 <RadioCardCheck />
-                {/* The minimum width wraps the badge to its own row in a narrow
-                    chat, so it doesn't squeeze the option name. */}
-                <RadioCardContent className="min-w-32">
-                  <RadioCardLabel>{option.label}</RadioCardLabel>
+                <RadioCardContent>
+                  {/* The badge shares a row with the label, so the
+                      description takes the full width of the card. In a
+                      narrow chat, the badge wraps below the label. */}
+                  <RadioCardLabelRow>
+                    <RadioCardLabel>{option.label}</RadioCardLabel>
+                    {option.recommended && (
+                      <RadioCardSlot $kind="badge">Recommended</RadioCardSlot>
+                    )}
+                  </RadioCardLabelRow>
                   <RadioCardDescription $truncate={false}>
                     {option.description}
                   </RadioCardDescription>
                 </RadioCardContent>
-                {option.recommended && (
-                  <RadioCardSlot $kind="badge">Recommended</RadioCardSlot>
-                )}
               </RadioCard>
             ))}
           </RadioGroup>

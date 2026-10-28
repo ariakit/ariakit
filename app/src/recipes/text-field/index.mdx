@@ -30,7 +30,7 @@ WCAG requires a contrast of 3:1 between the boundary that identifies a field and
 
 A colored edge gets the same floor. A light color, such as the yellow warning edge in the Colors example, gets darker on light layers until it reaches 3:1, and it stays close to its hue. A field with a colored fill keeps the neutral edge, which follows the fill. Color alone does not tell the status ([Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)), so each colored field also has a hint that tells it in words.
 
-A field can have no edge when something else identifies it. In the Message Composer, the textarea has no edge, but the group around it has one. The group is the area where you type.
+A field can have no edge when something else identifies it. In the Auto-Growing Textarea example, the textarea has no edge, but the group around it has one. The group is the area where you type.
 
 In the Slots example, the icons, the currency symbol, and the avatar are hidden from screen readers, because the label, the hint, or the value already tells the same thing. The green icon of the Domain field has the hint "Verified." The currency select is a separate control with its own name.
 
@@ -40,4 +40,4 @@ The Error example lists the error before the hint in `aria-describedby`, so scre
 
 The error icon is a sign of the error besides the danger color ([Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)). Screen readers do not read it, because the text tells the same thing. This is also true for an icon with a label, so the field reads only the error text. In forced colors mode, such as a Windows contrast theme, the icon uses the system text color, like the text. The icon also shows when you print the page.
 
-The show button of the Password example keeps the same name and tells its state with `aria-pressed`.
+The show button of the Password Visibility Toggle example keeps the same name and tells its state with `aria-pressed`.

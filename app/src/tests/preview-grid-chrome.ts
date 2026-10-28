@@ -16,7 +16,7 @@ test("preview grid cards of similar heights line up", async ({ page, q }) => {
   const getHeight = (locator: Locator) =>
     locator.evaluate((element) => element.getBoundingClientRect().height);
   const timing = q.region("Timing", { exact: true });
-  const article = q.region("Article", { exact: true });
+  const article = q.region("Paragraph Lines", { exact: true });
   // Cards hydrate when they scroll into view. Each of these cards shares its
   // row with a card that the test measures too.
   await timing.scrollIntoViewIfNeeded();
@@ -37,8 +37,8 @@ test("preview grid cards of similar heights line up", async ({ page, q }) => {
         (await getHeight(getCard("Skeleton"))),
     )
     .toBeCloseTo(0, 0);
-  expect(await getHeight(getCard("Thumbnails"))).toBeLessThan(
-    (await getHeight(getCard("Article"))) * 0.8,
+  expect(await getHeight(getCard("Static Shapes"))).toBeLessThan(
+    (await getHeight(getCard("Paragraph Lines"))) * 0.8,
   );
 });
 
@@ -56,12 +56,14 @@ test("a preview grid card that would sit alone takes the whole row", async ({
     });
   // The gallery pairs every half-width card, so removing the second card of the
   // first pair leaves Navigation alone before the full-width Top Bar.
-  await getRegion("Brand Navigation").evaluate((element) => element.remove());
+  await getRegion("Custom Current Link").evaluate((element) =>
+    element.remove(),
+  );
   const [navigation, topBar, course, workspace] = await Promise.all([
     getBox("Navigation"),
     getBox("Top Bar"),
-    getBox("Course Lessons"),
-    getBox("Workspace Sidebar"),
+    getBox("Progress Tracking"),
+    getBox("Shortcut Hints"),
   ]);
   expect(navigation.left).toBeCloseTo(topBar.left, 0);
   expect(navigation.width).toBeCloseTo(topBar.width, 0);

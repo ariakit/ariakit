@@ -685,16 +685,18 @@ test("table of contents marks a shorter card in a gallery row", async ({
   const toc = query(q.navigation("On this page"));
   const island = q.navigation("On this page").locator("astro-island");
   await expect(island).not.toHaveAttribute("ssr");
-  // The Password card is shorter than the other card in its row, so it sticks
-  // below the headers while the row scrolls. Its title would stay below the
-  // place where the link scrolls to, but the link goes to the card section,
-  // which shares the top of the row.
-  await toc.link("Password").click();
-  await expect(toc.link("Password")).toHaveAttribute(
+  // The Password Visibility Toggle card is shorter than the other card in its
+  // row, so it sticks below the headers while the row scrolls. Its title would
+  // stay below the place where the link scrolls to, but the link goes to the
+  // card section, which shares the top of the row.
+  await toc.link("Password Visibility Toggle").click();
+  await expect(toc.link("Password Visibility Toggle")).toHaveAttribute(
     "aria-current",
     "location",
   );
-  await expect(q.region("Password", { exact: true })).toBeInViewport();
+  await expect(
+    q.region("Password Visibility Toggle", { exact: true }),
+  ).toBeInViewport();
 });
 
 test("app shells in preview cards keep corners concentric with the card", async ({
