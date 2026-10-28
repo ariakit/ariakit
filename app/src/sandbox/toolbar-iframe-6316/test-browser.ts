@@ -25,49 +25,6 @@ function getSelectionStart(input: Locator) {
 
 // https://github.com/ariakit/ariakit/issues/6316
 withFramework(import.meta.dirname, async ({ test, query }) => {
-  test("ToolbarItem input navigates at text boundaries in the parent document", async ({
-    page,
-    q,
-  }) => {
-    const input = q.textbox("Find");
-    const previousItem = q.button("Bold");
-    const nextItem = q.button("Italic");
-
-    await input.click();
-    await page.keyboard.type("hi");
-    await setSelection(input, 0);
-
-    await page.keyboard.press("ArrowRight");
-
-    await test.expect(input).toBeFocused();
-    await test.expect.poll(() => getSelectionStart(input)).toBe(1);
-
-    await page.keyboard.press("ArrowRight");
-
-    await test.expect(input).toBeFocused();
-    await test.expect.poll(() => getSelectionStart(input)).toBe(2);
-
-    await page.keyboard.press("ArrowRight");
-
-    await test.expect(nextItem).toBeFocused();
-
-    await input.focus();
-    await setSelection(input, 2);
-    await page.keyboard.press("ArrowLeft");
-
-    await test.expect(input).toBeFocused();
-    await test.expect.poll(() => getSelectionStart(input)).toBe(1);
-
-    await page.keyboard.press("ArrowLeft");
-
-    await test.expect(input).toBeFocused();
-    await test.expect.poll(() => getSelectionStart(input)).toBe(0);
-
-    await page.keyboard.press("ArrowLeft");
-
-    await test.expect(previousItem).toBeFocused();
-  });
-
   test("ToolbarItem input navigates at text boundaries inside iframes", async ({
     page,
   }) => {

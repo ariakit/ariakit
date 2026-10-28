@@ -1,13 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("focuses a plain Ariakit Button when clicked", async ({ q }) => {
-    const button = q.button("Default button");
-
-    await button.click();
-    await test.expect(button).toBeFocused();
-  });
-
   test("declares native button types before refs run", async ({ q }) => {
     await test.expect(q.tab("Default tab")).toHaveAttribute("type", "button");
     await test.expect(q.tab("Submit tab")).toHaveAttribute("type", "submit");

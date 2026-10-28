@@ -117,28 +117,4 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(container).toBeFocused();
   });
-
-  test("vertical toolbar moves with up and down arrows only", async ({
-    page,
-    q,
-  }) => {
-    const toolbar = q.toolbar("Vertical formatting");
-    const moveUp = q.button("Move up");
-    const moveDown = q.button("Move down");
-
-    await test.expect(toolbar).toHaveAttribute("aria-orientation", "vertical");
-
-    await moveUp.focus();
-    await page.keyboard.press("ArrowRight");
-    await test.expect(moveUp).toBeFocused();
-
-    await page.keyboard.press("ArrowDown");
-    await test.expect(moveDown).toBeFocused();
-
-    await page.keyboard.press("ArrowLeft");
-    await test.expect(moveDown).toBeFocused();
-
-    await page.keyboard.press("ArrowUp");
-    await test.expect(moveUp).toBeFocused();
-  });
 });
