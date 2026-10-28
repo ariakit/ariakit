@@ -239,6 +239,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test
       .expect(nav.link("Dates"))
       .toHaveAttribute("aria-current", "location");
+    // The thumb covers both headings of the row. A heading beside the first one
+    // doesn't end its section.
+    await test.expect
+      .poll(() => getThumbLinks(q.navigation("Side by side")))
+      .toEqual(test.expect.arrayContaining(["Cherries", "Dates"]));
     // Scrolling on starts from that heading, without going back to the first
     // one of its row. Read the current link after the frame that updates it.
     const seen = await q.navigation("Side by side").evaluate(async (nav) => {

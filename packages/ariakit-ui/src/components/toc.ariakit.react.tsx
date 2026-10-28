@@ -252,12 +252,14 @@ function getSpyState({ sections, contentEnd, height }: GetSpyStateParams) {
     } else {
       passed = true;
     }
-    // A section runs to the next heading in the list. Any part of it between
-    // the base line and the bottom makes it visible.
+    // A section runs to the next heading in the list, skipping the headings
+    // beside it in the same row. Any part of it between the base line and the
+    // bottom makes it visible.
     let bottom = contentEnd;
     for (let j = i + 1; j < sections.length; j++) {
       const next = sections[j];
       if (!next) continue;
+      if (Math.abs(next.top - section.top) <= 1) continue;
       bottom = next.top;
       break;
     }
