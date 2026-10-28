@@ -381,6 +381,70 @@ export default function CheckboxExamples() {
       </Example>
 
       <Example
+        title="Disabled inverted card"
+        description="An inverted card and a bordered inverted row fade into the surface around them while disabled. A disabled fieldset fades them without the disabled prop."
+        code={`
+          <CheckboxCard value="exports" $invert disabled defaultChecked>
+            <CheckboxCardCheck />
+            <CheckboxCardLabel>Exports</CheckboxCardLabel>
+          </CheckboxCard>
+          <CheckboxField $invert $border disabled>
+            <CheckboxLabel>Beta program</CheckboxLabel>
+          </CheckboxField>
+          <fieldset disabled className="flex flex-wrap items-start gap-3">
+            <CheckboxCard value="backups" $invert defaultChecked>
+              <CheckboxCardCheck />
+              <CheckboxCardLabel>Backups</CheckboxCardLabel>
+            </CheckboxCard>
+            <CheckboxField $invert $border>
+              <CheckboxLabel>Early access</CheckboxLabel>
+            </CheckboxField>
+          </fieldset>
+        `}
+      >
+        <CheckboxCard value="exports" $invert disabled defaultChecked>
+          <CheckboxCardCheck />
+          <CheckboxCardLabel>Exports</CheckboxCardLabel>
+        </CheckboxCard>
+        <CheckboxField $invert $border disabled>
+          <CheckboxLabel>Beta program</CheckboxLabel>
+        </CheckboxField>
+        <fieldset disabled className="flex flex-wrap items-start gap-3">
+          <CheckboxCard value="backups" $invert defaultChecked>
+            <CheckboxCardCheck />
+            <CheckboxCardLabel>Backups</CheckboxCardLabel>
+          </CheckboxCard>
+          <CheckboxField $invert $border>
+            <CheckboxLabel>Early access</CheckboxLabel>
+          </CheckboxField>
+        </fieldset>
+      </Example>
+
+      <Example
+        title="Disabled colors"
+        description="A colored row fades into the surface around it while its input is disabled, so it does not look enabled. A disabled fieldset fades it without the disabled prop."
+        code={`
+          <CheckboxField $layer="brand" disabled defaultChecked>
+            <CheckboxLabel>Weekly digest</CheckboxLabel>
+          </CheckboxField>
+          <fieldset disabled>
+            <CheckboxField $layer="danger">
+              <CheckboxLabel>Delete history</CheckboxLabel>
+            </CheckboxField>
+          </fieldset>
+        `}
+      >
+        <CheckboxField $layer="brand" disabled defaultChecked>
+          <CheckboxLabel>Weekly digest</CheckboxLabel>
+        </CheckboxField>
+        <fieldset disabled>
+          <CheckboxField $layer="danger">
+            <CheckboxLabel>Delete history</CheckboxLabel>
+          </CheckboxField>
+        </fieldset>
+      </Example>
+
+      <Example
         title="Mixed card"
         description="A card in the mixed state tints like a checked card, and its check draws a dash."
         code={`

@@ -8,6 +8,17 @@ import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
 import { fontSizeVariants, slotFrame } from "./slot-frame.ts";
 import { text } from "./text.ts";
 
+/**
+ * Checks whether a disabled control fades its surface into the parent layer, so
+ * that a colored or inverted surface does not look enabled. Neutral fills,
+ * including canvas, stay because they can be the control's only boundary.
+ */
+export function fadesDisabledSurface(variants: VariantProps<typeof layer>) {
+  if (variants.$invert) return true;
+  if (!isLayerColor(variants.$layer)) return false;
+  return variants.$layer !== "canvas";
+}
+
 /** Shared layout, text spacing, and disabled styles for controls. */
 export const control = cv({
   extend: [slotFrame],
@@ -40,8 +51,12 @@ export const control = cv({
     $p: 2,
   },
   refine({ variants, setVariants }) {
+    // The fade applies after the lightness push, so it also dims an inverted
+    // surface, whose push always reaches a lightness bound. Extenders fade the
+    // same surfaces for their DOM disabled state.
     if (!variants.$disabled) return;
-    setVariants({ $invert: false });
+    if (!fadesDisabledSurface(variants)) return;
+    setVariants({ $fade: 80 });
   },
 });
 
@@ -207,7 +222,7 @@ export const controlSlot = cv({
       "m-0! absolute top-0 inset-e-0 -translate-y-1/2 border",
       // Reverse the physical translation for the opposite RTL corner.
       "translate-x-[calc(var(--size)/2)] rtl:-translate-x-[calc(var(--size)/2)]",
-      "in-[.control]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
+      "in-[.control,.badge]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
     ],
     /**
      * Scales the slot height by the number of text rows. Use `1` to align with
@@ -329,16 +344,16 @@ export const controlSlot = cv({
     if (variants.$border == null && hasLayerBackground(variants)) {
       addClass("forced-colors:ak-frame-border");
     }
-    // Disabled mixing would paint a fill behind a border-only shortcut.
+    // Disabled fading would paint a fill behind a border-only shortcut.
     const fadesSurface =
       variants.$kind !== "shortcut" || hasLayerBackground(variants);
     addClass(
       fadesSurface && [
-        // Mix the disabled surface before calculating readable text contrast.
-        "group-[.disabled]/control:ak-layer-mix-20",
+        // Fade the disabled surface before calculating readable text contrast.
+        "group-[.disabled]/control:ak-layer-fade-80",
         // DOM disabled state can change without rerendering the recipe.
-        "group-ui-disabled/control:ak-layer-mix-20",
-        "group-ui-disabled-within/choice:ak-layer-mix-20",
+        "group-ui-disabled/control:ak-layer-fade-80",
+        "group-ui-disabled-within/choice:ak-layer-fade-80",
         // Reach slots below wrappers beyond the control's direct-child text
         // rules.
         "group-[.disabled]/control:ak-ink-0",

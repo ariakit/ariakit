@@ -9,6 +9,7 @@ import {
   controlLabel,
   controlSeparator,
   controlSlot,
+  fadesDisabledSurface,
 } from "./control.ts";
 import { focusHighlight } from "./focus.ts";
 import { hover } from "./hover.ts";
@@ -105,19 +106,12 @@ export const button = cv({
     ) {
       addClass("forced-colors:ak-frame-border");
     }
-    // Mix a disabled colored surface into the parent like disabled slots, so it
-    // does not look enabled. Neutral fills, including canvas, stay as the
-    // boundary.
-    const mutesSurface =
-      isLayerColor(variants.$layer) && variants.$layer !== "canvas";
-    if (mutesSurface) {
-      // DOM disabled state can change without rerendering the recipe.
-      addClass("ui-disabled:ak-layer-mix-20");
+    // Fade the surface like control does for $disabled. DOM disabled state can
+    // change without rerendering the recipe.
+    if (fadesDisabledSurface(variants)) {
+      addClass("ui-disabled:ak-layer-fade-80");
     }
     if (!variants.$disabled) return;
-    if (mutesSurface) {
-      setVariants({ $mix: 20 });
-    }
     // Label-based controls never match :disabled, so remove their hover and
     // press variants explicitly.
     setVariants({

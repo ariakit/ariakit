@@ -10,6 +10,7 @@ import {
   controlFieldErrorText,
   controlFieldLabel,
   controlSlot,
+  fadesDisabledSurface,
 } from "./control.ts";
 import { focusHighlight } from "./focus.ts";
 
@@ -160,6 +161,12 @@ export const input = cv({
     $edgeRaw: getInputEdgeRaw,
     $focus: true,
     $focusOffset: "inset",
+  },
+  refine({ variants, addClass }) {
+    // Fade the field while its entry controls are disabled, as control does for
+    // $disabled.
+    if (!fadesDisabledSurface(variants)) return;
+    addClass("ui-field-disabled:ak-layer-fade-80");
   },
 });
 

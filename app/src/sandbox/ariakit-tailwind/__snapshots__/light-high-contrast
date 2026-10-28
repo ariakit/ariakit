@@ -180,6 +180,44 @@
           }
         }
       },
+      "ak-layer-fade side": {
+        "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+        "children": {
+          "neon cyan": {
+            "class": "bg-[oklch(0.1466_0.32_195)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.32_195_/_0.4334)] p-[4px]",
+            "children": {
+              "push fade": "bg-[oklch(0.9_0.32_195)] text-[oklch(0_0_0)] *:text-[lch(0_40_196.225)] rounded-[5px] border-[1px] border-[oklch(1_0.32_195_/_0.4334)] p-[4px]"
+            }
+          },
+          "outset": {
+            "class": "bg-[oklch(0.2_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.245_262.881_/_0.4334)] p-[4px]",
+            "children": {
+              "light parent": {
+                "class": "bg-[oklch(1_0.0126_255.673)] text-[oklch(0_0_0)] rounded-[5px] border-[1px] border-[oklch(1_0.0126_255.673_/_0.4334)] p-[4px]",
+                "children": {
+                  "push fade": "bg-[oklch(0.9_0.245_262.881)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.245_262.881_/_0.4334)] p-[4px] mt-[4px]"
+                }
+              }
+            }
+          },
+          "nested": {
+            "class": "bg-[oklch(0.2_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.245_262.881_/_0.4334)] p-[4px]",
+            "children": {
+              "outer fade": {
+                "class": "bg-[oklch(0.9_0.245_262.881)] text-[oklch(0_0_0)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+                "children": {
+                  "light layer": {
+                    "class": "bg-[oklch(1_0.02_250)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.02_250_/_0.4334)] p-[4px]",
+                    "children": {
+                      "push fade": "bg-[oklch(0.9067_0.02_250)] text-[oklch(0_0_0)] *:text-[lch(0_7.42_253.457)] border-[1px] border-[oklch(0_0.02_250_/_0.4334)] p-[4px]"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "raw mix": "bg-[oklch(1_0.0971_30.0506)] text-[oklch(0_0_0)] *:text-[lch(0_34.87_33.938)] rounded-[15px] border-[1px] border-[oklch(0_0.0971_30.0506_/_0.4334)] p-[4px]",
       "raw mix inputs": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
       "raw contrast amount": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
@@ -389,6 +427,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.35_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.9067_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(0_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(1_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(0_41.72_45.035)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[16px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -593,6 +640,15 @@
               "80": "bg-[oklch(1_0.1774_41.1449)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1774_41.1449_/_0.4334)] p-[4px]",
               "90": "bg-[oklch(1_0.1997_41.1288)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1997_41.1288_/_0.4334)] p-[4px]",
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.4334)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.35_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.9067_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(0_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(1_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(0_41.72_45.035)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.4334)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -801,6 +857,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.35_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.9067_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(0_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(1_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(0_41.72_45.035)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[16px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -1005,6 +1070,15 @@
               "80": "bg-[oklch(1_0.1774_41.1449)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1774_41.1449_/_0.4334)] p-[4px]",
               "90": "bg-[oklch(1_0.1997_41.1288)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1997_41.1288_/_0.4334)] p-[4px]",
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.4334)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.35_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.9067_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(0_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(1_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(0_41.72_45.035)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.4334)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -1213,6 +1287,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.35_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.9067_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(0_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(1_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(0_41.72_45.035)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[16px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -1417,6 +1500,15 @@
               "80": "bg-[oklch(1_0.1774_41.1449)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1774_41.1449_/_0.4334)] p-[4px]",
               "90": "bg-[oklch(1_0.1997_41.1288)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1997_41.1288_/_0.4334)] p-[4px]",
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.4334)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.35_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.9067_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(0_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(1_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(0_41.72_45.035)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.4334)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -1625,6 +1717,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.35_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.9067_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(0_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(1_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(0_41.72_45.035)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[16px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -1829,6 +1930,15 @@
               "80": "bg-[oklch(1_0.1774_41.1449)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1774_41.1449_/_0.4334)] p-[4px]",
               "90": "bg-[oklch(1_0.1997_41.1288)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1997_41.1288_/_0.4334)] p-[4px]",
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.4334)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.35_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.9067_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(0_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(1_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(0_41.72_45.035)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.4334)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -2037,6 +2147,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.0011_197.14)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.14_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.0436_41.586)] text-[oklch(1_0_0)] *:text-[lch(100_0.16_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.1105_41.2319)] text-[oklch(1_0_0)] *:text-[lch(100_2.59_104.588)] rounded-[10px] border-[1px] border-[oklch(1_0.1105_41.2319_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(0_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[16px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -2243,6 +2362,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.0011_197.14)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.14_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.0436_41.586)] text-[oklch(1_0_0)] *:text-[lch(100_0.16_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.1105_41.2319)] text-[oklch(1_0_0)] *:text-[lch(100_2.59_104.588)] rounded-[10px] border-[1px] border-[oklch(1_0.1105_41.2319_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(0_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[16px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -2447,6 +2575,15 @@
               "80": "bg-[oklch(0.1834_0.1774_41.1449)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1774_41.1449_/_0.4334)] p-[4px]",
               "90": "bg-[oklch(0.2_0.1997_41.1288)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1997_41.1288_/_0.4334)] p-[4px]",
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.0011_197.14)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(0_0.38_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0.14_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.0436_41.586)] text-[oklch(1_0_0)] *:text-[lch(100_0.16_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0436_41.586_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.1105_41.2319)] text-[oklch(1_0_0)] *:text-[lch(100_2.59_104.588)] rounded-[10px] border-[1px] border-[oklch(1_0.1105_41.2319_/_0.4334)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -2660,6 +2797,15 @@
               "100": "bg-[oklch(0.7936_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.1834)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.3134_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(76.4118_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "push fade": "bg-[oklch(0.8627_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(25.2896_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(37.4589_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.1834)] p-[4px]",
+              "color fade": "bg-[oklch(0.9064_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(25.2896_41.97_45.099)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.1834)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[16px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px] m-[16px]",
             "children": {
@@ -2864,6 +3010,15 @@
               "80": "bg-[oklch(0.7968_0.1774_41.1449)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1774_41.1449_/_0.1834)] p-[4px]",
               "90": "bg-[oklch(0.7911_0.1997_41.1288)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1997_41.1288_/_0.1834)] p-[4px]",
               "100": "bg-[oklch(0.7936_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.1834)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0.9834_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.3134_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(76.4118_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "push fade": "bg-[oklch(0.8494_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(25.2896_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "offset fade": "bg-[oklch(1_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(37.4589_15.92_45.281)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.1834)] p-[4px]",
+              "color fade": "bg-[oklch(0.898_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(25.2896_42_45.106)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.1834)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -3072,6 +3227,15 @@
               "100": "bg-[oklch(0.7936_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.1834)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0.8834_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.3134_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(76.4118_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "push fade": "bg-[oklch(0.7694_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(17.1886_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "offset fade": "bg-[oklch(0.9392_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(30.2938_15.94_45.276)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.1834)] p-[4px]",
+              "color fade": "bg-[oklch(0.848_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(19.9962_40_45.156)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.1834)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(0.8834_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[16px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px] m-[16px]",
             "children": {
@@ -3276,6 +3440,15 @@
               "80": "bg-[oklch(0.7886_0.1774_41.1449)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1774_41.1449_/_0.1834)] p-[4px]",
               "90": "bg-[oklch(0.7911_0.1997_41.1288)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.1997_41.1288_/_0.1834)] p-[4px]",
               "100": "bg-[oklch(0.7936_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.1834)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0.8522_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.3134_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(76.4118_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "push fade": "bg-[oklch(0.4623_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(99.0429_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "offset fade": "bg-[oklch(0.9143_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(30.2938_15.96_45.274)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.1834)] p-[4px]",
+              "color fade": "bg-[oklch(0.8325_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(19.9962_40_45.174)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.1834)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -3484,6 +3657,15 @@
               "100": "bg-[oklch(0.7936_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.222_41.116_/_0.1834)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0.8522_0.0011_197.14)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.3134_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(76.4118_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "push fade": "bg-[oklch(0.4623_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(99.0429_0.38_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px]",
+              "offset fade": "bg-[oklch(0.9143_0.0436_41.586)] text-[oklch(0_0_0)] *:text-[lch(30.2938_15.96_45.274)] rounded-[10px] border-[1px] border-[oklch(0_0.0436_41.586_/_0.1834)] p-[4px]",
+              "color fade": "bg-[oklch(0.8325_0.1105_41.2319)] text-[oklch(0_0_0)] *:text-[lch(19.9962_40_45.174)] rounded-[10px] border-[1px] border-[oklch(0_0.1105_41.2319_/_0.1834)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(0.8522_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[16px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1834)] p-[4px] m-[16px]",
             "children": {
@@ -3688,6 +3870,15 @@
               "80": "bg-[oklch(0.4227_0.1774_41.1449)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1774_41.1449_/_0.1834)] p-[4px]",
               "90": "bg-[oklch(0.4177_0.1997_41.1288)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1997_41.1288_/_0.1834)] p-[4px]",
               "100": "bg-[oklch(0.7936_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.1834)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.0011_197.14)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0011_197.14_/_0.1834)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.8767_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(27.8204_0.38_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.1834)] p-[4px]",
+              "push fade": "bg-[oklch(0.1753_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(63.5464_0.27_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0011_197.14_/_0.1834)] p-[4px]",
+              "offset fade": "bg-[oklch(0.0659_0.0436_41.586)] text-[oklch(1_0_0)] *:text-[lch(61.4645_1.88_16.718)] rounded-[10px] border-[1px] border-[oklch(1_0.0436_41.586_/_0.1834)] p-[4px]",
+              "color fade": "bg-[oklch(0.2397_0.1105_41.2319)] text-[oklch(1_0_0)] *:text-[lch(70.456_39.7_34.189)] rounded-[10px] border-[1px] border-[oklch(1_0.1105_41.2319_/_0.1834)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -3901,6 +4092,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0_0)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0_0_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0_0)] text-[oklch(0_0_0)] *:text-[lch(0_0.01_0)] rounded-[10px] border-[1px] border-[oklch(1_0_0_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0_0)] text-[oklch(1_0_0)] *:text-[lch(100_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0_0_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.0444_41.116)] text-[oklch(1_0_0)] *:text-[lch(100_0.17_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0444_41.116_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.111_41.116)] text-[oklch(1_0_0)] *:text-[lch(100_2.6_104.489)] rounded-[10px] border-[1px] border-[oklch(1_0.111_41.116_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(0_0_0)] text-[oklch(1_0_0)] rounded-[16px] border-[1px] border-[oklch(1_0_0_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -4107,6 +4307,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0_0)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0_0_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0_0)] text-[oklch(0_0_0)] *:text-[lch(0_0.01_0)] rounded-[10px] border-[1px] border-[oklch(1_0_0_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0_0)] text-[oklch(1_0_0)] *:text-[lch(100_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0_0_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.0444_41.116)] text-[oklch(1_0_0)] *:text-[lch(100_0.17_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0444_41.116_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.111_41.116)] text-[oklch(1_0_0)] *:text-[lch(100_2.6_104.489)] rounded-[10px] border-[1px] border-[oklch(1_0.111_41.116_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(0_0_0)] text-[oklch(1_0_0)] rounded-[16px] border-[1px] border-[oklch(1_0_0_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -4311,6 +4520,15 @@
               "80": "bg-[oklch(0.1834_0.1745_40.2915)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1745_40.2915_/_0.4334)] p-[4px]",
               "90": "bg-[oklch(0.2_0.1982_40.7531)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1982_40.7531_/_0.4334)] p-[4px]",
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.02_260)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.02_260_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.02_260)] text-[oklch(0_0_0)] *:text-[lch(0_7.5_262.627)] rounded-[10px] border-[1px] border-[oklch(1_0.02_260_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.02_260)] text-[oklch(1_0_0)] *:text-[lch(100_3.39_269.566)] rounded-[10px] border-[1px] border-[oklch(1_0.02_260_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.0335_23.6623)] text-[oklch(1_0_0)] *:text-[lch(100_0.02_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0335_23.6623_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.1034_37.6356)] text-[oklch(1_0_0)] *:text-[lch(100_1.71_101.023)] rounded-[10px] border-[1px] border-[oklch(1_0.1034_37.6356_/_0.4334)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -4524,6 +4742,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.245_262.881)] text-[oklch(0_0_0)] *:text-[lch(0_40_278.477)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.245_262.881)] text-[oklch(1_0_0)] *:text-[lch(100_80_314.998)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.1655_273.172)] text-[oklch(1_0_0)] *:text-[lch(100_24.64_297.763)] rounded-[10px] border-[1px] border-[oklch(1_0.1655_273.172_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.0839_324.643)] text-[oklch(1_0_0)] *:text-[lch(100_0.5_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0839_324.643_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] rounded-[16px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -4728,6 +4955,15 @@
               "80": "bg-[oklch(0.1834_0.1448_28.0877)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1448_28.0877_/_0.4334)] p-[4px]",
               "90": "bg-[oklch(0.2_0.1823_35.979)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1823_35.979_/_0.4334)] p-[4px]",
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.245_262.881)] text-[oklch(0_0_0)] *:text-[lch(0_40_278.477)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.245_262.881)] text-[oklch(1_0_0)] *:text-[lch(100_80_314.998)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.1655_273.172)] text-[oklch(1_0_0)] *:text-[lch(100_24.64_297.763)] rounded-[10px] border-[1px] border-[oklch(1_0.1655_273.172_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.0839_324.643)] text-[oklch(1_0_0)] *:text-[lch(100_0.5_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0839_324.643_/_0.4334)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -4936,6 +5172,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.245_262.881)] text-[oklch(0_0_0)] *:text-[lch(0_40_278.477)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.245_262.881)] text-[oklch(1_0_0)] *:text-[lch(100_80_314.998)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.1655_273.172)] text-[oklch(1_0_0)] *:text-[lch(100_24.64_297.763)] rounded-[10px] border-[1px] border-[oklch(1_0.1655_273.172_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.0839_324.643)] text-[oklch(1_0_0)] *:text-[lch(100_0.5_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0839_324.643_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] rounded-[16px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -5140,6 +5385,15 @@
               "80": "bg-[oklch(0.1834_0.1448_28.0877)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1448_28.0877_/_0.4334)] p-[4px]",
               "90": "bg-[oklch(0.2_0.1823_35.979)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1823_35.979_/_0.4334)] p-[4px]",
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.245_262.881)] text-[oklch(0_0_0)] *:text-[lch(0_40_278.477)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.245_262.881)] text-[oklch(1_0_0)] *:text-[lch(100_80_314.998)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.1655_273.172)] text-[oklch(1_0_0)] *:text-[lch(100_24.64_297.763)] rounded-[10px] border-[1px] border-[oklch(1_0.1655_273.172_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.0839_324.643)] text-[oklch(1_0_0)] *:text-[lch(100_0.5_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0839_324.643_/_0.4334)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {
@@ -5348,6 +5602,15 @@
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
             }
           },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.245_262.881)] text-[oklch(0_0_0)] *:text-[lch(0_40_278.477)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.245_262.881)] text-[oklch(1_0_0)] *:text-[lch(100_80_314.998)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.1655_273.172)] text-[oklch(1_0_0)] *:text-[lch(100_24.64_297.763)] rounded-[10px] border-[1px] border-[oklch(1_0.1655_273.172_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.0839_324.643)] text-[oklch(1_0_0)] *:text-[lch(100_0.5_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0839_324.643_/_0.4334)] p-[4px]"
+            }
+          },
           "ak-layer-saturate-<number>": {
             "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] rounded-[16px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] m-[16px]",
             "children": {
@@ -5552,6 +5815,15 @@
               "80": "bg-[oklch(0.1834_0.1448_28.0877)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1448_28.0877_/_0.4334)] p-[4px]",
               "90": "bg-[oklch(0.2_0.1823_35.979)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.1823_35.979_/_0.4334)] p-[4px]",
               "100": "bg-[oklch(0.9794_0.222_41.116)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.222_41.116_/_0.4334)] p-[4px]"
+            }
+          },
+          "ak-layer-fade-<number>": {
+            "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] mr-[-5px] ml-[-5px]",
+            "children": {
+              "push": "bg-[oklch(0.9_0.245_262.881)] text-[oklch(0_0_0)] *:text-[lch(0_40_278.477)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "push fade": "bg-[oklch(0.1253_0.245_262.881)] text-[oklch(1_0_0)] *:text-[lch(100_80_314.998)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px]",
+              "offset fade": "bg-[oklch(0_0.1655_273.172)] text-[oklch(1_0_0)] *:text-[lch(100_24.64_297.763)] rounded-[10px] border-[1px] border-[oklch(1_0.1655_273.172_/_0.4334)] p-[4px]",
+              "color fade": "bg-[oklch(0_0.0839_324.643)] text-[oklch(1_0_0)] *:text-[lch(100_0.5_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0839_324.643_/_0.4334)] p-[4px]"
             }
           },
           "ak-layer-saturate-<number>": {

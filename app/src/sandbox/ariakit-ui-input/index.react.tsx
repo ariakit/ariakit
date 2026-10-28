@@ -461,6 +461,37 @@ export default function InputExamples() {
       </Example>
 
       <Example
+        title="Disabled inverted"
+        description="An inverted field fades into the surface around it while its input is disabled, so it does not look enabled."
+        code={`
+          <Input $invert disabled />
+        `}
+      >
+        <Input aria-label="Username" defaultValue="ada" $invert disabled />
+      </Example>
+
+      <Example
+        title="Disabled colors"
+        description="A colored field fades into the surface around it while its input is disabled, so it does not look enabled. A disabled fieldset fades it without the disabled prop."
+        code={`
+          <Input $layer="danger" disabled />
+          <fieldset disabled>
+            <Input $layer="brand" />
+          </fieldset>
+        `}
+      >
+        <Input
+          aria-label="Coupon"
+          defaultValue="SAVE20"
+          $layer="danger"
+          disabled
+        />
+        <fieldset disabled>
+          <Input aria-label="Referral" defaultValue="ada" $layer="brand" />
+        </fieldset>
+      </Example>
+
+      <Example
         title="Subtle edge"
         description="A lighter edge. The default is the lightest edge that meets the contrast minimum for a field boundary, so the lighter edge needs the contrast floor turned off. Use this only where something else marks the field."
         code={`

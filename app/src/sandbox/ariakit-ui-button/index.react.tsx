@@ -973,7 +973,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled"
-        description="The badge fill mixes into the button's surface while its text keeps adaptive contrast. The button stops responding to the pointer."
+        description="The badge fill fades into the button's surface while its text keeps adaptive contrast. The button stops responding to the pointer."
         code={`
           <Button disabled>
             <ButtonSlot>
@@ -1115,7 +1115,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled brand"
-        description="The color mixes into the surface around the button, and the text fades."
+        description="The color fades into the surface around the button, and the text fades."
         code={`
           <Button $layer="brand" disabled>Publish</Button>
         `}
@@ -1127,7 +1127,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled colors"
-        description="Other colors and colored bevels mix the same way. A disabled fieldset mixes a colored button without the disabled prop."
+        description="Other colors and colored bevels fade the same way. A disabled fieldset fades a colored button without the disabled prop."
         code={`
           <Button $layer="danger" disabled>Delete</Button>
           <Button $layer="brand" $kind="bevel" disabled>Deploy</Button>
@@ -1177,14 +1177,36 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled inverted"
-        description="A disabled button drops the inversion and fades like a see-through button."
+        description="The inverted surface fades into the surface around the button, like a disabled colored button, and the text fades. A disabled fieldset fades it without the disabled prop. On a mid-tone surface, the faded surface stays on the inverted side."
         code={`
           <Button $invert disabled>Continue</Button>
+          <fieldset disabled>
+            <Button $invert>Save</Button>
+          </fieldset>
+          <Frame $layer="brand" $p={3}>
+            <Button $invert disabled>Vote</Button>
+          </Frame>
+          <Frame $layer="secondary" $p={3}>
+            <Button $invert disabled>Vote</Button>
+          </Frame>
         `}
       >
         <Button $invert disabled>
           Continue
         </Button>
+        <fieldset disabled>
+          <Button $invert>Save</Button>
+        </fieldset>
+        <Frame $layer="brand" $p={3}>
+          <Button $invert disabled>
+            Vote
+          </Button>
+        </Frame>
+        <Frame $layer="secondary" $p={3}>
+          <Button $invert disabled>
+            Vote
+          </Button>
+        </Frame>
       </Example>
 
       <Example

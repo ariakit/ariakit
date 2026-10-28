@@ -1,12 +1,17 @@
 import { cv } from "clava";
-import { control, controlLabel, controlSlot } from "./control.ts";
+import { controlLabel, controlSlot } from "./control.ts";
 import { isLayerColor } from "./layer.ts";
+import { slotFrame } from "./slot-frame.ts";
 
 /** A compact badge with a tinted surface and rounded edge. */
 export const badge = cv({
-  extend: [control],
+  extend: [slotFrame],
   class: [
-    "font-medium",
+    // Rules that keep controls at their content width or color the border of a
+    // floating slot also match this marker.
+    "badge font-medium",
+    // Center short counts in the minimum width, and position floating slots.
+    "relative justify-center",
     // Keep badges aligned with surrounding text while allowing flex and grid
     // placement.
     "inline-flex",
