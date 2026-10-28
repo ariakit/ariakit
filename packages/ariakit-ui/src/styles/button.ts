@@ -107,16 +107,28 @@ export const button = cv({
     }
     // Mix a disabled colored surface into the parent like disabled slots, so it
     // does not look enabled. Neutral fills, including canvas, stay as the
-    // boundary.
+    // boundary. An inverted surface fades below instead, because the mix would
+    // move the color that its push starts from.
     const mutesSurface =
-      isLayerColor(variants.$layer) && variants.$layer !== "canvas";
+      !variants.$invert &&
+      isLayerColor(variants.$layer) &&
+      variants.$layer !== "canvas";
     if (mutesSurface) {
       // DOM disabled state can change without rerendering the recipe.
       addClass("ui-disabled:ak-layer-mix-20");
     }
+    // The inverted surface comes from a push that reaches its lightness bound,
+    // so a mix before the push has no effect. Fade it after the push to the
+    // same 20% surface instead.
+    if (variants.$invert) {
+      addClass("ui-disabled:ak-layer-fade-80");
+    }
     if (!variants.$disabled) return;
     if (mutesSurface) {
       setVariants({ $mix: 20 });
+    }
+    if (variants.$invert) {
+      addClass("ak-layer-fade-80");
     }
     // Label-based controls never match :disabled, so remove their hover and
     // press variants explicitly.

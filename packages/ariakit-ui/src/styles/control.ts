@@ -39,10 +39,6 @@ export const control = cv({
     $rounded: "md",
     $p: 2,
   },
-  refine({ variants, setVariants }) {
-    if (!variants.$disabled) return;
-    setVariants({ $invert: false });
-  },
 });
 
 // Single-row badges, avatars, and shortcut boxes need extra content space;

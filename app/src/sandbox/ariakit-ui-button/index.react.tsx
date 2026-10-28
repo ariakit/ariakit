@@ -1177,14 +1177,36 @@ export default function ButtonExamples() {
 
       <Example
         title="Disabled inverted"
-        description="A disabled button drops the inversion and fades like a see-through button."
+        description="The inverted surface fades into the surface around the button, like a disabled colored button, and the text fades. A disabled fieldset fades it without the disabled prop. On a mid-tone surface, the faded surface stays on the inverted side."
         code={`
           <Button $invert disabled>Continue</Button>
+          <fieldset disabled>
+            <Button $invert>Save</Button>
+          </fieldset>
+          <Frame $layer="brand" $p={3}>
+            <Button $invert disabled>Vote</Button>
+          </Frame>
+          <Frame $layer="secondary" $p={3}>
+            <Button $invert disabled>Vote</Button>
+          </Frame>
         `}
       >
         <Button $invert disabled>
           Continue
         </Button>
+        <fieldset disabled>
+          <Button $invert>Save</Button>
+        </fieldset>
+        <Frame $layer="brand" $p={3}>
+          <Button $invert disabled>
+            Vote
+          </Button>
+        </Frame>
+        <Frame $layer="secondary" $p={3}>
+          <Button $invert disabled>
+            Vote
+          </Button>
+        </Frame>
       </Example>
 
       <Example
