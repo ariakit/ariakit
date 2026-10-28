@@ -84,6 +84,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Nothing shows the pending hide, so cross its 1s hide timeout.
     await page.waitForTimeout(1000);
     await test.expect(tooltip).toHaveAttribute("data-open");
+    // The pointer stays outside, and moving focus away still hides it.
+    await page.keyboard.press("Shift+Tab");
+    await test.expect(q.button("After tooltip")).toBeFocused();
+    await test.expect(tooltip).not.toHaveAttribute("data-open");
   });
 
   // https://github.com/ariakit/ariakit/issues/8086
