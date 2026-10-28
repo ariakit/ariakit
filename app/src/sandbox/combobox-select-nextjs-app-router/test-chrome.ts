@@ -112,11 +112,7 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     await test.expect(q.combobox("Status")).toHaveText("2 selected");
   });
 
-  test("opens a multi-value option in a new tab", async ({
-    browserName,
-    page,
-    q,
-  }) => {
+  test("opens a multi-value option in a new tab", async ({ page, q }) => {
     // Opening a new tab may cold-start the preview worker under CI load.
     test.slow();
     const modifier = await getNewTabModifier(page);
@@ -135,15 +131,11 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     await test.expect(status).toBeFocused();
 
     const newPage = await openNewTab(page, async () => {
-      if (browserName === "webkit") {
-        await q.option("Archived").click({ modifiers: [modifier] });
-      } else {
-        await page.keyboard.down(modifier);
-        try {
-          await status.press("Enter");
-        } finally {
-          await page.keyboard.up(modifier);
-        }
+      await page.keyboard.down(modifier);
+      try {
+        await status.press("Enter");
+      } finally {
+        await page.keyboard.up(modifier);
       }
     });
 

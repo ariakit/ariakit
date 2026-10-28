@@ -2,7 +2,7 @@ import { press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // The scroll side of the presentation is browser-only and lives in
-// test-browser.ts.
+// test-chrome.ts.
 // #7068 redefines the focus contract #6832 established here: an open the select
 // did not initiate still takes focus, because the app asked for the popup.
 // combobox-select-programmatic-open covers the non-default openings.

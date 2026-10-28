@@ -2,7 +2,7 @@ import { click, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // The scroll side of the presentation is browser-only and lives in
-// test-browser.ts.
+// test-chrome.ts.
 // https://github.com/ariakit/ariakit/issues/7068
 test("takes focus when opened without focus", async () => {
   expect(document.body).toHaveFocus();
