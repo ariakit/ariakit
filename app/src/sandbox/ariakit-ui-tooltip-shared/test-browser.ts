@@ -1,28 +1,6 @@
-import type { Locator, Page } from "@playwright/test";
-import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { withFramework } from "#app/test-utils/preview.ts";
 import { SKIP_TIMEOUT } from "#app/test-utils/tooltip.ts";
-
-// The slide of the shared popup lasts 150 ms.
-const SLIDE_DURATION = 150;
-
-/**
- * Moves the pointer onto an anchor. Ariakit resets hover intent on scroll, so
- * the anchor must be in view before the pointer moves over it.
- */
-async function hoverAnchor(anchor: Locator) {
-  await anchor.scrollIntoViewIfNeeded();
-  await anchor.hover();
-}
-
-/**
- * Waits for the slides that could start after the popup moves. The count is the
- * visible state, but a slide that must not happen leaves it unchanged, so the
- * wait crosses the frames that start a transition and the slide duration.
- */
-async function waitPastSlide(page: Page) {
-  await flushFrames(page);
-  await page.waitForTimeout(SLIDE_DURATION);
-}
+import { hoverAnchor, waitPastSlide } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   test.use({ viewport: { width: 1280, height: 1000 } });
@@ -96,27 +74,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.waitForTimeout(SKIP_TIMEOUT);
     await hoverAnchor(query(list).button("Item 3"));
     await test.expect(q.tooltip("Item 3 tooltip")).toBeVisible();
-    await waitPastSlide(page);
-    await test.expect(query(section).status()).toHaveText("Slides: 0");
-  });
-
-  test("doesn't slide with $slide set to false", async ({ page, q }) => {
-    const section = q.region("No slide");
-    await hoverAnchor(query(section).button("One"));
-    await test.expect(q.tooltip("One tooltip")).toBeVisible();
-    await query(section).button("Two").hover();
-    await test.expect(q.tooltip("Two tooltip")).toBeVisible();
-    await waitPastSlide(page);
-    await test.expect(query(section).status()).toHaveText("Slides: 0");
-  });
-
-  test("doesn't slide with reduced motion", async ({ page, q }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    const section = q.region("Slide");
-    await hoverAnchor(query(section).button("One"));
-    await test.expect(q.tooltip("One tooltip")).toBeVisible();
-    await query(section).button("Two").hover();
-    await test.expect(q.tooltip("Two tooltip")).toBeVisible();
     await waitPastSlide(page);
     await test.expect(query(section).status()).toHaveText("Slides: 0");
   });

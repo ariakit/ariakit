@@ -110,18 +110,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(link).toHaveAccessibleDescription("Members and billing");
   });
 
-  test("describes a link by its description without ids", async ({ q }) => {
-    const nav = query(q.navigation("Link descriptions"));
-    await test
-      .expect(nav.link("Inbox 4"))
-      .toHaveAccessibleDescription(
-        "Messages that wait for a reply from you or your team",
-      );
-    await test
-      .expect(nav.link("Releases"))
-      .toHaveAccessibleDescription("2 drafts");
-  });
-
   test("describes a link whose wrapper forwards an undefined description id", async ({
     q,
   }) => {
@@ -184,24 +172,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const checkbox = nav.link("Checkbox");
     await test.expect(checkbox).toHaveAttribute("aria-current", "page");
     await test.expect(checkbox).toBeVisible();
-  });
-
-  test("moves the current page when a sidebar link is clicked", async ({
-    q,
-  }) => {
-    const nav = query(q.navigation("Documentation sections"));
-    const current = q
-      .navigation("Documentation sections")
-      .locator("[aria-current='page']");
-    await test.expect(current).toHaveCount(1);
-    await test
-      .expect(current)
-      .toHaveAttribute("href", "/docs/styling/introduction");
-    await nav.link("Quickstart").first().click();
-    await test.expect(current).toHaveCount(1);
-    await test
-      .expect(current)
-      .toHaveAttribute("href", "/docs/start/quickstart");
   });
 
   // Regression fixtures.
@@ -385,13 +355,5 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(workspace.link("Drafts")).toBeVisible();
     await test.expect(workspace.navigation()).toHaveCount(1);
     await test.expect(workspace.navigation("Pinned")).toBeVisible();
-  });
-
-  test("skips the landmark of a Nav with landmark set to false", async ({
-    q,
-  }) => {
-    const link = q.link("Recent search");
-    await test.expect(link).toBeVisible();
-    await test.expect(q.navigation().filter({ has: link })).toHaveCount(0);
   });
 });

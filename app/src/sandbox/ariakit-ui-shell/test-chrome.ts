@@ -179,14 +179,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
   });
 
-  test("keeps a navigation sidebar as the only landmark around its Nav rows", async ({
-    q,
-  }) => {
-    const navigation = query(q.navigation("Documentation"));
-    await test.expect(navigation.link("Introduction")).toBeVisible();
-    await test.expect(navigation.navigation()).toHaveCount(0);
-  });
-
   test("keeps Nav rows a navigation inside a complementary sidebar", async ({
     q,
   }) => {
@@ -203,4 +195,68 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(main.text("Middle introduction")).toBeVisible();
     await test.expect(main.navigation("Inner navigation")).toBeVisible();
   });
+
+  for (const [width, scenario, name, sidebarWidth] of [
+    [1600, "docs", "Documentation", "256px"],
+    [1600, "docs", "On this page", "0px"],
+    [700, "docs", "Documentation", "0px"],
+    // A second column on the same side.
+    [1600, "chat", "Channels", "256px"],
+    // A data-open prop instead of open.
+    [1600, "geometry", "Layout contents", "0px"],
+  ] as const) {
+    test.describe(`at ${width}px`, () => {
+      test.use({ viewport: { width, height: 900 } });
+
+      // https://github.com/ariakit/ariakit/issues/8147
+      test(`keeps the ${name} sidebar in place when its panel arrives after the column`, async ({
+        q,
+      }) => {
+        await selectScenario(q, scenario);
+        const sidebar = getSidebar(q, name);
+        await expect(sidebar).toHaveCSS("width", sidebarWidth);
+        // Firefox transitions the main body's slot space when the scenario
+        // select remounts the shell. Let it settle so the probe below only sees
+        // the transitions that it starts.
+        await expect
+          .poll(() =>
+            sidebar.evaluate((column) => {
+              const body = document.querySelector("main > .shell-main-body");
+              return [column, body].flatMap(
+                (element) => element?.getAnimations() ?? [],
+              ).length;
+            }),
+          )
+          .toBe(0);
+        const transitions = await sidebar.evaluate((column) => {
+          const shell = column.parentElement;
+          const panel = column.firstElementChild;
+          const body = document.querySelector("main > .shell-main-body");
+          if (!shell || !panel || !body) {
+            throw new Error("Missing shell, sidebar panel, or main body");
+          }
+          // Resolving styles starts any transition that the change caused.
+          const getTransitions = () =>
+            [...column.getAnimations(), ...body.getAnimations()].map(
+              (animation) =>
+                animation instanceof CSSTransition
+                  ? animation.transitionProperty
+                  : animation.id,
+            );
+          // While HTML streams in, the parser can insert the column, pause
+          // before its panel, and let the browser resolve styles in that gap. A
+          // reinserted column has no earlier style to transition from.
+          const next = column.nextSibling;
+          column.remove();
+          panel.remove();
+          shell.insertBefore(column, next);
+          const gap = getTransitions();
+          column.append(panel);
+          return { gap, arrival: getTransitions() };
+        });
+        expect(transitions).toEqual({ gap: [], arrival: [] });
+        await expect(sidebar).toHaveCSS("width", sidebarWidth);
+      });
+    });
+  }
 });

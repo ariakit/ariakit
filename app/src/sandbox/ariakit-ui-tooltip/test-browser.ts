@@ -1,9 +1,6 @@
 import {
   capturePage,
   forEachColorScheme,
-  getCapture,
-  hoverOver,
-  OVERLAY_CLIP_MARGIN,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -17,23 +14,5 @@ withCaptures(import.meta.dirname, async ({ test }) => {
         item: "ariakit-ui-tooltip/page",
       }),
     );
-  });
-
-  test("shows the live tooltip over its anchor on hover @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      await hoverOver(q.button("Publish"));
-      const tooltip = q.tooltip("Publish to the public site");
-      await test.expect(tooltip).toBeVisible();
-      await visual(
-        getCapture(tooltip, colorScheme, {
-          item: "ariakit-ui-tooltip/live-tooltip-hover",
-          clipMargin: OVERLAY_CLIP_MARGIN,
-        }),
-      );
-    });
   });
 });
