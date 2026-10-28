@@ -39,8 +39,25 @@ export function hasLayerBackground(variants: VariantProps<typeof layer>) {
       return value !== "transparent";
     }
     if (key === "$ink") return false;
-    return !!layer.class({ $layer: false, [key]: value });
+    return isLayerModifier(key, value);
   });
+}
+
+// Recipes check layer modifiers on every pass, and most values repeat.
+const layerModifierCache = new Map<string, boolean>();
+
+/** Checks whether a layer variant value adds a class. */
+function isLayerModifier(key: string, value: string | number | boolean) {
+  const cacheKey = `${key}:${typeof value}:${value}`;
+  const cached = layerModifierCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+  const result = !!layer.class({ $layer: false, [key]: value });
+  // Bound the cache for callers that pass a continuous range of values.
+  if (layerModifierCache.size >= 500) {
+    layerModifierCache.clear();
+  }
+  layerModifierCache.set(cacheKey, result);
+  return result;
 }
 
 /**
@@ -210,9 +227,10 @@ export const layer = cv({
     /**
      * Caps background chroma (0–40) after other modifiers. `auto` follows
      * lightness so a fully light layer becomes white instead of a saturated
-     * color.
+     * color. It's the default on colored or modified layers. `null` removes the
+     * cap.
      */
-    $chromaMax(value?: ChromaValues | "auto" | (string & {}) | number) {
+    $chromaMax(value?: ChromaValues | "auto" | (string & {}) | number | null) {
       const mapValues = [...CHROMA_VALUES, "auto"] as const;
       if (includes(mapValues, value)) {
         const valueMap = {
@@ -338,5 +356,19 @@ export const layer = cv({
       if (variants.$invert) return 96;
       return defaultValue;
     },
+  },
+  // Lose chroma near white and black, so a light surface on a tinted layer
+  // reads white or a pale tint instead of a saturated color. Refine adds the
+  // class once the variants settle, which costs less than a default that
+  // changes between passes.
+  refine({ variants, addClass }) {
+    if (variants.$chromaMax !== undefined) return;
+    if (!variants.$layer) return;
+    // The cap marks the layer as modified, so add it only where a color or
+    // another modifier already does. A bare layer keeps the parent color and
+    // contrast bias, and a transparent one stays unpainted.
+    const $layer = variants.$layer === true ? "transparent" : variants.$layer;
+    if (!hasLayerBackground({ ...variants, $layer })) return;
+    addClass("ak-layer-max-c-auto");
   },
 });

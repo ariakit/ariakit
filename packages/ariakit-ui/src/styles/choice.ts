@@ -114,9 +114,6 @@ export const choice = cv({
     $borderType: "border",
     $edgeContrast: true,
     $lighten: true,
-    // Like the input, read white instead of a brighter tint on light tinted
-    // layers.
-    $chromaMax: "auto",
     $hoverOffset: true,
     $layer(defaultValue) {
       // Replace only the slot's transparent default; explicit colors still
