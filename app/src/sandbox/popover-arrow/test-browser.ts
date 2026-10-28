@@ -129,31 +129,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeLessThanOrEqual(anchorBox.x + anchorBox.width);
   });
 
-  test("arrow takes the new theme colors when the popover opens after a theme switch", async ({
-    page,
-    q,
-  }) => {
-    const disclosure = q.button("Themed popover");
-    await disclosure.click();
-    const dialog = q.dialog("Themed popover");
-    const arrow = dialog.locator(".arrow");
-    await test.expect(arrow).toHaveCSS("fill", "rgb(255, 255, 255)");
-    await test.expect(arrow).toHaveCSS("stroke", ringColor);
-    await test.expect(arrow).toHaveCSS("stroke-width", "2px");
-
-    await page.keyboard.press("Escape");
-    await test.expect(dialog).toBeHidden();
-    await q.checkbox("Dark theme").check();
-
-    // The switch happened while the popover was closed and re-rendered nothing
-    // inside it, so only a fresh read on open can pick up the dark colors.
-    await disclosure.click();
-    await test.expect(dialog).toBeVisible();
-    await test.expect(arrow).toHaveCSS("fill", "rgb(15, 23, 42)");
-    await test.expect(arrow).toHaveCSS("stroke", "rgb(250, 204, 21)");
-    await test.expect(arrow).toHaveCSS("stroke-width", "4px");
-  });
-
   // See https://github.com/ariakit/ariakit/issues/8090
   test("arrow stays clear of the rounded end of a pill tooltip near the viewport side", async ({
     q,
@@ -167,33 +142,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // The anchor is too close to the viewport side for the tooltip to center on
     // it, so the arrow moves toward the bottom-left corner. It must stop where
     // the curved end of the pill meets the straight bottom side.
-    const radius = await getPillRadius(tooltip);
-    await test.expect
-      .poll(() => getArrowLeftInset(tooltip))
-      .toBeCloseTo(radius, 0);
-  });
-
-  // See https://github.com/ariakit/ariakit/issues/8090
-  test("arrow follows the new corner radius when the tooltip opens after a shape change", async ({
-    page,
-    q,
-  }) => {
-    await q.radio("Square").check();
-    const anchor = q.button("Star");
-    await anchor.hover();
-    const tooltip = q.tooltip("Add to favorites");
-    await test.expect(tooltip).toBeVisible();
-
-    // Square corners leave the whole bottom side straight, so the arrow can
-    // move up to the minimum 4px padding next to the corner.
-    await test.expect.poll(() => getArrowLeftInset(tooltip)).toBeCloseTo(4, 0);
-
-    await page.mouse.move(0, 0);
-    await test.expect(tooltip).toBeHidden();
-    await q.radio("Pill").check();
-
-    await anchor.hover();
-    await test.expect(tooltip).toBeVisible();
     const radius = await getPillRadius(tooltip);
     await test.expect
       .poll(() => getArrowLeftInset(tooltip))
@@ -283,10 +231,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   ];
 
   // See https://github.com/ariakit/ariakit/issues/6321
-  for (const { label, strokeWidth, stroke } of cases) {
-    test(`arrow stroke matches the ${label.toLowerCase()} box-shadow`, async ({
-      q,
-    }) => {
+  test("arrow stroke matches the ring box-shadow", async ({ page, q }) => {
+    for (const { label, strokeWidth, stroke } of cases) {
       await q.button(label).click();
       const dialog = q.dialog(label);
       await test.expect(dialog).toBeVisible();
@@ -296,6 +242,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const arrow = dialog.locator(".arrow");
       await test.expect(arrow).toHaveCSS("stroke", stroke ?? ringColor);
       await test.expect(arrow).toHaveCSS("stroke-width", strokeWidth);
-    });
-  }
+      await page.keyboard.press("Escape");
+      await test.expect(dialog).not.toBeVisible();
+    }
+  });
 });

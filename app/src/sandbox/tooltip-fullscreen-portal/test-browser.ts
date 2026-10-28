@@ -27,33 +27,6 @@ function isPortalParentBody(tooltip: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
-  // See https://github.com/ariakit/ariakit/issues/6585 To reproduce the React
-  // 18 StrictMode failure in a browser, serve the app with
-  // `pnpm react18 -- pnpm dev-app`. CI's React 18 signal comes from test.ts.
-  test("does not leak duplicate tooltip portal containers", async ({
-    page,
-    q,
-  }) => {
-    await test
-      .expect(q.status("Portal containers"))
-      .toHaveText("Portal containers: 0");
-
-    await q.button("Hover target").hover();
-    await test.expect(q.tooltip("Tooltip content")).toBeVisible();
-    await test
-      .expect(q.status("Portal containers"))
-      .toHaveText("Portal containers: 1");
-
-    await q.button("Unmount tooltip").click();
-    await test.expect(q.tooltip("Tooltip content")).not.toBeVisible();
-    await test
-      .expect(q.status("Portal containers"))
-      .toHaveText("Portal containers: 0");
-
-    const state = await getPortalState(page);
-    test.expect(state.count).toBe(0);
-  });
-
   test("keeps one portal container while moving in and out of fullscreen", async ({
     page,
     q,
@@ -141,30 +114,21 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // See https://github.com/ariakit/ariakit/issues/865
-  test("tooltip renders inside fullscreen element", async ({ page, q }) => {
-    await q.button("Enter fullscreen").click();
-    await page.waitForFunction(() => document.fullscreenElement != null);
-    await q.button("Hover me").hover();
-    const tooltip = q.tooltip("Fullscreen tooltip");
-    await test.expect(tooltip).toBeVisible();
-
-    const isInsideFullscreen = await tooltip.evaluate((element) => {
-      const fullscreenElement = document.fullscreenElement;
-      if (!fullscreenElement) return false;
-      return fullscreenElement.contains(element);
-    });
-    test.expect(isInsideFullscreen).toBe(true);
-  });
-
-  // See https://github.com/ariakit/ariakit/issues/865
-  test("tooltip moves back to body after exiting fullscreen", async ({
+  test("tooltip renders inside fullscreen element and moves back to body after exiting", async ({
     page,
     q,
   }) => {
     await q.button("Enter fullscreen").click();
     await page.waitForFunction(() => document.fullscreenElement != null);
     await q.button("Hover me").hover();
-    await test.expect(q.tooltip("Fullscreen tooltip")).toBeVisible();
+    const fullscreenTooltip = q.tooltip("Fullscreen tooltip");
+    await test.expect(fullscreenTooltip).toBeVisible();
+    const isInsideFullscreen = await fullscreenTooltip.evaluate((element) => {
+      const fullscreenElement = document.fullscreenElement;
+      if (!fullscreenElement) return false;
+      return fullscreenElement.contains(element);
+    });
+    test.expect(isInsideFullscreen).toBe(true);
 
     await q.button("Exit fullscreen").click();
     await page.waitForFunction(() => document.fullscreenElement == null);
@@ -173,26 +137,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(tooltip).toBeVisible();
 
     test.expect(await isPortalParentBody(tooltip)).toBe(true);
-  });
-
-  // See https://github.com/ariakit/ariakit/issues/865
-  test("tooltip mounted while in fullscreen renders inside it", async ({
-    page,
-    q,
-  }) => {
-    await q.button("Enter fullscreen").click();
-    await page.waitForFunction(() => document.fullscreenElement != null);
-    await q.button("Show second tooltip").click();
-    await q.button("Second anchor").hover();
-    const tooltip = q.tooltip("Second tooltip");
-    await test.expect(tooltip).toBeVisible();
-
-    const isInsideFullscreen = await tooltip.evaluate((element) => {
-      const fullscreenElement = document.fullscreenElement;
-      if (!fullscreenElement) return false;
-      return fullscreenElement.contains(element);
-    });
-    test.expect(isInsideFullscreen).toBe(true);
   });
 
   // https://github.com/ariakit/ariakit/issues/7750

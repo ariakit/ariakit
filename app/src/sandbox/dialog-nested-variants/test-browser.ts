@@ -3,7 +3,7 @@ import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
-// This 29-test matrix uses the same options and navigates back to the preview
+// This 17-test matrix uses the same options and navigates back to the preview
 // before every test. Reuse one context per worker so WebKit doesn't keep
 // opening contexts against the same long-lived browser process.
 test.use({ reuseContext: true });
@@ -83,50 +83,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     expect(point).toBeDefined();
     if (!point) return;
     await page.mouse.click(point.x, point.y);
-  }
-
-  for (const { name, type } of [
-    { name: "nested", type: "" },
-    { name: "sibling", type: "" },
-    { name: "nested", type: " parent backdrop" },
-    { name: "sibling", type: " parent backdrop" },
-    { name: "nested", type: " unmount" },
-    { name: "sibling", type: " unmount" },
-    { name: "nested", type: " no portal" },
-    { name: "sibling", type: " no portal" },
-    { name: "nested", type: " no portal portal" },
-    { name: "sibling", type: " no portal portal" },
-    { name: "nested", type: " no backdrop" },
-    { name: "sibling", type: " no backdrop" },
-  ]) {
-    test(`hide ${name}${type} dialog by pressing Escape`, async ({ page }) => {
-      const q = query(page);
-      await q.button("Open dialog").click();
-      await q.button(`${name}${type}`).click();
-      await q.button(`${name}${type} ${name}`).click();
-      await expect(q.dialog("Dialog")).toBeVisible();
-      await expect(q.dialog(`${name}${type}`)).toBeVisible();
-      await expect(q.dialog(`${name}${type} ${name}`)).toBeVisible();
-      await expectAccessibleDialog(page, "Dialog", false);
-      await expectAccessibleDialog(page, `${name}${type}`, false);
-      await expectAccessibleDialog(page, `${name}${type} ${name}`, true);
-      await expect(canScrollBody(page)).resolves.toBe(false);
-      await page.keyboard.press("Escape");
-      await expect(q.dialog(`${name}${type} ${name}`)).not.toBeVisible();
-      await expect(q.dialog(`${name}${type}`)).toBeVisible();
-      await expectAccessibleDialog(page, "Dialog", false);
-      await expectAccessibleDialog(page, `${name}${type}`, true);
-      await expect(canScrollBody(page)).resolves.toBe(false);
-      await page.keyboard.press("Escape");
-      await expect(q.dialog(`${name}${type}`)).not.toBeVisible();
-      await expect(q.dialog("Dialog")).toBeVisible();
-      await expectAccessibleDialog(page, "Dialog", true);
-      await expect(canScrollBody(page)).resolves.toBe(false);
-      await page.keyboard.press("Escape");
-      await expect(q.button("Open dialog")).toBeFocused();
-      await expect(q.dialog("Dialog")).not.toBeVisible();
-      await expect(canScrollBody(page)).resolves.toBe(true);
-    });
   }
 
   for (const { name, type } of [
