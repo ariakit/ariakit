@@ -15,6 +15,7 @@ import {
   TocList,
 } from "@ariakit/ui/components/toc.ariakit.react";
 import type { AppHeading } from "#app/lib/app.ts";
+import { APP_TOP_ID } from "#app/lib/app.ts";
 
 interface AppTocEntry extends AppHeading {
   children: AppTocEntry[];
@@ -64,6 +65,11 @@ function Entries({ entries }: { entries: AppTocEntry[] }) {
 }
 
 export interface AppTocProps {
+  /**
+   * The title of the page, which links to the top of the page before the
+   * headings.
+   */
+  title?: string;
   headings: AppHeading[];
 }
 
@@ -72,13 +78,14 @@ export interface AppTocProps {
  * named "On this page", such as a `ShellSidebar` rendered as `nav`. The
  * landmark renders outside this island, so the table of contents skips its own.
  */
-export function AppToc({ headings }: AppTocProps) {
+export function AppToc({ title, headings }: AppTocProps) {
   return (
     <Toc
       landmark={false}
       label={<TocLabel $uppercase>On this page</TocLabel>}
       $cover
     >
+      {title && <TocLink href={`#${APP_TOP_ID}`}>{title}</TocLink>}
       <Entries entries={getEntries(headings)} />
     </Toc>
   );

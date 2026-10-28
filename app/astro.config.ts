@@ -20,11 +20,14 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { previewConfig } from "./src/lib/preview-config.ts";
 import { resolvePreviewRoots } from "./src/lib/preview-discovery.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
+import { remarkGalleryExamples } from "./src/lib/remark-gallery.ts";
 import { sourcePlugin } from "./src/lib/source.ts";
 
 const port = Number(process.env.APP_PORT) || 4321;
 const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || 0;
 const viteCacheDir = process.env.APP_VITE_CACHE_DIR;
+const srcDir = join(import.meta.dirname, "src");
+const previewRoots = resolvePreviewRoots({ ...previewConfig, srcDir });
 
 // https://astro.build/config
 export default defineConfig({
@@ -75,15 +78,7 @@ export default defineConfig({
       // Perf CI enables this so CDP script profiles can resolve source maps.
       sourcemap: process.env.PERF_SOURCE_MAP === "true",
     },
-    plugins: [
-      tailwindcss(),
-      sourcePlugin(
-        resolvePreviewRoots({
-          ...previewConfig,
-          srcDir: join(import.meta.dirname, "src"),
-        }),
-      ),
-    ],
+    plugins: [tailwindcss(), sourcePlugin(previewRoots)],
     // TODO: Remove this workaround once withastro/astro#17166 is fixed.
     // Pre-optimize bare SSR imports so the Cloudflare adapter cannot reload
     // React mid-request.
@@ -100,6 +95,7 @@ export default defineConfig({
   markdown: {
     syntaxHighlight: false,
     processor: unified({
+      remarkPlugins: [[remarkGalleryExamples, { roots: previewRoots, srcDir }]],
       rehypePlugins: [
         rehypeHeadingIds,
         [rehypeAutolinkHeadings, { behavior: "wrap" }],

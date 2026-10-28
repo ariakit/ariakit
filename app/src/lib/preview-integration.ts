@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AstroConfig, AstroIntegration } from "astro";
 import type { Plugin } from "vite";
@@ -19,6 +19,7 @@ import {
 import {
   discoverPreviews,
   getPreviewIdFromDir,
+  resolvePreviewModuleFile,
   resolvePreviewRoots,
   shouldRegeneratePreview,
 } from "./preview-discovery.ts";
@@ -69,16 +70,8 @@ export function resolvePreviewImport(
   const specifier = id.split("?")[0] ?? id;
   const filename = specifier.split(/[/\\]/).pop();
   if (filename !== "preview.astro") return;
-  const file = isAbsolute(specifier)
-    ? specifier
-    : specifier.startsWith("#app/")
-      ? join(
-          fileURLToPath(params.config.srcDir),
-          specifier.slice("#app/".length),
-        )
-      : importer
-        ? resolve(dirname(importer), specifier)
-        : undefined;
+  const srcDir = fileURLToPath(params.config.srcDir);
+  const file = resolvePreviewModuleFile(specifier, importer, srcDir);
   if (!file) return;
   const previewId = getPreviewImportId(file, params);
   if (!previewId) return;
