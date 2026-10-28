@@ -598,24 +598,32 @@ test("table of contents keeps the page content in place while the page loads", a
     downloadThroughput: 1_000_000,
     uploadThroughput: 1_000_000,
   });
-  // Counts the distinct title positions and first preview card widths on the
-  // frames from the first paint.
+  // Counts the distinct title positions, first preview card widths, and
+  // positions of the visible table of contents on the frames from the first
+  // paint.
   await page.addInitScript(() => {
-    const layouts = new Set<string>();
+    const titleXs = new Set<number>();
+    const cardWidths = new Set<number>();
+    const tocYs = new Set<number>();
     const counter = document.createElement("output");
     counter.id = "layout-count";
     counter.hidden = true;
     const record = () => {
       const title = document.querySelector("main h1");
       const card = document.querySelector("[data-preview-card]");
-      if (title && card) {
-        const titleX = title.getBoundingClientRect().x;
-        const cardWidth = card.getBoundingClientRect().width;
-        layouts.add(`${titleX} ${cardWidth}`);
-        counter.value = String(layouts.size);
-        if (!counter.isConnected) {
-          document.body.append(counter);
-        }
+      const toc = document.querySelector('[aria-label="On this page"]');
+      if (title) {
+        titleXs.add(title.getBoundingClientRect().x);
+      }
+      if (card) {
+        cardWidths.add(card.getBoundingClientRect().width);
+      }
+      if (toc?.checkVisibility({ visibilityProperty: true })) {
+        tocYs.add(toc.getBoundingClientRect().y + window.scrollY);
+      }
+      counter.value = `${titleXs.size} ${cardWidths.size} ${tocYs.size}`;
+      if (document.body && !counter.isConnected) {
+        document.body.append(counter);
       }
       requestAnimationFrame(record);
     };
@@ -627,7 +635,7 @@ test("table of contents keeps the page content in place while the page loads", a
   // A table of contents that arrives after the content narrows it in the frame
   // that renders the table, which the counter records on the next frame.
   await flushFrames(page);
-  await expect(page.locator("#layout-count")).toHaveText("1");
+  await expect(page.locator("#layout-count")).toHaveText("1 1 1");
 });
 
 test("table of contents lists the gallery examples", async ({ page, q }) => {

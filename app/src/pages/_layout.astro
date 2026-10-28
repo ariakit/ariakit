@@ -234,7 +234,10 @@ const hasSidebar = sidebar && navigation.length > 0;
         end. The inner shell holds the header, the site navigation, the main
         content, a table of contents, and the footer. */}
     <Shell id={APP_TOP_ID}>
-      <Shell>
+      {/* The table of contents comes before the main content, but it starts
+          below the intro. It shows once the main body starts, after the intro,
+          instead of moving down when the intro arrives. */}
+      <Shell className="[&>.shell-sidebar-end:not(:has(~.shell-main>.shell-main-body))]:invisible">
         <ShellHeader $height="sm" $blur className="text-sm">
           {/* The global styles give islands the display of their parent, so a
               hidden button would leave an empty flex item and its gap. */}
