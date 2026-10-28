@@ -214,6 +214,24 @@ const hasSidebar = sidebar && navigation.length > 0;
   <head>
     <slot name="meta"><Meta {title} /></slot>
     <ThemeScript />
+    <script is:inline>
+      // Links work while the page parses, before its scripts run. This records
+      // the last click until then, so the scripts can do what they would have
+      // done for it, such as moving focus to a preview card.
+      (() => {
+        /** @param {MouseEvent} event */
+        const record = (event) => {
+          window.appEarlyClick = event;
+        };
+        document.addEventListener("click", record);
+        // Deferred and module scripts run before this event.
+        document.addEventListener(
+          "DOMContentLoaded",
+          () => document.removeEventListener("click", record),
+          { once: true },
+        );
+      })();
+    </script>
     {/* Navigating between site pages moves the navigation bars in a view
         transition. Examples in the page content name their own bars, which
         the next page doesn't have, so page loads leave them out. */}

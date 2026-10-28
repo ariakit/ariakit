@@ -850,6 +850,49 @@ test("inline previews stay active when focus falls back to the page", async ({
   await expect.poll(getViewportScroll).toBeGreaterThan(viewportScroll);
 });
 
+// https://github.com/ariakit/ariakit/issues/8153
+test("preview card links clicked while the page loads move focus to the card", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  const toc = query(q.navigation("On this page"));
+  const getCard = (title: string) =>
+    q.region(title, { exact: true }).locator("[data-preview-card]");
+
+  // A deep link scrolls to the card without moving focus to it.
+  await gotoAndSettle(page, "/react/recipes/tooltip/#shortcuts");
+  await expect(getCard("Keyboard Shortcuts")).not.toBeFocused();
+
+  // On a slow network, the table of contents works while later sections are
+  // still on the way. A held script before a section stops the parser there,
+  // and the page scripts run only after the parser finishes.
+  const { promise: released, resolve: release } = Promise.withResolvers();
+  await page.route("**/react/recipes/tooltip/", async (route) => {
+    const response = await route.fetch();
+    const html = await response.text();
+    const body = html.replace(
+      '<section id="truncated"',
+      '<script src="/held-parser.js"></script>$&',
+    );
+    await route.fulfill({ response, body });
+  });
+  await page.route("**/held-parser.js", async (route) => {
+    await released;
+    await route.fulfill({ contentType: "text/javascript", body: "" });
+  });
+  await page.goto("/react/recipes/tooltip/", { waitUntil: "commit" });
+  await toc.link("Keyboard Shortcuts").click();
+  await expect(page).toHaveURL(/#shortcuts$/);
+  // The card of the last link clicked takes the focus, even when its section
+  // arrives after the click.
+  await toc.link("Truncated Text").click();
+  await expect(page).toHaveURL(/#truncated$/);
+  await expect(q.region("Truncated Text", { exact: true })).toHaveCount(0);
+  release(undefined);
+  await expect(getCard("Truncated Text")).toBeFocused();
+});
+
 for (const framework of ["react", "solid"]) {
   test(`${framework} separator page uses its framework preview`, async ({
     page,
