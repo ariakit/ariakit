@@ -361,6 +361,8 @@ export const shellFooterEnd = shellHeaderEnd;
 /**
  * A sidebar column that folds to zero width while its panel keeps its full
  * width. Reopening animates without an entrance animation on first render.
+ * Mirror the panel's `data-open` on the column so it renders in place while the
+ * panel is still streaming in.
  */
 export const shellSidebar = cv({
   class: [
@@ -371,7 +373,11 @@ export const shellSidebar = cv({
     "[.shell-sidebar-end~&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*var(--shell-header-free-1)*(1-var(--shell-end-2-from-main)))]",
     "shell-sidebar flex flex-col box-border rounded-none!",
     "z-2 w-(--shell-slot-width) overflow-clip",
-    "[&:not(:has(>.shell-sidebar-panel[data-open]))]:w-0",
+    // Fold beside a closed panel. While HTML streams in, the parser can pause
+    // before the panel, so the column's own data-open stands in until then.
+    // https://github.com/ariakit/ariakit/issues/8147
+    "[&:has(>.shell-sidebar-panel:not([data-open]))]:w-0",
+    "[&:not([data-open]):not(:has(>.shell-sidebar-panel))]:w-0",
     "[&>.shell-sidebar-panel:not([data-open])]:hidden",
     "transition-[width] duration-(--shell-time) ease-(--shell-ease)",
   ],
@@ -441,56 +447,58 @@ export const shellSidebar = cv({
      * every width; `false` hides it at every width. Defaults to `3xl` (48rem).
      */
     $show: {
+      // The extra class outranks the column width, so the column folds outside
+      // its range whatever its panel state.
       true: "",
       false:
-        "shell-sidebar-hidden [&:has(>.shell-sidebar-panel[data-open])]:w-0 [&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-hidden [&.shell-sidebar]:w-0 [&>.shell-sidebar-panel]:hidden",
       "3xs":
-        "shell-sidebar-show-3xs @max-3xs/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-3xs/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-3xs @max-3xs/shell:[&.shell-sidebar]:w-0 @max-3xs/shell:[&>.shell-sidebar-panel]:hidden",
       "2xs":
-        "shell-sidebar-show-2xs @max-2xs/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-2xs/shell:[&>.shell-sidebar-panel]:hidden",
-      xs: "shell-sidebar-show-xs @max-xs/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-xs/shell:[&>.shell-sidebar-panel]:hidden",
-      sm: "shell-sidebar-show-sm @max-sm/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-sm/shell:[&>.shell-sidebar-panel]:hidden",
-      md: "shell-sidebar-show-md @max-md/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-md/shell:[&>.shell-sidebar-panel]:hidden",
-      lg: "shell-sidebar-show-lg @max-lg/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-lg/shell:[&>.shell-sidebar-panel]:hidden",
-      xl: "shell-sidebar-show-xl @max-xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-2xs @max-2xs/shell:[&.shell-sidebar]:w-0 @max-2xs/shell:[&>.shell-sidebar-panel]:hidden",
+      xs: "shell-sidebar-show-xs @max-xs/shell:[&.shell-sidebar]:w-0 @max-xs/shell:[&>.shell-sidebar-panel]:hidden",
+      sm: "shell-sidebar-show-sm @max-sm/shell:[&.shell-sidebar]:w-0 @max-sm/shell:[&>.shell-sidebar-panel]:hidden",
+      md: "shell-sidebar-show-md @max-md/shell:[&.shell-sidebar]:w-0 @max-md/shell:[&>.shell-sidebar-panel]:hidden",
+      lg: "shell-sidebar-show-lg @max-lg/shell:[&.shell-sidebar]:w-0 @max-lg/shell:[&>.shell-sidebar-panel]:hidden",
+      xl: "shell-sidebar-show-xl @max-xl/shell:[&.shell-sidebar]:w-0 @max-xl/shell:[&>.shell-sidebar-panel]:hidden",
       "2xl":
-        "shell-sidebar-show-2xl @max-2xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-2xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-2xl @max-2xl/shell:[&.shell-sidebar]:w-0 @max-2xl/shell:[&>.shell-sidebar-panel]:hidden",
       "3xl":
-        "shell-sidebar-show-3xl @max-3xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-3xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-3xl @max-3xl/shell:[&.shell-sidebar]:w-0 @max-3xl/shell:[&>.shell-sidebar-panel]:hidden",
       "4xl":
-        "shell-sidebar-show-4xl @max-4xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-4xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-4xl @max-4xl/shell:[&.shell-sidebar]:w-0 @max-4xl/shell:[&>.shell-sidebar-panel]:hidden",
       "5xl":
-        "shell-sidebar-show-5xl @max-5xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-5xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-5xl @max-5xl/shell:[&.shell-sidebar]:w-0 @max-5xl/shell:[&>.shell-sidebar-panel]:hidden",
       "6xl":
-        "shell-sidebar-show-6xl @max-6xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-6xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-6xl @max-6xl/shell:[&.shell-sidebar]:w-0 @max-6xl/shell:[&>.shell-sidebar-panel]:hidden",
       "7xl":
-        "shell-sidebar-show-7xl @max-7xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @max-7xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-7xl @max-7xl/shell:[&.shell-sidebar]:w-0 @max-7xl/shell:[&>.shell-sidebar-panel]:hidden",
       "max-3xs":
-        "shell-sidebar-show-max-3xs @3xs/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @3xs/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-3xs @3xs/shell:[&.shell-sidebar]:w-0 @3xs/shell:[&>.shell-sidebar-panel]:hidden",
       "max-2xs":
-        "shell-sidebar-show-max-2xs @2xs/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @2xs/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-2xs @2xs/shell:[&.shell-sidebar]:w-0 @2xs/shell:[&>.shell-sidebar-panel]:hidden",
       "max-xs":
-        "shell-sidebar-show-max-xs @xs/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @xs/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-xs @xs/shell:[&.shell-sidebar]:w-0 @xs/shell:[&>.shell-sidebar-panel]:hidden",
       "max-sm":
-        "shell-sidebar-show-max-sm @sm/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @sm/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-sm @sm/shell:[&.shell-sidebar]:w-0 @sm/shell:[&>.shell-sidebar-panel]:hidden",
       "max-md":
-        "shell-sidebar-show-max-md @md/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @md/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-md @md/shell:[&.shell-sidebar]:w-0 @md/shell:[&>.shell-sidebar-panel]:hidden",
       "max-lg":
-        "shell-sidebar-show-max-lg @lg/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @lg/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-lg @lg/shell:[&.shell-sidebar]:w-0 @lg/shell:[&>.shell-sidebar-panel]:hidden",
       "max-xl":
-        "shell-sidebar-show-max-xl @xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-xl @xl/shell:[&.shell-sidebar]:w-0 @xl/shell:[&>.shell-sidebar-panel]:hidden",
       "max-2xl":
-        "shell-sidebar-show-max-2xl @2xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @2xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-2xl @2xl/shell:[&.shell-sidebar]:w-0 @2xl/shell:[&>.shell-sidebar-panel]:hidden",
       "max-3xl":
-        "shell-sidebar-show-max-3xl @3xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @3xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-3xl @3xl/shell:[&.shell-sidebar]:w-0 @3xl/shell:[&>.shell-sidebar-panel]:hidden",
       "max-4xl":
-        "shell-sidebar-show-max-4xl @4xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @4xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-4xl @4xl/shell:[&.shell-sidebar]:w-0 @4xl/shell:[&>.shell-sidebar-panel]:hidden",
       "max-5xl":
-        "shell-sidebar-show-max-5xl @5xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @5xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-5xl @5xl/shell:[&.shell-sidebar]:w-0 @5xl/shell:[&>.shell-sidebar-panel]:hidden",
       "max-6xl":
-        "shell-sidebar-show-max-6xl @6xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @6xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-6xl @6xl/shell:[&.shell-sidebar]:w-0 @6xl/shell:[&>.shell-sidebar-panel]:hidden",
       "max-7xl":
-        "shell-sidebar-show-max-7xl @7xl/shell:[&:has(>.shell-sidebar-panel[data-open])]:w-0 @7xl/shell:[&>.shell-sidebar-panel]:hidden",
+        "shell-sidebar-show-max-7xl @7xl/shell:[&.shell-sidebar]:w-0 @7xl/shell:[&>.shell-sidebar-panel]:hidden",
     },
     /** Selects the first row the sidebar spans. Defaults to `main`. */
     $from: {
