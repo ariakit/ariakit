@@ -546,7 +546,10 @@ test("table of contents marks the section in view", async ({ page, q }) => {
   // The table of contents marks the current section after its island hydrates.
   const island = q.navigation("On this page").locator("astro-island");
   await expect(island).not.toHaveAttribute("ssr");
-  // The gallery comes before the first heading, so no section is current yet.
+  // The page title is current before the examples heading reaches the top.
+  const title = q.navigation("On this page").locator('a[href="#top"]');
+  await expect(title).toHaveText("App Shell");
+  await expect(title).toHaveAttribute("aria-current", "location");
   await expect(toc.link("Overview")).not.toHaveAttribute("aria-current");
   // The sections after the gallery are too short to reach the top. At the end
   // of the page, the activation line has slid down past the last heading.
@@ -625,6 +628,125 @@ test("table of contents keeps the page content in place while the page loads", a
   // that renders the table, which the counter records on the next frame.
   await flushFrames(page);
   await expect(page.locator("#layout-count")).toHaveText("1");
+});
+
+test("table of contents lists the gallery examples", async ({ page, q }) => {
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await gotoAndSettle(page, "/react/recipes/tooltip/");
+  const toc = query(q.navigation("On this page"));
+  const island = q.navigation("On this page").locator("astro-island");
+  await expect(island).not.toHaveAttribute("ssr");
+  // The examples heading is hidden in the page, and the card titles are
+  // headings under it, with the same links as the other headings.
+  await expect(q.heading("Examples", { level: 2 })).toHaveClass(/sr-only/);
+  const cardTitle = query(q.region("Keyboard Shortcuts")).heading(
+    "Keyboard Shortcuts",
+    { level: 3 },
+  );
+  await expect(query(cardTitle).link("Keyboard Shortcuts")).toHaveAttribute(
+    "href",
+    "#shortcuts",
+  );
+  // The card titles nest under the examples link, and the other headings follow
+  // it.
+  const examples = query(
+    toc.listitem().filter({ has: q.link("Examples", { exact: true }) }),
+  );
+  await expect(examples.link("Keyboard Shortcuts")).toBeVisible();
+  await expect(examples.link("Overview")).toHaveCount(0);
+
+  await query(cardTitle).link("Keyboard Shortcuts").click();
+  await expect(page).toHaveURL(/#shortcuts$/);
+  await expect(toc.link("Keyboard Shortcuts")).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  // Cards side by side share a row, so their titles reach the top together. The
+  // one that a link scrolled to is current.
+  await toc.link("Truncated Text").click();
+  await expect(toc.link("Truncated Text")).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  // The link moves focus to the card, as a click on it does, so its preview
+  // scrolls.
+  const getCard = (title: string) =>
+    q.region(title, { exact: true }).locator("[data-preview-card]");
+  await expect(getCard("Truncated Text")).toBeFocused();
+  // Scrolling on starts from the clicked card, without going back to the first
+  // card of its row. The pointer stays over the header, since the focused card
+  // would take the wheel.
+  const current = q.navigation("On this page").locator("[aria-current]");
+  const visited = new Set<string | null>();
+  await page.mouse.move(1100, 24);
+  await expect
+    .poll(
+      async () => {
+        await page.mouse.wheel(0, 20);
+        const text = await current.textContent();
+        visited.add(text);
+        return text;
+      },
+      { intervals: [50] },
+    )
+    .toBe("Collapsed Sidebar");
+  expect([...visited]).toEqual(["Truncated Text", "Collapsed Sidebar"]);
+  await toc.link("Disabled Action").click();
+  await expect(toc.link("Disabled Action")).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  await expect(toc.link("Truncated Text")).not.toHaveAttribute("aria-current");
+  // A preview frame becomes active too, and a card far below takes focus before
+  // it hydrates, and then becomes active.
+  await q.navigation("On this page").locator('a[href="#tooltip"]').click();
+  await expect(getCard("Tooltip")).toBeFocused();
+  await expect(
+    page.locator('iframe[title="Tooltip"]').contentFrame().locator("html"),
+  ).toHaveAttribute("data-preview-active", "");
+  await toc.link("Placements").click();
+  await expect(getCard("Placements")).toBeFocused();
+  await expect(
+    q.region("Placements", { exact: true }).locator("astro-island").first(),
+  ).not.toHaveAttribute("ssr");
+
+  // The examples link scrolls to the top of the gallery.
+  await toc.link("Examples", { exact: true }).click();
+  await expect(toc.link("Examples", { exact: true })).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  await expect(q.region("Tooltip", { exact: true })).toBeInViewport();
+  await expect(q.heading("Tooltip", { level: 1 })).not.toBeInViewport();
+
+  // The page title links to the top of the page.
+  const title = q.navigation("On this page").locator('a[href="#top"]');
+  await title.click();
+  await expect(title).toHaveAttribute("aria-current", "location");
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+});
+
+test("table of contents marks a shorter card in a gallery row", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await gotoAndSettle(page, "/react/recipes/text-field/");
+  const toc = query(q.navigation("On this page"));
+  const island = q.navigation("On this page").locator("astro-island");
+  await expect(island).not.toHaveAttribute("ssr");
+  // The Password Visibility Toggle card is shorter than the other card in its
+  // row, so it sticks below the headers while the row scrolls. Its title would
+  // stay below the place where the link scrolls to, but the link goes to the
+  // card section, which shares the top of the row.
+  await toc.link("Password Visibility Toggle").click();
+  await expect(toc.link("Password Visibility Toggle")).toHaveAttribute(
+    "aria-current",
+    "location",
+  );
+  await expect(
+    q.region("Password Visibility Toggle", { exact: true }),
+  ).toBeInViewport();
 });
 
 test("app shells in preview cards keep corners concentric with the card", async ({

@@ -22,6 +22,11 @@ declare namespace App {
   interface Locals {
     framework?: Framework;
     reference?: string;
+    /**
+     * The ids of the preview cards in the page gallery by preview id, which the
+     * layout picks before the page renders.
+     */
+    galleryIds?: Map<string, string>;
   }
 }
 
