@@ -195,6 +195,11 @@ export const tocLink = cv({
     $parentBold:
       "[li:has(>.toc-list_[aria-current]:not([aria-current=''],[aria-current=false]))>&]:font-[calc(500+var(--contrast))]",
   },
+  defaultVariants: {
+    // The guide, thumb, and marker pieces sit inside the link, so press scaling
+    // would pull them out of line with the pieces of the other rows.
+    $active: false,
+  },
 });
 
 /**

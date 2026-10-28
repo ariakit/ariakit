@@ -1,0 +1,36 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+---
+
+{/* Render this script as the first child of a shell panel. */}
+<script is:inline>
+  // Restores the saved state of the panel around this script as soon as the
+  // panel starts parsing. Long pages paint well before the layout script at
+  // the end of the body runs, so a late restore would move the content, and a
+  // restore after a painted panel would animate it.
+  (() => {
+    const panel = document.currentScript?.parentElement;
+    if (!panel?.id) return;
+    let saved = null;
+    try {
+      saved = localStorage.getItem(`app-panel:${panel.id}`);
+    } catch {}
+    if (saved == null) return;
+    const open = saved === "true";
+    panel.toggleAttribute("data-open", open);
+    // Toggles parsed before the panel follow it now. A script after the header
+    // syncs the toggles that come after the panel.
+    const selector = `[data-shell-toggle][aria-controls="${panel.id}"]`;
+    for (const toggle of document.querySelectorAll(selector)) {
+      toggle.setAttribute("aria-expanded", String(open));
+    }
+  })();
+</script>
