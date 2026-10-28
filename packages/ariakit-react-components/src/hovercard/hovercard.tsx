@@ -209,6 +209,16 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       hideTimeoutRef.current = 0;
     }, []);
 
+    // A hovercard stays mounted while its exit transition runs, so the pointer
+    // can schedule a hide while it's closed. If something else opens it before
+    // that hide runs, such as focus on a tooltip anchor, the hide is stale.
+    useEffect(() => {
+      return sync(store, ["open"], (state) => {
+        if (!state.open) return;
+        clearHideTimeout();
+      });
+    }, [store, clearHideTimeout]);
+
     // Checks whether the mouse is moving toward the hovercard. If not, hide the
     // card after a short delay (hideTimeout).
     useEffect(() => {
@@ -274,9 +284,6 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           const { anchorElement, disclosureElement } = store.getState();
           if (anchorElement && lastPath.includes(anchorElement)) return;
           if (disclosureElement && lastPath.includes(disclosureElement)) return;
-          // The answer can change while the hide is pending. For example, a
-          // tooltip anchor can take keyboard focus, so check again.
-          if (!hideOnHoverOutsideProp(event)) return;
           store.hide();
         }, hideTimeout ?? timeout);
       };

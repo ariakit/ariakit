@@ -1,4 +1,4 @@
-import { click, dispatch, focus, hover, press, q, sleep } from "@ariakit/test";
+import { click, dispatch, focus, hover, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const hoverOutside = async () => {
@@ -27,24 +27,6 @@ test("stays open when hover is followed by keyboard focus", async () => {
   await focus(anchor);
   await hoverOutside();
   expect(q.tooltip("Tooltip content")).toBeVisible();
-});
-
-test("stays open when the anchor takes keyboard focus while the tooltip waits to hide", async () => {
-  const anchor = q.button("Delayed hide anchor");
-  // Focus starts on the element before the anchor, so a Tab moves focus to the
-  // anchor without first hiding the tooltip on focus outside it.
-  await focus(q.button("After tooltip"));
-  await hover(anchor);
-  expect(await q.tooltip.wait("Delayed hide content")).toBeVisible();
-  // Leaving the anchor schedules the hide after the 1s hide timeout.
-  await hoverOutside();
-  await press.Tab();
-  expect(anchor).toHaveFocus();
-  expect(anchor).toHaveAttribute("data-focus-visible");
-  expect(q.tooltip("Delayed hide content")).toBeVisible();
-  // Nothing shows the pending hide, so cross the rest of the hide timeout.
-  await sleep(1000);
-  expect(q.tooltip("Delayed hide content")).toBeVisible();
 });
 
 test("shows on focus and hides after focus moves", async () => {

@@ -14,7 +14,11 @@ export default function Example() {
         <Ariakit.TooltipAnchor render={<button />}>
           Delayed hide anchor
         </Ariakit.TooltipAnchor>
-        <Ariakit.Tooltip>Delayed hide content</Ariakit.Tooltip>
+        {/* The exit transition keeps the closed tooltip mounted while the
+            pointer moves, so a hide can be pending when focus reopens it. */}
+        <Ariakit.Tooltip style={{ transition: "opacity 2s" }}>
+          Delayed hide content
+        </Ariakit.Tooltip>
       </Ariakit.TooltipProvider>
       <Ariakit.TooltipProvider hideTimeout={20} timeout={20}>
         <label htmlFor="tooltip-username">Username</label>
