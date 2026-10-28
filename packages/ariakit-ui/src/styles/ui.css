@@ -273,17 +273,18 @@ body > * {
   initial-value: 0px;
 }
 
-/* Registration lets the table of contents animate its thumb range. Every guide
-   piece reads the same animated values, so the thumb moves as one bar. */
+/* Registration lets the table of contents animate its thumb range on each piece
+   that reads it. A range that doesn't inherit makes each frame of the glide
+   cheaper to restyle in Chrome. */
 @property --toc-thumb-start {
   syntax: "<length>";
-  inherits: true;
+  inherits: false;
   initial-value: 0px;
 }
 
 @property --toc-thumb-end {
   syntax: "<length>";
-  inherits: true;
+  inherits: false;
   initial-value: 0px;
 }
 

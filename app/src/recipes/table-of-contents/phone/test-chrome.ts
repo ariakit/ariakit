@@ -38,8 +38,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // sets the range before the next frames paint. No state marks that moment,
     // and a glide from the old range would still run for its 200ms after it.
     await flushFrames(page);
+    // The thumb glides on its pieces, inside the root.
     const animations = await nav.evaluate(
-      (element) => element.getAnimations().length,
+      (element) => element.getAnimations({ subtree: true }).length,
     );
     test.expect(animations).toBe(0);
   });

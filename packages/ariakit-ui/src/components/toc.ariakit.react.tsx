@@ -370,8 +370,8 @@ interface UseTocSpyParams {
 }
 
 // Keeps the current link in React state and the thumb range in the inline
-// styles of the root, so scrolling re-renders only when the current link
-// changes.
+// styles of the thumb pieces and markers, so scrolling re-renders only when the
+// current link changes.
 function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
   const [currentId, setCurrentId] = React.useState<string | null>(null);
   // Links that register again restart the effect, which must not report the
@@ -479,22 +479,36 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
         ready = false;
         return;
       }
+      // The range goes on each piece that reads it, which glides it, so a glide
+      // restyles only these pieces, not every row.
+      const pieces = entries.flatMap((entry) => {
+        const thumb = entry.thumb.current;
+        const marker = entry.marker.current;
+        return [thumb, marker].filter((piece) => piece != null);
+      });
       const setRange = () => {
-        root.style.setProperty("--toc-thumb-start", `${range.start}px`);
-        root.style.setProperty("--toc-thumb-end", `${range.end}px`);
+        for (const piece of pieces) {
+          piece.style.setProperty("--toc-thumb-start", `${range.start}px`);
+          piece.style.setProperty("--toc-thumb-end", `${range.end}px`);
+        }
       };
       if (ready) {
         setRange();
         return;
       }
       ready = true;
-      // Reading the style applies the range before the transition turns back
+      // Reading the style applies the range before the transitions turn back
       // on, so only later ranges glide.
-      const { transitionDuration } = root.style;
-      root.style.transitionDuration = "0s";
+      for (const piece of pieces) {
+        piece.style.transitionDuration = "0s";
+      }
       setRange();
-      win.getComputedStyle(root).getPropertyValue("--toc-thumb-start");
-      root.style.transitionDuration = transitionDuration;
+      for (const piece of pieces) {
+        win.getComputedStyle(piece).getPropertyValue("--toc-thumb-start");
+      }
+      for (const piece of pieces) {
+        piece.style.transitionDuration = "";
+      }
     };
 
     // Keeps the rows of the sections on screen in view in a list that scrolls

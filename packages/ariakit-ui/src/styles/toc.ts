@@ -7,7 +7,8 @@ import { nav, navGroupLabel, navLink } from "./nav.ts";
  * A table of contents: a navigation region whose rows sit along a guide that
  * bends into nested lists. A thumb covers the guide along the rows whose
  * sections are on screen, between `--toc-thumb-start` and `--toc-thumb-end`,
- * which the style component sets in pixels from the top of this element.
+ * which the style component sets on each thumb piece and number marker in
+ * pixels from the top of this element.
  */
 export const toc = cv({
   extend: [nav],
@@ -28,10 +29,6 @@ export const toc = cv({
     "forced-colors:[--toc-guide-color:GrayText]",
     "forced-colors:[--toc-thumb-color:CanvasText]",
     "forced-colors:[--toc-halo-color:Canvas]",
-    // Pieces read the animated range in every frame, so the thumb moves as one
-    // bar through the bends.
-    "transition-[--toc-thumb-start,--toc-thumb-end] duration-200",
-    "ease-[cubic-bezier(0.25,0.7,0.3,1)] motion-reduce:transition-none",
   ],
   variants: {
     /**
@@ -277,13 +274,25 @@ export const tocLinkGuide = cv({
 });
 
 /**
+ * The glide of the thumb range. Each piece that reads the range animates it
+ * itself, which restyles only that piece in each frame. The pieces get the same
+ * range at the same time, so they glide as one bar through the bends.
+ */
+const tocThumbGlide = cv({
+  class: [
+    "transition-[--toc-thumb-start,--toc-thumb-end] duration-200",
+    "ease-[cubic-bezier(0.25,0.7,0.3,1)] motion-reduce:transition-none",
+  ],
+});
+
+/**
  * A hidden piece of a link that draws its part of the thumb over the guide.
  * Every piece shows only its part between `--toc-thumb-start` and
  * `--toc-thumb-end`, measured from `--toc-piece-top`, its own top relative to
  * the same origin, so the pieces join into one bar while the range animates.
  */
 export const tocLinkThumb = cv({
-  extend: [tocLinkPiece],
+  extend: [tocLinkPiece, tocThumbGlide],
   class: [
     "toc-link-thumb",
     "[--toc-line:var(--toc-thumb-width,2px)] [--toc-line-color:var(--toc-thumb-color)]",
@@ -301,7 +310,7 @@ export const tocLinkThumb = cv({
  * passes.
  */
 export const tocLinkMarker = cv({
-  extend: [edge],
+  extend: [edge, tocThumbGlide],
   class: [
     "toc-link-marker absolute pointer-events-none grid place-items-center rounded-full z-2",
     // The marker sits outside the link, on the surface around the rows.
@@ -322,6 +331,11 @@ export const tocLinkMarker = cv({
     // is either lit or not while the thumb is still. An empty range, with no
     // section on screen, doesn't widen.
     "[--toc-ring-reach:min(var(--toc-marker-halo),max(0px,(var(--toc-thumb-end)-var(--toc-thumb-start))*1000))]",
+    // Only the ring reads the range, so a marker without one doesn't glide.
+    "[.toc:not(.toc-ring)_&]:transition-none [.toc-unguided_&]:transition-none",
+    // The range doesn't inherit, so the ring takes it from the marker.
+    "[.toc-ring:not(.toc-unguided)_&]:after:[--toc-thumb-start:inherit]",
+    "[.toc-ring:not(.toc-unguided)_&]:after:[--toc-thumb-end:inherit]",
     "[.toc-ring:not(.toc-unguided)_&]:after:absolute",
     "[.toc-ring:not(.toc-unguided)_&]:after:-inset-(--toc-marker-halo)",
     "[.toc-ring:not(.toc-unguided)_&]:after:rounded-full",
