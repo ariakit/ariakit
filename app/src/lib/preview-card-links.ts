@@ -57,8 +57,21 @@ export function setupPreviewCardLinks() {
     if (!target) return;
     const card = getCard(target);
     if (!card) return;
-    // The link scrolls to the section after the click, and Chrome clears focus
-    // then, so the card takes focus in the next task without scrolling again.
-    setTimeout(() => card.focus({ preventScroll: true }));
+    const focusCard = () => card.focus({ preventScroll: true });
+    // The link scrolls to the section after the click and clears focus, even
+    // for the current hash. Firefox does it later than the next task, and only
+    // a new hash reports when it's done. So a link to the current hash scrolls
+    // here instead, which also follows the scroll margin.
+    if (link.hash === window.location.hash) {
+      event.preventDefault();
+      target.scrollIntoView();
+      focusCard();
+      return;
+    }
+    const onHashChange = () => {
+      if (window.location.hash !== link.hash) return;
+      focusCard();
+    };
+    window.addEventListener("hashchange", onHashChange, { once: true });
   });
 }

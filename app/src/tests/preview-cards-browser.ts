@@ -796,8 +796,11 @@ test("inline previews scroll after a click on their card", async ({
   expect(await hasBrandViewportEdge(viewport)).toBe(false);
 
   // A click on the title in the top bar moves focus to the card, which lets the
-  // example scroll and gives the viewport a brand border.
-  await query(article).heading("Paragraph Lines", { level: 3 }).click();
+  // example scroll and gives the viewport a brand border. The title links to
+  // the card, so the URL points to the card after the click.
+  const titleLink = query(article).link("Paragraph Lines");
+  await titleLink.click();
+  await expect(page).toHaveURL(/#article$/);
   await expect(card).toBeFocused();
   await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
   // The click scrolls the title into view, which can leave the example below
@@ -813,6 +816,12 @@ test("inline previews scroll after a click on their card", async ({
   // A click on the docs page makes the example inactive again.
   await q.heading("Skeleton", { level: 1 }).click();
   await expect.poll(() => getViewportEdge(viewport)).toBe(inactiveEdge);
+
+  // A link to the card moves focus to it again, even when the URL already
+  // points to the card.
+  await titleLink.click();
+  await expect(card).toBeFocused();
+  await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
 });
 
 test("inline previews stay active when focus falls back to the page", async ({
