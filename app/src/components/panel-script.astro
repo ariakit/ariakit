@@ -1,0 +1,30 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+---
+
+{/* Render this script as the first child of a shell panel. */}
+<script is:inline>
+  // Restores the saved state of the panel around this script as soon as the
+  // panel starts parsing. Long pages paint well before the layout script at
+  // the end of the body runs, so a late restore would move the content, and a
+  // restore after a painted panel would animate it.
+  (() => {
+    const panel = document.currentScript?.parentElement;
+    if (!panel?.id) return;
+    let saved = null;
+    try {
+      saved = localStorage.getItem(`app-panel:${panel.id}`);
+    } catch {}
+    if (saved == null) return;
+    // The layout script syncs the toggles, which can come after the panel.
+    panel.toggleAttribute("data-open", saved === "true");
+  })();
+</script>
