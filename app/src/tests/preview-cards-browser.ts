@@ -890,6 +890,10 @@ test("preview card links clicked while the page loads move focus to the card", a
   await expect(page).toHaveURL(/#truncated$/);
   await expect(q.region("Truncated Text", { exact: true })).toHaveCount(0);
   release(undefined);
+  // The card takes focus once the page loads, which waits for resources such as
+  // the example scripts and preview frames. On a slow runner, that can take
+  // longer than the assertion timeout, so the wait uses the test budget.
+  await page.waitForLoadState("load");
   await expect(getCard("Truncated Text")).toBeFocused();
 });
 
