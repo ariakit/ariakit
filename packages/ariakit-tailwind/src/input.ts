@@ -144,6 +144,14 @@ const TEXT_FOREGROUND_CONTRAST_L = fn.inflate(
 const DARK_L = fn.clamp01(TEXT_CONTRAST_L);
 const LIGHT_L = fn.clamp01(fn.invert(TEXT_CONTRAST_L));
 
+/**
+ * Returns the appearance-aware lightness offset direction of a lightness: 1
+ * lightens a dark color, and -1 darkens a light one.
+ */
+function getLightnessOffsetDirection(lightness: Value) {
+  return fn.sub(fn.double(fn.binary(fn.sub(DARK_THRESHOLD_L, lightness))), 1);
+}
+
 const LA_SPREAD = L_SPREAD_RATIO * LA_BASE;
 const LB_SPREAD = L_SPREAD_RATIO * (1 - LB_BASE);
 // Calibrate contrast so `contrastT=1` reaches the configured hard bounds.
@@ -596,7 +604,7 @@ const constantMathVars = {
     initial: fn.relu(fn.sub(LAYER_L_FLOOR, l)),
   }),
   lightnessOffsetDirection: _ak.prop("lod", {
-    initial: fn.sub(fn.double(DARK_L), 1),
+    initial: getLightnessOffsetDirection(l),
   }),
   darkL: _ak.prop("dal", { initial: DARK_L }),
   lightL: _ak.prop("lil", { initial: LIGHT_L }),
@@ -640,10 +648,12 @@ const layerMathVars = {
   layerIdleLimitedDelta: _ak.prop("lild", { initial: 0 }),
   layerOffsetBaseL: _ak.prop("lobl", { initial: l }),
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
-  // A numeric state on an idle offset passes how it should move from the idle
-  // offset stage to the state offset stage through the color alpha.
+  // A numeric state on an idle offset passes the lightness of the color that
+  // the offset moves from to the idle stage, and how the state should move to
+  // the state offset stage, through the color alpha.
   layerIdleOffsetValue: _ak.prop.zero("liov"),
   layerIdleOffsetAlpha: _ak.prop("lioa"),
+  layerIdleAlpha: _ak.prop("lia"),
   layerOffsetAlpha: _ak.prop("loa"),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushEnabled: _ak.prop.zero("lipe"),
@@ -1350,6 +1360,7 @@ const layerIdle = fn.oklch(vars.layerIdleOffset, {
     getContrastL(l, getPushValue(inputs.layerIdleContrastL)),
     fn.mul(layerIdleContrastBias, fn.sub(1, vars.layerIdlePushEnabled)),
   ),
+  a: fn.var(vars.layerIdleAlpha, alpha),
 });
 
 const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
@@ -2234,27 +2245,15 @@ utility(
 );
 
 // A numeric state on an idle offset stores its decision (0, 2, or 3) in the
-// alpha of the idle offset stage as `alpha * scale + top - step * decision`.
-// The decisions take the ranges [7/8, 1], [5/16, 7/16], and [1/32, 5/32], and
-// the decoder splits them in the middle of each gap. Firefox passes the alpha
-// between stages with only two or three decimals, so the decoded alpha is
-// rounded to two decimals. This keeps an opaque color exactly opaque.
-const STATE_ALPHA_SCALE = 1 / 8;
-const STATE_ALPHA_TOP = 1 - STATE_ALPHA_SCALE;
-const STATE_ALPHA_STEP = 9 / 32;
-
-/**
- * Returns the alpha in the middle of the gap between two decision ranges.
- */
-function getStateAlphaGapMiddle(lowerDecision: number, upperDecision: number) {
-  const lowerMax =
-    STATE_ALPHA_TOP - STATE_ALPHA_STEP * lowerDecision + STATE_ALPHA_SCALE;
-  const upperMin = STATE_ALPHA_TOP - STATE_ALPHA_STEP * upperDecision;
-  return (lowerMax + upperMin) / 2;
-}
-
-const STATE_ALPHA_REVERSED_MAX = getStateAlphaGapMiddle(3, 2);
-const STATE_ALPHA_NEAR_PARENT_MAX = getStateAlphaGapMiddle(2, 0);
+// alpha of the idle stage as `1 - step * decision`, which gives 1, 1/2, and
+// 1/4. Firefox passes these values between stages exactly, and the decoder
+// splits them in the middle of each gap.
+const STATE_ALPHA_STEP = 1 / 4;
+const STATE_ALPHA_REVERSED_MAX = 1 - 2.5 * STATE_ALPHA_STEP;
+const STATE_ALPHA_NEAR_PARENT_MAX = 1 - STATE_ALPHA_STEP;
+// Firefox rounds the alpha that passes between stages, so the parent lightness
+// that the idle stage reads can be off by up to one 8-bit alpha step.
+const STATE_PARENT_L_TOLERANCE = 0.005;
 
 /**
  * Returns a zero term that makes a number calc invalid at computed-value time
@@ -2267,11 +2266,12 @@ function getUnsetGuard(property: VarProperty) {
 
 /**
  * Returns the state offset declarations. On an element with an idle lightness
- * offset, the state keeps moving away from the parent layer. The state offset
- * stage only knows the color after the idle offset, so the idle offset stage,
- * which also knows the color that the offset moves from, decides how the state
- * moves and stores it in the color alpha. The state offset stage reads it and
- * restores the alpha.
+ * offset, the state keeps moving away from the parent layer. Each stage only
+ * knows the color that it moves from, so the idle offset stage passes the
+ * parent lightness to the idle stage through the color alpha. The idle stage,
+ * which also knows the rest lightness, decides how the state moves and passes
+ * it to the state offset stage the same way. The state offset stage then makes
+ * the color opaque.
  */
 function getStateOffsetDeclarations() {
   const bareValue = getBarePercentTokenValue();
@@ -2280,33 +2280,36 @@ function getStateOffsetDeclarations() {
   const amount = vars.stateOffsetAmount;
   const reversed = vars.stateOffsetReversed;
   const nearParent = vars.stateOffsetNearParent;
-  const direction = vars.lightnessOffsetDirection;
-  // In the idle offset stage, `l` is the color that the offset moves from, and
-  // `direction` is its appearance-aware direction. Each reference to the rest
-  // lightness repeats its whole expression, so the flags use it sparingly.
-  const restL = fn.var(inputs.layerIdleLOffsetL, l);
+  // In the idle stage, `l` is the rest lightness, and `alpha` is the lightness
+  // of the color that the offset moves from. Reading the rest lightness there
+  // avoids repeating the whole idle offset expression.
+  const parentL = alpha;
+  const direction = getLightnessOffsetDirection(parentL);
   // The state moves from the rest color in the appearance-aware direction of
   // the rest color. It points back to the parent when the offset moved against
   // the parent's direction, such as a flip to skip the forbidden interval, or
   // jumped over the lightness where the direction changes.
   const pointsToParent = fn.max(
-    fn.binary(fn.mul(fn.sub(l, restL), direction)),
-    fn.binary(fn.mul(fn.sub(restL, DARK_THRESHOLD_L), direction)),
+    fn.binary(fn.mul(fn.sub(parentL, l), direction)),
+    fn.binary(fn.mul(fn.sub(l, DARK_THRESHOLD_L), direction)),
   );
   // Otherwise, both colors share the direction, and a state that enters the
   // interval flips back toward the parent. The flip lands near the parent when
   // the distance from the rest color to the parent differs from the state
   // amount by no more than the distance from the rest color to the boundary.
-  // The margin includes an exact tie.
+  // The margin includes an exact tie. Both colors share the direction here, so
+  // the entry boundary of the rest color is the one of the parent.
   const entryBoundary = vars.forbiddenEntryBoundary;
   const nearMargin = fn.min(
     fn.add(
-      fn.mul(fn.add(fn.sub(entryBoundary, fn.double(restL)), l), direction),
+      fn.mul(fn.add(fn.sub(entryBoundary, fn.double(l)), parentL), direction),
       amount,
     ),
-    fn.sub(fn.mul(fn.sub(entryBoundary, l), direction), amount),
+    fn.sub(fn.mul(fn.sub(entryBoundary, parentL), direction), amount),
   );
-  const flipLandsNearParent = fn.binary(fn.add(nearMargin, 0.0001));
+  const flipLandsNearParent = fn.binary(
+    fn.add(nearMargin, STATE_PARENT_L_TOLERANCE),
+  );
   // A reversed state takes 3, and a flip that lands near the parent takes 2.
   // The flags are rounded because a tie leaves a mask between 0 and 1. A state
   // lighten or darken moves the color that the state starts from, which the
@@ -2319,23 +2322,7 @@ function getStateOffsetDeclarations() {
       fn.invert(fn.binary(fn.abs(inputs.layerRelativeL))),
     ),
   );
-  const encodedAlpha = fn.sub(
-    fn.add(fn.mul(alpha, STATE_ALPHA_SCALE), STATE_ALPHA_TOP),
-    fn.mul(STATE_ALPHA_STEP, decision),
-  );
-  const decodedAlpha = fn.round(
-    fn.div(
-      fn.add(
-        fn.sub(alpha, STATE_ALPHA_TOP),
-        fn.mul(
-          STATE_ALPHA_STEP,
-          fn.add(fn.mul(3, reversed), fn.double(nearParent)),
-        ),
-      ),
-      STATE_ALPHA_SCALE,
-    ),
-    0.01,
-  );
+  const encodedAlpha = fn.sub(1, fn.mul(STATE_ALPHA_STEP, decision));
   // The lightness left in the direction opposite to the appearance-aware one.
   // Darker colors stop at the layer lightness floor, under which changes are
   // hard to see.
@@ -2412,7 +2399,7 @@ function getStateOffsetDeclarations() {
         getUnsetGuard(inputs.layerMix),
       ),
     ),
-    // In the state offset stage, `alpha` is the encoded alpha.
+    // In the state offset stage, `alpha` is the encoded decision.
     set(
       reversed,
       fn.mul(hasIdleOffset, fn.binary(fn.sub(STATE_ALPHA_REVERSED_MAX, alpha))),
@@ -2425,14 +2412,19 @@ function getStateOffsetDeclarations() {
         fn.binary(fn.sub(STATE_ALPHA_NEAR_PARENT_MAX, alpha)),
       ),
     ),
-    // Without an idle offset, both stages keep the alpha as is.
+    // Without an idle offset, the stages keep the alpha as is. With one, the
+    // state color is opaque, even on a translucent parent.
     set(
       vars.layerIdleOffsetAlpha,
+      fn.add(alpha, fn.mul(hasIdleOffset, fn.sub(l, alpha))),
+    ),
+    set(
+      vars.layerIdleAlpha,
       fn.add(alpha, fn.mul(hasIdleOffset, fn.sub(encodedAlpha, alpha))),
     ),
     set(
       vars.layerOffsetAlpha,
-      fn.add(alpha, fn.mul(hasIdleOffset, fn.sub(decodedAlpha, alpha))),
+      fn.add(alpha, fn.mul(hasIdleOffset, fn.invert(alpha))),
     ),
     ...getDeclarations(bareValue),
     ...getDeclarations(arbitraryValue),
