@@ -49,7 +49,7 @@ export default function Example() {
             disabled. */}
         <Button
           type="submit"
-          $lightnessOffset
+          $invert
           disabled={choice == null || voted}
           accessibleWhenDisabled
         >

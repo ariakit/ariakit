@@ -210,9 +210,10 @@ export const layer = cv({
     /**
      * Caps background chroma (0–40) after other modifiers. `auto` follows
      * lightness so a fully light layer becomes white instead of a saturated
-     * color.
+     * color. It's the default on colored or modified layers. `null` removes the
+     * cap.
      */
-    $chromaMax(value?: ChromaValues | "auto" | (string & {}) | number) {
+    $chromaMax(value?: ChromaValues | "auto" | (string & {}) | number | null) {
       const mapValues = [...CHROMA_VALUES, "auto"] as const;
       if (includes(mapValues, value)) {
         const valueMap = {
@@ -337,6 +338,20 @@ export const layer = cv({
     $lightnessMax(defaultValue, variants) {
       if (variants.$invert) return 96;
       return defaultValue;
+    },
+    // Lose chroma near white and black, so a light surface on a tinted layer
+    // reads white or a pale tint instead of a saturated color.
+    $chromaMax(defaultValue, variants) {
+      if (defaultValue !== undefined) return defaultValue;
+      if (!variants.$layer) return defaultValue;
+      // The cap marks the layer as modified, so add it only where a color or
+      // another modifier already does. A bare layer keeps the parent color and
+      // contrast bias, and a transparent one stays unpainted. Ignore a cap from
+      // an earlier pass, such as after a refine turns off $invert.
+      const $layer = variants.$layer === true ? "transparent" : variants.$layer;
+      const otherVariants = { ...variants, $layer, $chromaMax: undefined };
+      if (!hasLayerBackground(otherVariants)) return defaultValue;
+      return "auto";
     },
   },
 });
