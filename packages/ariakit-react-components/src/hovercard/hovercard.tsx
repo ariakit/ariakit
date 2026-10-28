@@ -274,6 +274,9 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           const { anchorElement, disclosureElement } = store.getState();
           if (anchorElement && lastPath.includes(anchorElement)) return;
           if (disclosureElement && lastPath.includes(disclosureElement)) return;
+          // The answer can change while the hide is pending. For example, a
+          // tooltip anchor can take keyboard focus, so check again.
+          if (!hideOnHoverOutsideProp(event)) return;
           store.hide();
         }, hideTimeout ?? timeout);
       };

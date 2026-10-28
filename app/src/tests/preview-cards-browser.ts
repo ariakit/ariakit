@@ -838,7 +838,11 @@ test("inline previews stay active when focus falls back to the page", async ({
     viewport.evaluate((element) => element.scrollTop);
   await viewport.evaluate((element) => element.scrollIntoView());
   const loadMore = card.button("Load more");
-  await expect(loadMore).toBeEnabled();
+  // The card hydrates when it scrolls into view, and the example enables the
+  // button after its first posts load. On a slow runner, this can take longer
+  // than the assertion timeout, so the wait uses the test budget, like
+  // waitForArticle.
+  await loadMore.and(page.locator(":enabled")).waitFor();
   // The button turns disabled while the posts load, so the browser moves focus
   // from it to the page.
   await loadMore.click();
