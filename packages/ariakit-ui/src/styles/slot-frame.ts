@@ -37,7 +37,7 @@ export const slotFrame = cv({
     "[--sidebearing:0.15em]",
     // Reset stacked-card spacing on nested controls' parts while preserving the
     // element's own inherited alignment.
-    "[&>*]:[--control-inline:initial]",
+    "*:[--control-inline:initial]",
   ],
   variants: {
     ...fontSizeVariants,

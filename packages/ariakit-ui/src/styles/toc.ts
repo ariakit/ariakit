@@ -24,7 +24,7 @@ export const toc = cv({
     // keep the colors of the surface around the rows. The thumb takes the text
     // color at full strength.
     "[--toc-guide-color:var(--ak-edge)]",
-    "[--toc-thumb-color:oklch(from_var(--ak-text)_l_c_h_/_1)]",
+    "[--toc-thumb-color:oklch(from_var(--ak-text)_l_c_h/1)]",
     "[--toc-halo-color:var(--ak-layer)]",
     "forced-colors:[--toc-guide-color:GrayText]",
     "forced-colors:[--toc-thumb-color:CanvasText]",
@@ -100,7 +100,7 @@ export const toc = cv({
     }
     addClass([
       "[--toc-guide-offset:--spacing(2)]",
-      "[--toc-gutter:calc(var(--toc-guide-offset)+--spacing(1))]",
+      "[--toc-gutter:calc(var(--toc-guide-offset)+(--spacing(1)))]",
     ]);
   },
 });
@@ -245,9 +245,9 @@ const tocLinkPiece = cv({
     "before:inset-s-[calc(var(--toc-outward)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line))/2+(1-var(--toc-curve))*var(--toc-span)))]",
     "before:w-[calc(var(--toc-curve)*(var(--toc-span)+var(--toc-line))/2)]",
     "before:h-[calc(var(--toc-curve)*(var(--toc-bend-height)+var(--toc-line))/2+(1-var(--toc-curve))*var(--toc-bent)*hypot(var(--toc-span),var(--toc-bend-height)))]",
-    "before:border-s-[length:calc(var(--toc-line)*(var(--toc-curve)*var(--toc-in)+(1-var(--toc-curve))*var(--toc-bent)))]",
-    "before:border-e-[length:calc(var(--toc-line)*var(--toc-curve)*var(--toc-outward))]",
-    "before:border-be-[length:calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
+    "before:border-s-[calc(var(--toc-line)*(var(--toc-curve)*var(--toc-in)+(1-var(--toc-curve))*var(--toc-bent)))]",
+    "before:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-outward))]",
+    "before:border-be-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
     "before:rounded-es-[calc(100%*var(--toc-curve)*var(--toc-in))]",
     "before:rounded-ee-[calc(100%*var(--toc-curve)*var(--toc-outward))]",
     "before:origin-top",
@@ -258,9 +258,9 @@ const tocLinkPiece = cv({
     "after:top-[calc(var(--toc-bent)*(var(--toc-curve)*(var(--toc-bend-height)-var(--toc-line))/2+(1-var(--toc-curve))*var(--toc-bend-height)))]",
     "after:inset-s-[calc(var(--toc-in)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line))/2+(1-var(--toc-curve))*var(--toc-span)))]",
     "after:w-[calc(var(--toc-curve)*max(var(--toc-line),(var(--toc-span)+var(--toc-line))/2))]",
-    "after:border-bs-[length:calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
-    "after:border-e-[length:calc(var(--toc-line)*var(--toc-curve)*var(--toc-in))]",
-    "after:border-s-[length:calc(var(--toc-line)*(1-var(--toc-curve)*var(--toc-in)))]",
+    "after:border-bs-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
+    "after:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-in))]",
+    "after:border-s-[calc(var(--toc-line)*(1-var(--toc-curve)*var(--toc-in)))]",
     "after:rounded-se-[calc(var(--toc-curve)*var(--toc-in)*(var(--toc-span)+var(--toc-line))/2)_calc(var(--toc-curve)*var(--toc-in)*(var(--toc-bend-height)+var(--toc-line))/2)]",
     "after:rounded-ss-[calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-span)+var(--toc-line))/2)_calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-bend-height)+var(--toc-line))/2)]",
   ],
@@ -274,7 +274,7 @@ export const tocLinkGuide = cv({
     "[--toc-line:var(--toc-guide-width,1px)] [--toc-line-color:var(--toc-guide-color)]",
     // Fade out after the last row.
     "[--toc-end:0] [li:last-child:not(:has(>.toc-list))>*>&]:[--toc-end:1]",
-    "[li:last-child:not(:has(>.toc-list))>*>&]:mask-[linear-gradient(to_bottom,#000_calc(100%-var(--toc-tail,0)*var(--toc-end)*--spacing(2)),transparent)]",
+    "[li:last-child:not(:has(>.toc-list))>*>&]:mask-[linear-gradient(to_bottom,#000_calc(100%-var(--toc-tail,0)*var(--toc-end)*(--spacing(2))),transparent)]",
   ],
 });
 

@@ -197,7 +197,7 @@ export const controlSlot = cv({
       shortcut: [
         // Keep key chords left-to-right while the slot retains the row
         // direction for margins.
-        "*:flex *:[align-items:inherit] *:[gap:inherit] *:[direction:ltr]",
+        "*:flex *:[align-items:inherit] *:gap-[inherit] *:[direction:ltr]",
         // Size icon keys like the letters beside them, not like the slot box.
         "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,1em)",
       ],
@@ -526,7 +526,7 @@ export const controlField = cv({
       vertical: "flex flex-col",
       horizontal: [
         "grid items-baseline",
-        "[:where(&)]:grid-cols-[var(--field-columns,max-content_minmax(0,1fr))]",
+        "[:where(&)]:grid-cols-(--field-columns,max-content_minmax(0,1fr))",
         // The label pads its end instead of a column gap, so a click there
         // also reaches the control. Set --field-column-gap to change it.
         "gap-x-0 [--_field-column-gap:var(--field-column-gap,--spacing(3))]",

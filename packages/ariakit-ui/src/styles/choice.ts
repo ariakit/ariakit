@@ -266,7 +266,7 @@ export const choiceCard = cv({
     $orientation: {
       vertical: [
         // Override the control's reset of this flag on direct children.
-        "[&>*]:[--control-inline:0]!",
+        "*:[--control-inline:0]!",
         // Override the later-sorted justify-start and justify-center utilities.
         "justify-between!",
         // Keep shorter badges from stretching to the tallest slot. Zero
