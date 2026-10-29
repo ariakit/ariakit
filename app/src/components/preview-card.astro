@@ -64,13 +64,16 @@ const href = "/" + framework + "/previews/" + source.name + "/";
 const id = galleryId ?? "preview-card-" + source.name.replaceAll("/", "-");
 const headingId = id + "-title";
 const inline = Astro.slots.has("default");
-const browser = !inline && (Astro.props.browser ?? isNextjsPreviewId(source.name));
+const browser =
+  !inline && (Astro.props.browser ?? isNextjsPreviewId(source.name));
 const files = Object.entries(source.files);
 ---
 
-{/* Astro renders the script once, at the first card. Before the card markup,
+{
+  /* Astro renders the script once, at the first card. Before the card markup,
     it stays out of the run of sibling cards that preview grid selectors
-    match. */}
+    match. */
+}
 <script>
   import { setupPreviewCardLinks } from "#app/lib/preview-card-links.ts";
   import { setupPreviewFrames } from "#app/lib/preview-frames.ts";
@@ -83,17 +86,21 @@ const files = Object.entries(source.files);
   render={createElement("section", { id, "aria-labelledby": headingId })}
   {className}
 >
-  {/* Preview cards inside MDX prose or a preview grid are not main bands, so
-      they drop the band gutter and align with the surrounding content. */}
+  {
+    /* Preview cards inside MDX prose or a preview grid are not main bands, so
+      they drop the band gutter and align with the surrounding content. */
+  }
   <Frame
     $p="var(--app-gutter)"
     className="grid grid-cols-1 py-0! [.prose>.shell-main-wide>&]:px-0! [.preview-grid>.shell-main-wide>&]:px-0!"
   >
-    {/* The code renders on the server and reaches the island as a static
+    {
+      /* The code renders on the server and reaches the island as a static
         slot. A card hydrates as it comes near the viewport, so an inline
         example, which hydrates after its card, starts as the person reaches
         it. Hydrating a little early lets a frame that loaded before its card
-        hydrated show as the card scrolls into view, not after a loader. */}
+        hydrated show as the card scrolls into view, not after a loader. */
+    }
     <PreviewCard
       client:visible={{ rootMargin: PREVIEW_FRAME_MARGIN }}
       sectionId={id}

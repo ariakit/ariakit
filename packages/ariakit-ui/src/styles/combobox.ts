@@ -81,8 +81,8 @@ export const comboboxPopover = cv({
     "max-w-(--popover-available-width)",
     "min-w-[min(var(--popover-anchor-width),var(--popover-available-width))]",
     // Use native invoker anchors unless Ariakit supplies inline positioning.
-    "top-[calc(anchor(bottom)+--spacing(1))]",
-    "inset-s-[calc(anchor(start)---spacing(1))]",
+    "top-[calc(anchor(bottom)+(--spacing(1)))]",
+    "inset-s-[calc(anchor(start)-(--spacing(1)))]",
     "[position-try-fallbacks:flip-block,flip-inline]",
   ],
   defaultVariants: {
@@ -265,5 +265,5 @@ export const comboboxSelectPlaceholder = inputPlaceholder;
 /** A selection mark that keeps its space when empty. */
 export const comboboxItemCheck = cv({
   extend: [optionSlot],
-  class: "pointer-events-none [&:empty]:invisible",
+  class: "pointer-events-none empty:invisible",
 });

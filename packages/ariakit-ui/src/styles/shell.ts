@@ -66,6 +66,8 @@ export const shell = cv({
       auto: [
         "text-sm [--shell-header-step:calc(0.875rem/4)]",
         "[--shell-radius:calc(var(--radius)*5/0.875)]",
+        // A leading utility would set --tw-leading and replace
+        // text-* fallbacks.
         "[.shell_&]:[font-size:inherit] [.shell_&]:[line-height:inherit]",
         "[.shell_&]:[--shell-header-step:inherit]",
         "[.shell_&]:[--shell-radius:inherit]",
@@ -102,8 +104,8 @@ export const shell = cv({
 });
 
 const facingBorder = cx(
-  "[&:is(.shell-header,.shell-main-header,.shell-sidebar-header)]:border-be-(length:--border-width)",
-  "[&:is(.shell-footer,.shell-sidebar-footer)]:border-bs-(length:--border-width)",
+  "[.shell-header,.shell-main-header,.shell-sidebar-header]:border-be-(length:--border-width)",
+  "[.shell-footer,.shell-sidebar-footer]:border-bs-(length:--border-width)",
   // The column follows the shell direction; the body can have its own dir.
   "[.shell-sidebar-start:dir(ltr)>&]:border-r-(length:--border-width)",
   "[.shell-sidebar-start:dir(rtl)>&]:border-l-(length:--border-width)",
@@ -638,7 +640,7 @@ const content = cx(
   // Grid items do not collapse margins, so the grid spaces its children.
   "gap-y-(--shell-content-gap) [--shell-content-gap:--spacing(6)]",
   // Keep focused content above a sticky footer when it scrolls into view.
-  "[:where(&)_*]:[scroll-margin-block-end:var(--shell-foot)]",
+  "[:where(&)_*]:scroll-mbe-(--shell-foot)",
   // Keep controls and badges at their content width instead of stretching to
   // the column.
   "[&>:is(.control,.badge)]:justify-self-start",
@@ -652,7 +654,7 @@ const content = cx(
   "ak-frame-p-(--shell-gutter) px-0",
   "print:overflow-visible",
   "*:col-[content] *:min-w-0",
-  "[&_[id]]:[scroll-margin-block-start:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+1rem)]",
+  "[&_[id]]:scroll-mbs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+1rem)]",
 );
 
 const contentVariants = {

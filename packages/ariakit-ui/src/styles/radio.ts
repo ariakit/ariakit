@@ -90,8 +90,8 @@ export const radioGroupLabel = cv({
     // :where() lets caller font classes win.
     "radio-group-label [:where(&)]:text-[0.875em] [:where(&)]:font-medium",
     "col-span-full",
-    "in-[[aria-disabled=true]]:ak-ink-0",
-    "in-[[aria-disabled=true]]:forced-colors:text-[GrayText]",
+    "in-aria-disabled:ak-ink-0",
+    "in-aria-disabled:forced-colors:text-[GrayText]",
   ],
 });
 

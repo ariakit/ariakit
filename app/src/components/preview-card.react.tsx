@@ -159,6 +159,8 @@ export function PreviewCard({
           // it, so focus stays in the window.
           data-preview-card
           tabIndex={-1}
+          $border
+          $edgeWeight="light"
           // Between the 3xl and 4xl steps, so the window corner reads a little
           // rounder than the macOS browser window while following the theme.
           $rounded="calc(var(--radius)*7)"
@@ -625,7 +627,7 @@ function PreviewCardViewport({
                 "group-data-loading/preview:opacity-0",
                 // Without scripts, nothing reports the load, so the frame shows
                 // right away.
-                "[@media(scripting:none)]:opacity-100!",
+                "noscript:opacity-100!",
               ].join(" ")}
             />
             {/* Keeps a drag from the handle out of the frame. Pointer-events on
@@ -640,7 +642,7 @@ function PreviewCardViewport({
               className={[
                 "pointer-events-none hidden place-items-center",
                 "group-data-loading/preview:grid",
-                "[@media(scripting:none)]:hidden!",
+                "noscript:hidden!",
               ].join(" ")}
             >
               <PreviewCardLoader />

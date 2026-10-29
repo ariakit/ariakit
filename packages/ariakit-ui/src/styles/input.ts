@@ -68,7 +68,7 @@ export const input = cv({
     "ui-field-disabled:forced-colors:text-[GrayText]",
     "ui-field-disabled:forced-colors:[&_*:not(:is(button,input,a):not(:disabled,[aria-disabled='true']),:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:text-[GrayText]",
     "ui-field-disabled:forced-colors:border-[GrayText]",
-    "ui-field-disabled:forced-colors:[&_:is(button,input,a):not(:disabled,[aria-disabled='true'])]:[color:revert]",
+    "ui-field-disabled:forced-colors:[&_:is(button,input,a):not(:disabled,[aria-disabled='true'])]:text-[revert]",
     // A native input uses the control line box; a textarea keeps its rows.
     "[input]:box-content [input]:h-lh",
     "[&_input]:box-content [&_input]:h-lh",
