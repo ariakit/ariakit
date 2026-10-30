@@ -39,7 +39,7 @@ export default function Example() {
             id={getItemId(item.value)}
             name="data"
             value={item.value}
-            className="ms-[1.375em]"
+            className="ms-[1.4375em]"
           >
             {item.label}
           </CheckboxField>
