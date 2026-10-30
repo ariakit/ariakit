@@ -166,46 +166,48 @@ export default function Example() {
           <ShellMainIntro>
             <ShellMainFull $layer $hue="cyan" $chroma="vivid" $contrast $p={8}>
               <ShellMainContent>
-                <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-end">
-                  <Frame
-                    $layer="secondary"
-                    $hue="magenta"
-                    $chroma="vivid"
-                    $rounded="xl"
-                    className="grid aspect-square w-40 shrink-0 place-items-center shadow-lg"
-                  >
-                    <Music className="size-16" strokeWidth={1.25} />
-                  </Frame>
-                  <div className="flex min-w-0 flex-col gap-3">
-                    <p className="text-sm font-medium tracking-wider uppercase">
-                      Album
-                    </p>
-                    <HeadingLevel>
-                      <ak.Heading className="text-4xl leading-tight font-bold">
-                        Night Signals
-                      </ak.Heading>
-                    </HeadingLevel>
-                    <p className="text-lg font-medium">Halo Parade</p>
-                    <p className="text-sm opacity-80">
-                      2026 · 14 songs · 55 min
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <Button onClick={() => setIsPlaying(true)}>
-                        <ButtonSlot>
-                          <Play />
-                        </ButtonSlot>
-                        <ButtonLabel>Play album</ButtonLabel>
-                      </Button>
-                      <Button aria-label="Shuffle album">
-                        <ButtonSlot>
-                          <Shuffle />
-                        </ButtonSlot>
-                      </Button>
-                      <Button aria-label="Save album">
-                        <ButtonSlot>
-                          <Heart />
-                        </ButtonSlot>
-                      </Button>
+                <div className="@container/album">
+                  <div className="flex flex-col items-start gap-6 @md/album:flex-row @md/album:items-end">
+                    <Frame
+                      $layer="secondary"
+                      $hue="magenta"
+                      $chroma="vivid"
+                      $rounded="xl"
+                      className="grid aspect-square w-40 shrink-0 place-items-center shadow-lg"
+                    >
+                      <Music className="size-16" strokeWidth={1.25} />
+                    </Frame>
+                    <div className="flex min-w-0 flex-col gap-3">
+                      <p className="text-sm font-medium tracking-wider uppercase">
+                        Album
+                      </p>
+                      <HeadingLevel>
+                        <ak.Heading className="text-4xl leading-tight font-bold">
+                          Night Signals
+                        </ak.Heading>
+                      </HeadingLevel>
+                      <p className="text-lg font-medium">Halo Parade</p>
+                      <p className="text-sm opacity-80">
+                        2026 · 14 songs · 55 min
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <Button onClick={() => setIsPlaying(true)}>
+                          <ButtonSlot>
+                            <Play />
+                          </ButtonSlot>
+                          <ButtonLabel>Play album</ButtonLabel>
+                        </Button>
+                        <Button aria-label="Shuffle album">
+                          <ButtonSlot>
+                            <Shuffle />
+                          </ButtonSlot>
+                        </Button>
+                        <Button aria-label="Save album">
+                          <ButtonSlot>
+                            <Heart />
+                          </ButtonSlot>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
