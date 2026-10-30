@@ -1,4 +1,5 @@
 {
   "title": "App Shell",
+  "description": "A basic page layout with a sticky ShellHeader, a start ShellSidebar navigation that a header button toggles through aria-expanded and that folds away below a 48rem shell width, and a ShellMain with ShellMainIntro, ShellMainBody, and a ShellFooter. Use it as the baseline single-shell setup with one sidebar, before adding the nested shells, extra sidebars, or sticky footers that the other layouts show.",
   "fullscreen": true
 }

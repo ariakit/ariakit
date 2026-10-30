@@ -1,3 +1,4 @@
 {
-  "title": "Skeleton"
+  "title": "Skeleton",
+  "description": "Baseline loading state for a profile card that loads once: Skeleton with the loading prop wraps the card, and SkeletonCircle, SkeletonLine, and SkeletonFill hold the exact space of the avatar, text, Follow button, and badges, with aria-busy and a status message that announces the load. Use it for a simple single-area loading state with the default shimmer and minimum duration before reaching for a more specific layout."
 }

@@ -1,3 +1,4 @@
 {
-  "title": "Filter Chips"
+  "title": "Filter Chips",
+  "description": "Builds small round filter chips from CheckboxCard with $rounded=\"full\" and $size=\"sm\", keeping the checked values in one array with CheckboxProvider to filter a list of roles. A role=\"status\" count tells how many roles show, and all roles show when no chip is checked. Use it for toggles that narrow visible results, rather than form options that only submit values."
 }

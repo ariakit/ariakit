@@ -1,1 +1,5 @@
-{ "title": "Colored Surfaces", "fullscreen": true }
+{
+  "title": "Colored Surfaces",
+  "description": "A music player layout that tints Shell parts with $layer, $hue, $chroma, and $contrast, with a brand-colored header, a colored full-height sidebar, a ShellMainFull intro band that reaches both edges of the main area, and a $sticky ShellFooter player that keeps focused tracks scrolled above it. Use it when shell regions need their own colored surfaces or a persistent bottom bar must stay visible over long content.",
+  "fullscreen": true
+}

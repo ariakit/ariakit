@@ -1,3 +1,4 @@
 {
-  "title": "Placements"
+  "title": "Placements",
+  "description": "Four buttons around a center that open their tooltips on the top, right, bottom, and left with the placement prop and an arrow, and each tooltip flips to the other side when its side has no room near the viewport edge. Use it when a tooltip must open on a specific side, such as to avoid covering nearby content."
 }

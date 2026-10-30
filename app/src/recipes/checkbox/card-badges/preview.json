@@ -1,3 +1,4 @@
 {
-  "title": "Card Badges"
+  "title": "Card Badges",
+  "description": "Builds add-on cards where CheckboxCardLabelRow puts the CheckboxCardLabel and a CheckboxCardSlot with $kind=\"badge\" on one row, a full-width CheckboxCardDescription sits below, and a $kind=\"text\" slot shows a price. The badge and the price become part of the accessible name of each checkbox. Use it for paid or tagged options that need a badge, such as New or Popular, and extra details like a price."
 }

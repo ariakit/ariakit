@@ -1,3 +1,4 @@
 {
-  "title": "Backgrounds"
+  "title": "Backgrounds",
+  "description": "Text fields on colored surfaces made with Frame and its $layer, $mix, $rounded, and $p props, where the field edge, label, and hint adapt to keep enough contrast with each surface. Use it when a field sits on a brand, success, warning, or other colored panel, rather than Colors, which colors the field itself."
 }

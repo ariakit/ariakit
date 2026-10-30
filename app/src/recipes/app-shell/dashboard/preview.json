@@ -1,1 +1,5 @@
-{ "title": "Dashboard", "fullscreen": true }
+{
+  "title": "Dashboard",
+  "description": "A nested Shell layout where the outer ShellSidebar takes the full page height beside the header and uses $show={true}, so a header button toggles it at every width, while the header search and metric card grid adapt to their own width through container queries. Use it for admin or analytics dashboards that need a full-height app sidebar rather than one that sits below the header and folds away at narrow widths.",
+  "fullscreen": true
+}

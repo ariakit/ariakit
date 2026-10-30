@@ -1,1 +1,5 @@
-{ "title": "Sticky Composer", "fullscreen": true }
+{
+  "title": "Sticky Composer",
+  "description": "A chat layout whose $sticky ShellFooter holds a message form that stays in view while the thread scrolls, appending each sent message and scrolling it into view above the composer, beside a full-height channels sidebar and an end Members sidebar that ends at the footer. Use it for messaging, comments, or any input bar pinned to the bottom of a long scrolling feed.",
+  "fullscreen": true
+}

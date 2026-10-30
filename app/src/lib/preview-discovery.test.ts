@@ -253,6 +253,68 @@ test("requires title metadata for metadata-only recipes", async () => {
   await expect(promise).rejects.toThrow("Missing title metadata for menu");
 });
 
+test("requires description metadata when the root requires it", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
+  await writeFile(
+    join(dir, "recipes/menu/preview.json"),
+    JSON.stringify({ title: "Menu" }),
+  );
+  const root = { ...getRecipesRoot(dir), descriptionRequired: true };
+
+  const promise = discoverPreviews({ roots: [root] });
+
+  await expect(promise).rejects.toThrow(
+    "Missing description metadata for menu",
+  );
+});
+
+test("requires description metadata for metadata-only previews", async () => {
+  const dir = await createDir();
+  await writeFile(
+    join(dir, "recipes/menu/preview.json"),
+    JSON.stringify({ title: "Menu", frameworks: ["react"] }),
+  );
+  const root = { ...getRecipesRoot(dir), descriptionRequired: true };
+
+  const promise = discoverPreviews({ roots: [root] });
+
+  await expect(promise).rejects.toThrow(
+    "Missing description metadata for menu",
+  );
+});
+
+test("supports description metadata", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
+  await writeFile(
+    join(dir, "recipes/menu/preview.json"),
+    JSON.stringify({ title: "Menu", description: "A menu button." }),
+  );
+  const root = { ...getRecipesRoot(dir), descriptionRequired: true };
+
+  const previews = await discoverPreviews({ roots: [root] });
+
+  expect(previews).toMatchObject([
+    { id: "menu", metadata: { description: "A menu button." } },
+  ]);
+});
+
+test("rejects invalid description metadata", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
+  await writeFile(
+    join(dir, "recipes/menu/preview.json"),
+    JSON.stringify({ title: "Menu", description: ["A menu button."] }),
+  );
+
+  const promise = discoverPreviews({ roots: [getRecipesRoot(dir)] });
+
+  await expect(promise).rejects.toThrow(
+    "Invalid description metadata for menu",
+  );
+});
+
 test("rejects unknown preview metadata keys", async () => {
   const dir = await createDir();
   await writeFile(join(dir, "recipes/menu/index.react.tsx"));
@@ -460,6 +522,23 @@ test("preview loader reloads watched metadata changes", async () => {
   await watcher.emit("change", metadataFile);
 
   expect(entries.get("menu")?.data.title).toBe("Menu 2");
+});
+
+test("preview loader stores description metadata", async () => {
+  const dir = await createDir();
+  const loader = previewLoader({
+    roots: [getRecipesRoot(dir)],
+  });
+  const { context, entries } = getPreviewStoreContext(dir);
+  await writeFile(join(dir, "recipes/menu/index.react.tsx"));
+  await writeFile(
+    join(dir, "recipes/menu/preview.json"),
+    JSON.stringify({ title: "Menu", description: "A menu button." }),
+  );
+
+  await loader.load(context);
+
+  expect(entries.get("menu")?.data.description).toBe("A menu button.");
 });
 
 test("preview loader reloads watched entry file changes", async () => {

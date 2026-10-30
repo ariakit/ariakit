@@ -1,3 +1,4 @@
 {
-  "title": "Card Badges"
+  "title": "Card Badges",
+  "description": "Vertical plan cards in a RadioCardGrid with a RadioCardCheck, a label, and a price in a RadioCardDescription, where one card adds a RadioCardSlot with $kind=\"badge\" after the label. The badge becomes part of the accessible name, so the radio reads as Pro Popular, while the price stays the description. Use it when one option needs a highlight like Popular, such as a pricing plan picker."
 }

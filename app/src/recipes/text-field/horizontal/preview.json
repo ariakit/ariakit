@@ -1,3 +1,4 @@
 {
-  "title": "Horizontal"
+  "title": "Horizontal",
+  "description": "Horizontal fields built with InputField $orientation set to horizontal and InputFieldContent inside an InputFieldGrid, where labels share one end-aligned column, hints and errors sit under the input, a click between label and field focuses it, and fields stack when the grid is narrow. Use it for settings or billing forms with labels beside their inputs, rather than the stacked layout of the other text fields."
 }

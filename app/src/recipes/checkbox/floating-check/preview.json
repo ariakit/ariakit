@@ -1,3 +1,4 @@
 {
-  "title": "Floating Check"
+  "title": "Floating Check",
+  "description": "Builds a grid of vertical photo tiles with CheckboxCardGrid and CheckboxCard, where CheckboxCardCheck with $floating shows a check on the top-end corner of checked tiles only and the decorative picture is hidden from screen readers. Use it for visual pickers, such as images to share, where a mark should appear only on the selected tiles rather than on every card."
 }

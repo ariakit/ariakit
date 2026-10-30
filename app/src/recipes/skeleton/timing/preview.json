@@ -1,3 +1,4 @@
 {
-  "title": "Timing"
+  "title": "Timing",
+  "description": "A contact card with a network speed radio group that reloads the data and a timeline, built with useSkeletonState, that shows when the placeholders and the content appear under the Skeleton delay prop (150 ms) and the 200 ms minimum duration. Use it when fast loads should skip the placeholders entirely and slower ones should never flash, rather than showing the placeholders right away as the basic profile card does."
 }

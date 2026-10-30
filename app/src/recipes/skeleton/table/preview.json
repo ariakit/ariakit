@@ -1,3 +1,4 @@
 {
-  "title": "Reload on Filter"
+  "title": "Reload on Filter",
+  "description": "An orders data table with status filter tabs that reload the data, where Skeleton renders as the body TableRowGroup so the header keeps its labels, and a full page of placeholder rows with SkeletonCircle, SkeletonLine, and a SkeletonFill badge mirrors the result rows. Use it for tabular data that reloads in place when a filter or query changes, rather than content that appends like the feed."
 }

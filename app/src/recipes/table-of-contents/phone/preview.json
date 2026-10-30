@@ -1,4 +1,5 @@
 {
   "title": "Current Section Popover",
+  "description": "A compact layout that puts a Toc inside a Popover opened from a PopoverDisclosure in the ShellHeader, with onCurrentChange storing the current href so the button label shows the section being read. The popover keeps the Toc mounted while closed, so the current link stays up to date. Use it for narrow screens or pages with no room for a sidebar table of contents.",
   "fullscreen": true
 }

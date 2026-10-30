@@ -1,4 +1,5 @@
 {
   "title": "Tab with Next.js App Router",
+  "description": "Tabs whose selection lives in the URL with the Next.js App Router: each Tab renders a Next.js Link, Tabs reads selectedId from usePathname and calls router.push on change, and a single TabPanel shows server-rendered posts from a parallel @tabs route while the layout stays mounted. Use it when tabs must survive reloads, shared links, and Back and Forward navigation, rather than keeping the selected tab in local state.",
   "frameworks": ["react"]
 }

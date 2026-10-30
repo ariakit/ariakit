@@ -1,3 +1,4 @@
 {
-  "title": "Step by Step"
+  "title": "Step by Step",
+  "description": "An assistant flow that asks one question at a time, each in its own RadioGroup of RadioCard items with a Recommended badge in a RadioCardLabelRow. Back and Next move focus into the new question, a Clear button sets the value to null because a click cannot uncheck a radio, and the answers end in a summary reply. Use it for wizards or chat questionnaires where answers can be cleared or revisited."
 }

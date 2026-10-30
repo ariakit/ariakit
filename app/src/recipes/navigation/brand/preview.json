@@ -1,3 +1,4 @@
 {
-  "title": "Custom Current Link"
+  "title": "Custom Current Link",
+  "description": "A vertical Nav whose current link gets custom styling: a brand-tinted surface and brand text through $layer, $mix, and $text, $selectedPush turned off, and a start-side brand bar through the bar prop with $side and $layer, which also marks the link in high contrast mode. Use it when the current link must follow a brand color rather than the default neutral selected surface."
 }

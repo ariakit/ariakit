@@ -1,3 +1,4 @@
 {
-  "title": "Toggle Buttons"
+  "title": "Toggle Buttons",
+  "description": "Icon toggle buttons whose tooltips name the action the next click takes, such as Mute or Unmute, while each button keeps a fixed aria-label and reports its state with aria-pressed. Use it for toolbar or call-control toggles where the tooltip text must follow the state rather than stay a fixed label."
 }

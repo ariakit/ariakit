@@ -1,3 +1,4 @@
 {
-  "title": "Navigation"
+  "title": "Navigation",
+  "description": "A basic vertical Nav of icon links where the clicked link becomes current, with a client-side router passing currentUrl to each NavLink. An unread count sits as a floating badge on the icon, and a visually hidden NavLinkDescription gives the count to screen readers. Use it for a simple sidebar list of links before adding groups, collapsible sections, bars, or a horizontal layout."
 }

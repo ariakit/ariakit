@@ -1,3 +1,4 @@
 {
-  "title": "Field States"
+  "title": "Field States",
+  "description": "A grid of InputField fields in each common state: plain without a hint, with an InputDescription hint, invalid with aria-invalid and an InputError, and disabled with a hint. Use it when a form needs one reference for how labels, hints, and errors are styled and described across default, invalid, and disabled fields, rather than a single field."
 }

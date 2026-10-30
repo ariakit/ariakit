@@ -1,4 +1,5 @@
 {
   "title": "Table of Contents",
+  "description": "A documentation page with a Toc in an end ShellSidebar, where a TocItem with a TocList nests h3 links under an h2 link. As the page scrolls, the guide bends into the nested list, a thumb covers the rows of the sections on screen, and the section being read gets aria-current. Use it as the baseline sidebar table of contents for an article with a short heading tree.",
   "fullscreen": true
 }

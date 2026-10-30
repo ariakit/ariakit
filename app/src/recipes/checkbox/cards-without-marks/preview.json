@@ -1,3 +1,4 @@
 {
-  "title": "Cards Without Marks"
+  "title": "Cards Without Marks",
+  "description": "Builds a grid of vertical icon tiles with CheckboxCardGrid and CheckboxCard but no CheckboxCardCheck, so the checked state shows through the brand fill and a second edge pixel, with decorative icons hidden and labels that wrap. Use it for compact icon pickers, such as amenities, where a check mark would crowd the tile, rather than the floating check that marks selected tiles."
 }

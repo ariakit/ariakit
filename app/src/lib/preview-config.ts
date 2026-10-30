@@ -41,6 +41,8 @@ export const previewConfig = {
       kind: RECIPES_PREVIEW_KIND,
       dir: "recipes",
       metadataRequired: true,
+      // Descriptions are meant for AI agents that choose between examples.
+      descriptionRequired: true,
     },
     {
       kind: COMPONENTS_PREVIEW_KIND,

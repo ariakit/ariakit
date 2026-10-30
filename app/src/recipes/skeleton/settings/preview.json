@@ -1,3 +1,4 @@
 {
-  "title": "Form Controls"
+  "title": "Form Controls",
+  "description": "An account settings form where SkeletonFill wraps each Input and Checkbox so the placeholders keep their exact size, the field labels stay visible to keep accessible names, and useSkeletonState disables the Save changes button until the content shows. Use it for forms whose default values load asynchronously, or whenever content outside the skeleton parts must wait for loading to end."
 }
