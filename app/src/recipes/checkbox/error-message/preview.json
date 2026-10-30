@@ -1,3 +1,4 @@
 {
-  "title": "Error Message"
+  "title": "Error Message",
+  "description": "Shows a validation error under a required CheckboxField by setting aria-invalid and pointing aria-describedby to an InputError, so screen readers read the error after the name and state of the checkbox. Use it for a checkbox that must be checked to submit a form, such as accepting terms of service. The error shows all the time, so connect it to your own validation logic."
 }

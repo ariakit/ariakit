@@ -1,3 +1,4 @@
 {
-  "title": "Colors"
+  "title": "Colors",
+  "description": "Fields that color the Input itself: $edge set to success or warning with a matching $text on InputDescription, $layer with $mix for a value the app filled in, and an InputError shown on a danger panel with $layer and $mix that holds a link. Use it when a field must show a status, a warning, or a prefilled value through its edge or fill, or when an error needs a panel, rather than Backgrounds, which colors the surface behind the field."
 }

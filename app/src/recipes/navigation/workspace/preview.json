@@ -1,3 +1,4 @@
 {
-  "title": "Shortcut Hints"
+  "title": "Shortcut Hints",
+  "description": "An app sidebar with a workspace switcher button, plain NavList links, NavGroup headings, and NavDisclosure team sections with nested links, where rows show count badges and Kbd shortcut hints in a text NavSlot. A second Nav below a Separator holds a support link. Use it for a multi-level app sidebar with personal, workspace, and per-team pages, or when links show keyboard shortcuts."
 }

@@ -1,1 +1,5 @@
-{ "title": "Dashed Borders", "fullscreen": true }
+{
+  "title": "Dashed Borders",
+  "description": "A notes app layout that sets $borderType to dashed on the header, both sidebars, the sticky ShellMainHeader, and the sticky footer, and tints all of them but the main header with a muted yellow $hue, with a nested NavGroup page tree in the start sidebar and a toggleable end Context sidebar. Use it when shell separators need a dashed or tinted style, or for a document workspace with sidebars on both sides of the content.",
+  "fullscreen": true
+}

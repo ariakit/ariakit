@@ -1,3 +1,4 @@
 {
-  "title": "Text Field"
+  "title": "Text Field",
+  "description": "A labeled text field built with InputField, InputLabel, Input, and InputDescription, where the label htmlFor points at the input id and aria-describedby connects the hint. Use it for a basic text input with a visible label and a hint, and as the starting point before adding errors, states, slots, or layouts."
 }

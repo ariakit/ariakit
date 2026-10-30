@@ -39,6 +39,10 @@ export interface PreviewRootOptions {
   dir: PathInput;
   metadataRequired: boolean;
   /**
+   * Whether each preview in this root needs a `description` in its metadata.
+   */
+  descriptionRequired?: boolean;
+  /**
    * A segment that starts the ids of the previews in this root, so they cannot
    * collide with the previews of a root that uses the same folder names.
    */
@@ -56,6 +60,7 @@ export interface ResolvedPreviewRoot {
   kind: string;
   dir: string;
   metadataRequired: boolean;
+  descriptionRequired?: boolean;
   idPrefix?: string;
 }
 
@@ -67,6 +72,7 @@ type PreviewOpen = boolean | "hover";
 
 interface PreviewMetadata {
   title?: string;
+  description?: string;
   fullscreen?: boolean;
   open?: PreviewOpen;
   compact?: boolean;
@@ -75,6 +81,7 @@ interface PreviewMetadata {
 
 const PREVIEW_METADATA_KEYS = [
   "title",
+  "description",
   "fullscreen",
   "open",
   "compact",
@@ -96,6 +103,7 @@ export interface DiscoveredPreview {
 
 export const PreviewDataSchema = z.object({
   title: z.string(),
+  description: z.string().optional(),
   fullscreen: z.boolean().optional(),
   open: z.union([z.boolean(), z.literal("hover")]).optional(),
   compact: z.boolean().optional(),
@@ -124,6 +132,7 @@ export function resolvePreviewRoots(options: PreviewDiscoveryOptions) {
     kind: root.kind,
     dir: toFilePath(root.dir, srcDir),
     metadataRequired: root.metadataRequired,
+    descriptionRequired: root.descriptionRequired,
     idPrefix: root.idPrefix,
   }));
 }
@@ -159,10 +168,17 @@ function parsePreviewMetadata(value: unknown, id: string) {
     );
   }
   const metadata: PreviewMetadata = {};
-  const { title, fullscreen, open, compact } = value;
+  const { title, description, fullscreen, open, compact } = value;
   if (title !== undefined) {
     invariant(typeof title === "string", `Invalid title metadata for ${id}`);
     metadata.title = title;
+  }
+  if (description !== undefined) {
+    invariant(
+      typeof description === "string",
+      `Invalid description metadata for ${id}`,
+    );
+    metadata.description = description;
   }
   if (fullscreen !== undefined) {
     invariant(
@@ -390,6 +406,12 @@ async function discoverRoot(
     !!metadata?.title || !context.root.metadataRequired || !createsPreview,
     `Missing title metadata for ${getPreviewId(context.root, dir)}`,
   );
+  invariant(
+    !!metadata?.description ||
+      !context.root.descriptionRequired ||
+      !createsPreview,
+    `Missing description metadata for ${getPreviewId(context.root, dir)}`,
+  );
   addPreview({ context, dir, entryFiles, metadata });
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
@@ -432,6 +454,7 @@ async function updatePreviewStore(
   for (const preview of previews) {
     const rawData = {
       title: preview.title,
+      description: preview.metadata.description,
       fullscreen: preview.metadata.fullscreen,
       open: preview.metadata.open,
       compact: preview.metadata.compact,

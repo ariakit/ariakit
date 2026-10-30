@@ -1,4 +1,5 @@
 {
   "title": "Collapsing Labels",
+  "description": "Action bar buttons whose text labels hide through a container query at narrow widths, where a ResizeObserver with checkVisibility turns the Tooltip on to show the label only while it is hidden, and a fixed aria-label keeps each button named. Use it for responsive toolbars that collapse to icons, rather than an always-on tooltip for buttons that are always icon-only.",
   "compact": true
 }

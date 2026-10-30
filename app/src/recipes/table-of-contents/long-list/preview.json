@@ -1,4 +1,5 @@
 {
   "title": "Auto-Scrolling List",
+  "description": "A Toc with 24 flat release links in a sidebar body shorter than the list, which scrolls by itself to keep the rows of the sections on screen in view, the current link first, while the page keeps its place, and shows the label again at the start. Use it when the table of contents has more entries than fit in the sidebar, rather than the short nested list of the basic page.",
   "fullscreen": true
 }

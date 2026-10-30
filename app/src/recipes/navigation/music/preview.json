@@ -1,3 +1,4 @@
 {
-  "title": "Avatar Links"
+  "title": "Avatar Links",
+  "description": "A library sidebar where each link shows a large avatar NavSlot that spans two rows with $rowSpan, as square cover art or a round artist initial, beside NavLinkContent with a NavLinkLabel and a NavLinkDescription subtitle that becomes the accessible description. Use it for lists of media, people, or items that need an image and secondary text on each link rather than a single-line icon row."
 }

@@ -1,3 +1,4 @@
 {
-  "title": "Disabled Option"
+  "title": "Disabled Option",
+  "description": "Shipping method cards in a RadioGroup where one RadioCard is disabled and its wrapping RadioCardDescription tells why it is not available, and the arrow keys skip it. Each card has a RadioCardCheck and a price in a RadioCardSlot with $kind=\"text\", and a dir=\"rtl\" copy swaps the sides of the check and the price. Use it when a single option is unavailable and needs a reason, or for right-to-left card layouts."
 }

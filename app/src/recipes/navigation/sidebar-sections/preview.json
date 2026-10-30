@@ -1,4 +1,5 @@
 {
   "title": "Accordion Sections",
+  "description": "A full-page Shell sidebar Nav that wraps NavDisclosure sections in a NavDisclosureGroup and controls them so only one opens at a time, starting with the section of the current page. With $fill, the open section takes the free sidebar height and scrolls its own links, which show thumbnails and descriptions. Use it for docs or catalog sidebars with many links in a few large sections.",
   "fullscreen": true
 }

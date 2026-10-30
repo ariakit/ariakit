@@ -1,4 +1,5 @@
 {
   "title": "Narrow Reading Column",
+  "description": "An article layout that limits ShellMain to a 40rem reading column with $maxWidth, lets a figure and a pull quote break out through ShellMainFeature and ShellMainPopout, adds an aria-pressed reading mode toggle, and shows an On this page ShellSidebar only at 5xl shell widths. Use it for blog posts and long-form articles rather than app layouts with navigation sidebars.",
   "fullscreen": true
 }

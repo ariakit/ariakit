@@ -1,3 +1,4 @@
 {
-  "title": "Conditional Field"
+  "title": "Conditional Field",
+  "description": "A controlled RadioGroup with an Other option that shows a text field only while Other is checked, and keeps the typed text in state so it comes back later. The field sits right after the group, not inside it, so the arrow keys stay on the radios, focus stays on the radio, and Tab moves into the field. Use it when one choice needs extra free-form input rather than another fixed option."
 }

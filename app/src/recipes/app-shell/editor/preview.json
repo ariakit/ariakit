@@ -1,4 +1,5 @@
 {
   "title": "Two End Sidebars",
+  "description": "A design editor layout with a start Layers sidebar and two end ShellSidebar columns, a toggleable Properties panel and a narrow tools rail, where selecting a layer outlines it on a ShellMainFull canvas and shows its fields, and $stackCenter moves the header mode switcher to its own row at narrow widths. Use it for editors or builders that need inspector and toolbar panels stacked on the end side.",
   "fullscreen": true
 }

@@ -1,4 +1,5 @@
 {
   "title": "Top Bar",
+  "description": "A full-page Shell whose ShellHeader centers a horizontal Nav of text links, with a bar on the header bottom edge that moves to the clicked link in a bar view transition while the links stay clickable. Labels set through text keep the link widths when the current link turns heavier, and the links scroll in a narrow header. Use it for top-level site or app navigation in a header rather than a sidebar.",
   "fullscreen": true
 }

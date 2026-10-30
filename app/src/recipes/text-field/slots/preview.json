@@ -1,3 +1,4 @@
 {
-  "title": "Slots"
+  "title": "Slots",
+  "description": "Inputs with InputGroup and InputSlot parts: an amount whose currency symbol follows a ComboboxSelect in a slot and whose group fits the value with $fitContent, a leading icon, an initials avatar with $kind=\"avatar\" that updates as you type, a trailing status icon, and a right-to-left copy where the slots trade sides. Use it when a field needs icons, units, avatars, or an inline select around the text, rather than Password, which slots a toggle button."
 }

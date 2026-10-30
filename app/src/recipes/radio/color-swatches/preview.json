@@ -1,3 +1,4 @@
 {
-  "title": "Color Swatches"
+  "title": "Color Swatches",
+  "description": "A product picker with color swatch RadioCard items named by aria-label and a group label that shows the picked color, plus a RadioCardGrid of sizes. The sold-out size is disabled, struck through, and explained by a Tooltip and a hidden RadioCardDescription, while the group keeps one Tab stop. Use it for options shown as swatches instead of text, or to explain an unavailable option on hover."
 }

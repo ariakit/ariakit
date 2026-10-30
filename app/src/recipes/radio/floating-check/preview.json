@@ -1,3 +1,4 @@
 {
-  "title": "Floating Check"
+  "title": "Floating Check",
+  "description": "Picture cards in a RadioCardGrid where RadioCardCheck with $floating shows a check on the top-end corner of the checked card only. Each vertical card holds an aria-hidden preview drawing above a RadioCardLabel that names the option. Use it for visual choices, like a theme picker, where the check should sit on the corner of the picture card instead of taking space inside it."
 }

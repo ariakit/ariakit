@@ -1,3 +1,4 @@
 {
-  "title": "Static Shapes"
+  "title": "Static Shapes",
+  "description": "Decorative mockups of an inbox, a dashboard, and a profile drawn with SkeletonLine, SkeletonBox, and SkeletonCircle outside any Skeleton root, so the parts are static, never animate, and have no loading state, with $weight setting their tint. Use it for illustrations, empty states, or preview images built from placeholder shapes rather than for content that actually loads."
 }

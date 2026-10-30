@@ -1,3 +1,4 @@
 {
-  "title": "Password Visibility Toggle"
+  "title": "Password Visibility Toggle",
+  "description": "A password field whose InputGroup holds the Input and a Button in an InputSlot that switches the input type between password and text, keeping the same Show password name and telling its state with aria-pressed and aria-controls. Use it for a show or hide password control, or any toggle button inside a field, rather than Slots, whose slots hold icons, text, and a select."
 }

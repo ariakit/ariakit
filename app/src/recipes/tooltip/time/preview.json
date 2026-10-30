@@ -1,3 +1,4 @@
 {
-  "title": "Exact Timestamp"
+  "title": "Exact Timestamp",
+  "description": "Relative times in a comment list, such as 3 hours ago, rendered as links whose tooltip shows the exact date and time, with a hidden element referenced by aria-describedby so screen readers also get the exact time. Use it for relative dates or other short forms of a value that need the full form on hover or focus, rather than text that is cut off by width."
 }

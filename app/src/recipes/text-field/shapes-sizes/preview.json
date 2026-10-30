@@ -1,3 +1,4 @@
 {
-  "title": "Shapes and Sizes"
+  "title": "Shapes and Sizes",
+  "description": "Text fields that change shape and size through Input props: $rounded set to full for a pill, $p for denser or roomier padding, $size to scale only the input, and a smaller font size on InputField that scales the whole field. Use it when a field needs a pill shape, compact padding for tables, or a larger input, rather than the default field size."
 }
