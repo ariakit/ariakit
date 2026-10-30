@@ -391,6 +391,7 @@ export default function Example() {
         />
         <Contents label="Straight rail" entries={deep} $guide="rail" />
         <Contents label="Indent only" entries={deep} $guide={false} />
+        <Contents label="Wide thumb" entries={deep} $thumbWidth={3} />
         <Contents
           label="Bold current link"
           entries={deep}
@@ -407,6 +408,12 @@ export default function Example() {
           entries={chapters}
           ordered
           $markerRing={false}
+        />
+        <Contents
+          label="Wide thumb chapters"
+          entries={chapters}
+          ordered
+          $thumbWidth={5}
         />
         {/* The rows scroll in their own box below the label, which is shorter
             than the rows of the sections on screen. */}
