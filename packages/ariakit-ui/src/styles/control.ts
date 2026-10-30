@@ -122,6 +122,10 @@ export const controlSlot = cv({
     "group-[.disabled]/control:[&_kbd]:ak-ink-0",
     "group-ui-disabled/control:[&_kbd]:ak-ink-0",
     "group-ui-disabled-within/choice:[&_kbd]:ak-ink-0",
+    // A disabled input group mutes the text of its descendants itself. It is
+    // disabled through its entry controls, so the keys of an enabled action
+    // button in the group keep their surfaces.
+    "group-ui-field-disabled/control:[&_kbd:not(:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:ak-layer-fade-80",
   ],
   refine({ variants, addClass }) {
     addClass(getDisabledContentClass(variants));

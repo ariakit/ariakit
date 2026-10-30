@@ -14,6 +14,11 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import {
+  Input,
+  InputGroup,
+  InputSlot,
+} from "@ariakit/ui/components/input.ariakit.react";
 import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import {
   Example,
@@ -538,6 +543,57 @@ export default function KbdExamples() {
         `}
       >
         <KeyButtons $lightnessOffset disabled />
+      </Example>
+
+      <Example
+        title="Keys in a disabled input group"
+        description="While the input of a group is disabled, the slots fade the cap and the chip, so a brand chip keeps only a tint, and the group mutes key text. The key of an enabled action button keeps its surface."
+        code={`
+          <InputGroup>
+            <Input disabled />
+            <InputSlot $square={false} $size="xl">
+              <Kbd $kind="flat" $layer="brand">⌘K</Kbd>
+            </InputSlot>
+          </InputGroup>
+        `}
+      >
+        <div className="flex w-full flex-col gap-2">
+          <InputGroup>
+            <Input
+              aria-label="Search docs"
+              placeholder="Search docs"
+              disabled
+            />
+            <InputSlot $square={false}>
+              <Kbd $kind="keycap">⌘K</Kbd>
+            </InputSlot>
+          </InputGroup>
+          <InputGroup>
+            <Input
+              aria-label="Search files"
+              placeholder="Search files"
+              disabled
+            />
+            <InputSlot $square={false} $size="xl">
+              <Kbd $kind="flat" $layer="brand">
+                ⌘K
+              </Kbd>
+            </InputSlot>
+          </InputGroup>
+          <InputGroup>
+            <Input aria-label="Message" placeholder="Message" disabled />
+            <InputSlot $size="2xl" $square={false}>
+              <Button $size="sm">
+                <ButtonLabel>Send</ButtonLabel>
+                <ButtonSlot $square={false} $size="xl">
+                  <Kbd $kind="flat" $layer="brand">
+                    ↵
+                  </Kbd>
+                </ButtonSlot>
+              </Button>
+            </InputSlot>
+          </InputGroup>
+        </div>
       </Example>
 
       <Example

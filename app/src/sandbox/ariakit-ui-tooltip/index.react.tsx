@@ -194,7 +194,15 @@ export default function TooltipExamples() {
         description="An icon button named by its label, with its shortcut in a text slot after the tooltip text. The keys are muted and use the UI font, like a plain shortcut in a button."
         code={`
           <TooltipProvider open>
-            <TooltipAnchor render={<Button $kind="bevel" />}>
+            <TooltipAnchor
+              render={
+                <Button
+                  $kind="bevel"
+                  aria-label="Bold"
+                  aria-keyshortcuts="Meta+B"
+                />
+              }
+            >
               <ButtonSlot>
                 <Bold />
               </ButtonSlot>
@@ -338,7 +346,9 @@ export default function TooltipExamples() {
               </TooltipSlot>
             }
           >
-            <Button $kind="bevel">Copy</Button>
+            <Button $kind="bevel" aria-keyshortcuts="Meta+C">
+              Copy
+            </Button>
           </Tooltip>
         `}
       >
