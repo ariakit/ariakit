@@ -83,9 +83,9 @@ export const edge = cv({
     },
     /**
      * Uses full edge opacity without the default lightness push. Clears
-     * component defaults for `$edgeWeight`, `$edgePush`, `$edgeLighten`, and
-     * `$edgeDarken`. Explicit values and global `--contrast` adjustments still
-     * apply.
+     * component defaults for `$edgeWeight`, `$darkEdgeWeight`, `$edgePush`,
+     * `$edgeLighten`, and `$edgeDarken`. Explicit values and global
+     * `--contrast` adjustments still apply.
      */
     $edgeRaw: "ak-edge-raw",
     /**
@@ -122,6 +122,33 @@ export const edge = cv({
         allowZero: true,
         property: "--edge-alpha",
         class: "ak-edge-alpha-(--edge-alpha)",
+      });
+    },
+    /**
+     * Sets edge opacity on dark surfaces, in place of `$edgeWeight`. Takes a
+     * named weight or a number (0–100). Table grid lines and automatic cell
+     * borders read only `$edgeWeight`.
+     */
+    $darkEdgeWeight(
+      value?: EdgeWeightValues | "unset" | (string & {}) | number,
+    ) {
+      if (value == null) return;
+      if (value === "unset") return;
+      if (includes(EDGE_WEIGHT_VALUES, value)) {
+        const valueMap = {
+          adaptive: "ak-dark:ak-edge-0",
+          light: "ak-dark:ak-edge-5",
+          normal: "ak-dark:ak-edge-10",
+          medium: "ak-dark:ak-edge-20",
+          bold: "ak-dark:ak-edge-40",
+        } satisfies Record<EdgeWeightValues, string>;
+        return valueMap[value];
+      }
+      return getScaledStyleClass({
+        value,
+        allowZero: true,
+        property: "--dark-edge-alpha",
+        class: "ak-dark:ak-edge-alpha-(--dark-edge-alpha)",
       });
     },
     /**
@@ -308,6 +335,10 @@ export const edge = cv({
     // Clear component defaults that would override the raw color by stylesheet
     // order. Explicit caller values still apply.
     $edgeWeight(defaultValue, variants) {
+      if (variants.$edgeRaw) return undefined;
+      return defaultValue;
+    },
+    $darkEdgeWeight(defaultValue, variants) {
       if (variants.$edgeRaw) return undefined;
       return defaultValue;
     },

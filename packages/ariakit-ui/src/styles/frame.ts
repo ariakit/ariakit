@@ -207,6 +207,12 @@ export const frame = cv({
       }
       return defaultValue;
     },
+    $darkEdgeWeight(defaultValue, variants) {
+      if (variants.$border === "inherit") {
+        return "unset";
+      }
+      return defaultValue;
+    },
     // The contrast floor would make an inherited edge solid, and an element
     // without a border has no boundary to keep at 3:1.
     $edgeContrast(defaultValue, variants) {
