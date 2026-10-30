@@ -1,5 +1,5 @@
 import { cv } from "clava";
-import { getSpacingValue } from "../utils/styles.ts";
+import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
 import {
   disclosure,
   disclosureButton,
@@ -22,7 +22,7 @@ export const list = cv({
     // Prose supplies the default gap. Explicit `$gap` wins through the style
     // attribute; nested lists win by specificity.
     "in-[.prose]:[--list-gap-base:var(--list-gap-root,var(--prose-gap))]",
-    "[--list-item-padding:--spacing(1)]",
+    "[--list-item-padding:round(--spacing(1),1px)]",
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
     "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
     // Nested lists halve the base gap. This selector outranks the prose rule.
@@ -76,11 +76,14 @@ export const list = cv({
         style: { "--list-gap-root": getSpacingValue(value) },
       };
     },
-    /** Sets the item frame padding. Numbers scale the spacing token. */
+    /**
+     * Sets the item frame padding. Numbers scale the spacing token and round to
+     * a whole pixel.
+     */
     $itemPadding(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--list-item-padding": getSpacingValue(value) },
+        style: { "--list-item-padding": getPaddingValue(value) },
       };
     },
   },

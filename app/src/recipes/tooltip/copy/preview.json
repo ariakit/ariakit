@@ -1,3 +1,4 @@
 {
-  "title": "Copy Feedback"
+  "title": "Copy Feedback",
+  "description": "Copy-to-clipboard icon button whose tooltip changes from Copy link to Copied after a click and stays open, then resets after 2 seconds, with each copy restarting the timer. A status message also reports success or failure for screen readers and touch screens. Use it for copy buttons or other quick actions that confirm their result in the tooltip itself."
 }

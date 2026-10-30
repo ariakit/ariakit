@@ -1,3 +1,4 @@
 {
-  "title": "Tabs with Counts"
+  "title": "Tabs with Counts",
+  "description": "A horizontal Nav with $layout set to horizontal for repository tabs under a header, with icons, count badges, and a bar offset onto the header line that marks the current tab instead of a selected surface. NavLinkLabel with text reserves the bold width, so the tabs keep their widths when the current tab changes. Use it for tab-style section links inside a page or card rather than site-wide navigation."
 }

@@ -694,6 +694,22 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Compact count badge"
+        description="One step of padding at the small size stays a whole pixel, so the pill keeps equal space above and below."
+        code={`
+          <Button $size="sm" $p={1} $border>
+            <ButtonLabel>Inbox</ButtonLabel>
+            <ButtonSlot $kind="badge">12</ButtonSlot>
+          </Button>
+        `}
+      >
+        <Button $size="sm" $p={1} $border>
+          <ButtonLabel>Inbox</ButtonLabel>
+          <ButtonSlot $kind="badge">12</ButtonSlot>
+        </Button>
+      </Example>
+
+      <Example
         title="Badge hue"
         description="A hue on a colored badge turns its ring along with its fill."
         code={`

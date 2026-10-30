@@ -1,3 +1,4 @@
 {
-  "title": "Collapsed Sidebar"
+  "title": "Collapsed Sidebar",
+  "description": "Collapsed icon-only navigation rail whose NavLink items share one tooltip: TooltipAnchor elements and one TooltipPopover in a TooltipProvider read the aria-label of the active anchorElement, and tooltipWrapper slides it between links. The provider sets showTimeout={0} and hideTimeout={300}, so it shows at once and stays while the pointer crosses to the next link. Use it for icon sidebars where one tooltip follows hover and Tab focus."
 }

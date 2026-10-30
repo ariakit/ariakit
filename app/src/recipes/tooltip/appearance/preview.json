@@ -1,3 +1,4 @@
 {
-  "title": "Colors and Shapes"
+  "title": "Colors and Shapes",
+  "description": "Buttons that compare tooltip styles: the default inverted colors, $invert={false} for the popover surface with an edge, a $layer=\"brand\" color, the arrow prop, and $rounded=\"full\". Use it to choose how a tooltip looks, since these style props go to the TooltipPopover and not the anchor. It adds no behavior beyond the basic tooltip."
 }

@@ -1,3 +1,4 @@
 {
-  "title": "Paragraph Lines"
+  "title": "Paragraph Lines",
+  "description": "A blog article with a heading, author byline, hero image, and paragraphs, where several SkeletonLine elements per paragraph, the last one shorter, mimic wrapped text, and each line takes the height of its own font size, so the heading placeholder is taller. Use it for long-form text such as posts or documentation pages, rather than the short single-line fields of the profile card."
 }

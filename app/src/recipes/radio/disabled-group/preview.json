@@ -1,3 +1,4 @@
 {
-  "title": "Disabled Group"
+  "title": "Disabled Group",
+  "description": "A poll form that sets disabled on the whole RadioGroup after the vote, keeps the pick checked, and announces the result in a role=\"status\" live region. The Vote button uses accessibleWhenDisabled, so it keeps focus while disabled. Use it when a group must lock after an action, such as a submitted vote, rather than disabling a single unavailable option."
 }

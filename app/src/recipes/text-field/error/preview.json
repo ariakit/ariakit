@@ -1,3 +1,4 @@
 {
-  "title": "Error"
+  "title": "Error",
+  "description": "An invalid email field that shows an InputError message with its alert icon, sets aria-invalid on the Input for the danger edge, and lists the error id before the hint id in aria-describedby so screen readers read the error first. Use it when a text field must show a validation error, rather than the basic field that only has a hint."
 }

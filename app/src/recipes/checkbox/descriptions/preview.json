@@ -1,3 +1,4 @@
 {
-  "title": "Descriptions"
+  "title": "Descriptions",
+  "description": "Adds a second line to each checkbox by putting CheckboxLabel and CheckboxDescription inside CheckboxField, so the label is the accessible name and the description is the accessible description. Use it for settings that need a short explanation under each option, rather than the label-only rows of the basic checkbox group."
 }

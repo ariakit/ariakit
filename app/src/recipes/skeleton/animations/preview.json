@@ -1,3 +1,4 @@
 {
-  "title": "Animations"
+  "title": "Animations",
+  "description": "Three identical media cards side by side, each a Skeleton with a different $animate value (shimmer, pulse, and false), with a Loading checkbox that sets the loading prop of all of them by hand. Use it to compare and choose the placeholder animation, or when the loading state comes from a local boolean rather than a request."
 }

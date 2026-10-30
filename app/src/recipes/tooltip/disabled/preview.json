@@ -1,3 +1,4 @@
 {
-  "title": "Disabled Action"
+  "title": "Disabled Action",
+  "description": "A disabled Publish button whose tooltip explains why it can't be used: the Tooltip text holds the reason only while the button is disabled, accessibleWhenDisabled keeps it focusable and hoverable, and aria-describedby points to the same reason shown below the field. Use it when a disabled control needs a visible and accessible reason that also works on touch screens."
 }

@@ -1,4 +1,5 @@
 {
   "title": "Combobox Group",
+  "description": "A searchable combobox built with the single Combobox component that filters members and files with match-sorter, renders each result set in a labeled ComboboxGroup, and shows ComboboxEmpty when nothing matches. With autoSelect and autoComplete=\"both\", typing completes the first match inline and arrow keys move across groups. Use it for grouped, filterable results with plain text options, rather than Custom Items for avatars or descriptions.",
   "open": true
 }
