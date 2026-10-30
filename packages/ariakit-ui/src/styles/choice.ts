@@ -298,7 +298,9 @@ export const choiceCard = cv({
       if (defaultValue != null) return defaultValue;
       if (variants.$edgeRaw) return defaultValue;
       // A caller's edge weight or color applies on every surface.
-      if (variants.$edgeWeight != null) return defaultValue;
+      if (variants.$edgeWeight != null && variants.$edgeWeight !== "unset") {
+        return defaultValue;
+      }
       if (variants.$edge != null && variants.$edge !== "unset") {
         return defaultValue;
       }
