@@ -730,9 +730,10 @@ export const shellMain = cv({
     /**
      * Sets the space above the intro, or above the body without an intro, and
      * below the body. Fragment targets keep the same space, at least 1rem,
-     * below the sticky headers. Numbers scale the spacing token. Defaults to
-     * space that grows with the shell width, with more below the body. `none`
-     * removes the space; `unset` keeps the default.
+     * below the sticky headers. Numbers scale the spacing token; other values
+     * must be CSS lengths, not percentages. Defaults to space that grows with
+     * the shell width, with more below the body. `none` removes the space;
+     * `unset` keeps the default.
      */
     $py(value?: "unset" | "none" | (string & {}) | number) {
       if (value == null) return;
