@@ -1,0 +1,45 @@
+---
+title: Checkbox
+---
+
+## Overview
+
+These examples build checkboxes with the Ariakit UI `Checkbox` components. A checkbox turns one option on or off. In a group of checkboxes, a person can check any number of the options, or none. To let a person pick exactly one option, use a radio group.
+
+The gallery starts with a plain group of notification settings. Then it shows settings with descriptions, a select-all checkbox for a list of items, and a text field that shows while a box is checked. The examples with cards show photos with a floating check, cookie settings with a category that cannot change, add-ons with badges, amenities without marks, and topics with a limit. The last examples show an error message below a checkbox and chips that filter a list.
+
+## Components
+
+`CheckboxField` is a row with a native checkbox before its text. Put a `CheckboxLabel` and a `CheckboxDescription` in it to show a second line, as in the Descriptions example. The description is the accessible description of the checkbox, so it is not part of its name. Other props, such as `name`, `value`, `checked`, and `required`, go to the checkbox.
+
+A field without a background or a border has no padding, so the checkbox starts at the edge of the row, like the icon of an `InputError`. A `legend`, a hint, and an error message then line up with the checkboxes. To show an error, put an `InputError` after the field, list its id in the `aria-describedby` of the field, and set `aria-invalid`, as in the Error Message example.
+
+Each checkbox keeps its own state. Set `defaultChecked` to start with a checked box, or set `checked` and `onChange` to control it, as in the Conditional Field example. To keep the values of a group in one array, put the checkboxes in a `CheckboxProvider` from `@ariakit/react` and give each one a `value`, as in the Select All, Selection Limit, and Filter Chips examples. Set `checked="mixed"` to draw a dash for the mixed state, as on All data in the Select All example.
+
+Ariakit UI has no group component for checkboxes, because a group of checkboxes only needs a name. Put the checkboxes in a `fieldset` with a `legend`, as in the first example, or in an element with `role="group"` and an `aria-labelledby` that points to a visible label, as in the card examples. A `disabled` fieldset disables all of its checkboxes.
+
+`CheckboxCard` is a card with a hidden native checkbox, and its content names the checkbox. `CheckboxCardContent` stacks a `CheckboxCardLabel` and a `CheckboxCardDescription`. `CheckboxCardSlot` holds other content, such as an icon or a price. A slot with `$kind="badge"` shows a badge. To let the description use the full width, put the label and the badge in a `CheckboxCardLabelRow` inside `CheckboxCardContent`, as in the Card Badges example. The badge wraps below the label when the row runs out of room.
+
+`CheckboxCardCheck` draws the mark of a card. With `$floating`, a check shows on the top-end corner of the checked card only, as in the Floating Check example. A card without a mark shows its checked state with the brand fill and a second edge pixel, as in the Cards Without Marks example. The Filter Chips example sets `$rounded="full"` and `$size="sm"` on the cards. The checks keep their small corners in the round chips, because a round check looks like a radio.
+
+`CheckboxCardGrid` puts its cards in columns of equal width, with rows of equal height. `$minItemSize` sets the narrowest width of a card before the grid drops a column. The grid has the `group` role, so name it with `aria-labelledby` or `aria-label`.
+
+Set `disabled` on a checkbox or a card to disable it. A disabled checkbox keeps its state, like Strictly necessary in the Disabled Option example. When three topics are checked, the Selection Limit example disables the other topics.
+
+## Accessibility
+
+Each checkbox is a Tab stop, and Space checks or clears the checkbox that has focus. A disabled checkbox is not a Tab stop. This is the [checkbox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/) of the ARIA Authoring Practices Guide.
+
+The name of a group tells what the options are for. A screen reader reads it when focus moves into the group. A `legend` names its `fieldset`, and `aria-labelledby` names an element with the `group` role.
+
+A checkbox in the mixed state shows that some of the options it controls are checked, but not all of them. In the Select All example, All data lists the ids of its items in `aria-controls`. A click on All data in the mixed state checks all of the items, and the next click clears them. The items are indented below All data, so the layout shows which checkboxes it controls.
+
+Color alone does not show the checked state ([Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)). A checkbox shows a check mark, or a dash in the mixed state, and so does the check of a card. A card without a mark gets a second edge pixel, and in forced colors mode, such as a Windows contrast theme, its border gets wider.
+
+A screen reader reads a description after the name of its checkbox. The description of a disabled card can tell why the option cannot change, as in the Disabled Option example. A badge and a price in a card are part of the name, so the Card Badges example reads "Home setup New $29." The pictures of the Floating Check example and the icons of the Cards Without Marks example are hidden from screen readers, because each option has a word that names it.
+
+In the Conditional Field example, the text field comes right after the checkbox. When the box is checked, focus stays on the checkbox, because a change of focus on input can confuse people ([On Input](https://www.w3.org/WAI/WCAG22/Understanding/on-input.html)). Tab moves from the checkbox into the field.
+
+In the Error Message example, text tells what is wrong and how to fix it, and an icon marks it ([Error Identification](https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html)). The checkbox has `aria-invalid`, and the error is its accessible description, so a screen reader reads the error after the name and the state of the checkbox. Keep `aria-invalid` only while the error shows. The checkbox also has `required`, so a screen reader tells that the form needs it.
+
+The Selection Limit and Filter Chips examples show a count in a live region with `role="status"`, so screen readers read it without a change of focus ([Status Messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html)). At the limit, the status of the Selection Limit example tells why the other topics are disabled.
