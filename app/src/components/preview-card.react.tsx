@@ -160,14 +160,13 @@ export function PreviewCard({
           data-preview-card
           tabIndex={-1}
           $border
-          $edgeWeight="light"
-          // Between the 3xl and 4xl steps, so the window corner reads a little
-          // rounder than the macOS browser window while following the theme.
-          $rounded="calc(var(--radius)*7)"
+          // A little rounder than the macOS browser window, while following the
+          // theme. The viewport corners take this radius minus the padding.
+          $rounded="calc(var(--radius)*7 - var(--spacing)*0.5)"
           $forceRounded
-          $darken={0.5}
+          $lighten={0.3}
           $orientation="vertical"
-          $p={1.5}
+          $p={1}
           className={[
             "grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)]",
             // A preview grid limits the window height, and the viewport row
@@ -179,7 +178,7 @@ export function PreviewCard({
           <Frame
             $cover
             // Slightly more than the card padding, to suit the rounder corners.
-            $p={2}
+            $p={1.5}
             className={[
               "flex items-center gap-2 text-sm",
               // Only browser chrome queries the bar width, for the label below.
@@ -542,7 +541,15 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
           </Button>
         </Tooltip>
       </ButtonGroup>
-      <InputGroup $rounded="full" $border={false} className="min-w-0 flex-1">
+      <InputGroup
+        $rounded="full"
+        $border={false}
+        // The card is already white in light mode, where lightening would hide
+        // the address bar.
+        $lighten={false}
+        $lightnessOffset
+        className="min-w-0 flex-1"
+      >
         <InputSlot aria-hidden $ink={60}>
           <GlobeIcon />
         </InputSlot>
@@ -598,6 +605,7 @@ function PreviewCardViewport({
           ref={viewportRef}
           id={viewportId}
           $border
+          $borderType="ring"
           // The brand border shows that the preview scrolls, not the page.
           $edge={active ? "brand" : undefined}
           $edgeRaw={active}
@@ -716,6 +724,7 @@ function PreviewCardInline({
             // it scroll, like a click in a preview frame.
             tabIndex={-1}
             $border
+            $borderType="ring"
             // The brand border shows that the example scrolls, not the page.
             $edge={active ? "brand" : undefined}
             $edgeRaw={active}
@@ -962,10 +971,10 @@ function PreviewCardResizeHandle({
       onLostPointerCapture={resize.endDrag}
       onDoubleClick={() => resizeTo(maxWidth)}
       className={[
-        // Centers the grip in the 1.5-step card padding at the full width. The
-        // hit area overlaps the frame by 1.25 steps, less than a classic
-        // scrollbar at the end edge of the frame.
-        "group/resize absolute inset-y-0 -inset-e-2.75 z-1 grid w-4 place-items-center",
+        // Centers the grip on the 1-step card padding at the full width, though
+        // the grip is as wide as the padding. The hit area overlaps the frame by
+        // 1.5 steps, less than a classic scrollbar at the end edge of the frame.
+        "group/resize absolute inset-y-0 -inset-e-2.5 z-1 grid w-4 place-items-center",
         "cursor-ew-resize touch-none outline-none",
         // The handle renders from the start and shows once the card has room
         // to resize. Inserting it later would match broad :has() rules of the

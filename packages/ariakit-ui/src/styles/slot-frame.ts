@@ -129,18 +129,15 @@ export function hasSlotSurface(variants: VariantProps<typeof frame>) {
   return Boolean(variants.$border);
 }
 
-/**
- * Whether the slot kind is a badge or an avatar, which paint their own surface.
- * The refines of slotFrameSlot and controlSlot share this check.
- */
-export function isBadgeOrAvatar(kind?: string) {
+/** Whether the slot kind is a badge or an avatar. */
+function isBadgeOrAvatar(kind?: string) {
   return kind === "badge" || kind === "avatar";
 }
 
 /**
  * A text-aligned slot in a slot frame for an icon, avatar, badge, thumbnail,
  * keyboard key, or short text. Its margins follow the padding of the frame.
- * Controls extend it, and static rows, such as badges, use it directly.
+ * Controls extend it, and so can static rows, such as tooltips.
  */
 export const slotFrameSlot = cv({
   extend: [frame],

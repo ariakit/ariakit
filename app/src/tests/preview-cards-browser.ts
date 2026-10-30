@@ -20,13 +20,10 @@ async function waitForArticle(article: Locator) {
   await status.filter({ hasText: "Article loaded" }).waitFor();
 }
 
-// The viewport edge is a border or a ring, depending on the theme and the
-// lightness of the window around it.
+// The viewport edge is a ring. The border color follows the edge color even
+// with no border to paint, so it would not show that the edge changed.
 async function getViewportEdge(viewport: Locator) {
-  return viewport.evaluate((element) => {
-    const style = getComputedStyle(element);
-    return `${style.borderTopColor} ${style.boxShadow}`;
-  });
+  return viewport.evaluate((element) => getComputedStyle(element).boxShadow);
 }
 
 // The brand token and the computed edge write the same color in different
@@ -40,8 +37,7 @@ async function hasBrandViewportEdge(viewport: Locator) {
     doc.body.append(probe);
     const brand = getComputedStyle(probe).color;
     probe.remove();
-    const style = getComputedStyle(element);
-    return style.borderTopColor === brand || style.boxShadow.includes(brand);
+    return getComputedStyle(element).boxShadow.includes(brand);
   });
 }
 

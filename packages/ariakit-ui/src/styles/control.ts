@@ -2,11 +2,10 @@ import type { VariantProps } from "clava";
 import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
-import { isLayerColor, layer } from "./layer.ts";
+import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
 import {
   fontSizeVariants,
   hasSlotSurface,
-  isBadgeOrAvatar,
   slotFrame,
   slotFrameSlot,
   slotFrameText,
@@ -66,8 +65,50 @@ export const control = cv({
 });
 
 /**
- * A slot in a control. The surface of a badge or an avatar, and the keys in the
- * slot, fade while the control is disabled.
+ * Returns the classes that fade painted content inside a disabled control, such
+ * as a badge or a slot, by the rule of the control's own surface: a colored or
+ * inverted surface fades, a neutral fill stays, and images fade.
+ */
+export function getDisabledContentClass(variants: VariantProps<typeof layer>) {
+  // An input group is disabled through its entry controls, so its rules leave
+  // out the content of an enabled action button in the group.
+  const classes = [
+    // Fade image pixels only; fading the whole element would reduce text
+    // contrast. DOM disabled state can change without rerendering the recipe.
+    "group-[.disabled]/control:[&_img]:opacity-50",
+    "group-ui-disabled/control:[&_img]:opacity-50",
+    "group-ui-disabled-within/choice:[&_img]:opacity-50",
+    "group-ui-field-disabled/control:[&_img:not(:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:opacity-50",
+  ];
+  // Without a fill, the content takes the text color of the control.
+  if (!hasLayerBackground(variants)) return classes;
+  classes.push(
+    // A fill sets its own text color, which the control's direct-child text
+    // rules may not reach. A disabled input group sets the ink on its
+    // descendants itself, except in forced colors.
+    "group-[.disabled]/control:ak-ink-0",
+    "group-ui-disabled/control:ak-ink-0",
+    "group-ui-disabled-within/choice:ak-ink-0",
+  );
+  if (!fadesDisabledSurface(variants)) return classes;
+  classes.push(
+    // Fade the disabled surface before calculating readable text contrast.
+    "group-[.disabled]/control:ak-layer-fade-80",
+    "group-ui-disabled/control:ak-layer-fade-80",
+    "group-ui-disabled-within/choice:ak-layer-fade-80",
+    "not-[:is(button,input,a):not(:disabled,[aria-disabled='true'])_*]:group-ui-field-disabled/control:ak-layer-fade-80",
+    // An edge can follow the surface color, so it would still look enabled.
+    "group-[.disabled]/control:ak-edge-5",
+    "group-ui-disabled/control:ak-edge-5",
+    "group-ui-disabled-within/choice:ak-edge-5",
+    "not-[:is(button,input,a):not(:disabled,[aria-disabled='true'])_*]:group-ui-field-disabled/control:ak-edge-5",
+  );
+  return classes;
+}
+
+/**
+ * A slot in a control. Its painted content fades while the control is disabled,
+ * like the control's own surface, and the keys in it fade and mute their text.
  */
 export const controlSlot = cv({
   extend: [slotFrameSlot],
@@ -83,24 +124,7 @@ export const controlSlot = cv({
     "group-ui-disabled-within/choice:[&_kbd]:ak-ink-0",
   ],
   refine({ variants, addClass }) {
-    if (!isBadgeOrAvatar(variants.$kind)) return;
-    addClass([
-      // Fade the disabled surface before calculating readable text contrast.
-      "group-[.disabled]/control:ak-layer-fade-80",
-      // DOM disabled state can change without rerendering the recipe.
-      "group-ui-disabled/control:ak-layer-fade-80",
-      "group-ui-disabled-within/choice:ak-layer-fade-80",
-      // Reach slots below wrappers beyond the control's direct-child text
-      // rules.
-      "group-[.disabled]/control:ak-ink-0",
-      "group-ui-disabled/control:ak-ink-0",
-      "group-ui-disabled-within/choice:ak-ink-0",
-      // Fade image pixels only; fading the whole slot would reduce text
-      // contrast.
-      "group-[.disabled]/control:[&_img]:opacity-50",
-      "group-ui-disabled/control:[&_img]:opacity-50",
-      "group-ui-disabled-within/choice:[&_img]:opacity-50",
-    ]);
+    addClass(getDisabledContentClass(variants));
   },
 });
 
