@@ -11,6 +11,7 @@ const tocs = {
   "five-levels-diagonal": "Five levels, diagonal",
   "straight-rail": "Straight rail",
   "indent-only": "Indent only",
+  "wide-thumb": "Wide thumb",
   "bold-current-link": "Bold current link",
   "twelve-chapters": "Twelve chapters",
   "marked-parents": "Marked parents",
@@ -77,6 +78,18 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         box: plain,
         colorScheme,
         item: `${id}/numbers-over-thumb`,
+      });
+      // The ring takes the width of a thumb wider than the marker halo, which
+      // widens the halo to keep the ring off the number.
+      const wide = q.navigation("Wide thumb chapters");
+      await test
+        .expect(query(wide).link("Chapter 10"))
+        .toHaveAttribute("aria-current", "location");
+      await captureInView({
+        visual,
+        box: wide,
+        colorScheme,
+        item: `${id}/wide-thumb-chapters-lit`,
       });
     });
   });
