@@ -92,7 +92,7 @@ export default function Example() {
         <RadioGroup
           label="Delivery window"
           defaultValue="morning"
-          className="grid gap-2 ps-[1.375em]"
+          className="grid gap-2 ps-[1.4375em]"
         >
           <RadioField value="morning">Morning</RadioField>
           <RadioField value="evening">Evening</RadioField>

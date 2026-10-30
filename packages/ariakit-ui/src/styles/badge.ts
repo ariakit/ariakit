@@ -1,7 +1,6 @@
 import { cv } from "clava";
-import { controlLabel, controlSlot } from "./control.ts";
 import { isLayerColor } from "./layer.ts";
-import { slotFrame } from "./slot-frame.ts";
+import { slotFrame, slotFrameSlot, slotFrameText } from "./slot-frame.ts";
 
 /** A compact badge with a tinted surface and rounded edge. */
 export const badge = cv({
@@ -86,7 +85,7 @@ export const badge = cv({
 
 /** Badge text with capital-height alignment. */
 export const badgeLabel = cv({
-  extend: [controlLabel],
+  extend: [slotFrameText],
   class: [
     // Trim browser-dependent font metrics to center the capitals. Padding
     // restores the line height only where text-box is supported; untrimmable
@@ -112,4 +111,4 @@ export const badgeLabel = cv({
 });
 
 /** A text-aligned slot for badge icons and other content. */
-export const badgeSlot = controlSlot;
+export const badgeSlot = slotFrameSlot;

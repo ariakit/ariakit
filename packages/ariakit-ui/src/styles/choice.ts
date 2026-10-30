@@ -21,8 +21,8 @@ import { hover } from "./hover.ts";
 import { hasLayerBackground } from "./layer.ts";
 
 /**
- * A checkbox or radio mark with control-slot geometry. State comes from the
- * input or a surrounding choice host; a child replaces the drawn mark.
+ * A checkbox or radio mark with the geometry of a control slot. State comes
+ * from the input or a surrounding choice host; a child replaces the drawn mark.
  */
 export const choice = cv({
   extend: [controlSlot, hover],

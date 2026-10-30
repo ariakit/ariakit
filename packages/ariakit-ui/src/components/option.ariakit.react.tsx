@@ -1,8 +1,8 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { wrapsSlotChildren } from "../styles/control.ts";
 import { optionLabel, optionSlot } from "../styles/option.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface OptionLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof optionLabel> {}
