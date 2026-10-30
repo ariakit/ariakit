@@ -25,10 +25,10 @@ export default function Example() {
     <div className="grid w-[30rem] max-w-full grid-cols-[repeat(auto-fill,minmax(min(100%,13rem),1fr))] gap-x-5 gap-y-6">
       <InputField>
         <InputLabel htmlFor={`${id}-website`}>Website</InputLabel>
-        {/* The value continues the prefix text, so neither the group gap nor
-            the slot margin separates them. */}
+        {/* The value continues the prefix text, so the group gap doesn't
+            separate them. */}
         <InputGroup $gap="none">
-          <InputSlot aria-hidden $kind="text" $ink={60} $mx="md">
+          <InputSlot aria-hidden $kind="text" $ink={60}>
             https://
           </InputSlot>
           <Input id={`${id}-website`} defaultValue="ada.dev" />

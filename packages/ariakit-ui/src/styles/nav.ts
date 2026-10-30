@@ -214,7 +214,7 @@ const navSlotBase = cv({
      * text size; without `$slotSize`, a badge after the label takes the line
      * height instead. Numbers scale the spacing token; other lengths apply
      * directly. Named sizes `xs` to `lg` become `xl` for badges and avatars;
-     * `xl` and larger add label spacing.
+     * `xl` and larger add label spacing, except for thumbnails and text.
      */
     $size(value?: SlotSize | "auto" | number | (string & {})) {
       if (value == null) return;

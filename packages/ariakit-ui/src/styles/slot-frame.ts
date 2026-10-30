@@ -322,6 +322,10 @@ export const slotFrameSlot = cv({
       // A picture already reads as a separate box, so it keeps the default
       // label gap at any size.
       if (variants.$kind === "thumbnail") return "md";
+      // Text, such as plain keys, has the side bearings of its glyphs, so it
+      // also keeps the default label gap. The extra margin of line-tall slots
+      // makes up for the side bearings that a box has none of.
+      if (variants.$kind === "text") return "md";
       return variants.$size;
     },
     $square(defaultValue, variants) {
