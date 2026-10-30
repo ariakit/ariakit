@@ -674,14 +674,12 @@ export const controlFieldError = cv({
         "[--gap:var(--field-error-icon-gap,max(0.375em,calc(var(--py)+(1lh-var(--field-error-icon-size,1.125em))/2-var(--sidebearing))))] gap-(--gap)",
       );
     }
+    // Without padding, slotFrame starts the icon at the edge, like a list
+    // bullet, so it lines up with the field label and hints. A panel moves the
+    // icon into its side padding, like the slots of a control.
     if (variants.$gap === "auto" && !padded) {
       addClass("[--gap:var(--field-error-icon-gap,0.375em)] gap-(--gap)");
     }
-    if (padded) return;
-    // Without padding, the icon starts at the edge, like a list bullet, so it
-    // lines up with the field label and hints. A panel moves the icon into its
-    // side padding, like the slots of a control.
-    addClass("[&>.control-field-error-icon]:[--slot-pull:0]");
   },
 });
 

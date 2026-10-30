@@ -23,11 +23,32 @@ export const fontSizeVariants = {
   },
 };
 
+// Gaps in a row with padding follow its padding: sm the block padding, the
+// other steps the side padding.
+const PADDED_GAPS = {
+  sm: "[--gap:var(--py)] gap-(--gap)",
+  // Keep content apart in rows with little side padding.
+  md: "[--gap:max(var(--spacing),calc(var(--px)-var(--sidebearing)))] gap-(--gap)",
+  lg: "[--gap:max(var(--spacing),var(--px))] gap-(--gap)",
+  xl: "[--gap:max(var(--spacing),calc(var(--px)+var(--sidebearing)))] gap-(--gap)",
+};
+
+// Without padding, the slots have no side margins, so the gap alone keeps them
+// apart from the text. md is the gap after the icon of a field error, and the
+// other steps are a side bearing apart, like md, lg, and xl with padding.
+const FLUSH_GAPS = {
+  sm: "[--gap:calc(0.375em-var(--sidebearing))] gap-(--gap)",
+  md: "[--gap:0.375em] gap-(--gap)",
+  lg: "[--gap:calc(0.375em+var(--sidebearing))] gap-(--gap)",
+  xl: "[--gap:calc(0.375em+var(--sidebearing)*2)] gap-(--gap)",
+};
+
 /**
  * A text frame that lays out slots and text in a row. Its gaps and the margins
- * of the slots inside follow its padding and font size. It has no interactive
- * state, so controls extend it, and so can static elements, such as field
- * errors.
+ * of the slots inside follow its padding and font size. With `$p="none"`, a
+ * slot at an edge starts at that edge, like a list bullet, so it lines up with
+ * the text around the frame. It has no interactive state, so controls extend
+ * it, and so can static elements, such as field errors.
  */
 export const slotFrame = cv({
   extend: [textFrame, text],
@@ -42,16 +63,18 @@ export const slotFrame = cv({
   variants: {
     ...fontSizeVariants,
     /**
-     * Sets the gap between the element's content and its siblings.
+     * Sets the gap between the element's content and its siblings. With
+     * `$p="none"`, `md` is `0.375em`, and the other steps are a side bearing
+     * apart.
      * @default "md"
      */
     $gap: {
       none: "",
-      sm: "[--gap:var(--py)] gap-(--gap)",
-      // Keep content apart in rows with little or no side padding.
-      md: "[--gap:max(var(--spacing),calc(var(--px)-var(--sidebearing)))] gap-(--gap)",
-      lg: "[--gap:max(var(--spacing),var(--px))] gap-(--gap)",
-      xl: "[--gap:max(var(--spacing),calc(var(--px)+var(--sidebearing)))] gap-(--gap)",
+      // The refine picks each gap for the padding.
+      sm: "",
+      md: "",
+      lg: "",
+      xl: "",
     },
     /**
      * Sets the vertical gap between the element's label and description.
@@ -68,6 +91,21 @@ export const slotFrame = cv({
     $gapY: "auto",
   },
   refine({ variants, addClass }) {
+    const padded = variants.$p !== "none";
+    if (!padded) {
+      // A slot moves into the side padding by its distance from the top, so it
+      // sits as far from the side as from the top. Without padding, that
+      // distance would be a side margin that no edge shows. A control inside
+      // the slot moves its own slots again, like in a text slot.
+      addClass(
+        "[&>.control-slot]:[--slot-pull:0] [&>.control-slot>*]:[--slot-pull:initial]",
+      );
+    }
+    // Extenders can add their own gap keys, such as auto.
+    const gap = variants.$gap;
+    if (gap && gap !== "none" && Object.hasOwn(PADDED_GAPS, gap)) {
+      addClass(padded ? PADDED_GAPS[gap] : FLUSH_GAPS[gap]);
+    }
     // Forced colors remove the fill, which may be the only boundary.
     if (variants.$border != null) return;
     if (!hasLayerBackground(variants)) return;

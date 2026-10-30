@@ -87,10 +87,12 @@ export default function Example() {
       >
         <RadioField value="standard">Standard</RadioField>
         <RadioField value="express">Express</RadioField>
+        {/* The nested group starts where the text of Express starts: after
+            the box and the gap of a field without padding. */}
         <RadioGroup
           label="Delivery window"
           defaultValue="morning"
-          className="grid gap-2 ps-6"
+          className="grid gap-2 ps-[1.375em]"
         >
           <RadioField value="morning">Morning</RadioField>
           <RadioField value="evening">Evening</RadioField>
