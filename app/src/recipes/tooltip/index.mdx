@@ -16,7 +16,7 @@ Other props go to the tooltip popup, a `TooltipPopover`. So `className`, `$inver
 
 Empty content, such as `null`, `false`, a blank string, or an empty list, turns the tooltip off. The anchor remounts when its tooltip turns on or off, so it loses focus and its state at that time. The Disabled Action example has a tooltip only while the button is disabled. The Truncated Text example shows the full text only when the link cuts it off, and the Collapsing Labels example shows a label only while it is hidden.
 
-`TooltipShortcut` shows a keyboard shortcut after the tooltip text, with muted keys like the shortcut slot of a button. Wrap each key in a `kbd` element. The Keyboard Shortcuts example only shows the keys. An app handles them in its editor.
+`TooltipSlot` puts an icon, a badge, or a keyboard shortcut beside the tooltip text, like a slot of a button. For a shortcut, put a `Kbd` in a `text` slot, which draws the keys as muted text by default. Beside a slot, wrap text that has inline elements, such as `strong`, in one element, so it flows as one paragraph. The Keyboard Shortcuts example only shows the keys. An app handles them in its editor.
 
 By default, a tooltip inverts the page colors: it is dark on a light page and light on a dark page, and it has no edge. `$invert={false}` puts it on the popover surface, with an edge. A layer color, such as `$layer="brand"`, keeps its hue and the edge. The Colors and Shapes example shows each one.
 

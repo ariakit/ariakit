@@ -205,6 +205,14 @@ body > * {
   initial-value: 0px;
 }
 
+/* Resolve the slot height in the slot's font, so a key with a smaller font can
+   fill the slot. */
+@property --slot-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Each field resolves the --field-gap and --field-column-gap that a caller
    sets on it or on an ancestor into these lengths in its own font, so its
    smaller label can cover the same gap. */

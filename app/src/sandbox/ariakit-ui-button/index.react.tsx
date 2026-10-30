@@ -18,6 +18,7 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { button, buttonGroup } from "@ariakit/ui/styles/button";
 import { control } from "@ariakit/ui/styles/control";
@@ -706,34 +707,33 @@ export default function ButtonExamples() {
 
       <Example
         title="Keyboard shortcut"
-        description="The keys of a shortcut keep their order in every text direction."
+        description="Plain keys in a text slot keep the side padding of the label."
         code={`
           <Button>
             <ButtonLabel>Save</ButtonLabel>
-            <ButtonSlot $kind="shortcut">
-              <kbd>⌘S</kbd>
+            <ButtonSlot $kind="text">
+              <Kbd>⌘S</Kbd>
             </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Save</ButtonLabel>
-          <ButtonSlot $kind="shortcut">
-            <kbd>⌘S</kbd>
+          <ButtonSlot $kind="text">
+            <Kbd>⌘S</Kbd>
           </ButtonSlot>
         </Button>
       </Example>
 
       <Example
         title="Right to left shortcut"
-        description="In right-to-left text, the shortcut ends the row on the left, and its keys keep their order."
+        description="In right-to-left text, the shortcut ends the row on the left, and the key chord stays left to right."
         code={`
           <div dir="rtl">
             <Button>
               <ButtonLabel>حفظ</ButtonLabel>
-              <ButtonSlot $kind="shortcut">
-                <kbd>⌘</kbd>
-                <kbd>S</kbd>
+              <ButtonSlot $kind="text">
+                <Kbd>⌘S</Kbd>
               </ButtonSlot>
             </Button>
           </div>
@@ -742,9 +742,8 @@ export default function ButtonExamples() {
         <div dir="rtl" lang="ar" className="w-full">
           <Button>
             <ButtonLabel>حفظ</ButtonLabel>
-            <ButtonSlot $kind="shortcut">
-              <kbd>⌘</kbd>
-              <kbd>S</kbd>
+            <ButtonSlot $kind="text">
+              <Kbd>⌘S</Kbd>
             </ButtonSlot>
           </Button>
         </div>
@@ -752,84 +751,68 @@ export default function ButtonExamples() {
 
       <Example
         title="Icon shortcut key"
-        description="A key drawn as an icon takes the size of the letters, and a gap on the slot spaces the keys."
+        description="An icon in a key takes the size of the letters beside it."
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $kind="shortcut" className="gap-1">
-              <Command />
-              <kbd>K</kbd>
+            <ButtonSlot $kind="text">
+              <Kbd>
+                <Command />K
+              </Kbd>
             </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonSlot $kind="shortcut" className="gap-1">
-            <Command />
-            <kbd>K</kbd>
-          </ButtonSlot>
-        </Button>
-      </Example>
-
-      <Example
-        title="Large icon shortcut key"
-        description="A larger shortcut slot, as in a search field, keeps the icon key the size of the letters."
-        code={`
-          <Button>
-            <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $kind="shortcut" $size="xl" className="gap-1">
-              <Command />
-              <kbd>K</kbd>
-            </ButtonSlot>
-          </Button>
-        `}
-      >
-        <Button>
-          <ButtonLabel>Search</ButtonLabel>
-          <ButtonSlot $kind="shortcut" $size="xl" className="gap-1">
-            <Command />
-            <kbd>K</kbd>
+          <ButtonSlot $kind="text">
+            <Kbd>
+              <Command />K
+            </Kbd>
           </ButtonSlot>
         </Button>
       </Example>
 
       <Example
         title="Filled shortcut"
-        description="A lightness offset fills the shortcut, which then gets smaller keys in a padded box that sits as far from the side of the button as from its top."
+        description="A flat key fills a slot that is not square, so the slot size sets the chip. A line-tall slot sits as far from the side of the button as from its top."
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $kind="shortcut" $lightnessOffset>
-              <kbd>⌘K</kbd>
+            <ButtonSlot $square={false} $size="xl">
+              <Kbd $kind="flat">⌘K</Kbd>
             </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonSlot $kind="shortcut" $lightnessOffset>
-            <kbd>⌘K</kbd>
+          <ButtonSlot $square={false} $size="xl">
+            <Kbd $kind="flat">⌘K</Kbd>
           </ButtonSlot>
         </Button>
       </Example>
 
       <Example
         title="Bordered shortcut"
-        description="A border also draws a padded box around the keys, with the same gaps as a filled one."
+        description="A transparent flat key with a border draws only the outline of the chip, with the same gaps as a filled one."
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $kind="shortcut" $border>
-              <kbd>⌘K</kbd>
+            <ButtonSlot $square={false} $size="xl">
+              <Kbd $kind="flat" $layer="transparent" $border>
+                ⌘K
+              </Kbd>
             </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonSlot $kind="shortcut" $border>
-            <kbd>⌘K</kbd>
+          <ButtonSlot $square={false} $size="xl">
+            <Kbd $kind="flat" $layer="transparent" $border>
+              ⌘K
+            </Kbd>
           </ButtonSlot>
         </Button>
       </Example>
@@ -886,7 +869,9 @@ export default function ButtonExamples() {
               <ButtonLabel>Open Ariakit UI</ButtonLabel>
               <ButtonDescription>…</ButtonDescription>
             </ButtonContent>
-            <ButtonSlot $kind="shortcut">↵</ButtonSlot>
+            <ButtonSlot $kind="text">
+              <Kbd>↵</Kbd>
+            </ButtonSlot>
           </Button>
         `}
       >
@@ -905,7 +890,9 @@ export default function ButtonExamples() {
               A secondary line that truncates when the row runs out of room
             </ButtonDescription>
           </ButtonContent>
-          <ButtonSlot $kind="shortcut">↵</ButtonSlot>
+          <ButtonSlot $kind="text">
+            <Kbd>↵</Kbd>
+          </ButtonSlot>
         </Button>
       </Example>
 

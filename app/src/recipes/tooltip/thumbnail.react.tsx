@@ -1,10 +1,11 @@
 import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import {
   SkeletonBox,
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
-import { TooltipShortcut } from "@ariakit/ui/components/tooltip.ariakit.react";
+import { TooltipSlot } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { button, buttonGroup, buttonSlot } from "@ariakit/ui/styles/button";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
 import { clsx } from "clsx";
@@ -64,10 +65,9 @@ export default function Thumbnail() {
               {tool.hovered && (
                 <span {...tooltipProps} data-open>
                   Italic
-                  <TooltipShortcut>
-                    <kbd>⌘</kbd>
-                    <kbd>I</kbd>
-                  </TooltipShortcut>
+                  <TooltipSlot $kind="text">
+                    <Kbd>⌘I</Kbd>
+                  </TooltipSlot>
                 </span>
               )}
             </span>

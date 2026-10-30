@@ -32,6 +32,7 @@ import {
   InputGroup,
   InputSlot,
 } from "@ariakit/ui/components/input.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import * as icons from "lucide-react";
 import {
   Example,
@@ -273,9 +274,8 @@ export default function ComboboxExamples() {
                 <ComboboxItemContent>
                   <ComboboxItemLabel>New file</ComboboxItemLabel>
                 </ComboboxItemContent>
-                <ComboboxItemSlot $kind="shortcut">
-                  <kbd>⌘</kbd>
-                  <kbd>N</kbd>
+                <ComboboxItemSlot $kind="text">
+                  <Kbd>⌘N</Kbd>
                 </ComboboxItemSlot>
               </ComboboxItem>
               <ComboboxItem value="Share">
@@ -305,9 +305,8 @@ export default function ComboboxExamples() {
                 <ComboboxItemContent>
                   <ComboboxItemLabel>New file</ComboboxItemLabel>
                 </ComboboxItemContent>
-                <ComboboxItemSlot $kind="shortcut" aria-hidden>
-                  <kbd>⌘</kbd>
-                  <kbd>N</kbd>
+                <ComboboxItemSlot $kind="text" aria-hidden>
+                  <Kbd>⌘N</Kbd>
                 </ComboboxItemSlot>
               </ComboboxItem>
               <ComboboxItem value="Share">

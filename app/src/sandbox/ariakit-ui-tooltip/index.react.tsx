@@ -11,14 +11,15 @@ import {
   Button,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import {
   TooltipAnchor,
   TooltipArrow,
   TooltipPopover,
   TooltipProvider,
-  TooltipShortcut,
+  TooltipSlot,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
-import { Bold } from "lucide-react";
+import { Bold, Check } from "lucide-react";
 import {
   Example,
   ExampleGrid,
@@ -129,8 +130,34 @@ export default function TooltipExamples() {
       </Example>
 
       <Example
+        title="Rich text"
+        description="Text with inline elements and no slot flows as a paragraph, so the emphasis stays on its line."
+        code={`
+          <TooltipProvider open>
+            <TooltipAnchor render={<Button $kind="bevel" />}>Close</TooltipAnchor>
+            <TooltipPopover>
+              Press <strong>Esc</strong> to close the dialog and go back to
+              the <em>page</em> you were reading
+            </TooltipPopover>
+          </TooltipProvider>
+        `}
+      >
+        <ExampleStage anchor="end" height={32}>
+          <TooltipProvider open>
+            <TooltipAnchor render={<Button $kind="bevel" />}>
+              Close
+            </TooltipAnchor>
+            <TooltipPopover {...openTooltipProps}>
+              Press <strong>Esc</strong> to close the dialog and go back to the{" "}
+              <em>page</em> you were reading
+            </TooltipPopover>
+          </TooltipProvider>
+        </ExampleStage>
+      </Example>
+
+      <Example
         title="Icon button with a shortcut"
-        description="An icon button named by its label, with its shortcut after the tooltip text. The keys are muted and use the UI font, like the shortcut slot of a button."
+        description="An icon button named by its label, with its shortcut in a text slot after the tooltip text. The keys are muted and use the UI font, like a plain shortcut in a button."
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>
@@ -140,10 +167,9 @@ export default function TooltipExamples() {
             </TooltipAnchor>
             <TooltipPopover>
               Bold
-              <TooltipShortcut>
-                <kbd>⌘</kbd>
-                <kbd>B</kbd>
-              </TooltipShortcut>
+              <TooltipSlot $kind="text">
+                <Kbd>⌘B</Kbd>
+              </TooltipSlot>
             </TooltipPopover>
           </TooltipProvider>
         `}
@@ -165,10 +191,9 @@ export default function TooltipExamples() {
             </TooltipAnchor>
             <TooltipPopover {...openTooltipProps}>
               Bold
-              <TooltipShortcut>
-                <kbd>⌘</kbd>
-                <kbd>B</kbd>
-              </TooltipShortcut>
+              <TooltipSlot $kind="text">
+                <Kbd>⌘B</Kbd>
+              </TooltipSlot>
             </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
@@ -176,16 +201,17 @@ export default function TooltipExamples() {
 
       <Example
         title="Boxed shortcut"
-        description="A border draws a box around the shortcut keys, which get smaller to fit it, as in the shortcut slot of a button."
+        description="A bordered flat key fills a line-tall slot that is not square, so the chip is as tall as a line of the tooltip text and sits as far from the text as from the side."
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Search</TooltipAnchor>
             <TooltipPopover>
               Search
-              <TooltipShortcut $border>
-                <kbd>⌘</kbd>
-                <kbd>K</kbd>
-              </TooltipShortcut>
+              <TooltipSlot $square={false} $size="xl">
+                <Kbd $kind="flat" $layer="transparent" $border>
+                  ⌘K
+                </Kbd>
+              </TooltipSlot>
             </TooltipPopover>
           </TooltipProvider>
         `}
@@ -199,10 +225,67 @@ export default function TooltipExamples() {
             </TooltipAnchor>
             <TooltipPopover {...openTooltipProps}>
               Search
-              <TooltipShortcut $border>
-                <kbd>⌘</kbd>
-                <kbd>K</kbd>
-              </TooltipShortcut>
+              <TooltipSlot $square={false} $size="xl">
+                <Kbd $kind="flat" $layer="transparent" $border>
+                  ⌘K
+                </Kbd>
+              </TooltipSlot>
+            </TooltipPopover>
+          </TooltipProvider>
+        </ExampleStage>
+      </Example>
+
+      <Example
+        title="Leading icon"
+        description="An icon slot before the tooltip text moves into the side padding, like the icon of a button."
+        code={`
+          <TooltipProvider open>
+            <TooltipAnchor render={<Button $kind="bevel" />}>Copy</TooltipAnchor>
+            <TooltipPopover>
+              <TooltipSlot>
+                <Check />
+              </TooltipSlot>
+              Copied
+            </TooltipPopover>
+          </TooltipProvider>
+        `}
+      >
+        <ExampleStage anchor="end" height={22}>
+          <TooltipProvider open>
+            <TooltipAnchor render={<Button $kind="bevel" />}>
+              Copy
+            </TooltipAnchor>
+            <TooltipPopover {...openTooltipProps}>
+              <TooltipSlot>
+                <Check />
+              </TooltipSlot>
+              Copied
+            </TooltipPopover>
+          </TooltipProvider>
+        </ExampleStage>
+      </Example>
+
+      <Example
+        title="Badge slot"
+        description="A badge slot after the tooltip text, sized and spaced like a badge in a button."
+        code={`
+          <TooltipProvider open>
+            <TooltipAnchor render={<Button $kind="bevel" />}>Inbox</TooltipAnchor>
+            <TooltipPopover>
+              Unread messages
+              <TooltipSlot $kind="badge">3</TooltipSlot>
+            </TooltipPopover>
+          </TooltipProvider>
+        `}
+      >
+        <ExampleStage anchor="end" height={22}>
+          <TooltipProvider open>
+            <TooltipAnchor render={<Button $kind="bevel" />}>
+              Inbox
+            </TooltipAnchor>
+            <TooltipPopover {...openTooltipProps}>
+              Unread messages
+              <TooltipSlot $kind="badge">3</TooltipSlot>
             </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
@@ -232,7 +315,7 @@ export default function TooltipExamples() {
 
       <Example
         title="Roomy padding"
-        description="More padding. The sides stay at twice the frame padding, so both axes grow together."
+        description="More padding. The sides add the optical inset of the text to the frame padding, so both axes grow together."
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Export</TooltipAnchor>

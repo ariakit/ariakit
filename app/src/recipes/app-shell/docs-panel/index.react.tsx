@@ -271,14 +271,15 @@ export default function Example() {
                 </HeadingLevel>
                 <List>
                   <ListItem>
-                    <Kbd>ArrowDown</Kbd> opens the list and moves to the next
-                    option.
+                    <Kbd $kind="keycap">ArrowDown</Kbd> opens the list and moves
+                    to the next option.
                   </ListItem>
                   <ListItem>
-                    <Kbd>Enter</Kbd> selects the active option.
+                    <Kbd $kind="keycap">Enter</Kbd> selects the active option.
                   </ListItem>
                   <ListItem>
-                    <Kbd>Escape</Kbd> closes the list and clears the filter.
+                    <Kbd $kind="keycap">Escape</Kbd> closes the list and clears
+                    the filter.
                   </ListItem>
                 </List>
               </Prose>

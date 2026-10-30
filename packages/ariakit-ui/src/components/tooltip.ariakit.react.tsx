@@ -7,7 +7,7 @@ import {
   hasContent,
 } from "../react-utils/create-render.react.ts";
 import { wrapsSlotChildren } from "../styles/control.ts";
-import { tooltip, tooltipShortcut } from "../styles/tooltip.ts";
+import { tooltip, tooltipSlot } from "../styles/tooltip.ts";
 
 type TooltipProviderPropKey =
   | "store"
@@ -170,33 +170,34 @@ export function TooltipArrow(props: TooltipArrowProps) {
   return <ak.TooltipArrow {...props} />;
 }
 
-export interface TooltipShortcutProps
-  extends ak.RoleProps<"span">, VariantProps<typeof tooltipShortcut> {}
+export interface TooltipSlotProps
+  extends ak.RoleProps<"span">, VariantProps<typeof tooltipSlot> {}
 
 /**
- * Renders a keyboard shortcut after the tooltip text, styled like the shortcut
- * slot of a control. Wrap each key in a `kbd` element. The tooltip is visual
- * only, so give the anchor `aria-keyshortcuts` too.
+ * Renders an icon, badge, keyboard key, or short text beside the tooltip text,
+ * like a slot of a control. For a keyboard shortcut, put a `Kbd` in a `text`
+ * slot. Beside a slot, wrap text that has inline elements, such as `strong`, in
+ * one element. The tooltip is visual only, so give the anchor
+ * `aria-keyshortcuts` too.
  * @example
  * <Tooltip
  *   content={
  *     <>
  *       Bold
- *       <TooltipShortcut>
- *         <kbd>⌘</kbd>
- *         <kbd>B</kbd>
- *       </TooltipShortcut>
+ *       <TooltipSlot $kind="text">
+ *         <Kbd>⌘B</Kbd>
+ *       </TooltipSlot>
  *     </>
  *   }
  * >
  *   <Button aria-label="Bold" aria-keyshortcuts="Meta+B">…</Button>
  * </Tooltip>
  */
-export function TooltipShortcut(props: TooltipShortcutProps) {
-  const [variantProps, rest] = splitProps(props, tooltipShortcut);
-  const variants = tooltipShortcut.getVariants(variantProps);
+export function TooltipSlot(props: TooltipSlotProps) {
+  const [variantProps, rest] = splitProps(props, tooltipSlot);
+  const variants = tooltipSlot.getVariants(variantProps);
   return (
-    <ak.Role.span {...tooltipShortcut.jsx(variantProps)} {...rest}>
+    <ak.Role.span {...tooltipSlot.jsx(variantProps)} {...rest}>
       {wrapsSlotChildren(variants.$kind) ? (
         <span>{rest.children}</span>
       ) : (
