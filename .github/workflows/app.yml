@@ -192,14 +192,26 @@ jobs:
         include:
           - os: ubuntu-latest
             shard: chrome
+            project: chrome
             engine: chromium
             test: xvfb-run pnpm -F app run test-visual
           - os: ubuntu-latest
             shard: firefox
+            project: firefox
             engine: firefox
             test: xvfb-run pnpm -F app run test-visual
           - os: macos-latest
-            shard: safari
+            shard: safari-1
+            project: safari
+            playwrightShard: 1/2
+            shardWeights: "3:2"
+            engine: webkit
+            test: pnpm -F app run test-visual
+          - os: macos-latest
+            shard: safari-2
+            project: safari
+            playwrightShard: 2/2
+            shardWeights: "3:2"
             engine: webkit
             test: pnpm -F app run test-visual
     steps:
@@ -294,7 +306,15 @@ jobs:
       - name: Test visual
         env:
           VISUAL_SHARD: ${{ matrix.shard }}
-        run: ${{ matrix.test }} --project ${{ matrix.shard }} --grep @visual --output test-results/test-visual
+          VISUAL_PROJECT: ${{ matrix.project }}
+          VISUAL_PLAYWRIGHT_SHARD: ${{ matrix.playwrightShard }}
+          # The first tests of the Safari project are faster than the last ones.
+          # In the per-test durations of 3 runs, 3:2 simulates to a gap of 7 to
+          # 24s between the shards, and 1:1 to a gap of 102 to 136s.
+          PWTEST_SHARD_WEIGHTS: ${{ matrix.shardWeights }}
+        # The invocation must match discovery.expectedInvocation in
+        # app/playwright.config.ts exactly.
+        run: ${{ matrix.test }} --project ${{ matrix.project }} --grep @visual --output test-results/test-visual ${{ matrix.playwrightShard && format('--shard={0}', matrix.playwrightShard) || '' }}
 
       - name: Upload captures
         uses: actions/upload-artifact@v7
@@ -350,7 +370,7 @@ jobs:
         id: submit
         env:
           GH_TOKEN: ${{ github.token }}
-        run: visonaut submit --shard chrome --shard firefox --shard safari
+        run: visonaut submit --shard chrome --shard firefox --shard safari-1 --shard safari-2
 
       - name: Upload receipt
         uses: actions/upload-artifact@v7
