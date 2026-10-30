@@ -103,6 +103,7 @@ interface PartsShellProps {
 function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
   const [textSize, setTextSize] = useState("");
   const [spacingGutter, setSpacingGutter] = useState(false);
+  const [blockPadding, setBlockPadding] = useState("gutter");
   const [from, setFrom] = useState<Start>("intro");
   const [endOpen, setEndOpen] = useState(true);
   const [startVisibility, setStartVisibility] = useState<Visibility>("always");
@@ -163,6 +164,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
       )}
       <ShellMain
         $p={spacingGutter ? 3 : "var(--page-gutter)"}
+        $py={blockPadding === "10" ? 10 : blockPadding}
         $maxWidth={unbounded ? "100%" : 120}
         className="[--page-gutter:1rem] @5xl/shell:[--page-gutter:2rem]"
       >
@@ -230,6 +232,18 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
                 }
               />
               Use spacing gutter
+            </label>
+            <label>
+              Main block padding{" "}
+              <select
+                value={blockPadding}
+                onChange={(event) => setBlockPadding(event.currentTarget.value)}
+              >
+                <option value="gutter">Gutter</option>
+                <option value="none">None</option>
+                <option value="10">10 steps</option>
+                <option value="2em">2em</option>
+              </select>
             </label>
             <label>
               End sidebar starts at{" "}
