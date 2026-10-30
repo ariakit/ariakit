@@ -1,6 +1,7 @@
 import {
   capturePage,
   forEachColorScheme,
+  forEachColorSchemeOf,
   getCapture,
   hoverOver,
   withCaptures,
@@ -20,7 +21,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   // https://github.com/ariakit/ariakit/issues/7478
   test("default shape on hover @visual", async ({ page, q, visual }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Default"], async (colorScheme) => {
       const box = q.article("Default");
       const button = query(box).button("What is Ariakit?");
       await button.click();

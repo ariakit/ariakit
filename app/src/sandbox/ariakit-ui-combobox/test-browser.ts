@@ -4,6 +4,7 @@ import {
   capturePage,
   expectMedia,
   forEachColorScheme,
+  forEachColorSchemeOf,
   getCapture,
   hoverOver,
   OVERLAY_CLIP_MARGIN,
@@ -84,13 +85,18 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         );
       }
     };
-    await forEachColorScheme(page, capture);
+    const examples = [
+      "Open suggestions",
+      "Disabled active option",
+      "combobox-item-highlight",
+    ];
+    await forEachColorSchemeOf(page, examples, capture);
     // The forced-colors variant of the same captures. The option with focus
     // uses the system selection colors, also when it is disabled.
     // https://github.com/ariakit/ariakit/issues/7518
     // https://github.com/ariakit/ariakit/issues/7871
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, examples, async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
       await capture(colorScheme);
     });
@@ -168,7 +174,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Status select"], async (colorScheme) => {
       const select = q.combobox("Review status");
       await select.click();
       await q.option("Published").click();

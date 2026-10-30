@@ -3,6 +3,7 @@ import {
   capturePage,
   expectMedia,
   forEachColorScheme,
+  forEachColorSchemeOf,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -95,21 +96,25 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     visual,
   }) => {
     await page.emulateMedia({ contrast: "more" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(prefers-contrast: more)");
-      await captureInView({
-        visual,
-        box: q.article("Default"),
-        colorScheme,
-        item: "ariakit-ui-progress/high-contrast/bordered-track",
-      });
-      await captureInView({
-        visual,
-        box: q.article("Borderless track"),
-        colorScheme,
-        item: "ariakit-ui-progress/high-contrast/borderless-track",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Default", "Borderless track"],
+      async (colorScheme) => {
+        await expectMedia(page, "(prefers-contrast: more)");
+        await captureInView({
+          visual,
+          box: q.article("Default"),
+          colorScheme,
+          item: "ariakit-ui-progress/high-contrast/bordered-track",
+        });
+        await captureInView({
+          visual,
+          box: q.article("Borderless track"),
+          colorScheme,
+          item: "ariakit-ui-progress/high-contrast/borderless-track",
+        });
+      },
+    );
   });
 
   // The fill animates toward each value, and the capture disables animations,
@@ -119,7 +124,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Value change"], async (colorScheme) => {
       const box = q.article("Value change");
       const scope = query(box);
       await scope.button("Advance").click();

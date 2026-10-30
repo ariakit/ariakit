@@ -1,6 +1,7 @@
 import {
   capturePage,
   forEachColorScheme,
+  forEachColorSchemeOf,
   getCapture,
   hoverOver,
   withCaptures,
@@ -23,7 +24,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Permalink"], async (colorScheme) => {
       const box = q.article("Permalink");
       await hoverOver(query(box).link("Anchored heading"));
       await visual(

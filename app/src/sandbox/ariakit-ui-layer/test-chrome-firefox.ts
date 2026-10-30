@@ -1,7 +1,7 @@
 import {
   captureInView,
   expectMedia,
-  forEachColorScheme,
+  forEachColorSchemeOf,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -20,14 +20,18 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      await captureInView({
-        visual,
-        box: q.article("Text color modifiers"),
-        colorScheme,
-        item: "ariakit-ui-layer/forced-colors/text-color-modifiers",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Text color modifiers"],
+      async (colorScheme) => {
+        await expectMedia(page, "(forced-colors: active)");
+        await captureInView({
+          visual,
+          box: q.article("Text color modifiers"),
+          colorScheme,
+          item: "ariakit-ui-layer/forced-colors/text-color-modifiers",
+        });
+      },
+    );
   });
 });

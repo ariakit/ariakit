@@ -2,6 +2,7 @@ import {
   captureInView,
   expectMedia,
   forEachColorScheme,
+  forEachColorSchemeOf,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -13,7 +14,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Disabled"], async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
       await captureInView({
         visual,
@@ -33,19 +34,23 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      const box = q.article("Field with leading icon");
-      const input = query(box).textbox("Filter components");
-      await input.evaluate((node) => node.setAttribute("disabled", ""));
-      await test.expect(input).toBeDisabled();
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-input/forced-colors/disabled-wrapper",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Field with leading icon"],
+      async (colorScheme) => {
+        await expectMedia(page, "(forced-colors: active)");
+        const box = q.article("Field with leading icon");
+        const input = query(box).textbox("Filter components");
+        await input.evaluate((node) => node.setAttribute("disabled", ""));
+        await test.expect(input).toBeDisabled();
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-input/forced-colors/disabled-wrapper",
+        });
+      },
+    );
   });
 
   // An enabled action button in a disabled field can still be used, so it must

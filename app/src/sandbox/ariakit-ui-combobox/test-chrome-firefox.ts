@@ -1,6 +1,6 @@
 import {
   captureInView,
-  forEachColorScheme,
+  forEachColorSchemeOf,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
@@ -93,7 +93,7 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Empty state"], async (colorScheme) => {
       const box = q.article("Empty state");
       await captureInView({
         visual,

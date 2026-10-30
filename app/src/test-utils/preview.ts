@@ -1,5 +1,6 @@
 import { resolve } from "node:path";
 import { query } from "@ariakit/test/playwright";
+import { invariant } from "@ariakit/utils";
 import { errors } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { previewConfig } from "#app/lib/preview-config.ts";
@@ -68,9 +69,36 @@ interface WithFrameworkCallbackParams {
   query: typeof query;
 }
 
+interface WithFrameworkOptions {
+  deferVisualLoad?: boolean;
+}
+
+const previewUrls = new WeakMap<Page, string>();
+
+/** The preview URL of a test that deferred its first load. */
+export function getPreviewUrl(page: Page) {
+  const url = previewUrls.get(page);
+  invariant(url, "The test must run in withDeferredVisualLoad");
+  return url;
+}
+
+/**
+ * Runs `withFramework`, but leaves the page blank before the tests tagged
+ * `@visual`, which load the preview themselves through `getPreviewUrl`. A page
+ * load is the largest cost of a capture test, so a load before theirs would be
+ * wasted.
+ */
+export function withDeferredVisualLoad(
+  dirname: string,
+  callback: (params: WithFrameworkCallbackParams) => Promise<void>,
+) {
+  withFramework(dirname, callback, { deferVisualLoad: true });
+}
+
 export function withFramework(
   dirname: string,
   callback: (params: WithFrameworkCallbackParams) => Promise<void>,
+  { deferVisualLoad = false }: WithFrameworkOptions = {},
 ) {
   const id = getPreviewIdFromDir(previewRoots, resolve(dirname));
   if (!id) {
@@ -82,8 +110,12 @@ export function withFramework(
     : getPreviewFrameworksSync(dirname);
   for (const framework of frameworkNames) {
     test.describe(framework, { tag: `@${framework}` }, () => {
-      test.beforeEach(async ({ page, javaScriptEnabled }) => {
+      test.beforeEach(async ({ page, javaScriptEnabled }, testInfo) => {
         const url = `/${framework}/previews/${id}/`;
+        if (deferVisualLoad && testInfo.tags.includes("@visual")) {
+          previewUrls.set(page, url);
+          return;
+        }
         // Next.js previews contain no Astro island that marks hydration and
         // prefetch routes after load, and JavaScript-disabled previews never
         // hydrate, so network idle remains their settle signal.

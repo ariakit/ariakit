@@ -1,13 +1,16 @@
 import type { Locator } from "@playwright/test";
+import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import {
   captureInView,
   capturePage,
   expectFocusVisible,
   forEachColorScheme,
+  forEachColorSchemeOf,
   getCapture,
   hoverOver,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { waitForFonts } from "#app/test-utils/visual.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   test("shares cell border geometry with focus without adding hover edges @visual", async ({
@@ -15,30 +18,34 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Cell edge override");
-      const fixture = query(box);
-      const checkbox = fixture.checkbox("Show all borders on Failed cells");
-      await checkbox.check();
-      for (const name of ["Plain cell edges", "Colored cell edges"]) {
-        await hoverOver(query(fixture.table(name)).cell("Failed"));
-      }
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-table/cell-edge/hover",
-        }),
-      );
-      await checkbox.focus();
-      await page.keyboard.press("Tab");
-      await expectFocusVisible(
-        query(fixture.table("Plain cell edges")).cell("Failed"),
-      );
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-table/cell-edge/focus",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Cell edge override"],
+      async (colorScheme) => {
+        const box = q.article("Cell edge override");
+        const fixture = query(box);
+        const checkbox = fixture.checkbox("Show all borders on Failed cells");
+        await checkbox.check();
+        for (const name of ["Plain cell edges", "Colored cell edges"]) {
+          await hoverOver(query(fixture.table(name)).cell("Failed"));
+        }
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-table/cell-edge/hover",
+          }),
+        );
+        await checkbox.focus();
+        await page.keyboard.press("Tab");
+        await expectFocusVisible(
+          query(fixture.table("Plain cell edges")).cell("Failed"),
+        );
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-table/cell-edge/focus",
+          }),
+        );
+      },
+    );
   });
 
   test("shares row borders with focus across hover, selection, and pinned cells @visual", async ({
@@ -46,31 +53,35 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Row edge override");
-      const fixture = query(box);
-      const checkbox = fixture.checkbox("Show all borders on Failed row");
-      const row = fixture.row("Failed Needs review");
-      await checkbox.check();
-      await hoverOver(row);
-      await fixture.checkbox("Select Failed row").check();
-      await test.expect(row).toHaveAttribute("aria-selected", "true");
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-table/row-edge/selected",
-        }),
-      );
-      await checkbox.uncheck();
-      await checkbox.check();
-      await checkbox.focus();
-      await page.keyboard.press("Tab");
-      await expectFocusVisible(row);
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-table/row-edge/focus",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Row edge override"],
+      async (colorScheme) => {
+        const box = q.article("Row edge override");
+        const fixture = query(box);
+        const checkbox = fixture.checkbox("Show all borders on Failed row");
+        const row = fixture.row("Failed Needs review");
+        await checkbox.check();
+        await hoverOver(row);
+        await fixture.checkbox("Select Failed row").check();
+        await test.expect(row).toHaveAttribute("aria-selected", "true");
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-table/row-edge/selected",
+          }),
+        );
+        await checkbox.uncheck();
+        await checkbox.check();
+        await checkbox.focus();
+        await page.keyboard.press("Tab");
+        await expectFocusVisible(row);
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-table/row-edge/focus",
+          }),
+        );
+      },
+    );
   });
 
   // https://github.com/ariakit/ariakit/pull/7498#discussion_r3998333745
@@ -79,53 +90,57 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Row edge override");
-      const fixture = query(box);
-      await fixture.checkbox("Scroll row borders").check();
-      const scroller = fixture.grid().locator("xpath=..");
-      const cases = [
-        {
-          key: "failed-static",
-          name: "Failed Needs review",
-          focus: false,
-        },
-        {
-          key: "failed-focus",
-          name: "Failed Needs review",
-          focus: true,
-        },
-        {
-          key: "pending-static",
-          name: "Pending Ready to test",
-          focus: false,
-        },
-      ];
-      for (const { key, name, focus } of cases) {
-        const row = fixture.row(name);
-        await scroller.evaluate((node) => {
-          node.scrollLeft = 0;
-        });
-        await fixture.checkbox("Show all borders on Failed row").focus();
-        if (focus) {
-          await page.keyboard.press("Tab");
-          await row.focus();
-          await expectFocusVisible(row);
+    await forEachColorSchemeOf(
+      page,
+      ["Row edge override"],
+      async (colorScheme) => {
+        const box = q.article("Row edge override");
+        const fixture = query(box);
+        await fixture.checkbox("Scroll row borders").check();
+        const scroller = fixture.grid().locator("xpath=..");
+        const cases = [
+          {
+            key: "failed-static",
+            name: "Failed Needs review",
+            focus: false,
+          },
+          {
+            key: "failed-focus",
+            name: "Failed Needs review",
+            focus: true,
+          },
+          {
+            key: "pending-static",
+            name: "Pending Ready to test",
+            focus: false,
+          },
+        ];
+        for (const { key, name, focus } of cases) {
+          const row = fixture.row(name);
+          await scroller.evaluate((node) => {
+            node.scrollLeft = 0;
+          });
+          await fixture.checkbox("Show all borders on Failed row").focus();
+          if (focus) {
+            await page.keyboard.press("Tab");
+            await row.focus();
+            await expectFocusVisible(row);
+          }
+          await hoverOver(fixture.checkbox("Scroll row borders"));
+          await scroller.evaluate((node) => {
+            node.scrollLeft = (node.scrollWidth - node.clientWidth) / 2;
+          });
+          await test.expect
+            .poll(() => scroller.evaluate((node) => node.scrollLeft))
+            .toBeGreaterThan(0);
+          await visual(
+            getCapture(box, colorScheme, {
+              item: `ariakit-ui-table/scrolled-row/${key}`,
+            }),
+          );
         }
-        await hoverOver(fixture.checkbox("Scroll row borders"));
-        await scroller.evaluate((node) => {
-          node.scrollLeft = (node.scrollWidth - node.clientWidth) / 2;
-        });
-        await test.expect
-          .poll(() => scroller.evaluate((node) => node.scrollLeft))
-          .toBeGreaterThan(0);
-        await visual(
-          getCapture(box, colorScheme, {
-            item: `ariakit-ui-table/scrolled-row/${key}`,
-          }),
-        );
-      }
-    });
+      },
+    );
   });
 
   // The narrow containers of the fixture tables let the cells scroll under the
@@ -156,7 +171,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Selected rows"], async (colorScheme) => {
       const box = q.article("Selected rows");
       const grid = query(box);
       await grid.checkbox("Select all rows").focus();
@@ -180,20 +195,24 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Focusable rows");
-      await query(box)
-        .row(/^Button /)
-        .focus();
-      await page.keyboard.press("End");
-      await expectFocusVisible(query(box).row(/^Table /));
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-table/focused-last-row-ring",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Focusable rows"],
+      async (colorScheme) => {
+        const box = q.article("Focusable rows");
+        await query(box)
+          .row(/^Button /)
+          .focus();
+        await page.keyboard.press("End");
+        await expectFocusVisible(query(box).row(/^Table /));
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-table/focused-last-row-ring",
+        });
+      },
+    );
   });
 
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972228648
@@ -202,16 +221,20 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Table cell layer");
-      await scrollCellsUnderPinnedCell(query(box).grid());
-      await hoverOver(query(box).text("Disabled surface"));
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-table/hovered-row-through-cells",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Table cell layer"],
+      async (colorScheme) => {
+        const box = q.article("Table cell layer");
+        await scrollCellsUnderPinnedCell(query(box).grid());
+        await hoverOver(query(box).text("Disabled surface"));
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-table/hovered-row-through-cells",
+          }),
+        );
+      },
+    );
   });
 
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972228648
@@ -220,20 +243,24 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Table cell layer");
-      await scrollCellsUnderPinnedCell(query(box).grid());
-      await query(box).checkbox("Select row").check();
-      await test
-        .expect(query(box).row())
-        .toHaveAttribute("aria-selected", "true");
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-table/selected-row-through-cells",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Table cell layer"],
+      async (colorScheme) => {
+        const box = q.article("Table cell layer");
+        await scrollCellsUnderPinnedCell(query(box).grid());
+        await query(box).checkbox("Select row").check();
+        await test
+          .expect(query(box).row())
+          .toHaveAttribute("aria-selected", "true");
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-table/selected-row-through-cells",
+        });
+      },
+    );
   });
 
   // The head cell sets the pinned column, and the body and foot cells inherit
@@ -244,7 +271,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Table rows"], async (colorScheme) => {
       const box = q.article("Table rows");
       await scrollCellsUnderPinnedCell(query(box).table("Team hours"));
       await captureInView({
@@ -262,7 +289,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Table rows"], async (colorScheme) => {
       const box = q.article("Table rows");
       const pin = query(box).checkbox("Pin contributor names");
       await pin.uncheck();
@@ -275,5 +302,33 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         item: "ariakit-ui-table/unpinned-names",
       });
     });
+  });
+
+  // Capture tests load this page through forEachColorSchemeOf. A box with
+  // another size would change their images, and a browser that reserves room
+  // for a scrollbar could size the shorter page differently.
+  test("keeps the size of an example on the isolated page", async ({
+    page,
+    q,
+  }) => {
+    const box = q.article("Row edge override");
+    const getSize = () =>
+      box.evaluate((node) => {
+        const { width, height } = node.getBoundingClientRect();
+        return { width, height };
+      });
+    const size = await getSize();
+    const errors: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() !== "error") return;
+      errors.push(message.text());
+    });
+    await page.goto(`${page.url()}isolated/?example=Row+edge+override`);
+    await page.waitForFunction(isPreviewHydrated);
+    await waitForFonts(page);
+
+    await test.expect(q.article()).toHaveCount(1);
+    test.expect(await getSize()).toEqual(size);
+    test.expect(errors).toEqual([]);
   });
 });

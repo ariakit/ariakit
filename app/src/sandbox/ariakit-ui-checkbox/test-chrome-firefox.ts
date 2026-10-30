@@ -2,6 +2,7 @@ import {
   captureInView,
   expectMedia,
   forEachColorScheme,
+  forEachColorSchemeOf,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -66,14 +67,18 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      await captureInView({
-        visual,
-        box: q.article("Disabled choices in colored text"),
-        colorScheme,
-        item: "ariakit-ui-checkbox/forced-colors/disabled-colored-text",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Disabled choices in colored text"],
+      async (colorScheme) => {
+        await expectMedia(page, "(forced-colors: active)");
+        await captureInView({
+          visual,
+          box: q.article("Disabled choices in colored text"),
+          colorScheme,
+          item: "ariakit-ui-checkbox/forced-colors/disabled-colored-text",
+        });
+      },
+    );
   });
 });

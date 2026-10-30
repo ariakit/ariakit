@@ -4,6 +4,7 @@ import {
   expectFocusVisible,
   expectMedia,
   forEachColorScheme,
+  forEachColorSchemeOf,
   getCapture,
   hoverOver,
   tabTo,
@@ -42,15 +43,19 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Nested disclosures");
-      await hoverOver(query(box).link("Radio"));
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-nav/nested-section-hover",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Nested disclosures"],
+      async (colorScheme) => {
+        const box = q.article("Nested disclosures");
+        await hoverOver(query(box).link("Radio"));
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-nav/nested-section-hover",
+          }),
+        );
+      },
+    );
   });
 
   test("moves the sidebar current surface on click and shows keyboard focus on a row @visual", async ({
@@ -58,7 +63,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Sidebar"], async (colorScheme) => {
       const box = q.article("Sidebar");
       const quickstart = query(box).link("Quickstart").first();
       await quickstart.click();

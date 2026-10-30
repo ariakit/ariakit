@@ -21,17 +21,29 @@ export const getStaticPaths = (async () => {
   return entries.flatMap((entry) => {
     // Next.js previews are redirected by the Worker wrapper.
     if (isNextjsPreviewId(entry.id)) return [];
-    return entry.data.frameworks.map((framework) => ({
-      params: { preview: `${framework}/previews/${entry.id}` },
-      props: { framework, entry },
-    }));
+    return entry.data.frameworks.flatMap((framework) => {
+      const preview = `${framework}/previews/${entry.id}`;
+      const paths = [
+        { params: { preview }, props: { framework, entry, isolated: false } },
+      ];
+      // Capture tests load an Ariakit UI sandbox many times, and most of them
+      // need only a few of its cards. See forEachColorSchemeOf.
+      if (framework === "react" && entry.id.startsWith("ariakit-ui-")) {
+        paths.push({
+          params: { preview: `${preview}/isolated` },
+          props: { framework, entry, isolated: true },
+        });
+      }
+      return paths;
+    });
   });
 }) satisfies GetStaticPaths;
 
-const { framework, entry } = Astro.props;
+const { framework, entry, isolated } = Astro.props;
 const { Content } = await render(entry);
 
 Astro.locals.framework = framework;
+Astro.locals.previewIsolated = isolated;
 
 const title = entry.data.title;
 const fullscreen = entry.data.fullscreen;

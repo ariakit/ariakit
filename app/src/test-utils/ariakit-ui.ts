@@ -3,7 +3,7 @@ import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { slugify } from "#app/lib/string.ts";
-import { withFramework } from "./preview.ts";
+import { getPreviewUrl, withDeferredVisualLoad } from "./preview.ts";
 import type { ScreenshotOptions, ScreenshotRegion } from "./visual.ts";
 import { viewports, waitForFonts } from "./visual.ts";
 
@@ -11,13 +11,15 @@ import { viewports, waitForFonts } from "./visual.ts";
 // examples of one Ariakit UI component in a grid of boxes built with
 // app/src/components/ariakit-ui-example.react.tsx.
 
-type WithFrameworkCallback = Parameters<typeof withFramework>[1];
+type WithFrameworkCallback = Parameters<typeof withDeferredVisualLoad>[1];
 type Visual = (options: ScreenshotOptions) => Promise<void>;
 
 // The color schemes that every Ariakit UI capture is taken in.
 const colorSchemes = ["light", "dark"] as const;
 
 export type ColorScheme = (typeof colorSchemes)[number];
+
+type Capture = (colorScheme: ColorScheme) => Promise<void>;
 
 // Safari on the macOS runners can take several seconds for one capture of a
 // tall sandbox, and a new baseline needs two identical captures in a row, which
@@ -38,7 +40,7 @@ export const OVERLAY_CLIP_MARGIN = 64;
  * captures and can take a capture in each color scheme.
  */
 export function withCaptures(dirname: string, callback: WithFrameworkCallback) {
-  withFramework(dirname, async (params) => {
+  withDeferredVisualLoad(dirname, async (params) => {
     params.test.use({ viewport: viewports.desktop });
     // Page captures extend this budget for each extra example card.
     params.test.describe.configure({ timeout: 120_000 });
@@ -52,11 +54,33 @@ export function withCaptures(dirname: string, callback: WithFrameworkCallback) {
  * mount, so the sandbox loads again in each scheme, and `capture` sets up the
  * state it captures from the start.
  */
-export async function forEachColorScheme(
+export function forEachColorScheme(page: Page, capture: Capture) {
+  return loadInEachColorScheme(page, getPreviewUrl(page), capture);
+}
+
+/**
+ * Runs `capture` in each color scheme, like `forEachColorScheme`, on a page
+ * that renders only the example boxes with the given titles. The other boxes
+ * hold their grid cells empty, so the page loads much faster and the boxes keep
+ * their widths. The boxes can sit higher on the page than in the full sandbox.
+ */
+export function forEachColorSchemeOf(
   page: Page,
-  capture: (colorScheme: ColorScheme) => Promise<void>,
+  examples: string[],
+  capture: Capture,
 ) {
-  const url = page.url();
+  const params = new URLSearchParams(
+    examples.map((example) => ["example", example]),
+  );
+  const url = `${getPreviewUrl(page)}isolated/?${params}`;
+  return loadInEachColorScheme(page, url, capture);
+}
+
+async function loadInEachColorScheme(
+  page: Page,
+  url: string,
+  capture: Capture,
+) {
   for (const colorScheme of colorSchemes) {
     // A pointer left over an element from the previous scheme does not move
     // when the capture hovers that element again, and a tooltip waits for a
@@ -68,6 +92,10 @@ export async function forEachColorScheme(
     // position of the previous scheme after the capture started scrolling.
     await page.goto(url, { waitUntil: "load" });
     await page.waitForFunction(isPreviewHydrated);
+    // The text of a preview can start loading its font only after hydration,
+    // and a font swap can move the elements that the capture is about to
+    // interact with.
+    await waitForFonts(page);
     await capture(colorScheme);
   }
 }
@@ -118,7 +146,6 @@ export async function capturePage({
   item,
 }: CapturePageParams) {
   const main = query(page).main();
-  await waitForFonts(page);
   const boxes = main.locator(":scope > article");
   // One round trip reads the title and height of every card.
   const cards = await boxes.evaluateAll((nodes) =>
