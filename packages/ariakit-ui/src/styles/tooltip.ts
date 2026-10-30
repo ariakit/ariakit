@@ -26,11 +26,7 @@ export const tooltip = cv({
     $size: "sm",
     $shadow: "md",
     $rounded: "lg",
-    // One spacing step is 3.5px at the default text size. Chrome paints the
-    // half pixel on one side, so a line-tall slot would sit 1px closer to the
-    // bottom than the top. Round it to a whole pixel.
-    // https://github.com/ariakit/ariakit/issues/8179
-    $p: "round(var(--spacing), 1px)",
+    $p: 1,
     $invert(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
       // A color tooltip keeps its hue. Inverting would turn it into a pale

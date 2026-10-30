@@ -53,6 +53,18 @@ export function getSpacingValue(value: string | number) {
     : `calc(var(--spacing) * (${value}))`;
 }
 
+/**
+ * Converts a padding prop value to CSS: numbers scale the `--spacing` theme
+ * token and round to a whole pixel, and strings pass through as raw lengths or
+ * expressions.
+ */
+export function getPaddingValue(value: string | number) {
+  if (typeof value === "string") return value;
+  // One spacing step is 3.5px at 14px text. Chrome paints the half pixel on one
+  // side, so a slot that fills the line would sit 1px off center.
+  return `round(${getSpacingValue(value)}, 1px)`;
+}
+
 interface GetScaledStyleClassParams {
   /** Class name to emit when the value produces a style class. */
   class: string;
