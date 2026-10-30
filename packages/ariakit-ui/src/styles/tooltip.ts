@@ -1,6 +1,6 @@
 import { cv } from "clava";
-import { controlSlot } from "./control.ts";
 import { popover } from "./popover.ts";
+import { slotFrameSlot } from "./slot-frame.ts";
 
 /**
  * A compact popover with wider side padding and wrapping text. It inverts the
@@ -56,7 +56,7 @@ export const tooltip = cv({
  * direction. A fill or a border draws a box around the keys.
  */
 export const tooltipShortcut = cv({
-  extend: [controlSlot],
+  extend: [slotFrameSlot],
   class: [
     // Stay on the text line. inline-flex sorts after the slot's flex.
     "inline-flex",

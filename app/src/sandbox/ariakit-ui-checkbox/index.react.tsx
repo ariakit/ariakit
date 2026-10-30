@@ -111,7 +111,13 @@ function SelectAll() {
       >
         <CheckboxLabel>All features</CheckboxLabel>
       </CheckboxField>
-      <div role="group" aria-label="Features" className="grid gap-2 ps-6">
+      {/* The children start where the text of All features starts: after the
+          box and the gap of a field without padding. */}
+      <div
+        role="group"
+        aria-label="Features"
+        className="grid gap-2 ps-[1.4375em]"
+      >
         {features.map((feature) => (
           <CheckboxField
             key={feature.value}

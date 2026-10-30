@@ -48,7 +48,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // Toggling the bar keeps the link's children mounted.
     const slot = await nav
       .link("Default bar")
-      .locator(".control-slot")
+      .locator(".slot-frame-slot")
       .elementHandle();
     await q.checkbox("Show bars").uncheck();
     await expect(getBar("Default bar")).toHaveCount(0);

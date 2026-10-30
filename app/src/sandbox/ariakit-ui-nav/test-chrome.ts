@@ -261,7 +261,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     }
     const [themesBox, iconBox] = await Promise.all([
       getBox(themes),
-      getBox(styling.locator(".control-slot").first()),
+      getBox(styling.locator(".slot-frame-slot").first()),
     ]);
     await test.expect
       .poll(async () => (await barEdges()).middle)
