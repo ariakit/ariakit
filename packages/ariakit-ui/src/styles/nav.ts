@@ -7,15 +7,12 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
-import type { BarOffset, SlotSize } from "./control.ts";
+import type { BarOffset } from "./control.ts";
 import {
   barBase,
   getBarOffset,
   getNamedBarOffsetClass,
-  getSlotSizeClass,
-  hasSlotSurface,
   isNamedBarOffset,
-  isSlotSize,
 } from "./control.ts";
 import {
   disclosure,
@@ -24,6 +21,8 @@ import {
   disclosureGroup,
 } from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
+import type { SlotSize } from "./slot-frame.ts";
+import { getSlotSizeClass, hasSlotSurface, isSlotSize } from "./slot-frame.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
@@ -238,8 +237,8 @@ const navSlotBase = cv({
     },
   },
   defaultVariants: {
-    // Resolve before controlSlot refinement converts the named sizes of badges,
-    // avatars, and shortcut boxes.
+    // Resolve before slotFrameSlot refinement converts the named sizes of
+    // badges, avatars, and shortcut boxes.
     $size: "auto",
   },
 });
@@ -254,8 +253,8 @@ export const navSlot = cv({
     $size(defaultValue, variants) {
       if (defaultValue !== "auto") return defaultValue;
       if (variants.$kind === "shortcut") {
-        // This variant replaces the slot size that controlSlot would raise to a
-        // line for a shortcut surface.
+        // This variant replaces the slot size that slotFrameSlot would raise to
+        // a line for a shortcut surface.
         return hasSlotSurface(variants) ? "xl" : "md";
       }
       // A picture keeps a line of height instead of the icon size.

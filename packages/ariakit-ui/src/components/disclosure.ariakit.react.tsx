@@ -8,7 +8,6 @@ import {
   createRender,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   disclosure,
   disclosureButton,
@@ -22,6 +21,7 @@ import {
   disclosureGroup,
   disclosurePlus,
 } from "../styles/disclosure.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface DisclosureOwnProps {
   /**

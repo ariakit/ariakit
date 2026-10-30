@@ -17,7 +17,7 @@ test("lets links take, omit, or replace the navigation bar", () => {
 
 test("keeps link children mounted while the navigation bar toggles", async () => {
   const link = q.within(q.navigation("Bar overrides")).link("Default bar");
-  const slot = link.querySelector(".control-slot");
+  const slot = link.querySelector(".slot-frame-slot");
   expect(slot).not.toBeNull();
   await click(q.checkbox("Show bars"));
   expect(link.querySelector(".control-bar")).toBeNull();
@@ -99,7 +99,7 @@ test("keeps a bare fragment label separate from its description and badge", asyn
   // The chevron that leads the row is a slot too, so the badge is found by its
   // text.
   const badges = Array.from(
-    button.querySelectorAll(":scope > .control-slot"),
+    button.querySelectorAll(":scope > .slot-frame-slot"),
   ).filter((slot) => slot.textContent === "3");
   expect(badges).toHaveLength(1);
   await click(button);

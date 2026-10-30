@@ -8,7 +8,7 @@ import {
   createOptionalRender,
   createRender,
 } from "../react-utils/create-render.react.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 import {
   tab,
   tabBar,

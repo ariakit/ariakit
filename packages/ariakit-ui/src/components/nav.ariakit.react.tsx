@@ -17,7 +17,6 @@ import {
   useDescription,
   useDescriptionRegistry,
 } from "../react-utils/use-description.react.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   nav,
   navButton,
@@ -36,6 +35,7 @@ import {
   navList,
   navSlot,
 } from "../styles/nav.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 import { isCurrentPage } from "../utils/is-current-page.ts";
 import type { ButtonProps } from "./button.ariakit.react.tsx";
 import { Button } from "./button.ariakit.react.tsx";

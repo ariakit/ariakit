@@ -403,7 +403,7 @@ export const tableCell = cv({
         "ak-ink-70 font-semibold",
         // A bare choice or icon keeps the body size beside the smaller label.
         // Slots inside a control keep that control's own explicit size.
-        "[&>.control-slot]:text-(length:--table-size)",
+        "[&>.slot-frame-slot]:text-(length:--table-size)",
       ],
       row: "font-semibold",
     },
