@@ -80,6 +80,26 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
+  test("moves the intro's first line with the shell width as the window resizes", async ({
+    q,
+    page,
+  }) => {
+    const intro = q.main().locator(":scope > .shell-main-intro");
+    const firstLine = intro.locator(":scope > *").first();
+    // At the shell's 16px text size, the top edge grows from 2em at a 525px
+    // shell to 3em at a 1225px shell.
+    const getTopEdge = (shellWidth: number) =>
+      Math.min(48, Math.max(32, 20 + (shellWidth / 100) * 2 * (16 / 14)));
+    // The widths between the sidebar breakpoints change only the edge.
+    for (const width of [1440, 1100, 900, 375, 1100]) {
+      await page.setViewportSize({ width, height: 900 });
+      const shellWidth = (await getBox(getShell(page))).width;
+      await expect
+        .poll(async () => (await getBox(firstLine)).y - (await getBox(intro)).y)
+        .toBeCloseTo(getTopEdge(shellWidth), 0);
+    }
+  });
+
   test.describe("responsive toggles", () => {
     test.use({ viewport: { width: 1600, height: 900 } });
 

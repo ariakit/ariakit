@@ -373,7 +373,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
             </a>
           </ShellSidebarBody>
         </ShellSidebar>
-        <ShellMain>
+        <ShellMain $py="none">
           <ShellMainBody $p={0}>
             <div className="h-40">Outer introduction</div>
             <Shell id="middle-shell" $size="md">
@@ -394,7 +394,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
                   </a>
                 </ShellSidebarBody>
               </ShellSidebar>
-              <ShellMain>
+              <ShellMain $py="none">
                 <ShellMainBody $p={0}>
                   <div className="h-40">Middle introduction</div>
                   <Shell id="inner-shell" $size="md">

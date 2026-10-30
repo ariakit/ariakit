@@ -225,11 +225,7 @@ export default function Example() {
         <ShellMain>
           <ShellMainBody>
             <p className="ak-ink-70 py-4 text-center text-xs">Today</p>
-            <ol
-              ref={messagesRef}
-              aria-label="Messages"
-              className="grid gap-5 pb-6"
-            >
+            <ol ref={messagesRef} aria-label="Messages" className="grid gap-5">
               {messages.map((message) => (
                 <li key={message.id} className="flex gap-3">
                   <Avatar person={message.author} />

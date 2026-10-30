@@ -61,28 +61,30 @@ export const shell = cv({
     // length against the parent font when the element changes its own size. The
     // shell radius divides the theme radius by the text size, so the corner
     // matches Chrome's macOS window (20px at the default radius) at every size
-    // without rounding the shell itself.
+    // without rounding the shell itself. The text ratio scales the width term
+    // of the main edges, so they reach their limits at the same shell widths.
     $size: {
       auto: [
         "text-sm [--shell-header-step:calc(0.875rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5/0.875)]",
+        "[--shell-radius:calc(var(--radius)*5/0.875)] [--shell-text-ratio:1]",
         // A leading utility would set --tw-leading and replace
         // text-* fallbacks.
         "[.shell_&]:[font-size:inherit] [.shell_&]:[line-height:inherit]",
         "[.shell_&]:[--shell-header-step:inherit]",
         "[.shell_&]:[--shell-radius:inherit]",
+        "[.shell_&]:[--shell-text-ratio:inherit]",
       ],
       sm: [
         "text-sm [--shell-header-step:calc(0.875rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5/0.875)]",
+        "[--shell-radius:calc(var(--radius)*5/0.875)] [--shell-text-ratio:1]",
       ],
       md: [
         "text-base [--shell-header-step:calc(1rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5)]",
+        "[--shell-radius:calc(var(--radius)*5)] [--shell-text-ratio:calc(16/14)]",
       ],
       lg: [
         "text-lg [--shell-header-step:calc(1.125rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5/1.125)]",
+        "[--shell-radius:calc(var(--radius)*5/1.125)] [--shell-text-ratio:calc(18/14)]",
       ],
     },
     /**
@@ -645,16 +647,18 @@ const content = cx(
   // the column.
   "[&>:is(.control,.badge)]:justify-self-start",
   // A leading or trailing wide or full band touches the bars around the
-  // section.
-  "[&:has(>:is(.shell-main-wide,.shell-main-full):first-child)]:pbs-0",
-  "[&:has(>:is(.shell-main-wide,.shell-main-full):last-child)]:pbe-0",
+  // section. The space between the intro and the body stays.
+  "[&:not(.shell-main-intro~*):has(>:is(.shell-main-wide,.shell-main-full):first-child)]:pbs-0",
+  "[&:not(.shell-main-intro):has(>:is(.shell-main-wide,.shell-main-full):last-child)]:pbe-0",
   // Publish gutter spacing as frame padding so nested frame corners remain
   // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
   "ak-frame-p-(--shell-gutter) px-0",
   "print:overflow-visible",
   "*:col-[content] *:min-w-0",
-  "[&_[id]]:scroll-mbs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+1rem)]",
+  // The scroll gap covers the main top edge, so a table of contents marks the
+  // first heading current at the top of the page.
+  "[&_[id]]:scroll-mbs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+var(--shell-main-scroll-gap))]",
 );
 
 const contentVariants = {
@@ -675,9 +679,9 @@ const contentVariants = {
     return { style: { "--shell-main-max-width": getSpacingValue(value) } };
   },
   /**
-   * Sets the minimum content gutter and block padding. Numbers scale the
-   * spacing token. Inherits from main by default. `none` removes the space;
-   * `unset` leaves the CSS gutter unchanged.
+   * Sets the minimum content gutter. Numbers scale the spacing token. Inherits
+   * from main by default. `none` removes the space; `unset` leaves the CSS
+   * gutter unchanged.
    */
   $p(value?: "unset" | "none" | (string & {}) | number) {
     if (value == null) return;
@@ -699,6 +703,16 @@ export const shellMain = cv({
     "shell-slot-state",
     // The main header derives its own gutter from this one.
     "[--shell-main-gutter:var(--shell-gutter)]",
+    // The space above the intro, or above the body without an intro, and below
+    // the body grows with the shell width from 525px to 1225px. The parts
+    // resolve the container units, so a fold restyles only them and WebKit
+    // updates them as the shell resizes. Bar steps ignore a part's text size.
+    "[--shell-main-pbs:clamp(calc(var(--shell-header-step)*8),calc(var(--shell-header-step)*5+2cqi*var(--shell-text-ratio,1)),calc(var(--shell-header-step)*12))]",
+    "[--shell-main-pbe:clamp(calc(var(--shell-header-step)*12),calc(var(--shell-header-step)*9+2cqi*var(--shell-text-ratio,1)),calc(var(--shell-header-step)*16))]",
+    // Fragment targets keep the largest top edge below the sticky headers. A
+    // gap that followed the shell width would restyle every target on each
+    // frame of a fold.
+    "[--shell-main-scroll-gap:calc(var(--shell-header-step)*12)]",
     // Nested shells inside main also clear its sticky local header. Only the
     // first two levels publish offsets: the supported third level consumes them.
     "[.shell:not(.shell_*)>&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
@@ -707,10 +721,32 @@ export const shellMain = cv({
   variants: {
     /**
      * Sets the shared main gutter. Numbers scale the spacing token. A CSS
-     * length can use container queries on the nearest shell. Defaults to 3.
+     * length can use container queries on the nearest shell. Defaults to 3. Use
+     * `$py` for the space above and below the parts.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       return contentVariants.$p(value);
+    },
+    /**
+     * Sets the space above the intro, or above the body without an intro, and
+     * below the body. Fragment targets keep the same space, at least 1rem,
+     * below the sticky headers. Numbers scale the spacing token. Defaults to
+     * space that grows with the shell width, with more below the body. `none`
+     * removes the space; `unset` keeps the default.
+     */
+    $py(value?: "unset" | "none" | (string & {}) | number) {
+      if (value == null) return;
+      if (value === "unset") return;
+      // The registered value resolves at main, so a part's text size doesn't
+      // change it.
+      return {
+        style: {
+          "--shell-main-py": getSpacingValue(value === "none" ? 0 : value),
+          "--shell-main-pbs": "var(--shell-main-py)",
+          "--shell-main-pbe": "var(--shell-main-py)",
+          "--shell-main-scroll-gap": "max(1rem, var(--shell-main-py))",
+        },
+      };
     },
     /**
      * Sets the shared maximum content width. Numbers scale the spacing token.
@@ -814,8 +850,10 @@ export const shellMainIntro = cv({
     content,
     "shell-main-intro content-start col-start-1 col-end-[calc(2+var(--shell-intro-free-1)+var(--shell-intro-free-1)*var(--shell-intro-free-2))] row-[intro] overflow-x-clip",
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))]",
-    // Separate the title from the bars above.
-    "pbs-[calc(var(--shell-gutter)*3)]",
+    // Three bar steps below the intro and three above the body match the
+    // default sidebar body padding, so a sidebar that starts at the body lines
+    // up with its first line. The padding-block utility sorts before py-*.
+    "[padding-block:var(--shell-main-pbs)_calc(var(--shell-header-step)*3)]",
   ],
   variants: contentVariants,
   defaultVariants: { $p: "unset" },
@@ -828,6 +866,9 @@ export const shellMainBody = cv({
     content,
     "shell-main-body content-start col-[main] row-[body] overflow-x-clip",
     "[--shell-content-end-space:0px]",
+    // After an intro, the body starts three bar steps below it.
+    "[.shell-main-intro~&]:[--shell-main-pbs:calc(var(--shell-header-step)*3)]",
+    "[padding-block:var(--shell-main-pbs)_var(--shell-main-pbe)]",
   ],
   variants: contentVariants,
   defaultVariants: { $p: "unset" },

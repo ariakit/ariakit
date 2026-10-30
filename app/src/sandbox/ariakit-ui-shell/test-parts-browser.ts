@@ -2,6 +2,10 @@ import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 
+// Fragment targets keep a 3em scroll gap below the sticky headers, at the
+// shell's 16px text size.
+const SCROLL_GAP = 48;
+
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
@@ -42,7 +46,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect(nestedHeader).toHaveCSS("top", "64px");
       await expect(q.region("Main content")).toHaveCSS(
         "scroll-margin-block-start",
-        "80px",
+        `${64 + SCROLL_GAP}px`,
       );
       // Playwright can scroll the page to click "Narrow shell", such as when it
       // retries the click while the columns still move.
@@ -94,7 +98,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(nestedHeader).toHaveCSS("top", visible ? "128px" : "64px");
         await expect(q.region("Main content")).toHaveCSS(
           "scroll-margin-block-start",
-          visible ? "144px" : "80px",
+          `${(visible ? 128 : 64) + SCROLL_GAP}px`,
         );
       }
       await q.checkbox("Narrow shell").check();
@@ -133,7 +137,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(nestedHeader).toBeVisible();
         await expect(q.region("Main content")).toHaveCSS(
           "scroll-margin-block-start",
-          "80px",
+          `${64 + SCROLL_GAP}px`,
         );
         await page.evaluate(() => window.scrollTo(0, 0));
         expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
