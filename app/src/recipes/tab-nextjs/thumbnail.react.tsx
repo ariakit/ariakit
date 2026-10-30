@@ -3,22 +3,38 @@ import {
   SkeletonBox,
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
-import { badge } from "@ariakit/ui/styles/badge";
+import { badge, badgeLabel, badgeSlot } from "@ariakit/ui/styles/badge";
 import { tab, tabList, tabPanels, tabs } from "@ariakit/ui/styles/tabs";
+import { LockIcon } from "lucide-react";
 
-// Placeholder widths for the posts after the first one, as fractions of the
-// post text column.
-const posts = [
-  { id: "privacy", title: "w-4/5", meta: "w-3/5" },
-  { id: "wai", title: "w-3/4", meta: "w-1/2" },
-  { id: "focus", title: "w-2/3", meta: "w-2/5" },
-  { id: "landmarks", title: "w-4/5", meta: "w-1/2" },
-  { id: "contrast", title: "w-3/5", meta: "w-1/3" },
+interface PostData {
+  id: string;
+  score: number;
+  title: string;
+  // Posts without meta show a placeholder line under the title.
+  meta?: string;
+  tag: string;
+}
+
+const posts: PostData[] = [
+  {
+    id: "aria",
+    score: 312,
+    title: "Answering “What ARIA can I use?”",
+    meta: "Maya Chen · 5 hours ago · 48 replies",
+    tag: "ARIA",
+  },
+  {
+    id: "focus",
+    score: 128,
+    title: "Focus rings that work on every surface",
+    tag: "CSS",
+  },
 ];
 
 export default function Thumbnail() {
   return (
-    <div {...tabs.jsx({ className: "mt-4 w-80 text-sm" })}>
+    <div {...tabs.jsx({ className: "w-[52em]" })}>
       <div {...tabList.jsx()}>
         <div {...tab.jsx()} aria-selected="true">
           Hot
@@ -33,42 +49,52 @@ export default function Thumbnail() {
         <div {...tab.jsx()} aria-selected="false">
           New
         </div>
+        <div {...tab.jsx()} aria-selected="false">
+          Top
+        </div>
+        {/* The address follows the selected tab. */}
+        <span {...badge.jsx({ className: "ms-auto me-20 self-center" })}>
+          <span {...badgeSlot.jsx()}>
+            <LockIcon />
+          </span>
+          <span {...badgeLabel.jsx()}>
+            acme.dev/forum/<b>hot</b>
+          </span>
+        </span>
       </div>
       <div {...tabPanels.jsx({ className: "grid gap-3" })}>
-        <div className="flex items-center gap-2.5">
-          <Frame
-            $layer
-            $rounded="md"
-            $border
-            className="grid h-8 w-10 shrink-0 place-items-center font-semibold"
-          >
-            312
-          </Frame>
-          <div className="grid min-w-0 flex-1">
-            <span className="truncate font-medium">
-              Answering “What ARIA can I use?”
-            </span>
-            <span className="ak-ink-70 truncate text-xs">
-              Maya Chen · 5 hours ago
-            </span>
-          </div>
-          <span {...badge.jsx({ $rounded: "sm", className: "shrink-0" })}>
-            ARIA
-          </span>
-        </div>
         {posts.map((post) => (
           <div key={post.id} className="flex items-center gap-2.5">
-            <SkeletonBox $rounded="md" className="h-8 w-10 shrink-0" />
-            <div className="grid flex-1">
-              <SkeletonLine className={post.title} />
-              <SkeletonLine
-                $weight="light"
-                className={`text-xs ${post.meta}`}
-              />
+            <Frame
+              $layer
+              $rounded="md"
+              $border
+              className="grid h-8 w-10 shrink-0 place-items-center font-semibold"
+            >
+              {post.score}
+            </Frame>
+            <div className="grid min-w-0">
+              <span className="flex items-center gap-2">
+                <span className="font-medium">{post.title}</span>
+                <span {...badge.jsx({ $rounded: "sm" })}>
+                  <span {...badgeLabel.jsx()}>{post.tag}</span>
+                </span>
+              </span>
+              {post.meta ? (
+                <span className="ak-ink-70">{post.meta}</span>
+              ) : (
+                <SkeletonLine $weight="light" className="mt-1 w-40" />
+              )}
             </div>
-            <SkeletonBox $rounded="sm" className="h-5 w-12 shrink-0" />
           </div>
         ))}
+        <div className="flex items-center gap-2.5">
+          <SkeletonBox $rounded="md" className="h-8 w-10 shrink-0" />
+          <div className="grid w-60 gap-1">
+            <SkeletonLine className="w-4/5" />
+            <SkeletonLine $weight="light" className="w-3/5" />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,9 +1,14 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
+import { badge, badgeLabel } from "@ariakit/ui/styles/badge";
 import {
-  SkeletonCircle,
-  SkeletonLine,
-} from "@ariakit/ui/components/skeleton.ariakit.react";
+  controlContent,
+  controlDescription,
+  controlLabel,
+  controlSlot,
+} from "@ariakit/ui/styles/control";
 import { separator } from "@ariakit/ui/styles/separator";
+import { slotFrame } from "@ariakit/ui/styles/slot-frame";
 import { Fragment } from "react";
 
 // Placeholder widths for the rows between separators.
@@ -15,33 +20,64 @@ const rows = [
 
 export default function Thumbnail() {
   return (
-    <div className="flex justify-center text-xs">
-      <Frame
-        $layer
-        $lighten
-        $rounded="xl"
-        $border
-        $p={3}
-        className="grid w-72 gap-2.5 shadow-xs"
-      >
-        <div className="flex items-center gap-2">
-          <SkeletonCircle $weight="medium" className="size-6 shrink-0" />
-          <SkeletonLine $weight="bold" className="w-2/5" />
-        </div>
-        <div {...separator.jsx({ $line: "solid", $gap: 0 })} />
-        {rows.map((row, index) => (
-          <div key={row.id} className="grid gap-2.5">
-            {index > 0 && (
-              <div {...separator.jsx({ $line: "dashed", $gap: 0 })} />
-            )}
-            <div className="flex items-center justify-between">
-              <SkeletonLine className={row.width} />
-              <SkeletonLine $weight="light" className="w-1/8" />
-            </div>
-          </div>
-        ))}
-      </Frame>
-    </div>
+    <Frame
+      $layer
+      $lighten
+      $rounded="xl"
+      $border
+      $p={2}
+      className="grid w-80 max-w-full shadow-md"
+    >
+      <div {...slotFrame.jsx({ $p: 2 })}>
+        <span
+          {...controlSlot.jsx({
+            $kind: "avatar",
+            $rowSpan: 2,
+            $layer: "brand",
+            $contrast: true,
+          })}
+        >
+          MC
+        </span>
+        <span {...controlContent.jsx()}>
+          <span {...controlLabel.jsx({ className: "font-semibold" })}>
+            Maya Chen
+          </span>
+          <span {...controlDescription.jsx()}>maya@acme.dev</span>
+        </span>
+      </div>
+      <div {...separator.jsx({ $line: "solid", $gap: 1 })} />
+      <div {...slotFrame.jsx({ $p: 2 })}>
+        <span {...controlLabel.jsx({ $grow: true })}>Profile</span>
+        <span {...controlSlot.jsx({ $kind: "shortcut" })}>
+          <span>
+            <kbd>⌘</kbd>
+            <kbd>P</kbd>
+          </span>
+        </span>
+      </div>
+      <div {...slotFrame.jsx({ $p: 2 })}>
+        <span {...controlLabel.jsx({ $grow: true })}>Billing</span>
+        {/* The badge colors the text of its label. The row padding is below
+            1rem, so the badge forces its pill shape instead of following the
+            row corners. */}
+        <span {...badge.jsx({ $layer: "brand", $forceRounded: true })}>
+          <span {...badgeLabel.jsx()}>Pro</span>
+        </span>
+      </div>
+      <div {...separator.jsx({ $line: "dashed", $gap: 1 })} />
+      <div {...slotFrame.jsx({ $p: 2 })}>
+        <span {...controlLabel.jsx({ $grow: true })}>
+          <SkeletonLine className="w-1/3" />
+        </span>
+        <SkeletonLine $weight="light" className="w-5" />
+      </div>
+      <div {...slotFrame.jsx({ $p: 2 })}>
+        <span {...controlLabel.jsx({ $grow: true })}>
+          <SkeletonLine className="w-1/4" />
+        </span>
+      </div>
+    </Frame>
   );
 }
 

@@ -13,6 +13,7 @@ import { AppThumbnail } from "#app/components/app-thumbnail.react.tsx";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { focus } from "@ariakit/ui/styles/focus";
+import { hover } from "@ariakit/ui/styles/hover";
 import { uniq } from "#app/lib/array.ts";
 import {
   countEntryExamples,
@@ -27,6 +28,7 @@ import { renderThumbnail } from "#app/lib/thumbnail.ts";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import { ArrowRight } from "lucide-react";
 import { createElement } from "react";
 
 export const getStaticPaths = (async () => {
@@ -66,18 +68,50 @@ const guides = (
 ).map(getGuideDetail);
 const recipes = await getCollection("recipes");
 const previews = await getCollection("previews");
-const cards = await Promise.all(
-  entries.map(async (entry) => ({
-    entry,
-    count: countEntryExamples({ entry, framework, recipes, previews }),
-    thumbnail: await renderThumbnail(entry),
-  })),
+
+type CardShape = (typeof entries)[number]["data"]["shape"];
+
+// Larger shapes come first, so dense grid flow can fill the gaps that they
+// leave with smaller cards. Entries keep their title order within a shape.
+const shapeOrder = {
+  screen: 0,
+  popup: 1,
+  section: 2,
+  control: 3,
+} satisfies Record<CardShape, number>;
+
+// Narrow lists show one card per row, so wide shapes span two columns only
+// once the grid has them.
+const shapeClass = {
+  screen: "row-span-2 @md/cards:col-span-2",
+  popup: "row-span-2",
+  section: "@md/cards:col-span-2",
+  control: "",
+} satisfies Record<CardShape, string>;
+
+// The thumbnail stage keeps corners concentric with the card while this
+// padding stays below 1rem.
+const CARD_PADDING = "0.375rem";
+
+const cards = (
+  await Promise.all(
+    entries.map(async (entry) => ({
+      entry,
+      count: countEntryExamples({ entry, framework, recipes, previews }),
+      thumbnail: await renderThumbnail(entry),
+    })),
+  )
+).sort(
+  (a, b) => shapeOrder[a.entry.data.shape] - shapeOrder[b.entry.data.shape],
 );
 const lead =
   type === "recipes"
     ? "Common solutions composed from Ariakit components. Open a recipe to explore its examples and copy the code into your app."
     : "Accessible building blocks for your design system. Each component page covers its examples, recipes, and API reference.";
 const cardFocus = focus.jsx({ $focus: true, $focusOffset: 2 }).className;
+// Frame has no hover variants, so the link element carries them. Ariakit merges
+// its class and style with the ones from Frame.
+const cardHover = hover.jsx({ $hoverOffset: 0.5 });
 ---
 
 <Layout {title} section={type} sidebar={false} maxWidth="80rem">
@@ -105,34 +139,48 @@ const cardFocus = focus.jsx({ $focus: true, $focusOffset: 2 }).className;
       )
     }
   </header>
-  <ul
-    class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-x-6 gap-y-10"
-  >
-    {
-      cards.map(({ entry, count, thumbnail }) => (
-        <li>
-          <Frame
-            render={createElement("a", {
-              href: groupPath + "/" + entry.id + "/",
-              "aria-labelledby": entry.id + "-label",
-              "aria-describedby": entry.id + "-count",
-            })}
-            $rounded="lg"
-            $p="none"
-            className={"group/thumbnail grid gap-3 " + cardFocus}
-          >
-            {thumbnail && <AppThumbnail html={thumbnail} />}
-            <span class="grid gap-0.5 px-1">
-              <span id={entry.id + "-label"} class="font-medium">
-                {entry.data.title}
+  <div class="@container/cards">
+    <ul
+      class="grid auto-rows-[12.5rem] grid-flow-dense grid-cols-1 gap-3 @md/cards:grid-cols-2 @2xl/cards:auto-rows-[15rem] @2xl/cards:grid-cols-3 @2xl/cards:gap-4 @5xl/cards:grid-cols-4"
+    >
+      {
+        cards.map(({ entry, count, thumbnail }) => (
+          <li class:list={["min-w-0", shapeClass[entry.data.shape]]}>
+            <Frame
+              render={createElement("a", {
+                href: groupPath + "/" + entry.id + "/",
+                "aria-labelledby": entry.id + "-label",
+                "aria-describedby": entry.id + "-count",
+                ...cardHover,
+              })}
+              $layer
+              $lighten={0.5}
+              $rounded="3xl"
+              $p={CARD_PADDING}
+              $border
+              className={
+                "group/thumbnail grid h-full grid-rows-[minmax(0,1fr)_auto] " +
+                cardFocus
+              }
+            >
+              {thumbnail && <AppThumbnail html={thumbnail} />}
+              <span class="flex items-center gap-3 ps-3.5 pe-2 pt-2.5 pb-2">
+                <span class="grid min-w-0 flex-1 gap-0.5">
+                  <span id={entry.id + "-label"} class="truncate font-medium">
+                    {entry.data.title}
+                  </span>
+                  <span id={entry.id + "-count"} class="ak-ink-70 text-sm">
+                    {formatExampleCount(count)}
+                  </span>
+                </span>
+                <ArrowRight
+                  className="ak-ink-70 size-4 shrink-0 -translate-x-1 opacity-0 transition motion-reduce:transition-none group-hover/thumbnail:translate-x-0 group-hover/thumbnail:opacity-100 group-focus-visible/thumbnail:translate-x-0 group-focus-visible/thumbnail:opacity-100"
+                />
               </span>
-              <span id={entry.id + "-count"} class="ak-ink-70 text-sm">
-                {formatExampleCount(count)}
-              </span>
-            </span>
-          </Frame>
-        </li>
-      ))
-    }
-  </ul>
+            </Frame>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 </Layout>

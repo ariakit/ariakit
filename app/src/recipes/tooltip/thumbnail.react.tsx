@@ -4,12 +4,21 @@ import {
   SkeletonBox,
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
-import { TooltipShortcut } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { button, buttonGroup, buttonSlot } from "@ariakit/ui/styles/button";
-import { tooltip } from "@ariakit/ui/styles/tooltip";
+import { input } from "@ariakit/ui/styles/input";
+import { tooltip, tooltipShortcut } from "@ariakit/ui/styles/tooltip";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
-import { BoldIcon, CodeIcon, ItalicIcon, UnderlineIcon } from "lucide-react";
+import {
+  ArchiveIcon,
+  BoldIcon,
+  CheckIcon,
+  CodeIcon,
+  ItalicIcon,
+  LinkIcon,
+  UnderlineIcon,
+} from "lucide-react";
+import type { ComponentProps, ReactNode } from "react";
 
 interface Tool {
   id: string;
@@ -23,31 +32,68 @@ const tools: Tool[] = [
   { id: "italic", icon: ItalicIcon, hovered: true },
   { id: "underline", icon: UnderlineIcon },
   { id: "code", icon: CodeIcon },
+  { id: "link", icon: LinkIcon },
 ];
+
+interface Person {
+  id: string;
+  name: string;
+  initials: string;
+  hue: FrameProps["$hue"];
+  hovered?: boolean;
+}
+
+// The pointer rests on the second avatar, so its tooltip shows below it.
+const people: Person[] = [
+  { id: "maya", name: "Maya Chen", initials: "MC", hue: "orange" },
+  { id: "leo", name: "Leo Park", initials: "LP", hue: "blue", hovered: true },
+  { id: "ana", name: "Ana Ruiz", initials: "AR", hue: "magenta" },
+  { id: "jun", name: "Jun Sato", initials: "JS", hue: "green" },
+];
+
+interface TipProps {
+  side: "top" | "bottom" | "end";
+  children: ReactNode;
+}
+
+const sideClass = {
+  top: "bottom-full left-1/2 mb-2 -translate-x-1/2",
+  bottom: "top-full left-1/2 mt-2 -translate-x-1/2",
+  end: "left-full top-1/2 ms-2 -translate-y-1/2",
+} satisfies Record<TipProps["side"], string>;
 
 // Static markup needs data-open to show the tooltip, and the thumbnail must not
 // play the open animation on page load.
-const tooltipProps = tooltip.jsx({
-  className:
-    "transition-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap",
-});
+function Tip({ side, children }: TipProps) {
+  return (
+    <span
+      data-open
+      {...tooltip.jsx({
+        className: clsx(
+          "absolute whitespace-nowrap transition-none",
+          sideClass[side],
+        ),
+      })}
+    >
+      {children}
+    </span>
+  );
+}
 
-// A square frame that keeps straight corners inside the rounded window.
-function Region(props: FrameProps) {
-  return <Frame $rounded="none" $forceRounded $p="none" {...props} />;
+// An outlined button that stays a plain element, since the scene is a picture.
+function OutlineButton({ className, ...props }: ComponentProps<"span">) {
+  return (
+    <span
+      {...button.jsx({ $layer: true, $border: true, className })}
+      {...props}
+    />
+  );
 }
 
 export default function Thumbnail() {
   return (
-    <Frame
-      $layer
-      $lighten
-      $rounded="xl"
-      $border
-      $p="none"
-      className="mt-12 grid w-80 text-sm shadow-lg"
-    >
-      <Region $p={1.5} className="border-b">
+    <div className="grid w-60 justify-items-center gap-16 pt-12">
+      <Frame $layer $lighten $rounded="xl" $border $p={1} className="shadow-sm">
         <div {...buttonGroup.jsx()}>
           {tools.map((tool) => (
             <span
@@ -62,24 +108,72 @@ export default function Thumbnail() {
                 <tool.icon />
               </span>
               {tool.hovered && (
-                <span {...tooltipProps} data-open>
+                <Tip side="top">
                   Italic
-                  <TooltipShortcut>
-                    <kbd>⌘</kbd>
-                    <kbd>I</kbd>
-                  </TooltipShortcut>
-                </span>
+                  <span {...tooltipShortcut.jsx()}>
+                    <span>
+                      <kbd>⌘</kbd>
+                      <kbd>I</kbd>
+                    </span>
+                  </span>
+                </Tip>
               )}
             </span>
           ))}
         </div>
-      </Region>
-      <Region $p={4} className="grid gap-2">
-        <SkeletonLine $weight="bold" className="w-1/2 text-base" />
-        <SkeletonLine className="w-full" />
-        <SkeletonLine className="w-3/5" />
-      </Region>
-    </Frame>
+      </Frame>
+      <div className="flex">
+        {people.map((person) => (
+          <Frame
+            key={person.id}
+            $layer="brand"
+            $hue={person.hue}
+            $rounded="full"
+            $p="none"
+            className={clsx(
+              "relative grid size-9 place-items-center font-semibold",
+              "-ms-1.5 ring-2 ring-(--ak-layer-parent) first:ms-0",
+              person.hovered && "z-1 -translate-y-0.5",
+            )}
+          >
+            {person.initials}
+            {person.hovered && <Tip side="bottom">{person.name}</Tip>}
+          </Frame>
+        ))}
+        <Frame
+          $layer
+          $lightnessOffset
+          $rounded="full"
+          $p="none"
+          className="-ms-1.5 grid size-9 place-items-center font-semibold ring-2 ring-(--ak-layer-parent)"
+        >
+          +3
+        </Frame>
+      </div>
+      {/* The tooltip above this row needs room under the avatar tooltip. */}
+      <div className="mt-14 flex gap-1.5">
+        <span {...input.jsx({ className: "w-44" })}>
+          <SkeletonLine $weight="light" className="w-3/4" />
+        </span>
+        <OutlineButton className="relative">
+          <span {...buttonSlot.jsx()}>
+            <CheckIcon />
+          </span>
+          <Tip side="top">Copied</Tip>
+        </OutlineButton>
+      </div>
+      {/* The tooltip sits outside the disabled button, which fades its
+          content. */}
+      <div className="relative flex self-start justify-self-start">
+        <OutlineButton aria-disabled="true">
+          <span {...buttonSlot.jsx()}>
+            <ArchiveIcon />
+          </span>
+          Archive
+        </OutlineButton>
+        <Tip side="end">Only owners can archive</Tip>
+      </div>
+    </div>
   );
 }
 

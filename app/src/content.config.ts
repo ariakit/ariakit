@@ -41,6 +41,13 @@ const guides = defineCollection({
   }),
 });
 
+// The card size on the recipe and component list pages. Pick the shape that
+// fits the thumbnail scene: a whole screen, a popup that opens down from a
+// trigger, a section that runs across a page, or a single control.
+const ThumbnailShapeSchema = z
+  .enum(["screen", "popup", "section", "control"])
+  .default("control");
+
 const components = defineCollection({
   loader: componentLoader({
     base: join(import.meta.dirname, "component-docs"),
@@ -48,6 +55,7 @@ const components = defineCollection({
   schema: componentLoader.schema(
     z.object({
       title: z.string(),
+      shape: ThumbnailShapeSchema,
     }),
   ),
 });
@@ -59,6 +67,7 @@ const recipes = defineCollection({
   schema: recipeLoader.schema(
     z.object({
       title: z.string(),
+      shape: ThumbnailShapeSchema,
       components: z.array(reference("components")).default([]),
     }),
   ),
