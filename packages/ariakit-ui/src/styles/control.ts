@@ -108,10 +108,25 @@ export function getDisabledContentClass(variants: VariantProps<typeof layer>) {
 
 /**
  * A slot in a control. Its painted content fades while the control is disabled,
- * like the control's own surface.
+ * like the control's own surface, and the keys in it fade and mute their text.
  */
 export const controlSlot = cv({
   extend: [slotFrameSlot],
+  class: [
+    // Fade the surfaces of flat keys and keycaps, and mute key text like the
+    // label. Plain keys set their own ink, which the control's ink would not
+    // replace.
+    "group-[.disabled]/control:[&_kbd]:ak-layer-fade-80",
+    "group-ui-disabled/control:[&_kbd]:ak-layer-fade-80",
+    "group-ui-disabled-within/choice:[&_kbd]:ak-layer-fade-80",
+    "group-[.disabled]/control:[&_kbd]:ak-ink-0",
+    "group-ui-disabled/control:[&_kbd]:ak-ink-0",
+    "group-ui-disabled-within/choice:[&_kbd]:ak-ink-0",
+    // A disabled input group mutes the text of its descendants itself. It is
+    // disabled through its entry controls, so the keys of an enabled action
+    // button in the group keep their surfaces.
+    "group-ui-field-disabled/control:[&_kbd:not(:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:ak-layer-fade-80",
+  ],
   refine({ variants, addClass }) {
     addClass(getDisabledContentClass(variants));
   },

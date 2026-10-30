@@ -19,6 +19,7 @@ import {
   disclosureChevron,
   disclosureContent,
 } from "@ariakit/ui/styles/disclosure";
+import { kbd } from "@ariakit/ui/styles/kbd";
 import {
   nav,
   navButtonContent,
@@ -272,8 +273,8 @@ function Sidebar() {
                 <RowLabel label={link.label} width={link.width} />
                 {link.count && <Count value={link.count} />}
                 {link.shortcut && (
-                  <span {...navSlot.jsx({ $kind: "shortcut" })}>
-                    <span>{link.shortcut}</span>
+                  <span {...navSlot.jsx({ $kind: "text" })}>
+                    <kbd {...kbd.jsx()}>{link.shortcut}</kbd>
                   </span>
                 )}
                 {link.current && (

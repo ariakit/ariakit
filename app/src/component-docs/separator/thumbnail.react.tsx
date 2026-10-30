@@ -7,6 +7,7 @@ import {
   controlLabel,
   controlSlot,
 } from "@ariakit/ui/styles/control";
+import { kbd } from "@ariakit/ui/styles/kbd";
 import { separator } from "@ariakit/ui/styles/separator";
 import { slotFrame } from "@ariakit/ui/styles/slot-frame";
 import { Fragment } from "react";
@@ -49,11 +50,8 @@ export default function Thumbnail() {
       <div {...separator.jsx({ $line: "solid", $gap: 1 })} />
       <div {...slotFrame.jsx({ $p: 2 })}>
         <span {...controlLabel.jsx({ $grow: true })}>Profile</span>
-        <span {...controlSlot.jsx({ $kind: "shortcut" })}>
-          <span>
-            <kbd>⌘</kbd>
-            <kbd>P</kbd>
-          </span>
+        <span {...controlSlot.jsx({ $kind: "text" })}>
+          <kbd {...kbd.jsx()}>⌘P</kbd>
         </span>
       </div>
       <div {...slotFrame.jsx({ $p: 2 })}>

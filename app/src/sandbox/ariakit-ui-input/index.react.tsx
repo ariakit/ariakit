@@ -30,6 +30,7 @@ import {
   InputLabel,
   InputSlot,
 } from "@ariakit/ui/components/input.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import {
   Popover,
@@ -664,7 +665,7 @@ export default function InputExamples() {
           <Input render={<button type="button" />}>
             <InputSlot><Search /></InputSlot>
             <Text>Search docs</Text>
-            <InputSlot $kind="shortcut" $size="xl"><kbd aria-hidden>⌘K</kbd></InputSlot>
+            <InputSlot $kind="text"><Kbd aria-hidden>⌘K</Kbd></InputSlot>
           </Input>
         `}
       >
@@ -675,8 +676,8 @@ export default function InputExamples() {
           <Text {...inputPlaceholder.jsx({ className: "flex-1 truncate" })}>
             Search docs
           </Text>
-          <InputSlot $kind="shortcut" $size="xl">
-            <kbd aria-hidden>⌘K</kbd>
+          <InputSlot $kind="text">
+            <Kbd aria-hidden>⌘K</Kbd>
           </InputSlot>
         </Input>
       </Example>

@@ -4,6 +4,7 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import {
   Nav,
   NavDisclosure,
@@ -81,7 +82,11 @@ function renderLink(link: Link, path = getPath(link.label)) {
           {link.count}
         </NavSlot>
       )}
-      {link.shortcut && <NavSlot $kind="shortcut">{link.shortcut}</NavSlot>}
+      {link.shortcut && (
+        <NavSlot $kind="text">
+          <Kbd>{link.shortcut}</Kbd>
+        </NavSlot>
+      )}
     </RouterNavLink>
   );
 }

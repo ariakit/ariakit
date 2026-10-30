@@ -4,9 +4,10 @@ import {
   ButtonGroup,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import {
   Tooltip,
-  TooltipShortcut,
+  TooltipSlot,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
 import type { LucideIcon } from "lucide-react";
 import { BoldIcon, CodeIcon, ItalicIcon, UnderlineIcon } from "lucide-react";
@@ -35,14 +36,14 @@ export default function Example() {
       {tools.map((tool) => (
         <Tooltip
           key={tool.key}
-          content={
-            <>
-              {tool.label}
-              <TooltipShortcut>
-                <kbd>{apple ? "⌘" : "Ctrl+"}</kbd>
-                <kbd>{tool.key}</kbd>
-              </TooltipShortcut>
-            </>
+          text={tool.label}
+          endSlot={
+            <TooltipSlot $kind="text">
+              <Kbd>
+                {apple ? "⌘" : "Ctrl+"}
+                {tool.key}
+              </Kbd>
+            </TooltipSlot>
           }
         >
           {/* The editor of an app handles the shortcuts, and

@@ -22,7 +22,7 @@ import {
 } from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
 import type { SlotSize } from "./slot-frame.ts";
-import { getSlotSizeClass, hasSlotSurface, isSlotSize } from "./slot-frame.ts";
+import { getSlotSizeClass, isSlotSize } from "./slot-frame.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
@@ -94,10 +94,9 @@ export const nav = cv({
       };
     },
     /**
-     * Sets navigation slot and disclosure icon sizes, except shortcuts,
-     * thumbnails, and text. Set this on the root or an ancestor: consumers read
-     * inherited values and ancestor style queries. Numbers scale the spacing
-     * token.
+     * Sets navigation slot and disclosure icon sizes, except thumbnails and
+     * text. Set this on the root or an ancestor: consumers read inherited
+     * values and ancestor style queries. Numbers scale the spacing token.
      */
     $slotSize(value?: string | number) {
       if (value == null) return;
@@ -214,8 +213,8 @@ const navSlotBase = cv({
      * Sets the slot size. `auto` follows the navigation `$slotSize`, or the
      * text size; without `$slotSize`, a badge after the label takes the line
      * height instead. Numbers scale the spacing token; other lengths apply
-     * directly. Named sizes `xs` to `lg` become `xl` for badges, avatars, and
-     * shortcuts with a fill or a border; `xl` and larger add label spacing.
+     * directly. Named sizes `xs` to `lg` become `xl` for badges and avatars;
+     * `xl` and larger add label spacing, except for thumbnails and text.
      */
     $size(value?: SlotSize | "auto" | number | (string & {})) {
       if (value == null) return;
@@ -238,13 +237,13 @@ const navSlotBase = cv({
   },
   defaultVariants: {
     // Resolve before slotFrameSlot refinement converts the named sizes of
-    // badges, avatars, and shortcut boxes.
+    // badges and avatars.
     $size: "auto",
   },
 });
 
 /**
- * An icon, badge, avatar, shortcut, or text slot aligned with navigation
+ * An icon, badge, avatar, keyboard key, or text slot aligned with navigation
  * labels.
  */
 export const navSlot = cv({
@@ -252,11 +251,6 @@ export const navSlot = cv({
   defaultVariants: {
     $size(defaultValue, variants) {
       if (defaultValue !== "auto") return defaultValue;
-      if (variants.$kind === "shortcut") {
-        // This variant replaces the slot size that slotFrameSlot would raise to
-        // a line for a shortcut surface.
-        return hasSlotSurface(variants) ? "xl" : "md";
-      }
       // A picture keeps a line of height instead of the icon size.
       if (variants.$kind === "thumbnail") return "xl";
       if (variants.$kind === "text") return "xl";

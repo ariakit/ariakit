@@ -9,7 +9,7 @@ export default function Example() {
   return (
     // The tooltip names the icon button on hover and focus. The aria-label
     // names it for screen readers.
-    <Tooltip content="Notifications">
+    <Tooltip text="Notifications">
       <Button aria-label="Notifications">
         <ButtonSlot>
           <BellIcon />

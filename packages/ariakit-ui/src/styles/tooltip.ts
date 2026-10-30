@@ -1,19 +1,19 @@
 import { cv } from "clava";
 import { popover } from "./popover.ts";
-import { slotFrameSlot } from "./slot-frame.ts";
+import { slotFrame, slotFrameSlot, slotFrameText } from "./slot-frame.ts";
 
 /**
- * A compact popover with wider side padding and wrapping text. It inverts the
- * page colors without an edge by default. A layer color such as `brand` keeps
- * its hue and the popover edge.
+ * A compact popover with the optical side padding of a text frame and wrapping
+ * text. It inverts the page colors without an edge by default. A layer color
+ * such as `brand` keeps its hue and the popover edge. Put icons, badges, and
+ * keyboard keys in `TooltipSlot` parts, and the text beside them in a
+ * `TooltipText` part.
  */
 export const tooltip = cv({
-  extend: [popover],
+  // The slot frame lays out `TooltipText` and `TooltipSlot` parts in a row,
+  // with the optical side padding and gaps of a control.
+  extend: [popover, slotFrame],
   class: [
-    "text-sm",
-    // Scale side padding with frame padding. The var() utility sorts before
-    // caller px-* steps.
-    "[--tooltip-px:calc(var(--ak-frame-padding)*2)] px-(--tooltip-px)",
     // Allow caller max-w-* utilities to override the wrapping limit.
     "[--tooltip-max-width:--spacing(80)] max-w-(--tooltip-max-width)",
     // A tooltip that the next tooltip replaces at once hides without its exit
@@ -23,9 +23,14 @@ export const tooltip = cv({
     "data-instant:ui-closed:transition-none",
   ],
   defaultVariants: {
+    $size: "sm",
     $shadow: "md",
     $rounded: "lg",
-    $p: 1,
+    // One spacing step is 3.5px at the default text size. Chrome paints the
+    // half pixel on one side, so a line-tall slot would sit 1px closer to the
+    // bottom than the top. Round it to a whole pixel.
+    // https://github.com/ariakit/ariakit/issues/8179
+    $p: "round(var(--spacing), 1px)",
     $invert(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
       // A color tooltip keeps its hue. Inverting would turn it into a pale
@@ -51,22 +56,30 @@ export const tooltip = cv({
 });
 
 /**
- * A keyboard shortcut after the tooltip text, like the shortcut slot of a
- * control: muted keys in the UI font, in left-to-right order in any text
- * direction. A fill or a border draws a box around the keys.
+ * An icon, badge, keyboard key, or short text beside the tooltip text, aligned
+ * like a slot of a control.
  */
-export const tooltipShortcut = cv({
-  extend: [slotFrameSlot],
+export const tooltipSlot = slotFrameSlot;
+
+/**
+ * The arrow of a tooltip, through `TooltipArrow`. Ariakit places it with
+ * insets, so it keeps no margin.
+ */
+export const tooltipArrow = cv({
   class: [
-    // Stay on the text line. inline-flex sorts after the slot's flex.
-    "inline-flex",
-    // Separate the keys from the text before them, also without a space.
-    "ms-1",
+    // A line-tall slot after the arrow gives the element before it a margin,
+    // which would move the arrow off the tooltip edge or the anchor. The slot
+    // rule comes later in the CSS, so this needs !important.
+    "m-0!",
   ],
-  defaultVariants: {
-    $kind: "shortcut",
-  },
 });
+
+/**
+ * The tooltip text beside its slots. Inline elements, such as `strong`, stay on
+ * its lines, and a line-tall slot sits as far from it as from the side of the
+ * tooltip. Without slots, bare text works too.
+ */
+export const tooltipText = slotFrameText;
 
 /**
  * The positioned wrapper of a tooltip popup, through the `wrapperProps` of

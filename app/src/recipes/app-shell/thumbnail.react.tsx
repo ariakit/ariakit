@@ -9,6 +9,7 @@ import { badge, badgeLabel } from "@ariakit/ui/styles/badge";
 import { button, buttonSlot } from "@ariakit/ui/styles/button";
 import { controlLabel, controlSlot } from "@ariakit/ui/styles/control";
 import { input, inputPlaceholder, inputSlot } from "@ariakit/ui/styles/input";
+import { kbd } from "@ariakit/ui/styles/kbd";
 import {
   nav,
   navGroup,
@@ -142,11 +143,8 @@ function Header() {
         <span {...inputPlaceholder.jsx({ className: "flex-1 truncate" })}>
           Search orders…
         </span>
-        <span {...inputSlot.jsx({ $kind: "shortcut" })}>
-          <span>
-            <kbd>⌘</kbd>
-            <kbd>K</kbd>
-          </span>
+        <span {...inputSlot.jsx({ $kind: "text" })}>
+          <kbd {...kbd.jsx()}>⌘K</kbd>
         </span>
       </span>
       <span className="flex items-center gap-2 justify-self-end">

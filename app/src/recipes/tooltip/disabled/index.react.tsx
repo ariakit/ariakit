@@ -43,7 +43,7 @@ export default function Example() {
         </p>
         {/* The disabled button keeps focus, so keyboard users get the tooltip
             too. Screen readers read the reason as its description. */}
-        <Tooltip content={reason}>
+        <Tooltip text={reason}>
           <Button
             type="submit"
             $layer="brand"

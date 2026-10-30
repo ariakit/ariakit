@@ -37,11 +37,7 @@ function TruncatedLink({ href, children }: TruncatedLinkProps) {
     // The tooltip opens to the right, so it doesn't cover the next link in the
     // list. It also fits the viewport, so a long title wraps instead of going
     // off the screen there.
-    <Tooltip
-      content={truncated ? children : null}
-      placement="right"
-      fitViewport
-    >
+    <Tooltip text={truncated ? children : null} placement="right" fitViewport>
       <Link ref={setElement} href={href} className="block truncate">
         {children}
       </Link>

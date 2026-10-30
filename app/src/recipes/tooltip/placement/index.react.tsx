@@ -17,7 +17,7 @@ function SideButton({ side }: { side: Side }) {
   const placement: TooltipProps["placement"] = side;
   return (
     // Near an edge of the viewport, the tooltip flips to the other side.
-    <Tooltip content={`On the ${side}`} placement={placement} arrow>
+    <Tooltip text={`On the ${side}`} placement={placement} arrow>
       <Button $kind="bevel" className={`${sides[side]} w-24`}>
         {label}
       </Button>

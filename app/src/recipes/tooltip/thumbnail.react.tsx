@@ -1,11 +1,16 @@
 import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import {
   SkeletonBox,
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
+import {
+  TooltipSlot,
+  TooltipText,
+} from "@ariakit/ui/components/tooltip.ariakit.react";
 import { button, buttonGroup, buttonSlot } from "@ariakit/ui/styles/button";
-import { tooltip, tooltipShortcut } from "@ariakit/ui/styles/tooltip";
+import { tooltip } from "@ariakit/ui/styles/tooltip";
 import { clsx } from "clsx";
 import type { LucideIcon } from "lucide-react";
 import { BoldIcon, ItalicIcon, UnderlineIcon } from "lucide-react";
@@ -84,13 +89,10 @@ export default function Thumbnail() {
                 </span>
                 {tool.hovered && (
                   <Tip>
-                    Italic
-                    <span {...tooltipShortcut.jsx()}>
-                      <span>
-                        <kbd>⌘</kbd>
-                        <kbd>I</kbd>
-                      </span>
-                    </span>
+                    <TooltipText>Italic</TooltipText>
+                    <TooltipSlot $kind="text">
+                      <Kbd>⌘I</Kbd>
+                    </TooltipSlot>
                   </Tip>
                 )}
               </span>

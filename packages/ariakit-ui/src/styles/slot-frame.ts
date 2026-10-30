@@ -91,8 +91,8 @@ export const slotFrame = cv({
   },
 });
 
-// Single-row badges, avatars, and shortcut boxes need extra content space;
-// multi-row slots keep their requested size.
+// Single-row badges and avatars need extra content space; multi-row slots keep
+// their requested size.
 const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 
 const SLOT_SIZE_CLASSES = {
@@ -123,23 +123,20 @@ export function getSlotSizeClass(value: unknown) {
   return SLOT_SIZE_CLASSES[value];
 }
 
-// Painted shortcut keys get the inset of an icon on a painted tile.
-const SHORTCUT_SURFACE_PADDING = "xl";
-
-/** Whether a fill or a border draws a box around the slot content. */
+/** Whether a fill or a border draws a box around the content. */
 export function hasSlotSurface(variants: VariantProps<typeof frame>) {
   if (hasLayerBackground(variants)) return true;
   return Boolean(variants.$border);
 }
 
-/** Whether the slot kind is a badge, an avatar, or a shortcut. */
-function isBadgeAvatarOrShortcut(kind?: string) {
-  return kind === "badge" || kind === "avatar" || kind === "shortcut";
+/** Whether the slot kind is a badge or an avatar. */
+function isBadgeOrAvatar(kind?: string) {
+  return kind === "badge" || kind === "avatar";
 }
 
 /**
- * A text-aligned slot in a slot frame for an icon, avatar, badge, keyboard
- * shortcut, or short text. Its margins follow the padding of the frame.
+ * A text-aligned slot in a slot frame for an icon, avatar, badge, thumbnail,
+ * keyboard key, or short text. Its margins follow the padding of the frame.
  * Controls extend it, and so can static rows, such as tooltips.
  */
 export const slotFrameSlot = cv({
@@ -157,6 +154,9 @@ export const slotFrameSlot = cv({
     // moves its own slots again, like in a text slot.
     "[.slot-frame-flush>&]:[--slot-pull:0] [.slot-frame-flush>&>*]:[--slot-pull:initial]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
+    // Publish the resolved height for flat keys and keycaps that fill the
+    // slot.
+    "[--slot-height:calc(var(--size)*var(--row-span))]",
     // Custom marks set --slot-icon-size; painted icon slots use
     // --slot-icon-scale.
     "[&>svg]:block [&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
@@ -167,9 +167,9 @@ export const slotFrameSlot = cv({
     // Outside a text frame, --px and --py are missing and the slot has no side
     // margin.
     "mx-(--mx,0px) my-(--my)",
-    // Monospace fonts draw ⌘ much smaller than letters, so keys in any slot
-    // kind use the UI font. Zero specificity lets caller font classes win.
-    "[:where(&_kbd)]:font-sans",
+    // Keep separate keys of a chord left to right, with a gap between them
+    // that a caller gap class can replace.
+    "[:where(&:has(>kbd+kbd))]:gap-[0.25em] [&:has(>kbd+kbd):dir(rtl)]:flex-row-reverse",
   ],
   variants: {
     /** Sets the slot size. */
@@ -222,26 +222,19 @@ export const slotFrameSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the slot content type. `badge` and `shortcut` need one child
-     * wrapper; slot components create it automatically. For badge truncation,
-     * use a width-limited child with `block overflow-x-clip text-ellipsis
+     * Sets the slot content type. `badge` needs one child wrapper; slot
+     * components create it automatically. For badge truncation, use a
+     * width-limited child with `block overflow-x-clip text-ellipsis
      * whitespace-nowrap` to preserve descenders. `thumbnail` is a bordered 4:3
      * box that an image or another picture fills. `text`, such as a count or a
      * duration, is one line tall and keeps the side padding of the row text,
-     * while other slots move into it. `shortcut` keeps that padding too, unless
-     * a fill or a border draws a box around the keys. The box is then at
-     * least a line tall, with smaller keys.
+     * while other slots move into it. Put plain `Kbd` keys in a `text` slot,
+     * and flat keys or keycaps in an `icon` slot with `$square={false}`. A
+     * chord can be one `Kbd` or one per key.
      */
     $kind: {
       icon: "",
       thumbnail: "overflow-clip aspect-4/3 *:size-full *:object-cover",
-      shortcut: [
-        // Keep key chords left-to-right while the slot retains the row
-        // direction for margins.
-        "*:flex *:[align-items:inherit] *:gap-[inherit] *:[direction:ltr]",
-        // Size icon keys like the letters beside them, not like the slot box.
-        "*:[&>svg]:block *:[&>svg]:size-(--slot-icon-size,1em)",
-      ],
       avatar: "overflow-clip",
       // Keep the side padding of the row text, and let nested slots move again.
       // Fit short text, such as a single digit, instead of a line-wide box.
@@ -300,12 +293,6 @@ export const slotFrameSlot = cv({
       if (variants.$floating) return true;
       return defaultValue;
     },
-    $ink(defaultValue, variants) {
-      if (variants.$kind !== "shortcut") return defaultValue;
-      // A painted surface sets its own text contrast.
-      if (hasLayerBackground(variants)) return defaultValue;
-      return defaultValue ?? 60;
-    },
     $lightnessOffset(defaultValue, variants) {
       if (variants.$kind !== "avatar") return defaultValue;
       return defaultValue ?? true;
@@ -324,9 +311,6 @@ export const slotFrameSlot = cv({
       if (variants.$kind === "badge") {
         return defaultValue ?? "auto";
       }
-      if (variants.$kind === "shortcut" && hasSlotSurface(variants)) {
-        return defaultValue ?? SHORTCUT_SURFACE_PADDING;
-      }
       return defaultValue ?? "unset";
     },
     $rowSpan: 1,
@@ -335,6 +319,10 @@ export const slotFrameSlot = cv({
       // A picture already reads as a separate box, so it keeps the default
       // label gap at any size.
       if (variants.$kind === "thumbnail") return "md";
+      // Text, such as plain keys, has the side bearings of its glyphs, so it
+      // also keeps the default label gap. The extra margin of line-tall slots
+      // makes up for the side bearings that a box has none of.
+      if (variants.$kind === "text") return "md";
       return variants.$size;
     },
     $square(defaultValue, variants) {
@@ -366,17 +354,7 @@ export const slotFrameSlot = cv({
       // Inset icons on painted tiles; multi-row slots already have extra space.
       addClass("[--slot-icon-scale:0.6]");
     }
-    if (variants.$kind === "shortcut") {
-      if (!hasSlotSurface(variants)) {
-        // Keep the side padding of the row text, and fit a single key instead
-        // of a box as wide as the slot size. min-w-0 sorts after the base
-        // min-w-(--size).
-        addClass("[--slot-pull:0] min-w-0");
-        return;
-      }
-      addClass("*:text-[0.8125em]");
-    }
-    if (!isBadgeAvatarOrShortcut(variants.$kind)) return;
+    if (!isBadgeOrAvatar(variants.$kind)) return;
     // Forced colors remove the slot's fill, which may be its only boundary.
     if (variants.$border == null && hasLayerBackground(variants)) {
       addClass("forced-colors:ak-frame-border");
@@ -415,12 +393,9 @@ export function getIconSlotSize<Size extends string>(
   return "auto" as const;
 }
 
-/**
- * Whether the slot needs one child wrapper for badge typography or
- * left-to-right shortcuts.
- */
+/** Whether the slot needs one child wrapper for badge typography. */
 export function wrapsSlotChildren(kind?: string) {
-  return kind === "badge" || kind === "shortcut";
+  return kind === "badge";
 }
 
 /**

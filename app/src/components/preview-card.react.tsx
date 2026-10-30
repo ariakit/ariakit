@@ -229,7 +229,7 @@ export function PreviewCard({
               </ak.Disclosure>
               {/* Browser chrome has its own reload button. */}
               {!browser && (
-                <Tooltip content="Reload preview">
+                <Tooltip text="Reload preview">
                   <Button
                     aria-label="Reload preview"
                     onClick={reload}
@@ -241,7 +241,7 @@ export function PreviewCard({
                   </Button>
                 </Tooltip>
               )}
-              <Tooltip content="Open preview in a new tab">
+              <Tooltip text="Open preview in a new tab">
                 <Button
                   render={
                     <a href={frame.location} target="_blank" rel="noreferrer" />
@@ -506,7 +506,7 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
         $gap="xs"
         $layer="transparent"
       >
-        <Tooltip content="Back">
+        <Tooltip text="Back">
           <Button
             aria-label="Back"
             // Keeps focus when going back reaches the first entry.
@@ -520,7 +520,7 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
             </ButtonSlot>
           </Button>
         </Tooltip>
-        <Tooltip content="Forward">
+        <Tooltip text="Forward">
           <Button
             aria-label="Forward"
             accessibleWhenDisabled
@@ -533,7 +533,7 @@ function PreviewCardBrowserControls({ frame }: { frame: PreviewFrame }) {
             </ButtonSlot>
           </Button>
         </Tooltip>
-        <Tooltip content="Reload">
+        <Tooltip text="Reload">
           <Button aria-label="Reload" onClick={() => send("reload")} $ink={80}>
             <ButtonSlot>
               <RotateCwIcon />

@@ -11,6 +11,7 @@ import * as Ariakit from "@ariakit/react";
 import { DisclosureButtonLabel } from "@ariakit/ui/components/disclosure.ariakit.react";
 import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import type {
   NavLinkProps,
   NavProps,
@@ -664,7 +665,9 @@ export default function NavExamples() {
                 <Search />
               </NavSlot>
               <NavButtonContent>Search</NavButtonContent>
-              <NavSlot $kind="shortcut">⌘K</NavSlot>
+              <NavSlot $kind="text">
+                <Kbd>⌘K</Kbd>
+              </NavSlot>
             </NavButton>
             <NavLink>
               <NavSlot>
@@ -688,8 +691,8 @@ export default function NavExamples() {
                 <Search strokeWidth={1.5} />
               </NavSlot>
               <NavButtonContent>Search</NavButtonContent>
-              <NavSlot $kind="shortcut" className="ms-auto">
-                ⌘K
+              <NavSlot $kind="text" className="ms-auto">
+                <Kbd>⌘K</Kbd>
               </NavSlot>
             </NavButton>
           </li>
@@ -1209,7 +1212,9 @@ export default function NavExamples() {
                       <Search />
                     </NavSlot>
                     <NavButtonContent>بحث</NavButtonContent>
-                    <NavSlot $kind="shortcut">⌘K</NavSlot>
+                    <NavSlot $kind="text">
+                      <Kbd>⌘K</Kbd>
+                    </NavSlot>
                   </NavButton>
                 </NavList>
               </NavGroup>
@@ -1254,8 +1259,8 @@ export default function NavExamples() {
                       <Search strokeWidth={1.5} />
                     </NavSlot>
                     <NavButtonContent>بحث</NavButtonContent>
-                    <NavSlot $kind="shortcut" className="ms-auto">
-                      ⌘K
+                    <NavSlot $kind="text" className="ms-auto">
+                      <Kbd>⌘K</Kbd>
                     </NavSlot>
                   </NavButton>
                 </li>

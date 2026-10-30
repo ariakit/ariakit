@@ -35,7 +35,8 @@ function renderColumn(title: string) {
       </p>
       <p>
         Recipes such as <Code>button</Code> share one set of variants. Press{" "}
-        <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search the reference.
+        <Kbd $kind="keycap">⌘</Kbd> <Kbd $kind="keycap">K</Kbd> to search the
+        reference.
       </p>
     </>
   );
@@ -66,8 +67,8 @@ export default function ProseExamples() {
             Read the
             <Link>styling guide</Link>
             …
-            <Kbd>⌘</Kbd>
-            <Kbd>K</Kbd>
+            <Kbd $kind="keycap">⌘</Kbd>
+            <Kbd $kind="keycap">K</Kbd>
             to search the reference.
             <HeadingLevel>
               <Heading>…</Heading>
@@ -91,7 +92,8 @@ export default function ProseExamples() {
           </p>
           <p>
             Read the <Link href="#prose">styling guide</Link> for the details,
-            or press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search the reference.
+            or press <Kbd $kind="keycap">⌘</Kbd> <Kbd $kind="keycap">K</Kbd> to
+            search the reference.
           </p>
           <HeadingLevel>
             <Heading>What a list looks like inside</Heading>
@@ -120,8 +122,8 @@ export default function ProseExamples() {
             Recipes such as
             <Code>button</Code>
             …
-            <Kbd>⌘</Kbd>
-            <Kbd>K</Kbd>
+            <Kbd $kind="keycap">⌘</Kbd>
+            <Kbd $kind="keycap">K</Kbd>
             to search the reference.
           </Prose>
         `}
@@ -142,8 +144,8 @@ export default function ProseExamples() {
             Recipes such as
             <Code>button</Code>
             …
-            <Kbd>⌘</Kbd>
-            <Kbd>K</Kbd>
+            <Kbd $kind="keycap">⌘</Kbd>
+            <Kbd $kind="keycap">K</Kbd>
             to search the reference.
           </Prose>
         `}
@@ -166,8 +168,8 @@ export default function ProseExamples() {
             Recipes such as
             <Code>button</Code>
             …
-            <Kbd>⌘</Kbd>
-            <Kbd>K</Kbd>
+            <Kbd $kind="keycap">⌘</Kbd>
+            <Kbd $kind="keycap">K</Kbd>
             to search the reference.
           </Prose>
         `}

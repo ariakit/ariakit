@@ -23,7 +23,7 @@ export default function Example() {
       $rounded="xl"
       $p={1}
     >
-      <Tooltip content={muted ? "Unmute" : "Mute"}>
+      <Tooltip text={muted ? "Unmute" : "Mute"}>
         <Button
           aria-label="Mute"
           aria-pressed={muted}
@@ -33,7 +33,7 @@ export default function Example() {
           <ButtonSlot>{muted ? <MicOffIcon /> : <MicIcon />}</ButtonSlot>
         </Button>
       </Tooltip>
-      <Tooltip content={handRaised ? "Lower hand" : "Raise hand"}>
+      <Tooltip text={handRaised ? "Lower hand" : "Raise hand"}>
         <Button
           aria-label="Raise hand"
           aria-pressed={handRaised}

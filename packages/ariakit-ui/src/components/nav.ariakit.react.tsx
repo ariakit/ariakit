@@ -275,11 +275,12 @@ export interface NavSlotProps
 
 /**
  * Renders an icon, badge, avatar, shortcut, thumbnail, or short text in a nav
- * row. All except shortcuts, thumbnails, and text inherit the nav's
- * `$slotSize`. A badge after the label takes the line height and fits its text;
- * use `$p="md"` to keep a count of one or two digits round. A badge before the
- * label keeps the icon size. Badge and shortcut content gets a span for text
- * sizing and key direction.
+ * row. All except thumbnails and text inherit the nav's `$slotSize`. A badge
+ * after the label takes the line height and fits its text; use `$p="md"` to
+ * keep a count of one or two digits round. A badge before the label keeps the
+ * icon size. Badge content gets a span for text sizing. Put keyboard keys in a
+ * `Kbd`: plain keys in a `text` slot, and flat keys or keycaps in a slot with
+ * `$square={false}`.
  * @example
  * <Nav aria-label="Main">
  *   <NavLink href="/updates">

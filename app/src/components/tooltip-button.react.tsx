@@ -33,7 +33,7 @@ export function TooltipButton({
   ...props
 }: TooltipButtonProps) {
   return (
-    <Tooltip content={tooltip}>
+    <Tooltip text={tooltip}>
       {/* Without the explicit recipe type, the spread props make TypeScript
           infer a recipe that rejects the class name. */}
       <Button<typeof button>
