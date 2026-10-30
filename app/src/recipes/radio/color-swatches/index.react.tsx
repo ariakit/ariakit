@@ -86,107 +86,112 @@ export default function Example() {
   const currentColor = colors.find((item) => item.value === color);
   const currentSize = sizes.find((item) => item.value === size);
   return (
-    <div className="grid w-[40rem] max-w-full gap-6 sm:grid-cols-2">
-      {/* A drawing of the jacket in the picked color. */}
-      <Frame
-        aria-hidden
-        $rounded="2xl"
-        $p={6}
-        className="grid place-items-center"
-      >
-        <Jacket color={currentColor?.color} />
-      </Frame>
-      <div className="grid content-start gap-5">
-        <div>
-          <p className="text-lg font-semibold">Trail Jacket</p>
-          <p className="ak-ink-70">$180</p>
-        </div>
-        <RadioGroup
-          // The label shows the picked color as text, and it takes a full row
-          // above the swatches.
-          label={{
-            className: "w-full",
-            children: (
-              <>
-                Color:{" "}
-                <span className="font-normal">{currentColor?.label}</span>
-              </>
-            ),
-          }}
-          value={color}
-          setValue={setColor}
-          className="flex flex-wrap gap-2"
+    // The layout follows the width of the example, not the page, so it changes
+    // when the preview is resized. Two columns start where each column fits
+    // the four sizes in one row.
+    <div className="@container/product w-[40rem] max-w-full">
+      <div className="grid gap-6 @xl/product:grid-cols-2">
+        {/* A drawing of the jacket in the picked color. */}
+        <Frame
+          aria-hidden
+          $rounded="2xl"
+          $p={6}
+          className="grid place-items-center"
         >
-          {colors.map((item) => (
-            <RadioCard
-              key={item.value}
-              value={item.value}
-              aria-label={item.label}
-              $rounded="full"
-              $p={1}
-            >
-              {/* The slot paints the color as a layer. Its border keeps a
-                  light or dark color visible on the card. */}
-              <RadioCardSlot
-                $layer={item.color}
-                $border
+          <Jacket color={currentColor?.color} />
+        </Frame>
+        <div className="grid content-start gap-5">
+          <div>
+            <p className="text-lg font-semibold">Trail Jacket</p>
+            <p className="ak-ink-70">$180</p>
+          </div>
+          <RadioGroup
+            // The label shows the picked color as text, and it takes a full row
+            // above the swatches.
+            label={{
+              className: "w-full",
+              children: (
+                <>
+                  Color:{" "}
+                  <span className="font-normal">{currentColor?.label}</span>
+                </>
+              ),
+            }}
+            value={color}
+            setValue={setColor}
+            className="flex flex-wrap gap-2"
+          >
+            {colors.map((item) => (
+              <RadioCard
+                key={item.value}
+                value={item.value}
+                aria-label={item.label}
                 $rounded="full"
-                $size="xl"
-              />
-            </RadioCard>
-          ))}
-        </RadioGroup>
-        {/* The width fits four columns, so the sizes fill the row. */}
-        <RadioCardGrid
-          label="Size"
-          value={size}
-          setValue={setSize}
-          $minItemSize="3.5rem"
-          className="max-w-80"
-        >
-          {sizes.map((item) => (
-            <RadioCard
-              key={item.value}
-              value={item.value}
-              disabled={item.soldOut}
-              $p={2}
-            >
-              {item.soldOut ? (
-                // The line through the size shows that it is not available.
-                // Screen readers get the same text as the tooltip from the
-                // description. The anchor stays out of the Tab order, so the
-                // group keeps one Tab stop.
-                <Tooltip content="Sold out. Back on 20 November.">
-                  <RadioCardContent
-                    tabIndex={-1}
-                    className="items-center text-center"
-                  >
-                    <RadioCardLabel className="line-through">
-                      {item.label}
-                    </RadioCardLabel>
-                    <RadioCardDescription className="sr-only">
-                      Sold out. Back on 20 November.
-                    </RadioCardDescription>
+                $p={1}
+              >
+                {/* The slot paints the color as a layer. Its border keeps a
+                    light or dark color visible on the card. */}
+                <RadioCardSlot
+                  $layer={item.color}
+                  $border
+                  $rounded="full"
+                  $size="xl"
+                />
+              </RadioCard>
+            ))}
+          </RadioGroup>
+          {/* The width fits four columns, so the sizes fill the row. */}
+          <RadioCardGrid
+            label="Size"
+            value={size}
+            setValue={setSize}
+            $minItemSize="3.5rem"
+            className="max-w-80"
+          >
+            {sizes.map((item) => (
+              <RadioCard
+                key={item.value}
+                value={item.value}
+                disabled={item.soldOut}
+                $p={2}
+              >
+                {item.soldOut ? (
+                  // The line through the size shows that it is not available.
+                  // Screen readers get the same text as the tooltip from the
+                  // description. The anchor stays out of the Tab order, so the
+                  // group keeps one Tab stop.
+                  <Tooltip content="Sold out. Back on 20 November.">
+                    <RadioCardContent
+                      tabIndex={-1}
+                      className="items-center text-center"
+                    >
+                      <RadioCardLabel className="line-through">
+                        {item.label}
+                      </RadioCardLabel>
+                      <RadioCardDescription className="sr-only">
+                        Sold out. Back on 20 November.
+                      </RadioCardDescription>
+                    </RadioCardContent>
+                  </Tooltip>
+                ) : (
+                  <RadioCardContent className="items-center text-center">
+                    <RadioCardLabel>{item.label}</RadioCardLabel>
                   </RadioCardContent>
-                </Tooltip>
-              ) : (
-                <RadioCardContent className="items-center text-center">
-                  <RadioCardLabel>{item.label}</RadioCardLabel>
-                </RadioCardContent>
-              )}
-            </RadioCard>
-          ))}
-        </RadioCardGrid>
-        <Button
-          $kind="bevel"
-          $layer="brand"
-          disabled={!currentSize}
-          className="justify-self-start"
-        >
-          {currentSize
-            ? `Add ${currentColor?.label} jacket, size ${currentSize.label}`
-            : "Select a size"}
-        </Button>
+                )}
+              </RadioCard>
+            ))}
+          </RadioCardGrid>
+          <Button
+            $kind="bevel"
+            $layer="brand"
+            disabled={!currentSize}
+            className="justify-self-start"
+          >
+            {currentSize
+              ? `Add ${currentColor?.label} jacket, size ${currentSize.label}`
+              : "Select a size"}
+          </Button>
+        </div>
       </div>
     </div>
   );
