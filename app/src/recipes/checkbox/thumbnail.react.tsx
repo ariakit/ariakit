@@ -4,6 +4,11 @@ import {
   checkbox,
   checkboxCard,
   checkboxCardCheck,
+  checkboxCardContent,
+  checkboxCardDescription,
+  checkboxCardLabel,
+  checkboxCardLabelRow,
+  checkboxCardSlot,
 } from "@ariakit/ui/styles/checkbox";
 import { clsx } from "clsx";
 
@@ -22,37 +27,60 @@ const fields: Mark[] = [
   { id: "messages", width: "w-1/2", checked: "false", nested: true },
 ];
 
-const cards: Mark[] = [
-  { id: "design", width: "w-3/5", checked: "true" },
-  { id: "engineering", width: "w-1/2", checked: "true" },
+interface AddOnData {
+  id: string;
+  label: string;
+  // Add-ons without a description show a placeholder line.
+  description?: string;
+  price: string;
+  badge?: string;
+  checked?: boolean;
+}
+
+const addOns: AddOnData[] = [
+  {
+    id: "warranty",
+    label: "Warranty",
+    description: "Two more years of repairs",
+    price: "$49",
+    badge: "Popular",
+    checked: true,
+  },
+  { id: "setup", label: "Home setup", price: "$29" },
 ];
 
 export default function Thumbnail() {
   return (
-    <div className="grid w-72 gap-6">
-      <div className="grid gap-3">
-        <SkeletonLine $weight="bold" className="w-1/3 text-sm" />
-        {fields.map((field) => (
-          <div
-            key={field.id}
-            className={clsx(
-              "flex items-center gap-2.5",
-              field.nested && "ps-6",
+    <div className="grid w-[22em] max-w-full gap-2">
+      <span className="text-sm font-medium">Add-ons</span>
+      {addOns.map((addOn) => (
+        <div key={addOn.id} {...checkboxCard.jsx()}>
+          <span
+            {...checkboxCardCheck.jsx()}
+            aria-checked={addOn.checked ? "true" : "false"}
+          />
+          <span {...checkboxCardContent.jsx()}>
+            <span {...checkboxCardLabelRow.jsx()}>
+              <span {...checkboxCardLabel.jsx()}>{addOn.label}</span>
+              {addOn.badge && (
+                <span {...checkboxCardSlot.jsx({ $kind: "badge" })}>
+                  <span>{addOn.badge}</span>
+                </span>
+              )}
+            </span>
+            {addOn.description ? (
+              <span {...checkboxCardDescription.jsx()}>
+                {addOn.description}
+              </span>
+            ) : (
+              <SkeletonLine $weight="light" className="w-2/3" />
             )}
-          >
-            <span {...checkbox.jsx()} aria-checked={field.checked} />
-            <SkeletonLine $weight="medium" className={field.width} />
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        {cards.map((card) => (
-          <div key={card.id} {...checkboxCard.jsx()}>
-            <span {...checkboxCardCheck.jsx()} aria-checked={card.checked} />
-            <SkeletonLine $weight="medium" className={card.width} />
-          </div>
-        ))}
-      </div>
+          </span>
+          <span {...checkboxCardSlot.jsx({ $kind: "text" })}>
+            {addOn.price}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
