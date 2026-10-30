@@ -536,59 +536,6 @@ export default function ButtonExamples() {
         </Button>
       </Example>
 
-      {/* https://github.com/ariakit/ariakit/issues/8182 */}
-      <Example
-        title="Disabled painted slots"
-        description="In a disabled button, colored surfaces and images fade like the surface of the button, and neutral fills stay."
-        code={`
-          <Button disabled $lightnessOffset>
-            <ButtonLabel>Plan</ButtonLabel>
-            <Badge $layer="brand">
-              <BadgeSlot $kind="avatar">A</BadgeSlot>
-              <BadgeSlot><Sparkles /></BadgeSlot>
-              <BadgeLabel>New</BadgeLabel>
-            </Badge>
-          </Button>
-          <Button disabled $lightnessOffset>
-            <ButtonSlot $size="xl" $layer="brand" $mix={20}>
-              <Share2 />
-            </ButtonSlot>
-            <ButtonLabel>Share</ButtonLabel>
-          </Button>
-          <Button disabled $lightnessOffset>
-            <ButtonSlot $kind="thumbnail"><img alt="" src={picture} /></ButtonSlot>
-            <ButtonSlot $kind="avatar"><img alt="" src={picture} /></ButtonSlot>
-            <ButtonLabel>Photo</ButtonLabel>
-          </Button>
-        `}
-      >
-        <Button disabled $lightnessOffset>
-          <ButtonLabel>Plan</ButtonLabel>
-          <Badge $layer="brand">
-            <BadgeSlot $kind="avatar">A</BadgeSlot>
-            <BadgeSlot>
-              <Sparkles />
-            </BadgeSlot>
-            <BadgeLabel>New</BadgeLabel>
-          </Badge>
-        </Button>
-        <Button disabled $lightnessOffset>
-          <ButtonSlot $size="xl" $layer="brand" $mix={20}>
-            <Share2 />
-          </ButtonSlot>
-          <ButtonLabel>Share</ButtonLabel>
-        </Button>
-        <Button disabled $lightnessOffset>
-          <ButtonSlot $kind="thumbnail">
-            <img alt="" src={avatarImage} />
-          </ButtonSlot>
-          <ButtonSlot $kind="avatar">
-            <img alt="" src={avatarImage} className="size-full" />
-          </ButtonSlot>
-          <ButtonLabel>Photo</ButtonLabel>
-        </Button>
-      </Example>
-
       <Example
         title="Initial avatar"
         description="A round avatar slot that paints its own surface behind two initials."
@@ -2427,6 +2374,59 @@ export default function ButtonExamples() {
             <Share2 />
           </ButtonSlot>
           <ButtonLabel>Stay dim</ButtonLabel>
+        </Button>
+      </Example>
+
+      {/* https://github.com/ariakit/ariakit/issues/8182 */}
+      <Example
+        title="Disabled painted slots"
+        description="In a disabled button, colored surfaces and images fade like the surface of the button, and neutral fills stay."
+        code={`
+          <Button disabled $lightnessOffset>
+            <ButtonLabel>Plan</ButtonLabel>
+            <Badge $layer="brand">
+              <BadgeSlot $kind="avatar">A</BadgeSlot>
+              <BadgeSlot><Sparkles /></BadgeSlot>
+              <BadgeLabel>New</BadgeLabel>
+            </Badge>
+          </Button>
+          <Button disabled $lightnessOffset>
+            <ButtonSlot $size="xl" $layer="brand" $mix={20}>
+              <Share2 />
+            </ButtonSlot>
+            <ButtonLabel>Share</ButtonLabel>
+          </Button>
+          <Button disabled $lightnessOffset>
+            <ButtonSlot $kind="thumbnail"><img alt="" src={picture} /></ButtonSlot>
+            <ButtonSlot $kind="avatar"><img alt="" src={picture} /></ButtonSlot>
+            <ButtonLabel>Photo</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button disabled $lightnessOffset>
+          <ButtonLabel>Plan</ButtonLabel>
+          <Badge $layer="brand">
+            <BadgeSlot $kind="avatar">A</BadgeSlot>
+            <BadgeSlot>
+              <Sparkles />
+            </BadgeSlot>
+            <BadgeLabel>New</BadgeLabel>
+          </Badge>
+        </Button>
+        <Button disabled $lightnessOffset>
+          <ButtonSlot $size="xl" $layer="brand" $mix={20}>
+            <Share2 />
+          </ButtonSlot>
+          <ButtonLabel>Share</ButtonLabel>
+        </Button>
+        <Button disabled $lightnessOffset>
+          <ButtonSlot $kind="thumbnail">
+            <img alt="" src={avatarImage} />
+          </ButtonSlot>
+          <ButtonSlot $kind="avatar">
+            <img alt="" src={avatarImage} className="size-full" />
+          </ButtonSlot>
+          <ButtonLabel>Photo</ButtonLabel>
         </Button>
       </Example>
     </ExampleGrid>
