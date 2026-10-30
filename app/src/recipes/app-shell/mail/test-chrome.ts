@@ -18,6 +18,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         });
         const actions = q.group("Message actions");
         const subject = query(q.main()).heading();
+        await test.expect(actions).toBeVisible();
+        await test.expect(subject).toBeVisible();
         // The sidebar width follows the root font size through a transition.
         await test.expect
           .poll(async () => {

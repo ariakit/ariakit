@@ -18,6 +18,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
         });
         const toggle = q.button("Toggle sidebar");
         const filters = q.radiogroup("Filter issues");
+        await test.expect(toggle).toBeVisible();
+        await test.expect(filters).toBeVisible();
         // The sidebar width follows the root font size through a transition.
         await test.expect
           .poll(async () => {

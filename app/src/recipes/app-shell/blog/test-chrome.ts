@@ -8,10 +8,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.use({ viewport: { width: 1500, height: 800 } });
 
     test("starts the body and the sidebar on one line", async ({ q }) => {
-      const body = await q.text(/^Most interfaces compete/).boundingBox();
-      const sidebar = query(q.navigation("On this page"));
-      const label = await sidebar.text("On this page").boundingBox();
-      test.expect(label?.y).toBe(body?.y);
+      const body = q.text(/^Most interfaces compete/);
+      const label = query(q.navigation("On this page")).text("On this page");
+      await test.expect(body).toBeVisible();
+      await test.expect(label).toBeVisible();
+      const bodyBox = await body.boundingBox();
+      const labelBox = await label.boundingBox();
+      test.expect(labelBox?.y).toBe(bodyBox?.y);
     });
   });
 });

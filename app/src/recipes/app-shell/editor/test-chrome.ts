@@ -14,8 +14,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   // to a whole pixel on its own, so the sum must round the same way.
   // https://github.com/ariakit/ariakit/issues/8179
   test("keeps the tool rail buttons square", async ({ q }) => {
-    const rail = query(q.complementary("Tools"));
-    const box = await rail.radio("Move").boundingBox();
+    const button = query(q.complementary("Tools")).radio("Move");
+    await test.expect(button).toBeVisible();
+    const box = await button.boundingBox();
     test.expect(box?.width).toBe(box?.height);
   });
 
@@ -29,6 +30,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.addStyleTag({ content: "html { zoom: 0.9; }" });
     const rail = query(q.complementary("Tools"));
     const button = rail.radio("Move");
+    await test.expect(button).toBeVisible();
     // The sidebar width follows the zoom through a transition.
     await test.expect
       .poll(async () => {

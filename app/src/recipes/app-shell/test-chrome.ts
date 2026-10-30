@@ -17,9 +17,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/8179
   test.describe("at the default shell size", () => {
     test("keeps the header and the sidebar rows on one edge", async ({ q }) => {
-      const toggle = await q.button("Toggle navigation").boundingBox();
-      const sidebarLink = await q.link("Installation").boundingBox();
-      test.expect(sidebarLink?.x).toBe(toggle?.x);
+      const toggle = q.button("Toggle navigation");
+      const sidebarLink = q.link("Installation");
+      await test.expect(toggle).toBeVisible();
+      await test.expect(sidebarLink).toBeVisible();
+      const toggleBox = await toggle.boundingBox();
+      const sidebarLinkBox = await sidebarLink.boundingBox();
+      test.expect(sidebarLinkBox?.x).toBe(toggleBox?.x);
     });
 
     test.describe("without a sidebar", () => {
@@ -28,9 +32,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
       test("keeps the header and the main content on one edge", async ({
         q,
       }) => {
-        const headerLink = await q.link("Acme Docs").boundingBox();
-        const heading = await q.heading("Getting started").boundingBox();
-        test.expect(heading?.x).toBe(headerLink?.x);
+        const headerLink = q.link("Acme Docs");
+        const heading = q.heading("Getting started");
+        await test.expect(headerLink).toBeVisible();
+        await test.expect(heading).toBeVisible();
+        const headerLinkBox = await headerLink.boundingBox();
+        const headingBox = await heading.boundingBox();
+        test.expect(headingBox?.x).toBe(headerLinkBox?.x);
       });
     });
   });
