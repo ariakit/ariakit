@@ -21,8 +21,8 @@ import { hover } from "./hover.ts";
 import { hasLayerBackground } from "./layer.ts";
 
 /**
- * A checkbox or radio mark with control-slot geometry. State comes from the
- * input or a surrounding choice host; a child replaces the drawn mark.
+ * A checkbox or radio mark with the geometry of a control slot. State comes
+ * from the input or a surrounding choice host; a child replaces the drawn mark.
  */
 export const choice = cv({
   extend: [controlSlot, hover],
@@ -147,8 +147,10 @@ export const choiceInput = cv({
 /**
  * A label row for a native choice input and its description. The input supplies
  * the surface and focus ring. Without a background or a border, the row has no
- * padding unless `$p` is set. A border gives the row a transparent layer, so,
- * like a card, it sets its own text and edge colors.
+ * padding unless `$p` is set. The input then starts at the edge, like a list
+ * bullet, so it lines up with a group label, hints, and a field error. A border
+ * gives the row a transparent layer, so, like a card, it sets its own text and
+ * edge colors.
  */
 export const choiceField = cv({
   extend: [control],

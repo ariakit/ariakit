@@ -77,7 +77,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       const notifications = nav.link(/Notifications/);
       const anaLima = nav.link(/Ana Lima/);
       const slot = (row: Locator, text: string) =>
-        row.locator(".control-slot").filter({ hasText: text });
+        row.locator(".slot-frame-slot").filter({ hasText: text });
       await q.combobox("Slot size").selectOption(slotSize);
       await navigation.scrollIntoViewIfNeeded();
       // The text size is 16px at the sandbox's font, and $slotSize={5} and
@@ -91,7 +91,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       const trailingSize = slotSize === "text" ? lineHeight : size;
       const squares = [
         [inbox.locator(":scope > .disclosure-button-slot").first(), size],
-        [drafts.locator(".control-slot").first(), size],
+        [drafts.locator(".slot-frame-slot").first(), size],
         [slot(notifications, "9"), size],
         [slot(anaLima, "AL"), size],
         [slot(drafts, "3"), trailingSize],
@@ -133,7 +133,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       // as its end inset.
       const [row, rowIcon, rowPadding] = await Promise.all([
         getBox(drafts),
-        getBox(drafts.locator(".control-slot").first()),
+        getBox(drafts.locator(".slot-frame-slot").first()),
         drafts.evaluate((node) =>
           parseFloat(getComputedStyle(node).paddingTop),
         ),
@@ -159,10 +159,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       // A section badge joins the chevron at the row end instead of following
       // the label.
       const [inboxIcon, inboxLabel, inboxBadge, chevron] = await Promise.all([
-        getBox(inbox.locator(".control-slot").first()),
+        getBox(inbox.locator(".slot-frame-slot").first()),
         getBox(query(inbox).text("Inbox")),
         getBox(slot(inbox, "12")),
-        getBox(inbox.locator(".control-slot").last()),
+        getBox(inbox.locator(".slot-frame-slot").last()),
       ]);
       const rowGap = inboxLabel.x - inboxIcon.x - inboxIcon.width;
       const badgeToChevron = chevron.x - inboxBadge.x - inboxBadge.width;

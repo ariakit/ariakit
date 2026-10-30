@@ -34,7 +34,7 @@ import {
   comboboxLabel,
   comboboxPopover,
 } from "../styles/combobox.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface ComboboxProps
   extends

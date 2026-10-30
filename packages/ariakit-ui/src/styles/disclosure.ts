@@ -7,11 +7,11 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
-import { getIconSlotSize } from "./control.ts";
 import { edge } from "./edge.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
 import { prose } from "./prose.ts";
+import { getIconSlotSize } from "./slot-frame.ts";
 
 /** A shared frame with dividers between disclosures. */
 export const disclosureGroup = cv({

@@ -21,7 +21,7 @@ import {
   checkboxField,
   checkboxLabel,
 } from "../styles/checkbox.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface CheckboxProps
   extends ak.CheckboxProps, VariantProps<typeof checkbox> {}
