@@ -208,7 +208,9 @@ export interface ShellMainIntroProps
  * An introduction inside `ShellMain`, before `ShellMainBody`. Its content
  * aligns with the body, and its surface spans the adjacent end columns whose
  * sidebars start at the body. Direct element children use the centered content
- * column; named main bands can select a wider span.
+ * column; named main bands can select a wider span. `$py` sets the space above
+ * and below it. By default, this space grows with the width of the intro, so
+ * open sidebars beside it reduce the space.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -245,11 +247,11 @@ export interface ShellMainProps
  * `className="[--page-gutter:1rem] @3xl/shell:[--page-gutter:2rem]"`. The query
  * uses the nearest shell width. A part's own `$p` overrides this value. `$py`
  * sets the space above the intro, or above the body without an intro, and below
- * the body. By default, it is each part's gutter, so the content has the same
- * space on all sides; `$py="none"` removes it. `$maxWidth` sets the shared
- * content width limit. Use a number or CSS length to align columns across text
- * sizes. Percentages depend on each part's width and can misalign wider headers
- * or intros. Parts can override `$maxWidth`.
+ * the body. By default, the body uses its gutter and the intro uses its own
+ * `$py`; `$py="none"` removes the space. `$maxWidth` sets the shared content
+ * width limit. Use a number or CSS length to align columns across text sizes.
+ * Percentages depend on each part's width and can misalign wider headers or
+ * intros. Parts can override `$maxWidth`.
  * @example
  * <Shell>
  *   <ShellMain $p={4}>

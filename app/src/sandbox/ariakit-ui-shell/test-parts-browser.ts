@@ -2,8 +2,8 @@ import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 
-// Main's gutter is 1rem, or 2rem from a 64rem shell. Fragment targets keep it
-// below the sticky headers, so it covers the space above the intro.
+// Main's gutter is 1rem, or 2rem from a 64rem shell. Fragment targets in the
+// body keep it below the sticky headers.
 function getScrollGap(shellWidth: number) {
   return shellWidth < 1024 ? 16 : 32;
 }
@@ -40,18 +40,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const nestedBody = page.locator(
       "#nested-parts-shell > .shell-main > .shell-main-body",
     );
-    // At main's 16px: the 2rem page gutter, none, 10 steps, and 2em.
-    for (const [option, space] of [
-      ["Gutter", 32],
-      ["None", 0],
-      ["10 steps", 40],
-      ["2em", 32],
+    // At main's 16px: the 2rem page gutter, none, 10 steps, and 2em. The
+    // default intro doesn't take the gutter from main, so its fluid 14 bar
+    // steps apply at this shell width.
+    for (const [option, space, introSpace] of [
+      ["Gutter", 32, 56],
+      ["None", 0, 0],
+      ["10 steps", 40, 40],
+      ["2em", 32, 32],
     ] as const) {
       await q.combobox("Main block padding").selectOption(option);
-      await expect(intro).toHaveCSS("padding-block-start", `${space}px`);
+      await expect(intro).toHaveCSS("padding-block-start", `${introSpace}px`);
       await expect(body).toHaveCSS("padding-block-end", `${space}px`);
-      // The edges between the intro and the body keep three bar steps.
-      await expect(intro).toHaveCSS("padding-block-end", "12px");
+      // The space below the intro stays fluid, whatever main sets, and the body
+      // keeps three bar steps above it.
+      await expect(intro).toHaveCSS("padding-block-end", "56px");
       await expect(body).toHaveCSS("padding-block-start", "12px");
       await expect(q.region("Main content")).toHaveCSS(
         "scroll-margin-block-start",
@@ -59,6 +62,78 @@ withFramework(import.meta.dirname, async ({ test }) => {
       );
       // The nested main keeps its own 1rem gutter.
       await expect(nestedBody).toHaveCSS("padding-block-start", "16px");
+    }
+  });
+
+  test("grows the intro space with the shell width and sets it with $py", async ({
+    q,
+    page,
+  }) => {
+    await q.combobox("Main header visibility").selectOption("never");
+    const intro = page.locator(".shell-main-intro");
+    const title = q.heading("Explicit shell parts");
+    const body = q.main().locator(":scope > .shell-main-body");
+    const getIntroSpace = () =>
+      intro.evaluate((node) =>
+        Number.parseFloat(getComputedStyle(node).paddingBlockStart),
+      );
+    const getSpaceError = async () => {
+      const box = await getBox(intro);
+      // 5% of the intro width in whole pixels, between 5 and 14 bar steps.
+      const expected = Math.round(Math.min(56, Math.max(20, box.width * 0.05)));
+      const end = await intro.evaluate((node) =>
+        Number.parseFloat(getComputedStyle(node).paddingBlockEnd),
+      );
+      return Math.max(
+        Math.abs((await getIntroSpace()) - expected),
+        Math.abs(end - expected),
+      );
+    };
+    for (const width of [375, 900, 1440, 2000]) {
+      await page.setViewportSize({ width, height: 800 });
+      await expect.poll(getSpaceError).toBeLessThan(0.1);
+    }
+    // A sidebar beside the intro reduces the space. The end sidebar that starts
+    // at the body doesn't, so the space returns when it stops being beside it.
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await q.combobox("End sidebar starts at").selectOption("intro");
+    await expect.poll(getSpaceError).toBeLessThan(0.1);
+    const besideSpace = await getIntroSpace();
+    await q.combobox("End sidebar starts at").selectOption("body");
+    await expect.poll(getIntroSpace).toBeGreaterThan(besideSpace);
+    await expect.poll(getSpaceError).toBeLessThan(0.1);
+    await q.combobox("End sidebar starts at").selectOption("intro");
+    await expect.poll(getIntroSpace).toBe(besideSpace);
+    await q.checkbox("Second start sidebar").check();
+    await expect.poll(getIntroSpace).toBeLessThan(besideSpace);
+    await expect.poll(getSpaceError).toBeLessThan(0.1);
+    await q.checkbox("Second start sidebar").uncheck();
+    await page.setViewportSize({ width: 1440, height: 800 });
+    await q.checkbox("More targets in the intro").check();
+    // A nested main doesn't take the space of an intro around it: the 64px page
+    // header and the minimum 16px, not the 56px of the intro.
+    await expect(q.text("Nested shell target")).toHaveCSS(
+      "scroll-margin-block-start",
+      "80px",
+    );
+    // This target has a larger font and sits in a query container, and the
+    // space still resolves at the intro.
+    const queryTarget = q.text("Query container target");
+    for (const [option, space] of [
+      ["Auto", 56],
+      ["Gutter", 32],
+      ["None", 0],
+      ["10 steps", 40],
+    ] as const) {
+      await q.combobox("Intro block padding").selectOption(option);
+      await expect(intro).toHaveCSS("padding-block-start", `${space}px`);
+      await expect(intro).toHaveCSS("padding-block-end", `${space}px`);
+      await expect(body).toHaveCSS("padding-block-start", "12px");
+      // A target in the intro stops where it starts, so a table of contents
+      // marks it current at the top of the page.
+      const margin = `${64 + Math.max(16, space)}px`;
+      await expect(title).toHaveCSS("scroll-margin-block-start", margin);
+      await expect(queryTarget).toHaveCSS("scroll-margin-block-start", margin);
     }
   });
 

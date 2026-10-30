@@ -64,9 +64,11 @@ export default function Example() {
         </ShellHeaderStart>
       </ShellHeader>
       <ShellMain>
-        <ShellMainIntro>
+        <ShellMainIntro className="pb-3">
           {/* The intro ends with the space that the first heading of the body
-              drops from its top margin, as the other sections have. */}
+              drops from its top margin, as the other sections have. It replaces
+              the fluid space of the intro, so this gap matches them at every
+              width. */}
           <Prose className="pb-[1.75em]">
             <Heading render={<h1 />}>Country bread</Heading>
             <p>A crusty loaf with a soft crumb, made over two days.</p>
