@@ -185,19 +185,17 @@ test("preview card frames scroll after a resize with the handle", async ({
   page,
   q,
 }) => {
+  // The frame reloads twice below, and WebKit revalidates every module of the
+  // example on each reload, which takes several seconds on a slow runner.
+  test.slow();
   // The card is wide enough to resize.
   await page.setViewportSize({ width: 1600, height: 900 });
   await gotoAndSettle(page, "/react/recipes/combobox-group/");
   const iframe = page.locator('iframe[title="Combobox Group"]');
-  await iframe.scrollIntoViewIfNeeded();
-  const frame = iframe.contentFrame();
+  const frame = await waitForFrameHydration(iframe);
   const root = frame.locator("html");
-  await expect(root).toHaveAttribute("data-preview-hydrated", "");
   // The frame scrolls to the popup that it opens before the card shows it.
-  await expect(iframe.locator("xpath=..")).toHaveAttribute(
-    "aria-busy",
-    "false",
-  );
+  await waitForShownFrame(page, "Combobox Group");
   const getPageScroll = () => page.evaluate(() => window.scrollY);
   const getFrameScroll = () => root.evaluate((html) => html.scrollTop);
   const handle = query(q.region("Combobox Group", { exact: true })).separator(
@@ -251,7 +249,7 @@ test("preview card frames scroll after a resize with the handle", async ({
   });
   await root.evaluate(() => location.reload());
   await reloaded;
-  await expect(root).toHaveAttribute("data-preview-hydrated", "");
+  await waitForFrameHydration(iframe);
   await expect(root).toHaveAttribute("data-preview-active", "");
   await expect(handle).toBeFocused();
 
@@ -278,7 +276,7 @@ test("preview card frames scroll after a resize with the handle", async ({
   await reloadedAgain;
   // The card would replay the activation when the new document reports its
   // location while it parses, long before it hydrates.
-  await expect(root).toHaveAttribute("data-preview-hydrated", "");
+  await waitForFrameHydration(iframe);
   await expect(root).not.toHaveAttribute("data-preview-active", "");
 });
 
