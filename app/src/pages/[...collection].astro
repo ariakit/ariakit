@@ -167,7 +167,9 @@ const cardHover = hover.jsx({ $hoverOffset: 0.5 });
               }
             >
               {thumbnail && <AppThumbnail html={thumbnail} />}
-              <span class="flex items-center gap-3 ps-3.5 pe-2 pt-2.5 pb-2">
+              {/* The label stays in the footer row, also for an entry without
+                  a thumbnail. */}
+              <span class="row-start-2 flex items-center gap-3 ps-3.5 pe-2 pt-2.5 pb-2">
                 <span class="grid min-w-0 flex-1 gap-0.5">
                   <span id={entry.id + "-label"} class="truncate font-medium">
                     {entry.data.title}
