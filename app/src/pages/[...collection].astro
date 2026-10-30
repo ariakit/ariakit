@@ -169,9 +169,17 @@ const cardHover = hover.jsx({ $hoverOffset: 0.5 });
               {thumbnail && <AppThumbnail html={thumbnail} />}
               {/* The label stays in the footer row, also for an entry without
                   a thumbnail. */}
-              <span class="row-start-2 flex items-center gap-3 ps-3.5 pe-2 pt-2.5 pb-2">
+              <Frame
+                render={createElement("span")}
+                $cover
+                $p={4}
+                className="row-start-2 flex items-center gap-3"
+              >
                 <span class="grid min-w-0 flex-1 gap-0.5">
-                  <span id={entry.id + "-label"} class="truncate font-medium">
+                  <span
+                    id={entry.id + "-label"}
+                    class="truncate text-base font-medium"
+                  >
                     {entry.data.title}
                   </span>
                   <span id={entry.id + "-count"} class="ak-ink-70 text-sm">
@@ -181,7 +189,7 @@ const cardHover = hover.jsx({ $hoverOffset: 0.5 });
                 <ArrowRight
                   className="ak-ink-70 size-4 shrink-0 -translate-x-1 opacity-0 transition motion-reduce:transition-none group-hover/thumbnail:translate-x-0 group-hover/thumbnail:opacity-100 group-focus-visible/thumbnail:translate-x-0 group-focus-visible/thumbnail:opacity-100"
                 />
-              </span>
+              </Frame>
             </Frame>
           </li>
         ))
