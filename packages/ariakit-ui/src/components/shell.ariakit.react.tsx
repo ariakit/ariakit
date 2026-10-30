@@ -240,9 +240,8 @@ export interface ShellMainProps
  * parts. Uses subgrid; do not add size containment. A nested shell's main part
  * renders a `div`, so the page keeps one main landmark.
  *
- * `$p` sets a shared gutter. In a page shell, the default gutter grows with the
- * shell width, like the header and footer insets. Use a CSS length for other
- * responsive padding, such as `$p="var(--page-gutter)"` with
+ * `$p` sets a shared gutter. Use a CSS length for responsive padding, such as
+ * `$p="var(--page-gutter)"` with
  * `className="[--page-gutter:1rem] @3xl/shell:[--page-gutter:2rem]"`. The query
  * uses the nearest shell width. A part's own `$p` overrides this value. `$py`
  * sets the space above the intro, or above the body without an intro, and below

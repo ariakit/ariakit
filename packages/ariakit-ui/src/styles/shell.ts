@@ -5,17 +5,6 @@ import { frame, frameBase } from "./frame.ts";
 export type ShellWidth = string | number;
 
 /**
- * Converts a number of spacing steps at the shell's text size to a length. The
- * registered bar step resolves at the shell, so a part's own text size doesn't
- * change the result. Strings pass through.
- */
-function getShellSpacingValue(value: string | number) {
-  return typeof value === "string"
-    ? value
-    : `calc(var(--shell-header-step) * (${value}))`;
-}
-
-/**
  * A page layout with a header, main content, footer, and up to two sidebars per
  * side. Closed or absent sidebars take no space.
  */
@@ -33,10 +22,6 @@ export const shell = cv({
     // only a frame with a definite height.
     "[.ak-frame_&:not(.shell_*)]:rounded-(--ak-frame-radius)!",
     "[.ak-frame_&:not(.shell_*)]:min-h-[min(100cqb,100%)]",
-    // The default gutter and bar insets grow with a page shell's width. Inside
-    // another frame, they stay narrow like the frame padding that nested
-    // corners read, so corner controls stay concentric. Nested shells inherit.
-    "[&:not(.shell_*)]:[--shell-fluid:1] [.ak-frame_&:not(.shell_*)]:[--shell-fluid:0]",
     "grid-cols-[[shell-start]_auto_auto_[main-start]_minmax(0,1fr)_[main-end]_auto_auto_[shell-end]]",
     "grid-rows-[[shell-start_header-start]_auto_[header-end_main-start_main-header-start]_auto_[main-header-end_intro-start]_auto_[intro-end_body-start]_minmax(0,1fr)_[body-end_footer-start]_auto_[footer-end_shell-end]]",
     "[--shell-start-1-width:0px] [--shell-start-2-width:0px]",
@@ -76,30 +61,28 @@ export const shell = cv({
     // length against the parent font when the element changes its own size. The
     // shell radius divides the theme radius by the text size, so the corner
     // matches Chrome's macOS window (20px at the default radius) at every size
-    // without rounding the shell itself. The text ratio scales the width term
-    // of the fluid gutter, so it reaches its limits at the same shell widths.
+    // without rounding the shell itself.
     $size: {
       auto: [
         "text-sm [--shell-header-step:calc(0.875rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5/0.875)] [--shell-text-ratio:1]",
+        "[--shell-radius:calc(var(--radius)*5/0.875)]",
         // A leading utility would set --tw-leading and replace
         // text-* fallbacks.
         "[.shell_&]:[font-size:inherit] [.shell_&]:[line-height:inherit]",
         "[.shell_&]:[--shell-header-step:inherit]",
         "[.shell_&]:[--shell-radius:inherit]",
-        "[.shell_&]:[--shell-text-ratio:inherit]",
       ],
       sm: [
         "text-sm [--shell-header-step:calc(0.875rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5/0.875)] [--shell-text-ratio:1]",
+        "[--shell-radius:calc(var(--radius)*5/0.875)]",
       ],
       md: [
         "text-base [--shell-header-step:calc(1rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5)] [--shell-text-ratio:calc(16/14)]",
+        "[--shell-radius:calc(var(--radius)*5)]",
       ],
       lg: [
         "text-lg [--shell-header-step:calc(1.125rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5/1.125)] [--shell-text-ratio:calc(18/14)]",
+        "[--shell-radius:calc(var(--radius)*5/1.125)]",
       ],
     },
     /**
@@ -182,41 +165,12 @@ const seam = cv({
 });
 
 /**
- * Default bar padding. At the default `md` height, it matches the default main
- * gutter, which grows with the shell width from three spacing steps, the space
- * above and below a default control. Each height step shrinks or grows that
- * space by half a step on each side, so the side insets follow it.
+ * Default bar padding. At the default `md` height, three spacing steps match
+ * the space above and below a default control and the default main gutter. Each
+ * height step shrinks or grows that space by half a step on each side, so the
+ * side insets follow it.
  */
 const barInsetDefault = "var(--shell-bar-inset)";
-
-const barVariants = {
-  /**
-   * Sets the side insets and the frame padding. Numbers scale the spacing
-   * token. Defaults to an inset that follows the default main gutter.
-   */
-  $p(value?: "unset" | "none" | (string & {}) | number) {
-    if (value == null) return;
-    if (value === "unset") return;
-    if (value === "none") return "ak-frame-p-0 [--shell-bar-padding:0px]";
-    // Nested frames take the inset of a narrow shell as their padding. A frame
-    // padding that followed the shell width would restyle everything in the bar
-    // on each frame of a fold.
-    if (value === barInsetDefault) {
-      return {
-        class: "ak-frame-p-(--frame-padding)",
-        style: {
-          "--frame-padding": "var(--shell-bar-frame-inset)",
-          "--shell-bar-padding": barInsetDefault,
-        },
-      };
-    }
-    const padding = getSpacingValue(value);
-    return {
-      class: "ak-frame-p-(--frame-padding)",
-      style: { "--frame-padding": padding, "--shell-bar-padding": padding },
-    };
-  },
-};
 
 /**
  * Three columns keep the center aligned until a side needs more room. Content
@@ -236,12 +190,8 @@ const bar = cx(
   // The region scrolls, so rounded corners would clip a bar at its edge.
   "[&>*>.nav.horizontal]:rounded-none",
   "col-[shell] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
-  // The default inset grows like the main gutter. The bar spans the shell, so
-  // a percentage of its padding's base is the shell width. Container units
-  // would make a fold restyle the bar on each frame.
-  "[--shell-bar-gutter:clamp(calc(var(--shell-header-step)*3),calc(var(--shell-header-step)*0.75+1.5%*var(--shell-text-ratio)*var(--shell-fluid)),calc(var(--shell-header-step)*6))]",
-  "pl-[max(var(--shell-bar-padding,var(--ak-frame-padding)),env(safe-area-inset-left))]",
-  "pr-[max(var(--shell-bar-padding,var(--ak-frame-padding)),env(safe-area-inset-right))]",
+  "pl-[max(var(--ak-frame-padding),env(safe-area-inset-left))]",
+  "pr-[max(var(--ak-frame-padding),env(safe-area-inset-right))]",
   // A growing center receives twice the free space and stays centered while
   // each side fits within one quarter.
   "[&:has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
@@ -269,11 +219,9 @@ export const shellHeader = cv({
     // Let edge bars in a centered navigation row reach the inner edge.
     "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
     "z-4",
-    "[--shell-bar-inset:max(0px,calc(var(--shell-bar-gutter)+(var(--shell-header-height)-var(--shell-header-step)*16)/2))]",
-    "[--shell-bar-frame-inset:max(0px,calc(var(--shell-header-step)*3+(var(--shell-header-height)-var(--shell-header-step)*16)/2))]",
+    "[--shell-bar-inset:max(0px,calc(var(--spacing)*3+(var(--shell-header-height)-var(--shell-header-step)*16)/2))]",
   ],
   variants: {
-    ...barVariants,
     /**
      * Keeps the header in view within its row and reserves its space. Sticky
      * sidebars and anchors use its height as an offset. Defaults to `true`.
@@ -376,11 +324,9 @@ export const shellFooter = cv({
     "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
     "z-3",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
-    "[--shell-bar-inset:max(0px,calc(var(--shell-bar-gutter)+(var(--shell-footer-height)-var(--shell-header-step)*16)/2))]",
-    "[--shell-bar-frame-inset:max(0px,calc(var(--shell-header-step)*3+(var(--shell-footer-height)-var(--shell-header-step)*16)/2))]",
+    "[--shell-bar-inset:max(0px,calc(var(--spacing)*3+(var(--shell-footer-height)-var(--shell-header-step)*16)/2))]",
   ],
   variants: {
-    ...barVariants,
     /**
      * Keeps the footer in view at the bottom of the scroll area. Sticky
      * sidebars stop above it, and main content scrolls focused elements above
@@ -702,16 +648,15 @@ const content = cx(
   // section. The space between the intro and the body stays.
   "[&:not(.shell-main-intro~*):has(>:is(.shell-main-wide,.shell-main-full):first-child)]:pbs-0",
   "[&:not(.shell-main-intro):has(>:is(.shell-main-wide,.shell-main-full):last-child)]:pbe-0",
-  // Publish the smallest gutter as frame padding so nested frame corners
-  // remain concentric. A fluid frame padding would restyle all content on each
-  // frame of a fold.
+  // Publish gutter spacing as frame padding so nested frame corners remain
+  // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
-  "ak-frame-p-(--shell-gutter-min) px-0",
+  "ak-frame-p-(--shell-gutter) px-0",
   "print:overflow-visible",
   "*:col-[content] *:min-w-0",
-  // The scroll gap covers the main top edge, so a table of contents marks the
-  // first heading current at the top of the page.
-  "[&_[id]]:scroll-mbs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+var(--shell-main-scroll-gap))]",
+  // Fragment targets clear the space above the parts, and at least 1rem, so a
+  // table of contents marks the first heading current at the top of the page.
+  "[&_[id]]:scroll-mbs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+max(1rem,var(--shell-main-py,var(--shell-gutter))))]",
 );
 
 const contentVariants = {
@@ -732,22 +677,18 @@ const contentVariants = {
     return { style: { "--shell-main-max-width": getSpacingValue(value) } };
   },
   /**
-   * Sets the minimum content gutter. Numbers scale the spacing token at the
-   * shell's text size. Inherits from main by default. `none` removes the space;
-   * `unset` leaves the CSS gutter unchanged.
+   * Sets the minimum content gutter. Unless main sets `$py`, it also sets the
+   * space above the intro, or above the body without an intro, and below the
+   * body. The intro and the body keep three steps each on their facing edges.
+   * Numbers scale the spacing token. Inherits from main by default. `none`
+   * removes the space; `unset` leaves the CSS gutter unchanged.
    */
   $p(value?: "unset" | "none" | (string & {}) | number) {
     if (value == null) return;
     if (value === "unset") return;
-    // The registered length resolves relative units here, so the text size of a
-    // part below doesn't change the gutter.
     return {
       style: {
-        "--shell-gutter-length": getShellSpacingValue(
-          value === "none" ? 0 : value,
-        ),
-        "--shell-gutter": "var(--shell-gutter-length)",
-        "--shell-gutter-min": "var(--shell-gutter-length)",
+        "--shell-gutter": getSpacingValue(value === "none" ? 0 : value),
       },
     };
   },
@@ -760,21 +701,11 @@ export const shellMain = cv({
   class: [
     "shell-main col-[main-start/shell-end] row-[main-start/body-end] grid grid-cols-subgrid grid-rows-subgrid min-w-0",
     "shell-slot-state",
-    // In a page shell, the default gutter grows from 3 to 6 bar steps between
-    // 525px and 1225px shell widths, like the bar insets. It stays
-    // unregistered, so the parts resolve its container units: a fold restyles
-    // only them, and WebKit updates them as the shell resizes.
-    "[--shell-gutter:clamp(calc(var(--shell-header-step)*3),calc(var(--shell-header-step)*0.75+1.5cqi*var(--shell-text-ratio)*var(--shell-fluid)),calc(var(--shell-header-step)*6))]",
-    "[--shell-gutter-min:calc(var(--shell-header-step)*3)]",
     // The main header derives its own gutter from this one.
-    "[--shell-main-gutter:var(--shell-gutter)] [--shell-main-gutter-min:var(--shell-gutter-min)]",
-    // Without `$py`, each part spends its own gutter above and below it. A
-    // nested main doesn't take the space set on an outer one.
+    "[--shell-main-gutter:var(--shell-gutter)]",
+    // Without `$py`, the parts spend their own gutter on their edges next to
+    // the bars. A nested main doesn't take the space set on an outer one.
     "[--shell-main-py:initial]",
-    // Fragment targets keep the largest fluid gutter below the sticky headers.
-    // A gap that followed the shell width would restyle every target on each
-    // frame of a fold.
-    "[--shell-main-scroll-gap:max(1rem,calc(var(--shell-header-step)*6))]",
     // Nested shells inside main also clear its sticky local header. Only the
     // first two levels publish offsets: the supported third level consumes them.
     "[.shell:not(.shell_*)>&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
@@ -782,22 +713,19 @@ export const shellMain = cv({
   ],
   variants: {
     /**
-     * Sets the shared main gutter. Numbers scale the spacing token at the
-     * shell's text size. A CSS length can use container queries on the nearest
-     * shell. In a page shell, defaults to a gutter that grows from 3 to 6 steps
-     * between 525px and 1225px shell widths, like the header and footer insets.
-     * Inside another frame, such as a dialog, the default stays at 3 steps.
+     * Sets the shared main gutter. Numbers scale the spacing token. A CSS
+     * length can use container queries on the nearest shell. Defaults to 3. Use
+     * `$py` to set the space above and below the parts apart from it.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       return contentVariants.$p(value);
     },
     /**
      * Sets the space above the intro, or above the body without an intro, and
-     * below the body. Numbers scale the spacing token at the shell's text size;
-     * other values must be CSS lengths, not percentages. Defaults to `gutter`,
-     * each part's inline gutter, so the content has the same space on all sides
-     * until a centered column leaves more on the sides. `none` removes the
-     * space.
+     * below the body. Numbers scale the spacing token; other values must be CSS
+     * lengths, not percentages. Defaults to `gutter`, each part's gutter, so
+     * the content has the same space on all sides until a centered column
+     * leaves more on the sides. `none` removes the space.
      */
     $py(value?: "gutter" | "none" | (string & {}) | number) {
       if (value == null) return;
@@ -805,7 +733,7 @@ export const shellMain = cv({
       // The registered length resolves relative units at main.
       return {
         style: {
-          "--shell-main-py-length": getShellSpacingValue(
+          "--shell-main-py-length": getSpacingValue(
             value === "none" ? 0 : value,
           ),
           "--shell-main-py": "var(--shell-main-py-length)",
@@ -822,19 +750,7 @@ export const shellMain = cv({
       return contentVariants.$maxWidth(value);
     },
   },
-  defaultVariants: { $py: "gutter" },
-  refine({ variants, addStyle }) {
-    // Fragment targets clear a set top edge, and at least 1rem, below the
-    // sticky headers.
-    const edge =
-      variants.$py == null || variants.$py === "gutter"
-        ? variants.$p
-        : variants.$py;
-    if (edge == null) return;
-    if (edge === "unset") return;
-    const length = getShellSpacingValue(edge === "none" ? 0 : edge);
-    addStyle({ "--shell-main-scroll-gap": `max(1rem, ${length})` });
-  },
+  defaultVariants: { $p: 3, $py: "gutter" },
 });
 
 /**
@@ -852,15 +768,13 @@ export const shellMainHeader = cv({
     // its side insets with the space around its controls. A centered column
     // still lines up with the body once both side tracks have room to spare.
     "[--shell-gutter:max(0px,calc(var(--shell-main-gutter)+(var(--shell-main-header-height)-var(--shell-header-step)*16)/2))]",
-    "[--shell-gutter-min:max(0px,calc(var(--shell-main-gutter-min)+(var(--shell-main-header-height)-var(--shell-header-step)*16)/2))]",
   ],
   variants: {
     ...contentVariants,
     /**
-     * Sets the minimum content gutter. Numbers scale the spacing token at the
-     * shell's text size. Defaults to the main gutter, adjusted by half the
-     * height difference from an `md` header. `none` removes the space; `unset`
-     * keeps the default.
+     * Sets the minimum content gutter. Numbers scale the spacing token.
+     * Defaults to the main gutter, adjusted by half the height difference from
+     * an `md` header. `none` removes the space; `unset` keeps the default.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       return contentVariants.$p(value);

@@ -3,7 +3,6 @@ import { withFramework } from "#app/test-utils/preview.ts";
 import {
   expectCentered,
   getBox,
-  getGutter,
   getSidebar,
   selectScenario,
 } from "./test-helpers.ts";
@@ -145,15 +144,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const fullBox = await getBox(full);
     expect(fullBox.x).toBeCloseTo(192, 0);
     expect(fullBox.width).toBeCloseTo(1248, 0);
-    // At 1100px, the 908px body has 124px after the content, popout, and
-    // feature tracks, and two gutters leave the rest for compensation. The wide
-    // band gives the rest of the sidebar width back and stays centered on the
-    // content.
+    // At 1100px, the 908px body has 100px left for compensation after the
+    // content, popout, feature, and gutter tracks. The wide band gives the rest
+    // of the sidebar width back and stays centered on the content.
     await page.setViewportSize({ width: 1100, height: 900 });
-    const compensation = 124 - getGutter(1100) * 2;
     await expect
       .poll(async () => (await getBox(wide)).width)
-      .toBeCloseTo(908 - compensation, 0);
+      .toBeCloseTo(808, 0);
     await expectCentered(wide, content);
     expect((await getBox(wide)).x).toBeCloseTo(192, 0);
     expect((await getBox(full)).width).toBeCloseTo(908, 0);

@@ -9,7 +9,6 @@ import {
   expectCentered,
   getBox,
   getContent,
-  getGutter,
   getShell,
   getSidebar,
   sampleCenterOffset,
@@ -53,8 +52,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const button = await getBox(q.button("Toggle sidebar"));
     expect(button.height).toBeCloseTo(CONTROL_HEIGHT, 0);
     expect(header.height).toBeCloseTo(HEADER_HEIGHT, 0);
-    // The side inset follows the main gutter, which is at its largest here.
-    expect(button.x - header.x).toBeCloseTo(getGutter(1600), 0);
+    expect(button.x - header.x).toBeCloseTo(PART_PADDING, 0);
     expect(button.y - header.y).toBeCloseTo(
       PART_PADDING - HEADER_BORDER / 2,
       0,
@@ -75,76 +73,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await page.setViewportSize({ width, height: 900 });
       await expect
         .poll(async () => (await getBox(getContent(q))).width)
-        .toBeCloseTo(Math.min(CONTENT_WIDTH, width - getGutter(width) * 2), 0);
+        .toBeCloseTo(Math.min(CONTENT_WIDTH, width - PART_PADDING * 2), 0);
       if (width <= CONTENT_WIDTH) {
-        expect((await getBox(getContent(q))).x).toBeCloseTo(
-          getGutter(width),
-          0,
-        );
+        expect((await getBox(getContent(q))).x).toBeCloseTo(PART_PADDING, 0);
       }
     }
-  });
-
-  test("grows the gutter and the header inset with the shell width as the window resizes", async ({
-    q,
-    page,
-  }) => {
-    const intro = q.main().locator(":scope > .shell-main-intro");
-    const firstLine = intro.locator(":scope > *").first();
-    const body = q.main().locator(":scope > .shell-main-body");
-    const headerStart = q
-      .banner()
-      .locator(":scope > .shell-bar-start > :visible")
-      .first();
-    // The widths between the sidebar breakpoints change only the gutter.
-    for (const width of [1440, 1100, 900, 375, 1100]) {
-      await page.setViewportSize({ width, height: 900 });
-      const gutter = getGutter((await getBox(getShell(page))).width);
-      await expect
-        .poll(async () => (await getBox(firstLine)).y - (await getBox(intro)).y)
-        .toBeCloseTo(gutter, 0);
-      await expect
-        .poll(
-          async () =>
-            (await getBox(headerStart)).x - (await getBox(q.banner())).x,
-        )
-        .toBeCloseTo(gutter, 0);
-      // Up to 900px, the content fills the column. Wider, a centered column
-      // leaves more than the gutter on the sides.
-      if (width > 900) continue;
-      await expect
-        .poll(
-          async () => (await getBox(getContent(q))).x - (await getBox(body)).x,
-        )
-        .toBeCloseTo(gutter, 0);
-    }
-  });
-
-  test("keeps the gutter and the header inset narrow in a shell inside a wide dialog", async ({
-    q,
-    page,
-  }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
-    await selectScenario(q, "dialog");
-    await q.button("Open the release notes").click();
-    const dialog = q.dialog("Release notes");
-    // The dialog opens from a smaller scale, which moves its parts until the
-    // animation ends.
-    await expect
-      .poll(() => dialog.evaluate((element) => element.getAnimations().length))
-      .toBe(0);
-    const body = dialog.locator(".shell-main-body");
-    const [header, title, bodyBox, text] = await Promise.all([
-      getBox(dialog.locator(".shell-header")),
-      getBox(q.heading("Release notes")),
-      getBox(body),
-      getBox(body.locator(":scope > *").first()),
-    ]);
-    // On a page, the 960px shell would have a 17px gutter. In a frame, the
-    // header inset and the space above the body stay at three steps of the
-    // shell's 14px text.
-    expect(title.x - header.x).toBeCloseTo(10.5, 0);
-    expect(text.y - bodyBox.y).toBeCloseTo(10.5, 0);
   });
 
   test.describe("responsive toggles", () => {

@@ -1,11 +1,6 @@
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import {
-  getBox,
-  getGutter,
-  getSidebar,
-  selectScenario,
-} from "./test-helpers.ts";
+import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
@@ -33,8 +28,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.banner()).toHaveCSS("height", "64px");
     await q.checkbox("Compact gutter").check();
     expect((await getBox(content)).x).toBeCloseTo(8, 0);
-    // The default bar inset keeps following the fluid gutter.
-    expect((await getBox(headerText)).x).toBeCloseTo(getGutter(1440), 0);
+    expect((await getBox(headerText)).x).toBeCloseTo(12, 0);
     await q.checkbox("Wide bar padding").check();
     expect((await getBox(content)).x).toBeCloseTo(8, 0);
     expect((await getBox(headerText)).x).toBeCloseTo(48, 0);

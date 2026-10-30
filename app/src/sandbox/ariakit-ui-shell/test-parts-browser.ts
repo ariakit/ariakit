@@ -2,15 +2,11 @@ import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 
-// Main's gutter is 1em, or 2em from a 64rem shell, at main's 16px. Fragment
-// targets keep it below the sticky headers, so it covers the space above the
-// intro.
+// Main's gutter is 1rem, or 2rem from a 64rem shell. Fragment targets keep it
+// below the sticky headers, so it covers the space above the intro.
 function getScrollGap(shellWidth: number) {
   return shellWidth < 1024 ? 16 : 32;
 }
-
-// The narrow shell's maximum width, 60rem.
-const NARROW_SHELL_WIDTH = 960;
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
@@ -29,6 +25,38 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(panel).toHaveCSS("max-height", "576px");
     await q.checkbox("Size container pane").uncheck();
     await expect(panel).toHaveCSS("max-height", "836px");
+  });
+
+  test("sets the space above and below the parts with $py on main", async ({
+    q,
+    page,
+  }) => {
+    await q.combobox("Main header visibility").selectOption("never");
+    // A set space resolves at main, so the larger text of the intro doesn't
+    // change it.
+    await q.combobox("Local text size").selectOption("text-lg");
+    const intro = page.locator(".shell-main-intro");
+    const body = q.main().locator(":scope > .shell-main-body");
+    const nestedBody = page.locator(
+      "#nested-parts-shell > .shell-main > .shell-main-body",
+    );
+    // At main's 16px: the 2rem page gutter, none, 10 steps, and 2em.
+    for (const [option, space] of [
+      ["Gutter", 32],
+      ["None", 0],
+      ["10 steps", 40],
+      ["2em", 32],
+    ] as const) {
+      await q.combobox("Main block padding").selectOption(option);
+      await expect(intro).toHaveCSS("padding-block-start", `${space}px`);
+      await expect(body).toHaveCSS("padding-block-end", `${space}px`);
+      await expect(q.region("Main content")).toHaveCSS(
+        "scroll-margin-block-start",
+        `${64 + Math.max(16, space)}px`,
+      );
+      // The nested main keeps its own 1rem gutter.
+      await expect(nestedBody).toHaveCSS("padding-block-start", "16px");
+    }
   });
 
   for (const from of ["intro", "body"]) {
@@ -52,7 +80,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect(nestedHeader).toHaveCSS("top", "64px");
       await expect(q.region("Main content")).toHaveCSS(
         "scroll-margin-block-start",
-        `${64 + getScrollGap(NARROW_SHELL_WIDTH)}px`,
+        "80px",
       );
       // Playwright can scroll the page to click "Narrow shell", such as when it
       // retries the click while the columns still move.
@@ -326,16 +354,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeCloseTo(328, 0);
   });
 
-  for (const { unbounded, spacingGutter } of [
-    { unbounded: false, spacingGutter: true },
-    { unbounded: true, spacingGutter: true },
-    { unbounded: true, spacingGutter: false },
-  ]) {
-    test(`keeps shared geometry in ${unbounded ? "unbounded" : "bounded"} parts with ${spacingGutter ? "a spacing" : "an em"} gutter when text sizes differ`, async ({
+  for (const unbounded of [false, true]) {
+    test(`keeps shared geometry in ${unbounded ? "unbounded" : "bounded"} parts when text sizes differ`, async ({
       q,
       page,
     }) => {
-      await q.checkbox("Use spacing gutter").setChecked(spacingGutter);
+      await q.checkbox("Use spacing gutter").check();
       await q.checkbox("Unbounded content").setChecked(unbounded);
       const mainHeader = page.locator(".shell-main-header");
       const sidebarHeader = page.locator(".shell-sidebar-header");
@@ -351,11 +375,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         if (!unbounded) {
           expect(contentBox.width).toBeCloseTo(480, 0);
         } else {
-          // Three spacing steps, or 2em at main's 16px from a 64rem shell.
-          expect(contentBox.x - (await getBox(q.main())).x).toBeCloseTo(
-            spacingGutter ? 12 : 32,
-            0,
-          );
+          expect(contentBox.x - (await getBox(q.main())).x).toBeCloseTo(12, 0);
         }
         for (const part of [actions, q.heading("Explicit shell parts")]) {
           expect((await getBox(part)).x).toBeCloseTo(contentBox.x, 0);

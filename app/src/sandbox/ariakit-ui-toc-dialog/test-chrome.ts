@@ -75,35 +75,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(rows?.hidden).toEqual([]);
   });
 
-  test("keeps the header inset of the shell in a wide dialog", async ({
-    page,
-    q,
-  }) => {
-    // The shell in the dialog is wider than 525px, where a page shell's inset
-    // starts to grow. A shell inside another frame keeps the narrow inset.
-    await page.setViewportSize({ width: 1280, height: 800 });
-    await q.button("Read the terms").click();
-    const dialog = q.dialog("Terms of service");
-    await test.expect
-      .poll(() => dialog.evaluate((element) => element.getAnimations().length))
-      .toBe(0);
-    const [header, dismiss, title, terms] = await Promise.all([
-      dialog.locator(".shell-header").boundingBox(),
-      q.button("Dismiss popup").boundingBox(),
-      q.heading("Terms of service").boundingBox(),
-      dialog.locator(".shell-main-body > *").first().boundingBox(),
-    ]);
-    if (!header || !dismiss || !title || !terms) {
-      throw new Error("A part of the dialog has no box");
-    }
-    // The dismiss button is as far from the side as from the top, so its corner
-    // stays concentric with the dialog's.
-    test
-      .expect(header.x + header.width - dismiss.x - dismiss.width)
-      .toBeCloseTo(dismiss.y - header.y, 0);
-    test.expect(title.x).toBeCloseTo(terms.x, 0);
-  });
-
   test("keeps the label below the header at the end of the terms", async ({
     q,
   }) => {
