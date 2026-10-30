@@ -1,5 +1,5 @@
 import { cv, cx } from "clava";
-import { getSpacingValue } from "../utils/styles.ts";
+import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
 import { frame, frameBase } from "./frame.ts";
 
 export type ShellWidth = string | number;
@@ -168,7 +168,9 @@ const seam = cv({
  * Default bar padding. At the default `md` height, three spacing steps match
  * the space above and below a default control and the default main gutter. Each
  * height step shrinks or grows that space by half a step on each side, so the
- * side insets follow it.
+ * side insets follow it. The three steps and the height adjustment round to
+ * whole pixels separately, like the main gutter and the main header, so they
+ * all keep one edge.
  */
 const barInsetDefault = "var(--shell-bar-inset)";
 
@@ -219,7 +221,7 @@ export const shellHeader = cv({
     // Let edge bars in a centered navigation row reach the inner edge.
     "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
     "z-4",
-    "[--shell-bar-inset:max(0px,calc(var(--spacing)*3+(var(--shell-header-height)-var(--shell-header-step)*16)/2))]",
+    "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-header-height)-var(--shell-header-step)*16)/2,1px)))]",
   ],
   variants: {
     /**
@@ -324,7 +326,7 @@ export const shellFooter = cv({
     "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
     "z-3",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
-    "[--shell-bar-inset:max(0px,calc(var(--spacing)*3+(var(--shell-footer-height)-var(--shell-header-step)*16)/2))]",
+    "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-footer-height)-var(--shell-header-step)*16)/2,1px)))]",
   ],
   variants: {
     /**
@@ -399,13 +401,13 @@ export const shellSidebar = cv({
      */
     $width: {
       // A default button is one line tall. The body, group, and button padding
-      // add 1.5em on each side, and the facing edge adds 1px.
+      // each round to a whole pixel per side, and the facing edge adds 1px.
       "3xs": [
-        "[--shell-slot-width:calc(1lh+3em+1px)]",
-        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:calc(1lh+3em+1px)]",
-        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:calc(1lh+3em+1px)]",
-        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:calc(1lh+3em+1px)]",
-        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:calc(1lh+3em+1px)]",
+        "[--shell-slot-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
+        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
+        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
+        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
+        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
       ],
       xs: [
         "[--shell-slot-width:10rem]",
@@ -682,15 +684,16 @@ const contentVariants = {
    * Sets the minimum content gutter. Unless main sets `$py`, it also sets the
    * space above the body without an intro and below the body. The body keeps
    * three steps after an intro, and the intro sets its own space with `$py`.
-   * Numbers scale the spacing token. Inherits from main by default. `none`
-   * removes the space; `unset` leaves the CSS gutter unchanged.
+   * Numbers scale the spacing token and round to a whole pixel. Inherits from
+   * main by default. `none` removes the space; `unset` leaves the CSS gutter
+   * unchanged.
    */
   $p(value?: "unset" | "none" | (string & {}) | number) {
     if (value == null) return;
     if (value === "unset") return;
     return {
       style: {
-        "--shell-gutter": getSpacingValue(value === "none" ? 0 : value),
+        "--shell-gutter": getPaddingValue(value === "none" ? 0 : value),
       },
     };
   },
@@ -716,9 +719,10 @@ export const shellMain = cv({
   ],
   variants: {
     /**
-     * Sets the shared main gutter. Numbers scale the spacing token. A CSS
-     * length can use container queries on the nearest shell. Defaults to 3. Use
-     * `$py` to set the space above and below the parts apart from it.
+     * Sets the shared main gutter. Numbers scale the spacing token and round to
+     * a whole pixel. A CSS length can use container queries on the nearest
+     * shell. Defaults to 3. Use `$py` to set the space above and below the
+     * parts apart from it.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       return contentVariants.$p(value);
@@ -769,14 +773,18 @@ export const shellMainHeader = cv({
     // Like other bars, a shorter or taller header than `md` shrinks or grows
     // its side insets with the space around its controls. A centered column
     // still lines up with the body once both side tracks have room to spare.
-    "[--shell-gutter:max(0px,calc(var(--shell-main-gutter)+(var(--shell-main-header-height)-var(--shell-header-step)*16)/2))]",
+    // Round only the height adjustment, so a raw main gutter still matches the
+    // body. The bar inset rounds the same adjustment, so a header over a
+    // default main gutter stays on the edge of the bars.
+    "[--shell-gutter:max(0px,calc(var(--shell-main-gutter)+round((var(--shell-main-header-height)-var(--shell-header-step)*16)/2,1px)))]",
   ],
   variants: {
     ...contentVariants,
     /**
-     * Sets the minimum content gutter. Numbers scale the spacing token.
-     * Defaults to the main gutter, adjusted by half the height difference from
-     * an `md` header. `none` removes the space; `unset` keeps the default.
+     * Sets the minimum content gutter. Numbers scale the spacing token and
+     * round to a whole pixel. Defaults to the main gutter, adjusted by half the
+     * height difference from an `md` header. `none` removes the space; `unset`
+     * keeps the default.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       return contentVariants.$p(value);
@@ -897,7 +905,7 @@ export const shellMainBody = cv({
     // The body keeps `$py` from main, or its own gutter, above and below it.
     // After an intro, it starts three bar steps below the intro.
     "[--shell-main-pbs:var(--shell-main-py,var(--shell-gutter))]",
-    "[.shell-main-intro~&]:[--shell-main-pbs:calc(var(--shell-header-step)*3)]",
+    "[.shell-main-intro~&]:[--shell-main-pbs:round(calc(var(--shell-header-step)*3),1px)]",
     "[padding-block:var(--shell-main-pbs)_var(--shell-main-py,var(--shell-gutter))]",
   ],
   variants: contentVariants,

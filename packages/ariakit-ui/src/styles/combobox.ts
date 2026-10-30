@@ -82,7 +82,7 @@ export const comboboxPopover = cv({
     "min-w-[min(var(--popover-anchor-width),var(--popover-available-width))]",
     // Use native invoker anchors unless Ariakit supplies inline positioning.
     "top-[calc(anchor(bottom)+(--spacing(1)))]",
-    "inset-s-[calc(anchor(start)-(--spacing(1)))]",
+    "inset-s-[calc(anchor(start)-var(--ak-frame-padding))]",
     "[position-try-fallbacks:flip-block,flip-inline]",
   ],
   defaultVariants: {

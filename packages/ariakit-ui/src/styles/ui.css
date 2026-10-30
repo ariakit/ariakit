@@ -324,8 +324,15 @@ body > * {
   initial-value: 16px;
 }
 
-/* Parts publish their slot widths on the root. Registered lengths resolve
-   relative units once before the columns and their bodies inherit them. */
+/* Sidebars set their slot width and publish it on the root. Registered lengths
+   resolve relative units once before the columns and their bodies inherit
+   them. */
+@property --shell-slot-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 256px;
+}
+
 @property --shell-start-1-width {
   syntax: "<length>";
   inherits: true;
