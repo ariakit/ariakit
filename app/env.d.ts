@@ -21,6 +21,8 @@ type Framework = import("./src/lib/schemas.ts").Framework;
 declare namespace App {
   interface Locals {
     framework?: Framework;
+    /** Whether the page is the isolated page of a preview. */
+    previewIsolated?: boolean;
     reference?: string;
     /**
      * The ids of the preview cards in the page gallery by preview id, which the

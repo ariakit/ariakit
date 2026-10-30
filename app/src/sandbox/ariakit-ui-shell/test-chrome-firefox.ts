@@ -3,10 +3,10 @@ import {
   forEachColorScheme,
   getViewportCapture,
 } from "#app/test-utils/ariakit-ui.ts";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { withDeferredVisualLoad } from "#app/test-utils/preview.ts";
 import { selectScenario } from "./test-helpers.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withDeferredVisualLoad(import.meta.dirname, async ({ test }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
   // https://github.com/ariakit/ariakit/issues/7532

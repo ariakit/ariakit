@@ -164,8 +164,11 @@ function generatePreviewWrapper(preview: DiscoveredPreview, file: string) {
       sourceEntries.push(`  ${JSON.stringify(framework)}: source${variable},`);
     }
     const directive = adapter ? " client:load" : "";
+    // Only React sandboxes have an isolated page.
+    const isolated =
+      framework === "react" ? " isolated={Astro.locals.previewIsolated}" : "";
     componentEntries.push(
-      `  <${variable}Example${directive} slot=${JSON.stringify(framework)} />`,
+      `  <${variable}Example${directive}${isolated} slot=${JSON.stringify(framework)} />`,
     );
   }
   return `---\nimport PreviewFramework from "#app/components/preview-framework.astro";\n${componentImports.join("\n")}\n\n${sourceImports.join("\n")}\n\nexport const source = {\n${sourceEntries.join("\n")}\n};\n---\n\n<PreviewFramework>\n${componentEntries.join("\n")}\n</PreviewFramework>\n`;

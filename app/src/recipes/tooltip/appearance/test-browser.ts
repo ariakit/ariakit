@@ -4,10 +4,10 @@ import {
   hoverOver,
   OVERLAY_CLIP_MARGIN,
 } from "#app/test-utils/ariakit-ui.ts";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { withDeferredVisualLoad } from "#app/test-utils/preview.ts";
 import { tooltips } from "./test-helpers.ts";
 
-withFramework(import.meta.dirname, async ({ id, test }) => {
+withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
   for (const { button, text, item } of tooltips) {
     test(`shows the ${item} tooltip @visual`, async ({ page, q, visual }) => {
       await forEachColorScheme(page, async (colorScheme) => {

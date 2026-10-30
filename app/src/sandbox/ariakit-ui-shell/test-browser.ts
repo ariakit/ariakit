@@ -4,7 +4,7 @@ import {
   getCapture,
   getViewportCapture,
 } from "#app/test-utils/ariakit-ui.ts";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { withDeferredVisualLoad } from "#app/test-utils/preview.ts";
 import {
   expectCentered,
   getBox,
@@ -24,7 +24,7 @@ const CONTENT_WIDTH = 768;
 // The shell's motion duration.
 const DURATION = 300;
 
-withFramework(import.meta.dirname, async ({ test, query }) => {
+withDeferredVisualLoad(import.meta.dirname, async ({ test, query }) => {
   // https://github.com/ariakit/ariakit/pull/7536#discussion_r4023543418
   test("keeps the sticky sidebar below a header with a caller shell style", async ({
     q,

@@ -3,6 +3,7 @@ import {
   capturePage,
   expectFocusVisible,
   forEachColorScheme,
+  forEachColorSchemeOf,
   getBadgeHeight,
   getCapsOffset,
   tabTo,
@@ -40,17 +41,21 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Checkbox field");
-      const input = query(box).checkbox("Remember me");
-      await tabTo(page, input);
-      await expectFocusVisible(input);
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-checkbox/focused-field-ring",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Checkbox field"],
+      async (colorScheme) => {
+        const box = q.article("Checkbox field");
+        const input = query(box).checkbox("Remember me");
+        await tabTo(page, input);
+        await expectFocusVisible(input);
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-checkbox/focused-field-ring",
+        });
+      },
+    );
   });
 });

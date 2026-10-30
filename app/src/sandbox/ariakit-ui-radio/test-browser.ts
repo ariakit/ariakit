@@ -1,6 +1,7 @@
 import {
   capturePage,
   forEachColorScheme,
+  forEachColorSchemeOf,
   getCapture,
   hoverOver,
   withCaptures,
@@ -18,7 +19,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Cards"], async (colorScheme) => {
       const box = q.article("Cards");
       // The card is the label around the hidden input.
       await hoverOver(query(box).radio("Hobby").locator("xpath=.."));
@@ -37,7 +38,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Group"], async (colorScheme) => {
       const box = q.article("Group");
       await hoverOver(query(box).text("Pro"));
       await visual(
@@ -54,7 +55,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Inline radios"], async (colorScheme) => {
       const box = q.article("Inline radios");
       await hoverOver(query(box).radio("Office"));
       await visual(
@@ -70,7 +71,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Cards"], async (colorScheme) => {
       const box = q.article("Cards");
       await hoverOver(query(box).radio("Pro").locator("xpath=.."));
       await visual(
@@ -86,14 +87,18 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Disabled card grid");
-      await hoverOver(query(box).radio("Hobby").locator("xpath=.."));
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-radio/disabled-card-hover",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Disabled card grid"],
+      async (colorScheme) => {
+        const box = q.article("Disabled card grid");
+        await hoverOver(query(box).radio("Hobby").locator("xpath=.."));
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-radio/disabled-card-hover",
+          }),
+        );
+      },
+    );
   });
 });

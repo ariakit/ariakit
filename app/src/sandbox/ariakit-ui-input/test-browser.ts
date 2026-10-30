@@ -4,6 +4,7 @@ import {
   capturePage,
   expectFocusVisible,
   forEachColorScheme,
+  forEachColorSchemeOf,
   getCapture,
   hoverOver,
   tabInto,
@@ -119,18 +120,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Field with leading icon");
-      const input = query(box).textbox("Filter components");
-      await input.click();
-      await test.expect(input).toBeFocused();
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-input/wrapper-focus",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Field with leading icon"],
+      async (colorScheme) => {
+        const box = q.article("Field with leading icon");
+        const input = query(box).textbox("Filter components");
+        await input.click();
+        await test.expect(input).toBeFocused();
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-input/wrapper-focus",
+        });
+      },
+    );
   });
 
   // A disabled field used to compute the same styles as an enabled one, and the
@@ -141,18 +146,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Field with leading icon");
-      const input = query(box).textbox("Filter components");
-      await setDisabled(input);
-      await test.expect(input).toBeDisabled();
-      await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-input/disabled-input-hover",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Field with leading icon"],
+      async (colorScheme) => {
+        const box = q.article("Field with leading icon");
+        const input = query(box).textbox("Filter components");
+        await setDisabled(input);
+        await test.expect(input).toBeDisabled();
+        await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-input/disabled-input-hover",
+          }),
+        );
+      },
+    );
   });
 
   // The wrapper read only a natively disabled input, so an input that stays
@@ -162,18 +171,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Field with leading icon");
-      const input = query(box).textbox("Filter components");
-      await setDisabled(input, "aria-disabled");
-      await test.expect(input).toHaveAttribute("aria-disabled", "true");
-      await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-input/aria-disabled-input-hover",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Field with leading icon"],
+      async (colorScheme) => {
+        const box = q.article("Field with leading icon");
+        const input = query(box).textbox("Filter components");
+        await setDisabled(input, "aria-disabled");
+        await test.expect(input).toHaveAttribute("aria-disabled", "true");
+        await hoverOver(input.locator("xpath=.."), { x: 4, y: 4 });
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-input/aria-disabled-input-hover",
+          }),
+        );
+      },
+    );
   });
 
   // A disabled button inside a wrapper, such as a send button that waits for
@@ -183,18 +196,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Share link with copy button");
-      const button = query(box).button("Copy");
-      await setDisabled(button);
-      await test.expect(button).toBeDisabled();
-      await hoverOver(query(box).text("https://"));
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-input/disabled-button-hover",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Share link with copy button"],
+      async (colorScheme) => {
+        const box = q.article("Share link with copy button");
+        const button = query(box).button("Copy");
+        await setDisabled(button);
+        await test.expect(button).toBeDisabled();
+        await hoverOver(query(box).text("https://"));
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-input/disabled-button-hover",
+          }),
+        );
+      },
+    );
   });
 
   // A button-type input is a button too, so a disabled submit input must leave
@@ -204,25 +221,29 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Share link with copy button");
-      await query(box)
-        .button("Copy")
-        .evaluate((node) => {
-          const submit = document.createElement("input");
-          submit.type = "submit";
-          submit.value = "Send";
-          submit.disabled = true;
-          node.after(submit);
-        });
-      await test.expect(query(box).button("Send")).toBeDisabled();
-      await hoverOver(query(box).text("https://"));
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-input/disabled-submit-hover",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Share link with copy button"],
+      async (colorScheme) => {
+        const box = q.article("Share link with copy button");
+        await query(box)
+          .button("Copy")
+          .evaluate((node) => {
+            const submit = document.createElement("input");
+            submit.type = "submit";
+            submit.value = "Send";
+            submit.disabled = true;
+            node.after(submit);
+          });
+        await test.expect(query(box).button("Send")).toBeDisabled();
+        await hoverOver(query(box).text("https://"));
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-input/disabled-submit-hover",
+          }),
+        );
+      },
+    );
   });
 
   // The field stays enabled while any control in it still takes entry, such as
@@ -232,24 +253,28 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Share link with copy button");
-      await query(box)
-        .button("Copy")
-        .evaluate((node) => {
-          const select = document.createElement("select");
-          select.setAttribute("aria-label", "Expiry");
-          select.disabled = true;
-          select.append(new Option("7 days"));
-          node.before(select);
-        });
-      await test.expect(query(box).combobox("Expiry")).toBeDisabled();
-      await hoverOver(query(box).text("https://"));
-      await visual(
-        getCapture(box, colorScheme, {
-          item: "ariakit-ui-input/disabled-select-hover",
-        }),
-      );
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Share link with copy button"],
+      async (colorScheme) => {
+        const box = q.article("Share link with copy button");
+        await query(box)
+          .button("Copy")
+          .evaluate((node) => {
+            const select = document.createElement("select");
+            select.setAttribute("aria-label", "Expiry");
+            select.disabled = true;
+            select.append(new Option("7 days"));
+            node.before(select);
+          });
+        await test.expect(query(box).combobox("Expiry")).toBeDisabled();
+        await hoverOver(query(box).text("https://"));
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-input/disabled-select-hover",
+          }),
+        );
+      },
+    );
   });
 });

@@ -3,6 +3,7 @@ import {
   capturePage,
   expectFocusVisible,
   forEachColorScheme,
+  forEachColorSchemeOf,
   getCapsOffset,
   getCapture,
   hoverOver,
@@ -42,18 +43,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Thick focus ring");
-      const button = query(box).button("Move");
-      await tabTo(page, button);
-      await expectFocusVisible(button);
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-button/thick-focus-ring",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Thick focus ring"],
+      async (colorScheme) => {
+        const box = q.article("Thick focus ring");
+        const button = query(box).button("Move");
+        await tabTo(page, button);
+        await expectFocusVisible(button);
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-button/thick-focus-ring",
+        });
+      },
+    );
   });
 
   test("moves the segmented control selection to the clicked radio @visual", async ({
@@ -61,18 +66,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Segmented control");
-      const grid = query(query(box).radiogroup("View")).radio("Grid");
-      await grid.click();
-      await test.expect(grid).toBeChecked();
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-button/segmented-control-click",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Segmented control"],
+      async (colorScheme) => {
+        const box = q.article("Segmented control");
+        const grid = query(query(box).radiogroup("View")).radio("Grid");
+        await grid.click();
+        await test.expect(grid).toBeChecked();
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-button/segmented-control-click",
+        });
+      },
+    );
   });
 
   // A hovered control owns both of its shared edges, so each one takes the

@@ -3,6 +3,7 @@ import {
   expectFocusVisible,
   expectMedia,
   forEachColorScheme,
+  forEachColorSchemeOf,
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
@@ -15,14 +16,18 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await captureInView({
-        visual,
-        box: q.article("Control surfaces"),
-        colorScheme,
-        item: "ariakit-ui-button/forced-colors/control-surfaces",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Control surfaces"],
+      async (colorScheme) => {
+        await captureInView({
+          visual,
+          box: q.article("Control surfaces"),
+          colorScheme,
+          item: "ariakit-ui-button/forced-colors/control-surfaces",
+        });
+      },
+    );
   });
 
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
@@ -32,14 +37,18 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await captureInView({
-        visual,
-        box: q.article("Joined selection"),
-        colorScheme,
-        item: "ariakit-ui-button/forced-colors/joined-selection",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Joined selection"],
+      async (colorScheme) => {
+        await captureInView({
+          visual,
+          box: q.article("Joined selection"),
+          colorScheme,
+          item: "ariakit-ui-button/forced-colors/joined-selection",
+        });
+      },
+    );
   });
 
   // https://github.com/ariakit/ariakit/issues/7476
@@ -50,15 +59,19 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      await captureInView({
-        visual,
-        box: q.article("Layer disabled"),
-        colorScheme,
-        item: "ariakit-ui-button/forced-colors/disabled-layer",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Layer disabled"],
+      async (colorScheme) => {
+        await expectMedia(page, "(forced-colors: active)");
+        await captureInView({
+          visual,
+          box: q.article("Layer disabled"),
+          colorScheme,
+          item: "ariakit-ui-button/forced-colors/disabled-layer",
+        });
+      },
+    );
   });
 
   // The cards disable their buttons through the native attribute, the recipe
@@ -139,7 +152,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Ring borders"], async (colorScheme) => {
       await captureInView({
         visual,
         box: q.article("Ring borders"),

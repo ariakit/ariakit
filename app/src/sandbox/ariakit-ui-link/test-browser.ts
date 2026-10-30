@@ -3,6 +3,7 @@ import {
   capturePage,
   expectFocusVisible,
   forEachColorScheme,
+  forEachColorSchemeOf,
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
@@ -20,7 +21,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Default"], async (colorScheme) => {
       const box = q.article("Default");
       const link = query(box).link("styling guide");
       await tabTo(page, link);
@@ -39,17 +40,21 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      const box = q.article("Offset focus ring");
-      const link = query(box).link("View all");
-      await tabTo(page, link);
-      await expectFocusVisible(link);
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-link/standalone-link-focus",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Offset focus ring"],
+      async (colorScheme) => {
+        const box = q.article("Offset focus ring");
+        const link = query(box).link("View all");
+        await tabTo(page, link);
+        await expectFocusVisible(link);
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-link/standalone-link-focus",
+        });
+      },
+    );
   });
 });

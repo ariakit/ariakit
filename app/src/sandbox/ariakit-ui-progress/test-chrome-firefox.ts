@@ -1,7 +1,7 @@
 import {
   captureInView,
   expectMedia,
-  forEachColorScheme,
+  forEachColorSchemeOf,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -15,20 +15,24 @@ withCaptures(import.meta.dirname, async ({ test }) => {
   }) => {
     // The emulation lasts across the reloads of each color scheme.
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      await captureInView({
-        visual,
-        box: q.article("Default"),
-        colorScheme,
-        item: "ariakit-ui-progress/forced-colors/bar",
-      });
-      await captureInView({
-        visual,
-        box: q.article("Ring with label"),
-        colorScheme,
-        item: "ariakit-ui-progress/forced-colors/ring",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Default", "Ring with label"],
+      async (colorScheme) => {
+        await expectMedia(page, "(forced-colors: active)");
+        await captureInView({
+          visual,
+          box: q.article("Default"),
+          colorScheme,
+          item: "ariakit-ui-progress/forced-colors/bar",
+        });
+        await captureInView({
+          visual,
+          box: q.article("Ring with label"),
+          colorScheme,
+          item: "ariakit-ui-progress/forced-colors/ring",
+        });
+      },
+    );
   });
 });

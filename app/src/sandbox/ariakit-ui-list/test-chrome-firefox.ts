@@ -3,6 +3,7 @@ import {
   capturePage,
   expectMedia,
   forEachColorScheme,
+  forEachColorSchemeOf,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -34,18 +35,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      const box = q.article("Disclosure steps");
-      const button = query(box).button(/Connect the repository/);
-      await button.evaluate((node) => node.setAttribute("disabled", ""));
-      await test.expect(button).toBeDisabled();
-      await captureInView({
-        visual,
-        box,
-        colorScheme,
-        item: "ariakit-ui-list/forced-colors/disabled-checked-step",
-      });
-    });
+    await forEachColorSchemeOf(
+      page,
+      ["Disclosure steps"],
+      async (colorScheme) => {
+        await expectMedia(page, "(forced-colors: active)");
+        const box = q.article("Disclosure steps");
+        const button = query(box).button(/Connect the repository/);
+        await button.evaluate((node) => node.setAttribute("disabled", ""));
+        await test.expect(button).toBeDisabled();
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-list/forced-colors/disabled-checked-step",
+        });
+      },
+    );
   });
 });

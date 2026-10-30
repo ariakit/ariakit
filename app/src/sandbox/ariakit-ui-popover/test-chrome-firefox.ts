@@ -1,7 +1,7 @@
 import {
   captureInView,
   expectMedia,
-  forEachColorScheme,
+  forEachColorSchemeOf,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -13,7 +13,7 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     visual,
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
+    await forEachColorSchemeOf(page, ["Default"], async (colorScheme) => {
       await expectMedia(page, "(forced-colors: active)");
       await captureInView({
         visual,

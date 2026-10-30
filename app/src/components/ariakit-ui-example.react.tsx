@@ -24,6 +24,12 @@ import { useId } from "react";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import { dedent } from "#app/lib/string.ts";
 
+// The titles of the only examples that the isolated page of a sandbox renders.
+const isolatedExamples =
+  typeof location === "undefined"
+    ? []
+    : new URLSearchParams(location.search).getAll("example");
+
 export interface ExampleGridProps extends ComponentProps<"main"> {}
 
 /**
@@ -86,6 +92,11 @@ export function Example({
   children,
 }: ExampleProps) {
   const titleId = useId();
+  // An empty grid item holds the place of the example, so the grid keeps its
+  // columns and the examples on the page keep their widths.
+  if (isolatedExamples.length && !isolatedExamples.includes(title)) {
+    return <div className={clsx(wide && "col-span-full")} />;
+  }
   return (
     <Frame
       render={<article aria-labelledby={titleId} />}
