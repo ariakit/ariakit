@@ -571,12 +571,12 @@ pnpm -F app run test --project=chrome --debug my-component
 
 The native CI `Plan` job selects the checks needed for your pull request. If `Plan CI` reports `app=false`, the final step runs `visonaut submit --no-visual`. This command uses the Plan job's signed CI identity. Visonaut validates the run, attempt, and tested commit before completing the check without capturing images.
 
-If Plan reports `app=true`, `App / Visual Capture (chrome)`, `App / Visual Capture (firefox)`, and `App / Visual Capture (safari)` run visual tests in Chrome, Firefox, and Safari. They upload capture images and metadata as ordinary GitHub artifacts, which are kept for one day. Anyone who can download these artifacts can read their contents.
+If Plan reports `app=true`, `App / Visual Capture (chrome)`, `App / Visual Capture (firefox)`, `App / Visual Capture (safari-1)`, and `App / Visual Capture (safari-2)` run visual tests in Chrome, Firefox, and Safari. The two Safari jobs each run one Playwright shard of the Safari tests. They all upload capture images and metadata as ordinary GitHub artifacts, which are kept for one day on pull requests and seven days on pushes to `main`. Anyone who can download these artifacts can read their contents.
 
 `App / Visual Submit` submits all capture shards:
 
 ```sh
-visonaut submit --shard chrome --shard firefox --shard safari
+visonaut submit --shard chrome --shard firefox --shard safari-1 --shard safari-2
 ```
 
 Successful capture and Submit jobs do not approve visual changes. Check the Visonaut result. If it requires review, open the linked review and ask a maintainer to review the changes.

@@ -32,13 +32,14 @@ function requiredEnv(name: string) {
   return value;
 }
 
-// Each Visual Capture job in app.yml captures one project, and its shard key is
-// the project name.
+// Each Visual Capture job in app.yml captures one project, or one Playwright
+// shard of it, so the Visonaut shard key names the job and not the project.
 const visualShard =
   CI && process.env.VISUAL_TEST === "true"
     ? requiredEnv("VISUAL_SHARD")
     : undefined;
-const visualProjects = visualShard ? [visualShard] : [];
+const visualProjects = visualShard ? [requiredEnv("VISUAL_PROJECT")] : [];
+const visualPlaywrightShard = process.env.VISUAL_PLAYWRIGHT_SHARD;
 const captureDirectory = visualShard
   ? path.join(requiredEnv("RUNNER_TEMP"), "visonaut")
   : undefined;
@@ -105,6 +106,9 @@ export default defineConfig({
                 "@visual",
                 "--output",
                 "test-results/test-visual",
+                ...(visualPlaywrightShard
+                  ? [`--shard=${visualPlaywrightShard}`]
+                  : []),
               ],
             },
           },
