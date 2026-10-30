@@ -234,7 +234,7 @@ function Overview() {
     <Region $p={4} className="grid content-start gap-3.5">
       <div className="flex items-baseline gap-2.5">
         <span className="text-xl font-semibold">Overview</span>
-        <span className="ak-ink-70">Last 30 days</span>
+        <span className="ak-ink-70">Last 12 weeks</span>
       </div>
       <div className="grid grid-cols-3 gap-2.5">
         {stats.map((stat) => (
