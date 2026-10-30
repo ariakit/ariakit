@@ -31,9 +31,6 @@ export const choice = cv({
     // Restore text-line alignment for bare inputs; flex and grid parents still
     // control placement.
     "inline-flex align-middle",
-    "after:scale-0 ui-choice-on:after:scale-100",
-    "after:transition-transform after:duration-100 after:ease-out",
-    "motion-reduce:after:transition-none",
     // Keep forced colors from replacing the mark background with the system
     // canvas.
     "after:forced-color-adjust-none",
@@ -75,8 +72,26 @@ export const choice = cv({
         "after:size-(--slot-icon-size) after:mask-(--choice-mark-check)",
         "after:mask-contain after:mask-center after:mask-no-repeat",
         "ui-choice-mixed:after:mask-(--choice-mark-dash)",
+        // Both marks only move rightward at a constant speed: the check's two
+        // strokes are at 45 degrees and the dash is level. A left-to-right wipe
+        // therefore follows the line as if it were being written.
+        "after:[clip-path:inset(0_100%_0_0)] ui-choice-on:after:[clip-path:inset(0)]",
+        // The fill comes first and the mark starts when it ends. Only the on
+        // state sets these, so unchecking is immediate. The text color moves
+        // with the fill so that a custom child stays readable on it.
+        "[--choice-fill-duration:100ms]",
+        "motion-safe:ui-choice-on:transition-[background-color,border-color,color]",
+        "motion-safe:ui-choice-on:duration-(--choice-fill-duration)",
+        "motion-safe:ui-choice-on:ease-out",
+        "motion-safe:ui-choice-on:after:transition-[clip-path]",
+        "motion-safe:ui-choice-on:after:duration-150",
+        "motion-safe:ui-choice-on:after:ease-linear",
+        "motion-safe:ui-choice-on:after:delay-(--choice-fill-duration)",
       ],
       dot: [
+        "after:scale-0 ui-choice-on:after:scale-100",
+        "after:transition-transform after:duration-100 after:ease-out",
+        "motion-reduce:after:transition-none",
         // The center dot and the rim, which includes the border, take the
         // box's fill, so both keep its contrast against the surface ring
         // between them. The ring is 14% of the box's inner width.
@@ -339,10 +354,7 @@ export const choiceCardCheck = cv({
     $size: "lg",
     // The card already supplies hover feedback.
     $hoverOffset: false,
-    $rounded(defaultValue, variants) {
-      if (variants.$floating) return "full";
-      return defaultValue;
-    },
+    $rounded: "full",
   },
 });
 

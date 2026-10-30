@@ -780,17 +780,17 @@ export default function CheckboxExamples() {
       </Example>
 
       <Example
-        title="Round check"
-        description="A fully round check on a checked card. Keep it for checked states: an empty round check reads as a radio."
+        title="Small corners"
+        description="A check is round by default and can set another radius."
         code={`
           <CheckboxCard value="weekly" defaultChecked>
-            <CheckboxCardCheck $rounded="full" />
+            <CheckboxCardCheck $rounded="sm" />
             <CheckboxCardLabel>Weekly report</CheckboxCardLabel>
           </CheckboxCard>
         `}
       >
         <CheckboxCard value="weekly" defaultChecked>
-          <CheckboxCardCheck $rounded="full" />
+          <CheckboxCardCheck $rounded="sm" />
           <CheckboxCardLabel>Weekly report</CheckboxCardLabel>
         </CheckboxCard>
       </Example>
@@ -820,19 +820,19 @@ export default function CheckboxExamples() {
         description="Small pill cards in a wrapping row, used as a set of filters. Each chip keeps its check, so its state does not rest on color alone."
         code={`
           <CheckboxCard value="design" defaultChecked $rounded="full" $size="sm">
-            <CheckboxCardCheck $forceRounded={false} />
+            <CheckboxCardCheck />
             <CheckboxCardLabel>Design</CheckboxCardLabel>
           </CheckboxCard>
           <CheckboxCard value="docs" $rounded="full" $size="sm">
-            <CheckboxCardCheck $forceRounded={false} />
+            <CheckboxCardCheck />
             <CheckboxCardLabel>Docs</CheckboxCardLabel>
           </CheckboxCard>
           <CheckboxCard value="engineering" defaultChecked $rounded="full" $size="sm">
-            <CheckboxCardCheck $forceRounded={false} />
+            <CheckboxCardCheck />
             <CheckboxCardLabel>Engineering</CheckboxCardLabel>
           </CheckboxCard>
           <CheckboxCard value="marketing" $rounded="full" $size="sm">
-            <CheckboxCardCheck $forceRounded={false} />
+            <CheckboxCardCheck />
             <CheckboxCardLabel>Marketing</CheckboxCardLabel>
           </CheckboxCard>
         `}
@@ -846,7 +846,7 @@ export default function CheckboxExamples() {
               $rounded="full"
               $size="sm"
             >
-              <CheckboxCardCheck $forceRounded={false} />
+              <CheckboxCardCheck />
               <CheckboxCardLabel>{tag}</CheckboxCardLabel>
             </CheckboxCard>
           ))}

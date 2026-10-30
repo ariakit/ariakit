@@ -1,3 +1,4 @@
+import type { Locator } from "@playwright/test";
 import {
   captureInView,
   capturePage,
@@ -10,7 +11,63 @@ import {
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
+// Toggles in the page and reads the transitions of the card's check in the same
+// task, because a slower round trip could outlast them.
+function toggleAndGetTransitions(checkbox: Locator) {
+  return checkbox.evaluate((input: HTMLInputElement) => {
+    input.click();
+    const check = input.closest("label")?.querySelector(".choice-card-check");
+    const animations = check?.getAnimations({ subtree: true }) ?? [];
+    const transitions = animations.flatMap((animation) => {
+      if (!(animation instanceof CSSTransition)) return [];
+      const effect = animation.effect;
+      if (!(effect instanceof KeyframeEffect)) return [];
+      const { delay, duration } = effect.getComputedTiming();
+      const clipPaths = effect.getKeyframes().map((frame) => frame.clipPath);
+      const transition = { delay, duration, clipPaths };
+      return [[animation.transitionProperty, transition] as const];
+    });
+    return Object.fromEntries(transitions);
+  });
+}
+
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  test("draws the check after the fill and removes it at once", async ({
+    q,
+  }) => {
+    const box = query(q.article("Filter chips"));
+    const checkbox = box.checkbox("Docs");
+    await test.expect(checkbox).not.toBeChecked();
+
+    const on = await toggleAndGetTransitions(checkbox);
+    const fill = on["background-color"];
+    const mark = on["clip-path"];
+    test.expect(fill?.duration).toBeGreaterThan(0);
+    test.expect(on.color?.duration).toBe(fill?.duration);
+    test.expect(mark?.delay).toBe(fill?.duration);
+    test.expect(mark?.duration).toBeGreaterThan(0);
+    // The mark reveals from its left edge, where the check's line starts.
+    test
+      .expect(mark?.clipPaths)
+      .toEqual(["inset(0px 100% 0px 0px)", "inset(0px)"]);
+
+    // A chip checked from the start has a settled mark. The mark of the chip
+    // above hasn't moved yet, so unchecking it couldn't show a transition.
+    const settled = box.checkbox("Design");
+    await test.expect(settled).toBeChecked();
+    test.expect(await toggleAndGetTransitions(settled)).toEqual({});
+  });
+
+  test("toggles a card without motion when the user prefers reduced motion", async ({
+    page,
+    q,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const checkbox = query(q.article("Filter chips")).checkbox("Docs");
+    await test.expect(checkbox).not.toBeChecked();
+    test.expect(await toggleAndGetTransitions(checkbox)).toEqual({});
+  });
+
   // A tile's top row is as tall as its largest slot. A badge beside that slot
   // keeps the height it has in the tile's content, with its text centered.
   // https://github.com/ariakit/ariakit/issues/7599

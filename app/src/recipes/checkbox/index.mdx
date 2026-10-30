@@ -21,7 +21,7 @@ Ariakit UI has no group component for checkboxes, because a group of checkboxes 
 
 `CheckboxCard` is a card with a hidden native checkbox, and its content names the checkbox. `CheckboxCardContent` stacks a `CheckboxCardLabel` and a `CheckboxCardDescription`. `CheckboxCardSlot` holds other content, such as an icon or a price. A slot with `$kind="badge"` shows a badge. To let the description use the full width, put the label and the badge in a `CheckboxCardLabelRow` inside `CheckboxCardContent`, as in the Card Badges example. The badge wraps below the label when the row runs out of room.
 
-`CheckboxCardCheck` draws the mark of a card. With `$floating`, a check shows on the top-end corner of the checked card only, as in the Floating Check example. A card without a mark shows its checked state with the brand fill and a second edge pixel, as in the Cards Without Marks example. The Filter Chips example sets `$rounded="full"` and `$size="sm"` on the cards. The checks keep their small corners in the round chips, because a round check looks like a radio.
+`CheckboxCardCheck` draws the round mark of a card. With `$floating`, a check shows on the top-end corner of the checked card only, as in the Floating Check example. A card without a mark shows its checked state with the brand fill and a second edge pixel, as in the Cards Without Marks example. The Filter Chips example sets `$rounded="full"` and `$size="sm"` on the cards.
 
 `CheckboxCardGrid` puts its cards in columns of equal width, with rows of equal height. `$minItemSize` sets the narrowest width of a card before the grid drops a column. The grid has the `group` role, so name it with `aria-labelledby` or `aria-label`.
 
