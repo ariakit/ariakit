@@ -1,22 +1,19 @@
 import { cv } from "clava";
 import { popover } from "./popover.ts";
-import { slotFrame, slotFrameSlot } from "./slot-frame.ts";
+import { slotFrame, slotFrameSlot, slotFrameText } from "./slot-frame.ts";
 
 /**
  * A compact popover with the optical side padding of a text frame and wrapping
  * text. It inverts the page colors without an edge by default. A layer color
  * such as `brand` keeps its hue and the popover edge. Put icons, badges, and
- * keyboard keys in `TooltipSlot` parts.
+ * keyboard keys in `TooltipSlot` parts, and the text beside them in a
+ * `TooltipText` part.
  */
 export const tooltip = cv({
-  // The slot frame lays out text and `TooltipSlot` parts in a row, with the
-  // optical side padding and gaps of a control.
+  // The slot frame lays out `TooltipText` and `TooltipSlot` parts in a row,
+  // with the optical side padding and gaps of a control.
   extend: [popover, slotFrame],
   class: [
-    // Without slots, text flows as a paragraph, so inline elements such as
-    // <strong> stay on its lines. A flex row would make each text run and
-    // element a separate column. A caller display class needs ! to replace it.
-    "[&:not(:has(>.slot-frame-slot))]:block",
     // Allow caller max-w-* utilities to override the wrapping limit.
     "[--tooltip-max-width:--spacing(80)] max-w-(--tooltip-max-width)",
     // A tooltip that the next tooltip replaces at once hides without its exit
@@ -27,10 +24,6 @@ export const tooltip = cv({
   ],
   defaultVariants: {
     $size: "sm",
-    // Tooltip text is usually bare, so a line-tall slot can't push it away by
-    // the glyph side bearing, as it does a control label. A full side-padding
-    // gap keeps the slot as far from the text as from the side.
-    $gap: "lg",
     $shadow: "md",
     $rounded: "lg",
     // One spacing step is 3.5px at the default text size. Chrome paints the
@@ -67,6 +60,26 @@ export const tooltip = cv({
  * like a slot of a control.
  */
 export const tooltipSlot = slotFrameSlot;
+
+/**
+ * The arrow of a tooltip, through `TooltipArrow`. Ariakit places it with
+ * insets, so it keeps no margin.
+ */
+export const tooltipArrow = cv({
+  class: [
+    // A line-tall slot after the arrow gives the element before it a margin,
+    // which would move the arrow off the tooltip edge or the anchor. The slot
+    // rule comes later in the CSS, so this needs !important.
+    "m-0!",
+  ],
+});
+
+/**
+ * The tooltip text beside its slots. Inline elements, such as `strong`, stay on
+ * its lines, and a line-tall slot sits as far from it as from the side of the
+ * tooltip. Without slots, bare text works too.
+ */
+export const tooltipText = slotFrameText;
 
 /**
  * The positioned wrapper of a tooltip popup, through the `wrapperProps` of

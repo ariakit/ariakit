@@ -7,7 +7,12 @@ import {
   hasContent,
 } from "../react-utils/create-render.react.ts";
 import { wrapsSlotChildren } from "../styles/slot-frame.ts";
-import { tooltip, tooltipSlot } from "../styles/tooltip.ts";
+import {
+  tooltip,
+  tooltipArrow,
+  tooltipSlot,
+  tooltipText,
+} from "../styles/tooltip.ts";
 
 type TooltipProviderPropKey =
   | "store"
@@ -32,13 +37,25 @@ export interface TooltipProps
    */
   children: React.ReactElement;
   /**
-   * The tooltip content, as text or other nodes. Unlike the `content` prop of
-   * `Disclosure`, it does not take an element or props for the popup. Empty
-   * content, such as `null`, `false`, a blank string, or an empty list, renders
-   * only the anchor. The anchor remounts when its content becomes empty or
-   * stops being empty, so it loses focus and its state at that time.
+   * The tooltip text, as a string or inline nodes such as `strong`. It renders
+   * in a `TooltipText`. Empty text, such as `null`, `false`, a blank string, or
+   * an empty list, renders only the anchor. The anchor remounts when its text
+   * becomes empty or stops being empty, so it loses focus and its state at that
+   * time.
    */
-  content?: React.ReactNode;
+  text?: React.ReactNode;
+  /**
+   * A slot before the text, such as an icon, as a `TooltipSlot` element or
+   * `TooltipSlot` props. It shows only with `text`.
+   */
+  startSlot?: React.ReactElement | TooltipSlotProps;
+  /**
+   * A slot after the text, such as a keyboard shortcut or a badge, as a
+   * `TooltipSlot` element or `TooltipSlot` props. It shows only with `text`.
+   * For a shortcut, use a `text` slot with a `Kbd`, and give the anchor
+   * `aria-keyshortcuts` too.
+   */
+  endSlot?: React.ReactElement | TooltipSlotProps;
   /**
    * An arrow that points to the anchor, as `true`, an element, or
    * `TooltipArrow` props. Omitted by default.
@@ -53,13 +70,26 @@ export interface TooltipProps
  * The tooltip is visual only, so the anchor needs its own accessible name, such
  * as `aria-label` on an icon button.
  * @example
- * <Tooltip content="Save changes">
+ * <Tooltip text="Save changes">
  *   <Button>Save</Button>
+ * </Tooltip>
+ * @example
+ * <Tooltip
+ *   text="Bold"
+ *   endSlot={
+ *     <TooltipSlot $kind="text">
+ *       <Kbd>⌘B</Kbd>
+ *     </TooltipSlot>
+ *   }
+ * >
+ *   <Button aria-label="Bold" aria-keyshortcuts="Meta+B">…</Button>
  * </Tooltip>
  */
 export function Tooltip({
   children,
-  content,
+  text,
+  startSlot,
+  endSlot,
   arrow,
   store,
   open,
@@ -72,7 +102,7 @@ export function Tooltip({
   skipTimeout,
   ...props
 }: TooltipProps) {
-  if (!hasContent(content)) return children;
+  if (!hasContent(text)) return children;
   const arrowElement = createOptionalRender(
     TooltipArrow,
     arrow === true ? {} : arrow,
@@ -92,7 +122,9 @@ export function Tooltip({
       <ak.TooltipAnchor render={children} />
       <TooltipPopover {...props}>
         {arrowElement}
-        {content}
+        {createOptionalRender(TooltipSlot, startSlot)}
+        <TooltipText>{text}</TooltipText>
+        {createOptionalRender(TooltipSlot, endSlot)}
       </TooltipPopover>
     </ak.TooltipProvider>
   );
@@ -153,7 +185,8 @@ export function TooltipPopover({
   );
 }
 
-export interface TooltipArrowProps extends ak.TooltipArrowProps {}
+export interface TooltipArrowProps
+  extends ak.TooltipArrowProps, VariantProps<typeof tooltipArrow> {}
 
 /**
  * Renders an arrow that points from the tooltip to its anchor.
@@ -167,7 +200,8 @@ export interface TooltipArrowProps extends ak.TooltipArrowProps {}
  * </TooltipProvider>
  */
 export function TooltipArrow(props: TooltipArrowProps) {
-  return <ak.TooltipArrow {...props} />;
+  const [variantProps, rest] = splitProps(props, tooltipArrow);
+  return <ak.TooltipArrow {...tooltipArrow.jsx(variantProps)} {...rest} />;
 }
 
 export interface TooltipSlotProps
@@ -176,22 +210,15 @@ export interface TooltipSlotProps
 /**
  * Renders an icon, badge, keyboard key, or short text beside the tooltip text,
  * like a slot of a control. For a keyboard shortcut, put a `Kbd` in a `text`
- * slot. Beside a slot, wrap text that has inline elements, such as `strong`, in
- * one element. The tooltip is visual only, so give the anchor
- * `aria-keyshortcuts` too.
+ * slot. Put the text beside it in a `TooltipText`. The tooltip is visual only,
+ * so give the anchor `aria-keyshortcuts` too.
  * @example
- * <Tooltip
- *   content={
- *     <>
- *       Bold
- *       <TooltipSlot $kind="text">
- *         <Kbd>⌘B</Kbd>
- *       </TooltipSlot>
- *     </>
- *   }
- * >
- *   <Button aria-label="Bold" aria-keyshortcuts="Meta+B">…</Button>
- * </Tooltip>
+ * <TooltipPopover>
+ *   <TooltipText>Bold</TooltipText>
+ *   <TooltipSlot $kind="text">
+ *     <Kbd>⌘B</Kbd>
+ *   </TooltipSlot>
+ * </TooltipPopover>
  */
 export function TooltipSlot(props: TooltipSlotProps) {
   const [variantProps, rest] = splitProps(props, tooltipSlot);
@@ -205,4 +232,24 @@ export function TooltipSlot(props: TooltipSlotProps) {
       )}
     </ak.Role.span>
   );
+}
+
+export interface TooltipTextProps
+  extends ak.RoleProps<"span">, VariantProps<typeof tooltipText> {}
+
+/**
+ * Renders the tooltip text beside its slots. Inline elements, such as `strong`,
+ * stay on its lines, and a line-tall slot sits as far from it as from the side
+ * of the tooltip. `Tooltip` renders its `text` in it.
+ * @example
+ * <TooltipPopover>
+ *   <TooltipSlot>
+ *     <Check />
+ *   </TooltipSlot>
+ *   <TooltipText>Copied</TooltipText>
+ * </TooltipPopover>
+ */
+export function TooltipText(props: TooltipTextProps) {
+  const [variantProps, rest] = splitProps(props, tooltipText);
+  return <ak.Role.span {...tooltipText.jsx(variantProps)} {...rest} />;
 }

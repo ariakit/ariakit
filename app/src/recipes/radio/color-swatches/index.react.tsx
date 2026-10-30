@@ -160,7 +160,7 @@ export default function Example() {
                   // Screen readers get the same text as the tooltip from the
                   // description. The anchor stays out of the Tab order, so the
                   // group keeps one Tab stop.
-                  <Tooltip content="Sold out. Back on 20 November.">
+                  <Tooltip text="Sold out. Back on 20 November.">
                     <RadioCardContent
                       tabIndex={-1}
                       className="items-center text-center"

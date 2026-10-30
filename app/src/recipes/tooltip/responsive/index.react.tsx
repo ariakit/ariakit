@@ -30,8 +30,8 @@ function CollapsingButton({ label, icon: Icon }: CollapsingButtonProps) {
   }, [labelElement]);
 
   return (
-    // Empty content turns the tooltip off while the label shows.
-    <Tooltip content={labelHidden ? label : null}>
+    // Empty text turns the tooltip off while the label shows.
+    <Tooltip text={labelHidden ? label : null}>
       {/* A hidden label doesn't name the button, so it names itself. */}
       <Button aria-label={label}>
         <ButtonSlot>

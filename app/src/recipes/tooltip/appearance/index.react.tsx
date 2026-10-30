@@ -16,7 +16,7 @@ export default function Example() {
   return (
     <div className="flex max-w-[30rem] flex-wrap justify-center gap-3">
       {/* By default, the tooltip inverts the page colors. */}
-      <Tooltip content="Download the PDF">
+      <Tooltip text="Download the PDF">
         <Button $kind="bevel">
           <ButtonSlot>
             <DownloadIcon />
@@ -25,7 +25,7 @@ export default function Example() {
         </Button>
       </Tooltip>
       {/* The popover surface, with an edge. */}
-      <Tooltip content="Open a preview" $invert={false}>
+      <Tooltip text="Open a preview" $invert={false}>
         <Button $kind="bevel">
           <ButtonSlot>
             <EyeIcon />
@@ -34,7 +34,7 @@ export default function Example() {
         </Button>
       </Tooltip>
       {/* A layer color keeps its hue. */}
-      <Tooltip content="Available on the Pro plan" $layer="brand">
+      <Tooltip text="Available on the Pro plan" $layer="brand">
         <Button $kind="bevel">
           <ButtonSlot>
             <SparklesIcon />
@@ -42,7 +42,7 @@ export default function Example() {
           <ButtonLabel>Upgrade</ButtonLabel>
         </Button>
       </Tooltip>
-      <Tooltip content="Share with your team" arrow>
+      <Tooltip text="Share with your team" arrow>
         <Button $kind="bevel">
           <ButtonSlot>
             <Share2Icon />
@@ -50,7 +50,7 @@ export default function Example() {
           <ButtonLabel>Share</ButtonLabel>
         </Button>
       </Tooltip>
-      <Tooltip content="Add to favorites" $rounded="full">
+      <Tooltip text="Add to favorites" $rounded="full">
         <Button $kind="bevel">
           <ButtonSlot>
             <HeartIcon />

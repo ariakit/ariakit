@@ -68,7 +68,7 @@ function CommentTime({ id, time }: Pick<Comment, "id" | "time">) {
           time is its description, since the tooltip is only visual. */}
       {/* The tooltip opens to the right, so it doesn't cover the comment
           above. */}
-      <Tooltip content={exactTime} placement="right">
+      <Tooltip text={exactTime} placement="right">
         <Link href={`#${id}`} aria-describedby={descriptionId}>
           <time dateTime={time}>{formatRelativeTime(date)}</time>
         </Link>

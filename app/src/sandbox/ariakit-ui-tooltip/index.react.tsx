@@ -13,11 +13,13 @@ import {
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import {
+  Tooltip,
   TooltipAnchor,
   TooltipArrow,
   TooltipPopover,
   TooltipProvider,
   TooltipSlot,
+  TooltipText,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { Bold, Check } from "lucide-react";
 import {
@@ -107,6 +109,34 @@ export default function TooltipExamples() {
       </Example>
 
       <Example
+        title="Leading badge with an arrow"
+        description="A line-tall slot after the arrow doesn't move it. The arrow stays on the edge of a tooltip placed to the right."
+        code={`
+          <Tooltip
+            arrow
+            placement="right"
+            text="Unread"
+            startSlot={{ $kind: "badge", children: "3" }}
+          >
+            <Button $kind="bevel">Inbox</Button>
+          </Tooltip>
+        `}
+      >
+        <ExampleStage anchor="start" height={14}>
+          <Tooltip
+            {...openTooltipProps}
+            open
+            arrow
+            placement="right"
+            text="Unread"
+            startSlot={{ $kind: "badge", children: "3" }}
+          >
+            <Button $kind="bevel">Inbox</Button>
+          </Tooltip>
+        </ExampleStage>
+      </Example>
+
+      <Example
         title="Long label"
         description="A long label wraps at the maximum width of the tooltip and keeps its padding on every line."
         code={`
@@ -131,13 +161,15 @@ export default function TooltipExamples() {
 
       <Example
         title="Rich text"
-        description="Text with inline elements and no slot flows as a paragraph, so the emphasis stays on its line."
+        description="Text with inline elements in a TooltipText flows as a paragraph, so the emphasis stays on its line."
         code={`
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Close</TooltipAnchor>
             <TooltipPopover>
-              Press <strong>Esc</strong> to close the dialog and go back to
-              the <em>page</em> you were reading
+              <TooltipText>
+                Press <strong>Esc</strong> to close the dialog and go back
+                to the <em>page</em> you were reading
+              </TooltipText>
             </TooltipPopover>
           </TooltipProvider>
         `}
@@ -148,8 +180,10 @@ export default function TooltipExamples() {
               Close
             </TooltipAnchor>
             <TooltipPopover {...openTooltipProps}>
-              Press <strong>Esc</strong> to close the dialog and go back to the{" "}
-              <em>page</em> you were reading
+              <TooltipText>
+                Press <strong>Esc</strong> to close the dialog and go back to
+                the <em>page</em> you were reading
+              </TooltipText>
             </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
@@ -166,7 +200,7 @@ export default function TooltipExamples() {
               </ButtonSlot>
             </TooltipAnchor>
             <TooltipPopover>
-              Bold
+              <TooltipText>Bold</TooltipText>
               <TooltipSlot $kind="text">
                 <Kbd>⌘B</Kbd>
               </TooltipSlot>
@@ -190,7 +224,7 @@ export default function TooltipExamples() {
               </ButtonSlot>
             </TooltipAnchor>
             <TooltipPopover {...openTooltipProps}>
-              Bold
+              <TooltipText>Bold</TooltipText>
               <TooltipSlot $kind="text">
                 <Kbd>⌘B</Kbd>
               </TooltipSlot>
@@ -206,7 +240,7 @@ export default function TooltipExamples() {
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Search</TooltipAnchor>
             <TooltipPopover>
-              Search
+              <TooltipText>Search</TooltipText>
               <TooltipSlot $square={false} $size="xl">
                 <Kbd $kind="flat" $layer="transparent" $border>
                   ⌘K
@@ -224,7 +258,7 @@ export default function TooltipExamples() {
               Search
             </TooltipAnchor>
             <TooltipPopover {...openTooltipProps}>
-              Search
+              <TooltipText>Search</TooltipText>
               <TooltipSlot $square={false} $size="xl">
                 <Kbd $kind="flat" $layer="transparent" $border>
                   ⌘K
@@ -245,7 +279,7 @@ export default function TooltipExamples() {
               <TooltipSlot>
                 <Check />
               </TooltipSlot>
-              Copied
+              <TooltipText>Copied</TooltipText>
             </TooltipPopover>
           </TooltipProvider>
         `}
@@ -259,7 +293,7 @@ export default function TooltipExamples() {
               <TooltipSlot>
                 <Check />
               </TooltipSlot>
-              Copied
+              <TooltipText>Copied</TooltipText>
             </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>
@@ -272,7 +306,7 @@ export default function TooltipExamples() {
           <TooltipProvider open>
             <TooltipAnchor render={<Button $kind="bevel" />}>Inbox</TooltipAnchor>
             <TooltipPopover>
-              Unread messages
+              <TooltipText>Unread messages</TooltipText>
               <TooltipSlot $kind="badge">3</TooltipSlot>
             </TooltipPopover>
           </TooltipProvider>
@@ -284,10 +318,46 @@ export default function TooltipExamples() {
               Inbox
             </TooltipAnchor>
             <TooltipPopover {...openTooltipProps}>
-              Unread messages
+              <TooltipText>Unread messages</TooltipText>
               <TooltipSlot $kind="badge">3</TooltipSlot>
             </TooltipPopover>
           </TooltipProvider>
+        </ExampleStage>
+      </Example>
+
+      <Example
+        title="Text and slot props"
+        description="The Tooltip shorthand renders its text in a TooltipText, and its startSlot and endSlot in TooltipSlot parts, from props or an element."
+        code={`
+          <Tooltip
+            text="Copied"
+            startSlot={{ children: <Check /> }}
+            endSlot={
+              <TooltipSlot $kind="text">
+                <Kbd>⌘C</Kbd>
+              </TooltipSlot>
+            }
+          >
+            <Button $kind="bevel">Copy</Button>
+          </Tooltip>
+        `}
+      >
+        <ExampleStage anchor="end" height={22}>
+          <Tooltip
+            {...openTooltipProps}
+            open
+            text="Copied"
+            startSlot={{ children: <Check /> }}
+            endSlot={
+              <TooltipSlot $kind="text">
+                <Kbd>⌘C</Kbd>
+              </TooltipSlot>
+            }
+          >
+            <Button $kind="bevel" aria-keyshortcuts="Meta+C">
+              Copy
+            </Button>
+          </Tooltip>
         </ExampleStage>
       </Example>
 

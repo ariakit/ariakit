@@ -5,7 +5,10 @@ import {
   SkeletonBox,
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
-import { TooltipSlot } from "@ariakit/ui/components/tooltip.ariakit.react";
+import {
+  TooltipSlot,
+  TooltipText,
+} from "@ariakit/ui/components/tooltip.ariakit.react";
 import { button, buttonGroup, buttonSlot } from "@ariakit/ui/styles/button";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
 import { clsx } from "clsx";
@@ -64,7 +67,7 @@ export default function Thumbnail() {
               </span>
               {tool.hovered && (
                 <span {...tooltipProps} data-open>
-                  Italic
+                  <TooltipText>Italic</TooltipText>
                   <TooltipSlot $kind="text">
                     <Kbd>⌘I</Kbd>
                   </TooltipSlot>

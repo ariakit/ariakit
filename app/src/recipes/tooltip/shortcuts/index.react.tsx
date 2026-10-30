@@ -36,16 +36,14 @@ export default function Example() {
       {tools.map((tool) => (
         <Tooltip
           key={tool.key}
-          content={
-            <>
-              {tool.label}
-              <TooltipSlot $kind="text">
-                <Kbd>
-                  {apple ? "⌘" : "Ctrl+"}
-                  {tool.key}
-                </Kbd>
-              </TooltipSlot>
-            </>
+          text={tool.label}
+          endSlot={
+            <TooltipSlot $kind="text">
+              <Kbd>
+                {apple ? "⌘" : "Ctrl+"}
+                {tool.key}
+              </Kbd>
+            </TooltipSlot>
           }
         >
           {/* The editor of an app handles the shortcuts, and

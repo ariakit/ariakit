@@ -57,7 +57,7 @@ export default function Example() {
         <Input id={id} readOnly value={INVITE_LINK} />
         <InputSlot $size="2xl">
           {/* The tooltip stays open after the click and confirms the copy. */}
-          <Tooltip content={state === "copied" ? "Copied" : "Copy link"}>
+          <Tooltip text={state === "copied" ? "Copied" : "Copy link"}>
             <Button aria-label="Copy link" $size="sm" onClick={copy}>
               <ButtonSlot>
                 {state === "copied" ? <CheckIcon /> : <CopyIcon />}
