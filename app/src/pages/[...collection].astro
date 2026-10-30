@@ -140,8 +140,11 @@ const cardHover = hover.jsx({ $hoverOffset: 0.5 });
     }
   </header>
   <div class="@container/cards">
+    {/* Dense placement can move a card above cards that come before it in
+        the source, so focus and reading follow the visual rows where the
+        browser supports reading-flow. */}
     <ul
-      class="grid auto-rows-[12.5rem] grid-flow-dense grid-cols-1 gap-3 @md/cards:grid-cols-2 @2xl/cards:auto-rows-[15rem] @2xl/cards:grid-cols-3 @2xl/cards:gap-4 @5xl/cards:grid-cols-4"
+      class="grid auto-rows-[12.5rem] grid-flow-dense grid-cols-1 gap-3 [reading-flow:grid-rows] @md/cards:grid-cols-2 @2xl/cards:auto-rows-[15rem] @2xl/cards:grid-cols-3 @2xl/cards:gap-4 @5xl/cards:grid-cols-4"
     >
       {
         cards.map(({ entry, count, thumbnail }) => (
