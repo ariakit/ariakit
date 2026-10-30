@@ -70,18 +70,22 @@ export const control = cv({
  * inverted surface fades, a neutral fill stays, and images fade.
  */
 export function getDisabledContentClass(variants: VariantProps<typeof layer>) {
+  // An input group is disabled through its entry controls, so its rules leave
+  // out the content of an enabled action button in the group.
   const classes = [
     // Fade image pixels only; fading the whole element would reduce text
     // contrast. DOM disabled state can change without rerendering the recipe.
     "group-[.disabled]/control:[&_img]:opacity-50",
     "group-ui-disabled/control:[&_img]:opacity-50",
     "group-ui-disabled-within/choice:[&_img]:opacity-50",
+    "group-ui-field-disabled/control:[&_img:not(:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:opacity-50",
   ];
   // Without a fill, the content takes the text color of the control.
   if (!hasLayerBackground(variants)) return classes;
   classes.push(
     // A fill sets its own text color, which the control's direct-child text
-    // rules may not reach.
+    // rules may not reach. A disabled input group sets the ink on its
+    // descendants itself, except in forced colors.
     "group-[.disabled]/control:ak-ink-0",
     "group-ui-disabled/control:ak-ink-0",
     "group-ui-disabled-within/choice:ak-ink-0",
@@ -92,10 +96,12 @@ export function getDisabledContentClass(variants: VariantProps<typeof layer>) {
     "group-[.disabled]/control:ak-layer-fade-80",
     "group-ui-disabled/control:ak-layer-fade-80",
     "group-ui-disabled-within/choice:ak-layer-fade-80",
+    "not-[:is(button,input,a):not(:disabled,[aria-disabled='true'])_*]:group-ui-field-disabled/control:ak-layer-fade-80",
     // An edge can follow the surface color, so it would still look enabled.
     "group-[.disabled]/control:ak-edge-5",
     "group-ui-disabled/control:ak-edge-5",
     "group-ui-disabled-within/choice:ak-edge-5",
+    "not-[:is(button,input,a):not(:disabled,[aria-disabled='true'])_*]:group-ui-field-disabled/control:ak-edge-5",
   );
   return classes;
 }
