@@ -128,6 +128,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         const input = query(box).textbox("Filter components");
         await input.click();
         await test.expect(input).toBeFocused();
+        // The click leaves the pointer over the input, and this capture shows
+        // focus alone.
+        await page.mouse.move(0, 0);
         await captureInView({
           visual,
           box,
