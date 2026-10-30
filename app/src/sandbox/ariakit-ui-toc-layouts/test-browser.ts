@@ -6,17 +6,25 @@ import {
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
-const tocs = {
-  "five-levels": "Five levels",
-  "five-levels-diagonal": "Five levels, diagonal",
-  "straight-rail": "Straight rail",
-  "indent-only": "Indent only",
-  "wide-thumb": "Wide thumb",
-  "bold-current-link": "Bold current link",
-  "twelve-chapters": "Twelve chapters",
-  "marked-parents": "Marked parents",
-  "right-to-left": "Right to left",
-  "right-to-left-diagonal": "Right to left, diagonal",
+// The tables of contents at rest, in two tests. Without a previous capture,
+// each capture takes a second equal one, and all of them in one test exceed the
+// budget in Safari.
+// https://github.com/ariakit/ariakit/issues/8195
+const restingTocs = {
+  "shows the guide looks at rest": {
+    "five-levels": "Five levels",
+    "five-levels-diagonal": "Five levels, diagonal",
+    "straight-rail": "Straight rail",
+    "indent-only": "Indent only",
+    "wide-thumb": "Wide thumb",
+  },
+  "shows the link styles, the chapters, and right to left at rest": {
+    "bold-current-link": "Bold current link",
+    "twelve-chapters": "Twelve chapters",
+    "marked-parents": "Marked parents",
+    "right-to-left": "Right to left",
+    "right-to-left-diagonal": "Right to left, diagonal",
+  },
 };
 
 // Puts a heading where a click on its link would, at the scroll padding.
@@ -27,29 +35,31 @@ async function scrollToHeading(page: Page, id: string) {
 }
 
 withCaptures(import.meta.dirname, async ({ id, test, query }) => {
-  test("shows the guide looks at rest @visual", async ({ page, q, visual }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      // A row deeper than the third level is current, so its parents are
-      // marked, chapter rows have no visible section, and the right to left
-      // rows end the article.
-      await scrollToHeading(page, "deep-pnpm");
-      const nav = query(q.navigation("Five levels"));
-      await test
-        .expect(nav.link("With pnpm"))
-        .toHaveAttribute("aria-current", "location");
-      // The tables of contents wrap below the viewport. The headings scroll in
-      // their own box, so the window scroll that centers each capture keeps the
-      // current heading and the rows on screen.
-      for (const [item, name] of Object.entries(tocs)) {
-        await captureInView({
-          visual,
-          box: q.navigation(name),
-          colorScheme,
-          item: `${id}/${item}`,
-        });
-      }
+  for (const [title, tocs] of Object.entries(restingTocs)) {
+    test(`${title} @visual`, async ({ page, q, visual }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        // A row deeper than the third level is current, so its parents are
+        // marked, chapter rows have no visible section, and the right to left
+        // rows end the article.
+        await scrollToHeading(page, "deep-pnpm");
+        const nav = query(q.navigation("Five levels"));
+        await test
+          .expect(nav.link("With pnpm"))
+          .toHaveAttribute("aria-current", "location");
+        // The tables of contents wrap below the viewport. The headings scroll
+        // in their own box, so the window scroll that centers each capture
+        // keeps the current heading and the rows on screen.
+        for (const [item, name] of Object.entries(tocs)) {
+          await captureInView({
+            visual,
+            box: q.navigation(name),
+            colorScheme,
+            item: `${id}/${item}`,
+          });
+        }
+      });
     });
-  });
+  }
 
   test("lights the ring of a two-digit marker unless rings are off @visual", async ({
     page,
