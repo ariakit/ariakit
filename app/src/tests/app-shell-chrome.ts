@@ -266,6 +266,39 @@ test("collection pages list entries without the site navigation", async ({
   );
 });
 
+// At three columns, dense placement moves a card above cards that come before
+// it in the source. Safari doesn't support reading-flow yet, so this test runs
+// only in Chrome.
+// https://github.com/ariakit/ariakit/pull/8180#discussion_r4420926013
+test("collection page cards take focus in their visual order", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 900, height: 900 });
+  await gotoAndSettle(page, "/react/recipes/");
+  const cards = query(q.list().filter({ has: q.link("App Shell") }));
+  const positions = await cards.link().evaluateAll((links) =>
+    links.map((link) => {
+      const { top, left } = link.getBoundingClientRect();
+      const name = link.querySelector("[id$='-label']")?.textContent ?? "";
+      return { name, top: Math.round(top), left };
+    }),
+  );
+  const sourceOrder = positions.map((position) => position.name);
+  const visualOrder = positions
+    .toSorted((a, b) => a.top - b.top || a.left - b.left)
+    .map((position) => position.name);
+  // The layout must move a card, or the focus order would match either way.
+  expect(visualOrder).not.toEqual(sourceOrder);
+  const [first, ...rest] = visualOrder;
+  if (!first) throw new Error("No cards");
+  await cards.link(first, { exact: true }).focus();
+  for (const name of rest) {
+    await page.keyboard.press("Tab");
+    await expect(cards.link(name, { exact: true })).toBeFocused();
+  }
+});
+
 test("theme panel applies a mode to the site and its previews", async ({
   page,
   q,
