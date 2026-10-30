@@ -7,14 +7,12 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
-import type { BarOffset, SlotSize } from "./control.ts";
+import type { BarOffset } from "./control.ts";
 import {
   barBase,
   getBarOffset,
   getNamedBarOffsetClass,
-  getSlotSizeClass,
   isNamedBarOffset,
-  isSlotSize,
 } from "./control.ts";
 import {
   disclosure,
@@ -23,6 +21,8 @@ import {
   disclosureGroup,
 } from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
+import type { SlotSize } from "./slot-frame.ts";
+import { getSlotSizeClass, isSlotSize } from "./slot-frame.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
@@ -236,8 +236,8 @@ const navSlotBase = cv({
     },
   },
   defaultVariants: {
-    // Resolve before controlSlot refinement converts the named sizes of badges
-    // and avatars.
+    // Resolve before slotFrameSlot refinement converts the named sizes of
+    // badges and avatars.
     $size: "auto",
   },
 });

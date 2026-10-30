@@ -75,10 +75,10 @@ export const kbd = cv({
         // keep the space above and below the capitals on the face, above the
         // lip. The corners stay concentric with the control through the radius
         // the slot frame resolves.
-        "[.control-slot>&]:self-stretch [.control-slot>&]:content-center",
-        "[.control-slot>&]:text-[min(1em,max(0.875em,var(--slot-height)-max(2px,0.15em)))]",
-        "[.control-slot>&]:px-[calc((var(--slot-height)-max(2px,0.15em)-1cap)/2-0.06em)]",
-        "[.control-slot>&]:rounded-[max(0.125em,var(--ak-frame-radius))]",
+        "[.slot-frame-slot>&]:self-stretch [.slot-frame-slot>&]:content-center",
+        "[.slot-frame-slot>&]:text-[min(1em,max(0.875em,var(--slot-height)-max(2px,0.15em)))]",
+        "[.slot-frame-slot>&]:px-[calc((var(--slot-height)-max(2px,0.15em)-1cap)/2-0.06em)]",
+        "[.slot-frame-slot>&]:rounded-[max(0.125em,var(--ak-frame-radius))]",
       ],
       flat: [
         // With 0.15em padding around the capitals, the chip is 1.3 times its
@@ -99,14 +99,14 @@ export const kbd = cv({
         // In a slot, fill its height like an icon, so the slot size sets the
         // chip size. The text grows with the slot up to the keycap size, and
         // the sides keep the space above and below the capitals.
-        "[.control-slot>&]:self-stretch [.control-slot>&]:content-center",
-        "[.control-slot>&]:text-[min(0.875em,var(--slot-height)/1.3)]",
+        "[.slot-frame-slot>&]:self-stretch [.slot-frame-slot>&]:content-center",
+        "[.slot-frame-slot>&]:text-[min(0.875em,var(--slot-height)/1.3)]",
         // Outside a slot, a key sits inside text, not along the edges of its
         // parent frame, so its corners do not follow the parent's. In a slot,
         // the frame keeps them concentric with the control.
-        "[&:not(.control-slot>*)]:ak-frame-force",
+        "[&:not(.slot-frame-slot>*)]:ak-frame-force",
         // The default $px reads this side padding, which fits the slot height.
-        "[.control-slot>&]:[--kbd-slot-px:calc((var(--slot-height)-1cap)/2-0.06em)]",
+        "[.slot-frame-slot>&]:[--kbd-slot-px:calc((var(--slot-height)-1cap)/2-0.06em)]",
       ],
       plain: "inline-flex items-center",
     },

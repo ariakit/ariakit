@@ -6,7 +6,7 @@ import {
   createOptionalRender,
   hasContent,
 } from "../react-utils/create-render.react.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 import { tooltip, tooltipSlot } from "../styles/tooltip.ts";
 
 type TooltipProviderPropKey =

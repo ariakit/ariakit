@@ -1,7 +1,6 @@
 import { cv } from "clava";
-import { controlSlot } from "./control.ts";
 import { popover } from "./popover.ts";
-import { slotFrame } from "./slot-frame.ts";
+import { slotFrame, slotFrameSlot } from "./slot-frame.ts";
 
 /**
  * A compact popover with the optical side padding of a text frame and wrapping
@@ -17,7 +16,7 @@ export const tooltip = cv({
     // Without slots, text flows as a paragraph, so inline elements such as
     // <strong> stay on its lines. A flex row would make each text run and
     // element a separate column. A caller display class needs ! to replace it.
-    "[&:not(:has(>.control-slot))]:block",
+    "[&:not(:has(>.slot-frame-slot))]:block",
     // Allow caller max-w-* utilities to override the wrapping limit.
     "[--tooltip-max-width:--spacing(80)] max-w-(--tooltip-max-width)",
     // A tooltip that the next tooltip replaces at once hides without its exit
@@ -67,7 +66,7 @@ export const tooltip = cv({
  * An icon, badge, keyboard key, or short text beside the tooltip text, aligned
  * like a slot of a control.
  */
-export const tooltipSlot = controlSlot;
+export const tooltipSlot = slotFrameSlot;
 
 /**
  * The positioned wrapper of a tooltip popup, through the `wrapperProps` of

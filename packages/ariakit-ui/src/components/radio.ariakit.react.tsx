@@ -8,7 +8,6 @@ import {
   useDescription,
   useLabelDescription,
 } from "../react-utils/use-description.react.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   radio,
   radioCard,
@@ -25,6 +24,7 @@ import {
   radioGroupLabel,
   radioLabel,
 } from "../styles/radio.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface RadioProviderProps extends ak.RadioProviderProps {}
 

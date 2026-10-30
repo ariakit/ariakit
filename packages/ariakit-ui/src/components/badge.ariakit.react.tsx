@@ -2,7 +2,7 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { badge, badgeLabel, badgeSlot } from "../styles/badge.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface BadgeProps
   extends ak.RoleProps<"span">, VariantProps<typeof badge> {}

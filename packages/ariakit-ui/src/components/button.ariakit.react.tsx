@@ -16,7 +16,7 @@ import {
   buttonSeparator,
   buttonSlot,
 } from "../styles/button.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export type ButtonProps<
   R extends RecipeLike<typeof button, R> = typeof button,

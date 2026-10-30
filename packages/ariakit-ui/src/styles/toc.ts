@@ -17,9 +17,12 @@ export const toc = cv({
     "[--toc-indent:--spacing(3)]",
     "[--toc-guide-width:1px]",
     // Normalize the 0–100 contrast scale so high contrast adds only 20%, like
-    // the bar of a nav link.
-    "[--toc-thumb-width:calc(2px*(1+0.2*var(--contrast,0)/100))]",
-    "[--toc-marker-halo:--spacing(1)]",
+    // the bar of a nav link. Borders snap to device pixels, so a fractional
+    // width would draw the thumb beside the guide instead of over it.
+    "[--toc-thumb-width:round(calc(var(--toc-thumb-base-width,1px)*(1+0.2*var(--contrast,0)/100)),1px)]",
+    // The ring of a marker draws inside the halo, so a wider thumb widens the
+    // halo to keep the ring off the number.
+    "[--toc-marker-halo:max(--spacing(1),var(--toc-thumb-width))]",
     // Colors resolve against this element, so pieces inside a current link
     // keep the colors of the surface around the rows. The thumb takes the text
     // color at full strength.
@@ -57,6 +60,16 @@ export const toc = cv({
       diagonal: "toc-diagonal [--toc-bends:1] [--toc-curve:0]",
       rail: "toc-rail [--toc-bends:0] [--toc-curve:1]",
       false: "toc-unguided",
+    },
+    /**
+     * Sets the thickness of the thumb and the marker rings. Numbers are pixels;
+     * other values are CSS lengths. High contrast adds 20%, and the result
+     * rounds to whole pixels. Defaults to 1px.
+     */
+    $thumbWidth(value?: number | (string & {})) {
+      if (value == null) return;
+      const width = typeof value === "number" ? `${value}px` : value;
+      return { style: { "--toc-thumb-base-width": width } };
     },
     /**
      * Numbers the top-level rows with markers on the guide. The `ordered` prop
@@ -300,7 +313,7 @@ export const tocLinkThumb = cv({
   extend: [tocLinkPiece, tocThumbGlide],
   class: [
     "toc-link-thumb",
-    "[--toc-line:var(--toc-thumb-width,2px)] [--toc-line-color:var(--toc-thumb-color)]",
+    "[--toc-line:var(--toc-thumb-width,1px)] [--toc-line-color:var(--toc-thumb-color)]",
     // Negative side insets keep the slanted lines of diagonal bends whole. A
     // piece that the range doesn't cut keeps its edges outside the clip, which
     // otherwise leaves seams between pieces at fractional pixel positions.

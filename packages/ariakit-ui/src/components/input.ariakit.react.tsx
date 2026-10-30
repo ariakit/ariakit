@@ -15,7 +15,6 @@ import {
   hasContent,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
-import { wrapsSlotChildren } from "../styles/control.ts";
 import {
   input,
   inputDescription,
@@ -28,6 +27,7 @@ import {
   inputLabel,
   inputSlot,
 } from "../styles/input.ts";
+import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface InputProps
   extends
