@@ -50,6 +50,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await q.combobox("Main block padding").selectOption(option);
       await expect(intro).toHaveCSS("padding-block-start", `${space}px`);
       await expect(body).toHaveCSS("padding-block-end", `${space}px`);
+      // The edges between the intro and the body keep three bar steps.
+      await expect(intro).toHaveCSS("padding-block-end", "12px");
+      await expect(body).toHaveCSS("padding-block-start", "12px");
       await expect(q.region("Main content")).toHaveCSS(
         "scroll-margin-block-start",
         `${64 + Math.max(16, space)}px`,
