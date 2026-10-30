@@ -243,10 +243,13 @@ export interface ShellMainProps
  * `$p` sets a shared gutter. Use a CSS length for responsive padding, such as
  * `$p="var(--page-gutter)"` with
  * `className="[--page-gutter:1rem] @3xl/shell:[--page-gutter:2rem]"`. The query
- * uses the nearest shell width. A part's own `$p` overrides this value.
- * `$maxWidth` sets the shared content width limit. Use a number or CSS length
- * to align columns across text sizes. Percentages depend on each part's width
- * and can misalign wider headers or intros. Parts can override `$maxWidth`.
+ * uses the nearest shell width. A part's own `$p` overrides this value. `$py`
+ * sets the space above the intro, or above the body without an intro, and below
+ * the body. By default, it is each part's gutter, so the content has the same
+ * space on all sides; `$py="none"` removes it. `$maxWidth` sets the shared
+ * content width limit. Use a number or CSS length to align columns across text
+ * sizes. Percentages depend on each part's width and can misalign wider headers
+ * or intros. Parts can override `$maxWidth`.
  * @example
  * <Shell>
  *   <ShellMain $p={4}>

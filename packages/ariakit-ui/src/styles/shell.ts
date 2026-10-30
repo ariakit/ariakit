@@ -645,16 +645,18 @@ const content = cx(
   // the column.
   "[&>:is(.control,.badge)]:justify-self-start",
   // A leading or trailing wide or full band touches the bars around the
-  // section.
-  "[&:has(>:is(.shell-main-wide,.shell-main-full):first-child)]:pbs-0",
-  "[&:has(>:is(.shell-main-wide,.shell-main-full):last-child)]:pbe-0",
+  // section. The space between the intro and the body stays.
+  "[&:not(.shell-main-intro~*):has(>:is(.shell-main-wide,.shell-main-full):first-child)]:pbs-0",
+  "[&:not(.shell-main-intro):has(>:is(.shell-main-wide,.shell-main-full):last-child)]:pbe-0",
   // Publish gutter spacing as frame padding so nested frame corners remain
   // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
   "ak-frame-p-(--shell-gutter) px-0",
   "print:overflow-visible",
   "*:col-[content] *:min-w-0",
-  "[&_[id]]:scroll-mbs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+1rem)]",
+  // Fragment targets clear the space above the parts, and at least 1rem, so a
+  // table of contents marks the first heading current at the top of the page.
+  "[&_[id]]:scroll-mbs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+max(1rem,var(--shell-main-py,var(--shell-gutter))))]",
 );
 
 const contentVariants = {
@@ -675,9 +677,11 @@ const contentVariants = {
     return { style: { "--shell-main-max-width": getSpacingValue(value) } };
   },
   /**
-   * Sets the minimum content gutter and block padding. Numbers scale the
-   * spacing token. Inherits from main by default. `none` removes the space;
-   * `unset` leaves the CSS gutter unchanged.
+   * Sets the minimum content gutter. Unless main sets `$py`, it also sets the
+   * space above the intro, or above the body without an intro, and below the
+   * body. The intro and the body keep three steps each on their facing edges.
+   * Numbers scale the spacing token. Inherits from main by default. `none`
+   * removes the space; `unset` leaves the CSS gutter unchanged.
    */
   $p(value?: "unset" | "none" | (string & {}) | number) {
     if (value == null) return;
@@ -699,6 +703,9 @@ export const shellMain = cv({
     "shell-slot-state",
     // The main header derives its own gutter from this one.
     "[--shell-main-gutter:var(--shell-gutter)]",
+    // Without `$py`, the parts spend their own gutter on their edges next to
+    // the bars. A nested main doesn't take the space set on an outer one.
+    "[--shell-main-py:initial]",
     // Nested shells inside main also clear its sticky local header. Only the
     // first two levels publish offsets: the supported third level consumes them.
     "[.shell:not(.shell_*)>&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
@@ -707,10 +714,31 @@ export const shellMain = cv({
   variants: {
     /**
      * Sets the shared main gutter. Numbers scale the spacing token. A CSS
-     * length can use container queries on the nearest shell. Defaults to 3.
+     * length can use container queries on the nearest shell. Defaults to 3. Use
+     * `$py` to set the space above and below the parts apart from it.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       return contentVariants.$p(value);
+    },
+    /**
+     * Sets the space above the intro, or above the body without an intro, and
+     * below the body. Numbers scale the spacing token; other values must be CSS
+     * lengths, not percentages. Defaults to `gutter`, each part's gutter, so
+     * the content has the same space on all sides until a centered column
+     * leaves more on the sides. `none` removes the space.
+     */
+    $py(value?: "gutter" | "none" | (string & {}) | number) {
+      if (value == null) return;
+      if (value === "gutter") return;
+      // The registered length resolves relative units at main.
+      return {
+        style: {
+          "--shell-main-py-length": getSpacingValue(
+            value === "none" ? 0 : value,
+          ),
+          "--shell-main-py": "var(--shell-main-py-length)",
+        },
+      };
     },
     /**
      * Sets the shared maximum content width. Numbers scale the spacing token.
@@ -722,7 +750,7 @@ export const shellMain = cv({
       return contentVariants.$maxWidth(value);
     },
   },
-  defaultVariants: { $p: 3 },
+  defaultVariants: { $p: 3, $py: "gutter" },
 });
 
 /**
@@ -814,8 +842,11 @@ export const shellMainIntro = cv({
     content,
     "shell-main-intro content-start col-start-1 col-end-[calc(2+var(--shell-intro-free-1)+var(--shell-intro-free-1)*var(--shell-intro-free-2))] row-[intro] overflow-x-clip",
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))]",
-    // Separate the title from the bars above.
-    "pbs-[calc(var(--shell-gutter)*3)]",
+    // The intro starts `$py` from main, or its own gutter, below the header.
+    // Three bar steps below the intro and three above the body match the
+    // default sidebar body padding, so a sidebar that starts at the body lines
+    // up with its first line. The padding-block utility sorts before py-*.
+    "[padding-block:var(--shell-main-py,var(--shell-gutter))_calc(var(--shell-header-step)*3)]",
   ],
   variants: contentVariants,
   defaultVariants: { $p: "unset" },
@@ -828,6 +859,11 @@ export const shellMainBody = cv({
     content,
     "shell-main-body content-start col-[main] row-[body] overflow-x-clip",
     "[--shell-content-end-space:0px]",
+    // The body keeps `$py` from main, or its own gutter, above and below it.
+    // After an intro, it starts three bar steps below the intro.
+    "[--shell-main-pbs:var(--shell-main-py,var(--shell-gutter))]",
+    "[.shell-main-intro~&]:[--shell-main-pbs:calc(var(--shell-header-step)*3)]",
+    "[padding-block:var(--shell-main-pbs)_var(--shell-main-py,var(--shell-gutter))]",
   ],
   variants: contentVariants,
   defaultVariants: { $p: "unset" },

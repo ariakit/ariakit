@@ -370,6 +370,12 @@ body > * {
   initial-value: 12px;
 }
 
+@property --shell-main-py-length {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @property --shell-main-max-width {
   syntax: "<length-percentage>";
   inherits: true;

@@ -2,6 +2,12 @@ import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 
+// Main's gutter is 1rem, or 2rem from a 64rem shell. Fragment targets keep it
+// below the sticky headers, so it covers the space above the intro.
+function getScrollGap(shellWidth: number) {
+  return shellWidth < 1024 ? 16 : 32;
+}
+
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
@@ -19,6 +25,41 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(panel).toHaveCSS("max-height", "576px");
     await q.checkbox("Size container pane").uncheck();
     await expect(panel).toHaveCSS("max-height", "836px");
+  });
+
+  test("sets the space above and below the parts with $py on main", async ({
+    q,
+    page,
+  }) => {
+    await q.combobox("Main header visibility").selectOption("never");
+    // A set space resolves at main, so the larger text of the intro doesn't
+    // change it.
+    await q.combobox("Local text size").selectOption("text-lg");
+    const intro = page.locator(".shell-main-intro");
+    const body = q.main().locator(":scope > .shell-main-body");
+    const nestedBody = page.locator(
+      "#nested-parts-shell > .shell-main > .shell-main-body",
+    );
+    // At main's 16px: the 2rem page gutter, none, 10 steps, and 2em.
+    for (const [option, space] of [
+      ["Gutter", 32],
+      ["None", 0],
+      ["10 steps", 40],
+      ["2em", 32],
+    ] as const) {
+      await q.combobox("Main block padding").selectOption(option);
+      await expect(intro).toHaveCSS("padding-block-start", `${space}px`);
+      await expect(body).toHaveCSS("padding-block-end", `${space}px`);
+      // The edges between the intro and the body keep three bar steps.
+      await expect(intro).toHaveCSS("padding-block-end", "12px");
+      await expect(body).toHaveCSS("padding-block-start", "12px");
+      await expect(q.region("Main content")).toHaveCSS(
+        "scroll-margin-block-start",
+        `${64 + Math.max(16, space)}px`,
+      );
+      // The nested main keeps its own 1rem gutter.
+      await expect(nestedBody).toHaveCSS("padding-block-start", "16px");
+    }
   });
 
   for (const from of ["intro", "body"]) {
@@ -94,7 +135,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(nestedHeader).toHaveCSS("top", visible ? "128px" : "64px");
         await expect(q.region("Main content")).toHaveCSS(
           "scroll-margin-block-start",
-          visible ? "144px" : "80px",
+          `${(visible ? 128 : 64) + getScrollGap(width)}px`,
         );
       }
       await q.checkbox("Narrow shell").check();
@@ -133,7 +174,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(nestedHeader).toBeVisible();
         await expect(q.region("Main content")).toHaveCSS(
           "scroll-margin-block-start",
-          "80px",
+          `${64 + getScrollGap(width)}px`,
         );
         await page.evaluate(() => window.scrollTo(0, 0));
         expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
