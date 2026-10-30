@@ -474,12 +474,12 @@ const hasSidebar = sidebar && navigation.length > 0;
               use main bands. */}
           {
             Astro.slots.has("intro") && (
-              <ShellMainIntro className="gap-y-4">
+              <ShellMainIntro className="gap-y-4 pt-10 pb-6">
                 <slot name="intro" />
               </ShellMainIntro>
             )
           }
-          <ShellMainBody className="gap-y-8">
+          <ShellMainBody className="gap-y-8 pb-16">
             {/* The examples heading is out of the flow, so it doesn't add a
                 gap. It sits a little above the gallery, where the table of
                 contents scrolls, so it reaches the top of the page before the

@@ -161,10 +161,12 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
           <ShellSidebarBody>More navigation</ShellSidebarBody>
         </ShellSidebar>
       )}
+      {/* Like the site's gutter, the page gutter is in em, so it resolves at
+          main whatever the text size of a part. */}
       <ShellMain
         $p={spacingGutter ? 3 : "var(--page-gutter)"}
         $maxWidth={unbounded ? "100%" : 120}
-        className="[--page-gutter:1rem] @5xl/shell:[--page-gutter:2rem]"
+        className="[--page-gutter:--spacing(4)] @5xl/shell:[--page-gutter:--spacing(8)]"
       >
         {showHeader && (
           <ShellMainHeader

@@ -9,6 +9,14 @@ export async function selectScenario(q: Query, scenario: string) {
   await q.combobox("Scenario").selectOption(scenario);
 }
 
+/**
+ * The default gutter of main and the bar insets at the shell's 16px text size,
+ * which grows from 12px at a 525px shell to 24px at a 1225px shell.
+ */
+export function getGutter(shellWidth: number) {
+  return Math.min(24, Math.max(12, 3 + (shellWidth / 100) * 1.5 * (16 / 14)));
+}
+
 /** The shell root on the page: the outermost one when shells are nested. */
 export function getShell(page: Page) {
   return page.locator(".shell").first();

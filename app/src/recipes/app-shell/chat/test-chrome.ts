@@ -40,7 +40,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const sent = messages.listitem().last();
     await test.expect(sent).toContainText("Ship it");
     await test.expect(sent).toBeInViewport({ ratio: 1 });
-    // The message ends above the composer instead of under it.
+    // The message ends above the composer instead of under it. Scroll offsets
+    // snap to whole pixels, so a fractional gutter can leave the message less
+    // than a pixel past the composer's edge.
     await test.expect
       .poll(async () => {
         const [message, bar] = await Promise.all([
@@ -49,6 +51,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         ]);
         return (bar?.y ?? 0) - (message?.y ?? 0) - (message?.height ?? 0);
       })
-      .toBeGreaterThanOrEqual(0);
+      .toBeGreaterThan(-1);
   });
 });

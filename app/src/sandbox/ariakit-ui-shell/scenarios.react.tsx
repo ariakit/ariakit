@@ -8,6 +8,13 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  Dialog,
+  DialogDisclosure,
+  DialogDismiss,
+  DialogHeading,
+  DialogProvider,
+} from "@ariakit/ui/components/dialog.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Shell,
@@ -373,7 +380,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
             </a>
           </ShellSidebarBody>
         </ShellSidebar>
-        <ShellMain $py="none">
+        <ShellMain>
           <ShellMainBody $p={0}>
             <div className="h-40">Outer introduction</div>
             <Shell id="middle-shell" $size="md">
@@ -394,7 +401,7 @@ export function NestedScenario({ controls }: ScenarioProps) {
                   </a>
                 </ShellSidebarBody>
               </ShellSidebar>
-              <ShellMain $py="none">
+              <ShellMain>
                 <ShellMainBody $p={0}>
                   <div className="h-40">Middle introduction</div>
                   <Shell id="inner-shell" $size="md">
@@ -465,5 +472,44 @@ export function NestedScenario({ controls }: ScenarioProps) {
           document.body,
         )}
     </>
+  );
+}
+
+/**
+ * A shell inside a dialog. The dialog renders outside the page shell, so the
+ * shell inside it paints the dialog's corners and keeps the narrow gutter and
+ * bar insets at every width.
+ */
+export function DialogScenario({ controls }: ScenarioProps) {
+  return (
+    <Shell $size="md">
+      <ShellHeader>
+        <ShellHeaderEnd>{controls}</ShellHeaderEnd>
+      </ShellHeader>
+      <ShellMain>
+        <ShellMainBody>
+          <DialogProvider>
+            <DialogDisclosure>Open the release notes</DialogDisclosure>
+            <Dialog $p="none" className="[--dialog-max-width:60rem]">
+              <Shell>
+                <ShellHeader>
+                  <ShellHeaderStart>
+                    <DialogHeading>Release notes</DialogHeading>
+                  </ShellHeaderStart>
+                  <ShellHeaderEnd>
+                    <DialogDismiss />
+                  </ShellHeaderEnd>
+                </ShellHeader>
+                <ShellMain>
+                  <ShellMainBody>
+                    <p>The dialog keeps the same space around these notes.</p>
+                  </ShellMainBody>
+                </ShellMain>
+              </Shell>
+            </Dialog>
+          </DialogProvider>
+        </ShellMainBody>
+      </ShellMain>
+    </Shell>
   );
 }

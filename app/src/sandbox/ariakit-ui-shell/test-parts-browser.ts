@@ -2,9 +2,15 @@ import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 
-// Fragment targets keep a 3em scroll gap below the sticky headers, at the
-// shell's 16px text size.
-const SCROLL_GAP = 48;
+// Main's gutter is 1em, or 2em from a 64rem shell, at main's 16px. Fragment
+// targets keep it below the sticky headers, so it covers the space above the
+// intro.
+function getScrollGap(shellWidth: number) {
+  return shellWidth < 1024 ? 16 : 32;
+}
+
+// The narrow shell's maximum width, 60rem.
+const NARROW_SHELL_WIDTH = 960;
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
@@ -46,7 +52,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect(nestedHeader).toHaveCSS("top", "64px");
       await expect(q.region("Main content")).toHaveCSS(
         "scroll-margin-block-start",
-        `${64 + SCROLL_GAP}px`,
+        `${64 + getScrollGap(NARROW_SHELL_WIDTH)}px`,
       );
       // Playwright can scroll the page to click "Narrow shell", such as when it
       // retries the click while the columns still move.
@@ -98,7 +104,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(nestedHeader).toHaveCSS("top", visible ? "128px" : "64px");
         await expect(q.region("Main content")).toHaveCSS(
           "scroll-margin-block-start",
-          `${(visible ? 128 : 64) + SCROLL_GAP}px`,
+          `${(visible ? 128 : 64) + getScrollGap(width)}px`,
         );
       }
       await q.checkbox("Narrow shell").check();
@@ -137,7 +143,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(nestedHeader).toBeVisible();
         await expect(q.region("Main content")).toHaveCSS(
           "scroll-margin-block-start",
-          `${64 + SCROLL_GAP}px`,
+          `${64 + getScrollGap(width)}px`,
         );
         await page.evaluate(() => window.scrollTo(0, 0));
         expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
@@ -320,12 +326,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeCloseTo(328, 0);
   });
 
-  for (const unbounded of [false, true]) {
-    test(`keeps shared geometry in ${unbounded ? "unbounded" : "bounded"} parts when text sizes differ`, async ({
+  for (const { unbounded, spacingGutter } of [
+    { unbounded: false, spacingGutter: true },
+    { unbounded: true, spacingGutter: true },
+    { unbounded: true, spacingGutter: false },
+  ]) {
+    test(`keeps shared geometry in ${unbounded ? "unbounded" : "bounded"} parts with ${spacingGutter ? "a spacing" : "an em"} gutter when text sizes differ`, async ({
       q,
       page,
     }) => {
-      await q.checkbox("Use spacing gutter").check();
+      await q.checkbox("Use spacing gutter").setChecked(spacingGutter);
       await q.checkbox("Unbounded content").setChecked(unbounded);
       const mainHeader = page.locator(".shell-main-header");
       const sidebarHeader = page.locator(".shell-sidebar-header");
@@ -341,7 +351,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
         if (!unbounded) {
           expect(contentBox.width).toBeCloseTo(480, 0);
         } else {
-          expect(contentBox.x - (await getBox(q.main())).x).toBeCloseTo(12, 0);
+          // Three spacing steps, or 2em at main's 16px from a 64rem shell.
+          expect(contentBox.x - (await getBox(q.main())).x).toBeCloseTo(
+            spacingGutter ? 12 : 32,
+            0,
+          );
         }
         for (const part of [actions, q.heading("Explicit shell parts")]) {
           expect((await getBox(part)).x).toBeCloseTo(contentBox.x, 0);
