@@ -104,6 +104,8 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
   const [textSize, setTextSize] = useState("");
   const [spacingGutter, setSpacingGutter] = useState(false);
   const [blockPadding, setBlockPadding] = useState("gutter");
+  const [introBlockPadding, setIntroBlockPadding] = useState("auto");
+  const [introTargets, setIntroTargets] = useState(false);
   const [from, setFrom] = useState<Start>("intro");
   const [endOpen, setEndOpen] = useState(true);
   const [startVisibility, setStartVisibility] = useState<Visibility>("always");
@@ -184,8 +186,25 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
             className={textSize}
             $maxWidth={introMaxWidth || undefined}
             $p={localPadding ? 2 : undefined}
+            $py={introBlockPadding === "10" ? 10 : introBlockPadding}
           >
-            <h1>Explicit shell parts</h1>
+            <h1 id="part-title">Explicit shell parts</h1>
+            {introTargets && (
+              <>
+                <div className="@container">
+                  <p id="intro-query-target" className="text-2xl">
+                    Query container target
+                  </p>
+                </div>
+                <Shell $size="md">
+                  <ShellMain>
+                    <ShellMainBody>
+                      <p id="intro-shell-target">Nested shell target</p>
+                    </ShellMainBody>
+                  </ShellMain>
+                </Shell>
+              </>
+            )}
           </ShellMainIntro>
         )}
         <ShellMainBody>
@@ -243,6 +262,20 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
                 <option value="none">None</option>
                 <option value="10">10 steps</option>
                 <option value="2em">2em</option>
+              </select>
+            </label>
+            <label>
+              Intro block padding{" "}
+              <select
+                value={introBlockPadding}
+                onChange={(event) =>
+                  setIntroBlockPadding(event.currentTarget.value)
+                }
+              >
+                <option value="auto">Auto</option>
+                <option value="gutter">Gutter</option>
+                <option value="none">None</option>
+                <option value="10">10 steps</option>
               </select>
             </label>
             <label>
@@ -405,6 +438,16 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
                 }
               />{" "}
               Second start sidebar
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={introTargets}
+                onChange={(event) =>
+                  setIntroTargets(event.currentTarget.checked)
+                }
+              />{" "}
+              More targets in the intro
             </label>
           </section>
           <Shell id="nested-parts-shell" $size="md" className="mt-4 max-w-3xl">
