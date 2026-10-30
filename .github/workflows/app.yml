@@ -278,7 +278,7 @@ jobs:
           # has not expired.
           find_artifact() {
             gh api "repos/$REPOSITORY/actions/runs/$1/artifacts?per_page=100" \
-              --jq "[.artifacts[] | select(.expired | not) | select(.name | test(\"^visonaut-capture-[0-9]+-[0-9]+-($SHARD|${SHARD%-[0-9]})\$\"))] | sort_by(.created_at) | last | .name // empty"
+              --jq "[.artifacts[] | select(.expired | not) | select(.name | test(\"^visonaut-capture-[0-9]+-[0-9]+-$SHARD\$\"))] | sort_by(.created_at) | last | .name // empty"
           }
           # A newer push to main often cancels the run of the base commit. Its
           # capture artifact is still usable, because a shard uploads it only
