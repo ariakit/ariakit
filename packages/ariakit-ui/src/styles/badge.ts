@@ -1,6 +1,7 @@
 import { cv } from "clava";
+import { controlSlot, getDisabledContentClass } from "./control.ts";
 import { isLayerColor } from "./layer.ts";
-import { slotFrame, slotFrameSlot, slotFrameText } from "./slot-frame.ts";
+import { slotFrame, slotFrameText } from "./slot-frame.ts";
 
 /** A compact badge with a tinted surface and rounded edge. */
 export const badge = cv({
@@ -73,6 +74,8 @@ export const badge = cv({
     },
   },
   refine({ variants, addClass }) {
+    // A badge in a disabled control fades like the slots of the control.
+    addClass(getDisabledContentClass(variants));
     if (!isLayerColor(variants.$layer)) return;
     if (variants.$edgeRaw) return;
     if (variants.$edgeLightnessMin != null) return;
@@ -110,5 +113,8 @@ export const badgeLabel = cv({
   },
 });
 
-/** A text-aligned slot for badge icons and other content. */
-export const badgeSlot = slotFrameSlot;
+/**
+ * A text-aligned slot for badge icons and other content. In a disabled control,
+ * its painted content fades like the badge.
+ */
+export const badgeSlot = controlSlot;

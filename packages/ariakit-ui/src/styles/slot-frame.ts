@@ -132,19 +132,15 @@ export function hasSlotSurface(variants: VariantProps<typeof frame>) {
   return Boolean(variants.$border);
 }
 
-/**
- * Whether the slot kind is a badge, an avatar, or a shortcut. The refines of
- * slotFrameSlot and controlSlot share this list, and each checks its other
- * conditions, such as the fill of a shortcut.
- */
-export function isBadgeAvatarOrShortcut(kind?: string) {
+/** Whether the slot kind is a badge, an avatar, or a shortcut. */
+function isBadgeAvatarOrShortcut(kind?: string) {
   return kind === "badge" || kind === "avatar" || kind === "shortcut";
 }
 
 /**
  * A text-aligned slot in a slot frame for an icon, avatar, badge, keyboard
  * shortcut, or short text. Its margins follow the padding of the frame.
- * Controls extend it, and static rows, such as badges, use it directly.
+ * Controls extend it, and so can static rows, such as tooltips.
  */
 export const slotFrameSlot = cv({
   extend: [frame],

@@ -6,7 +6,6 @@ import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
 import {
   fontSizeVariants,
   hasSlotSurface,
-  isBadgeAvatarOrShortcut,
   slotFrame,
   slotFrameSlot,
   slotFrameText,
@@ -66,33 +65,49 @@ export const control = cv({
 });
 
 /**
- * A slot in a control. The surface of a badge, an avatar, or a shortcut with a
- * fill fades while the control is disabled.
+ * Returns the classes that fade painted content inside a disabled control, such
+ * as a badge or a slot, by the rule of the control's own surface: a colored or
+ * inverted surface fades, a neutral fill stays, and images fade.
+ */
+export function getDisabledContentClass(variants: VariantProps<typeof layer>) {
+  const classes = [
+    // Fade image pixels only; fading the whole element would reduce text
+    // contrast. DOM disabled state can change without rerendering the recipe.
+    "group-[.disabled]/control:[&_img]:opacity-50",
+    "group-ui-disabled/control:[&_img]:opacity-50",
+    "group-ui-disabled-within/choice:[&_img]:opacity-50",
+  ];
+  // Without a fill, the content takes the text color of the control.
+  if (!hasLayerBackground(variants)) return classes;
+  classes.push(
+    // A fill sets its own text color, which the control's direct-child text
+    // rules may not reach.
+    "group-[.disabled]/control:ak-ink-0",
+    "group-ui-disabled/control:ak-ink-0",
+    "group-ui-disabled-within/choice:ak-ink-0",
+  );
+  if (!fadesDisabledSurface(variants)) return classes;
+  classes.push(
+    // Fade the disabled surface before calculating readable text contrast.
+    "group-[.disabled]/control:ak-layer-fade-80",
+    "group-ui-disabled/control:ak-layer-fade-80",
+    "group-ui-disabled-within/choice:ak-layer-fade-80",
+    // An edge can follow the surface color, so it would still look enabled.
+    "group-[.disabled]/control:ak-edge-5",
+    "group-ui-disabled/control:ak-edge-5",
+    "group-ui-disabled-within/choice:ak-edge-5",
+  );
+  return classes;
+}
+
+/**
+ * A slot in a control. Its painted content fades while the control is disabled,
+ * like the control's own surface.
  */
 export const controlSlot = cv({
   extend: [slotFrameSlot],
   refine({ variants, addClass }) {
-    if (!isBadgeAvatarOrShortcut(variants.$kind)) return;
-    // A shortcut without a fill has no surface to fade, and fading would paint
-    // a fill behind a border-only shortcut.
-    if (variants.$kind === "shortcut" && !hasLayerBackground(variants)) return;
-    addClass([
-      // Fade the disabled surface before calculating readable text contrast.
-      "group-[.disabled]/control:ak-layer-fade-80",
-      // DOM disabled state can change without rerendering the recipe.
-      "group-ui-disabled/control:ak-layer-fade-80",
-      "group-ui-disabled-within/choice:ak-layer-fade-80",
-      // Reach slots below wrappers beyond the control's direct-child text
-      // rules.
-      "group-[.disabled]/control:ak-ink-0",
-      "group-ui-disabled/control:ak-ink-0",
-      "group-ui-disabled-within/choice:ak-ink-0",
-      // Fade image pixels only; fading the whole slot would reduce text
-      // contrast.
-      "group-[.disabled]/control:[&_img]:opacity-50",
-      "group-ui-disabled/control:[&_img]:opacity-50",
-      "group-ui-disabled-within/choice:[&_img]:opacity-50",
-    ]);
+    addClass(getDisabledContentClass(variants));
   },
 });
 
