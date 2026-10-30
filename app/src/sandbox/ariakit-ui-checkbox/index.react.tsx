@@ -116,7 +116,7 @@ function SelectAll() {
       <div
         role="group"
         aria-label="Features"
-        className="grid gap-2 ps-[1.375em]"
+        className="grid gap-2 ps-[1.4375em]"
       >
         {features.map((feature) => (
           <CheckboxField

@@ -115,6 +115,10 @@ export const controlSlot = cv({
     // --slot-pull to zero to keep the text inset.
     "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span)*var(--control-inline,1))]",
     "[--mx:calc((var(--py)-var(--px)+var(--my))*var(--slot-pull,1)*var(--control-inline,1))]",
+    // A slot frame without padding has no edge to show that distance, so a
+    // slot starts at its edge, like a list bullet. A control inside the slot
+    // moves its own slots again, like in a text slot.
+    "[.slot-frame-flush>&]:[--slot-pull:0] [.slot-frame-flush>&>*]:[--slot-pull:initial]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
     // Custom marks set --slot-icon-size; painted icon slots use
     // --slot-icon-scale.
@@ -633,9 +637,12 @@ export const controlFieldError = cv({
   variants: {
     /**
      * Sets the gap between the icon and the text. `auto` uses
-     * `--field-error-icon-gap`, or `0.375em`. With padding, the fallback grows
-     * to the icon's distance from the top edge, minus the side bearing, like
-     * the space after the icon of a control.
+     * `--field-error-icon-gap`. Without padding, the fallback is the `md` gap
+     * of a slot frame without padding at the size of the field text, so the
+     * text lines up with the label of a checkbox or radio field. With padding,
+     * the fallback is the icon's distance from the top edge, minus the side
+     * bearing, like the space after the icon of a control, and at least
+     * `0.375em`.
      */
     $gap: {
       // The refine picks the gap for the padding.
@@ -676,9 +683,12 @@ export const controlFieldError = cv({
     }
     // Without padding, slotFrame starts the icon at the edge, like a list
     // bullet, so it lines up with the field label and hints. A panel moves the
-    // icon into its side padding, like the slots of a control.
+    // icon into its side padding, like the slots of a control. The error text
+    // is 0.875em, so scale the gap back to the size of the field text.
     if (variants.$gap === "auto" && !padded) {
-      addClass("[--gap:var(--field-error-icon-gap,0.375em)] gap-(--gap)");
+      addClass(
+        "[--gap:var(--field-error-icon-gap,calc(var(--flush-gap)/0.875))] gap-(--gap)",
+      );
     }
   },
 });
