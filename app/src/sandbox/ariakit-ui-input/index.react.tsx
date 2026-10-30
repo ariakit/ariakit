@@ -7,7 +7,10 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Button } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  Button,
+  ButtonSlot,
+} from "@ariakit/ui/components/button.ariakit.react";
 import {
   ComboboxItem,
   ComboboxPopover,
@@ -46,6 +49,10 @@ import {
   Example,
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
+
+// A local image, so the screenshots never wait on the network.
+const avatarImage =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23f59e0b'/%3E%3Ccircle cx='20' cy='16' r='7' fill='%23fff7ed'/%3E%3Cpath d='M6 40c2-9 7-13 14-13s12 4 14 13z' fill='%23fff7ed'/%3E%3C/svg%3E";
 
 const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
 
@@ -957,6 +964,55 @@ export default function InputExamples() {
             </fieldset>
           </InputFieldGrid>
         </div>
+      </Example>
+
+      {/*
+       * https://github.com/ariakit/ariakit/pull/8185#discussion_r4421623470
+       */}
+      <Example
+        title="Disabled group slots"
+        description="While the input of a group is disabled, colored slots and images in the group fade, like the slots of any disabled control. The slots of an enabled action button do not fade."
+        code={`
+          <InputGroup>
+            <InputSlot $size="xl" $layer="brand" $mix={20}>
+              <Lock />
+            </InputSlot>
+            <InputSlot $kind="avatar"><img alt="" src={picture} /></InputSlot>
+            <Input disabled />
+            <InputSlot $size="2xl" $square={false}>
+              <Button $size="sm">
+                <ButtonSlot $size="xl" $layer="brand" $mix={20}>
+                  <Search />
+                </ButtonSlot>
+                <ButtonSlot $kind="avatar">
+                  <img alt="" src={picture} />
+                </ButtonSlot>
+                Find
+              </Button>
+            </InputSlot>
+          </InputGroup>
+        `}
+      >
+        <InputGroup>
+          <InputSlot $size="xl" $layer="brand" $mix={20}>
+            <Lock />
+          </InputSlot>
+          <InputSlot $kind="avatar">
+            <img alt="" src={avatarImage} className="size-full" />
+          </InputSlot>
+          <Input aria-label="Owner" defaultValue="ada" disabled />
+          <InputSlot $size="2xl" $square={false}>
+            <Button $size="sm">
+              <ButtonSlot $size="xl" $layer="brand" $mix={20}>
+                <Search />
+              </ButtonSlot>
+              <ButtonSlot $kind="avatar">
+                <img alt="" src={avatarImage} className="size-full" />
+              </ButtonSlot>
+              Find
+            </Button>
+          </InputSlot>
+        </InputGroup>
       </Example>
     </ExampleGrid>
   );
