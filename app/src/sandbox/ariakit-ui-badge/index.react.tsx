@@ -453,6 +453,124 @@ export default function BadgeExamples() {
       </Example>
 
       <Example
+        title="Side padding in a slot"
+        description="A badge in a slot fills its height, and $px still sets its side padding."
+        code={`
+          <Badge $size="md">
+            <BadgeLabel>Default</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge>Fit</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Named</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="sm">Small</Badge>
+            </BadgeSlot>
+            <BadgeSlot $kind="box">
+              <Badge $px="xl">Large</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Raw</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="0.25em">Length</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Icon</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="xl">
+                <BadgeSlot aria-hidden>★</BadgeSlot>
+                <BadgeLabel>Fit</BadgeLabel>
+              </Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Round</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid" $round $px="0.5em">128</Badge>
+            </BadgeSlot>
+          </Badge>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge $size="md">
+            <BadgeLabel>Default</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge>Fit</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Named</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="sm">Small</Badge>
+            </BadgeSlot>
+            <BadgeSlot $kind="box">
+              <Badge $px="xl">Large</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Raw</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="0.25em">Length</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Icon</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="xl">
+                <BadgeSlot aria-hidden>★</BadgeSlot>
+                <BadgeLabel>Fit</BadgeLabel>
+              </Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Round</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid" $round $px="0.5em">
+                128
+              </Badge>
+            </BadgeSlot>
+          </Badge>
+        </div>
+      </Example>
+
+      <Example
+        title="Nested in a round badge"
+        description="A round badge does not pass its side padding to a badge nested in it, so both nested badges have the same width."
+        code={`
+          <Badge $size="sm">
+            <BadgeLabel>Plain</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="sm" $round>
+            <BadgeLabel>Round</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </BadgeSlot>
+          </Badge>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge $size="sm">
+            <BadgeLabel>Plain</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="sm" $round>
+            <BadgeLabel>Round</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </BadgeSlot>
+          </Badge>
+        </div>
+      </Example>
+
+      <Example
         title="Truncated label"
         description="A long label ends in an ellipsis when the badge has a maximum width."
         code={`

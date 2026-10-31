@@ -6,8 +6,8 @@ import { slotFrame, slotFrameText } from "./slot-frame.ts";
 /**
  * A compact badge with a rounded edge. In a slot, it fills the slot height, so
  * it grows with the control and keeps its pill shape. The slot then sets its
- * text size and side padding, so `$size` and `$px` apply only outside a slot.
- * Use a `box` slot, which is one line tall and takes the width of the badge.
+ * text size, so `$size` applies only outside a slot. Use a `box` slot, which is
+ * one line tall and takes the width of the badge.
  */
 export const badge = cv({
   extend: [slotFrame],
@@ -30,12 +30,8 @@ export const badge = cv({
     // smaller than the text around the slot, and short counts stay at least
     // square.
     "[.slot-frame-slot>&]:self-stretch [.slot-frame-slot>&]:items-center",
-    "[.slot-frame-slot>&]:py-0 [.slot-frame-slot>&]:text-[0.8125em]",
+    "[.slot-frame-slot>&]:text-[0.8125em]",
     "[.slot-frame-slot>&]:min-w-(--slot-height)",
-    // The sides keep 0.75 of the space above and below the capitals. Slot
-    // padding would sit outside the fill. --slot-height is a registered length
-    // that keeps the font of the slot, and 1lh and 1cap follow the badge.
-    "[.slot-frame-slot>&]:px-[var(--badge-round-px,max(0px,calc((var(--slot-height)-1lh)/2+(1lh-1cap)*0.75)))]",
     // Concentric rounding can collapse the pill at default control padding.
     "[.slot-frame-slot>&]:ak-frame-force",
   ],
@@ -50,9 +46,13 @@ export const badge = cv({
     $kind: { tint: "", solid: "" },
     /**
      * Keeps a short count round in a slot. Longer text gets less side padding.
-     * Outside a slot, it has no effect.
+     * A raw `$px` length overrides it, and a named `$px` has no effect. Outside
+     * a slot, it has no effect.
      */
-    $round: "[--badge-round-px:calc(var(--slot-height)*0.15)]",
+    $round: [
+      // The extra selector wins over the side padding that fits the slot.
+      "[.slot-frame-slot>&.badge]:[--px:calc(var(--slot-height)*0.15)]",
+    ],
   },
   defaultVariants: {
     $kind: "tint",
@@ -65,8 +65,7 @@ export const badge = cv({
     $size: "xs",
     $p: 1,
     $px(defaultValue, variants) {
-      // Replace only the text frame default; explicit padding still wins
-      // outside a slot.
+      // Replace only the text frame default; explicit padding still wins.
       if (defaultValue !== "md") return defaultValue;
       if (variants.$rounded === "full") return "lg";
       return defaultValue;
@@ -141,6 +140,16 @@ export const badge = cv({
   refine({ variants, addClass }) {
     // A badge in a disabled control fades like the slots of the control.
     addClass(getDisabledContentClass(variants));
+    if (variants.$p !== "none") {
+      addClass([
+        // In a slot, the space above and below the line replaces the frame
+        // padding, and $px still sets the extra at the sides. Slot padding
+        // would sit outside the fill. --slot-height is a registered length that
+        // keeps the font of the slot, and 1lh and 1cap follow the badge.
+        "[.slot-frame-slot>&]:[--py:max(0px,calc((var(--slot-height)-1lh)/2))]",
+        "[.slot-frame-slot>&]:[--px:max(0px,calc((var(--slot-height)-1lh)/2+(1lh-1cap)*var(--px-scale)))]",
+      ]);
+    }
     if (variants.$kind === "solid") return;
     if (!isLayerColor(variants.$layer)) return;
     if (variants.$edgeRaw) return;
