@@ -46,7 +46,7 @@ export default function ProseExamples() {
   return (
     <ExampleGrid>
       {/*
-        The full article is composition only. The Heading page owns the heading
+        The full article is composition only. The Heading page shows the heading
         flow margins, and the List and Separator pages own how those components
         read the column gap, so no test asserts them here.
       */}

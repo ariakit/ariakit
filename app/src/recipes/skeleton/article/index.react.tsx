@@ -39,7 +39,7 @@ export default function Example() {
       </p>
       <Skeleton loading={loading} className="grid gap-5">
         <HeadingLevel level={3}>
-          <Heading $level={1} className="text-balance">
+          <Heading $level={1}>
             <SkeletonLine $weight="medium" className="w-4/5">
               {data?.title}
             </SkeletonLine>

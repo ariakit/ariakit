@@ -224,7 +224,9 @@ function DocsArticle() {
       <HeadingLevel level={2}>
         {docsSections.map((section) => (
           <section key={section.id}>
-            <Heading id={section.id}>{section.title}</Heading>
+            <Heading id={section.id} className="mb-2">
+              {section.title}
+            </Heading>
             {paragraphs.map((text, index) => (
               <p key={index}>{text}</p>
             ))}
@@ -733,7 +735,9 @@ function SettingsScenario() {
               <HeadingLevel>
                 {settingsSections.map((section) => (
                   <section key={section.id}>
-                    <Heading id={section.id}>{section.title}</Heading>
+                    <Heading id={section.id} className="mb-2">
+                      {section.title}
+                    </Heading>
                     <p>{paragraphs[0]}</p>
                     <Input
                       aria-label={`${section.title} name`}

@@ -7,7 +7,10 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
+import {
+  Heading,
+  HeadingDescription,
+} from "@ariakit/ui/components/heading.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import type { ComponentProps } from "react";
 
@@ -33,3 +36,7 @@ function A(props: ComponentProps<"a">) {
 }
 
 export const mdxComponents = { h2: H2, h3: H3, h4: H4, a: A };
+
+// A page description renders its own paragraphs, so each one is the description
+// part. A wrapper part can't mute them because prose colors each paragraph.
+export const descriptionComponents = { p: HeadingDescription };

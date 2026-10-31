@@ -12,6 +12,7 @@ import Meta from "#app/components/meta.astro";
 import { filterGuidesByGroup, getGuideDetail } from "#app/lib/content.ts";
 import PageIntro from "#app/components/page-intro.astro";
 import { mdxComponents } from "#app/components/mdx-components.react.tsx";
+import { HeadingDescription } from "@ariakit/ui/components/heading.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
@@ -68,7 +69,11 @@ const section = type === "styles" ? undefined : type;
     </ul>
   </nav>
   <PageIntro slot="intro" {title}>
-    {entry.data.description && <p>{entry.data.description}</p>}
+    {
+      entry.data.description && (
+        <HeadingDescription>{entry.data.description}</HeadingDescription>
+      )
+    }
   </PageIntro>
   <Prose><Content {framework} components={mdxComponents} /></Prose>
 </Layout>

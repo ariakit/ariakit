@@ -8,7 +8,8 @@ export interface ProseProps
 
 /**
  * Renders a content container with consistent vertical spacing and styles for
- * paragraphs and strong emphasis.
+ * paragraphs and strong emphasis. It sets the space around its direct `Heading`
+ * children.
  * @example
  * <Prose>
  *   <p>Create a project to organize your work.</p>

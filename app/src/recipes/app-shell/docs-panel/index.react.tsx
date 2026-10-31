@@ -9,6 +9,7 @@ import {
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
+  HeadingDescription,
   HeadingLevel,
 } from "@ariakit/ui/components/heading.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
@@ -178,14 +179,12 @@ export default function Example() {
 
           <ShellMainIntro>
             <Prose>
-              <HeadingLevel level={1}>
-                <Heading>Combobox</Heading>
-              </HeadingLevel>
-              <p>
+              <Heading>Combobox</Heading>
+              <HeadingDescription>
                 A text input with a filterable list of options. Use it when a
                 select is too long to scan, or when users need to type to find
                 an option.
-              </p>
+              </HeadingDescription>
             </Prose>
             <div className="flex flex-wrap gap-2">
               {badges.map((badge) => (

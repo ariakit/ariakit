@@ -2,7 +2,10 @@ import {
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
-import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
+import {
+  Heading,
+  HeadingDescription,
+} from "@ariakit/ui/components/heading.ariakit.react";
 import {
   Popover,
   PopoverDisclosure,
@@ -71,7 +74,9 @@ export default function Example() {
               width. */}
           <Prose className="pb-[1.75em]">
             <Heading render={<h1 />}>Country bread</Heading>
-            <p>A crusty loaf with a soft crumb, made over two days.</p>
+            <HeadingDescription>
+              A crusty loaf with a soft crumb, made over two days.
+            </HeadingDescription>
           </Prose>
         </ShellMainIntro>
         <ShellMainBody>

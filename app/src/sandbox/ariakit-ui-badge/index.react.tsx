@@ -306,9 +306,29 @@ export default function BadgeExamples() {
           </Heading>
         `}
       >
-        <Heading $level={3} className="mt-0 mb-0">
+        <Heading $level={3}>
           Changelog{" "}
           <Badge $layer="brand" $size="auto">
+            <BadgeLabel>Latest</BadgeLabel>
+          </Badge>
+        </Heading>
+      </Example>
+
+      <Example
+        title="Default size in a heading"
+        description="The badge keeps its own small text and normal letter spacing, so the tighter letters of the heading don't crowd it."
+        code={`
+          <Heading $level={1}>
+            Changelog
+            <Badge $layer="brand">
+              <BadgeLabel>Latest</BadgeLabel>
+            </Badge>
+          </Heading>
+        `}
+      >
+        <Heading $level={1}>
+          Changelog{" "}
+          <Badge $layer="brand">
             <BadgeLabel>Latest</BadgeLabel>
           </Badge>
         </Heading>
