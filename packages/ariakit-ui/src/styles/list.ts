@@ -17,7 +17,13 @@ const SLOT_LIGHTNESS = 1;
 /** A list with adaptive item spacing, markers, and optional guides. */
 export const list = cv({
   class: [
-    "list grid gap-(--list-gap) [counter-reset:list]",
+    "list grid gap-(--list-gap)",
+    // Markers read the native counter, so the `start` attribute applies. They
+    // increment it themselves because a grid row does not count. This rule
+    // stops the implied increment of other rows, which would count twice.
+    "[&>li]:[counter-increment:list-item_0]",
+    // Only list elements scope the native counter by default.
+    "[&:not(ol,ul,menu)]:[counter-reset:list-item]",
     "[--list-gap-base:var(--list-gap-root,--spacing(4))]",
     // Prose supplies the default gap. Explicit `$gap` wins through the style
     // attribute; nested lists win by specificity.
@@ -166,8 +172,8 @@ export const listItemMarker = cv({
     "top-(--list-marker-offset,0px) inset-s-(--list-marker-offset,0px)",
     "m-(--list-marker-inset)",
     "w-(--list-marker-size) h-(--list-marker-size) rounded-full",
-    "ui-list-counter:[counter-increment:list]",
-    "ui-list-counter:before:content-[counter(list)]",
+    "ui-list-counter:[counter-increment:list-item]",
+    "ui-list-counter:before:content-[counter(list-item)]",
     "ui-list-counter:before:absolute ui-list-counter:before:inset-0",
     "ui-list-counter:before:text-center ui-list-counter:before:font-semibold",
     "ui-list-counter:before:leading-(--list-marker-size)",

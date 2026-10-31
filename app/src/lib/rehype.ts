@@ -28,6 +28,40 @@ export function rehypeInlineCode() {
   };
 }
 
+interface MdxHtmlNode {
+  type: string;
+  name?: string | null;
+  tagName?: string;
+  data?: object;
+}
+
+function getHtmlName(node: MdxHtmlNode) {
+  if (node.type === "element") return node.tagName;
+  if (node.type === "mdxJsxFlowElement") return node.name;
+  if (node.type === "mdxJsxTextElement") return node.name;
+  return undefined;
+}
+
+/**
+ * Applies the MDX components prop to HTML written as JSX, as it applies to
+ * Markdown syntax. MDX has no option for this, and exempts each tag it flags as
+ * explicit JSX, so this plugin clears that private flag. It sets the flag on
+ * the `code` of a `pre`, so fenced blocks stay native and a `code` mapping only
+ * reaches inline code.
+ * https://github.com/orgs/mdx-js/discussions/2314
+ */
+export function rehypeHtmlComponents() {
+  return (tree: Root) => {
+    visit(tree, (node: MdxHtmlNode, _index, parent?: MdxHtmlNode) => {
+      const name = getHtmlName(node);
+      if (!name) return;
+      const explicit =
+        name === "code" && parent && getHtmlName(parent) === "pre";
+      node.data = { ...node.data, _mdxExplicitJsx: !!explicit };
+    });
+  };
+}
+
 interface RehypeAsTagNameOptions {
   tags: string[];
 }
