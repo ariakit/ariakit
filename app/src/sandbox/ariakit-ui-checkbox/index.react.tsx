@@ -26,6 +26,7 @@ import {
   CheckboxField,
   CheckboxLabel,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
+import type { CheckboxCardCheckProps } from "@ariakit/ui/components/checkbox.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import * as icons from "lucide-react";
@@ -208,6 +209,35 @@ function FeatureGrid({ role }: FeatureGridProps) {
         </CheckboxCard>
       ))}
     </CheckboxCardGrid>
+  );
+}
+
+interface OptionalRoleProps {
+  role?: AriaRole;
+}
+
+interface OptionalSwitchCardProps extends OptionalRoleProps {
+  mark?: CheckboxCardCheckProps["$mark"];
+}
+
+// Passes its optional role on as is, so the input gets a role prop that is
+// present but undefined.
+function OptionalRoleSwitchField({ role }: OptionalRoleProps) {
+  return (
+    <CheckboxField role={role} $mark="switch">
+      <CheckboxLabel>Optional role</CheckboxLabel>
+    </CheckboxField>
+  );
+}
+
+// Also passes its optional mark on to the check, which then keeps the mark of
+// the card.
+function OptionalPropsSwitchCard({ role, mark }: OptionalSwitchCardProps) {
+  return (
+    <CheckboxCard role={role} $mark="switch">
+      <CheckboxCardLabel>Optional props</CheckboxCardLabel>
+      <CheckboxCardCheck $mark={mark} />
+    </CheckboxCard>
   );
 }
 
@@ -813,6 +843,107 @@ export default function CheckboxExamples() {
           </CheckboxCardCheck>
           <CheckboxCardLabel>Starred</CheckboxCardLabel>
         </CheckboxCard>
+      </Example>
+
+      <Example
+        title="Switch mark"
+        description="The mark sets the switch role. The thumb moves to the end side when on and stops at the center when mixed, which needs the checkbox role, because a switch has no mixed state."
+        code={`
+          <CheckboxField $mark="switch" defaultChecked>
+            <CheckboxLabel>Wi-Fi</CheckboxLabel>
+          </CheckboxField>
+        `}
+      >
+        <div className="grid gap-3">
+          <CheckboxField $mark="switch">
+            <CheckboxLabel>Off</CheckboxLabel>
+          </CheckboxField>
+          <CheckboxField $mark="switch" defaultChecked>
+            <CheckboxLabel>On</CheckboxLabel>
+          </CheckboxField>
+          <CheckboxField
+            role="checkbox"
+            $mark="switch"
+            checked="mixed"
+            readOnly
+          >
+            <CheckboxLabel>Mixed</CheckboxLabel>
+          </CheckboxField>
+          <CheckboxField $mark="switch" disabled>
+            <CheckboxLabel>Disabled off</CheckboxLabel>
+          </CheckboxField>
+          <CheckboxField $mark="switch" disabled defaultChecked>
+            <CheckboxLabel>Disabled on</CheckboxLabel>
+          </CheckboxField>
+          <OptionalRoleSwitchField />
+          <div dir="rtl" lang="ar" className="grid gap-3">
+            <CheckboxField $mark="switch">
+              <CheckboxLabel>إيقاف</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField $mark="switch" defaultChecked>
+              <CheckboxLabel>تشغيل</CheckboxLabel>
+            </CheckboxField>
+          </div>
+        </div>
+      </Example>
+
+      <Example
+        title="Switch mark sizes"
+        description="The track and the thumb scale with the mark's size, and the mark aligns with the first line."
+        code={`
+          <label>
+            <Checkbox $mark="switch" $size="md" />
+            Medium
+          </label>
+        `}
+      >
+        <div className="grid gap-3">
+          {(["md", "lg", "xl"] as const).map((size) => (
+            <label key={size} className="flex items-center gap-2">
+              <Checkbox $mark="switch" $size={size} />
+              {size}
+            </label>
+          ))}
+        </div>
+      </Example>
+
+      <Example
+        title="Switch cards"
+        description="A switch at the end of a card follows the card's state, on neutral and brand surfaces."
+        code={`
+          <CheckboxCard $mark="switch" defaultChecked>
+            <CheckboxCardLabel>Email</CheckboxCardLabel>
+            <CheckboxCardCheck />
+          </CheckboxCard>
+        `}
+      >
+        <div className="grid gap-2">
+          <CheckboxCard $mark="switch" defaultChecked>
+            <CheckboxCardLabel>On</CheckboxCardLabel>
+            <CheckboxCardCheck />
+          </CheckboxCard>
+          <CheckboxCard $mark="switch">
+            <CheckboxCardLabel>Off</CheckboxCardLabel>
+            <CheckboxCardCheck />
+          </CheckboxCard>
+          <CheckboxCard $mark="switch" disabled defaultChecked>
+            <CheckboxCardLabel>Disabled on</CheckboxCardLabel>
+            <CheckboxCardCheck />
+          </CheckboxCard>
+          <OptionalPropsSwitchCard />
+          <CheckboxCard role="checkbox" $mark="switch">
+            <CheckboxCardLabel>Checkbox role</CheckboxCardLabel>
+            <CheckboxCardCheck />
+          </CheckboxCard>
+          <Frame $layer="brand" $p={3} $rounded="xl" className="grid gap-3">
+            <CheckboxField $mark="switch">
+              <CheckboxLabel>Off on brand</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField $mark="switch" defaultChecked>
+              <CheckboxLabel>On on brand</CheckboxLabel>
+            </CheckboxField>
+          </Frame>
+        </div>
       </Example>
 
       <Example

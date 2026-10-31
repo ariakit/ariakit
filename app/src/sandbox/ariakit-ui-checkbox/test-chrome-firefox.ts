@@ -58,6 +58,35 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     });
   });
 
+  // Forced colors remove the fill of a switch, so a system checkbox could
+  // replace it. The switch keeps its own track, and the thumb's position shows
+  // the state.
+  test("draws the switch mark in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorSchemeOf(
+      page,
+      ["Switch mark", "Switch cards"],
+      async (colorScheme) => {
+        await expectMedia(page, "(forced-colors: active)");
+        for (const [key, title] of [
+          ["switch-mark", "Switch mark"],
+          ["switch-cards", "Switch cards"],
+        ] as const) {
+          await captureInView({
+            visual,
+            box: q.article(title),
+            colorScheme,
+            item: `ariakit-ui-checkbox/forced-colors/${key}`,
+          });
+        }
+      },
+    );
+  });
+
   // An adaptive text color targets nested text directly, so the disabled fields
   // and the disabled card need the system color on the same targets.
   // https://github.com/ariakit/ariakit/issues/7869

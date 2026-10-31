@@ -43,6 +43,38 @@ test("names a card by its label and describes it by its description", async () =
   expect(checkbox).not.toBeChecked();
 });
 
+test("sets the switch role from the switch mark on each component", () => {
+  const fields = q.within(q.article("Switch mark"));
+  expect(fields.switch("Off")).not.toBeChecked();
+  expect(fields.switch("On")).toBeChecked();
+  const bare = q.within(q.article("Switch mark sizes"));
+  expect(bare.switch("md")).not.toBeChecked();
+  const cards = q.within(q.article("Switch cards"));
+  expect(cards.switch("On")).toBeChecked();
+  expect(cards.switch("Off")).not.toBeChecked();
+});
+
+test("keeps a role that the app gives to a switch mark", () => {
+  const fields = q.within(q.article("Switch mark"));
+  expect(fields.checkbox("Mixed")).toBePartiallyChecked();
+  expect(fields.switch.maybe("Mixed")).not.toBeInTheDocument();
+  const cards = q.within(q.article("Switch cards"));
+  expect(cards.checkbox("Checkbox role")).not.toBeChecked();
+  expect(cards.switch.maybe("Checkbox role")).not.toBeInTheDocument();
+});
+
+test("keeps the switch role when the app passes an undefined role", () => {
+  const fields = q.within(q.article("Switch mark"));
+  expect(fields.switch("Optional role")).not.toBeChecked();
+  const cards = q.within(q.article("Switch cards"));
+  expect(cards.switch("Optional props")).not.toBeChecked();
+});
+
+test("keeps the checkbox role for the other marks", () => {
+  expect(q.within(q.article("Checkbox field")).checkbox()).toBeInTheDocument();
+  expect(q.within(q.article("Checkbox card")).checkbox()).toBeInTheDocument();
+});
+
 test("keeps the ids that the app gives to the fields", () => {
   const box = q.within(q.article("Select all"));
   const children = q.within(box.group("Features")).checkbox.all();
