@@ -34,9 +34,9 @@ test("shows the symbol of the chosen currency", async () => {
 });
 
 test("shows the initials of the display name", async () => {
-  expect(q.text("AL")).toBeInTheDocument();
+  expect(q.text("MO")).toBeInTheDocument();
   await click(q.textbox("Display name"));
-  await type("\b".repeat("Ada Lovelace".length));
-  await type("Grace Hopper");
-  expect(q.text("GH")).toBeInTheDocument();
+  await type("\b".repeat("Marta Oliveira".length));
+  await type("Tom Becker");
+  expect(q.text("TB")).toBeInTheDocument();
 });

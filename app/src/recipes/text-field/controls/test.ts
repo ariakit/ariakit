@@ -2,7 +2,7 @@ import { q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("names and describes a group, a select, and a textarea", () => {
-  expect(q.textbox("Website")).toHaveValue("ada.dev");
+  expect(q.textbox("Website")).toHaveValue("marta.example");
   expect(q.combobox("Country")).toHaveAccessibleDescription(
     "Sets your currency.",
   );

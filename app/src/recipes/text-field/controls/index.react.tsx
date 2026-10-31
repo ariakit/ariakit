@@ -31,7 +31,7 @@ export default function Example() {
           <InputSlot aria-hidden $kind="text" $ink={60}>
             https://
           </InputSlot>
-          <Input id={`${id}-website`} defaultValue="ada.dev" />
+          <Input id={`${id}-website`} defaultValue="marta.example" />
         </InputGroup>
       </InputField>
       <ComboboxProvider defaultSelectedValue="Portugal">

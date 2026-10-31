@@ -14,10 +14,10 @@ interface Person {
 }
 
 const people: Person[] = [
-  { name: "Ada Lovelace", hue: "magenta" },
-  { name: "Grace Hopper", hue: "blue" },
-  { name: "Alan Turing", hue: "green" },
-  { name: "Katherine Johnson", hue: "orange" },
+  { name: "Hana Kobayashi", hue: "magenta" },
+  { name: "Tom Becker", hue: "blue" },
+  { name: "Rosa Delgado", hue: "green" },
+  { name: "Owen Walsh", hue: "orange" },
 ];
 
 const MORE_COUNT = 3;

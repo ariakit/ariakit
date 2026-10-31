@@ -1,7 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import { useRef, useState } from "react";
 
-const takenUsernames = ["ada"];
+const takenUsernames = ["marta"];
 
 interface PendingCheck {
   cancel: () => void;

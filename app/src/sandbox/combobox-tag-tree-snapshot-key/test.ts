@@ -14,10 +14,10 @@ test("popup's own tree snapshot key survives the caller's key", async () => {
   expect(q.listbox("Suggestions")).toBeVisible();
   expect(q.listbox.maybe("Invitees")).not.toBeInTheDocument();
 
-  await click(q.option("Grace Hopper"));
+  await click(q.option("Irene Petrov"));
 
   expect(q.listbox("Suggestions")).toBeVisible();
-  const tag = q.within(q.listbox("Invitees")).option("Grace Hopper");
+  const tag = q.within(q.listbox("Invitees")).option("Irene Petrov");
 
   await click(tag);
 

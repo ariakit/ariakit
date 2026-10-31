@@ -511,7 +511,7 @@ const channels = ["general", "design", "engineering", "random", "support"];
 
 const messages = Array.from({ length: 24 }, (_, index) => ({
   id: index + 1,
-  author: index % 3 === 0 ? "Ada" : index % 3 === 1 ? "Grace" : "Linus",
+  author: index % 3 === 0 ? "Bruno" : index % 3 === 1 ? "Claire" : "Victor",
   text: `Message ${index + 1}: ${paragraphs[index % paragraphs.length]}`,
 }));
 
@@ -641,7 +641,7 @@ function ChatScenario() {
             <ak.Heading className="font-medium">Members</ak.Heading>
           </HeadingLevel>
           <ul className="mt-2 grid gap-2 text-sm">
-            {["Ada", "Grace", "Linus", "Margaret", "Tim"].map((member) => (
+            {["Bruno", "Claire", "Victor", "Ruth", "Tim"].map((member) => (
               <li key={member} className="flex items-center gap-2">
                 <MessageSquare className="size-4" strokeWidth={1.5} />
                 {member}

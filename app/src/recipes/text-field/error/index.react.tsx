@@ -19,12 +19,12 @@ export default function Example() {
       <Input
         id={id}
         type="email"
-        defaultValue="ada.lovelace"
+        defaultValue="marta.oliveira"
         aria-invalid
         aria-describedby={`${errorId} ${hintId}`}
       />
       <InputError id={errorId}>
-        Enter an email address like ada@example.com.
+        Enter an email address like marta@example.com.
       </InputError>
       <InputDescription id={hintId}>
         We send a confirmation link to this address.

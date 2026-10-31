@@ -290,15 +290,15 @@ test("keeps previously returned object results unchanged", async () => {
   const lastSaved = q.status("Last saved name");
   const saveCalls = q.status("Save calls");
 
-  expect(lastSaved.textContent).toBe("Ada:Ada");
+  expect(lastSaved.textContent).toBe("Rosa:Rosa");
   expect(saveCalls.textContent).toBe("0");
 
-  await click(q.button("Use name Grace"));
-  expect(lastSaved.textContent).toBe("Grace:Grace");
+  await click(q.button("Use name Hugo"));
+  expect(lastSaved.textContent).toBe("Hugo:Hugo");
   expect(saveCalls.textContent).toBe("1");
 
-  await click(q.button("Use name Ada"));
-  expect(lastSaved.textContent).toBe("Ada:Ada");
+  await click(q.button("Use name Rosa"));
+  expect(lastSaved.textContent).toBe("Rosa:Rosa");
   expect(saveCalls.textContent).toBe("2");
 });
 
@@ -307,17 +307,17 @@ test("returns only fields selected by the current object", async () => {
   const fields = q.status("Order fields");
 
   expect(fields.textContent).toBe(
-    "contactEmail=ada@example.test, shippingAddress=10 Main Street, deliveryNote=none",
+    "contactEmail=rosa@example.test, shippingAddress=10 Main Street, deliveryNote=none",
   );
 
   await click(q.button("Use pickup"));
-  expect(fields.textContent).toBe("contactEmail=ada@example.test");
+  expect(fields.textContent).toBe("contactEmail=rosa@example.test");
 
   await click(q.button("Use alternate contact"));
-  expect(fields.textContent).toBe("contactEmail=grace@example.test");
+  expect(fields.textContent).toBe("contactEmail=hugo@example.test");
 
   await click(q.button("Use delivery"));
   expect(fields.textContent).toBe(
-    "contactEmail=grace@example.test, shippingAddress=10 Main Street, deliveryNote=none",
+    "contactEmail=hugo@example.test, shippingAddress=10 Main Street, deliveryNote=none",
   );
 });

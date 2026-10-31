@@ -154,9 +154,9 @@ export default function Example() {
           </Nav>
         </ShellSidebarBody>
         <ShellSidebarFooter className="flex items-center gap-2">
-          <Avatar person={maya} className="size-8 text-xs" />
+          <Avatar person={lucia} className="size-8 text-xs" />
           <div className="min-w-0 text-sm">
-            <p className="truncate font-semibold">{maya.name}</p>
+            <p className="truncate font-semibold">{lucia.name}</p>
             <p className="ak-ink-70 truncate text-xs">In a meeting</p>
           </div>
         </ShellSidebarFooter>
@@ -262,7 +262,7 @@ export default function Example() {
                     ...previous,
                     {
                       id: previous.length + 1,
-                      author: maya,
+                      author: lucia,
                       time: "Now",
                       text,
                     },
@@ -300,42 +300,42 @@ export default function Example() {
   );
 }
 
-const maya: Person = {
-  id: "maya",
-  name: "Maya Chen",
+const lucia: Person = {
+  id: "lucia",
+  name: "Lucia Romero",
   hue: "green",
   online: true,
 };
 
-const ada: Person = {
-  id: "ada",
-  name: "Ada Lovelace",
+const dan: Person = {
+  id: "dan",
+  name: "Dan Kowalski",
   hue: "red",
   online: true,
 };
 
-const grace: Person = {
-  id: "grace",
-  name: "Grace Hopper",
+const helen: Person = {
+  id: "helen",
+  name: "Helen Ito",
   hue: "blue",
   online: true,
 };
 
-const linus: Person = {
-  id: "linus",
-  name: "Linus Torvalds",
+const victor: Person = {
+  id: "victor",
+  name: "Victor Lund",
   hue: "orange",
   online: false,
 };
 
-const margaret: Person = {
-  id: "margaret",
-  name: "Margaret Hamilton",
+const ruth: Person = {
+  id: "ruth",
+  name: "Ruth Adeyemi",
   hue: "magenta",
   online: true,
 };
 
-const members = [ada, grace, linus, margaret];
+const members = [dan, helen, victor, ruth];
 
 const channels = [
   { name: "general", unread: 0, current: false },
@@ -345,69 +345,69 @@ const channels = [
 ];
 
 const directMessages = [
-  { person: ada, unread: 1 },
-  { person: grace, unread: 0 },
-  { person: linus, unread: 0 },
+  { person: dan, unread: 1 },
+  { person: helen, unread: 0 },
+  { person: victor, unread: 0 },
 ];
 
 const initialMessages = [
-  { id: 1, author: ada, time: "9:02", text: "Morning! Avatars are in Figma." },
-  { id: 2, author: grace, time: "9:04", text: "Do small sizes read at 24px?" },
-  { id: 3, author: ada, time: "9:05", text: "Yes, I checked the badge too." },
+  { id: 1, author: dan, time: "9:02", text: "Morning! Avatars are in Figma." },
+  { id: 2, author: helen, time: "9:04", text: "Do small sizes read at 24px?" },
+  { id: 3, author: dan, time: "9:05", text: "Yes, I checked the badge too." },
   {
     id: 4,
-    author: maya,
+    author: lucia,
     time: "9:11",
     text: "Composer now sits under thread.",
   },
   {
     id: 5,
-    author: linus,
+    author: victor,
     time: "9:15",
     text: "Can the composer stay visible?",
   },
-  { id: 6, author: maya, time: "9:17", text: "Yes, it sticks to the bottom." },
+  { id: 6, author: lucia, time: "9:17", text: "Yes, it sticks to the bottom." },
   {
     id: 7,
-    author: margaret,
+    author: ruth,
     time: "9:22",
     text: "Keyboard order follows reading.",
   },
   {
     id: 8,
-    author: grace,
+    author: helen,
     time: "9:26",
     text: "Members panel collapses on mobile.",
   },
-  { id: 9, author: ada, time: "9:31", text: "Shared the new empty state." },
+  { id: 9, author: dan, time: "9:31", text: "Shared the new empty state." },
   {
     id: 10,
-    author: maya,
+    author: lucia,
     time: "9:34",
     text: "Love it. Same copy for #launch?",
   },
-  { id: 11, author: linus, time: "9:40", text: "Release build is green." },
+  { id: 11, author: victor, time: "9:40", text: "Release build is green." },
   {
     id: 12,
-    author: margaret,
+    author: ruth,
     time: "9:43",
     text: "Two flaky tests pass on rerun.",
   },
   {
     id: 13,
-    author: grace,
+    author: helen,
     time: "9:50",
     text: "Opened a ticket for Safari tooltips.",
   },
   {
     id: 14,
-    author: ada,
+    author: dan,
     time: "9:58",
-    text: "I will pair with Grace after lunch.",
+    text: "I will pair with Helen after lunch.",
   },
   {
     id: 15,
-    author: maya,
+    author: lucia,
     time: "10:05",
     text: "Great. Final specs before review.",
   },

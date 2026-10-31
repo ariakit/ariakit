@@ -5,7 +5,7 @@ test("names and describes the horizontal fields", () => {
   expect(q.textbox("Full name")).toHaveAccessibleDescription(
     "Used on invoices.",
   );
-  expect(q.textbox("Billing email")).toHaveValue("ada@engine.org");
+  expect(q.textbox("Billing email")).toHaveValue("marta@example.com");
   expect(q.textbox("Phone")).toHaveAccessibleDescription(
     "Enter the full number.",
   );

@@ -87,7 +87,7 @@ function AmountField({ label, currencyLabel, hint }: AmountFieldProps) {
 
 export default function Example() {
   const id = useId();
-  const [name, setName] = useState("Ada Lovelace");
+  const [name, setName] = useState("Marta Oliveira");
   return (
     <div className="grid w-[30rem] max-w-full grid-cols-[repeat(auto-fill,minmax(min(100%,13rem),1fr))] gap-x-5 gap-y-6">
       <AmountField
@@ -128,7 +128,7 @@ export default function Example() {
         <InputGroup>
           <Input
             id={`${id}-domain`}
-            defaultValue="ada.dev"
+            defaultValue="marta.example"
             aria-describedby={`${id}-domain-hint`}
           />
           <InputSlot aria-hidden>

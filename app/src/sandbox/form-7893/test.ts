@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 // https://github.com/ariakit/ariakit/issues/7893
 test("validating stays true while a newer validation is pending", async () => {
   await click(q.textbox("Username"));
-  await type("ada");
+  await type("marta");
   await expect.poll(q.text.lazy(/Username check: pending/)).toBeVisible();
   // Each cancelled check settles its validate() call one frame later, so cross
   // that frame before asserting the flag that must stay set.

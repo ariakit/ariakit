@@ -309,7 +309,7 @@ interface ProfileState {
 
 function ProfileAutosave() {
   const [store] = useState(() =>
-    createStore<ProfileState>({ displayName: "Ada" }),
+    createStore<ProfileState>({ displayName: "Rosa" }),
   );
   const profile = useStoreStateObject(store, {
     directName: "displayName",
@@ -336,15 +336,15 @@ function ProfileAutosave() {
     <>
       <button
         type="button"
-        onClick={() => store.setState("displayName", "Grace")}
+        onClick={() => store.setState("displayName", "Hugo")}
       >
-        Use name Grace
+        Use name Hugo
       </button>
       <button
         type="button"
-        onClick={() => store.setState("displayName", "Ada")}
+        onClick={() => store.setState("displayName", "Rosa")}
       >
-        Use name Ada
+        Use name Rosa
       </button>
       <p>
         Last saved name:{" "}
@@ -366,7 +366,7 @@ interface OrderState {
 function OrderFields() {
   const [store] = useState(() =>
     createStore<OrderState>({
-      contactEmail: "ada@example.test",
+      contactEmail: "rosa@example.test",
       shippingAddress: "10 Main Street",
       deliveryNote: undefined,
     }),
@@ -396,7 +396,7 @@ function OrderFields() {
       </button>
       <button
         type="button"
-        onClick={() => store.setState("contactEmail", "grace@example.test")}
+        onClick={() => store.setState("contactEmail", "hugo@example.test")}
       >
         Use alternate contact
       </button>

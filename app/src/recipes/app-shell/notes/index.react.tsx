@@ -231,7 +231,7 @@ export default function Example() {
         <ShellMainHeader $sticky $blur $borderType="dashed">
           <div className="flex w-full items-center justify-between gap-4 text-sm">
             <span className="ak-ink-70 truncate">
-              Edited 6 min ago by Ada Park
+              Edited 6 min ago by Anna Park
             </span>
             <div className="flex items-center gap-2">
               <ButtonGroup aria-label="Note actions">
@@ -349,7 +349,7 @@ export default function Example() {
 }
 
 const collaborators = [
-  { initials: "AP", name: "Ada Park" },
+  { initials: "AP", name: "Anna Park" },
   { initials: "GL", name: "Grace Lin" },
   { initials: "TM", name: "Theo Marsh" },
 ];
