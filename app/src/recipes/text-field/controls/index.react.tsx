@@ -54,7 +54,7 @@ export default function Example() {
           id={`${id}-bio`}
           render={<textarea rows={3} />}
           maxLength={160}
-          defaultValue="Wrote the first published algorithm, for the Analytical Engine."
+          defaultValue="Designs booking tools for small clinics in Porto."
           aria-describedby={`${id}-bio-hint`}
         />
         <InputDescription id={`${id}-bio-hint`}>

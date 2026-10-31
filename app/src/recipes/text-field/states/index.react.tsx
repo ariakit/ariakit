@@ -46,7 +46,7 @@ export default function Example() {
         <InputLabel htmlFor={`${id}-workspace`}>Workspace</InputLabel>
         <Input
           id={`${id}-workspace`}
-          defaultValue="analytical-engine"
+          defaultValue="oliveira-studio"
           disabled
           aria-describedby={`${id}-workspace-hint`}
         />

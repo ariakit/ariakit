@@ -30,11 +30,7 @@ export default function Example() {
       </InputField>
       <InputField>
         <InputLabel htmlFor={`${id}-company`}>Company</InputLabel>
-        <Input
-          id={`${id}-company`}
-          placeholder="Analytical Engines Ltd."
-          $p={3}
-        />
+        <Input id={`${id}-company`} placeholder="Oliveira Studio Ltd." $p={3} />
       </InputField>
       {/* $size scales only the input, so the label keeps the size of the
           other labels. */}
@@ -42,7 +38,7 @@ export default function Example() {
         <InputLabel htmlFor={`${id}-title`}>Title</InputLabel>
         <Input
           id={`${id}-title`}
-          defaultValue="Notes on the Analytical Engine"
+          defaultValue="Notes on the spring release"
           $size="xl"
         />
       </InputField>

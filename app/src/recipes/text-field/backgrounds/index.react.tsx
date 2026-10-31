@@ -35,7 +35,7 @@ const fields: Field[] = [
     name: "project",
     layer: "warning",
     label: "Project name",
-    placeholder: "analytical-engine",
+    placeholder: "oliveira-studio",
     hint: "Type the name to confirm.",
   },
 ];

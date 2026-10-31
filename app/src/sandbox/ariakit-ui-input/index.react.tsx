@@ -508,7 +508,7 @@ export default function InputExamples() {
       >
         <Input
           aria-label="Company"
-          placeholder="Analytical Engines Ltd."
+          placeholder="Oliveira Studio Ltd."
           $edgeWeight="normal"
           $edgeContrast={false}
         />

@@ -7,7 +7,7 @@ test("names each field with its label", () => {
   expect(q.textbox("Quantity")).toHaveValue("12");
   expect(q.textbox("Company")).toHaveAttribute(
     "placeholder",
-    "Analytical Engines Ltd.",
+    "Oliveira Studio Ltd.",
   );
-  expect(q.textbox("Title")).toHaveValue("Notes on the Analytical Engine");
+  expect(q.textbox("Title")).toHaveValue("Notes on the spring release");
 });
