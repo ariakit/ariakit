@@ -99,6 +99,22 @@ export default function LinkExamples() {
       </Example>
 
       <Example
+        title="Opens in a new window with no text after it"
+        description="The arrow also moves down with the last word when nothing follows the link, instead of passing the edge of the column."
+        code={`
+          <Link href="https://ariakit.com" target="_blank">
+            …
+          </Link>
+        `}
+      >
+        <p className="max-w-64 text-sm">
+          <Link href="https://ariakit.com" target="_blank">
+            Read the full changelog on the Ariakit website
+          </Link>
+        </p>
+      </Example>
+
+      <Example
         title="Opens in a new window from a flex link"
         description="The arrow keeps its size when the link is a flex container, which turns it into a flex item."
         code={`
