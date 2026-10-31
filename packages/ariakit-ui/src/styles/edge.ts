@@ -126,8 +126,9 @@ export const edge = cv({
     },
     /**
      * Sets edge opacity on dark surfaces, in place of `$edgeWeight`. Takes a
-     * named weight or a number (0–100). Table grid lines and automatic cell
-     * borders read only `$edgeWeight`.
+     * named weight or a number (0–100). Table parts apply it to their own edge.
+     * Unlike `$edgeWeight`, it isn't a default for nested cells and doesn't
+     * turn on the automatic border of a row or cell.
      */
     $darkEdgeWeight(
       value?: EdgeWeightValues | "unset" | (string & {}) | number,
