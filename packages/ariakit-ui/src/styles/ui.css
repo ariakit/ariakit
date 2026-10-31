@@ -191,6 +191,11 @@ body > * {
   --choice-mark-dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
 }
 
+/* The Lucide arrow-up-right mask of a link that opens in a new window. */
+:root {
+  --link-new-window-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h10v10'/%3E%3Cpath d='M7 17 17 7'/%3E%3C/svg%3E");
+}
+
 /* Compute the list guide flag, so `auto` can match a style query. */
 @property --list-guide {
   syntax: "<number>";
@@ -1450,6 +1455,12 @@ body > * {
         @slot;
       }
     }
+  }
+}
+
+@custom-variant ui-new-window {
+  &[target="_blank"] {
+    @slot;
   }
 }
 

@@ -57,4 +57,38 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       },
     );
   });
+
+  test("keeps the new window icon on the line of the last word", async ({
+    q,
+  }) => {
+    const box = q.article("Opens in a new window");
+    const link = query(box).link(
+      "Read the release notes on the Ariakit website",
+    );
+    // No state tracks where a line breaks, and only a sweep of widths reaches
+    // the one that fits the last word but not the icon. A wrapped icon would
+    // add a line to the link that its text does not have.
+    const orphanWidths = await link.evaluate((element) => {
+      const parent = element.parentElement;
+      const text = element.firstChild;
+      if (!parent) return [];
+      if (!text) return [];
+      const range = element.ownerDocument.createRange();
+      range.selectNodeContents(text);
+      const countLines = (rects: DOMRectList) =>
+        new Set(Array.from(rects, (rect) => Math.round(rect.bottom))).size;
+      const widths = [];
+      for (let width = 40; width <= 320; width += 1) {
+        parent.style.maxWidth = `${width}px`;
+        if (
+          countLines(element.getClientRects()) >
+          countLines(range.getClientRects())
+        ) {
+          widths.push(width);
+        }
+      }
+      return widths;
+    });
+    test.expect(orphanWidths).toEqual([]);
+  });
 });

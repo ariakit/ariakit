@@ -2,7 +2,10 @@ import { cv } from "clava";
 import { focus } from "./focus.ts";
 import { text } from "./text.ts";
 
-/** An underlined text link with adaptive color and keyboard focus. */
+/**
+ * An underlined text link with adaptive color and keyboard focus. A link with
+ * `target="_blank"` shows a trailing arrow.
+ */
 export const link = cv({
   // A transparent link needs a focus ring; focusHighlight would paint no
   // indicator.
@@ -15,6 +18,19 @@ export const link = cv({
     "ui-hover:decoration-[3px]",
     // Style queries read the ancestor layer, not the link itself.
     "ak-dark:[--link-dark:1]",
+    // An empty inline box adds no line break opportunity of its own, so its
+    // padding stays with the text before it and out of the underline. An
+    // inline-block or a nested icon could wrap onto its own line. The height and
+    // alignment only apply when a flex link blockifies the box.
+    "ui-new-window:after:ps-[1em] ui-new-window:after:h-[1em]",
+    "ui-new-window:after:self-center ui-new-window:after:bg-current",
+    // WebKit leaves an inline box unmasked outside the mask image, so the image
+    // fills the box. The SVG keeps its aspect ratio inside it.
+    "ui-new-window:after:mask-(--link-new-window-icon)",
+    "ui-new-window:after:mask-size-[100%_100%]",
+    // Forced colors would replace the background with the canvas color.
+    "ui-new-window:forced-colors:after:forced-color-adjust-none",
+    "ui-new-window:forced-colors:after:bg-[LinkText]",
   ],
   defaultVariants: {
     $text: "brand",
