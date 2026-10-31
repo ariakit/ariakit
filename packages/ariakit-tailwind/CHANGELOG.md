@@ -1,5 +1,66 @@
 # @ariakit/tailwind
 
+## 0.2.10
+
+### Contrast floors for edges and layers
+
+Two utilities now keep a color at 3:1 or more against the parent layer, which is the contrast that WCAG asks for the boundary of a control and its state. A floor aims 2.5% over its ratio, and a color that already reaches that keeps its color. The `contrast-more` variant raises 3:1 to 4.5:1, and `ak-disabled` lowers it to 1.5:1 by default.
+
+- **New `ak-edge-contrast` utility.** It keeps an edge at 3:1, such as the border of a text field. With the default push, a neutral edge becomes plain black or white and raises its alpha. An edge with a color becomes solid and moves its lightness toward the floor.
+
+- **`ak-layer-contrast` keeps its resting color at 3:1.** It still moves the lightness away from the parent layer, now by `30` instead of `25` by default, and then moves a color that is still short of 3:1, such as the fill of a checked checkbox on a brand surface. State utilities, such as `hover:ak-state-6`, apply on top of the resting color and can move it under the ratio. A color that has to move can land well over the ratio, because a layer skips the mid-lightness range. The amount now sets the ratio, and each further `30` multiplies it by 3, so `ak-layer-contrast-41` keeps about 4.5:1. Lower amounts, such as `ak-layer-contrast-10`, separate a surface without the 3:1 guarantee. A translucent layer with `ak-layer-contrast` becomes opaque.
+
+```html
+<input
+  class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-field/field ak-frame-border ak-edge-contrast"
+/>
+<input
+  class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-field/field ak-frame-border ak-edge-warning ak-edge-raw ak-edge-contrast"
+/>
+<div class="ak-layer ak-layer-primary">
+  <input type="checkbox" class="ak-layer ak-layer-primary ak-layer-contrast" />
+</div>
+```
+
+The README describes the cases that the [edge floor](https://github.com/ariakit/ariakit/blob/main/packages/ariakit-tailwind/readme.md#contrast-floor) and the [layer floor](https://github.com/ariakit/ariakit/blob/main/packages/ariakit-tailwind/readme.md#layer-contrast-floor) don't cover.
+
+### New `ak-layer-fade-*` utility
+
+The new `ak-layer-fade-*` utilities fade a layer toward the parent layer after the lightness offset, push, and bounds. Use them for a surface whose lightness comes from a push, such as an inverted surface. `ak-layer-mix-*` applies before the push, so it can't fade a push that always reaches its bound.
+
+```html
+<button
+  class="ak-layer ak-layer-push-100 ak-layer-min-l-23 ak-layer-max-l-96 ak-layer-fade-80"
+>
+  Vote
+</button>
+```
+
+When a layer with a lightness offset or push fades into the forbidden mid-lightness range, it stays on the far side of the range from the parent layer, so it remains distinct from a mid-tone parent layer.
+
+### New `ak-outset` utility
+
+The new `ak-outset` utility makes an element take its color context from the layer around its parent layer. Use it on an element that paints outside its parent's box, such as a bar below a selected tab, so it adapts to the surface behind it instead of its parent. It applies to `ak-layer` and its modifiers, including `ak-layer-mix` and `ak-layer-contrast`, and to `ak-text` and `ak-outline` on the same element.
+
+```html
+<div class="ak-layer ak-layer-canvas">
+  <button
+    class="ak-layer ak-layer-primary relative ak-frame ak-frame-field/field"
+  >
+    Selected tab
+    <span
+      class="ak-layer ak-layer-contrast ak-outset absolute inset-x-0 -bottom-2 h-0.5"
+    ></span>
+  </button>
+</div>
+```
+
+Put `ak-outset` on a direct child of an `ak-layer` element. Its descendants keep measuring from their own parent layer.
+
+### Other updates
+
+- Fixed nested `ak-frame` elements keeping a minimum radius of `0.125rem` when their parent's padding covers the parent's radius. The minimum is now `0.125em`, so frames scaled down through their font size stay concentric with their parents.
+
 ## 0.2.9
 
 ### Ink inherits through nested layers
