@@ -1,5 +1,11 @@
 # @ariakit/react-store
 
+## 0.1.14
+
+- Fixed `useStoreStateObject` keeping fields that the current selection object no longer includes and omitting newly selected fields whose value is `undefined`.
+- Fixed `useStoreStateObject` changing results that it had already returned, so consumers can compare a previous result with the current one to detect changed fields.
+- Updated dependencies: `@ariakit/utils@0.2.3`, `@ariakit/store@0.1.12`, `@ariakit/react-utils@0.2.9`
+
 ## 0.1.13
 
 - Updated dependencies: `@ariakit/utils@0.2.2`, `@ariakit/react-utils@0.2.8`, `@ariakit/store@0.1.11`
