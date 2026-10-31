@@ -1,12 +1,13 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { expect, test } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import {
   assertCIGate,
   ciWorkflowNames,
   createCIPlan,
   parseLockfileImporterChanges,
   parseChangedFiles,
+  runCIGate,
   serializeCIGatePlan,
 } from "./ci.ts";
 import type { CIGateResult, CIWorkflowName, PackageJSONChange } from "./ci.ts";
@@ -25,6 +26,52 @@ function getResults(
   }
   return { ...results, ...overrides };
 }
+
+function getWorkflowRun(id: number, headRepository = "ariakit/ariakit") {
+  return {
+    id,
+    html_url: `https://github.com/ariakit/ariakit/actions/runs/${id}`,
+    workflow_id: 1,
+    head_branch: "feature",
+    event: "pull_request",
+    head_repository: { full_name: headRepository },
+  };
+}
+
+interface StubGitHubOptions {
+  runs?: unknown[];
+  cancelStatus?: number;
+}
+
+function stubGitHub({ runs = [], cancelStatus = 202 }: StubGitHubOptions) {
+  const fetchMock = vi.fn(async (url: string, _init?: RequestInit) => {
+    if (url.endsWith("/force-cancel")) {
+      return new Response(null, { status: cancelStatus });
+    }
+    if (url.includes("/workflows/")) {
+      return Response.json({ workflow_runs: runs });
+    }
+    return Response.json(getWorkflowRun(10));
+  });
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+}
+
+function getGateOptions(results: Record<string, CIGateResult>, plan?: string) {
+  return {
+    plan,
+    results: JSON.stringify(results),
+    repository: "ariakit/ariakit",
+    runId: "10",
+    token: "token",
+  };
+}
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 function getPackageJSONChange(
   file: string,
@@ -689,4 +736,123 @@ test("rejects workflows that run outside the plan", () => {
   expect(() =>
     assertCIGate(plan, getResults(plan, { perf: { result: "success" } })),
   ).toThrow("perf: expected skipped, received success");
+});
+
+test("cancels the gate when a newer run replaced a cancelled run", async () => {
+  vi.useFakeTimers();
+  const log = vi.spyOn(console, "log").mockImplementation(() => {});
+  const fetchMock = stubGitHub({
+    runs: [getWorkflowRun(11), getWorkflowRun(10), getWorkflowRun(9)],
+  });
+  const plan = createCIPlan(["readme.md"]);
+  const results = getResults(plan, { main: { result: "cancelled" } });
+  const options = getGateOptions(results, serializeCIGatePlan(plan));
+
+  const gate = runCIGate(options);
+  const assertion = expect(gate).rejects.toThrow(
+    "This CI run was replaced, but the gate is still running",
+  );
+  await vi.runAllTimersAsync();
+  await assertion;
+  expect(
+    fetchMock.mock.calls.map(([url, init]) => [url, init?.method]),
+  ).toEqual([
+    ["https://api.github.com/repos/ariakit/ariakit/actions/runs/10", undefined],
+    [
+      "https://api.github.com/repos/ariakit/ariakit/actions/workflows/1/runs?branch=feature&event=pull_request",
+      undefined,
+    ],
+    [
+      "https://api.github.com/repos/ariakit/ariakit/actions/runs/10/force-cancel",
+      "POST",
+    ],
+  ]);
+  expect(log).toHaveBeenCalledWith(
+    "This CI run was replaced by https://github.com/ariakit/ariakit/actions/runs/11. Cancelling the gate.",
+  );
+});
+
+test("cancels the gate when a newer run replaced a run with a cancelled plan", async () => {
+  vi.useFakeTimers();
+  vi.spyOn(console, "log").mockImplementation(() => {});
+  const fetchMock = stubGitHub({ runs: [getWorkflowRun(11)] });
+  const options = getGateOptions({ plan: { result: "cancelled" } });
+
+  const gate = runCIGate(options);
+  const assertion = expect(gate).rejects.toThrow("the gate is still running");
+  await vi.runAllTimersAsync();
+  await assertion;
+  expect(fetchMock).toHaveBeenLastCalledWith(
+    "https://api.github.com/repos/ariakit/ariakit/actions/runs/10/force-cancel",
+    expect.objectContaining({ method: "POST" }),
+  );
+});
+
+test("fails the gate when no newer run replaced a cancelled run", async () => {
+  const error = vi.spyOn(console, "error").mockImplementation(() => {});
+  const fetchMock = stubGitHub({
+    runs: [
+      getWorkflowRun(11, "fork/ariakit"),
+      getWorkflowRun(10),
+      getWorkflowRun(9),
+    ],
+  });
+  const plan = createCIPlan(["readme.md"]);
+  const results = getResults(plan, { main: { result: "cancelled" } });
+  const options = getGateOptions(results, serializeCIGatePlan(plan));
+
+  await expect(runCIGate(options)).rejects.toThrow(
+    "main: expected success, received cancelled",
+  );
+  expect(error).toHaveBeenCalledWith(
+    "This CI run was cancelled, and no newer run replaced it.",
+  );
+  expect(fetchMock).toHaveBeenCalledTimes(2);
+});
+
+test("fails the gate when a replaced run cannot cancel it", async () => {
+  stubGitHub({ runs: [getWorkflowRun(11)], cancelStatus: 403 });
+  const options = getGateOptions({ plan: { result: "cancelled" } });
+
+  await expect(runCIGate(options)).rejects.toThrow(
+    "This CI run was replaced by https://github.com/ariakit/ariakit/actions/runs/11, but the gate could not cancel itself (403)",
+  );
+});
+
+test("fails the gate when a cancelled run has a failed job", async () => {
+  const fetchMock = stubGitHub({ runs: [getWorkflowRun(11)] });
+  const plan = createCIPlan(["readme.md"]);
+  const results = getResults(plan, {
+    main: { result: "failure" },
+    perf: { result: "cancelled" },
+  });
+  const options = getGateOptions(results, serializeCIGatePlan(plan));
+
+  await expect(runCIGate(options)).rejects.toThrow(
+    "main: expected success, received failure",
+  );
+  expect(fetchMock).not.toHaveBeenCalled();
+});
+
+test("fails the gate when the plan fails", async () => {
+  const fetchMock = stubGitHub({ runs: [getWorkflowRun(11)] });
+  const options = getGateOptions({ plan: { result: "failure" } });
+
+  await expect(runCIGate(options)).rejects.toThrow(
+    "plan: expected success, received failure",
+  );
+  expect(fetchMock).not.toHaveBeenCalled();
+});
+
+test("passes the gate when planned workflows succeed", async () => {
+  const log = vi.spyOn(console, "log").mockImplementation(() => {});
+  const fetchMock = stubGitHub({});
+  const plan = createCIPlan(["readme.md"]);
+  const options = getGateOptions(getResults(plan), serializeCIGatePlan(plan));
+
+  await expect(runCIGate(options)).resolves.toBeUndefined();
+  expect(fetchMock).not.toHaveBeenCalled();
+  expect(log).toHaveBeenCalledWith(
+    "All planned CI workflows completed with the expected result.",
+  );
 });

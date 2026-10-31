@@ -159,6 +159,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
+      # Lets the gate cancel itself when the run is cancelled.
+      actions: write
       contents: read
     steps:
       - name: Checkout repository
@@ -175,4 +177,5 @@ jobs:
         env:
           CI_PLAN: ${{ needs.plan.outputs.plan }}
           CI_RESULTS: ${{ toJSON(needs) }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: node packages/ariakit-scripts/src/ci-run.ts gate

@@ -8,7 +8,7 @@ function getEnvironmentVariable(name: string) {
   return value;
 }
 
-function runCICommand(command: string | undefined) {
+async function runCICommand(command: string | undefined) {
   if (command === "plan") {
     runCIPlan({
       base: getEnvironmentVariable("BASE_SHA"),
@@ -20,9 +20,12 @@ function runCICommand(command: string | undefined) {
   }
 
   if (command === "gate") {
-    runCIGate({
-      plan: getEnvironmentVariable("CI_PLAN"),
+    await runCIGate({
+      plan: process.env.CI_PLAN,
       results: getEnvironmentVariable("CI_RESULTS"),
+      repository: getEnvironmentVariable("GITHUB_REPOSITORY"),
+      runId: getEnvironmentVariable("GITHUB_RUN_ID"),
+      token: getEnvironmentVariable("GITHUB_TOKEN"),
     });
     return;
   }
@@ -30,4 +33,4 @@ function runCICommand(command: string | undefined) {
   throw new Error(`Unknown CI command: ${command ?? ""}`);
 }
 
-runCICommand(process.argv[2]);
+await runCICommand(process.argv[2]);
