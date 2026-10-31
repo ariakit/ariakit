@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonSlot,
@@ -636,7 +637,7 @@ export default function InputExamples() {
               <Text>https://</Text>
               <input aria-label="Share link" readOnly />
             </span>
-            <InputSlot $size="2xl" $square={false}>
+            <InputSlot $kind="box" $size="2xl">
               <Button $size="sm">Copy</Button>
             </InputSlot>
           </InputGroup>
@@ -652,7 +653,7 @@ export default function InputExamples() {
               className="min-w-0 flex-1"
             />
           </span>
-          <InputSlot $size="2xl" $square={false}>
+          <InputSlot $size="2xl" $kind="box">
             <Button $size="sm">Copy</Button>
           </InputSlot>
         </InputGroup>
@@ -789,7 +790,7 @@ export default function InputExamples() {
           <PopoverProvider>
             <InputGroup>
               <Input aria-label="Contact email" />
-              <InputSlot $size="2xl" $square={false}>
+              <InputSlot $kind="box" $size="2xl">
                 <PopoverDisclosure $size="sm">Email help</PopoverDisclosure>
               </InputSlot>
               <Popover portal role="note" focusable={false} autoFocusOnShow={false}>
@@ -802,7 +803,7 @@ export default function InputExamples() {
         <PopoverProvider>
           <InputGroup>
             <Input aria-label="Contact email" placeholder="you@example.com" />
-            <InputSlot $size="2xl" $square={false}>
+            <InputSlot $size="2xl" $kind="box">
               <PopoverDisclosure $size="sm">Email help</PopoverDisclosure>
             </InputSlot>
             <Popover
@@ -980,7 +981,7 @@ export default function InputExamples() {
             </InputSlot>
             <InputSlot $kind="avatar"><img alt="" src={picture} /></InputSlot>
             <Input disabled />
-            <InputSlot $size="2xl" $square={false}>
+            <InputSlot $kind="box" $size="2xl">
               <Button $size="sm">
                 <ButtonSlot $size="xl" $layer="brand" $mix={20}>
                   <Search />
@@ -1002,7 +1003,7 @@ export default function InputExamples() {
             <img alt="" src={avatarImage} className="size-full" />
           </InputSlot>
           <Input aria-label="Owner" defaultValue="marta" disabled />
-          <InputSlot $size="2xl" $square={false}>
+          <InputSlot $size="2xl" $kind="box">
             <Button $size="sm">
               <ButtonSlot $size="xl" $layer="brand" $mix={20}>
                 <Search />
@@ -1014,6 +1015,42 @@ export default function InputExamples() {
             </Button>
           </InputSlot>
         </InputGroup>
+      </Example>
+
+      <Example
+        title="Tint and solid badges in box slots"
+        description="A badge fills a box slot in the input group, with the same space at the end and at the top."
+        code={`
+          <InputGroup>
+            <Input aria-label="Coupon" />
+            <InputSlot $kind="box">
+              <Badge $layer="success">Save 20%</Badge>
+            </InputSlot>
+          </InputGroup>
+          <InputGroup>
+            <Input aria-label="Messages" />
+            <InputSlot $kind="box">
+              <Badge $kind="solid" $round>3</Badge>
+            </InputSlot>
+          </InputGroup>
+        `}
+      >
+        <div className="flex w-full flex-col gap-2">
+          <InputGroup>
+            <Input aria-label="Coupon" />
+            <InputSlot $kind="box">
+              <Badge $layer="success">Save 20%</Badge>
+            </InputSlot>
+          </InputGroup>
+          <InputGroup>
+            <Input aria-label="Messages" />
+            <InputSlot $kind="box">
+              <Badge $kind="solid" $round>
+                3
+              </Badge>
+            </InputSlot>
+          </InputGroup>
+        </div>
       </Example>
     </ExampleGrid>
   );

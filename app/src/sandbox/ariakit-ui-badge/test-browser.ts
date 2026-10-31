@@ -16,6 +16,15 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     test.expect(await getCapsOffset(label)).toBeCloseTo(0, 1);
   });
 
+  test("centers plain text and numbers like a label", async ({ q }) => {
+    const box = query(q.article("Plain text children"));
+    for (const text of ["Text", "0", "3 new"]) {
+      const label = box.text(text);
+      await test.expect(label).toBeVisible();
+      test.expect(await getCapsOffset(label)).toBeCloseTo(0, 1);
+    }
+  });
+
   // A label with overflow: hidden is a scroll container, which Firefox does not
   // trim, so the padding that gives back the trimmed room would make the badge
   // taller.

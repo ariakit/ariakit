@@ -668,7 +668,9 @@ export default function CheckboxExamples() {
             <CheckboxCardContent>
               <CheckboxCardLabelRow>
                 <CheckboxCardLabel>Reports</CheckboxCardLabel>
-                <CheckboxCardSlot $kind="badge">Beta</CheckboxCardSlot>
+                <CheckboxCardSlot $kind="box">
+                  <Badge $kind="solid">Beta</Badge>
+                </CheckboxCardSlot>
               </CheckboxCardLabelRow>
               <CheckboxCardDescription $truncate={false}>…</CheckboxCardDescription>
             </CheckboxCardContent>
@@ -695,7 +697,9 @@ export default function CheckboxExamples() {
             <CheckboxCardContent>
               <CheckboxCardLabelRow>
                 <CheckboxCardLabel>Reports</CheckboxCardLabel>
-                <CheckboxCardSlot $kind="badge">Beta</CheckboxCardSlot>
+                <CheckboxCardSlot $kind="box">
+                  <Badge $kind="solid">Beta</Badge>
+                </CheckboxCardSlot>
               </CheckboxCardLabelRow>
               <CheckboxCardDescription $truncate={false}>
                 A summary of usage and retention in your inbox every Monday
@@ -720,7 +724,9 @@ export default function CheckboxExamples() {
             <CheckboxCardContent>
               <CheckboxCardLabelRow>
                 <CheckboxCardLabel>Audit log</CheckboxCardLabel>
-                <CheckboxCardSlot $kind="badge">Enterprise</CheckboxCardSlot>
+                <CheckboxCardSlot $kind="box">
+                  <Badge $kind="solid">Enterprise</Badge>
+                </CheckboxCardSlot>
               </CheckboxCardLabelRow>
               <CheckboxCardDescription $truncate={false}>
                 Every change, with who made it
@@ -1293,14 +1299,18 @@ export default function CheckboxExamples() {
           <CheckboxCard value="messages">
             <CheckboxCardCheck />
             <CheckboxCardLabel>Messages</CheckboxCardLabel>
-            <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+            <CheckboxCardSlot $kind="box">
+              <Badge $kind="solid">3</Badge>
+            </CheckboxCardSlot>
           </CheckboxCard>
         `}
       >
         <CheckboxCard value="messages">
           <CheckboxCardCheck />
           <CheckboxCardLabel>Messages</CheckboxCardLabel>
-          <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+          <CheckboxCardSlot $kind="box">
+            <Badge $kind="solid">3</Badge>
+          </CheckboxCardSlot>
         </CheckboxCard>
       </Example>
       <Example
@@ -1309,21 +1319,29 @@ export default function CheckboxExamples() {
         code={`
           <CheckboxCard value="email" disabled>
             <CheckboxCardLabel>Email</CheckboxCardLabel>
-            <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+            <CheckboxCardSlot $kind="box">
+              <Badge $kind="solid">3</Badge>
+            </CheckboxCardSlot>
           </CheckboxCard>
           <CheckboxCard value="messages" aria-disabled>
             <CheckboxCardLabel>Messages</CheckboxCardLabel>
-            <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+            <CheckboxCardSlot $kind="box">
+              <Badge $kind="solid">3</Badge>
+            </CheckboxCardSlot>
           </CheckboxCard>
         `}
       >
         <CheckboxCard value="email" disabled>
           <CheckboxCardLabel>Email</CheckboxCardLabel>
-          <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+          <CheckboxCardSlot $kind="box">
+            <Badge $kind="solid">3</Badge>
+          </CheckboxCardSlot>
         </CheckboxCard>
         <CheckboxCard value="messages" aria-disabled>
           <CheckboxCardLabel>Messages</CheckboxCardLabel>
-          <CheckboxCardSlot $kind="badge">3</CheckboxCardSlot>
+          <CheckboxCardSlot $kind="box">
+            <Badge $kind="solid">3</Badge>
+          </CheckboxCardSlot>
         </CheckboxCard>
       </Example>
       <Example
@@ -1424,6 +1442,40 @@ export default function CheckboxExamples() {
             <CheckboxDescription>Only owners can remove</CheckboxDescription>
           </CheckboxField>
         </div>
+      </Example>
+
+      <Example
+        title="Tint and solid badges in box slots"
+        description="A badge fills a box slot at the end of the card, with the same space at the end and at the top."
+        code={`
+          <CheckboxCard value="pro">
+            <CheckboxCardLabel>Pro</CheckboxCardLabel>
+            <CheckboxCardSlot $kind="box">
+              <Badge $layer="success">Save 20%</Badge>
+            </CheckboxCardSlot>
+          </CheckboxCard>
+          <CheckboxCard value="team">
+            <CheckboxCardLabel>Team</CheckboxCardLabel>
+            <CheckboxCardSlot $kind="box">
+              <Badge $kind="solid" $round>3</Badge>
+            </CheckboxCardSlot>
+          </CheckboxCard>
+        `}
+      >
+        <CheckboxCard value="pro">
+          <CheckboxCardLabel>Pro</CheckboxCardLabel>
+          <CheckboxCardSlot $kind="box">
+            <Badge $layer="success">Save 20%</Badge>
+          </CheckboxCardSlot>
+        </CheckboxCard>
+        <CheckboxCard value="team">
+          <CheckboxCardLabel>Team</CheckboxCardLabel>
+          <CheckboxCardSlot $kind="box">
+            <Badge $kind="solid" $round>
+              3
+            </Badge>
+          </CheckboxCardSlot>
+        </CheckboxCard>
       </Example>
     </ExampleGrid>
   );

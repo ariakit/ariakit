@@ -8,7 +8,6 @@ import {
   createOptionalRender,
   createRender,
 } from "../react-utils/create-render.react.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 import {
   tab,
   tabBar,
@@ -275,7 +274,9 @@ export interface TabSlotProps
  *   <TabList aria-label="Project">
  *     <Tab id="activity">
  *       <TabLabel>Activity</TabLabel>
- *       <TabSlot $kind="badge">3 new</TabSlot>
+ *       <TabSlot $kind="box">
+ *         <Badge $kind="solid">3 new</Badge>
+ *       </TabSlot>
  *     </Tab>
  *   </TabList>
  *   <TabPanels>
@@ -285,16 +286,7 @@ export interface TabSlotProps
  */
 export function TabSlot(props: TabSlotProps) {
   const [variantProps, rest] = splitProps(props, tabSlot);
-  const variants = tabSlot.getVariants(variantProps);
-  return (
-    <span {...tabSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </span>
-  );
+  return <span {...tabSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface TabPanelsProps

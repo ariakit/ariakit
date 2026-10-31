@@ -21,6 +21,8 @@ import {
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
 
+const newItemCount = 3;
+
 export default function BadgeExamples() {
   return (
     <ExampleGrid>
@@ -434,16 +436,138 @@ export default function BadgeExamples() {
         code={`
           <Badge $size="sm">
             <BadgeLabel>Issues</BadgeLabel>
-            <BadgeSlot $kind="badge" $p="md" $layer="danger">12</BadgeSlot>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid" $round $layer="danger">12</Badge>
+            </BadgeSlot>
           </Badge>
         `}
       >
         <Badge $size="sm">
           <BadgeLabel>Issues</BadgeLabel>
-          <BadgeSlot $kind="badge" $p="md" $layer="danger">
-            12
+          <BadgeSlot $kind="box">
+            <Badge $kind="solid" $round $layer="danger">
+              12
+            </Badge>
           </BadgeSlot>
         </Badge>
+      </Example>
+
+      <Example
+        title="Side padding in a slot"
+        description="A badge in a slot fills its height, and $px still sets its side padding."
+        code={`
+          <Badge $size="md">
+            <BadgeLabel>Default</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge>Fit</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Named</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="sm">Small</Badge>
+            </BadgeSlot>
+            <BadgeSlot $kind="box">
+              <Badge $px="xl">Large</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Raw</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="0.25em">Length</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Icon</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="xl">
+                <BadgeSlot aria-hidden>★</BadgeSlot>
+                <BadgeLabel>Fit</BadgeLabel>
+              </Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Round</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid" $round $px="0.5em">128</Badge>
+            </BadgeSlot>
+          </Badge>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge $size="md">
+            <BadgeLabel>Default</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge>Fit</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Named</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="sm">Small</Badge>
+            </BadgeSlot>
+            <BadgeSlot $kind="box">
+              <Badge $px="xl">Large</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Raw</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="0.25em">Length</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Icon</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $px="xl">
+                <BadgeSlot aria-hidden>★</BadgeSlot>
+                <BadgeLabel>Fit</BadgeLabel>
+              </Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="md">
+            <BadgeLabel>Round</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid" $round $px="0.5em">
+                128
+              </Badge>
+            </BadgeSlot>
+          </Badge>
+        </div>
+      </Example>
+
+      <Example
+        title="Nested in a round badge"
+        description="A round badge does not pass its side padding to a badge nested in it, so both nested badges have the same width."
+        code={`
+          <Badge $size="sm">
+            <BadgeLabel>Plain</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="sm" $round>
+            <BadgeLabel>Round</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </BadgeSlot>
+          </Badge>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge $size="sm">
+            <BadgeLabel>Plain</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </BadgeSlot>
+          </Badge>
+          <Badge $size="sm" $round>
+            <BadgeLabel>Round</BadgeLabel>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </BadgeSlot>
+          </Badge>
+        </div>
       </Example>
 
       <Example
@@ -485,6 +609,50 @@ export default function BadgeExamples() {
             <BadgeLabel>Beta</BadgeLabel>
           </Badge>
         </Frame>
+      </Example>
+
+      <Example
+        title="Plain text children"
+        description="Text and numbers go in a label automatically, including a count of zero. A badge with an icon uses its own label."
+        code={`
+          <Badge>Text</Badge>
+          <Badge>{0}</Badge>
+          <Badge>{count} new</Badge>
+          <Badge>
+            <BadgeSlot aria-hidden>★</BadgeSlot>
+            <BadgeLabel>Icon</BadgeLabel>
+          </Badge>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge>Text</Badge>
+          <Badge>{0}</Badge>
+          <Badge>{newItemCount} new</Badge>
+          <Badge>
+            <BadgeSlot aria-hidden>★</BadgeSlot>
+            <BadgeLabel>Icon</BadgeLabel>
+          </Badge>
+        </div>
+      </Example>
+
+      <Example
+        title="Solid kind"
+        description="A solid badge fills with its layer color, brand by default, and has no border. Other variants still override it."
+        code={`
+          <Badge $kind="solid">Brand</Badge>
+          <Badge $kind="solid" $layer="success">Success</Badge>
+          <Badge $kind="solid" $border>Border</Badge>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge $kind="solid">Brand</Badge>
+          <Badge $kind="solid" $layer="success">
+            Success
+          </Badge>
+          <Badge $kind="solid" $border>
+            Border
+          </Badge>
+        </div>
       </Example>
     </ExampleGrid>
   );

@@ -205,16 +205,16 @@ export const navGroupLabel = cv({
   },
 });
 
-/** Shared slot sizing and margins for navigation icons, badges, and avatars. */
+/** Shared slot sizing and margins for navigation icons, boxes, and avatars. */
 const navSlotBase = cv({
   extend: [buttonSlot],
   variants: {
     /**
      * Sets the slot size. `auto` follows the navigation `$slotSize`, or the
-     * text size; without `$slotSize`, a badge after the label takes the line
+     * text size; without `$slotSize`, a box after the label takes the line
      * height instead. Numbers scale the spacing token; other lengths apply
-     * directly. Named sizes `xs` to `lg` become `xl` for badges and avatars;
-     * `xl` and larger add label spacing, except for thumbnails and text.
+     * directly. Named sizes `xs` to `lg` become `xl` for avatars; `xl` and
+     * larger add label spacing, except for thumbnails and text.
      */
     $size(value?: SlotSize | "auto" | number | (string & {})) {
       if (value == null) return;
@@ -237,14 +237,14 @@ const navSlotBase = cv({
   },
   defaultVariants: {
     // Resolve before slotFrameSlot refinement converts the named sizes of
-    // badges and avatars.
+    // avatars.
     $size: "auto",
   },
 });
 
 /**
- * An icon, badge, avatar, keyboard key, or text slot aligned with navigation
- * labels.
+ * An icon, box, avatar, or text slot aligned with navigation labels. A box can
+ * hold a badge or a keyboard key.
  */
 export const navSlot = cv({
   extend: [navSlotBase],
@@ -269,17 +269,15 @@ export const navSlot = cv({
     },
   },
   refine({ variants, addClass }) {
-    if (variants.$kind !== "badge") return;
-    // A floating badge sits on another slot, so it keeps the icon size.
+    if (variants.$kind !== "box") return;
+    // A floating box sits on another slot, so it keeps the icon size.
     if (variants.$floating) return;
-    // A badge after the label takes the nav's $slotSize, or the line height
-    // like a button badge. A badge before it sits in the icon column, where it
-    // keeps the icon size and a padding that keeps one digit round. The variant
-    // classes sort after the base size and padding classes.
+    // A box after the label takes the nav's $slotSize, or the line height like
+    // a button box. A box before it sits in the icon column, where it keeps the
+    // icon size. The variant class sorts after the base size class.
     if (variants.$size === "auto") {
       addClass("[*+&]:[--size:var(--nav-slot-size,1lh)]");
     }
-    if (variants.$p === "auto") addClass("first:px-[calc(var(--size)*0.15)]");
   },
 });
 

@@ -34,7 +34,6 @@ import {
   comboboxLabel,
   comboboxPopover,
 } from "../styles/combobox.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface ComboboxProps
   extends
@@ -561,16 +560,7 @@ export interface ComboboxItemSlotProps
  */
 export function ComboboxItemSlot(props: ComboboxItemSlotProps) {
   const [variantProps, rest] = splitProps(props, comboboxItemSlot);
-  const variants = comboboxItemSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...comboboxItemSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...comboboxItemSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface ComboboxSelectedValueProps

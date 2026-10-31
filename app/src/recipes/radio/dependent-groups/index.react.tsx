@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
   RadioCard,
@@ -89,8 +90,10 @@ export default function Example() {
                   {item.weekday} {item.date}
                 </RadioCardLabel>
               </RadioCardContent>
-              <RadioCardSlot $kind="badge" $floating>
-                {openTimes ? `${openTimes} open` : "Full"}
+              <RadioCardSlot $kind="box" $floating>
+                <Badge $kind="solid">
+                  {openTimes ? `${openTimes} open` : "Full"}
+                </Badge>
               </RadioCardSlot>
             </RadioCard>
           );
@@ -124,8 +127,8 @@ export default function Example() {
                   </RadioCardLabel>
                 </RadioCardContent>
                 {slot.booked && (
-                  <RadioCardSlot $kind="badge" $floating>
-                    Booked
+                  <RadioCardSlot $kind="box" $floating>
+                    <Badge $kind="solid">Booked</Badge>
                   </RadioCardSlot>
                 )}
               </RadioCard>

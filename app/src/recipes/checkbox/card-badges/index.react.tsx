@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   CheckboxCard,
   CheckboxCardCheck,
@@ -49,8 +50,8 @@ export default function Example() {
               <CheckboxCardLabelRow>
                 <CheckboxCardLabel>{addOn.label}</CheckboxCardLabel>
                 {addOn.badge && (
-                  <CheckboxCardSlot $kind="badge">
-                    {addOn.badge}
+                  <CheckboxCardSlot $kind="box">
+                    <Badge $kind="solid">{addOn.badge}</Badge>
                   </CheckboxCardSlot>
                 )}
               </CheckboxCardLabelRow>

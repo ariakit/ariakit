@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   RadioCard,
   RadioCardCheck,
@@ -50,7 +51,11 @@ export default function Example() {
           {/* A vertical card shows the content below the top row, so the
               badge can come after the label in the source. The radio is then
               named "Pro Popular". */}
-          {plan.popular && <RadioCardSlot $kind="badge">Popular</RadioCardSlot>}
+          {plan.popular && (
+            <RadioCardSlot $kind="box">
+              <Badge $kind="solid">Popular</Badge>
+            </RadioCardSlot>
+          )}
         </RadioCard>
       ))}
     </RadioCardGrid>

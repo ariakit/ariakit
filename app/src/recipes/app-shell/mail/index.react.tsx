@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonGroup,
@@ -256,8 +257,10 @@ export default function Example() {
                   <item.icon strokeWidth={1.5} />
                 </NavSlot>
                 <NavLinkLabel>{item.label}</NavLinkLabel>
-                <NavSlot $kind="badge" $p="md">
-                  {countInFolder(item.id)}
+                <NavSlot $kind="box">
+                  <Badge $kind="solid" $round>
+                    {countInFolder(item.id)}
+                  </Badge>
                 </NavSlot>
               </NavLink>
             ))}

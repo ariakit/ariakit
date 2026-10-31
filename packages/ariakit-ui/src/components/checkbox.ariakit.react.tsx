@@ -22,7 +22,6 @@ import {
   checkboxField,
   checkboxLabel,
 } from "../styles/checkbox.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 type CheckboxMark = VariantProps<typeof checkbox>["$mark"];
 
@@ -244,16 +243,7 @@ export interface CheckboxCardSlotProps
  */
 export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardSlot);
-  const variants = checkboxCardSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...checkboxCardSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...checkboxCardSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface CheckboxCardContentProps
@@ -287,7 +277,9 @@ export interface CheckboxCardLabelRowProps
  *   <CheckboxCardContent>
  *     <CheckboxCardLabelRow>
  *       <CheckboxCardLabel>Email updates</CheckboxCardLabel>
- *       <CheckboxCardSlot $kind="badge">New</CheckboxCardSlot>
+ *       <CheckboxCardSlot $kind="box">
+ *         <Badge $kind="solid">New</Badge>
+ *       </CheckboxCardSlot>
  *     </CheckboxCardLabelRow>
  *     <CheckboxCardDescription>Receive product news.</CheckboxCardDescription>
  *   </CheckboxCardContent>

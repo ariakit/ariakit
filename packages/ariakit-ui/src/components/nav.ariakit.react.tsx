@@ -35,7 +35,6 @@ import {
   navList,
   navSlot,
 } from "../styles/nav.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 import { isCurrentPage } from "../utils/is-current-page.ts";
 import type { ButtonProps } from "./button.ariakit.react.tsx";
 import { Button } from "./button.ariakit.react.tsx";
@@ -275,32 +274,25 @@ export interface NavSlotProps
 
 /**
  * Renders an icon, badge, avatar, shortcut, thumbnail, or short text in a nav
- * row. All except thumbnails and text inherit the nav's `$slotSize`. A badge
- * after the label takes the line height and fits its text; use `$p="md"` to
- * keep a count of one or two digits round. A badge before the label keeps the
- * icon size. Badge content gets a span for text sizing. Put keyboard keys in a
- * `Kbd`: plain keys in a `text` slot, and flat keys or keycaps in a slot with
- * `$square={false}`.
+ * row. All except thumbnails and text inherit the nav's `$slotSize`. A `box`
+ * slot after the label takes the line height and the width of what fills it,
+ * such as a `Badge`; use `$round` on the badge to keep a count of one or two
+ * digits round. A `box` slot before the label keeps the icon size. Put keyboard
+ * keys in a `Kbd`: plain keys in a `text` slot, and flat keys or keycaps in a
+ * `box` slot.
  * @example
  * <Nav aria-label="Main">
  *   <NavLink href="/updates">
  *     <NavLinkLabel>Updates</NavLinkLabel>
- *     <NavSlot $kind="badge" $p="md">3</NavSlot>
+ *     <NavSlot $kind="box">
+ *       <Badge $kind="solid" $round>3</Badge>
+ *     </NavSlot>
  *   </NavLink>
  * </Nav>
  */
 export function NavSlot(props: NavSlotProps) {
   const [variantProps, rest] = splitProps(props, navSlot);
-  const variants = navSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...navSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...navSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface NavLinkContentProps
@@ -342,7 +334,9 @@ export interface NavLinkLabelProps
  * <Nav aria-label="Main">
  *   <NavLink href="/updates">
  *     <NavLinkLabel>Updates</NavLinkLabel>
- *     <NavSlot $kind="badge" $p="md">3</NavSlot>
+ *     <NavSlot $kind="box">
+ *       <Badge $kind="solid" $round>3</Badge>
+ *     </NavSlot>
  *   </NavLink>
  * </Nav>
  * @example
@@ -559,7 +553,9 @@ export interface NavButtonContentProps extends ak.RoleProps<"span"> {}
  * @example
  * <NavButton render={<a href="/updates" />}>
  *   <NavButtonContent>Updates</NavButtonContent>
- *   <NavSlot $kind="badge" $p="md">3</NavSlot>
+ *   <NavSlot $kind="box">
+ *     <Badge $kind="solid" $round>3</Badge>
+ *   </NavSlot>
  * </NavButton>
  */
 export function NavButtonContent(props: NavButtonContentProps) {
@@ -582,7 +578,9 @@ export interface NavDisclosureButtonProps extends Omit<
  *   <NavDisclosure
  *     button={
  *       <NavDisclosureButton label="Guides">
- *         <NavSlot $kind="badge" $p="md">3</NavSlot>
+ *         <NavSlot $kind="box">
+ *           <Badge $kind="solid" $round>3</Badge>
+ *         </NavSlot>
  *       </NavDisclosureButton>
  *     }
  *   >

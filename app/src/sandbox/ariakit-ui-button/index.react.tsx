@@ -681,14 +681,18 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Inbox</ButtonLabel>
-            <ButtonSlot $kind="badge" $p="md">12</ButtonSlot>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid" $round>12</Badge>
+            </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Inbox</ButtonLabel>
-          <ButtonSlot $kind="badge" $p="md">
-            12
+          <ButtonSlot $kind="box">
+            <Badge $kind="solid" $round>
+              12
+            </Badge>
           </ButtonSlot>
         </Button>
       </Example>
@@ -699,13 +703,17 @@ export default function ButtonExamples() {
         code={`
           <Button $size="sm" $p={1} $border>
             <ButtonLabel>Inbox</ButtonLabel>
-            <ButtonSlot $kind="badge">12</ButtonSlot>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid">12</Badge>
+            </ButtonSlot>
           </Button>
         `}
       >
         <Button $size="sm" $p={1} $border>
           <ButtonLabel>Inbox</ButtonLabel>
-          <ButtonSlot $kind="badge">12</ButtonSlot>
+          <ButtonSlot $kind="box">
+            <Badge $kind="solid">12</Badge>
+          </ButtonSlot>
         </Button>
       </Example>
 
@@ -715,14 +723,18 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Reviews</ButtonLabel>
-            <ButtonSlot $kind="badge" $p="md" $layer="brand" $hue="green" $border>3</ButtonSlot>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid" $round $layer="brand" $hue="green" $border>3</Badge>
+            </ButtonSlot>
           </Button>
         `}
       >
         <Button>
           <ButtonLabel>Reviews</ButtonLabel>
-          <ButtonSlot $kind="badge" $p="md" $layer="brand" $hue="green" $border>
-            3
+          <ButtonSlot $kind="box">
+            <Badge $kind="solid" $round $layer="brand" $hue="green" $border>
+              3
+            </Badge>
           </ButtonSlot>
         </Button>
       </Example>
@@ -801,7 +813,7 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false} $size="xl">
+            <ButtonSlot $kind="box">
               <Kbd $kind="flat">⌘K</Kbd>
             </ButtonSlot>
           </Button>
@@ -809,7 +821,7 @@ export default function ButtonExamples() {
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonSlot $square={false} $size="xl">
+          <ButtonSlot $kind="box">
             <Kbd $kind="flat">⌘K</Kbd>
           </ButtonSlot>
         </Button>
@@ -821,7 +833,7 @@ export default function ButtonExamples() {
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false} $size="xl">
+            <ButtonSlot $kind="box">
               <Kbd $kind="flat" $layer="transparent" $border>
                 ⌘K
               </Kbd>
@@ -831,7 +843,7 @@ export default function ButtonExamples() {
       >
         <Button>
           <ButtonLabel>Search</ButtonLabel>
-          <ButtonSlot $square={false} $size="xl">
+          <ButtonSlot $kind="box">
             <Kbd $kind="flat" $layer="transparent" $border>
               ⌘K
             </Kbd>
@@ -845,15 +857,19 @@ export default function ButtonExamples() {
         code={`
           <Button $kind="bevel">
             <ButtonLabel>Updates</ButtonLabel>
-            <ButtonSlot $kind="badge" $layer="success" $floating>New</ButtonSlot>
+            <ButtonSlot $kind="box" $floating>
+              <Badge $kind="solid" $layer="success">New</Badge>
+            </ButtonSlot>
           </Button>
         `}
       >
         <div className="pt-3">
           <Button $kind="bevel">
             <ButtonLabel>Updates</ButtonLabel>
-            <ButtonSlot $kind="badge" $layer="success" $floating>
-              New
+            <ButtonSlot $kind="box" $floating>
+              <Badge $kind="solid" $layer="success">
+                New
+              </Badge>
             </ButtonSlot>
           </Button>
         </div>
@@ -866,7 +882,9 @@ export default function ButtonExamples() {
           <div dir="rtl">
             <Button $kind="bevel">
               <ButtonLabel>التحديثات</ButtonLabel>
-              <ButtonSlot $kind="badge" $layer="success" $floating>جديد</ButtonSlot>
+              <ButtonSlot $kind="box" $floating>
+                <Badge $kind="solid" $layer="success">جديد</Badge>
+              </ButtonSlot>
             </Button>
           </div>
         `}
@@ -874,8 +892,10 @@ export default function ButtonExamples() {
         <div dir="rtl" lang="ar" className="w-full pt-3">
           <Button $kind="bevel">
             <ButtonLabel>التحديثات</ButtonLabel>
-            <ButtonSlot $kind="badge" $layer="success" $floating>
-              جديد
+            <ButtonSlot $kind="box" $floating>
+              <Badge $kind="solid" $layer="success">
+                جديد
+              </Badge>
             </ButtonSlot>
           </Button>
         </div>
@@ -989,7 +1009,9 @@ export default function ButtonExamples() {
               <Trash />
             </ButtonSlot>
             <ButtonLabel>Delete</ButtonLabel>
-            <ButtonSlot $kind="badge" $p="md">3</ButtonSlot>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid" $round>3</Badge>
+            </ButtonSlot>
           </Button>
         `}
       >
@@ -998,8 +1020,10 @@ export default function ButtonExamples() {
             <Trash2 />
           </ButtonSlot>
           <ButtonLabel>Delete</ButtonLabel>
-          <ButtonSlot $kind="badge" $p="md">
-            3
+          <ButtonSlot $kind="box">
+            <Badge $kind="solid" $round>
+              3
+            </Badge>
           </ButtonSlot>
         </Button>
       </Example>
@@ -1058,13 +1082,17 @@ export default function ButtonExamples() {
             <legend>
               <Button>
                 Actions
-                <ButtonSlot $kind="badge">1</ButtonSlot>
+                <ButtonSlot $kind="box">
+                  <Badge $kind="solid">1</Badge>
+                </ButtonSlot>
               </Button>
             </legend>
             <Button>
               <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
               <ButtonLabel>Jane Doe</ButtonLabel>
-              <ButtonSlot $kind="badge">3</ButtonSlot>
+              <ButtonSlot $kind="box">
+                <Badge $kind="solid">3</Badge>
+              </ButtonSlot>
             </Button>
           </fieldset>
         `}
@@ -1073,7 +1101,9 @@ export default function ButtonExamples() {
           <legend>
             <Button>
               Actions
-              <ButtonSlot $kind="badge">1</ButtonSlot>
+              <ButtonSlot $kind="box">
+                <Badge $kind="solid">1</Badge>
+              </ButtonSlot>
             </Button>
           </legend>
           <Button>
@@ -1081,7 +1111,9 @@ export default function ButtonExamples() {
               J
             </ButtonSlot>
             <ButtonLabel>Jane Doe</ButtonLabel>
-            <ButtonSlot $kind="badge">3</ButtonSlot>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid">3</Badge>
+            </ButtonSlot>
           </Button>
         </fieldset>
       </Example>
@@ -1094,7 +1126,9 @@ export default function ButtonExamples() {
             <ButtonContent $orientation="horizontal">
               <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
               <ButtonLabel>Jane Doe</ButtonLabel>
-              <ButtonSlot $kind="badge">3</ButtonSlot>
+              <ButtonSlot $kind="box">
+                <Badge $kind="solid">3</Badge>
+              </ButtonSlot>
             </ButtonContent>
           </Button>
         `}
@@ -1105,7 +1139,9 @@ export default function ButtonExamples() {
               J
             </ButtonSlot>
             <ButtonLabel>Jane Doe</ButtonLabel>
-            <ButtonSlot $kind="badge">3</ButtonSlot>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid">3</Badge>
+            </ButtonSlot>
           </ButtonContent>
         </Button>
       </Example>
@@ -2357,7 +2393,9 @@ export default function ButtonExamples() {
           <Button $ink={60}>
             <ButtonSlot><Share2 /></ButtonSlot>
             <ButtonLabel>Share</ButtonLabel>
-            <ButtonSlot $kind="badge">9</ButtonSlot>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid">9</Badge>
+            </ButtonSlot>
           </Button>
           <Button $ink={60} $hoverInk={false}>
             <ButtonSlot><Share2 /></ButtonSlot>
@@ -2370,7 +2408,9 @@ export default function ButtonExamples() {
             <Share2 />
           </ButtonSlot>
           <ButtonLabel>Share</ButtonLabel>
-          <ButtonSlot $kind="badge">9</ButtonSlot>
+          <ButtonSlot $kind="box">
+            <Badge $kind="solid">9</Badge>
+          </ButtonSlot>
         </Button>
         <Button $ink={60} $hoverInk={false}>
           <ButtonSlot>
@@ -2431,6 +2471,106 @@ export default function ButtonExamples() {
           </ButtonSlot>
           <ButtonLabel>Photo</ButtonLabel>
         </Button>
+      </Example>
+
+      <Example
+        title="Badges in box slots"
+        description="A badge fills a box slot, so it grows with the button and sits as far from the side as from the top, before or after the label."
+        code={`
+          <Button $size="md">
+            <ButtonLabel>Inbox</ButtonLabel>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid" $round>3</Badge>
+            </ButtonSlot>
+          </Button>
+          <Button $size="md">
+            <ButtonSlot $kind="box">
+              <Badge $layer="success">Save 20%</Badge>
+            </ButtonSlot>
+            <ButtonLabel>Upgrade</ButtonLabel>
+          </Button>
+        `}
+      >
+        <div className="flex flex-col items-start gap-2">
+          {(["xs", "sm", "md", "lg", "xl"] as const).map((size) => (
+            <div key={size} className="flex flex-wrap items-center gap-2">
+              <Button $size={size}>
+                <ButtonLabel>Inbox</ButtonLabel>
+                <ButtonSlot $kind="box">
+                  <Badge $kind="solid" $round>
+                    3
+                  </Badge>
+                </ButtonSlot>
+              </Button>
+              <Button $size={size}>
+                <ButtonSlot $kind="box">
+                  <Badge $layer="success">Save 20%</Badge>
+                </ButtonSlot>
+                <ButtonLabel>Upgrade</ButtonLabel>
+              </Button>
+            </div>
+          ))}
+        </div>
+      </Example>
+
+      <Example
+        title="Disabled badges in box slots"
+        description="A solid and a tint badge fade with the disabled button."
+        code={`
+          <Button disabled>
+            <ButtonLabel>Inbox</ButtonLabel>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid" $round>3</Badge>
+            </ButtonSlot>
+          </Button>
+          <Button disabled>
+            <ButtonLabel>Upgrade</ButtonLabel>
+            <ButtonSlot $kind="box">
+              <Badge $layer="success">Save 20%</Badge>
+            </ButtonSlot>
+          </Button>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <Button disabled>
+            <ButtonLabel>Inbox</ButtonLabel>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid" $round>
+                3
+              </Badge>
+            </ButtonSlot>
+          </Button>
+          <Button disabled>
+            <ButtonLabel>Upgrade</ButtonLabel>
+            <ButtonSlot $kind="box">
+              <Badge $layer="success">Save 20%</Badge>
+            </ButtonSlot>
+          </Button>
+        </div>
+      </Example>
+
+      <Example
+        title="Leading badge beside a plain button"
+        description="The text of both buttons sits on one line, and the buttons have the same height."
+        code={`
+          <Button>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </ButtonSlot>
+            <ButtonLabel>Inbox</ButtonLabel>
+          </Button>
+          <Button>Archive</Button>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <Button>
+            <ButtonSlot $kind="box">
+              <Badge $kind="solid">New</Badge>
+            </ButtonSlot>
+            <ButtonLabel>Inbox</ButtonLabel>
+          </Button>
+          <Button>Archive</Button>
+        </div>
       </Example>
     </ExampleGrid>
   );

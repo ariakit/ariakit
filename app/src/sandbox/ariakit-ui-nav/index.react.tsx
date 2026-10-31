@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as Ariakit from "@ariakit/react";
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { DisclosureButtonLabel } from "@ariakit/ui/components/disclosure.ariakit.react";
 import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
@@ -357,8 +358,8 @@ function DocumentationSidebar() {
           <Hexagon strokeWidth={1.5} />
         </NavSlot>
         <NavButtonContent>Ariakit UI</NavButtonContent>
-        <NavSlot $kind="badge" $p="auto" className="ms-auto">
-          beta
+        <NavSlot $kind="box" className="ms-auto">
+          <Badge $kind="solid">beta</Badge>
         </NavSlot>
       </NavButton>
       <Nav aria-label="Documentation sections" $p="none">
@@ -425,8 +426,10 @@ function BadgesAndAvatars() {
               icon={<Inbox strokeWidth={1.5} />}
               label="Inbox"
             >
-              <NavSlot $kind="badge" $p="md">
-                12
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  12
+                </Badge>
               </NavSlot>
             </NavDisclosureButton>
           }
@@ -455,8 +458,10 @@ function BadgesAndAvatars() {
             <FileCode strokeWidth={1.5} />
           </NavSlot>
           <NavLinkLabel>Drafts</NavLinkLabel>
-          <NavSlot $kind="badge" $p="md">
-            3
+          <NavSlot $kind="box">
+            <Badge $kind="solid" $round>
+              3
+            </Badge>
           </NavSlot>
         </NavLink>
         <NavLink href="#profile">
@@ -467,7 +472,11 @@ function BadgesAndAvatars() {
           <NavSlot $kind="avatar">JD</NavSlot>
         </NavLink>
         <NavLink href="#notifications">
-          <NavSlot $kind="badge">9</NavSlot>
+          <NavSlot $kind="box">
+            <Badge $kind="solid" $round>
+              9
+            </Badge>
+          </NavSlot>
           <NavLinkLabel>Notifications</NavLinkLabel>
         </NavLink>
         <NavLink href="#ana-lima">
@@ -620,8 +629,8 @@ export default function NavExamples() {
               <NavList>
                 <NavLink>
                   <NavLinkLabel>Components</NavLinkLabel>
-                  <NavSlot $kind="badge" $p="md">
-                    12
+                  <NavSlot $kind="box">
+                    <Badge $kind="solid" $round>12</Badge>
                   </NavSlot>
                 </NavLink>
                 <NavLink>Hooks</NavLink>
@@ -645,8 +654,10 @@ export default function NavExamples() {
             <NavList>
               <NavLink href="#components">
                 <NavLinkLabel>Components</NavLinkLabel>
-                <NavSlot $kind="badge" $p="md" className="ms-auto">
-                  12
+                <NavSlot $kind="box" className="ms-auto">
+                  <Badge $kind="solid" $round>
+                    12
+                  </Badge>
                 </NavSlot>
               </NavLink>
               <NavLink href="#hooks">Hooks</NavLink>
@@ -1155,8 +1166,8 @@ export default function NavExamples() {
                 <Hexagon />
               </NavSlot>
               <NavButtonContent>Ariakit UI</NavButtonContent>
-              <NavSlot $kind="badge" $p="auto">
-                beta
+              <NavSlot $kind="box">
+                <Badge $kind="solid">beta</Badge>
               </NavSlot>
             </NavButton>
             <Nav $p="none">
@@ -1203,8 +1214,8 @@ export default function NavExamples() {
                       <FileCode />
                     </NavSlot>
                     <NavLinkLabel>المكونات</NavLinkLabel>
-                    <NavSlot $kind="badge" $p="md">
-                      12
+                    <NavSlot $kind="box">
+                      <Badge $kind="solid" $round>12</Badge>
                     </NavSlot>
                   </NavLink>
                   <NavButton>
@@ -1249,8 +1260,10 @@ export default function NavExamples() {
                     <FileCode strokeWidth={1.5} />
                   </NavSlot>
                   <NavLinkLabel>المكونات</NavLinkLabel>
-                  <NavSlot $kind="badge" $p="md" className="ms-auto">
-                    12
+                  <NavSlot $kind="box" className="ms-auto">
+                    <Badge $kind="solid" $round>
+                      12
+                    </Badge>
                   </NavSlot>
                 </NavLink>
                 <li>
@@ -1468,15 +1481,19 @@ export default function NavExamples() {
         description="An explicit label keeps its NavSlot badge beside the text, with or without a description."
         code={`
           <NavDisclosureButton label="Team pages" description="All pages in this workspace">
-            <NavSlot $kind="badge" $p="md">3</NavSlot>
+            <NavSlot $kind="box">
+              <Badge $kind="solid" $round>3</Badge>
+            </NavSlot>
           </NavDisclosureButton>
         `}
       >
         <Nav>
           <NavDisclosure defaultOpen>
             <NavDisclosureButton label="Project pages">
-              <NavSlot $kind="badge" $p="md">
-                3
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  3
+                </Badge>
               </NavSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
@@ -1492,8 +1509,10 @@ export default function NavExamples() {
               label={<CustomLabel id="nav-pages-label">Team pages</CustomLabel>}
               description="All pages in this workspace"
             >
-              <NavSlot $kind="badge" $p="md">
-                3
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  3
+                </Badge>
               </NavSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
@@ -1514,8 +1533,10 @@ export default function NavExamples() {
               }
               description="Manage account pages"
             >
-              <NavSlot $kind="badge" $p="md">
-                3
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  3
+                </Badge>
               </NavSlot>
             </NavDisclosureButton>
             <NavDisclosureContent>
@@ -1532,7 +1553,9 @@ export default function NavExamples() {
           <Nav $slotSize={5}>
             <NavDisclosure defaultOpen button={
               <NavDisclosureButton icon={<Inbox />} label="Inbox">
-                <NavSlot $kind="badge" $p="md">12</NavSlot>
+                <NavSlot $kind="box">
+                  <Badge $kind="solid" $round>12</Badge>
+                </NavSlot>
               </NavDisclosureButton>
             }>
               <NavList>
@@ -1554,7 +1577,9 @@ export default function NavExamples() {
                 <FileCode />
               </NavSlot>
               <NavLinkLabel>Drafts</NavLinkLabel>
-              <NavSlot $kind="badge" $p="md">3</NavSlot>
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>3</Badge>
+              </NavSlot>
             </NavLink>
             <NavLink>
               <NavSlot>
@@ -1564,7 +1589,9 @@ export default function NavExamples() {
               <NavSlot $kind="avatar">JD</NavSlot>
             </NavLink>
             <NavLink>
-              <NavSlot $kind="badge">9</NavSlot>
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>9</Badge>
+              </NavSlot>
               <NavLinkLabel>Notifications</NavLinkLabel>
             </NavLink>
             <NavLink>
@@ -1596,7 +1623,9 @@ export default function NavExamples() {
             </NavLink>
             <NavDisclosure $slotSize={8} defaultOpen button={
               <NavDisclosureButton icon={<Palette />} label="Design">
-                <NavSlot $kind="badge" $p="md">4</NavSlot>
+                <NavSlot $kind="box">
+                  <Badge $kind="solid" $round>4</Badge>
+                </NavSlot>
               </NavDisclosureButton>
             }>
               <NavList>
@@ -1648,8 +1677,10 @@ export default function NavExamples() {
                 icon={<Palette strokeWidth={1.5} />}
                 label="Design"
               >
-                <NavSlot $kind="badge" $p="md">
-                  4
+                <NavSlot $kind="box">
+                  <Badge $kind="solid" $round>
+                    4
+                  </Badge>
                 </NavSlot>
               </NavDisclosureButton>
             }
@@ -1857,7 +1888,9 @@ export default function NavExamples() {
                 <NavLinkLabel>Inbox</NavLinkLabel>
                 <NavLinkDescription>Messages that wait for a reply</NavLinkDescription>
               </NavLinkContent>
-              <NavSlot $kind="badge" $p="md">4</NavSlot>
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>4</Badge>
+              </NavSlot>
             </NavLink>
             <NavLink>
               <NavSlot>
@@ -1894,8 +1927,10 @@ export default function NavExamples() {
                 Messages that wait for a reply from you or your team
               </NavLinkDescription>
             </NavLinkContent>
-            <NavSlot $kind="badge" $p="md">
-              4
+            <NavSlot $kind="box">
+              <Badge $kind="solid" $round>
+                4
+              </Badge>
             </NavSlot>
           </NavLink>
           {/*
@@ -2059,6 +2094,58 @@ export default function NavExamples() {
               <NavLink href="#override-billing">Billing</NavLink>
             </NavList>
           </NavDisclosure>
+        </Nav>
+      </Example>
+
+      <Example
+        title="Tint and solid badges in box slots"
+        description="After the label, a badge takes the line height and fits its text. Before the label, a round count keeps the icon size."
+        code={`
+          <Nav aria-label="Badges in box slots">
+            <NavLink>
+              <NavLinkLabel>Inbox</NavLinkLabel>
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>3</Badge>
+              </NavSlot>
+            </NavLink>
+            <NavLink>
+              <NavLinkLabel>Billing</NavLinkLabel>
+              <NavSlot $kind="box">
+                <Badge $layer="success">Save 20%</Badge>
+              </NavSlot>
+            </NavLink>
+            <NavLink>
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>9</Badge>
+              </NavSlot>
+              <NavLinkLabel>Alerts</NavLinkLabel>
+            </NavLink>
+          </Nav>
+        `}
+      >
+        <Nav aria-label="Badges in box slots">
+          <NavLink href="#badge-inbox">
+            <NavLinkLabel>Inbox</NavLinkLabel>
+            <NavSlot $kind="box">
+              <Badge $kind="solid" $round>
+                3
+              </Badge>
+            </NavSlot>
+          </NavLink>
+          <NavLink href="#badge-billing">
+            <NavLinkLabel>Billing</NavLinkLabel>
+            <NavSlot $kind="box">
+              <Badge $layer="success">Save 20%</Badge>
+            </NavSlot>
+          </NavLink>
+          <NavLink href="#badge-alerts">
+            <NavSlot $kind="box">
+              <Badge $kind="solid" $round>
+                9
+              </Badge>
+            </NavSlot>
+            <NavLinkLabel>Alerts</NavLinkLabel>
+          </NavLink>
         </Nav>
       </Example>
     </ExampleGrid>

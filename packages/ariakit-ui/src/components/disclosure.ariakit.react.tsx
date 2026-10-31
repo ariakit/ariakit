@@ -21,7 +21,6 @@ import {
   disclosureGroup,
   disclosurePlus,
 } from "../styles/disclosure.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface DisclosureOwnProps {
   /**
@@ -305,23 +304,16 @@ export interface DisclosureButtonSlotProps
  * @example
  * <Disclosure>
  *   <DisclosureButton label="Updates">
- *     <DisclosureButtonSlot $kind="badge">3</DisclosureButtonSlot>
+ *     <DisclosureButtonSlot $kind="box">
+ *       <Badge $kind="solid" $round>3</Badge>
+ *     </DisclosureButtonSlot>
  *   </DisclosureButton>
  *   <DisclosureContent>Three updates are available.</DisclosureContent>
  * </Disclosure>
  */
 export function DisclosureButtonSlot(props: DisclosureButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, disclosureButtonSlot);
-  const variants = disclosureButtonSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...disclosureButtonSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...disclosureButtonSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface DisclosureContentProps

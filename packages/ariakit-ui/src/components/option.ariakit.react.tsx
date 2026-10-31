@@ -2,7 +2,6 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { optionLabel, optionSlot } from "../styles/option.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface OptionLabelProps
   extends ak.RoleProps<"span">, VariantProps<typeof optionLabel> {}
@@ -37,14 +36,5 @@ export interface OptionSlotProps
  */
 export function OptionSlot(props: OptionSlotProps) {
   const [variantProps, rest] = splitProps(props, optionSlot);
-  const variants = optionSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...optionSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...optionSlot.jsx(variantProps)} {...rest} />;
 }

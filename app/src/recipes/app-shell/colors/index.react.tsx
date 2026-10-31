@@ -1,4 +1,5 @@
 import * as ak from "@ariakit/react";
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonGroup,
@@ -110,8 +111,10 @@ export default function Example() {
                 {playlists.map((playlist) => (
                   <NavLink key={playlist.name} href="#playlists">
                     <NavLinkLabel>{playlist.name}</NavLinkLabel>
-                    <NavSlot $kind="badge" $p="md">
-                      {playlist.count}
+                    <NavSlot $kind="box">
+                      <Badge $kind="solid" $round>
+                        {playlist.count}
+                      </Badge>
                     </NavSlot>
                   </NavLink>
                 ))}

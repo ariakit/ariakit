@@ -24,7 +24,6 @@ import {
   radioGroupLabel,
   radioLabel,
 } from "../styles/radio.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface RadioProviderProps extends ak.RadioProviderProps {}
 
@@ -285,16 +284,7 @@ export interface RadioCardSlotProps
  */
 export function RadioCardSlot(props: RadioCardSlotProps) {
   const [variantProps, rest] = splitProps(props, radioCardSlot);
-  const variants = radioCardSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...radioCardSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...radioCardSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface RadioCardContentProps
@@ -331,7 +321,9 @@ export interface RadioCardLabelRowProps
  *     <RadioCardContent>
  *       <RadioCardLabelRow>
  *         <RadioCardLabel>Pro</RadioCardLabel>
- *         <RadioCardSlot $kind="badge">Popular</RadioCardSlot>
+ *         <RadioCardSlot $kind="box">
+ *           <Badge $kind="solid">Popular</Badge>
+ *         </RadioCardSlot>
  *       </RadioCardLabelRow>
  *       <RadioCardDescription>For growing teams.</RadioCardDescription>
  *     </RadioCardContent>

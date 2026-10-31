@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
   DisclosureButtonLabel,
@@ -676,7 +677,9 @@ export default function ListExamples() {
         description="An explicit label keeps its badge beside the text, with or without a description."
         code={`
           <ListDisclosureButton label="Team tasks" description="All tasks in this workspace">
-            <DisclosureButtonSlot $kind="badge" $p="md">3</DisclosureButtonSlot>
+            <DisclosureButtonSlot $kind="box">
+              <Badge $kind="solid" $round>3</Badge>
+            </DisclosureButtonSlot>
           </ListDisclosureButton>
         `}
       >
@@ -684,8 +687,10 @@ export default function ListExamples() {
           <li>
             <ListDisclosure defaultOpen>
               <ListDisclosureButton label="Project tasks">
-                <DisclosureButtonSlot $kind="badge" $p="md">
-                  3
+                <DisclosureButtonSlot $kind="box">
+                  <Badge $kind="solid" $round>
+                    3
+                  </Badge>
                 </DisclosureButtonSlot>
               </ListDisclosureButton>
               <ListDisclosureContent>
@@ -701,8 +706,10 @@ export default function ListExamples() {
                 }
                 description="All tasks in this workspace"
               >
-                <DisclosureButtonSlot $kind="badge" $p="md">
-                  3
+                <DisclosureButtonSlot $kind="box">
+                  <Badge $kind="solid" $round>
+                    3
+                  </Badge>
                 </DisclosureButtonSlot>
               </ListDisclosureButton>
               <ListDisclosureContent>
@@ -721,8 +728,10 @@ export default function ListExamples() {
                 }
                 description="Manage account tasks"
               >
-                <DisclosureButtonSlot $kind="badge" $p="md">
-                  3
+                <DisclosureButtonSlot $kind="box">
+                  <Badge $kind="solid" $round>
+                    3
+                  </Badge>
                 </DisclosureButtonSlot>
               </ListDisclosureButton>
               <ListDisclosureContent>

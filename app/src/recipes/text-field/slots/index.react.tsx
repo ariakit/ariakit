@@ -66,7 +66,7 @@ function AmountField({ label, currencyLabel, hint }: AmountFieldProps) {
             aria-describedby={`${id}-amount-hint`}
             className="tabular-nums"
           />
-          <InputSlot $size="2xl" $square={false}>
+          <InputSlot $size="2xl" $kind="box">
             <ComboboxSelect
               aria-label={currencyLabel}
               $size="sm"

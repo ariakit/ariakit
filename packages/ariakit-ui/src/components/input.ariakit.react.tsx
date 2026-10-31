@@ -27,7 +27,6 @@ import {
   inputLabel,
   inputSlot,
 } from "../styles/input.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export interface InputProps
   extends
@@ -119,16 +118,7 @@ export interface InputSlotProps
  */
 export function InputSlot(props: InputSlotProps) {
   const [variantProps, rest] = splitProps(props, inputSlot);
-  const variants = inputSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...inputSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...inputSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface InputFieldProps

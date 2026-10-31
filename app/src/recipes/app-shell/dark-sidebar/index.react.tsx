@@ -285,8 +285,10 @@ export default function Example() {
                     <Inbox />
                   </NavSlot>
                   <NavLinkLabel>Inbox</NavLinkLabel>
-                  <NavSlot $kind="badge" $p="md">
-                    3
+                  <NavSlot $kind="box">
+                    <Badge $kind="solid" $round>
+                      3
+                    </Badge>
                   </NavSlot>
                 </NavLink>
                 <NavLink href="#my-issues">
@@ -321,8 +323,10 @@ export default function Example() {
                       />
                     </NavSlot>
                     <NavLinkLabel>{project.name}</NavLinkLabel>
-                    <NavSlot $kind="badge" $p="md">
-                      {project.count}
+                    <NavSlot $kind="box">
+                      <Badge $kind="solid" $round>
+                        {project.count}
+                      </Badge>
                     </NavSlot>
                   </NavLink>
                 ))}

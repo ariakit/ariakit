@@ -91,8 +91,8 @@ export const slotFrame = cv({
   },
 });
 
-// Single-row badges and avatars need extra content space; multi-row slots keep
-// their requested size.
+// Single-row avatars need extra content space; multi-row slots keep their
+// requested size.
 const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 
 const SLOT_SIZE_CLASSES = {
@@ -129,11 +129,6 @@ export function hasSlotSurface(variants: VariantProps<typeof frame>) {
   return Boolean(variants.$border);
 }
 
-/** Whether the slot kind is a badge or an avatar. */
-function isBadgeOrAvatar(kind?: string) {
-  return kind === "badge" || kind === "avatar";
-}
-
 /**
  * A text-aligned slot in a slot frame for an icon, avatar, badge, thumbnail,
  * keyboard key, or short text. Its margins follow the padding of the frame.
@@ -162,7 +157,7 @@ export const slotFrameSlot = cv({
     "[&>svg]:block [&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
     // A nested button or select fills the slot like a picture does, so the
     // slot size sets its height and the gaps around it stay even. Its content
-    // stays centered when its own padding is taller. Badges keep their size.
+    // stays centered when its own padding is taller.
     "[&>:is(button,a).control]:size-full [&>:is(button,a).control]:items-center",
     // Outside a text frame, --px and --py are missing and the slot has no side
     // margin.
@@ -196,20 +191,6 @@ export const slotFrameSlot = cv({
         "[&+*]:ms-[calc(var(--py)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--py)*var(--control-inline,1))]",
       full: "[&+*]:ms-[calc(1cap*var(--control-inline,1))] [*:has(+&)]:me-[calc(1cap*var(--control-inline,1))]",
     },
-    /** Sets the slot padding. */
-    $p: {
-      unset: "",
-      // Match badge padding after scaling its text to 0.8125em, using 0.75 of
-      // the capital-height spacing.
-      auto: "px-[max(0px,calc((var(--size)-1lh*0.8125)/2+(1lh-1cap)*0.8125*0.75))]",
-      xs: "px-[calc(var(--size)*0.05)]",
-      sm: "px-[calc(var(--size)*0.1)]",
-      md: "px-[calc(var(--size)*0.15)]",
-      lg: "px-[calc(var(--size)*0.15)]",
-      xl: "px-[calc(var(--size)*0.2)]",
-      "2xl": "px-[calc(var(--size)*0.25)]",
-      full: "px-[calc(var(--size)*0.25)]",
-    },
     /**
      * Sets the radius from a named step, CSS length, or expression. `auto`
      * stays concentric with the parent frame; `full` keeps a pill shape.
@@ -222,18 +203,17 @@ export const slotFrameSlot = cv({
       return getFrameRoundedClass(value);
     },
     /**
-     * Sets the slot content type. `badge` needs one child wrapper; slot
-     * components create it automatically. For badge truncation, use a
-     * width-limited child with `block overflow-x-clip text-ellipsis
-     * whitespace-nowrap` to preserve descenders. `thumbnail` is a bordered 4:3
+     * Sets the slot content type. `box` is one line tall and takes the width of
+     * what fills it, such as a `Badge`, a flat `Kbd`, a keycap, or a select. It
+     * sits as far from the side as from the top. `thumbnail` is a bordered 4:3
      * box that an image or another picture fills. `text`, such as a count or a
      * duration, is one line tall and keeps the side padding of the row text,
-     * while other slots move into it. Put plain `Kbd` keys in a `text` slot,
-     * and flat keys or keycaps in an `icon` slot with `$square={false}`. A
+     * while other slots move into it. Put plain `Kbd` keys in a `text` slot. A
      * chord can be one `Kbd` or one per key.
      */
     $kind: {
       icon: "",
+      box: "",
       thumbnail: "overflow-clip aspect-4/3 *:size-full *:object-cover",
       avatar: "overflow-clip",
       // Keep the side padding of the row text, and let nested slots move again.
@@ -242,9 +222,6 @@ export const slotFrameSlot = cv({
       // min-w-(--size). Number, keyword, and bracket min-w-* classes still
       // override it; min-w-(--var) classes sort earlier and do not.
       text: "[--slot-pull:0] *:[--slot-pull:initial] min-w-0",
-      // Trim browser-dependent line metrics to center the badge's capitals.
-      // https://github.com/ariakit/ariakit/issues/7588
-      badge: "*:text-[0.8125em] *:[text-box:cap_alphabetic]",
     },
     /** Sets the slot to be a square. */
     $square: "aspect-square",
@@ -257,6 +234,9 @@ export const slotFrameSlot = cv({
       // Reverse the physical translation for the opposite RTL corner.
       "translate-x-[calc(var(--size)/2)] rtl:-translate-x-[calc(var(--size)/2)]",
       "in-[.control,.badge]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
+      // What fills the slot sits inside this border, so a round count stays
+      // round. The selector wins over the base --slot-height.
+      "[&.slot-frame-slot]:[--slot-height:calc(var(--size)*var(--row-span)-2px)]",
     ],
     /**
      * Scales the slot height by the number of text rows. Use `1` to align with
@@ -277,6 +257,9 @@ export const slotFrameSlot = cv({
       if (variants.$kind === "thumbnail") return "xl";
       // Text takes a line of height, so it centers on the first label line.
       if (variants.$kind === "text") return "xl";
+      // A box takes a line of height, so what fills it centers on the first
+      // label line.
+      if (variants.$kind === "box") return "xl";
       return "md";
     },
     $border(defaultValue, variants) {
@@ -287,8 +270,7 @@ export const slotFrameSlot = cv({
     $layer(defaultValue, variants) {
       // Replace only frame's transparent default; preserve explicit colors.
       if (defaultValue !== "transparent") return defaultValue;
-      // Badges, avatars, and floating slots paint their own surface.
-      if (variants.$kind === "badge") return "brand";
+      // Avatars and floating slots paint their own surface.
       if (variants.$kind === "avatar") return true;
       if (variants.$floating) return true;
       return defaultValue;
@@ -301,17 +283,7 @@ export const slotFrameSlot = cv({
       if (defaultValue != null) return defaultValue;
       if (variants.$floating) return "full";
       if (variants.$kind === "avatar") return "full";
-      // Concentric rounding can collapse a badge's radius at default control
-      // padding.
-      if (variants.$kind === "badge") return "full";
       return "auto";
-    },
-    $p(defaultValue, variants) {
-      // Pad badge text only; avatar images must fill the clipped shape.
-      if (variants.$kind === "badge") {
-        return defaultValue ?? "auto";
-      }
-      return defaultValue ?? "unset";
     },
     $rowSpan: 1,
     $mx(defaultValue, variants) {
@@ -330,22 +302,6 @@ export const slotFrameSlot = cv({
       if (variants.$kind === "avatar") return defaultValue ?? true;
       return defaultValue;
     },
-    $edge(defaultValue, variants) {
-      if (variants.$kind !== "badge") return defaultValue;
-      if (!isLayerColor(variants.$layer)) return defaultValue;
-      return defaultValue ?? variants.$layer;
-    },
-    $edgeHue(defaultValue, variants) {
-      if (defaultValue != null) return defaultValue;
-      if (variants.$kind !== "badge") return defaultValue;
-      if (!isLayerColor(variants.$layer)) return defaultValue;
-      // Copy the layer hue unless the caller chose a different edge color. The
-      // computed $edge may not be resolved yet.
-      if (variants.$edge != null && variants.$edge !== variants.$layer) {
-        return defaultValue;
-      }
-      return variants.$hue;
-    },
   },
   refine({ variants, setVariants, addClass }) {
     const paintsIcon =
@@ -354,25 +310,22 @@ export const slotFrameSlot = cv({
       // Inset icons on painted tiles; multi-row slots already have extra space.
       addClass("[--slot-icon-scale:0.6]");
     }
-    if (!isBadgeOrAvatar(variants.$kind)) return;
+    if (variants.$kind !== "avatar") return;
     // Forced colors remove the slot's fill, which may be its only boundary.
     if (variants.$border == null && hasLayerBackground(variants)) {
       addClass("forced-colors:ak-frame-border");
     }
     if (variants.$rowSpan !== 1) return;
-    if (variants.$kind === "avatar") {
-      if (variants.$size === "2xl") return;
-      if (variants.$size === "full") return;
-      addClass([
-        // Preserve line height and set initials' capital height to 0.3 times
-        // the slot size. tan(atan2(a,b)) divides lengths where Firefox calc()
-        // cannot.
-        "leading-[1lh] [font-size-adjust:cap-height_calc(0.3*tan(atan2(var(--size,1lh),1em)))]",
-        // Use the frame's measured inset so the adjusted font does not change
-        // margins.
-        "[--px:calc(var(--py)+var(--text-frame-inset))]",
-      ]);
-    }
+    if (variants.$size === "2xl") return;
+    if (variants.$size === "full") return;
+    addClass([
+      // Preserve line height and set initials' capital height to 0.3 times the
+      // slot size. tan(atan2(a,b)) divides lengths where Firefox calc() cannot.
+      "leading-[1lh] [font-size-adjust:cap-height_calc(0.3*tan(atan2(var(--size,1lh),1em)))]",
+      // Use the frame's measured inset so the adjusted font does not change
+      // margins.
+      "[--px:calc(var(--py)+var(--text-frame-inset))]",
+    ]);
     if (includes(PADDED_SLOT_SIZES, variants.$size)) {
       setVariants({ $size: "xl" });
     }
@@ -391,11 +344,6 @@ export function getIconSlotSize<Size extends string>(
   // Preserve any size supplied by an extender.
   if (defaultValue !== "md") return defaultValue;
   return "auto" as const;
-}
-
-/** Whether the slot needs one child wrapper for badge typography. */
-export function wrapsSlotChildren(kind?: string) {
-  return kind === "badge";
 }
 
 /**

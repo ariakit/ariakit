@@ -16,7 +16,6 @@ import {
   buttonSeparator,
   buttonSlot,
 } from "../styles/button.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
 export type ButtonProps<
   R extends RecipeLike<typeof button, R> = typeof button,
@@ -186,14 +185,5 @@ export interface ButtonSlotProps
  */
 export function ButtonSlot(props: ButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, buttonSlot);
-  const variants = buttonSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...buttonSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...buttonSlot.jsx(variantProps)} {...rest} />;
 }
