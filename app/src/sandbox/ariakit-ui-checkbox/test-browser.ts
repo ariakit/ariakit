@@ -131,12 +131,19 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   });
 
   test("moves the thumb of a card's switch both ways", async ({ q }) => {
-    const checkbox = query(q.article("Switch cards")).switch("Off");
-    await test.expect(checkbox).not.toBeChecked();
-    const on = await toggleAndGetTransitions(checkbox);
+    const box = query(q.article("Switch cards"));
+    const unchecked = box.switch("Off");
+    await test.expect(unchecked).not.toBeChecked();
+    const on = await toggleAndGetTransitions(unchecked);
     test.expect(on.translate?.duration).toBeGreaterThan(0);
     test.expect(on.scale?.duration).toBeGreaterThan(0);
-    const off = await toggleAndGetTransitions(checkbox);
+
+    // A switch checked from the start has a settled thumb. The thumb of the
+    // switch above may not have moved yet, and turning it off then would cancel
+    // its transition without starting another one.
+    const checked = box.switch("On");
+    await test.expect(checked).toBeChecked();
+    const off = await toggleAndGetTransitions(checked);
     test.expect(off.translate?.duration).toBeGreaterThan(0);
   });
 
