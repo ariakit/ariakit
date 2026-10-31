@@ -47,7 +47,9 @@ export interface ListProps
 /**
  * List container that renders an ordered or unordered list with consistent
  * styles. An ordered list numbers its rows and, in blocks mode, joins the
- * numbers with a guide; `$marker` and `$guide` pick both for any list.
+ * numbers with a guide; `$marker` and `$guide` pick both for any list. The
+ * native `start` attribute sets the first number. Chrome and Safari keep the
+ * old numbers when it changes, so also pass it as `key` if it can change.
  * @example
  * <List>
  *   <ListItem>Item</ListItem>

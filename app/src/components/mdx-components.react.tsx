@@ -44,19 +44,8 @@ function Keycap(props: ComponentProps<"kbd">) {
   return <Kbd $kind="keycap" {...props} />;
 }
 
-interface OlProps extends Omit<ComponentProps<"ol">, "start"> {
-  // Markdown sets a string when a block without indentation splits a list of
-  // steps.
-  start?: number | string;
-}
-
-function Ol({ start: startProp, style, ...props }: OlProps) {
-  const start = startProp == null ? undefined : Number(startProp);
-  // List numbers its markers with a CSS counter, which ignores `start`.
-  const counterReset = start == null ? undefined : `list ${start - 1}`;
-  return (
-    <List ordered start={start} style={{ counterReset, ...style }} {...props} />
-  );
+function Ol(props: ComponentProps<"ol">) {
+  return <List ordered {...props} />;
 }
 
 // The rehypeHtmlComponents plugin also applies these to HTML written as JSX,

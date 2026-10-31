@@ -141,6 +141,23 @@ export default function ListExamples() {
       </Example>
 
       <Example
+        title="Start number"
+        description="The native start attribute sets the first number, so a list can continue after other content."
+        stretch
+        code={`
+          <List ordered start={3}>
+            <ListItem>Bake for twenty minutes</ListItem>
+            <ListItem>Let it cool</ListItem>
+          </List>
+        `}
+      >
+        <List ordered start={3}>
+          <ListItem>Bake for twenty minutes</ListItem>
+          <ListItem>Let it cool</ListItem>
+        </List>
+      </Example>
+
+      <Example
         title="Bulleted rows"
         description="A small disc in the color of the dash."
         stretch
