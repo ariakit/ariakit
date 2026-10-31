@@ -18,10 +18,13 @@ export const link = cv({
     "ui-hover:decoration-[3px]",
     // Style queries read the ancestor layer, not the link itself.
     "ak-dark:[--link-dark:1]",
-    // An empty inline box adds no line break opportunity of its own, so its
-    // padding stays with the text before it and out of the underline. An
-    // inline-block or a nested icon could wrap onto its own line. The height and
-    // alignment only apply when a flex link blockifies the box.
+    // A word joiner in an inline box keeps its padding with the text before it
+    // and out of the underline. An inline-block or a nested icon could wrap
+    // onto its own line. Without a character in the box, Chromium would not
+    // count the padding when it breaks a line, and the icon would pass the
+    // column edge. The height and alignment only apply when a flex link
+    // blockifies the box.
+    "ui-new-window:after:content-(--link-new-window-content)",
     "ui-new-window:after:ps-[1em] ui-new-window:after:h-[1em]",
     "ui-new-window:after:self-center ui-new-window:after:bg-current",
     // WebKit leaves an inline box unmasked outside the mask image, so the image
