@@ -81,6 +81,46 @@ export default function LinkExamples() {
       </Example>
 
       <Example
+        title="Opens in a new window"
+        description="A link with a blank target gets a trailing arrow. The arrow stays on the line of the last word when the link wraps."
+        code={`
+          <Link href="https://ariakit.com" target="_blank">
+            …
+          </Link>
+          .
+        `}
+      >
+        <p className="max-w-64 text-sm">
+          <Link href="https://ariakit.com" target="_blank">
+            Read the release notes on the Ariakit website
+          </Link>
+          .
+        </p>
+      </Example>
+
+      <Example
+        title="Opens in a new window from a flex link"
+        description="The arrow keeps its size when the link is a flex container, which turns it into a flex item."
+        code={`
+          <Link
+            href="https://ariakit.com"
+            target="_blank"
+            className="inline-flex items-center gap-1"
+          >
+            ariakit.com
+          </Link>
+        `}
+      >
+        <Link
+          href="https://ariakit.com"
+          target="_blank"
+          className="inline-flex items-center gap-1"
+        >
+          ariakit.com
+        </Link>
+      </Example>
+
+      <Example
         title="Rendered as a button"
         description="An in-page action keeps the look of a link."
         code={`
