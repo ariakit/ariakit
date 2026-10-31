@@ -58,7 +58,7 @@ const avatarImage =
 const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
 
 function ErrorThatClears() {
-  const [value, setValue] = useState("ada.lovelace");
+  const [value, setValue] = useState("marta.oliveira");
   const invalid = !EMAIL_PATTERN.test(value);
   return (
     <InputField className="w-full">
@@ -74,7 +74,7 @@ function ErrorThatClears() {
       {/* The error stays in place and holds an empty string once the value is
           valid. */}
       <InputError id="input-error-clears-error">
-        {invalid ? "Enter an email address like ada@example.com." : ""}
+        {invalid ? "Enter an email address like marta@example.com." : ""}
       </InputError>
     </InputField>
   );
@@ -108,7 +108,7 @@ interface ErrorThatShowsOnBlurProps extends InputErrorProps {
 }
 
 function ErrorThatShowsOnBlur({ id, ...props }: ErrorThatShowsOnBlurProps) {
-  const [value, setValue] = useState("ada lovelace");
+  const [value, setValue] = useState("marta oliveira");
   const [touched, setTouched] = useState(false);
   const error = touched && /\s/.test(value) ? "Remove the spaces." : null;
   return (
@@ -141,7 +141,7 @@ export default function InputExamples() {
           <Input />
         `}
       >
-        <Input aria-label="Full name" placeholder="Ada Lovelace" />
+        <Input aria-label="Full name" placeholder="Marta Oliveira" />
       </Example>
 
       <Example
@@ -162,7 +162,7 @@ export default function InputExamples() {
           </Text>
           <Input
             id="input-display-name"
-            defaultValue="Ada Lovelace"
+            defaultValue="Marta Oliveira"
             aria-describedby="input-display-name-hint"
           />
           <Text id="input-display-name-hint" className="ak-ink-70 text-sm">
@@ -213,7 +213,7 @@ export default function InputExamples() {
           <Input
             id="input-error-long"
             type="email"
-            defaultValue="ada@engine.org"
+            defaultValue="marta@example.com"
             aria-invalid
             aria-describedby="input-error-long-error"
           />
@@ -238,7 +238,7 @@ export default function InputExamples() {
           <Input
             id="input-error-rtl"
             type="email"
-            defaultValue="ada.lovelace"
+            defaultValue="marta.oliveira"
             aria-invalid
             aria-describedby="input-error-rtl-error"
           />
@@ -260,7 +260,7 @@ export default function InputExamples() {
           <Input
             id="input-error-icon"
             type="email"
-            defaultValue="ada@engine.org"
+            defaultValue="marta@example.com"
             aria-invalid
             aria-describedby="input-error-icon-error"
           />
@@ -346,7 +346,7 @@ export default function InputExamples() {
           <Input
             id="input-error-panel"
             type="email"
-            defaultValue="ada@engine.org"
+            defaultValue="marta@example.com"
             aria-invalid
             aria-describedby="input-error-panel-error"
           />
@@ -465,7 +465,7 @@ export default function InputExamples() {
           <Input disabled />
         `}
       >
-        <Input aria-label="Username" defaultValue="ada" disabled />
+        <Input aria-label="Username" defaultValue="marta" disabled />
       </Example>
 
       <Example
@@ -475,7 +475,7 @@ export default function InputExamples() {
           <Input $invert disabled />
         `}
       >
-        <Input aria-label="Username" defaultValue="ada" $invert disabled />
+        <Input aria-label="Username" defaultValue="marta" $invert disabled />
       </Example>
 
       <Example
@@ -495,7 +495,7 @@ export default function InputExamples() {
           disabled
         />
         <fieldset disabled>
-          <Input aria-label="Referral" defaultValue="ada" $layer="brand" />
+          <Input aria-label="Referral" defaultValue="marta" $layer="brand" />
         </fieldset>
       </Example>
 
@@ -508,7 +508,7 @@ export default function InputExamples() {
       >
         <Input
           aria-label="Company"
-          placeholder="Analytical Engines Ltd."
+          placeholder="Oliveira Studio Ltd."
           $edgeWeight="normal"
           $edgeContrast={false}
         />
@@ -623,7 +623,7 @@ export default function InputExamples() {
       >
         <InputGroup $size="sm">
           <InputSlot className="ak-ink-60">@</InputSlot>
-          <Input aria-label="Handle" placeholder="ada" />
+          <Input aria-label="Handle" placeholder="marta" />
         </InputGroup>
       </Example>
 
@@ -945,7 +945,7 @@ export default function InputExamples() {
             <InputField $orientation="horizontal">
               <InputLabel htmlFor="input-grid-name">Name</InputLabel>
               <InputFieldContent>
-                <Input id="input-grid-name" defaultValue="Ada Lovelace" />
+                <Input id="input-grid-name" defaultValue="Marta Oliveira" />
               </InputFieldContent>
             </InputField>
             <fieldset className="grid gap-2">
@@ -958,7 +958,7 @@ export default function InputExamples() {
                   <Input
                     id="input-grid-email"
                     type="email"
-                    defaultValue="ada@engine.org"
+                    defaultValue="marta@example.com"
                   />
                 </InputFieldContent>
               </InputField>
@@ -1001,7 +1001,7 @@ export default function InputExamples() {
           <InputSlot $kind="avatar">
             <img alt="" src={avatarImage} className="size-full" />
           </InputSlot>
-          <Input aria-label="Owner" defaultValue="ada" disabled />
+          <Input aria-label="Owner" defaultValue="marta" disabled />
           <InputSlot $size="2xl" $square={false}>
             <Button $size="sm">
               <ButtonSlot $size="xl" $layer="brand" $mix={20}>

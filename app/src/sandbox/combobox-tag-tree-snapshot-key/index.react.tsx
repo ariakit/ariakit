@@ -1,12 +1,7 @@
 import { useState } from "react";
 import * as Ariakit from "./ariakit-experimental.react.ts";
 
-const people = [
-  "Ada Lovelace",
-  "Alan Turing",
-  "Grace Hopper",
-  "Linus Torvalds",
-];
+const people = ["Bruno Costa", "Claire Dubois", "Irene Petrov", "Sam Whitaker"];
 
 export default function Example() {
   const [values, setValues] = useState<string[]>([]);

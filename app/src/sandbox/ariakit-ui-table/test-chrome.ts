@@ -69,31 +69,31 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const fixture = query(q.article("Table rows"));
-    await fixture.textbox("Ada notes").fill("Ready for review");
-    await fixture.textbox("Grace notes").fill("Tests complete");
+    await fixture.textbox("Bruno notes").fill("Ready for review");
+    await fixture.textbox("Claire notes").fill("Tests complete");
     await fixture.button("Reverse rows").click();
 
     await test
-      .expect(fixture.cell(/^(Ada|Grace)$/))
-      .toHaveText(["Grace", "Ada"]);
+      .expect(fixture.cell(/^(Bruno|Claire)$/))
+      .toHaveText(["Claire", "Bruno"]);
     await test
-      .expect(fixture.textbox("Ada notes"))
+      .expect(fixture.textbox("Bruno notes"))
       .toHaveValue("Ready for review");
     await test
-      .expect(fixture.textbox("Grace notes"))
+      .expect(fixture.textbox("Claire notes"))
       .toHaveValue("Tests complete");
 
     await fixture.button("Add contributor").click();
 
     await test
-      .expect(fixture.cell(/^(Ada|Grace|Katherine)$/))
-      .toHaveText(["Katherine", "Grace", "Ada"]);
-    await test.expect(fixture.textbox("Katherine notes")).toHaveValue("");
+      .expect(fixture.cell(/^(Bruno|Claire|Irene)$/))
+      .toHaveText(["Irene", "Claire", "Bruno"]);
+    await test.expect(fixture.textbox("Irene notes")).toHaveValue("");
     await test
-      .expect(fixture.textbox("Ada notes"))
+      .expect(fixture.textbox("Bruno notes"))
       .toHaveValue("Ready for review");
     await test
-      .expect(fixture.textbox("Grace notes"))
+      .expect(fixture.textbox("Claire notes"))
       .toHaveValue("Tests complete");
   });
 
@@ -105,8 +105,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test
       .expect(table.columnheader())
       .toHaveText(["Contributor", "Hours", "Notes"]);
-    await test.expect(query(table.row(/^Ada /)).cell()).toHaveCount(3);
-    await test.expect(query(table.row(/^Grace /)).cell()).toHaveCount(3);
+    await test.expect(query(table.row(/^Bruno /)).cell()).toHaveCount(3);
+    await test.expect(query(table.row(/^Claire /)).cell()).toHaveCount(3);
     await test.expect(table.rowheader("Total")).toHaveAttribute("scope", "row");
     await test.expect(query(table.row(/^Total /)).cell()).toHaveCount(2);
   });
@@ -118,12 +118,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const fixture = query(q.article("Table rows"));
     await fixture.button("Add contributor").click();
 
-    const cells = query(fixture.row(/^Katherine\b/)).cell();
+    const cells = query(fixture.row(/^Irene\b/)).cell();
     await test.expect(cells).toHaveCount(3);
-    await test.expect(cells.nth(0)).toHaveText("Katherine");
+    await test.expect(cells.nth(0)).toHaveText("Irene");
     await test.expect(cells.nth(1)).toBeEmpty();
     await test
-      .expect(query(cells.nth(2)).textbox("Katherine notes"))
+      .expect(query(cells.nth(2)).textbox("Irene notes"))
       .toHaveValue("");
   });
 
@@ -162,12 +162,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.waitForFunction(isPreviewHydrated);
 
     const table = query(q.table("Element values"));
-    const row = table.row(/^Ada /);
-    await test.expect(query(row).rowheader("Ada")).toBeVisible();
+    const row = table.row(/^Bruno /);
+    await test.expect(query(row).rowheader("Bruno")).toBeVisible();
     const cells = query(row).cell();
     await test.expect(cells).toHaveCount(2);
     await test.expect(cells.nth(0)).toHaveText("Active");
-    await test.expect(query(cells.nth(1)).button("Edit Ada")).toBeVisible();
+    await test.expect(query(cells.nth(1)).button("Edit Bruno")).toBeVisible();
     test.expect(errors).toEqual([]);
   });
 });

@@ -436,7 +436,7 @@ export default function ComboboxExamples() {
           <div className="grid w-full content-start gap-4">
             <label className="grid gap-2">
               Full name
-              <Input defaultValue="Ada Lovelace" />
+              <Input defaultValue="Marta Oliveira" />
             </label>
             <ComboboxProvider open defaultSelectedValue="United Kingdom">
               <div className="grid gap-2">

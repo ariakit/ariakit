@@ -29,19 +29,19 @@ interface Comment {
 const comments: Comment[] = [
   {
     id: "comment-3",
-    author: "Ada Lovelace",
+    author: "Paulo Mendes",
     text: "The new chart reads much better. Ship it.",
     time: "2026-10-25T12:10:00Z",
   },
   {
     id: "comment-2",
-    author: "Grace Hopper",
+    author: "Erin Walsh",
     text: "Can we label the axes?",
     time: "2026-10-24T09:30:00Z",
   },
   {
     id: "comment-1",
-    author: "Alan Turing",
+    author: "Kenji Mori",
     text: "First draft of the chart is up.",
     time: "2026-10-18T17:45:00Z",
   },

@@ -20,7 +20,7 @@ export default function Example() {
         <InputFieldContent>
           <Input
             id={`${id}-full-name`}
-            defaultValue="Augusta Ada King"
+            defaultValue="Marta Oliveira"
             aria-describedby={`${id}-full-name-hint`}
           />
           <InputDescription id={`${id}-full-name-hint`}>
@@ -34,7 +34,7 @@ export default function Example() {
           <Input
             id={`${id}-billing-email`}
             type="email"
-            defaultValue="ada@engine.org"
+            defaultValue="marta@example.com"
           />
         </InputFieldContent>
       </InputField>

@@ -12,7 +12,7 @@ export default function Example() {
   return (
     <InputField className="w-[24rem] max-w-full">
       <InputLabel htmlFor={id}>Display name</InputLabel>
-      <Input id={id} defaultValue="Ada Lovelace" aria-describedby={hintId} />
+      <Input id={id} defaultValue="Marta Oliveira" aria-describedby={hintId} />
       <InputDescription id={hintId}>
         Shown on your profile and next to your comments.
       </InputDescription>

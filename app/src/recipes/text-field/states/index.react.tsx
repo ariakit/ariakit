@@ -13,13 +13,13 @@ export default function Example() {
     <div className="grid w-[30rem] max-w-full grid-cols-[repeat(auto-fill,minmax(min(100%,13rem),1fr))] gap-x-5 gap-y-6">
       <InputField>
         <InputLabel htmlFor={`${id}-username`}>Username</InputLabel>
-        <Input id={`${id}-username`} defaultValue="ada" />
+        <Input id={`${id}-username`} defaultValue="marta" />
       </InputField>
       <InputField>
         <InputLabel htmlFor={`${id}-name`}>Display name</InputLabel>
         <Input
           id={`${id}-name`}
-          defaultValue="Ada Lovelace"
+          defaultValue="Marta Oliveira"
           aria-describedby={`${id}-name-hint`}
         />
         <InputDescription id={`${id}-name-hint`}>
@@ -31,7 +31,7 @@ export default function Example() {
         <Input
           id={`${id}-email`}
           type="email"
-          defaultValue="ada.lovelace"
+          defaultValue="marta.oliveira"
           aria-invalid
           aria-describedby={`${id}-email-error ${id}-email-hint`}
         />
@@ -46,7 +46,7 @@ export default function Example() {
         <InputLabel htmlFor={`${id}-workspace`}>Workspace</InputLabel>
         <Input
           id={`${id}-workspace`}
-          defaultValue="analytical-engine"
+          defaultValue="oliveira-studio"
           disabled
           aria-describedby={`${id}-workspace-hint`}
         />

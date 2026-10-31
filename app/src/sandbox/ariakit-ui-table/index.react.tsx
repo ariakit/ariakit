@@ -85,18 +85,20 @@ function TableRowsFixture() {
     {
       // Zero is a stable key, including when the row moves away from index 0.
       key: 0,
-      0: "Ada",
+      0: "Bruno",
       hours: 12,
       notes: {
-        children: <Input aria-label="Ada notes" defaultValue="Design review" />,
+        children: (
+          <Input aria-label="Bruno notes" defaultValue="Design review" />
+        ),
       },
     },
     {
-      key: "grace",
-      0: "Grace",
+      key: "claire",
+      0: "Claire",
       hours: 7,
       notes: {
-        children: <Input aria-label="Grace notes" defaultValue="Testing" />,
+        children: <Input aria-label="Claire notes" defaultValue="Testing" />,
       },
     },
   ]);
@@ -113,13 +115,11 @@ function TableRowsFixture() {
             setAdded(true);
             setRows((rows) => [
               {
-                key: "katherine",
-                0: "Katherine",
+                key: "irene",
+                0: "Irene",
                 // No hours have been recorded yet; the notes keep their column.
                 notes: {
-                  children: (
-                    <Input aria-label="Katherine notes" defaultValue="" />
-                  ),
+                  children: <Input aria-label="Irene notes" defaultValue="" />,
                 },
               },
               ...rows,
@@ -216,14 +216,14 @@ const elementValueRows: TableRows<"name" | "status" | "action"> = [
     action: { children: "Action", $fit: true },
   },
   {
-    key: "ada",
-    name: <TableCell header="row">Ada</TableCell>,
+    key: "bruno",
+    name: <TableCell header="row">Bruno</TableCell>,
     status: (
       <Badge $forceRounded $layer="success">
         <BadgeLabel>Active</BadgeLabel>
       </Badge>
     ),
-    action: <Button>Edit Ada</Button>,
+    action: <Button>Edit Bruno</Button>,
   },
 ];
 
@@ -521,16 +521,16 @@ const reviewRows: TableRows<ReviewColumn> = [
     notes: "Notes",
   },
   {
-    key: "linus",
-    reviewer: "Linus",
+    key: "victor",
+    reviewer: "Victor",
     hours: 5,
-    notes: <Input aria-label="Linus notes" defaultValue="API review" />,
+    notes: <Input aria-label="Victor notes" defaultValue="API review" />,
   },
   {
-    key: "margaret",
-    reviewer: "Margaret",
+    key: "ruth",
+    reviewer: "Ruth",
     hours: 3,
-    notes: <Input aria-label="Margaret notes" defaultValue="Docs" />,
+    notes: <Input aria-label="Ruth notes" defaultValue="Docs" />,
   },
   {
     group: "foot",
@@ -1044,7 +1044,7 @@ export default function TableExamples() {
             </TableRowGroup>
             <TableRowGroup>
               <TableRow>
-                <TableCell $grow>Linus</TableCell>
+                <TableCell $grow>Victor</TableCell>
                 <TableCell numeric $fit>5</TableCell>
                 <TableCell>
                   <Input />

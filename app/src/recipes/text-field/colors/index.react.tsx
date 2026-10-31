@@ -16,7 +16,7 @@ export default function Example() {
         <InputLabel htmlFor={`${id}-username`}>Username</InputLabel>
         <Input
           id={`${id}-username`}
-          defaultValue="ada"
+          defaultValue="marta"
           aria-describedby={`${id}-username-hint`}
           $edge="success"
         />
@@ -29,7 +29,7 @@ export default function Example() {
         <Input
           id={`${id}-recipient`}
           type="email"
-          defaultValue="ada@engine.org"
+          defaultValue="marta@example.com"
           aria-describedby={`${id}-recipient-hint`}
           $edge="warning"
         />
@@ -55,7 +55,7 @@ export default function Example() {
         <Input
           id={`${id}-email`}
           type="email"
-          defaultValue="ada@example.com"
+          defaultValue="marta@example.com"
           aria-invalid
           aria-describedby={`${id}-email-error ${id}-email-hint`}
         />
