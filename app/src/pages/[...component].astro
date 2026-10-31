@@ -14,7 +14,10 @@ import { getReferencePath } from "#app/lib/url.ts";
 import { getGalleryExamples } from "#app/lib/gallery.ts";
 import { descriptionToText } from "#app/lib/content.ts";
 import PageIntro from "#app/components/page-intro.astro";
-import { mdxComponents } from "#app/components/mdx-components.react.tsx";
+import {
+  descriptionComponents,
+  mdxComponents,
+} from "#app/components/mdx-components.react.tsx";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
@@ -100,7 +103,11 @@ const descriptionText = await descriptionToText(description?.body, framework);
     description={descriptionText}
   />
   <PageIntro slot="intro" {title}>
-    {Description && <Description {framework} />}
+    {
+      Description && (
+        <Description {framework} components={descriptionComponents} />
+      )
+    }
   </PageIntro>
   {Gallery && <Gallery slot="gallery" {framework} />}
   <nav aria-label="API reference">

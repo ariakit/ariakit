@@ -4,6 +4,7 @@ import {
 } from "@ariakit/ui/components/button.ariakit.react";
 import {
   Heading,
+  HeadingDescription,
   HeadingLevel,
 } from "@ariakit/ui/components/heading.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
@@ -24,7 +25,7 @@ import {
   ShellSidebarBody,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import { Hexagon, PanelLeft } from "lucide-react";
-import { useId, useState } from "react";
+import { Fragment, useId, useState } from "react";
 
 export default function Example() {
   const [open, setOpen] = useState(true);
@@ -77,20 +78,20 @@ export default function Example() {
         <ShellMainIntro>
           <Prose>
             <Heading>Getting started</Heading>
-            <p>
+            <HeadingDescription>
               Everything you need to set up a project, from installation to your
               first deploy.
-            </p>
+            </HeadingDescription>
           </Prose>
         </ShellMainIntro>
         <ShellMainBody>
           <Prose>
             <HeadingLevel level={2}>
               {sections.map((section) => (
-                <section key={section.id}>
+                <Fragment key={section.id}>
                   <Heading id={section.id}>{section.title}</Heading>
                   <p>{section.text}</p>
-                </section>
+                </Fragment>
               ))}
             </HeadingLevel>
           </Prose>

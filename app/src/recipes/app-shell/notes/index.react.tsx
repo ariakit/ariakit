@@ -13,6 +13,7 @@ import {
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
+  HeadingDescription,
   HeadingLevel,
 } from "@ariakit/ui/components/heading.ariakit.react";
 import {
@@ -254,10 +255,10 @@ export default function Example() {
         </ShellMainHeader>
         <ShellMainIntro>
           <Prose>
-            <HeadingLevel>
-              <Heading>Weekly planning</Heading>
-            </HeadingLevel>
-            <p>Monday sync. Decisions, owners, and what ships by Friday.</p>
+            <Heading>Weekly planning</Heading>
+            <HeadingDescription>
+              Monday sync. Decisions, owners, and what ships by Friday.
+            </HeadingDescription>
           </Prose>
         </ShellMainIntro>
         <ShellMainBody>

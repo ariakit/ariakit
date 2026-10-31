@@ -34,8 +34,13 @@ export const prose = cv({
     "[:where(&_:is(p,li))]:ak-dark:ak-ink-75",
     "[:where(&_:is(p,li))]:ak-light:ak-ink-90",
     "[:where(&_strong)]:ak-ink-100 [:where(&_strong)]:font-medium",
-    // The column gap already separates a heading from the content after it.
-    // Flex margins do not collapse, so a bottom margin would add to the gap.
-    "[&>:is(h1,h2,h3,h4,h5,h6)]:[--heading-mb:0px]",
+    // A heading starts a new part of the column, so it adds space above the gap.
+    // Adjacent headings stay closer. Zero specificity lets caller mt-* classes
+    // win, and em values follow the size of each heading.
+    "[:where(&>:is(h1,h2,h3,h4,h5,h6):not(:first-child,:is(h1,h2,h3,h4,h5,h6)+*))]:mt-4",
+    "[:where(&>:is(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6))]:mt-[0.35em]",
+    // Tighten only the space after a heading, so later children keep the gap.
+    // The margin is negative while the gap is larger than this space.
+    "[:where(&>:is(h1,h2,h3,h4,h5,h6)+.heading-description)]:mt-[calc(var(--spacing)*3.5-var(--prose-gap))]",
   ],
 });

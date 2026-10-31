@@ -10,6 +10,7 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
+  HeadingDescription,
   HeadingLevel,
 } from "@ariakit/ui/components/heading.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
@@ -29,23 +30,21 @@ export default function HeadingExamples() {
         description="Each HeadingLevel goes one level deeper, from h3 to h6. Each element sets its own size. The h5 and the h6 keep the size of the text around them."
         stretch
         code={`
-          <Heading>Level three</Heading>
-          <HeadingLevel>
-            <Heading>Level four</Heading>
+          <Prose>
+            <Heading>Level three</Heading>
             <HeadingLevel>
-              <Heading>Level five</Heading>
+              <Heading>Level four</Heading>
               <HeadingLevel>
-                <Heading>Level six</Heading>
+                <Heading>Level five</Heading>
+                <HeadingLevel>
+                  <Heading>Level six</Heading>
+                </HeadingLevel>
               </HeadingLevel>
             </HeadingLevel>
-          </HeadingLevel>
+          </Prose>
         `}
       >
-        {/*
-          Block flow, so the gaps between the headings are their own flow
-          margins and not a flex gap.
-        */}
-        <div>
+        <Prose>
           <Heading>Level three</Heading>
           <HeadingLevel>
             <Heading>Level four</Heading>
@@ -56,7 +55,7 @@ export default function HeadingExamples() {
               </HeadingLevel>
             </HeadingLevel>
           </HeadingLevel>
-        </div>
+        </Prose>
       </Example>
 
       <Example
@@ -85,7 +84,7 @@ export default function HeadingExamples() {
 
       <Example
         title="Wrapped title"
-        description="A long title at the h1 size wraps onto more than one line. The heading uses a tighter line height of 1.25."
+        description="A long title at the h1 size wraps onto more than one line. The lines stay close and about the same length, and the letters are tighter than at smaller sizes."
         code={`
           <Heading $level={1}>…</Heading>
         `}
@@ -96,8 +95,85 @@ export default function HeadingExamples() {
       </Example>
 
       <Example
+        title="In a nowrap parent"
+        description="Balanced lines keep the wrap mode of the parent, so this title stays on one line."
+        code={`
+          <div className="overflow-hidden whitespace-nowrap">
+            <Heading $level={1}>…</Heading>
+          </div>
+        `}
+      >
+        <div className="overflow-hidden whitespace-nowrap">
+          <Heading $level={1}>
+            A long page title that stays on a single line and never wraps
+          </Heading>
+        </div>
+      </Example>
+
+      <Example
+        title="Description"
+        description="The description is muted and keeps the font size of its parent. In Prose, it sits close to the heading, and the next paragraph keeps the column gap."
+        stretch
+        code={`
+          <Prose>
+            <Heading>Getting started</Heading>
+            <HeadingDescription>…</HeadingDescription>
+            …
+          </Prose>
+        `}
+      >
+        <Prose>
+          <Heading>Getting started</Heading>
+          <HeadingDescription>
+            Everything you need to set up a project.
+          </HeadingDescription>
+          <p>A paragraph of running text after the description.</p>
+        </Prose>
+      </Example>
+
+      <Example
+        title="Description on a brand layer"
+        description="The description stays readable on a colored layer, because its ink keeps a readable minimum."
+        stretch
+        code={`
+          <Frame $layer="brand" $rounded="xl" $p={4}>
+            <Prose>
+              <Heading>Getting started</Heading>
+              <HeadingDescription>…</HeadingDescription>
+            </Prose>
+          </Frame>
+        `}
+      >
+        <Frame $layer="brand" $rounded="xl" $p={4}>
+          <Prose>
+            <Heading>Getting started</Heading>
+            <HeadingDescription>
+              Everything you need to set up a project.
+            </HeadingDescription>
+          </Prose>
+        </Frame>
+      </Example>
+
+      <Example
+        title="Space from the parent"
+        description="A heading has no margins of its own. Outside Prose, the gap of the parent is the only space around it."
+        stretch
+        code={`
+          <div className="grid gap-2">
+            <Heading>A heading in a grid</Heading>
+            …
+          </div>
+        `}
+      >
+        <div className="grid gap-2">
+          <Heading>A heading in a grid</Heading>
+          <p>The grid gap sets the space above this paragraph.</p>
+        </div>
+      </Example>
+
+      <Example
         title="Flow margins"
-        description="The first heading has no top margin. A heading directly under a heading sits closer to it than a heading after a paragraph."
+        description="Prose sets these margins. The first heading has no top margin. A heading directly under a heading sits closer to it than a heading after a paragraph."
         stretch
         code={`
           <Prose>
@@ -150,7 +226,7 @@ export default function HeadingExamples() {
 
       <Example
         title="On an inverted layer"
-        description="The heading ink follows the layer behind it. A heading that is the only child has no margins, so the padding stays even."
+        description="The heading ink follows the layer behind it. A heading has no margins, so the padding stays even."
         stretch
         code={`
           <Frame $invert $rounded="xl" $p={4}>

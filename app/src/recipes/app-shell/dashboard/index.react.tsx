@@ -8,6 +8,7 @@ import {
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
+  HeadingDescription,
   HeadingLevel,
 } from "@ariakit/ui/components/heading.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
@@ -152,12 +153,10 @@ export default function Example() {
           <ShellMainIntro>
             <div className="flex flex-wrap items-end justify-between gap-4">
               <Prose>
-                <HeadingLevel>
-                  <Heading>Good morning, Maya</Heading>
-                </HeadingLevel>
-                <p className="ak-ink-70">
+                <Heading>Good morning, Maya</Heading>
+                <HeadingDescription>
                   Here is how Acme is doing across all channels.
-                </p>
+                </HeadingDescription>
               </Prose>
               <ak.RadioProvider
                 value={range}

@@ -474,7 +474,7 @@ const hasSidebar = sidebar && navigation.length > 0;
               use main bands. */}
           {
             Astro.slots.has("intro") && (
-              <ShellMainIntro className="gap-y-4">
+              <ShellMainIntro>
                 <slot name="intro" />
               </ShellMainIntro>
             )

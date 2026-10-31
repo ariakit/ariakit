@@ -10,7 +10,7 @@ export const separator = cv({
     "border-bs my-(--separator-gap)",
     "[--separator-gap:calc(var(--prose-gap,--spacing(5))*0.5)]",
     // The separator supplies the next element's top spacing. `not-first`
-    // raises specificity above heading margins.
+    // raises specificity above margin utilities on that element.
     "[&+*]:not-first:mt-0",
   ],
   variants: {

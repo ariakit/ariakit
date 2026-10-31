@@ -210,11 +210,17 @@ export interface ShellMainIntroProps
  * sidebars start at the body. Direct element children use the centered content
  * column; named main bands can select a wider span. `$py` sets the space above
  * and below it. By default, this space grows with the width of the intro, so
- * open sidebars beside it reduce the space.
+ * open sidebars beside it reduce the space. It sets no text styles, so banners,
+ * images, and controls keep their size. Put a title in `Prose`.
  * @example
  * <Shell>
  *   <ShellMain>
- *     <ShellMainIntro><h1>Getting started</h1></ShellMainIntro>
+ *     <ShellMainIntro>
+ *       <Prose>
+ *         <Heading>Getting started</Heading>
+ *         <HeadingDescription>Set up a project.</HeadingDescription>
+ *       </Prose>
+ *     </ShellMainIntro>
  *     <ShellMainBody><p>Install Ariakit.</p></ShellMainBody>
  *   </ShellMain>
  * </Shell>

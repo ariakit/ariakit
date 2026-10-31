@@ -51,7 +51,7 @@ export default function Example() {
               <span className="text-lg font-semibold">{user?.initials}</span>
             </Frame>
           </SkeletonCircle>
-          <div className="grid min-w-0 flex-1">
+          <div className="grid min-w-0 flex-1 gap-2">
             <HeadingLevel level={3}>
               <Heading id="profile-name" $level={4}>
                 <SkeletonLine className="w-32">{user?.name}</SkeletonLine>

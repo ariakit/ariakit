@@ -1,4 +1,3 @@
-import * as ak from "@ariakit/react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
@@ -66,9 +65,9 @@ export default function Example() {
           <Badge className="w-fit">
             <BadgeLabel>Engineering</BadgeLabel>
           </Badge>
-          <ak.Heading className="text-4xl font-medium tracking-tight text-balance">
+          <Heading className="text-4xl">
             Designing calm interfaces for long reads
-          </ak.Heading>
+          </Heading>
           <p className="ak-ink-70 flex flex-wrap items-center gap-x-4 gap-y-1">
             <span className="flex items-center gap-1.5">
               <CircleUser className="size-4" /> Maya Chen

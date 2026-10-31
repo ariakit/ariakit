@@ -6,7 +6,10 @@ import {
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
-import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
+import {
+  Heading,
+  HeadingDescription,
+} from "@ariakit/ui/components/heading.ariakit.react";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import {
   Nav,
@@ -424,7 +427,9 @@ export default function Example() {
           <ShellMainIntro>
             <Prose>
               <Heading>Website redesign</Heading>
-              <p>Ship the new marketing site before the Q4 launch.</p>
+              <HeadingDescription>
+                Ship the new marketing site before the Q4 launch.
+              </HeadingDescription>
             </Prose>
           </ShellMainIntro>
 

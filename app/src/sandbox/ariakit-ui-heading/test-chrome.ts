@@ -26,6 +26,14 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toBeVisible();
   });
 
+  test("describes a heading with a paragraph", async ({ q }) => {
+    const box = query(q.article("Description"));
+    await test.expect(box.heading("Getting started")).toBeVisible();
+    await test
+      .expect(box.paragraph())
+      .toContainText(["Everything you need to set up a project."]);
+  });
+
   test("links a permalink to its heading", async ({ q }) => {
     const heading = query(q.article("Permalink")).heading("Anchored heading");
     await test

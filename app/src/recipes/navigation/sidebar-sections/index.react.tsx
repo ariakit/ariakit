@@ -1,4 +1,5 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
 import {
   Nav,
   NavDisclosure,
@@ -155,7 +156,7 @@ function Site() {
       </ShellSidebar>
       <ShellMain>
         <ShellMainIntro>
-          <h1 className="text-3xl font-semibold">{currentPage}</h1>
+          <Heading className="text-3xl">{currentPage}</Heading>
         </ShellMainIntro>
         <ShellMainBody>
           <div className="grid gap-4">
