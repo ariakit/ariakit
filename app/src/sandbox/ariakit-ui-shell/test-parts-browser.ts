@@ -92,6 +92,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     for (const width of [375, 900, 1440, 2000]) {
       await page.setViewportSize({ width, height: 800 });
       await expect.poll(getSpaceError).toBeLessThan(0.1);
+      // A target can't read the percentage, so it clears the largest space at
+      // every width, and a table of contents marks it current at the top.
+      await expect(title).toHaveCSS("scroll-margin-block-start", "120px");
     }
     // A sidebar beside the intro reduces the space. The end sidebar that starts
     // at the body doesn't, so the space returns when it stops being beside it.
@@ -135,6 +138,33 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect(title).toHaveCSS("scroll-margin-block-start", margin);
       await expect(queryTarget).toHaveCSS("scroll-margin-block-start", margin);
     }
+    // At this root font size, the largest space is 52.5px and the padding
+    // rounds up to 53px, so the scroll margin must round too.
+    await q.combobox("Intro block padding").selectOption("Auto");
+    await page.evaluate(() => {
+      document.documentElement.style.fontSize = "15px";
+    });
+    await expect
+      .poll(() =>
+        title.evaluate((node) => {
+          const { top } = node.getBoundingClientRect();
+          const { scrollMarginBlockStart } = getComputedStyle(node);
+          return Number.parseFloat(scrollMarginBlockStart) - top - scrollY;
+        }),
+      )
+      .toBeGreaterThanOrEqual(0);
+    await page.evaluate(() => {
+      document.documentElement.style.removeProperty("font-size");
+    });
+    // A value on the intro replaces the space that main sets above it.
+    await q.combobox("Intro block padding").selectOption("10 steps");
+    await q.combobox("Main block padding").selectOption("2em");
+    await expect(intro).toHaveCSS("padding-block-start", "40px");
+    await expect(title).toHaveCSS("scroll-margin-block-start", "104px");
+    await q.combobox("Intro block padding").selectOption("Auto");
+    await expect(intro).toHaveCSS("padding-block-start", "32px");
+    await expect(intro).toHaveCSS("padding-block-end", "56px");
+    await expect(title).toHaveCSS("scroll-margin-block-start", "96px");
   });
 
   for (const from of ["intro", "body"]) {
