@@ -17,7 +17,7 @@ import {
 
 /**
  * A native checkbox with a check mark, mixed-state dash, and keyboard focus
- * ring.
+ * ring. `$mark="switch"` draws a switch instead.
  */
 export const checkbox = cv({
   extend: [choiceInput],

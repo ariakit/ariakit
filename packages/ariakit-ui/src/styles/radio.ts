@@ -19,6 +19,10 @@ import { text } from "./text.ts";
 /** A native radio input with a circular mark and keyboard focus ring. */
 export const radio = cv({
   extend: [choiceInput],
+  variants: {
+    // A click can't turn a radio off, so it can't look like a switch.
+    $mark: { switch: null },
+  },
   defaultVariants: {
     $mark: "dot",
     // Keep the radio round inside a parent frame.
@@ -51,6 +55,10 @@ export const radioCard = cv({
  */
 export const radioCardCheck = cv({
   extend: [choiceCardCheck],
+  variants: {
+    // A click can't turn a radio off, so it can't look like a switch.
+    $mark: { switch: null },
+  },
   defaultVariants: {
     $mark(_defaultValue, variants) {
       // A floating mark is a badge on the card's corner. Like a checkbox

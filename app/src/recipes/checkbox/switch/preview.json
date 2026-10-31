@@ -1,0 +1,4 @@
+{
+  "title": "Switch",
+  "description": "Makes each CheckboxField a switch with $mark=\"switch\", which draws a thumb that moves along a pill track and sets the switch role by default, so that most screen readers announce on or off. Use it for settings that apply at once, such as device connections, rather than the check mark rows of Descriptions, which suit options that a person submits with a form."
+}

@@ -68,6 +68,35 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     test.expect(await toggleAndGetTransitions(checkbox)).toEqual({});
   });
 
+  test("moves the thumb of a card's switch both ways", async ({ q }) => {
+    const checkbox = query(q.article("Switch cards")).switch("Off");
+    await test.expect(checkbox).not.toBeChecked();
+    const on = await toggleAndGetTransitions(checkbox);
+    test.expect(on.translate?.duration).toBeGreaterThan(0);
+    test.expect(on.scale?.duration).toBeGreaterThan(0);
+    const off = await toggleAndGetTransitions(checkbox);
+    test.expect(off.translate?.duration).toBeGreaterThan(0);
+  });
+
+  test("keeps the card's switch mark when a check gets an undefined mark", async ({
+    q,
+  }) => {
+    const checkbox = query(q.article("Switch cards")).switch("Optional props");
+    await test.expect(checkbox).not.toBeChecked();
+    const on = await toggleAndGetTransitions(checkbox);
+    test.expect(on.translate?.duration).toBeGreaterThan(0);
+  });
+
+  test("moves the thumb of a switch without motion when the user prefers reduced motion", async ({
+    page,
+    q,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const checkbox = query(q.article("Switch cards")).switch("Off");
+    await test.expect(checkbox).not.toBeChecked();
+    test.expect(await toggleAndGetTransitions(checkbox)).toEqual({});
+  });
+
   // A tile's top row is as tall as its largest slot. A badge beside that slot
   // keeps the height it has in the tile's content, with its text centered.
   // https://github.com/ariakit/ariakit/issues/7599

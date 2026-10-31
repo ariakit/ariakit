@@ -7,7 +7,7 @@ shape: control
 
 These examples build checkboxes with the Ariakit UI `Checkbox` components. A checkbox turns one option on or off. In a group of checkboxes, a person can check any number of the options, or none. To let a person pick exactly one option, use a radio group.
 
-The gallery starts with a plain group of notification settings. Then it shows settings with descriptions, a select-all checkbox for a list of items, and a text field that shows while a box is checked. The examples with cards show photos with a floating check, cookie settings with a category that cannot change, add-ons with badges, amenities without marks, and topics with a limit. The last examples show an error message below a checkbox and chips that filter a list.
+The gallery starts with a plain group of notification settings. Then it shows settings with descriptions, a select-all checkbox for a list of items, and a text field that shows while a box is checked. The examples with cards show photos with a floating check, cookie settings with a category that cannot change, add-ons with badges, amenities without marks, and topics with a limit. Then the gallery shows an error message below a checkbox and chips that filter a list. The last examples show switches in rows and in cards.
 
 ## Components
 
@@ -25,6 +25,8 @@ Ariakit UI has no group component for checkboxes, because a group of checkboxes 
 
 `CheckboxCardGrid` puts its cards in columns of equal width, with rows of equal height. `$minItemSize` sets the narrowest width of a card before the grid drops a column. The grid has the `group` role, so name it with `aria-labelledby` or `aria-label`.
 
+A switch is a checkbox with a different mark and role. Set `$mark="switch"` on a `Checkbox` or a `CheckboxField`, as in the Switch example, or on a `CheckboxCard`, as in the Switch Cards example. It draws the switch and sets the `switch` role by default. On a card, the `CheckboxCardCheck` takes the mark from the card.
+
 Set `disabled` on a checkbox or a card to disable it. A disabled checkbox keeps its state, like Strictly necessary in the Disabled Option example. When three topics are checked, the Selection Limit example disables the other topics.
 
 ## Accessibility
@@ -36,6 +38,8 @@ The name of a group tells what the options are for. A screen reader reads it whe
 A checkbox in the mixed state shows that some of the options it controls are checked, but not all of them. In the Select All example, All data lists the ids of its items in `aria-controls`. A click on All data in the mixed state checks all of the items, and the next click clears them. The items are indented below All data, so the layout shows which checkboxes it controls.
 
 Color alone does not show the checked state ([Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html)). A checkbox shows a check mark, or a dash in the mixed state, and so does the check of a card. A card without a mark gets a second edge pixel, and in forced colors mode, such as a Windows contrast theme, its border gets wider.
+
+A switch shows its state with the position of its thumb and with the fill of its track. Use it for a setting that applies at once. Most screen readers read the state as on or off. Some read a switch as a checkbox, which still gives the correct state. Do not use the mixed state with a switch, because the [switch role](https://www.w3.org/TR/wai-aria-1.2/#switch) has no mixed state.
 
 A screen reader reads a description after the name of its checkbox. The description of a disabled card can tell why the option cannot change, as in the Disabled Option example. A badge and a price in a card are part of the name, so the Card Badges example reads "Home setup New $29." The pictures of the Floating Check example and the icons of the Cards Without Marks example are hidden from screen readers, because each option has a word that names it.
 

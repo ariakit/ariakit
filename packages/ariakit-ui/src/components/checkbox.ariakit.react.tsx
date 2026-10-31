@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import * as React from "react";
 import {
   DescriptionContext,
   useDescription,
@@ -23,13 +24,27 @@ import {
 } from "../styles/checkbox.ts";
 import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 
+type CheckboxMark = VariantProps<typeof checkbox>["$mark"];
+
+/**
+ * Returns the input props that a mark implies. A role prop stays out of the
+ * other marks, because an undefined role would remove the role of a non-native
+ * checkbox.
+ */
+function getMarkProps(mark: CheckboxMark, role?: React.AriaRole) {
+  if (mark !== "switch") return;
+  // Preserve the switch role when the caller passes undefined.
+  return { role: role ?? "switch" };
+}
+
 export interface CheckboxProps
   extends ak.CheckboxProps, VariantProps<typeof checkbox> {}
 
 /**
  * Native checkbox drawn by CSS. The checked, mixed and disabled looks come from
  * the input's own state, so it works on its own, inside a `CheckboxField` or in
- * a table cell. `checked="mixed"` draws a dash.
+ * a table cell. `checked="mixed"` draws a dash. `$mark="switch"` draws a switch
+ * and sets the `switch` role by default.
  * @example
  * <label>
  *   <Checkbox defaultChecked />
@@ -38,18 +53,27 @@ export interface CheckboxProps
  */
 export function Checkbox(props: CheckboxProps) {
   const [variantProps, rest] = splitProps(props, checkbox);
-  return <ak.Checkbox {...checkbox.jsx(variantProps)} {...rest} />;
+  return (
+    <ak.Checkbox
+      {...checkbox.jsx(variantProps)}
+      {...rest}
+      {...getMarkProps(variantProps.$mark, rest.role)}
+    />
+  );
 }
 
 export interface CheckboxFieldProps
-  extends ak.CheckboxProps, VariantProps<typeof checkboxField> {}
+  extends
+    ak.CheckboxProps,
+    VariantProps<typeof checkboxField>,
+    Pick<VariantProps<typeof checkbox>, "$mark"> {}
 
 /**
  * Label row holding a `Checkbox` before its children, which it stacks so a
  * `CheckboxDescription` lands under the `CheckboxLabel`. The label text names
  * the checkbox, and the description describes it before any `aria-describedby`
  * passed to the field. Variant props style the row; every other prop reaches
- * the input.
+ * the input, such as `$mark="switch"` to make a switch.
  * @example
  * <CheckboxField name="updates">
  *   <CheckboxLabel>Email updates</CheckboxLabel>
@@ -123,20 +147,27 @@ export function CheckboxDescription(props: CheckboxDescriptionProps) {
 }
 
 export interface CheckboxCardProps
-  extends ak.CheckboxProps, VariantProps<typeof checkboxCard> {}
+  extends
+    ak.CheckboxProps,
+    VariantProps<typeof checkboxCard>,
+    Pick<VariantProps<typeof checkboxCardCheck>, "$mark"> {}
+
+const CheckboxCardMarkContext = React.createContext<CheckboxMark>(undefined);
 
 /**
  * Card-like label wrapping an Ariakit Checkbox kept out of sight, styled from
  * the input's checked, mixed and disabled state. The card's content names the
  * checkbox, and a `CheckboxCardDescription` describes it before any
- * `aria-describedby` passed to the card.
+ * `aria-describedby` passed to the card. `$mark` sets the mark of its
+ * `CheckboxCardCheck`, and `$mark="switch"` also sets the `switch` role on the
+ * input by default.
  * @example
  * <CheckboxCard name="updates">
  *   <CheckboxCardCheck />
  *   <CheckboxCardLabel>Email updates</CheckboxCardLabel>
  * </CheckboxCard>
  */
-export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
+export function CheckboxCard({ children, $mark, ...props }: CheckboxCardProps) {
   const [variantProps, rest] = splitProps(props, checkboxCard);
   const { id, describedBy, context } = useLabelDescription(rest);
   // Labels cannot match :disabled, so mirror the input state.
@@ -149,15 +180,31 @@ export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
           $disabled: variantProps.$disabled ?? rest.disabled,
         })}
       >
-        <ak.Checkbox {...rest} id={id} aria-describedby={describedBy} />
-        {children}
+        <ak.Checkbox
+          {...rest}
+          {...getMarkProps($mark, rest.role)}
+          id={id}
+          aria-describedby={describedBy}
+        />
+        <CheckboxCardMarkContext.Provider value={$mark}>
+          {children}
+        </CheckboxCardMarkContext.Provider>
       </label>
     </DescriptionContext.Provider>
   );
 }
 
 export interface CheckboxCardCheckProps
-  extends ak.RoleProps<"span">, VariantProps<typeof checkboxCardCheck> {}
+  extends
+    ak.RoleProps<"span">,
+    Omit<VariantProps<typeof checkboxCardCheck>, "$mark"> {
+  /**
+   * The mark of this check. It takes the `$mark` of its card by default. To
+   * draw a switch, set `$mark="switch"` on the card, which owns the input and
+   * also sets its role.
+   */
+  $mark?: Exclude<CheckboxMark, "switch">;
+}
 
 /**
  * The drawn check of a card, reflecting the input's state. Pass a child element
@@ -170,11 +217,15 @@ export interface CheckboxCardCheckProps
  */
 export function CheckboxCardCheck(props: CheckboxCardCheckProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardCheck);
+  const cardMark = React.useContext(CheckboxCardMarkContext);
   // Decorative: the input announces the state.
   return (
     <ak.Role.span
       aria-hidden
-      {...checkboxCardCheck.jsx(variantProps)}
+      {...checkboxCardCheck.jsx({
+        ...variantProps,
+        $mark: variantProps.$mark ?? cardMark,
+      })}
       {...rest}
     />
   );

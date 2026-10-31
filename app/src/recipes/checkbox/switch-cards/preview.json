@@ -1,0 +1,4 @@
+{
+  "title": "Switch Cards",
+  "description": "Sets $mark=\"switch\" on each CheckboxCard, which gives the input the switch role and the CheckboxCardCheck after the content its switch mark, so that a switch shows at the end of a row with an icon and a description, and the whole card toggles it. Use it for a list of settings that needs more emphasis than the plain rows of Switch."
+}

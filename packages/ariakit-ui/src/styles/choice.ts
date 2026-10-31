@@ -20,12 +20,23 @@ import { focusHighlight, focusWithin } from "./focus.ts";
 import { hover } from "./hover.ts";
 import { hasLayerBackground } from "./layer.ts";
 
+// The box radius wins over the radius that a slot computes for floating and
+// avatar slots. The switch mark can't set it in the same object, so it replaces
+// this value in its computed default.
+const choiceBase = cv({
+  extend: [controlSlot, hover],
+  defaultVariants: {
+    $rounded: "sm",
+  },
+});
+
 /**
- * A checkbox or radio mark with the geometry of a control slot. State comes
- * from the input or a surrounding choice host; a child replaces the drawn mark.
+ * A checkbox, radio, or switch mark with the geometry of a control slot. State
+ * comes from the input or a surrounding choice host; a child replaces the drawn
+ * mark.
  */
 export const choice = cv({
-  extend: [controlSlot, hover],
+  extend: [choiceBase],
   class: [
     "appearance-none",
     // Restore text-line alignment for bare inputs; flex and grid parents still
@@ -62,6 +73,8 @@ export const choice = cv({
      * The mark drawn inside the box while the choice is on. `check` draws a
      * check mark and, in the mixed state, a dash. `dot` draws an outlined dot:
      * a rim and a center dot in the checked fill with the surface between them.
+     * `switch` draws a pill track with a thumb that moves to the end side while
+     * the choice is on and stops at the center in the mixed state.
      * @default "check"
      */
     $mark: {
@@ -103,6 +116,26 @@ export const choice = cv({
         // is the rim. Draw the dot in the text color without the ring.
         "forced-colors:after:bg-current forced-colors:after:ring-0",
       ],
+      switch: [
+        "w-[calc(var(--size)*1.75)]",
+        // The thumb moves from the center to the center of each round end, so
+        // it stays concentric with the track at any thumb size.
+        "[--choice-switch-dir:1] rtl:[--choice-switch-dir:-1]",
+        "[--choice-switch-travel:calc(var(--size)*0.375*var(--choice-switch-dir))]",
+        "after:-translate-x-(--choice-switch-travel)",
+        "ui-choice-on:after:translate-x-(--choice-switch-travel)",
+        "ui-choice-mixed:after:translate-x-0",
+        // The thumb takes the track's readable text color, because the edge
+        // color can fall below 3:1 against the track. It grows on the fill.
+        "after:size-(--slot-icon-size) after:rounded-full after:bg-current",
+        "after:scale-75 ui-choice-on:after:scale-100",
+        // Unlike the check, the switch animates both ways, because its thumb
+        // travels between two resting positions.
+        "motion-safe:transition-[background-color,border-color,color]",
+        "motion-safe:duration-150 motion-safe:ease-out",
+        "motion-safe:after:transition-[translate,scale]",
+        "motion-safe:after:duration-150 motion-safe:after:ease-out",
+      ],
     },
     /**
      * Sets the rim width of the `dot` mark, including the box border. Numbers
@@ -121,7 +154,23 @@ export const choice = cv({
       if (variants.$mark !== "dot") return defaultValue;
       return defaultValue ?? 2;
     },
-    $rounded: "sm",
+    // A switch needs more room than a box to show its thumb's two positions.
+    $size(defaultValue, variants) {
+      // Preserve any size supplied by an extender.
+      if (defaultValue !== "md") return defaultValue;
+      if (variants.$mark === "switch") return "lg";
+      return defaultValue;
+    },
+    $square(defaultValue, variants) {
+      if (variants.$mark === "switch") return false;
+      return defaultValue;
+    },
+    $rounded(defaultValue, variants) {
+      // Radios and card checks set their own radius.
+      if (defaultValue !== "sm") return defaultValue;
+      if (variants.$mark === "switch") return "full";
+      return defaultValue;
+    },
     // Preserve the box shape independently of the surrounding card or row.
     $forceRounded: true,
     // The slot fixes the outer size. Match the input's raised surface and 3:1
@@ -151,11 +200,15 @@ export const choiceInput = cv({
     // A click can't change a checked radio, so hover doesn't light it.
     "ui-settled:ui-hover:ak-state-0",
     "ui-settled:group-hover/choice-field:ak-state-0",
-    "forced-colors:appearance-auto forced-colors:after:hidden",
   ],
   defaultVariants: {
     $focus: true,
     $hoverOffset: 3,
+  },
+  refine({ variants, addClass }) {
+    // A system checkbox can't show a switch, so the switch keeps its own marks.
+    if (variants.$mark === "switch") return;
+    addClass("forced-colors:appearance-auto forced-colors:after:hidden");
   },
 });
 
