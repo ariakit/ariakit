@@ -49,8 +49,6 @@ export default function Example() {
                 $rounded="full"
                 $size="sm"
               >
-                {/* The check keeps its small corners in the round chip, so
-                    the chip doesn't look like a radio. */}
                 <CheckboxCardCheck />
                 <CheckboxCardLabel>{team.label}</CheckboxCardLabel>
               </CheckboxCard>

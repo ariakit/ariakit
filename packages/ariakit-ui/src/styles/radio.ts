@@ -58,7 +58,6 @@ export const radioCardCheck = cv({
       if (variants.$floating) return "check";
       return "dot";
     },
-    $rounded: "full",
   },
 });
 
