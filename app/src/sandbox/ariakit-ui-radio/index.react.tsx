@@ -735,6 +735,41 @@ export default function RadioExamples() {
       </Example>
 
       <Example
+        title="Card edge weights"
+        description="On dark surfaces, cards default to a light edge. $darkEdgeWeight replaces it there, and $edgeWeight applies on every surface."
+        wide
+        code={`
+          <RadioCardGrid $minItemSize="10rem">
+            <RadioCard value="named" $darkEdgeWeight="bold">
+              <RadioCardLabel>Dark bold</RadioCardLabel>
+            </RadioCard>
+            <RadioCard value="number" $darkEdgeWeight={25}>
+              <RadioCardLabel>Dark 25</RadioCardLabel>
+            </RadioCard>
+            <RadioCard value="all" $edgeWeight="bold">
+              <RadioCardLabel>Bold</RadioCardLabel>
+            </RadioCard>
+          </RadioCardGrid>
+        `}
+      >
+        <RadioCardGrid
+          aria-label="Edge weight"
+          $minItemSize="10rem"
+          className="w-full"
+        >
+          <RadioCard value="named" $darkEdgeWeight="bold">
+            <RadioCardLabel>Dark bold</RadioCardLabel>
+          </RadioCard>
+          <RadioCard value="number" $darkEdgeWeight={25}>
+            <RadioCardLabel>Dark 25</RadioCardLabel>
+          </RadioCard>
+          <RadioCard value="all" $edgeWeight="bold">
+            <RadioCardLabel>Bold</RadioCardLabel>
+          </RadioCard>
+        </RadioCardGrid>
+      </Example>
+
+      <Example
         title="Disabled card"
         description="One card is unavailable. It keeps a faint edge, its text dims, and it does not respond to hover."
         wide
