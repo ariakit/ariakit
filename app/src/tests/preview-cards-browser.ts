@@ -137,11 +137,11 @@ test("preview card frames do not scroll or take focus until activated", async ({
   await expect.poll(getPageScroll).toBeGreaterThan(pageScroll);
   expect(await getFrameScroll()).toBe(frameScroll);
 
-  // A click inside the frame activates it.
-  const frameBox = await iframe.boundingBox();
-  expect(frameBox).not.toBeNull();
-  if (!frameBox) return;
-  await page.mouse.click(frameBox.x + 8, frameBox.y + 8);
+  // A click inside the frame activates it. The wheel can leave the corner of
+  // the frame above the window, so the locator click scrolls the frame into
+  // view and reads its box right before the click.
+  // https://github.com/ariakit/ariakit/issues/8207
+  await iframe.click({ position: { x: 8, y: 8 } });
   await combobox.evaluate((element) => element.focus());
   await expect(combobox).toBeFocused();
   // WebKit applies the new root overflow to wheel scrolling on a later
@@ -255,17 +255,10 @@ test("preview card frames scroll after a resize with the handle", async ({
 
   // A click in another preview frame sends no event to the docs page, but it
   // also makes the frame inactive, even after a click in the frame itself.
-  const frameBox = await iframe.boundingBox();
-  expect(frameBox).not.toBeNull();
-  if (!frameBox) return;
-  await page.mouse.click(frameBox.x + 8, frameBox.y + 8);
+  await iframe.click({ position: { x: 8, y: 8 } });
   await expect(root).toHaveAttribute("data-preview-active", "");
   const otherFrame = page.locator('iframe[title="Custom Items"]');
-  await otherFrame.scrollIntoViewIfNeeded();
-  const otherBox = await otherFrame.boundingBox();
-  expect(otherBox).not.toBeNull();
-  if (!otherBox) return;
-  await page.mouse.click(otherBox.x + 8, otherBox.y + 8);
+  await otherFrame.click({ position: { x: 8, y: 8 } });
   await expect(root).not.toHaveAttribute("data-preview-active", "");
 
   // A new document in the frame stays inactive once focus is in another frame.
@@ -338,25 +331,21 @@ test("preview card frames scroll after a click on the card", async ({
   await expect(root).not.toHaveAttribute("data-preview-active", "");
   await expect.poll(() => getViewportEdge(viewport)).toBe(inactiveEdge);
 
-  // A click in the frame also gives the viewport a brand border.
-  await page.mouse.click(box.x + 8, box.y + 8);
+  // A click in the frame also gives the viewport a brand border. The click on
+  // the heading can scroll the page, so the locator click scrolls the frame
+  // into view and reads its box right before the click.
+  // https://github.com/ariakit/ariakit/issues/8207
+  await iframe.click({ position: { x: 8, y: 8 } });
   await expect(root).toHaveAttribute("data-preview-active", "");
   await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
 
   // A click in another preview frame sends no event to the docs page, but the
   // card loses its brand border, even after a click on its top bar.
   await query(region).heading("Combobox Group").click();
-  const frameBox = await iframe.boundingBox();
-  expect(frameBox).not.toBeNull();
-  if (!frameBox) return;
-  await page.mouse.click(frameBox.x + 8, frameBox.y + 8);
+  await iframe.click({ position: { x: 8, y: 8 } });
   await expect(root).toHaveAttribute("data-preview-active", "");
   const otherFrame = page.locator('iframe[title="Custom Items"]');
-  await otherFrame.scrollIntoViewIfNeeded();
-  const otherBox = await otherFrame.boundingBox();
-  expect(otherBox).not.toBeNull();
-  if (!otherBox) return;
-  await page.mouse.click(otherBox.x + 8, otherBox.y + 8);
+  await otherFrame.click({ position: { x: 8, y: 8 } });
   await expect(root).not.toHaveAttribute("data-preview-active", "");
   await expect.poll(() => getViewportEdge(viewport)).toBe(inactiveEdge);
 });
@@ -416,7 +405,7 @@ test("preview cards show the popup of their example open", async ({
   expect(await combobox.getAttribute("aria-expanded")).toBe("true");
 
   // A click in the frame below the example is outside the popup and closes it.
-  await page.mouse.click(frameBox.x + 8, frameBox.y + frameBox.height - 8);
+  await iframe.click({ position: { x: 8, y: frameBox.height - 8 } });
   await expect(listbox).not.toBeVisible();
   await expect(combobox).toHaveAttribute("aria-expanded", "false");
 });
