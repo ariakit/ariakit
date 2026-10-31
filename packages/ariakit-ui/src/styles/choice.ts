@@ -89,17 +89,10 @@ export const choice = cv({
         // strokes are at 45 degrees and the dash is level. A left-to-right wipe
         // therefore follows the line as if it were being written.
         "after:[clip-path:inset(0_100%_0_0)] ui-choice-on:after:[clip-path:inset(0)]",
-        // The fill comes first and the mark starts when it ends. Only the on
-        // state sets these, so unchecking is immediate. The text color moves
-        // with the fill so that a custom child stays readable on it.
-        "[--choice-fill-duration:100ms]",
-        "motion-safe:ui-choice-on:transition-[background-color,border-color,color]",
-        "motion-safe:ui-choice-on:duration-(--choice-fill-duration)",
-        "motion-safe:ui-choice-on:ease-out",
+        // Only the on state sets these, so unchecking is immediate.
         "motion-safe:ui-choice-on:after:transition-[clip-path]",
         "motion-safe:ui-choice-on:after:duration-150",
         "motion-safe:ui-choice-on:after:ease-linear",
-        "motion-safe:ui-choice-on:after:delay-(--choice-fill-duration)",
       ],
       dot: [
         "after:scale-0 ui-choice-on:after:scale-100",
@@ -409,10 +402,20 @@ export const choiceCardCheck = cv({
      * unchecked.
      */
     $floating: [
-      "not-ui-choice-on:invisible",
+      "not-ui-choice-on:scale-0",
       // The check paints outside the card, so it takes its colors from the
       // surface around the card.
       "ak-outset",
+      // The whole check grows from its center. The scale property is separate
+      // from translate, so the check stays on the corner.
+      "motion-safe:ui-choice-on:transition-[scale]",
+      "motion-safe:ui-choice-on:duration-(--duration-overshoot)",
+      "motion-safe:ui-choice-on:ease-overshoot",
+      // The state changes the colors at once. Hold them until the check has
+      // shrunk.
+      "motion-safe:not-ui-choice-on:transition-[scale,background-color,color]",
+      "motion-safe:not-ui-choice-on:duration-150",
+      "motion-safe:not-ui-choice-on:ease-[var(--ease-in-out),step-end,step-end]",
     ],
   },
   defaultVariants: {
@@ -420,6 +423,21 @@ export const choiceCardCheck = cv({
     // The card already supplies hover feedback.
     $hoverOffset: false,
     $rounded: "full",
+  },
+  refine({ variants, addClass }) {
+    if (!variants.$floating) return;
+    if (variants.$mark !== "check") return;
+    addClass([
+      // The mark starts once the check has mostly grown.
+      "motion-safe:ui-choice-on:after:delay-100",
+      // The check shrinks as a whole, so the mark stays until it's gone instead
+      // of hiding when the state changes. The mask keeps a mixed check's dash
+      // from turning into a check on the way out.
+      "motion-safe:not-ui-choice-on:after:transition-[clip-path,mask-image]",
+      "motion-safe:not-ui-choice-on:after:transition-discrete",
+      "motion-safe:not-ui-choice-on:after:duration-0",
+      "motion-safe:not-ui-choice-on:after:delay-150",
+    ]);
   },
 });
 
