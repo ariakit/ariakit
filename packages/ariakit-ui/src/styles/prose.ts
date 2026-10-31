@@ -37,7 +37,7 @@ export const prose = cv({
     // A heading starts a new part of the column, so it adds space above the gap.
     // Adjacent headings stay closer. Zero specificity lets caller mt-* classes
     // win, and em values follow the size of each heading.
-    "[:where(&>:is(h1,h2,h3,h4,h5,h6):not(:first-child,:is(h1,h2,h3,h4,h5,h6)+*))]:mt-4",
+    "[:where(&>:not(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6))]:mt-4",
     "[:where(&>:is(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6))]:mt-[0.35em]",
     // Tighten only the space after a heading, so later children keep the gap.
     // The margin is negative while the gap is larger than this space.
