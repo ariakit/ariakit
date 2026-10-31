@@ -20,6 +20,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { previewConfig } from "./src/lib/preview-config.ts";
 import { resolvePreviewRoots } from "./src/lib/preview-discovery.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
+import { rehypeHtmlComponents } from "./src/lib/rehype.ts";
 import { remarkGalleryExamples } from "./src/lib/remark-gallery.ts";
 import { sourcePlugin } from "./src/lib/source.ts";
 
@@ -97,6 +98,7 @@ export default defineConfig({
     processor: unified({
       remarkPlugins: [[remarkGalleryExamples, { roots: previewRoots, srcDir }]],
       rehypePlugins: [
+        rehypeHtmlComponents,
         rehypeHeadingIds,
         [rehypeAutolinkHeadings, { behavior: "wrap" }],
       ],

@@ -7,11 +7,16 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+
+import { Code } from "@ariakit/ui/components/code.ariakit.react";
 import {
   Heading,
   HeadingDescription,
 } from "@ariakit/ui/components/heading.ariakit.react";
+import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
+import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react";
+import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
 import type { ComponentProps } from "react";
 
 // MDX renders plain elements. These map them to Ariakit UI components so page
@@ -35,8 +40,43 @@ function A(props: ComponentProps<"a">) {
   return <Link {...props} />;
 }
 
-export const mdxComponents = { h2: H2, h3: H3, h4: H4, a: A };
+function Keycap(props: ComponentProps<"kbd">) {
+  return <Kbd $kind="keycap" {...props} />;
+}
+
+interface OlProps extends Omit<ComponentProps<"ol">, "start"> {
+  // Markdown sets a string when a block without indentation splits a list of
+  // steps.
+  start?: number | string;
+}
+
+function Ol({ start: startProp, style, ...props }: OlProps) {
+  const start = startProp == null ? undefined : Number(startProp);
+  // List numbers its markers with a CSS counter, which ignores `start`.
+  const counterReset = start == null ? undefined : `list ${start - 1}`;
+  return (
+    <List ordered start={start} style={{ counterReset, ...style }} {...props} />
+  );
+}
+
+// The rehypeHtmlComponents plugin also applies these to HTML written as JSX,
+// and leaves the code of a fenced block out.
+const inlineComponents = { a: A, code: Code, kbd: Keycap };
+
+export const mdxComponents = {
+  ...inlineComponents,
+  h2: H2,
+  h3: H3,
+  h4: H4,
+  ul: List,
+  ol: Ol,
+  li: ListItem,
+  hr: Separator,
+};
 
 // A page description renders its own paragraphs, so each one is the description
 // part. A wrapper part can't mute them because prose colors each paragraph.
-export const descriptionComponents = { p: HeadingDescription };
+export const descriptionComponents = {
+  ...inlineComponents,
+  p: HeadingDescription,
+};

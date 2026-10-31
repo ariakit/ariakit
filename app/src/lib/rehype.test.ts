@@ -7,10 +7,46 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { unified } from "@astrojs/markdown-remark";
 import type { Element, ElementContent, Root } from "hast";
 import { expect, test } from "vitest";
 import { decodeBase64 } from "./base64.ts";
-import { rehypeAdmonitions, rehypePreviousCode } from "./rehype.ts";
+import {
+  rehypeAdmonitions,
+  rehypeHtmlComponents,
+  rehypePreviousCode,
+} from "./rehype.ts";
+
+// Compiles the MDX through the processor that the app uses for content.
+async function compileMdx(source: string) {
+  const processor = unified({ rehypePlugins: [rehypeHtmlComponents] });
+  const renderer = await processor.createMdxRenderer?.({}, { optimize: false });
+  if (!renderer) {
+    throw new Error("The processor renders no MDX");
+  }
+  const { code } = await renderer.process(source, "test.mdx", {});
+  return code;
+}
+
+test("rehypeHtmlComponents maps HTML written as JSX", async () => {
+  const code = await compileMdx('Press <kbd title="Search">K</kbd> now');
+  expect(code).toContain("_components.kbd");
+});
+
+test("rehypeHtmlComponents maps inline code from Markdown and JSX", async () => {
+  await expect(compileMdx("Run `one`")).resolves.toContain("_components.code");
+  await expect(compileMdx("Run <code>two</code>")).resolves.toContain(
+    "_components.code",
+  );
+});
+
+test("rehypeHtmlComponents keeps the code of a block native", async () => {
+  const fenced = await compileMdx("```js\nvalue\n```");
+  expect(fenced).toContain("_components.pre");
+  expect(fenced).not.toContain("_components.code");
+  const jsx = await compileMdx("<pre><code>value</code></pre>");
+  expect(jsx).not.toContain("_components.code");
+});
 
 function createParagraph(children: ElementContent[]): Element {
   return {
