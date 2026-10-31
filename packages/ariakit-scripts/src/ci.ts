@@ -46,8 +46,11 @@ export interface CIGateResult {
 }
 
 export interface RunCIGateOptions {
-  plan: string;
+  plan?: string;
   results: string;
+  repository: string;
+  runId: string;
+  token: string;
 }
 
 type CIResults = Record<string, CIGateResult | undefined>;
@@ -657,10 +660,22 @@ function parseCIResults(value: string) {
   return parsedResults;
 }
 
+function getCIPlanFailure(results: CIResults) {
+  const result = results.plan?.result;
+  if (result === "success") return;
+  return `plan: expected success, received ${result}`;
+}
+
+function throwCIGateFailures(failures: string[]) {
+  if (failures.length === 0) return;
+  throw new Error(`CI gate failed:\n- ${failures.join("\n- ")}`);
+}
+
 export function assertCIGate(plan: CIGatePlan, results: CIResults) {
   const failures: string[] = [];
-  if (results.plan?.result !== "success") {
-    failures.push(`plan: expected success, received ${results.plan?.result}`);
+  const planFailure = getCIPlanFailure(results);
+  if (planFailure) {
+    failures.push(planFailure);
   }
 
   for (const workflow of ciWorkflowNames) {
@@ -671,9 +686,99 @@ export function assertCIGate(plan: CIGatePlan, results: CIResults) {
     }
   }
 
-  if (failures.length > 0) {
-    throw new Error(`CI gate failed:\n- ${failures.join("\n- ")}`);
+  throwCIGateFailures(failures);
+}
+
+function hasCIResult(results: CIResults, value: string) {
+  return Object.values(results).some((result) => result?.result === value);
+}
+
+async function requestGitHub(
+  options: RunCIGateOptions,
+  path: string,
+  init: RequestInit = {},
+) {
+  const url = `https://api.github.com/repos/${options.repository}/${path}`;
+  return fetch(url, {
+    ...init,
+    headers: {
+      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${options.token}`,
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
+  });
+}
+
+async function fetchGitHubJSON(options: RunCIGateOptions, path: string) {
+  const response = await requestGitHub(options, path);
+  if (!response.ok) {
+    throw new Error(`GitHub API request failed (${response.status}): ${path}`);
   }
+  const json: unknown = await response.json();
+  return json;
+}
+
+function getHeadRepository(run: Record<string, unknown>) {
+  if (!isRecord(run.head_repository)) return;
+  const name = run.head_repository.full_name;
+  if (typeof name !== "string") return;
+  return name;
+}
+
+// Finds a newer run of this workflow for the same pull request head, which is
+// what cancels this run through the concurrency group. A wrong match only turns
+// a failed gate into a cancelled one, which still blocks merging.
+async function fetchNewerCIRunURL(options: RunCIGateOptions) {
+  const currentRun = await fetchGitHubJSON(
+    options,
+    `actions/runs/${options.runId}`,
+  );
+  if (!isRecord(currentRun)) return;
+  const { id, workflow_id, head_branch, event } = currentRun;
+  if (typeof id !== "number") return;
+  if (typeof workflow_id !== "number") return;
+  if (typeof head_branch !== "string") return;
+  if (typeof event !== "string") return;
+  const headRepository = getHeadRepository(currentRun);
+  const query = new URLSearchParams({ branch: head_branch, event });
+  const response = await fetchGitHubJSON(
+    options,
+    `actions/workflows/${workflow_id}/runs?${query}`,
+  );
+  if (!isRecord(response)) return;
+  if (!Array.isArray(response.workflow_runs)) return;
+  for (const run of response.workflow_runs) {
+    if (!isRecord(run)) continue;
+    if (typeof run.id !== "number") continue;
+    if (run.id <= id) continue;
+    if (getHeadRepository(run) !== headRepository) continue;
+    if (typeof run.html_url !== "string") continue;
+    return run.html_url;
+  }
+  return;
+}
+
+// The runner stops this job shortly after the force-cancel request. This
+// timeout only bounds the wait if that never happens.
+const ciCancelTimeout = 120_000;
+
+async function cancelCIGate(options: RunCIGateOptions, newerRunURL: string) {
+  const response = await requestGitHub(
+    options,
+    `actions/runs/${options.runId}/force-cancel`,
+    { method: "POST" },
+  );
+  if (!response.ok) {
+    // Fork pull requests get a read-only token, so their gate still fails.
+    throw new Error(
+      `This CI run was replaced by ${newerRunURL}, but the gate could not cancel itself (${response.status})`,
+    );
+  }
+  console.log(
+    `This CI run was replaced by ${newerRunURL}. Cancelling the gate.`,
+  );
+  await new Promise((resolve) => setTimeout(resolve, ciCancelTimeout));
+  throw new Error("This CI run was replaced, but the gate is still running");
 }
 
 export function serializeCIGatePlan(plan: CIPlan) {
@@ -718,9 +823,29 @@ export function runCIPlan(options: RunCIPlanOptions) {
   }
 }
 
-export function runCIGate(options: RunCIGateOptions) {
-  const plan = parseCIPlan(options.plan);
+export async function runCIGate(options: RunCIGateOptions) {
   const results = parseCIResults(options.results);
+  // This job runs with always() even after a newer push cancels the run. A
+  // cancelled gate still blocks merging, unlike a skipped one, without
+  // reporting a failure.
+  // https://github.com/ariakit/ariakit/issues/8196
+  if (hasCIResult(results, "cancelled") && !hasCIResult(results, "failure")) {
+    const newerRunURL = await fetchNewerCIRunURL(options);
+    if (newerRunURL) {
+      await cancelCIGate(options, newerRunURL);
+    }
+    // A job that reaches its timeout is also cancelled, without a newer run.
+    console.error("This CI run was cancelled, and no newer run replaced it.");
+  }
+  // A cancelled or failed plan job produces no plan output.
+  const planFailure = getCIPlanFailure(results);
+  if (planFailure) {
+    throwCIGateFailures([planFailure]);
+  }
+  if (!options.plan) {
+    throw new Error("Missing CI plan");
+  }
+  const plan = parseCIPlan(options.plan);
   assertCIGate(plan, results);
   console.log("All planned CI workflows completed with the expected result.");
 }
