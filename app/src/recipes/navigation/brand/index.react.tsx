@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Nav,
   NavLinkLabel,
@@ -55,8 +56,10 @@ function WorkspaceNav() {
               {link.label}
             </NavLinkLabel>
             {link.count && (
-              <NavSlot $kind="badge" $p="md">
-                {link.count}
+              <NavSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  {link.count}
+                </Badge>
               </NavSlot>
             )}
           </RouterNavLink>

@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonSlot,
@@ -116,7 +117,7 @@ export default function TooltipExamples() {
             arrow
             placement="right"
             text="Unread"
-            startSlot={{ $kind: "badge", children: "3" }}
+            startSlot={{ $kind: "box", children: <Badge $kind="solid">3</Badge> }}
           >
             <Button $kind="bevel">Inbox</Button>
           </Tooltip>
@@ -129,9 +130,42 @@ export default function TooltipExamples() {
             arrow
             placement="right"
             text="Unread"
-            startSlot={{ $kind: "badge", children: "3" }}
+            startSlot={{
+              $kind: "box",
+              children: <Badge $kind="solid">3</Badge>,
+            }}
           >
             <Button $kind="bevel">Inbox</Button>
+          </Tooltip>
+        </ExampleStage>
+      </Example>
+
+      <Example
+        title="Leading tint badge"
+        description="A tint badge fills a box slot before the tooltip text."
+        code={`
+          <Tooltip
+            open
+            placement="right"
+            text="Discount"
+            startSlot={{ $kind: "box", children: <Badge $layer="success">20%</Badge> }}
+          >
+            <Button $kind="bevel">Billing</Button>
+          </Tooltip>
+        `}
+      >
+        <ExampleStage anchor="start" height={14}>
+          <Tooltip
+            {...openTooltipProps}
+            open
+            placement="right"
+            text="Discount"
+            startSlot={{
+              $kind: "box",
+              children: <Badge $layer="success">20%</Badge>,
+            }}
+          >
+            <Button $kind="bevel">Billing</Button>
           </Tooltip>
         </ExampleStage>
       </Example>
@@ -249,7 +283,7 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>Search</TooltipAnchor>
             <TooltipPopover>
               <TooltipText>Search</TooltipText>
-              <TooltipSlot $square={false} $size="xl">
+              <TooltipSlot $kind="box">
                 <Kbd $kind="flat" $layer="transparent" $border>
                   ⌘K
                 </Kbd>
@@ -267,7 +301,7 @@ export default function TooltipExamples() {
             </TooltipAnchor>
             <TooltipPopover {...openTooltipProps}>
               <TooltipText>Search</TooltipText>
-              <TooltipSlot $square={false} $size="xl">
+              <TooltipSlot $kind="box">
                 <Kbd $kind="flat" $layer="transparent" $border>
                   ⌘K
                 </Kbd>
@@ -315,7 +349,9 @@ export default function TooltipExamples() {
             <TooltipAnchor render={<Button $kind="bevel" />}>Inbox</TooltipAnchor>
             <TooltipPopover>
               <TooltipText>Unread messages</TooltipText>
-              <TooltipSlot $kind="badge">3</TooltipSlot>
+              <TooltipSlot $kind="box">
+                <Badge $kind="solid">3</Badge>
+              </TooltipSlot>
             </TooltipPopover>
           </TooltipProvider>
         `}
@@ -327,7 +363,9 @@ export default function TooltipExamples() {
             </TooltipAnchor>
             <TooltipPopover {...openTooltipProps}>
               <TooltipText>Unread messages</TooltipText>
-              <TooltipSlot $kind="badge">3</TooltipSlot>
+              <TooltipSlot $kind="box">
+                <Badge $kind="solid">3</Badge>
+              </TooltipSlot>
             </TooltipPopover>
           </TooltipProvider>
         </ExampleStage>

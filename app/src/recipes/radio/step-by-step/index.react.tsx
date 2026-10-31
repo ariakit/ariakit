@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
@@ -176,7 +177,9 @@ export default function Example() {
                   <RadioCardLabelRow>
                     <RadioCardLabel>{option.label}</RadioCardLabel>
                     {option.recommended && (
-                      <RadioCardSlot $kind="badge">Recommended</RadioCardSlot>
+                      <RadioCardSlot $kind="box">
+                        <Badge $kind="solid">Recommended</Badge>
+                      </RadioCardSlot>
                     )}
                   </RadioCardLabelRow>
                   <RadioCardDescription $truncate={false}>

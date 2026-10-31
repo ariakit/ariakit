@@ -21,6 +21,8 @@ import {
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
 
+const newItemCount = 3;
+
 export default function BadgeExamples() {
   return (
     <ExampleGrid>
@@ -434,14 +436,18 @@ export default function BadgeExamples() {
         code={`
           <Badge $size="sm">
             <BadgeLabel>Issues</BadgeLabel>
-            <BadgeSlot $kind="badge" $p="md" $layer="danger">12</BadgeSlot>
+            <BadgeSlot $kind="box">
+              <Badge $kind="solid" $round $layer="danger">12</Badge>
+            </BadgeSlot>
           </Badge>
         `}
       >
         <Badge $size="sm">
           <BadgeLabel>Issues</BadgeLabel>
-          <BadgeSlot $kind="badge" $p="md" $layer="danger">
-            12
+          <BadgeSlot $kind="box">
+            <Badge $kind="solid" $round $layer="danger">
+              12
+            </Badge>
           </BadgeSlot>
         </Badge>
       </Example>
@@ -485,6 +491,50 @@ export default function BadgeExamples() {
             <BadgeLabel>Beta</BadgeLabel>
           </Badge>
         </Frame>
+      </Example>
+
+      <Example
+        title="Plain text children"
+        description="Text and numbers go in a label automatically, including a count of zero. A badge with an icon uses its own label."
+        code={`
+          <Badge>Text</Badge>
+          <Badge>{0}</Badge>
+          <Badge>{count} new</Badge>
+          <Badge>
+            <BadgeSlot aria-hidden>★</BadgeSlot>
+            <BadgeLabel>Icon</BadgeLabel>
+          </Badge>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge>Text</Badge>
+          <Badge>{0}</Badge>
+          <Badge>{newItemCount} new</Badge>
+          <Badge>
+            <BadgeSlot aria-hidden>★</BadgeSlot>
+            <BadgeLabel>Icon</BadgeLabel>
+          </Badge>
+        </div>
+      </Example>
+
+      <Example
+        title="Solid kind"
+        description="A solid badge fills with its layer color, brand by default, and has no border. Other variants still override it."
+        code={`
+          <Badge $kind="solid">Brand</Badge>
+          <Badge $kind="solid" $layer="success">Success</Badge>
+          <Badge $kind="solid" $border>Border</Badge>
+        `}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge $kind="solid">Brand</Badge>
+          <Badge $kind="solid" $layer="success">
+            Success
+          </Badge>
+          <Badge $kind="solid" $border>
+            Border
+          </Badge>
+        </div>
       </Example>
     </ExampleGrid>
   );

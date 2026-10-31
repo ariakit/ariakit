@@ -189,8 +189,10 @@ function Sidebar() {
                   <SkeletonLine $weight="light" className={link.width} />
                 )}
                 {link.count && (
-                  <span {...navSlot.jsx({ $kind: "badge" })}>
-                    <span>{link.count}</span>
+                  <span {...navSlot.jsx({ $kind: "box" })}>
+                    <span {...badge.jsx({ $kind: "solid" })}>
+                      <span {...badgeLabel.jsx()}>{link.count}</span>
+                    </span>
                   </span>
                 )}
               </span>

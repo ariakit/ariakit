@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Nav,
   NavLinkDescription,
@@ -27,8 +28,10 @@ export default function Example() {
             <NavSlot className="relative">
               <link.icon />
               {link.count && (
-                <NavSlot $kind="badge" $floating $p="md" aria-hidden>
-                  {link.count}
+                <NavSlot $kind="box" $floating aria-hidden>
+                  <Badge $kind="solid" $round>
+                    {link.count}
+                  </Badge>
                 </NavSlot>
               )}
             </NavSlot>

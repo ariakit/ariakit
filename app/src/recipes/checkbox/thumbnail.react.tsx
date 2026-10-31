@@ -1,5 +1,6 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
+import { badge, badgeLabel } from "@ariakit/ui/styles/badge";
 import {
   checkbox,
   checkboxCard,
@@ -63,8 +64,10 @@ export default function Thumbnail() {
             <span {...checkboxCardLabelRow.jsx()}>
               <span {...checkboxCardLabel.jsx()}>{addOn.label}</span>
               {addOn.badge && (
-                <span {...checkboxCardSlot.jsx({ $kind: "badge" })}>
-                  <span>{addOn.badge}</span>
+                <span {...checkboxCardSlot.jsx({ $kind: "box" })}>
+                  <span {...badge.jsx({ $kind: "solid" })}>
+                    <span {...badgeLabel.jsx()}>{addOn.badge}</span>
+                  </span>
                 </span>
               )}
             </span>

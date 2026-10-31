@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
@@ -444,7 +445,9 @@ export default function RadioExamples() {
               <RadioCardContent>
                 <RadioCardLabelRow>
                   <RadioCardLabel>React</RadioCardLabel>
-                  <RadioCardSlot $kind="badge">Recommended</RadioCardSlot>
+                  <RadioCardSlot $kind="box">
+                    <Badge $kind="solid">Recommended</Badge>
+                  </RadioCardSlot>
                 </RadioCardLabelRow>
                 <RadioCardDescription $truncate={false}>…</RadioCardDescription>
               </RadioCardContent>
@@ -454,7 +457,9 @@ export default function RadioExamples() {
               <RadioCardContent>
                 <RadioCardLabelRow>
                   <RadioCardLabel>No framework</RadioCardLabel>
-                  <RadioCardSlot $kind="badge">Lightest</RadioCardSlot>
+                  <RadioCardSlot $kind="box">
+                    <Badge $kind="solid">Lightest</Badge>
+                  </RadioCardSlot>
                 </RadioCardLabelRow>
                 <RadioCardDescription $truncate={false}>…</RadioCardDescription>
               </RadioCardContent>
@@ -472,7 +477,9 @@ export default function RadioExamples() {
             <RadioCardContent>
               <RadioCardLabelRow>
                 <RadioCardLabel>React</RadioCardLabel>
-                <RadioCardSlot $kind="badge">Recommended</RadioCardSlot>
+                <RadioCardSlot $kind="box">
+                  <Badge $kind="solid">Recommended</Badge>
+                </RadioCardSlot>
               </RadioCardLabelRow>
               <RadioCardDescription $truncate={false}>
                 Most examples and the widest ecosystem, with server rendering
@@ -485,7 +492,9 @@ export default function RadioExamples() {
             <RadioCardContent>
               <RadioCardLabelRow>
                 <RadioCardLabel>No framework</RadioCardLabel>
-                <RadioCardSlot $kind="badge">Lightest</RadioCardSlot>
+                <RadioCardSlot $kind="box">
+                  <Badge $kind="solid">Lightest</Badge>
+                </RadioCardSlot>
               </RadioCardLabelRow>
               <RadioCardDescription $truncate={false}>
                 Plain HTML and a little JavaScript
@@ -882,7 +891,9 @@ export default function RadioExamples() {
             <RadioCard value="jane">
               <RadioCardSlot $kind="avatar" $layer="brand">J</RadioCardSlot>
               <RadioCardLabel>Jane Doe</RadioCardLabel>
-              <RadioCardSlot $kind="badge">3</RadioCardSlot>
+              <RadioCardSlot $kind="box">
+                <Badge $kind="solid">3</Badge>
+              </RadioCardSlot>
             </RadioCard>
           </RadioCardGrid>
         `}
@@ -900,7 +911,9 @@ export default function RadioExamples() {
               J
             </RadioCardSlot>
             <RadioCardLabel>Jane Doe</RadioCardLabel>
-            <RadioCardSlot $kind="badge">3</RadioCardSlot>
+            <RadioCardSlot $kind="box">
+              <Badge $kind="solid">3</Badge>
+            </RadioCardSlot>
           </RadioCard>
         </RadioCardGrid>
       </Example>
@@ -911,11 +924,15 @@ export default function RadioExamples() {
           <RadioCardGrid aria-label="Unavailable channels">
             <RadioCard value="email" disabled>
               <RadioCardLabel>Email</RadioCardLabel>
-              <RadioCardSlot $kind="badge">3</RadioCardSlot>
+              <RadioCardSlot $kind="box">
+                <Badge $kind="solid">3</Badge>
+              </RadioCardSlot>
             </RadioCard>
             <RadioCard value="messages" aria-disabled>
               <RadioCardLabel>Messages</RadioCardLabel>
-              <RadioCardSlot $kind="badge">3</RadioCardSlot>
+              <RadioCardSlot $kind="box">
+                <Badge $kind="solid">3</Badge>
+              </RadioCardSlot>
             </RadioCard>
           </RadioCardGrid>
         `}
@@ -923,11 +940,15 @@ export default function RadioExamples() {
         <RadioCardGrid aria-label="Unavailable channels">
           <RadioCard value="email" disabled>
             <RadioCardLabel>Email</RadioCardLabel>
-            <RadioCardSlot $kind="badge">3</RadioCardSlot>
+            <RadioCardSlot $kind="box">
+              <Badge $kind="solid">3</Badge>
+            </RadioCardSlot>
           </RadioCard>
           <RadioCard value="messages" aria-disabled>
             <RadioCardLabel>Messages</RadioCardLabel>
-            <RadioCardSlot $kind="badge">3</RadioCardSlot>
+            <RadioCardSlot $kind="box">
+              <Badge $kind="solid">3</Badge>
+            </RadioCardSlot>
           </RadioCard>
         </RadioCardGrid>
       </Example>
@@ -960,6 +981,42 @@ export default function RadioExamples() {
             <RadioDescription>Receive message updates.</RadioDescription>
           </RadioField>
         </RadioGroup>
+      </Example>
+
+      <Example
+        title="Tint and solid badges in box slots"
+        description="A badge fills a box slot at the end of the card, with the same space at the end and at the top."
+        code={`
+          <RadioCard value="pro">
+            <RadioCardLabel>Pro</RadioCardLabel>
+            <RadioCardSlot $kind="box">
+              <Badge $layer="success">Save 20%</Badge>
+            </RadioCardSlot>
+          </RadioCard>
+          <RadioCard value="team">
+            <RadioCardLabel>Team</RadioCardLabel>
+            <RadioCardSlot $kind="box">
+              <Badge $kind="solid" $round>3</Badge>
+            </RadioCardSlot>
+          </RadioCard>
+        `}
+      >
+        <RadioCardGrid aria-label="Plans with badges">
+          <RadioCard value="pro">
+            <RadioCardLabel>Pro</RadioCardLabel>
+            <RadioCardSlot $kind="box">
+              <Badge $layer="success">Save 20%</Badge>
+            </RadioCardSlot>
+          </RadioCard>
+          <RadioCard value="team">
+            <RadioCardLabel>Team</RadioCardLabel>
+            <RadioCardSlot $kind="box">
+              <Badge $kind="solid" $round>
+                3
+              </Badge>
+            </RadioCardSlot>
+          </RadioCard>
+        </RadioCardGrid>
       </Example>
     </ExampleGrid>
   );

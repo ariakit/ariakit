@@ -30,6 +30,32 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     );
   });
 
+  test("keeps the boundary of badges in box slots in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorSchemeOf(
+      page,
+      ["Badges in box slots", "Disabled badges in box slots"],
+      async (colorScheme) => {
+        await captureInView({
+          visual,
+          box: q.article("Badges in box slots"),
+          colorScheme,
+          item: "ariakit-ui-button/forced-colors/badges-in-box-slots",
+        });
+        await captureInView({
+          visual,
+          box: q.article("Disabled badges in box slots"),
+          colorScheme,
+          item: "ariakit-ui-button/forced-colors/disabled-badges-in-box-slots",
+        });
+      },
+    );
+  });
+
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
   test("keeps joined selection boundaries and inherited widths in forced colors @visual", async ({
     page,

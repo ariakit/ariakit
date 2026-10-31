@@ -38,13 +38,13 @@ function KeyButtons({ label = "Search", ...props }: KeyButtonsProps) {
     <div className="flex flex-col items-start gap-2">
       <Button {...props}>
         <ButtonLabel>{label}</ButtonLabel>
-        <ButtonSlot $square={false}>
+        <ButtonSlot $kind="box" $size="md">
           <Kbd $kind="keycap">⌘K</Kbd>
         </ButtonSlot>
       </Button>
       <Button {...props}>
         <ButtonLabel>{label}</ButtonLabel>
-        <ButtonSlot $square={false} $size="xl">
+        <ButtonSlot $kind="box">
           <Kbd $kind="flat">⌘K</Kbd>
         </ButtonSlot>
       </Button>
@@ -480,13 +480,13 @@ export default function KbdExamples() {
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false}>
+            <ButtonSlot $kind="box" $size="md">
               <Kbd $kind="keycap">⌘K</Kbd>
             </ButtonSlot>
           </Button>
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false} $size="xl">
+            <ButtonSlot $kind="box">
               <Kbd $kind="flat">⌘K</Kbd>
             </ButtonSlot>
           </Button>
@@ -506,7 +506,7 @@ export default function KbdExamples() {
         code={`
           <Button $layer="brand">
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false} $size="xl">
+            <ButtonSlot $kind="box">
               <Kbd $kind="flat">⌘K</Kbd>
             </ButtonSlot>
           </Button>
@@ -521,7 +521,7 @@ export default function KbdExamples() {
         code={`
           <Button $invert>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false}>
+            <ButtonSlot $kind="box" $size="md">
               <Kbd $kind="keycap">⌘K</Kbd>
             </ButtonSlot>
           </Button>
@@ -551,7 +551,7 @@ export default function KbdExamples() {
         code={`
           <InputGroup>
             <Input disabled />
-            <InputSlot $square={false} $size="xl">
+            <InputSlot $kind="box">
               <Kbd $kind="flat" $layer="brand">⌘K</Kbd>
             </InputSlot>
           </InputGroup>
@@ -564,7 +564,7 @@ export default function KbdExamples() {
               placeholder="Search docs"
               disabled
             />
-            <InputSlot $square={false}>
+            <InputSlot $kind="box" $size="md">
               <Kbd $kind="keycap">⌘K</Kbd>
             </InputSlot>
           </InputGroup>
@@ -574,7 +574,7 @@ export default function KbdExamples() {
               placeholder="Search files"
               disabled
             />
-            <InputSlot $square={false} $size="xl">
+            <InputSlot $kind="box">
               <Kbd $kind="flat" $layer="brand">
                 ⌘K
               </Kbd>
@@ -582,10 +582,10 @@ export default function KbdExamples() {
           </InputGroup>
           <InputGroup>
             <Input aria-label="Message" placeholder="Message" disabled />
-            <InputSlot $size="2xl" $square={false}>
+            <InputSlot $size="2xl" $kind="box">
               <Button $size="sm">
                 <ButtonLabel>Send</ButtonLabel>
-                <ButtonSlot $square={false} $size="xl">
+                <ButtonSlot $kind="box">
                   <Kbd $kind="flat" $layer="brand">
                     ↵
                   </Kbd>
@@ -621,7 +621,7 @@ export default function KbdExamples() {
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false}>
+            <ButtonSlot $kind="box" $size="md">
               <Kbd $kind="keycap">⌘</Kbd>
               <Kbd $kind="keycap">K</Kbd>
             </ButtonSlot>
@@ -631,7 +631,7 @@ export default function KbdExamples() {
         <div className="flex flex-wrap items-start gap-4">
           <Button $lightnessOffset>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false}>
+            <ButtonSlot $kind="box" $size="md">
               <Kbd $kind="keycap">⌘</Kbd>
               <Kbd $kind="keycap">K</Kbd>
             </ButtonSlot>
@@ -646,7 +646,7 @@ export default function KbdExamples() {
           <div dir="rtl" lang="ar" className="contents">
             <Button $lightnessOffset>
               <ButtonLabel>بحث</ButtonLabel>
-              <ButtonSlot $square={false}>
+              <ButtonSlot $kind="box" $size="md">
                 <Kbd $kind="keycap">⌘</Kbd>
                 <Kbd $kind="keycap">K</Kbd>
               </ButtonSlot>
@@ -661,7 +661,7 @@ export default function KbdExamples() {
         code={`
           <Button $size="sm">
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false} $size="xl">
+            <ButtonSlot $kind="box">
               <Kbd $kind="flat">⌘K</Kbd>
             </ButtonSlot>
           </Button>
@@ -679,19 +679,19 @@ export default function KbdExamples() {
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false} $size="md">
+            <ButtonSlot $kind="box" $size="md">
               <Kbd $kind="flat">⌘K</Kbd>
             </ButtonSlot>
           </Button>
-          <Button>…<ButtonSlot $square={false} $size="lg">…</ButtonSlot></Button>
-          <Button>…<ButtonSlot $square={false} $size="xl">…</ButtonSlot></Button>
+          <Button>…<ButtonSlot $kind="box" $size="lg">…</ButtonSlot></Button>
+          <Button>…<ButtonSlot $kind="box">…</ButtonSlot></Button>
         `}
       >
         <div className="flex flex-col items-start gap-2">
           {(["md", "lg", "xl"] as const).map((size) => (
             <Button key={size} $lightnessOffset>
               <ButtonLabel>Search</ButtonLabel>
-              <ButtonSlot $square={false} $size={size}>
+              <ButtonSlot $kind="box" $size={size}>
                 <Kbd $kind="flat">⌘K</Kbd>
               </ButtonSlot>
             </Button>
@@ -704,7 +704,7 @@ export default function KbdExamples() {
         code={`
           <Button>
             <ButtonLabel>Play</ButtonLabel>
-            <ButtonSlot $square={false} $size="xl">
+            <ButtonSlot $kind="box">
               <Kbd $kind="flat" $px="0.75em">Space</Kbd>
             </ButtonSlot>
           </Button>
@@ -713,13 +713,13 @@ export default function KbdExamples() {
         <div className="flex flex-wrap items-start gap-4">
           <Button $lightnessOffset>
             <ButtonLabel>Play</ButtonLabel>
-            <ButtonSlot $square={false} $size="xl">
+            <ButtonSlot $kind="box">
               <Kbd $kind="flat">Space</Kbd>
             </ButtonSlot>
           </Button>
           <Button $lightnessOffset>
             <ButtonLabel>Play</ButtonLabel>
-            <ButtonSlot $square={false} $size="xl">
+            <ButtonSlot $kind="box">
               <Kbd $kind="flat" $px="0.75em">
                 Space
               </Kbd>
@@ -733,19 +733,19 @@ export default function KbdExamples() {
         code={`
           <Button>
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false} $size="md">
+            <ButtonSlot $kind="box" $size="md">
               <Kbd $kind="keycap">⌘K</Kbd>
             </ButtonSlot>
           </Button>
-          <Button>…<ButtonSlot $square={false} $size="lg">…</ButtonSlot></Button>
-          <Button>…<ButtonSlot $square={false} $size="xl">…</ButtonSlot></Button>
+          <Button>…<ButtonSlot $kind="box" $size="lg">…</ButtonSlot></Button>
+          <Button>…<ButtonSlot $kind="box">…</ButtonSlot></Button>
         `}
       >
         <div className="flex flex-col items-start gap-2">
           {(["md", "lg", "xl"] as const).map((size) => (
             <Button key={size} $lightnessOffset>
               <ButtonLabel>Search</ButtonLabel>
-              <ButtonSlot $square={false} $size={size}>
+              <ButtonSlot $kind="box" $size={size}>
                 <Kbd $kind="keycap">⌘K</Kbd>
               </ButtonSlot>
             </Button>
@@ -759,7 +759,7 @@ export default function KbdExamples() {
         code={`
           <Button $rounded="2xl">
             <ButtonLabel>Search</ButtonLabel>
-            <ButtonSlot $square={false} $size="xl">
+            <ButtonSlot $kind="box">
               <Kbd $kind="flat">⌘K</Kbd>
             </ButtonSlot>
           </Button>
@@ -775,7 +775,7 @@ export default function KbdExamples() {
                 $rounded={rounded}
               >
                 <ButtonLabel>Search</ButtonLabel>
-                <ButtonSlot $square={false} $size="xl">
+                <ButtonSlot $kind="box">
                   <Kbd $kind={kind}>⌘K</Kbd>
                 </ButtonSlot>
               </Button>

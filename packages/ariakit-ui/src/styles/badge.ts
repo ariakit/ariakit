@@ -3,7 +3,12 @@ import { controlSlot, getDisabledContentClass } from "./control.ts";
 import { isLayerColor } from "./layer.ts";
 import { slotFrame, slotFrameText } from "./slot-frame.ts";
 
-/** A compact badge with a tinted surface and rounded edge. */
+/**
+ * A compact badge with a rounded edge. In a slot, it fills the slot height, so
+ * it grows with the control and keeps its pill shape. The slot then sets its
+ * text size and side padding, so `$size` and `$px` apply only outside a slot.
+ * Use a `box` slot, which is one line tall and takes the width of the badge.
+ */
 export const badge = cv({
   extend: [slotFrame],
   class: [
@@ -21,22 +26,66 @@ export const badge = cv({
     "inline-flex",
     // Keep one-line counts at least square, including padding and borders.
     "min-w-[calc(1lh+(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px))*2)]",
+    // In a slot, the slot height sets the size of the badge. The text is a bit
+    // smaller than the text around the slot, and short counts stay at least
+    // square.
+    "[.slot-frame-slot>&]:self-stretch [.slot-frame-slot>&]:items-center",
+    "[.slot-frame-slot>&]:py-0 [.slot-frame-slot>&]:text-[0.8125em]",
+    "[.slot-frame-slot>&]:min-w-(--slot-height)",
+    // The sides keep 0.75 of the space above and below the capitals. Slot
+    // padding would sit outside the fill. --slot-height is a registered length
+    // that keeps the font of the slot, and 1lh and 1cap follow the badge.
+    "[.slot-frame-slot>&]:px-[var(--badge-round-px,max(0px,calc((var(--slot-height)-1lh)/2+(1lh-1cap)*0.75)))]",
+    // Concentric rounding can collapse the pill at default control padding.
+    "[.slot-frame-slot>&]:ak-frame-force",
   ],
+  variants: {
+    /**
+     * Sets how the badge is painted. `tint` blends the `$layer` color into the
+     * parent surface, with an edge and colored text. `solid` fills the badge
+     * with the `$layer` color, which defaults to `brand`. Each one only changes
+     * the default of other variants, so these still override it.
+     * @default "tint"
+     */
+    $kind: { tint: "", solid: "" },
+    /**
+     * Keeps a short count round in a slot. Longer text gets less side padding.
+     * Outside a slot, it has no effect.
+     */
+    $round: "[--badge-round-px:calc(var(--slot-height)*0.15)]",
+  },
   defaultVariants: {
-    $layer: true,
+    $kind: "tint",
+    $layer(defaultValue, variants) {
+      // Replace only frame's transparent default; preserve explicit colors.
+      if (defaultValue !== "transparent") return defaultValue;
+      return variants.$kind === "solid" ? "brand" : true;
+    },
     $rounded: "full",
     $size: "xs",
     $p: 1,
     $px(defaultValue, variants) {
-      // Replace only the text frame default; explicit padding still wins.
+      // Replace only the text frame default; explicit padding still wins
+      // outside a slot.
       if (defaultValue !== "md") return defaultValue;
       if (variants.$rounded === "full") return "lg";
       return defaultValue;
     },
-    $border: true,
-    $borderType: "inset",
+    $border(defaultValue, variants) {
+      if (variants.$kind === "solid") return defaultValue;
+      return defaultValue ?? true;
+    },
+    $borderType(defaultValue, variants) {
+      // An inset border draws a ring even without $border, since the ring width
+      // inherits.
+      if (variants.$kind === "solid") return defaultValue;
+      // Replace only frame's auto default; $border={false} and "inherit" clear
+      // the ring.
+      return defaultValue === "auto" ? "inset" : defaultValue;
+    },
     $edgeWeight(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
+      if (variants.$kind === "solid") return defaultValue;
       if (variants.$edgeRaw) return defaultValue;
       // Colored badges keep a tinted edge; neutral badges show it only at high
       // contrast.
@@ -59,20 +108,32 @@ export const badge = cv({
     },
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
+      if (variants.$kind === "solid") return defaultValue;
       // Only neutral badges shift away from their parent surface.
       if (variants.$layer === "transparent") return false;
       if (isLayerColor(variants.$layer)) return false;
       return true;
     },
     $mix(defaultValue, variants) {
+      if (variants.$kind === "solid") return defaultValue;
       if (!isLayerColor(variants.$layer)) return defaultValue;
       // Blend colored badges into the parent surface for a lighter tint.
       return defaultValue ?? 15;
     },
-    $text: true,
-    $textPush: 60,
-    $textWarm: 20,
+    $text(defaultValue, variants) {
+      if (variants.$kind === "solid") return defaultValue;
+      return defaultValue ?? true;
+    },
+    $textPush(defaultValue, variants) {
+      if (variants.$kind === "solid") return defaultValue;
+      return defaultValue ?? 60;
+    },
+    $textWarm(defaultValue, variants) {
+      if (variants.$kind === "solid") return defaultValue;
+      return defaultValue ?? 20;
+    },
     $textChroma(defaultValue, variants) {
+      if (variants.$kind === "solid") return defaultValue;
       if (!isLayerColor(variants.$layer)) return defaultValue;
       return defaultValue ?? "vivid";
     },
@@ -80,6 +141,7 @@ export const badge = cv({
   refine({ variants, addClass }) {
     // A badge in a disabled control fades like the slots of the control.
     addClass(getDisabledContentClass(variants));
+    if (variants.$kind === "solid") return;
     if (!isLayerColor(variants.$layer)) return;
     if (variants.$edgeRaw) return;
     if (variants.$edgeLightnessMin != null) return;

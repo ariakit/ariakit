@@ -1,4 +1,5 @@
 import * as ak from "@ariakit/react";
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonLabel,
@@ -118,8 +119,10 @@ export default function Example() {
                     </NavSlot>
                     <NavLinkLabel>{channel.name}</NavLinkLabel>
                     {channel.unread > 0 && (
-                      <NavSlot $kind="badge" $p="md">
-                        {channel.unread}
+                      <NavSlot $kind="box">
+                        <Badge $kind="solid" $round>
+                          {channel.unread}
+                        </Badge>
                       </NavSlot>
                     )}
                   </NavLink>
@@ -143,8 +146,10 @@ export default function Example() {
                       {person.name}
                     </NavLinkLabel>
                     {unread > 0 && (
-                      <NavSlot $kind="badge" $p="md">
-                        {unread}
+                      <NavSlot $kind="box">
+                        <Badge $kind="solid" $round>
+                          {unread}
+                        </Badge>
                       </NavSlot>
                     )}
                   </NavLink>

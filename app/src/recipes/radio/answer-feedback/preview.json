@@ -1,4 +1,4 @@
 {
   "title": "Answer Feedback",
-  "description": "A quiz with RadioCard options where a Check button disables the RadioGroup, marks the correct answer and the wrong pick with success and danger RadioCardSlot badges, and shows the result in a role=\"status\" live region. The same button becomes Try again, keeps focus with accessibleWhenDisabled, and resets the value to null. Use it to check a pick against a right answer with feedback in words, not color alone."
+  "description": "A quiz with RadioCard options where a Check button disables the RadioGroup, marks the correct answer and the wrong pick with success and danger Badge elements in a RadioCardSlot, and shows the result in a role=\"status\" live region. The same button becomes Try again, keeps focus with accessibleWhenDisabled, and resets the value to null. Use it to check a pick against a right answer with feedback in words, not color alone."
 }

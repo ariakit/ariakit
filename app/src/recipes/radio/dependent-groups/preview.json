@@ -1,4 +1,4 @@
 {
   "title": "Dependent Groups",
-  "description": "An appointment picker where a RadioCardGrid of days drives a separate RadioGroup of times, and a new day clears the picked time. Full days and booked times are disabled and say so in RadioCardSlot badges with $kind=\"badge\" and $floating, and aria-describedby adds a time zone hint to the times group. Use it when the options of one group depend on the value of another."
+  "description": "An appointment picker where a RadioCardGrid of days drives a separate RadioGroup of times, and a new day clears the picked time. Full days and booked times are disabled and say so in Badge elements in a RadioCardSlot with $kind=\"box\" and $floating, and aria-describedby adds a time zone hint to the times group. Use it when the options of one group depend on the value of another."
 }

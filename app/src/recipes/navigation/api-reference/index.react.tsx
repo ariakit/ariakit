@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Nav,
@@ -85,12 +86,14 @@ export default function Example() {
                     {resource.endpoints.map(([method, title]) => (
                       <RouterNavLink key={title} to={getPath(title)}>
                         <NavLinkLabel>{title}</NavLinkLabel>
-                        <NavSlot
-                          $kind="badge"
-                          $layer={methodLayers[method]}
-                          className="font-mono"
-                        >
-                          {method}
+                        <NavSlot $kind="box">
+                          <Badge
+                            $kind="solid"
+                            $layer={methodLayers[method]}
+                            className="font-mono"
+                          >
+                            {method}
+                          </Badge>
                         </NavSlot>
                       </RouterNavLink>
                     ))}

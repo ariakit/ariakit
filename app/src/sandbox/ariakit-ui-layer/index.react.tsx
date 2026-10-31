@@ -86,7 +86,7 @@ function TextModifierCases() {
         </Button>
         <Button $border $textChroma="vivid" $textHue="red">
           <ButtonLabel>Nested layer</ButtonLabel>
-          <ButtonSlot>
+          <ButtonSlot $kind="box">
             <Badge>
               <BadgeLabel>New</BadgeLabel>
             </Badge>
@@ -135,7 +135,7 @@ function TextModifierCases() {
         </fieldset>
         <Button $border disabled>
           <ButtonLabel>Disabled badge</ButtonLabel>
-          <ButtonSlot>
+          <ButtonSlot $kind="box">
             <Badge>
               <BadgeLabel>New</BadgeLabel>
             </Badge>

@@ -78,8 +78,10 @@ function Repository() {
                   the tabs keep their widths when the current tab changes. */}
               <NavLinkLabel text={tab.label} />
               {tab.count && (
-                <NavSlot $kind="badge" $layer $darken={1}>
-                  {tab.count}
+                <NavSlot $kind="box">
+                  <Badge $kind="solid" $layer $darken={1}>
+                    {tab.count}
+                  </Badge>
                 </NavSlot>
               )}
             </RouterNavLink>

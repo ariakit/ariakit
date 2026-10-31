@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Tab,
@@ -1145,7 +1146,9 @@ export default function TabsExamples() {
               </Tab>
               <Tab>
                 <TabLabel>Code</TabLabel>
-                <TabSlot $kind="badge" $p="md">3</TabSlot>
+                <TabSlot $kind="box">
+                  <Badge $kind="solid" $round>3</Badge>
+                </TabSlot>
               </Tab>
               <Tab>
                 <TabLabel>Usage</TabLabel>
@@ -1166,8 +1169,10 @@ export default function TabsExamples() {
             </Tab>
             <Tab id="badge-code">
               <TabLabel>Code</TabLabel>
-              <TabSlot $kind="badge" $p="md">
-                3
+              <TabSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  3
+                </Badge>
               </TabSlot>
             </Tab>
             <Tab id="badge-usage">
@@ -1594,6 +1599,46 @@ export default function TabsExamples() {
         code={`<Tab $kind="flat" bar={{ $offset: 1.5, $side: "end" }}>Code</Tab>`}
       >
         <BarPlacement />
+      </Example>
+
+      <Example
+        title="Tint and solid badges in box slots"
+        description="A badge fills a box slot after the tab label."
+        code={`
+          <TabList>
+            <Tab>
+              <TabLabel>Issues</TabLabel>
+              <TabSlot $kind="box">
+                <Badge $kind="solid" $round>3</Badge>
+              </TabSlot>
+            </Tab>
+            <Tab>
+              <TabLabel>Billing</TabLabel>
+              <TabSlot $kind="box">
+                <Badge $layer="success">Save 20%</Badge>
+              </TabSlot>
+            </Tab>
+          </TabList>
+        `}
+      >
+        <Tabs>
+          <TabList aria-label="Tabs with badges">
+            <Tab id="box-issues">
+              <TabLabel>Issues</TabLabel>
+              <TabSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  3
+                </Badge>
+              </TabSlot>
+            </Tab>
+            <Tab id="box-billing">
+              <TabLabel>Billing</TabLabel>
+              <TabSlot $kind="box">
+                <Badge $layer="success">Save 20%</Badge>
+              </TabSlot>
+            </Tab>
+          </TabList>
+        </Tabs>
       </Example>
     </ExampleGrid>
   );

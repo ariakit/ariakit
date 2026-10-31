@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   ComboboxDescription,
   ComboboxEmpty,
@@ -285,7 +286,9 @@ export default function ComboboxExamples() {
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Share</ComboboxItemLabel>
                 </ComboboxItemContent>
-                <ComboboxItemSlot $kind="badge">New</ComboboxItemSlot>
+                <ComboboxItemSlot $kind="box">
+                  <Badge $kind="solid">New</Badge>
+                </ComboboxItemSlot>
               </ComboboxItem>
             </ComboboxPopover>
           </ComboboxProvider>
@@ -316,7 +319,9 @@ export default function ComboboxExamples() {
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Share</ComboboxItemLabel>
                 </ComboboxItemContent>
-                <ComboboxItemSlot $kind="badge">New</ComboboxItemSlot>
+                <ComboboxItemSlot $kind="box">
+                  <Badge $kind="solid">New</Badge>
+                </ComboboxItemSlot>
               </ComboboxItem>
             </ComboboxPopover>
           </ComboboxProvider>
@@ -869,13 +874,13 @@ export default function ComboboxExamples() {
         description="A country code select in a slot before a phone number. While the select is invalid, the group shows the danger edge. A group whose number is disabled while its select stays enabled keeps its enabled look."
         code={`
           <InputGroup>
-            <InputSlot $size="2xl" $square={false}>
+            <InputSlot $kind="box" $size="2xl">
               <ComboboxSelect aria-invalid $size="sm" $layer="transparent" />
             </InputSlot>
             <Input type="tel" />
           </InputGroup>
           <InputGroup>
-            <InputSlot $size="2xl" $square={false}>
+            <InputSlot $kind="box" $size="2xl">
               <ComboboxSelect $size="sm" $layer="transparent" />
             </InputSlot>
             <Input type="tel" disabled />
@@ -885,7 +890,7 @@ export default function ComboboxExamples() {
         <div className="grid w-full gap-4">
           <ComboboxProvider defaultSelectedValue="">
             <InputGroup className="w-full">
-              <InputSlot $size="2xl" $square={false}>
+              <InputSlot $size="2xl" $kind="box">
                 <ComboboxSelect
                   aria-label="Country code"
                   placeholder="Code"
@@ -907,7 +912,7 @@ export default function ComboboxExamples() {
           </ComboboxProvider>
           <ComboboxProvider defaultSelectedValue="+44">
             <InputGroup className="w-full">
-              <InputSlot $size="2xl" $square={false}>
+              <InputSlot $size="2xl" $kind="box">
                 <ComboboxSelect
                   aria-label="Fax country code"
                   $size="sm"

@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonLabel,
@@ -78,8 +79,10 @@ function renderLink(link: Link, path = getPath(link.label)) {
       </NavSlot>
       <NavLinkLabel>{link.label}</NavLinkLabel>
       {link.count && (
-        <NavSlot $kind="badge" $p="md">
-          {link.count}
+        <NavSlot $kind="box">
+          <Badge $kind="solid" $round>
+            {link.count}
+          </Badge>
         </NavSlot>
       )}
       {link.shortcut && (

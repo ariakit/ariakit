@@ -1,3 +1,4 @@
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { InputError } from "@ariakit/ui/components/input.ariakit.react";
@@ -43,13 +44,17 @@ export default function Example() {
             {/* After the check, words mark the answers, so color doesn't
                 do it alone. */}
             {checked && option.value === correctAnswer && (
-              <RadioCardSlot $kind="badge" $layer="success">
-                Correct answer
+              <RadioCardSlot $kind="box">
+                <Badge $kind="solid" $layer="success">
+                  Correct answer
+                </Badge>
               </RadioCardSlot>
             )}
             {checked && option.value === answer && !isCorrect && (
-              <RadioCardSlot $kind="badge" $layer="danger">
-                Your answer
+              <RadioCardSlot $kind="box">
+                <Badge $kind="solid" $layer="danger">
+                  Your answer
+                </Badge>
               </RadioCardSlot>
             )}
           </RadioCard>

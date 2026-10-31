@@ -1,6 +1,13 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  test("puts plain text and numbers in a label", async ({ q }) => {
+    const box = query(q.article("Plain text children"));
+    for (const text of ["Text", "0", "3 new", "Icon"]) {
+      await test.expect(box.text(text).locator("..")).toHaveClass(/\bbadge\b/);
+    }
+  });
+
   // A badge is phrasing content, so the parser keeps it inside a paragraph, and
   // a heading, which holds phrasing content only, can hold it.
   test("renders a badge as phrasing content", async ({ q }) => {

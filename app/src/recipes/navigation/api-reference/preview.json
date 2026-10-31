@@ -1,4 +1,4 @@
 {
   "title": "Category Badges",
-  "description": "An API reference sidebar with guide links, a NavGroup with $divider and an $uppercase NavGroupLabel, and one NavDisclosure per resource whose endpoint links end with color-coded HTTP method badges, a badge NavSlot with a $layer per method. Use it for docs or reference navigation where each link needs a colored category or status tag rather than a count or icon."
+  "description": "An API reference sidebar with guide links, a NavGroup with $divider and an $uppercase NavGroupLabel, and one NavDisclosure per resource whose endpoint links end with color-coded HTTP method badges, a solid Badge with a $layer per method in a NavSlot with $kind=\"box\". Use it for docs or reference navigation where each link needs a colored category or status tag rather than a count or icon."
 }

@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
   Combobox,
@@ -168,8 +169,10 @@ function DisclosureExplicitLabels() {
           ),
           description: "Manage your profile",
           children: (
-            <DisclosureButtonSlot $kind="badge" $p="md">
-              3
+            <DisclosureButtonSlot $kind="box">
+              <Badge $kind="solid" $round>
+                3
+              </Badge>
             </DisclosureButtonSlot>
           ),
         }}
@@ -184,8 +187,10 @@ function DisclosureExplicitLabels() {
           label: { id: "invitation-label", children: <>Invitation details</> },
           description: "Review workspace invitations",
           children: (
-            <DisclosureButtonSlot $kind="badge" $p="md">
-              2
+            <DisclosureButtonSlot $kind="box">
+              <Badge $kind="solid" $round>
+                2
+              </Badge>
             </DisclosureButtonSlot>
           ),
         }}
@@ -250,7 +255,9 @@ export default function DisclosureExamples() {
         code={`
           <Disclosure defaultOpen button={
             <DisclosureButton label="Notifications" indicator="chevron-down-end">
-              <DisclosureButtonSlot $kind="badge" $p="md">3</DisclosureButtonSlot>
+              <DisclosureButtonSlot $kind="box">
+                <Badge $kind="solid" $round>3</Badge>
+              </DisclosureButtonSlot>
             </DisclosureButton>
           }>
             Three messages need your attention.
@@ -264,8 +271,10 @@ export default function DisclosureExamples() {
               label="Notifications"
               indicator="chevron-down-end"
             >
-              <DisclosureButtonSlot $kind="badge" $p="md">
-                3
+              <DisclosureButtonSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  3
+                </Badge>
               </DisclosureButtonSlot>
             </DisclosureButton>
           }
@@ -289,7 +298,9 @@ export default function DisclosureExamples() {
               label={<CustomLabel id="workspace-members-label">Workspace members</CustomLabel>}
               description="People with access to this workspace"
             >
-              <DisclosureButtonSlot $kind="badge" $p="md">4</DisclosureButtonSlot>
+              <DisclosureButtonSlot $kind="box">
+                <Badge $kind="solid" $round>4</Badge>
+              </DisclosureButtonSlot>
             </DisclosureButton>
           }>
             Invite a teammate or change a role.
@@ -308,8 +319,10 @@ export default function DisclosureExamples() {
               }
               description="People with access to this workspace"
             >
-              <DisclosureButtonSlot $kind="badge" $p="md">
-                4
+              <DisclosureButtonSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  4
+                </Badge>
               </DisclosureButtonSlot>
             </DisclosureButton>
           }
@@ -840,7 +853,9 @@ export default function DisclosureExamples() {
         code={`
           <DisclosureButton label={0} description="Pending invitations" />
           <DisclosureButton label={{ children: <>Invitation details</> }}>
-            <DisclosureButtonSlot $kind="badge" $p="md">2</DisclosureButtonSlot>
+            <DisclosureButtonSlot $kind="box">
+              <Badge $kind="solid" $round>2</Badge>
+            </DisclosureButtonSlot>
           </DisclosureButton>
         `}
       >
@@ -893,6 +908,58 @@ export default function DisclosureExamples() {
         >
           Filter controls
         </Disclosure>
+      </Example>
+
+      <Example
+        title="Tint and solid badges in box slots"
+        description="A badge fills a box slot beside the button label."
+        code={`
+          <Disclosure button={
+            <DisclosureButton label="Messages" indicator="chevron-down-end">
+              <DisclosureButtonSlot $kind="box">
+                <Badge $kind="solid" $round>3</Badge>
+              </DisclosureButtonSlot>
+            </DisclosureButton>
+          }>
+            Three messages are waiting.
+          </Disclosure>
+          <Disclosure button={
+            <DisclosureButton label="Billing" indicator="chevron-down-end">
+              <DisclosureButtonSlot $kind="box">
+                <Badge $layer="success">Save 20%</Badge>
+              </DisclosureButtonSlot>
+            </DisclosureButton>
+          }>
+            A yearly plan costs less.
+          </Disclosure>
+        `}
+      >
+        <div className="flex w-full flex-col gap-2">
+          <Disclosure
+            button={
+              <DisclosureButton label="Messages" indicator="chevron-down-end">
+                <DisclosureButtonSlot $kind="box">
+                  <Badge $kind="solid" $round>
+                    3
+                  </Badge>
+                </DisclosureButtonSlot>
+              </DisclosureButton>
+            }
+          >
+            Three messages are waiting.
+          </Disclosure>
+          <Disclosure
+            button={
+              <DisclosureButton label="Billing" indicator="chevron-down-end">
+                <DisclosureButtonSlot $kind="box">
+                  <Badge $layer="success">Save 20%</Badge>
+                </DisclosureButtonSlot>
+              </DisclosureButton>
+            }
+          >
+            A yearly plan costs less.
+          </Disclosure>
+        </div>
       </Example>
     </ExampleGrid>
   );

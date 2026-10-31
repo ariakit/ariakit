@@ -185,8 +185,10 @@ function Panel({ className, ...props }: FrameProps) {
 
 function Count({ value }: { value: number }) {
   return (
-    <span {...navSlot.jsx({ $kind: "badge" })}>
-      <span>{value}</span>
+    <span {...navSlot.jsx({ $kind: "box" })}>
+      <span {...badge.jsx({ $kind: "solid" })}>
+        <span {...badgeLabel.jsx()}>{value}</span>
+      </span>
     </span>
   );
 }
@@ -386,14 +388,16 @@ function ApiReference() {
                   aria-current={endpoint.current ? "page" : undefined}
                 >
                   <RowLabel label={endpoint.label} width={endpoint.width} />
-                  <span
-                    {...navSlot.jsx({
-                      $kind: "badge",
-                      $layer: methodLayers[endpoint.method],
-                      className: "font-mono",
-                    })}
-                  >
-                    <span>{endpoint.method}</span>
+                  <span {...navSlot.jsx({ $kind: "box" })}>
+                    <span
+                      {...badge.jsx({
+                        $kind: "solid",
+                        $layer: methodLayers[endpoint.method],
+                        className: "font-mono",
+                      })}
+                    >
+                      <span {...badgeLabel.jsx()}>{endpoint.method}</span>
+                    </span>
                   </span>
                 </span>
               </li>

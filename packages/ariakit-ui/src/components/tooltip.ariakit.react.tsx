@@ -6,7 +6,6 @@ import {
   createOptionalRender,
   hasContent,
 } from "../react-utils/create-render.react.ts";
-import { wrapsSlotChildren } from "../styles/slot-frame.ts";
 import {
   tooltip,
   tooltipArrow,
@@ -222,16 +221,7 @@ export interface TooltipSlotProps
  */
 export function TooltipSlot(props: TooltipSlotProps) {
   const [variantProps, rest] = splitProps(props, tooltipSlot);
-  const variants = tooltipSlot.getVariants(variantProps);
-  return (
-    <ak.Role.span {...tooltipSlot.jsx(variantProps)} {...rest}>
-      {wrapsSlotChildren(variants.$kind) ? (
-        <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
-    </ak.Role.span>
-  );
+  return <ak.Role.span {...tooltipSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface TooltipTextProps

@@ -11,7 +11,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const button = example.button("Share 9");
     const label = example.text("Share");
     const icon = button.locator("svg");
-    // The badge slot wraps its text in a span; the innermost one is the text.
+    // The badge wraps its text in a label; the innermost span is the text.
     const badge = button.locator("span", { hasText: /^9$/ }).last();
     const labelAlpha = await inkAlpha(label);
     test.expect(labelAlpha).toBeLessThan(1);
