@@ -71,10 +71,10 @@ export const choice = cv({
   variants: {
     /**
      * The mark drawn inside the box while the choice is on. `check` draws a
-     * check mark and, in the mixed state, a dash. `dot` draws an outlined dot:
-     * a rim and a center dot in the checked fill with the surface between them.
-     * `switch` draws a pill track with a thumb that moves to the end side while
-     * the choice is on and stops at the center in the mixed state.
+     * check mark and, in the mixed state, a dash. `dot` draws a round bullet in
+     * the center of the checked fill. `switch` draws a pill track with a thumb
+     * that moves to the end side while the choice is on and stops at the center
+     * in the mixed state.
      * @default "check"
      */
     $mark: {
@@ -95,19 +95,16 @@ export const choice = cv({
         "motion-safe:ui-choice-on:after:ease-linear",
       ],
       dot: [
+        // Like the check, the bullet takes the fill's readable text color, so
+        // it keeps its contrast against the box in checked and disabled states.
+        "after:size-[calc((var(--size)-2*var(--border-width))*0.4)]",
+        "after:rounded-full after:bg-current",
+        // The fill changes at once, and the bullet grows from the center.
         "after:scale-0 ui-choice-on:after:scale-100",
-        "after:transition-transform after:duration-100 after:ease-out",
-        "motion-reduce:after:transition-none",
-        // The center dot and the rim, which includes the border, take the
-        // box's fill, so both keep its contrast against the surface ring
-        // between them. The ring is 14% of the box's inner width.
-        "[--choice-mark-gap:calc((var(--size)-2*var(--border-width))*0.14)]",
-        "after:size-[calc(100%-2*(var(--choice-mark-rim)-var(--border-width)+var(--choice-mark-gap)))]",
-        "after:rounded-full after:bg-(--ak-layer)",
-        "after:ring-(length:--choice-mark-gap) after:ring-(--ak-layer-parent)",
-        // Forced colors replace the fill with the system canvas, so the border
-        // is the rim. Draw the dot in the text color without the ring.
-        "forced-colors:after:bg-current forced-colors:after:ring-0",
+        // Only the on state sets these, so unchecking is immediate.
+        "motion-safe:ui-choice-on:after:transition-[scale]",
+        "motion-safe:ui-choice-on:after:duration-150",
+        "motion-safe:ui-choice-on:after:ease-in-out",
       ],
       switch: [
         "w-[calc(var(--size)*1.75)]",
@@ -130,23 +127,9 @@ export const choice = cv({
         "motion-safe:after:duration-150 motion-safe:after:ease-out",
       ],
     },
-    /**
-     * Sets the rim width of the `dot` mark, including the box border. Numbers
-     * are pixels; other values are CSS lengths. A thinner rim leaves more room
-     * for the center dot. Defaults to 2px for the `dot` mark.
-     */
-    $markRim(value?: number | (string & {})) {
-      if (value == null) return;
-      const width = typeof value === "number" ? `${value}px` : value;
-      return { style: { "--choice-mark-rim": width } };
-    },
   },
   defaultVariants: {
     $mark: "check",
-    $markRim(defaultValue, variants) {
-      if (variants.$mark !== "dot") return defaultValue;
-      return defaultValue ?? 2;
-    },
     // A switch needs more room than a box to show its thumb's two positions.
     $size(defaultValue, variants) {
       // Preserve any size supplied by an extender.
@@ -426,14 +409,15 @@ export const choiceCardCheck = cv({
   },
   refine({ variants, addClass }) {
     if (!variants.$floating) return;
-    if (variants.$mark !== "check") return;
+    // The switch keeps its own motion.
+    if (variants.$mark === "switch") return;
     addClass([
       // The mark starts once the check has mostly grown.
       "motion-safe:ui-choice-on:after:delay-100",
       // The check shrinks as a whole, so the mark stays until it's gone instead
       // of hiding when the state changes. The mask keeps a mixed check's dash
       // from turning into a check on the way out.
-      "motion-safe:not-ui-choice-on:after:transition-[clip-path,mask-image]",
+      "motion-safe:not-ui-choice-on:after:transition-[clip-path,mask-image,scale]",
       "motion-safe:not-ui-choice-on:after:transition-discrete",
       "motion-safe:not-ui-choice-on:after:duration-0",
       "motion-safe:not-ui-choice-on:after:delay-150",

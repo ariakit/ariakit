@@ -77,7 +77,7 @@ export default function RadioExamples() {
     <ExampleGrid>
       <Example
         title="Group"
-        description="A group of label rows. The checked input draws an outlined dot in brand, and the other inputs sink into the surface. Hovering the checked row does not light it, because a click does not change it."
+        description="A group of label rows. The checked input fills with brand and draws a bullet in its center, and the other inputs sink into the surface. Hovering the checked row does not light it, because a click does not change it."
         code={`
           <RadioGroup className="grid gap-2">
             <RadioField value="hobby">
@@ -213,28 +213,6 @@ export default function RadioExamples() {
             <Radio value="office" /> Office
           </label>
         </RadioGroup>
-      </Example>
-
-      <Example
-        title="Rim width"
-        description="The rim of the checked dot, including the border, is 2px by default. A thinner rim leaves more room for the dot, and a thicker one less."
-        code={`
-          <RadioGroup>
-            <label>
-              <Radio value="thin" $markRim={1} /> 1px
-            </label>
-          </RadioGroup>
-        `}
-      >
-        <div className="flex flex-wrap gap-x-6 gap-y-2">
-          {[1, 2, 3].map((rim) => (
-            <RadioGroup key={rim} defaultValue="on" aria-label={`${rim}px rim`}>
-              <label>
-                <Radio value="on" $markRim={rim} /> {rim}px
-              </label>
-            </RadioGroup>
-          ))}
-        </div>
       </Example>
 
       <Example
