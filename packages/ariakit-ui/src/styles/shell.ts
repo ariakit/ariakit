@@ -598,9 +598,7 @@ export const shellSidebarFooter = cv({
  * Clamp each length to zero before summing: easing can overshoot after the
  * column reaches zero width. Each content grid animates its own lengths, and
  * the values derived from them do not inherit, so each animation frame restyles
- * the grids but not the content inside them. The exception is the default space
- * of an intro: fragment targets in the intro read it, so that content restyles
- * each time the whole-pixel value changes. A `transition` utility on a main
+ * the grids but not the content inside them. A `transition` utility on a main
  * header, intro, or body replaces this transition, so keep the slot spaces in
  * its transition properties.
  */
@@ -854,14 +852,20 @@ export const shellMainIntro = cv({
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))]",
     // By default, the intro starts `$py` from main, or a space that follows the
     // width of the intro, below the header. It ends with that same space,
-    // whatever main sets. Sidebars beside the intro reduce this width, and
-    // adjacent end sidebars that start at the body don't. Whole pixels keep a
-    // fluid value from leaving the page at a fractional height. The sidebar
-    // alignment with the body depends only on the three bar steps above the
-    // body. The padding-block utility sorts before py-*.
-    "[--shell-main-intro-py:round(clamp(calc(var(--shell-header-step)*5),calc((100cqi-var(--shell-start-total)-var(--shell-end-total)+var(--shell-content-end-space))*0.05),calc(var(--shell-header-step)*14)),1px)]",
-    "[--shell-main-intro-pbs:var(--shell-main-py,var(--shell-main-intro-py))]",
-    "[padding-block:var(--shell-main-intro-pbs)_var(--shell-main-intro-py)]",
+    // whatever main sets. A percentage resolves against the grid area, which
+    // sidebars beside the intro reduce and adjacent end sidebars that start at
+    // the body don't. Whole pixels keep a fluid value from leaving the page at a
+    // fractional height. The sidebar alignment with the body depends only on the
+    // three bar steps above the body. The padding-block utility sorts before
+    // py-*.
+    // Don't use a container unit here: in Chrome, one such unit under a stretched
+    // grid container restyles each element with a container query on every
+    // relayout of that container, such as each frame of a sidebar fold.
+    "[--shell-main-intro-space:round(clamp(calc(var(--shell-header-step)*5),5%,calc(var(--shell-header-step)*14)),1px)]",
+    "[padding-block:var(--shell-main-py,var(--shell-main-intro-space))_var(--shell-main-intro-space)]",
+    // Fragment targets can't read a percentage, so they clear the largest space.
+    // A table of contents still marks a target current at the top of the page.
+    "[--shell-main-intro-pbs:var(--shell-main-py,round(calc(var(--shell-header-step)*14),1px))]",
   ],
   variants: {
     ...contentVariants,
@@ -871,7 +875,8 @@ export const shellMainIntro = cv({
      * `auto`, the same space on both edges, which grows with the width of the
      * intro: open sidebars beside it reduce the space, and adjacent end
      * sidebars that start at the body don't. With `auto`, `$py` on main
-     * replaces the space above when set. `gutter` uses the gutter on both
+     * replaces the space above when set, and fragment targets in the intro
+     * otherwise clear the largest space. `gutter` uses the gutter on both
      * edges. `none` removes the space, so `py-*`, `pt-*`, and `pb-*` can set
      * it. These classes don't move fragment targets, so use a value when the
      * intro has targets.
@@ -885,9 +890,11 @@ export const shellMainIntro = cv({
           : getSpacingValue(value === "none" ? 0 : value);
       return {
         style: {
-          // The registered length resolves relative units at the intro.
-          "--shell-main-intro-py": space,
-          "--shell-main-intro-pbs": "var(--shell-main-intro-py)",
+          // The registered length resolves relative units at the intro, and it
+          // replaces the space above that main sets.
+          "--shell-main-py-length": space,
+          "--shell-main-py": "var(--shell-main-py-length)",
+          "--shell-main-intro-space": "var(--shell-main-py-length)",
         },
       };
     },

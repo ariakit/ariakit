@@ -383,14 +383,6 @@ body > * {
   initial-value: 0px;
 }
 
-/* The registered length resolves relative units at the intro, so a target with
-   its own text size or query container keeps the scroll margin of the intro. */
-@property --shell-main-intro-py {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
 @property --shell-main-max-width {
   syntax: "<length-percentage>";
   inherits: true;
