@@ -1,3 +1,4 @@
 {
-  "title": "Disabled Option"
+  "title": "Disabled Option",
+  "description": "Lists cookie categories as CheckboxCard rows with CheckboxCardCheck in an element with role=\"group\" and aria-labelledby, where one card is checked and disabled so it cannot change. Its untruncated CheckboxCardDescription tells why and is the accessible description. Use it when an option must stay locked and people need to know the reason, rather than cards that all toggle freely."
 }

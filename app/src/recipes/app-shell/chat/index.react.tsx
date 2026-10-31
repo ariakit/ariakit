@@ -153,7 +153,7 @@ export default function Example() {
             </NavGroup>
           </Nav>
         </ShellSidebarBody>
-        <ShellSidebarFooter className="flex items-center gap-2 p-3">
+        <ShellSidebarFooter className="flex items-center gap-2">
           <Avatar person={maya} className="size-8 text-xs" />
           <div className="min-w-0 text-sm">
             <p className="truncate font-semibold">{maya.name}</p>

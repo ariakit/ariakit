@@ -1,1 +1,5 @@
-{ "title": "Dark Sidebar", "fullscreen": true }
+{
+  "title": "Dark Sidebar",
+  "description": "A full-height ShellSidebar in an outer Shell, styled with $darken and $lightnessMax so it stays dark in both light and dark color schemes, next to a nested Shell whose sticky ShellMainHeader holds a radio group that filters a grouped issue table. Use it when app navigation needs a dark surface that does not flip with the color scheme, unlike $invert, or when filters must stay in view above scrolling content.",
+  "fullscreen": true
+}

@@ -1,3 +1,4 @@
 {
-  "title": "Avatar Stack"
+  "title": "Avatar Stack",
+  "description": "Overlapping avatar links that share one tooltip naming each member, with TooltipAnchor elements and one TooltipPopover in a TooltipProvider that reads the aria-label of the active anchorElement and slides between avatars with tooltipWrapper. Use it for avatar groups or other tight clusters of labeled links with the default show delay, rather than the instant tooltip of a navigation rail."
 }

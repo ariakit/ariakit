@@ -1,3 +1,4 @@
 {
-  "title": "Radio"
+  "title": "Radio",
+  "description": "A basic uncontrolled radio group built with RadioGroup and RadioField, using the label prop to name the group and defaultValue to start with a checked option. Tab moves to the checked radio, and the arrow keys move to and check the next one. Use it as the starting point for a simple single-choice list of plain text options, before adding descriptions, cards, or controlled state."
 }

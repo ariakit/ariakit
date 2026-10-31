@@ -1,1 +1,5 @@
-{ "title": "Density Settings Panel", "fullscreen": true }
+{
+  "title": "Density Settings Panel",
+  "description": "An outer Shell holds a full-height end ShellSidebar that spans the header of a nested docs Shell, where accent and density radios edit a draft theme that Apply commits to the inner Shell, density to $size and accent to $hue and $textHue, and closing discards. Use it for a customization or settings drawer beside the whole app whose changes apply only on confirm, or for a docs page with an On this page sidebar shown only at wide widths.",
+  "fullscreen": true
+}

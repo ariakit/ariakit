@@ -1,3 +1,4 @@
 {
-  "title": "Load More"
+  "title": "Load More",
+  "description": "A social feed of post cards where each page of posts is its own Skeleton, so Load more shows placeholders only for the new page while the loaded posts stay visible, the new page grows in with a max-height transition, and the button is disabled while a page loads. Use it for paginated or infinite lists that append content, rather than a single area that reloads in place like the table."
 }

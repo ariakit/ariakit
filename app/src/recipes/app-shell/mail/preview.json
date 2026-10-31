@@ -1,4 +1,5 @@
 {
   "title": "Two Start Sidebars",
+  "description": "A three-pane mail layout with two start ShellSidebar columns, a toggleable folders nav and a wider message list that appears only at 4xl shell widths, where choosing a folder filters the list and choosing a message fills the ShellMain reading pane. Use it for list-detail apps like mail or inboxes that need two columns before the content, and for reusing Nav rows with landmark={false} outside navigation landmarks.",
   "fullscreen": true
 }

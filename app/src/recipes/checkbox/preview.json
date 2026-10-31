@@ -1,3 +1,4 @@
 {
-  "title": "Checkbox"
+  "title": "Checkbox",
+  "description": "A basic group of independent CheckboxField rows inside a fieldset named by its legend, using a shared name with distinct values and defaultChecked for the initial state. Each checkbox is a Tab stop and toggles with Space or a click. Use it as the starting point for a simple uncontrolled list of options, such as notification settings, before adding descriptions, cards, or shared group state."
 }

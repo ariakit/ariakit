@@ -1,3 +1,4 @@
 {
-  "title": "Progress Tracking"
+  "title": "Progress Tracking",
+  "description": "A course outline that renders the Nav as an ordered List of ListDisclosure chapters with progress, under a Progress bar for the whole course. Lesson links show done checks with ListItemMarker, lock icons, and durations, and a halfway full-length bar on the list guide marks the current lesson. Use it for lessons, steps, or onboarding with completion state rather than plain grouped links."
 }

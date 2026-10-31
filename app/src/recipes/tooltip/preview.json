@@ -1,5 +1,6 @@
 {
   "title": "Tooltip",
+  "description": "A basic icon button whose tooltip names it on hover and keyboard focus, built with the Tooltip component and its text prop, while aria-label gives the button its accessible name. The tooltip stays while the pointer moves over it and hides on Escape with focus kept on the button. Use it as the starting point for a single static label before adding shortcuts, shared tooltips, or text that changes.",
   "open": "hover",
   "compact": true
 }

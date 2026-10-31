@@ -1,6 +1,6 @@
 import { cv } from "clava";
 import { includes } from "../utils/includes.ts";
-import { getSpacingValue } from "../utils/styles.ts";
+import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
 import { edge } from "./edge.ts";
 
 const ROUNDED_VALUES = [
@@ -103,7 +103,9 @@ export const frameBase = cv({
      */
     $forceRounded: "ak-frame-force",
     /**
-     * Sets frame padding. Values below `1rem` affect nested corner rounding.
+     * Sets frame padding. Numbers scale the spacing token and round to a whole
+     * pixel; strings pass through as raw lengths or expressions. Values below
+     * `1rem` affect nested corner rounding.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       if (value == null) return;
@@ -111,7 +113,7 @@ export const frameBase = cv({
       if (value === "none") return "ak-frame-p-0";
       return {
         class: "ak-frame-p-(--frame-padding)",
-        style: { "--frame-padding": getSpacingValue(value) },
+        style: { "--frame-padding": getPaddingValue(value) },
       };
     },
     /**

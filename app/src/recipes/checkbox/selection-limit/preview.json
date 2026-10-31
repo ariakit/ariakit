@@ -1,3 +1,4 @@
 {
-  "title": "Selection Limit"
+  "title": "Selection Limit",
+  "description": "Caps a CheckboxCardGrid of topic cards at three picks by keeping the values in one array with CheckboxProvider and disabling the unpicked cards once the limit is reached. A role=\"status\" live region announces the count and tells why the other topics are disabled. Use it when people can pick only up to a maximum number of options."
 }

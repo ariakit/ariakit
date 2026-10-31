@@ -1,4 +1,5 @@
 {
   "title": "Custom Items",
+  "description": "Grouped, filterable combobox results with rich options, composed from ComboboxProvider, ComboboxLabel, ComboboxInput, and ComboboxPopover, where each ComboboxItem shows an initials avatar in a ComboboxItemSlot plus a ComboboxItemLabel and a ComboboxItemDescription for the email or folder. Use it when grouped options need avatars or secondary text, or when you need the separate combobox parts instead of the single Combobox component.",
   "open": true
 }

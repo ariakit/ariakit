@@ -1,3 +1,4 @@
 {
-  "title": "Select All"
+  "title": "Select All",
+  "description": "Builds a parent All data checkbox that controls child CheckboxField items kept in one array with CheckboxProvider, showing checked=\"mixed\" when only some items are checked and listing the items in aria-controls. A click in the mixed state checks all items, and the next click clears them. Use it when one checkbox must check or clear a whole list and reflect its partial state."
 }

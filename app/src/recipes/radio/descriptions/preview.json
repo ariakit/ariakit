@@ -1,3 +1,4 @@
 {
-  "title": "Descriptions"
+  "title": "Descriptions",
+  "description": "Radio options with a second line of text, built by putting a RadioLabel and a RadioDescription inside each RadioField. The description becomes the accessible description of the radio, so screen readers read it after the name without adding it to the name. Use it when each option needs a short explanation in a compact list rather than the larger RadioCard layouts."
 }

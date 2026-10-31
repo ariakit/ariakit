@@ -1,3 +1,4 @@
 {
-  "title": "Keyboard Shortcuts"
+  "title": "Keyboard Shortcuts",
+  "description": "A formatting toolbar of icon buttons whose tooltips show each keyboard shortcut as a Kbd in a TooltipSlot endSlot, with matching aria-keyshortcuts and Command or Control keys picked by platform. Once one tooltip shows, the next shows at once as the pointer or arrow-key focus moves along the toolbar. Use it for buttons that need to advertise shortcuts, while the app still handles the keys itself."
 }

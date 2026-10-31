@@ -1,3 +1,4 @@
 {
-  "title": "Auto-Growing Textarea"
+  "title": "Auto-Growing Textarea",
+  "description": "A chat composer where an Input rendered as a textarea grows with $fitContent inside an InputGroup that draws the edge, with a send Button in an InputSlot. Enter submits the form, Shift+Enter adds a line, Enter during IME composition is ignored, and empty drafts are skipped. Use it for chat or comment inputs that auto-grow and send on Enter, rather than the fixed-height textarea in Controls."
 }

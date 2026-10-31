@@ -1,3 +1,4 @@
 {
-  "title": "Truncated Text"
+  "title": "Truncated Text",
+  "description": "Links that cut long titles off with an ellipsis, where a ResizeObserver compares scrollWidth with clientWidth and the Tooltip shows the full text only while it is cut off, placed to the right with fitViewport, so long text wraps. Use it for truncated labels, file names, or titles that need their full text on hover or focus, rather than a tooltip on every item."
 }

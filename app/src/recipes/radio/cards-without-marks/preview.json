@@ -1,3 +1,4 @@
 {
-  "title": "Cards Without Marks"
+  "title": "Cards Without Marks",
+  "description": "A rating scale of RadioCard items in a RadioCardGrid with no RadioCardCheck, so the checked card shows its state with the brand fill and a second edge pixel. Each card stacks an aria-hidden icon above a RadioCardLabel word that names the option, and $minItemSize fits all five cards in one row. Use it for compact icon-and-word choices, like a satisfaction scale, where a check mark would crowd the card."
 }

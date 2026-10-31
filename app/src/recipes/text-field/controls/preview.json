@@ -1,3 +1,4 @@
 {
-  "title": "Controls"
+  "title": "Controls",
+  "description": "Other controls laid out like text fields: an InputGroup with $gap=\"none\" and a text InputSlot prefix that focuses the input on click, a ComboboxSelect in a ComboboxField with ComboboxSelectLabel and ComboboxDescription, and an Input rendered as a textarea with maxLength. Use it when a form mixes a prefixed URL input, a select, and a multiline field that share the same label and hint layout."
 }

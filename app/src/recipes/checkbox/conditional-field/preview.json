@@ -1,3 +1,4 @@
 {
-  "title": "Conditional Field"
+  "title": "Conditional Field",
+  "description": "Reveals a text field right after a controlled CheckboxField, using checked and onChange, only while the box is checked, and keeps the typed text in state so it comes back when the box is checked again. Focus stays on the checkbox, and Tab moves into the field. Use it when checking an option asks for extra input, such as a gift message, rather than a checkbox that only toggles a value."
 }
