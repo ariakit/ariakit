@@ -1,0 +1,5 @@
+{
+  "title": "Straight Rail Guide",
+  "description": "A Toc with $guide set to rail, which keeps one straight guide and thumb along the rows of every level while three levels of nested TocList rows indent away from it. Use it when the guide should read as one continuous progress line, rather than the bends of the basic layout.",
+  "fullscreen": true
+}

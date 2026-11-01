@@ -1,0 +1,5 @@
+{
+  "title": "Marked Parent Links",
+  "description": "A Toc whose links set $parentInk and $parentBold, which give full ink and a bold weight to each link whose nested TocList rows hold the current link, with $selectedBold on the current link itself. A heavier label can wrap differently and move the rows after it. Use it for deep heading trees where the reader needs to see the whole path to the current section, rather than the current link alone.",
+  "fullscreen": true
+}

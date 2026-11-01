@@ -746,6 +746,12 @@ test("table of contents lists the gallery examples", async ({ page, q }) => {
   );
   await expect(examples.link("Keyboard Shortcuts")).toBeVisible();
   await expect(examples.link("Overview")).toHaveCount(0);
+  // Nested rows get dots, in a list that stays unordered. Top-level rows don't.
+  await expect(examples.list()).toHaveJSProperty("tagName", "UL");
+  await expect(
+    toc.link("Keyboard Shortcuts").locator(".toc-link-dot"),
+  ).toBeVisible();
+  await expect(toc.link("Overview").locator(".toc-link-dot")).toBeHidden();
 
   await query(cardTitle).link("Keyboard Shortcuts").click();
   await expect(page).toHaveURL(/#shortcuts$/);

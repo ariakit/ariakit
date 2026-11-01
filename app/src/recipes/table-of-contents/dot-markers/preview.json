@@ -1,0 +1,5 @@
+{
+  "title": "Dot Markers",
+  "description": "A Toc with $marker set to dot on each nested TocList, which draws a small dot on the guide at each nested row and fills it with the thumb color while the thumb covers it. The dots keep the rows at the regular indent and the lists stay unordered, unlike the numbered markers. Use it for documentation pages with many sub-sections, where each nested row should show whether its section is on screen.",
+  "fullscreen": true
+}

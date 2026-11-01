@@ -56,7 +56,7 @@ function Entries({ entries }: { entries: AppTocEntry[] }) {
     return (
       <TocItem key={entry.slug}>
         <TocLink href={href}>{entry.text}</TocLink>
-        <TocList>
+        <TocList $marker="dot">
           <Entries entries={entry.children} />
         </TocList>
       </TocItem>
