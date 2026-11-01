@@ -279,7 +279,7 @@ withDeferredVisualLoad(import.meta.dirname, async ({ test, query }) => {
             colorScheme,
             "ariakit-ui-shell/reading-responsive",
           ),
-          // The nested shells sit below the first screen.
+          // The last nested shell ends below the first screen.
           fullPage: true,
           viewports: {
             wide: { width: 1440, height: 900 },

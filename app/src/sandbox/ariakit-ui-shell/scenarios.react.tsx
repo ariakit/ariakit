@@ -126,7 +126,9 @@ export function ReadingScenario({ controls }: ScenarioProps) {
           <Prose className="text-sm/relaxed">
             <p>Prose with its own size</p>
           </Prose>
-          <Shell>
+          {/* Each panel takes its content height, so one capture holds all three
+              within the screenshot size limit. */}
+          <Shell className="min-h-0!">
             <ShellHeader>
               <ShellHeaderStart>
                 <span>Automatic panel header</span>
@@ -140,7 +142,7 @@ export function ReadingScenario({ controls }: ScenarioProps) {
               </ShellMainBody>
             </ShellMain>
           </Shell>
-          <Shell $size="lg">
+          <Shell $size="lg" className="min-h-0!">
             <ShellHeader>
               <ShellHeaderStart>
                 <span>Large panel header</span>
@@ -154,7 +156,7 @@ export function ReadingScenario({ controls }: ScenarioProps) {
               </ShellMainBody>
             </ShellMain>
           </Shell>
-          <Shell>
+          <Shell className="min-h-0!">
             <ShellHeader>
               <ShellHeaderStart>
                 <span>Sized panel header</span>
