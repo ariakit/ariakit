@@ -50,25 +50,27 @@ export const segment = cv({
   },
   defaultVariants: {
     // Computed defaults run after static ones, so these replace the defaults of
-    // extenders, such as a tab. Caller values still win.
-    $layer(defaultValue, variants) {
-      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+    // extenders, such as a tab. Caller values still win. Other kinds keep the
+    // resolved value, because defaultValue would undo the computed default of
+    // an extender, such as the field surface of a comboboxSelect.
+    $layer(_defaultValue, variants) {
+      if (!isSegmentedKind(variants.$kind)) return variants.$layer;
       return "var(--segmented-surface)";
     },
-    $lightnessOffset(defaultValue, variants) {
-      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+    $lightnessOffset(_defaultValue, variants) {
+      if (!isSegmentedKind(variants.$kind)) return variants.$lightnessOffset;
       return false;
     },
-    $selectedPush(defaultValue, variants) {
-      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+    $selectedPush(_defaultValue, variants) {
+      if (!isSegmentedKind(variants.$kind)) return variants.$selectedPush;
       return false;
     },
     $selectedShadow(defaultValue, variants) {
-      if (variants.$kind !== "segmented-flat") return defaultValue;
+      if (variants.$kind !== "segmented-flat") return variants.$selectedShadow;
       return defaultValue ?? true;
     },
-    $lighten(defaultValue, variants) {
-      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+    $lighten(_defaultValue, variants) {
+      if (!isSegmentedKind(variants.$kind)) return variants.$lighten;
       if (variants.$layer !== "var(--segmented-surface)") return false;
       if (variants.$invert) return false;
       // An offset darkens the thumb on light surfaces, so it replaces the lift.
@@ -76,17 +78,17 @@ export const segment = cv({
       return true;
     },
     $rounded(defaultValue, variants) {
-      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+      if (!isSegmentedKind(variants.$kind)) return variants.$rounded;
       if (defaultValue !== "unset") return defaultValue;
       return "md";
     },
     // The edge shows only in high contrast, unless the caller sets a weight.
     $border(defaultValue, variants) {
-      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+      if (!isSegmentedKind(variants.$kind)) return variants.$border;
       return defaultValue ?? true;
     },
     $edgeWeight(defaultValue, variants) {
-      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+      if (!isSegmentedKind(variants.$kind)) return variants.$edgeWeight;
       return defaultValue ?? "adaptive";
     },
   },
@@ -165,29 +167,29 @@ export const segmentGroup = cv({
     },
   },
   defaultVariants: {
-    $layer(defaultValue, variants) {
-      if (variants.$kind !== "segmented") return defaultValue;
+    $layer(_defaultValue, variants) {
+      if (variants.$kind !== "segmented") return variants.$layer;
       return true;
     },
     $darken(defaultValue, variants) {
-      if (variants.$kind !== "segmented") return defaultValue;
+      if (variants.$kind !== "segmented") return variants.$darken;
       // Replaces the default of extenders, such as a tab list.
       if (variants.$layer !== true) return false;
       return defaultValue ?? 0.5;
     },
     // The group clips at its padding box, and a focus ring reaches 3px past a
     // segment at any text size, so this is the smallest padding that fits it.
-    $p(defaultValue, variants) {
-      if (variants.$kind !== "segmented") return defaultValue;
+    $p(_defaultValue, variants) {
+      if (variants.$kind !== "segmented") return variants.$p;
       return "3px";
     },
     $border(defaultValue, variants) {
-      if (variants.$kind !== "segmented") return defaultValue;
+      if (variants.$kind !== "segmented") return variants.$border;
       // The edge is all that marks a group without a surface.
       return defaultValue ?? variants.$layer === "transparent";
     },
     $edgeWeight(defaultValue, variants) {
-      if (variants.$kind !== "segmented") return defaultValue;
+      if (variants.$kind !== "segmented") return variants.$edgeWeight;
       if (variants.$edgeRaw) return defaultValue;
       return defaultValue ?? "light";
     },
