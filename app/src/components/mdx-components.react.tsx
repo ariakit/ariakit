@@ -36,8 +36,22 @@ function H4(props: ComponentProps<"h4">) {
   return <Heading render={<h4 />} className={headingClass} {...props} />;
 }
 
+// Absolute and protocol-relative URLs leave the site. Relative paths,
+// fragments, and other schemes such as mailto: stay in the current tab.
+const externalHrefPattern = /^(?:https?:)?\/\//i;
+
+function isExternalHref(href?: string) {
+  if (!href) return false;
+  return externalHrefPattern.test(href);
+}
+
+// External links open in a new tab without giving the destination page access
+// to window.opener or the referrer. Explicit props still take precedence.
 function A(props: ComponentProps<"a">) {
-  return <Link {...props} />;
+  if (!isExternalHref(props.href)) {
+    return <Link {...props} />;
+  }
+  return <Link target="_blank" rel="noopener noreferrer" {...props} />;
 }
 
 function Keycap(props: ComponentProps<"kbd">) {
