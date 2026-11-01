@@ -74,13 +74,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
               list: link.closest("ul, ol"),
               bottom: Math.round(bottom * devicePixelRatio),
               column: columns.join(),
+              columnCount: columns.length,
             };
           });
           const found: string[] = [];
           const firstRows = new Map<Element | null, (typeof rows)[number]>();
           for (const [index, row] of rows.entries()) {
-            if (!row.column) {
-              found.push(`${row.name} has no guide`);
+            if (row.columnCount !== 1) {
+              found.push(`${row.name} paints columns [${row.column}]`);
             }
             const first = firstRows.get(row.list) ?? row;
             firstRows.set(row.list, first);
