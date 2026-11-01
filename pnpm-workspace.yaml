@@ -18,6 +18,7 @@ allowBuilds:
   workerd: true
 
 minimumReleaseAgeExclude:
+  - clava@0.7.2
   - rolldown-plugin-react-forward-ref@0.2.0
   - "@visonaut/playwright"
   - visonaut
