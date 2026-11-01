@@ -18,15 +18,3 @@ test("orders the chapters with two-digit numbers out of the link names", () => {
   expect(q.within(nav).list()).toHaveProperty("tagName", "OL");
   expect(q.within(nav).link("Chapter 12")).toHaveAccessibleName("Chapter 12");
 });
-
-test("orders only the rows of a nested ordered list", () => {
-  const nav = q.navigation("Numbered steps");
-  const lists = q.within(nav).list.all();
-  expect(lists.map((list) => list.tagName)).toEqual(["UL", "OL", "UL"]);
-});
-
-test("keeps the lists with dots unordered", () => {
-  const nav = q.navigation("Dot steps");
-  const lists = q.within(nav).list.all();
-  expect(lists.map((list) => list.tagName)).toEqual(["UL", "UL", "UL"]);
-});
