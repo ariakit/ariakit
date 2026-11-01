@@ -177,6 +177,34 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(glide.rings).toEqual(glide.ranges);
   });
 
+  test("ends the bends on the edges of the lines they join", async ({ q }) => {
+    const nav = q.navigation("Dot steps");
+    const edges = await nav.evaluate((element) => {
+      const getEnd = (name: string, pseudo: string) => {
+        const links = [...element.querySelectorAll("a")];
+        const link = links.find((item) => item.textContent === name);
+        const guide = link?.querySelector(".toc-link-guide");
+        if (!guide) return Number.NaN;
+        const inset = getComputedStyle(guide, pseudo).insetInlineEnd;
+        return guide.getBoundingClientRect().right - Number.parseFloat(inset);
+      };
+      return {
+        bendIn: getEnd("Install", "::after"),
+        lineAfterBendIn: getEnd("Configure", "::after"),
+        bendOut: getEnd("Deploy", "::before"),
+        lineBeforeBendOut: getEnd("Theme", "::after"),
+      };
+    });
+    // A display rounds each edge to a device pixel, so edges that differ by a
+    // fraction can land on different pixels. The rows have half pixels at this
+    // scale, where a difference shows. Fractional scales also snap the borders,
+    // which this geometry can't show.
+    test.expect(edges.bendIn).toBeGreaterThan(0);
+    test.expect(edges.bendOut).toBeGreaterThan(0);
+    test.expect(edges.bendIn).toBe(edges.lineAfterBendIn);
+    test.expect(edges.bendOut).toBe(edges.lineBeforeBendOut);
+  });
+
   test("changes the colors of the markers at once with the theme", async ({
     page,
     q,
