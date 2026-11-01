@@ -20,7 +20,7 @@ const CONTROL_HEIGHT = 40;
 const PART_PADDING = 12;
 const HEADER_BORDER = 1;
 const HEADER_HEIGHT = CONTROL_HEIGHT + PART_PADDING * 2;
-const CONTENT_WIDTH = 640;
+const CONTENT_WIDTH = 672;
 // The shell's motion duration.
 const DURATION = 300;
 

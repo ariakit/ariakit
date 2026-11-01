@@ -26,8 +26,8 @@ export const shell = cv({
     "grid-rows-[[shell-start_header-start]_auto_[header-end_main-start_main-header-start]_auto_[main-header-end_intro-start]_auto_[intro-end_body-start]_minmax(0,1fr)_[body-end_footer-start]_auto_[footer-end_shell-end]]",
     "[--shell-start-1-width:0px] [--shell-start-2-width:0px]",
     "[--shell-end-1-width:0px] [--shell-end-2-width:0px]",
-    // Without a main size, Prose is 1rem, so this is 40em of its text.
-    "[--shell-header-height:0px] [--shell-main-max-width:40rem]",
+    // Without a main size, Prose is 1rem, so this is 42em of its text.
+    "[--shell-header-height:0px] [--shell-main-max-width:42rem]",
     // A shell inside a sized main doesn't pass that size on to its Prose.
     "[.shell-main-sized_&]:[--prose-size:initial]",
     "[--shell-duration:300ms] [--shell-motion:1] motion-reduce:[--shell-motion:0]",
@@ -685,7 +685,7 @@ const contentVariants = {
   },
   /**
    * Sets the maximum width of a centered content column. Numbers scale the
-   * spacing token. Defaults to 40rem, or 40em when `ShellMain` sets `$size`.
+   * spacing token. Defaults to 42rem, or 42em when `ShellMain` sets `$size`.
    */
   $maxWidth(value?: ShellWidth) {
     if (value == null) return;
@@ -713,7 +713,7 @@ const contentVariants = {
 // The registered width resolves against main's own text, so every part keeps
 // the same column. An unregistered 1em follows the parent where Prose reads it.
 const sizedMain = cx(
-  "shell-main-sized [--prose-size:1em] [--shell-main-max-width:40em]",
+  "shell-main-sized [--prose-size:1em] [--shell-main-max-width:42em]",
 );
 
 /**
@@ -736,7 +736,7 @@ export const shellMain = cv({
   ],
   variants: {
     /**
-     * Sets the text size of main and a column of 40em, and `Prose` inside main
+     * Sets the text size of main and a column of 42em, and `Prose` inside main
      * follows that text. Bars and sidebars keep the shell's size. `auto` leaves
      * the shell's text and the shell's column, and `Prose` stays at 1rem. A
      * shell inside a sized main doesn't pass the size on. Defaults to `auto`.
@@ -780,7 +780,7 @@ export const shellMain = cv({
      * Sets the shared maximum content width. Numbers scale the spacing token.
      * Parts can override it with `$maxWidth`. Prefer lengths for alignment:
      * percentages resolve against each part, and header or intro widths can
-     * include sidebars. Defaults to 40rem, or 40em with `$size`.
+     * include sidebars. Defaults to 42rem, or 42em with `$size`.
      */
     $maxWidth(value?: ShellWidth) {
       return contentVariants.$maxWidth(value);

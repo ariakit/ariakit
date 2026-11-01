@@ -394,7 +394,7 @@ body > * {
 @property --shell-main-max-width {
   syntax: "<length-percentage>";
   inherits: true;
-  initial-value: 640px;
+  initial-value: 672px;
 }
 
 /* Animate occupied sidebar widths to keep main content centered during folding.

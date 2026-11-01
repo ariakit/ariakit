@@ -4,7 +4,7 @@ import { gotoAndSettle } from "#app/test-utils/preview.ts";
 
 test.use({ viewport: { width: 1440, height: 900 } });
 
-test("reading pages set large text in a 40em column beside smaller bars", async ({
+test("reading pages set large text in a 42em column beside smaller bars", async ({
   page,
   q,
 }) => {
@@ -12,7 +12,7 @@ test("reading pages set large text in a 40em column beside smaller bars", async 
   const prose = q.main().locator(":scope > .shell-main-body > .prose");
   await expect(prose).toHaveCSS("font-size", "18px");
   await expect(prose).toHaveCSS("row-gap", "22.5px");
-  await expect(prose).toHaveCSS("width", "720px");
+  await expect(prose).toHaveCSS("width", "756px");
   await expect(q.navigation("Site")).toHaveCSS("font-size", "14px");
   await expect(q.banner()).toHaveCSS("font-size", "14px");
 });
@@ -56,7 +56,7 @@ for (const { name, path } of [
   { name: "guide code", path: "/react/components/styling/" },
   { name: "API reference types", path: "/react/components/separator/" },
 ]) {
-  test(`${name} wraps inside the 40em column`, async ({ page, q }) => {
+  test(`${name} wraps inside the 42em column`, async ({ page, q }) => {
     await gotoAndSettle(page, path);
     const body = q.main().locator(":scope > .shell-main-body");
     // The body clips its overflow, so a long line that leaves its block shows

@@ -260,7 +260,7 @@ export interface ShellMainProps
  * Percentages depend on each part's width and can misalign wider headers or
  * intros. Parts can override `$maxWidth`.
  *
- * `$size` sets the text size of main and a 40em column, so line length stays
+ * `$size` sets the text size of main and a 42em column, so line length stays
  * the same at every size. `Prose` follows it, and bars and sidebars keep the
  * shell's size. Other text and unsized controls in main grow with it, so use it
  * for reading pages. A nested shell doesn't take the size. With `$size`, define

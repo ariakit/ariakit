@@ -9,22 +9,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await selectScenario(q, "reading");
   });
 
-  test("keeps the shell's text and a 40rem column without a main size", async ({
+  test("keeps the shell's text and a 42rem column without a main size", async ({
     q,
   }) => {
     await expect(q.text("Body prose")).toHaveCSS("font-size", "16px");
     await expect(q.text("Plain text")).toHaveCSS("font-size", "14px");
     await expect(q.button("Unsized button")).toHaveCSS("font-size", "14px");
     await expect(q.text("Page header")).toHaveCSS("font-size", "14px");
-    expect((await getBox(q.text("Body prose"))).width).toBeCloseTo(640, 0);
+    expect((await getBox(q.text("Body prose"))).width).toBeCloseTo(672, 0);
   });
 
   for (const { size, text, column } of [
-    { size: "sm", text: 14, column: 560 },
-    { size: "md", text: 16, column: 640 },
-    { size: "lg", text: 18, column: 720 },
+    { size: "sm", text: 14, column: 588 },
+    { size: "md", text: 16, column: 672 },
+    { size: "lg", text: 18, column: 756 },
   ]) {
-    test(`sets main's text and a 40em column at ${size}, and bars keep the shell's text`, async ({
+    test(`sets main's text and a 42em column at ${size}, and bars keep the shell's text`, async ({
       q,
     }) => {
       await q.combobox("Main size").selectOption(size);
@@ -55,8 +55,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const intro = await getBox(q.text("Intro prose"));
     const body = await getBox(q.text("Body prose"));
     expect(intro.x).toBeCloseTo(body.x, 0);
-    expect(intro.width).toBeCloseTo(720, 0);
-    expect(body.width).toBeCloseTo(720, 0);
+    expect(intro.width).toBeCloseTo(756, 0);
+    expect(body.width).toBeCloseTo(756, 0);
   });
 
   test("follows the text around Prose unless Prose sets its own size", async ({
