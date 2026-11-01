@@ -8,6 +8,11 @@ export const code = cv({
   class: [
     // Keep a consistent x-height across platform monospace fonts.
     "font-mono [font-size-adjust:0.48]",
+    // An inherited line height centers on this font's metrics, not those of the
+    // surrounding text, which makes the line taller. An inline chip paints from
+    // the font box and keeps its size, but a flex item or block gets shorter.
+    // Use zero specificity so line-height utilities can override.
+    "[:where(&)]:leading-none",
     "px-1 py-[0.18em] rounded ring",
     // A layer supplies the edge channel; raw edges keep their full opacity.
     "ring-(--ak-edge)",
