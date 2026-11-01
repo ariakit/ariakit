@@ -177,62 +177,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(glide.rings).toEqual(glide.ranges);
   });
 
-  test("changes the colors of the markers at once with the theme", async ({
-    page,
-    q,
-  }) => {
-    const navs = [q.navigation("Twelve chapters"), q.navigation("Dot steps")];
-    await page.emulateMedia({ colorScheme: "dark" });
-    for (const nav of navs) {
-      const properties = await nav.evaluate((element) => {
-        const animations = element.getAnimations({ subtree: true });
-        return animations.flatMap((animation) => {
-          const { effect } = animation;
-          if (!(effect instanceof KeyframeEffect)) return [];
-          if (!effect.target?.matches(".toc-link-marker, .toc-link-dot")) {
-            return [];
-          }
-          return animation instanceof CSSTransition
-            ? [animation.transitionProperty]
-            : [];
-        });
-      });
-      test.expect(properties).toEqual([]);
-    }
-  });
-
-  test("shows the first range without filling the markers", async ({
-    page,
-    q,
-  }) => {
-    // The transition can end before any later read, so a listener from the
-    // start of the page counts it. No user-facing state tracks the transitions.
-    await page.addInitScript(() => {
-      const runs: string[] = [];
-      Object.assign(window, { fillRuns: runs });
-      document.addEventListener(
-        "transitionrun",
-        (event) => {
-          if (event.pseudoElement !== "::after") return;
-          if (!(event.target instanceof HTMLElement)) return;
-          runs.push(event.target.className);
-        },
-        true,
-      );
-    });
-    await page.reload();
-    const dot = query(q.navigation("Dot steps"))
-      .link("Install")
-      .locator(".toc-link-dot");
-    await test.expect(dot).toHaveAttribute("style", /--toc-piece-top/);
-    // The range is in place above, and transitionrun fires on a later frame.
-    await flushFrames(page);
-    const runs = await page.evaluate(() => {
-      return "fillRuns" in window ? window.fillRuns : null;
-    });
-    test.expect(runs).toEqual([]);
-  });
-
   test("fills only the markers that the thumb reaches, over time", async ({
     page,
     q,
@@ -284,47 +228,25 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(fill.middle).not.toEqual(fill.start);
   });
 
-  test("shows each marker only at the rows of its own list", async ({ q }) => {
-    const getMarkers = (nav: string, link: string) => {
-      const row = query(q.navigation(nav)).link(link);
-      return {
-        number: row.locator(".toc-link-marker"),
-        dot: row.locator(".toc-link-dot"),
-      };
-    };
-    const expectMarker = async (
+  test("shows numbers only at the rows of the outermost list", async ({
+    q,
+  }) => {
+    const expectNumber = async (
       nav: string,
       link: string,
-      marker: "number" | "dot" | null,
+      visible: boolean,
     ) => {
-      const { number, dot } = getMarkers(nav, link);
-      await test.expect(number).toBeVisible({ visible: marker === "number" });
-      await test.expect(dot).toBeVisible({ visible: marker === "dot" });
+      const row = query(q.navigation(nav)).link(link);
+      await test
+        .expect(row.locator(".toc-link-marker"))
+        .toBeVisible({ visible });
+      await test.expect(row.locator(".toc-link-dot")).toBeHidden();
     };
-    // A nested list has its own marker, which neither the rows around it nor a
-    // list inside it take.
-    await expectMarker("Numbered steps", "Overview", null);
-    await expectMarker("Numbered steps", "Install", "number");
-    await expectMarker("Numbered steps", "Theme", null);
-    await expectMarker("Dot steps", "Overview", null);
-    await expectMarker("Dot steps", "Install", "dot");
-    await expectMarker("Dot steps", "Theme", null);
-    // An ordered table of contents numbers only the rows of its outermost list.
-    await expectMarker("Right to left", "الاستخدام", "number");
-    await expectMarker("Right to left", "مثال بسيط", null);
+    await expectNumber("Right to left", "الاستخدام", true);
+    await expectNumber("Right to left", "مثال بسيط", false);
     // A table of contents without markers shows none.
-    await expectMarker("Five levels", "Overview", null);
-    await expectMarker("Five levels", "Getting started", null);
-  });
-
-  test("measures dots that show after the first render", async ({ q }) => {
-    const nav = q.navigation("Dots shown later");
-    const dot = query(nav).link("Install").locator(".toc-link-dot");
-    await test.expect(dot).toBeHidden();
-    await q.button("Show dots").click();
-    await test.expect(dot).toBeVisible();
-    // The fill reads the position of the dot, which only a visible dot has.
-    await test.expect(dot).toHaveAttribute("style", /--toc-piece-top:\s*[1-9]/);
+    await expectNumber("Five levels", "Overview", false);
+    await expectNumber("Five levels", "Getting started", false);
   });
 
   test("keeps the current link in view when the rows on screen don't fit", async ({

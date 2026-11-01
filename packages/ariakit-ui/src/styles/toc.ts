@@ -289,6 +289,10 @@ const tocLinkPiece = cv({
     // that corner: the lower curve of a bend out wraps the top of this row, and
     // the upper curve of a bend in wraps the bottom of the row before it.
     "[--toc-bend-lower:calc(0.5+0.15*(var(--toc-outward)-var(--toc-in)))]",
+    // At whole scales, a whole number of pixels gives both curves one exact edge.
+    // Fractions could round to an overlap, which darkens a pixel of a translucent
+    // guide. The span leaves room for the border of the other curve.
+    "[--toc-bend-lower-width:min(var(--toc-span),round(calc((var(--toc-span)+var(--toc-line))*var(--toc-bend-lower)),1px))]",
     // The rail keeps the guide of the outermost list at every level.
     "[--toc-x:calc(-1*var(--toc-guide-offset,0px)-(1-var(--toc-bends,1))*var(--toc-depth,0)*var(--toc-indent))]",
     "top-[calc(var(--toc-joint)-(1-var(--toc-first))*var(--toc-bend-height))]",
@@ -302,8 +306,12 @@ const tocLinkPiece = cv({
     // line. A diagonal bend is one slanted line instead. A straight piece
     // leaves it empty.
     "before:absolute before:top-0 before:box-border before:border-solid before:border-(--toc-line-color)",
-    "before:inset-s-[calc(var(--toc-outward)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line))*var(--toc-bend-lower)+(1-var(--toc-curve))*var(--toc-span)))]",
-    "before:w-[calc(var(--toc-curve)*(var(--toc-span)+var(--toc-line))*(1-var(--toc-bend-lower)))]",
+    // An inset, not a width, ends a curve at the edge of the piece, which is the
+    // edge of the line in the next level. A sum of rounded lengths could round
+    // to another device pixel. A slanted line keeps a box as wide as its border,
+    // which is where it rotates.
+    "before:inset-s-[calc(var(--toc-outward)*(var(--toc-curve)*var(--toc-bend-lower-width)+(1-var(--toc-curve))*var(--toc-span)))]",
+    "before:inset-e-[calc((1-var(--toc-curve)*var(--toc-outward))*(var(--toc-curve)*var(--toc-bend-lower-width)+(1-var(--toc-curve))*(var(--toc-span)+var(--toc-line))))]",
     "before:h-[calc(var(--toc-curve)*(var(--toc-bend-height)+var(--toc-line))*(1-var(--toc-bend-lower))+(1-var(--toc-curve))*var(--toc-bent)*hypot(var(--toc-span),var(--toc-bend-height)))]",
     "before:border-s-[calc(var(--toc-line)*(var(--toc-curve)*var(--toc-in)+(1-var(--toc-curve))*var(--toc-bent)))]",
     "before:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-outward))]",
@@ -316,13 +324,13 @@ const tocLinkPiece = cv({
     // the line along it. Other pieces draw only the line.
     "after:absolute after:bottom-0 after:box-border after:border-solid after:border-(--toc-line-color)",
     "after:top-[calc(var(--toc-bent)*(var(--toc-curve)*((var(--toc-bend-height)+var(--toc-line))*(1-var(--toc-bend-lower))-var(--toc-line))+(1-var(--toc-curve))*var(--toc-bend-height)))]",
-    "after:inset-s-[calc(var(--toc-in)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line))*(1-var(--toc-bend-lower))+(1-var(--toc-curve))*var(--toc-span)))]",
-    "after:w-[calc(var(--toc-curve)*max(var(--toc-line),(var(--toc-span)+var(--toc-line))*var(--toc-bend-lower)))]",
+    "after:inset-s-[calc(var(--toc-in)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line)-var(--toc-bend-lower-width))+(1-var(--toc-curve))*var(--toc-span)))]",
+    "after:inset-e-[calc((1-var(--toc-in))*(var(--toc-span)+var(--toc-line)-var(--toc-curve)*max(var(--toc-line),var(--toc-bend-lower-width))))]",
     "after:border-bs-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
     "after:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-in))]",
     "after:border-s-[calc(var(--toc-line)*(1-var(--toc-curve)*var(--toc-in)))]",
-    "after:rounded-se-[calc(var(--toc-curve)*var(--toc-in)*(var(--toc-span)+var(--toc-line))*var(--toc-bend-lower))_calc(var(--toc-curve)*var(--toc-in)*(var(--toc-bend-height)+var(--toc-line))*var(--toc-bend-lower))]",
-    "after:rounded-ss-[calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-span)+var(--toc-line))*var(--toc-bend-lower))_calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-bend-height)+var(--toc-line))*var(--toc-bend-lower))]",
+    "after:rounded-se-[calc(var(--toc-curve)*var(--toc-in)*var(--toc-bend-lower-width))_calc(var(--toc-curve)*var(--toc-in)*(var(--toc-bend-height)+var(--toc-line))*var(--toc-bend-lower))]",
+    "after:rounded-ss-[calc(var(--toc-curve)*var(--toc-outward)*var(--toc-bend-lower-width))_calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-bend-height)+var(--toc-line))*var(--toc-bend-lower))]",
   ],
 });
 

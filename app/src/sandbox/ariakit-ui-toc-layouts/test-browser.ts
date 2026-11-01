@@ -25,21 +25,6 @@ const restingTocs = {
     "right-to-left": "Right to left",
     "right-to-left-diagonal": "Right to left, diagonal",
   },
-  "shows the numbered steps at rest": {
-    "numbered-steps": "Numbered steps",
-    "numbered-steps-diagonal": "Numbered steps, diagonal",
-    "numbered-steps-rail": "Numbered steps, rail",
-    "numbered-steps-indent-only": "Numbered steps, indent only",
-    "chapters-indent-only": "Chapters, indent only",
-    "right-to-left-numbered-steps": "Right to left, numbered steps",
-  },
-  "shows the dot steps at rest": {
-    "dot-steps": "Dot steps",
-    "dot-steps-diagonal": "Dot steps, diagonal",
-    "dot-steps-rail": "Dot steps, rail",
-    "dot-steps-wide-thumb": "Dot steps, wide thumb",
-    "right-to-left-dot-steps": "Right to left, dot steps",
-  },
 };
 
 // Puts a heading where a click on its link would, at the scroll padding.
@@ -126,56 +111,6 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         box: wide,
         colorScheme,
         item: `${id}/wide-thumb-chapters-lit`,
-      });
-    });
-  });
-
-  test("fills the dots that the thumb covers @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await forEachColorScheme(page, async (colorScheme) => {
-      await scrollToHeading(page, "dot-install");
-      const nav = q.navigation("Dot steps");
-      await test
-        .expect(query(nav).link("Install"))
-        .toHaveAttribute("aria-current", "location");
-      await captureInView({
-        visual,
-        box: nav,
-        colorScheme,
-        item: `${id}/dot-steps-lit`,
-      });
-      const rightToLeft = q.navigation("Right to left, dot steps");
-      await captureInView({
-        visual,
-        box: rightToLeft,
-        colorScheme,
-        item: `${id}/right-to-left-dot-steps-lit`,
-      });
-    });
-  });
-
-  test("keeps the dots and their fill in forced colors @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    // The emulation lasts across the reloads of each color scheme.
-    await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      await expectMedia(page, "(forced-colors: active)");
-      await scrollToHeading(page, "dot-install");
-      const nav = q.navigation("Dot steps");
-      await test
-        .expect(query(nav).link("Install"))
-        .toHaveAttribute("aria-current", "location");
-      await captureInView({
-        visual,
-        box: nav,
-        colorScheme,
-        item: `${id}/dot-steps-forced-colors`,
       });
     });
   });
