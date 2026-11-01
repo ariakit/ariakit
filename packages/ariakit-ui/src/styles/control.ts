@@ -32,6 +32,9 @@ export const control = cv({
     "ui-hover:ak-frame-join-active ui-selected:ak-frame-join-active ui-focus-visible:ak-frame-join-active",
     // Bars measure from the border edge, but frame borders do not inherit.
     "[--control-border:var(--ak-frame-border)]",
+    // Only the items of a stretched group take its side padding, not the badges
+    // and controls inside their slots.
+    "*:[--stretch-px-scale:initial]",
   ],
   variants: {
     /** Sets the element’s disabled state. */
@@ -700,8 +703,13 @@ export const controlGroup = cv({
     $layout: {
       none: "",
       wrap: "flex flex-wrap",
-      stretch:
+      stretch: [
         "flex w-full [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow",
+        // Centered items have free space, where a label outweighs its icon.
+        // More side padding pulls the icon further, which moves the row toward
+        // it.
+        "[&>.control]:[--stretch-px-scale:0.75]",
+      ],
       horizontal: "flex",
       vertical: "vertical flex flex-col [&>.control]:justify-start",
     },

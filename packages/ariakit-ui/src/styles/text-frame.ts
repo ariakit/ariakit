@@ -11,13 +11,14 @@ export const textFrame = cv({
   variants: {
     /**
      * Sets side padding. Named sizes scale the optical extra added to frame
-     * padding; other CSS values replace the full side padding. Ignored when
-     * `$p` is `"none"`.
+     * padding; other CSS values replace the full side padding. A control group
+     * with `$layout="stretch"` makes `md` as wide as `lg`. Ignored when `$p` is
+     * `"none"`.
      */
     $px(value?: "sm" | "md" | "lg" | "xl" | "2xl" | (string & {})) {
       if (value == null) return;
       if (value === "sm") return "[--px-scale:0]";
-      if (value === "md") return "[--px-scale:0.5]";
+      if (value === "md") return "[--px-scale:var(--stretch-px-scale,0.5)]";
       if (value === "lg") return "[--px-scale:0.75]";
       if (value === "xl") return "[--px-scale:1.25]";
       if (value === "2xl") return "[--px-scale:1.5]";

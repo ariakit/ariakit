@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonGroup,
@@ -26,9 +27,11 @@ import type {
 } from "@ariakit/ui/components/radio.ariakit.react";
 import {
   Tab,
+  TabLabel,
   TabList,
   TabPanel,
   TabProvider,
+  TabSlot,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { Columns3Icon, LayoutGridIcon, ListIcon } from "lucide-react";
@@ -232,6 +235,59 @@ export default function SegmentedControlExamples() {
       </Example>
 
       <Example
+        title="Stretched with explicit padding"
+        description="A named side padding replaces the default of a stretched group."
+        code={`
+          <RadioGroup $kind="segmented" $layout="stretch">
+            <RadioCard $kind="segmented" $px="sm" />
+          </RadioGroup>
+        `}
+        stretch
+      >
+        <Segments
+          name="Explicit padding"
+          content="both"
+          $layout="stretch"
+          item={{ $px: "sm" }}
+        />
+      </Example>
+
+      <Example
+        title="Stretched with a badge"
+        description="A badge in a slot keeps its side padding, which doesn't follow the default of a stretched group."
+        code={`
+          <RadioGroup $kind="segmented" $layout="stretch">
+            <RadioCard $kind="segmented">
+              <RadioCardLabel>Yearly</RadioCardLabel>
+              <RadioCardSlot $kind="box">
+                <Badge $rounded="md" />
+              </RadioCardSlot>
+            </RadioCard>
+          </RadioGroup>
+        `}
+        stretch
+      >
+        <RadioGroup
+          aria-label="Badge in a slot"
+          defaultValue="Yearly"
+          $kind="segmented"
+          $layout="stretch"
+        >
+          <RadioCard value="Monthly" $kind="segmented">
+            <RadioCardLabel>Monthly</RadioCardLabel>
+          </RadioCard>
+          <RadioCard value="Yearly" $kind="segmented">
+            <RadioCardLabel>Yearly</RadioCardLabel>
+            <RadioCardSlot $kind="box">
+              <Badge $layer="success" $rounded="md">
+                -20%
+              </Badge>
+            </RadioCardSlot>
+          </RadioCard>
+        </RadioGroup>
+      </Example>
+
+      <Example
         title="Disabled selection"
         description="A checked and disabled segment keeps its thumb."
         code={`<RadioCard value="list" disabled $kind="segmented" />`}
@@ -306,6 +362,37 @@ export default function SegmentedControlExamples() {
             $kind="segmented"
             $layout="stretch"
           />
+        </TabProvider>
+      </Example>
+
+      <Example
+        title="Stretched tabs with icons"
+        description="A row with an icon and a label moves toward the icon, like the segments of a stretched group."
+        code={`
+          <TabList $kind="segmented" $layout="stretch">
+            <Tab $kind="segmented">
+              <TabSlot><Icon /></TabSlot>
+              <TabLabel>Label</TabLabel>
+            </Tab>
+          </TabList>
+        `}
+        stretch
+      >
+        <TabProvider defaultSelectedId="list-view">
+          <TabList aria-label="View" $kind="segmented" $layout="stretch">
+            {views.map(({ label, Icon }) => (
+              <Tab
+                key={label}
+                id={`${label.toLowerCase()}-view`}
+                $kind="segmented"
+              >
+                <TabSlot>
+                  <Icon aria-hidden />
+                </TabSlot>
+                <TabLabel>{label}</TabLabel>
+              </Tab>
+            ))}
+          </TabList>
         </TabProvider>
       </Example>
 
