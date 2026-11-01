@@ -8,6 +8,7 @@ import {
   useDescription,
   useLabelDescription,
 } from "../react-utils/use-description.react.ts";
+import { buttonGroup } from "../styles/button.ts";
 import {
   radio,
   radioCard,
@@ -22,8 +23,10 @@ import {
   radioDescription,
   radioField,
   radioGroupLabel,
+  radioGroupStack,
   radioLabel,
 } from "../styles/radio.ts";
+import { isSegmentedKind } from "../styles/segment.ts";
 
 export interface RadioProviderProps extends ak.RadioProviderProps {}
 
@@ -49,7 +52,8 @@ export interface RadioGroupProps
     Pick<
       ak.RadioProviderProps,
       "store" | "value" | "defaultValue" | "setValue"
-    > {
+    >,
+    VariantProps<typeof buttonGroup> {
   /**
    * Label content, a custom element, or `RadioGroupLabel` props. The label
    * names the group. Omitted by default; use `aria-label` or `aria-labelledby`
@@ -61,11 +65,20 @@ export interface RadioGroupProps
 /**
  * Groups `Radio` components and provides their store, which holds the selected
  * value. Pass `value` and `setValue` to control it, or `store` to sync it with
- * a store from `useRadioStore`.
+ * a store from `useRadioStore`. With `$kind="segmented"`, it lays out
+ * `RadioCard`s with the same kind as a segmented control, and the other variant
+ * props style the group. They have no effect on other groups. A `label` then
+ * goes above the segments, and `className` and `style` go on the element that
+ * holds both.
  * @example
  * <RadioGroup label="Contact method" defaultValue="email">
  *   <RadioField value="email">Email</RadioField>
  *   <RadioField value="phone">Phone</RadioField>
+ * </RadioGroup>
+ * @example
+ * <RadioGroup label="View" defaultValue="list" $kind="segmented">
+ *   <RadioCard value="list" $kind="segmented">List</RadioCard>
+ *   <RadioCard value="grid" $kind="segmented">Grid</RadioCard>
  * </RadioGroup>
  */
 export function RadioGroup({
@@ -77,6 +90,33 @@ export function RadioGroup({
   children,
   ...props
 }: RadioGroupProps) {
+  const [variantProps, rest] = splitProps(props, buttonGroup);
+  const { className, style, ...variants } = variantProps;
+  const labelElement = createOptionalRender(RadioGroupLabel, label);
+  const content = () => {
+    // Other kinds add no styles, so callers lay out the group themselves.
+    if (variants.$kind !== "segmented") {
+      return (
+        <ak.RadioGroup className={className} style={style} {...rest}>
+          {labelElement}
+          {children}
+        </ak.RadioGroup>
+      );
+    }
+    if (!labelElement) {
+      return (
+        <ak.RadioGroup {...buttonGroup.jsx(variantProps)} {...rest}>
+          {children}
+        </ak.RadioGroup>
+      );
+    }
+    return (
+      <ak.RadioGroup {...radioGroupStack.jsx({ className, style })} {...rest}>
+        {labelElement}
+        <div {...buttonGroup.jsx(variants)}>{children}</div>
+      </ak.RadioGroup>
+    );
+  };
   return (
     <ak.RadioProvider
       store={store}
@@ -84,10 +124,7 @@ export function RadioGroup({
       defaultValue={defaultValue}
       setValue={setValue}
     >
-      <ak.RadioGroup {...props}>
-        {createOptionalRender(RadioGroupLabel, label)}
-        {children}
-      </ak.RadioGroup>
+      {content()}
     </ak.RadioProvider>
   );
 }
@@ -220,7 +257,10 @@ export interface RadioCardProps
  * A selectable card with a visually hidden radio input, styled from its checked
  * and disabled state. The card's content names the radio, and a
  * `RadioCardDescription` describes it before any `aria-describedby` passed to
- * the card. Use it inside a `RadioGroup` or `RadioCardGrid`.
+ * the card. Use it inside a `RadioGroup` or `RadioCardGrid`. With
+ * `$kind="segmented"` or `$kind="segmented-flat"`, it is a segment of a
+ * `RadioGroup` with `$kind="segmented"`, and a `Tooltip` around it anchors to
+ * the whole segment.
  * @example
  * <RadioCardGrid aria-label="Contact method">
  *   <RadioCard value="email">Email</RadioCard>
@@ -230,14 +270,19 @@ export interface RadioCardProps
 export function RadioCard({ children, ...props }: RadioCardProps) {
   const [variantProps, rest] = splitProps(props, radioCard);
   const { id, describedBy, context } = useLabelDescription(rest);
-  // Labels cannot match :disabled, so mirror the input state.
+  // Labels cannot match :disabled, so mirror the input state. A segment reads
+  // it from the input instead, because the variant removes the surface of the
+  // thumb, which is the only mark of a checked segment.
+  const disabled = isSegmentedKind(variantProps.$kind)
+    ? undefined
+    : rest.disabled;
   return (
     <DescriptionContext.Provider value={context}>
       <label
         htmlFor={id}
         {...radioCard.jsx({
           ...variantProps,
-          $disabled: variantProps.$disabled ?? rest.disabled,
+          $disabled: variantProps.$disabled ?? disabled,
         })}
       >
         <ak.Radio {...rest} id={id} aria-describedby={describedBy} />

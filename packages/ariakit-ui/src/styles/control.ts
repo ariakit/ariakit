@@ -3,6 +3,7 @@ import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
 import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
+import { segmentGroup } from "./segment.ts";
 import {
   fontSizeVariants,
   hasSlotSurface,
@@ -675,7 +676,7 @@ export const controlBar = cv({
 
 /** A control group with shared spacing and optional joined edges. */
 export const controlGroup = cv({
-  extend: [frame],
+  extend: [frame, segmentGroup],
   class: [
     // Bars inside the controls reach the group's padding edge.
     "control-group [--control-bar-gap:var(--ak-frame-padding)]",

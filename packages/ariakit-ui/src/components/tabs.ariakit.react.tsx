@@ -172,7 +172,10 @@ function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
 }
 
 /**
- * Renders a named tab list from children, an array, or a record of tabs.
+ * Renders a named tab list from children, an array, or a record of tabs. With
+ * `$kind="segmented"`, it stands on its own as a segmented control, outside
+ * `Tabs`, and the tabs of the `tabs` prop take the same kind. Tabs written as
+ * children need their own `$kind`.
  * @example
  * <Tabs>
  *   <TabList
@@ -201,11 +204,14 @@ function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
  */
 export function TabList({ tabs, children, ...props }: TabListProps) {
   const [variantProps, rest] = splitProps(props, tabList);
+  // The tabs of the shorthand have no props of their own to set the kind.
+  const kindProps: TabProps | undefined =
+    variantProps.$kind === "segmented" ? { $kind: "segmented" } : undefined;
   return (
     <ak.TabList {...tabList.jsx(variantProps)} {...rest}>
       {Array.isArray(tabs)
         ? tabs.map((tab, index) => {
-            const element = renderTab(tab);
+            const element = renderTab(tab, kindProps);
             if (!element) return null;
             // Prefixes prevent key/index collisions. Children.toArray clones
             // still cause missing-key warnings in react-dom 19.
@@ -214,7 +220,7 @@ export function TabList({ tabs, children, ...props }: TabListProps) {
             return <Fragment key={key}>{element}</Fragment>;
           })
         : Object.entries(tabs ?? {}).map(([id, tab]) => (
-            <Fragment key={id}>{renderTab(tab, { id })}</Fragment>
+            <Fragment key={id}>{renderTab(tab, { ...kindProps, id })}</Fragment>
           ))}
       {children}
     </ak.TabList>

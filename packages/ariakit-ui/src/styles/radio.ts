@@ -109,3 +109,11 @@ export const radioCardGrid = cv({
   // the cards keep their own height.
   class: "has-[>.radio-group-label]:grid-rows-[auto]",
 });
+
+/**
+ * Stacks a visible label above a segmented radio group, because the label can't
+ * go on the surface of the group. Caller classes can replace the layout.
+ */
+export const radioGroupStack = cv({
+  class: "[:where(&)]:flex [:where(&)]:flex-col [:where(&)]:gap-1.5 min-w-0",
+});

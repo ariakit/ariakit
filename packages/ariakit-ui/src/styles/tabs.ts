@@ -8,6 +8,11 @@ import {
   buttonSlot,
 } from "./button.ts";
 import { frame } from "./frame.ts";
+import {
+  SEGMENT_GROUP_CLASS,
+  SEGMENT_KIND_CLASSES,
+  isSegmentedKind,
+} from "./segment.ts";
 import { hasSelectedSurface, selectedHoverClass } from "./selected.ts";
 
 /**
@@ -165,23 +170,30 @@ export const tab = cv({
     "not-ui-selected:ak-layer-color-(--ak-layer-parent)",
     "not-ui-selected:ak-layer-lighten-0",
     "not-ui-selected:ak-layer-offset-0",
-    // Tab kinds supply their own focus indicators. The button ring would cross
-    // the folder seam and be clipped by the strip.
-    "ui-focus-visible:outline-none",
   ],
   variants: {
     /**
      * Sets the selected tab shape: `flat` lifts the surface, `bevel` adds
      * depth, and `folder` joins the panel. Unselected folder tabs use an inset
-     * hover surface; other kinds fill the box.
+     * hover surface; other kinds fill the box. The segmented kinds go inside a
+     * segmented `TabList`.
      */
-    $kind(value?: "flat" | "bevel" | "folder") {
+    $kind(
+      value?: "flat" | "bevel" | "folder" | "segmented" | "segmented-flat",
+    ) {
       if (value == null) return;
-      if (value === "folder") return tabFolder;
-      if (value === "bevel") {
-        return [tabBox, "ui-selected:ui-bevel-button"];
+      if (value === "segmented") return SEGMENT_KIND_CLASSES.segmented;
+      if (value === "segmented-flat") {
+        return SEGMENT_KIND_CLASSES["segmented-flat"];
       }
-      return tabBox;
+      // Tab kinds supply their own focus indicators. The button ring would
+      // cross the folder seam and be clipped by the strip.
+      const noRing = "ui-focus-visible:outline-none";
+      if (value === "folder") return [tabFolder, noRing];
+      if (value === "bevel") {
+        return [tabBox, noRing, "ui-selected:ui-bevel-button"];
+      }
+      return [tabBox, noRing];
     },
   },
   defaultVariants: {
@@ -189,18 +201,23 @@ export const tab = cv({
     $layer: "var(--tabs-layer)",
     // Flat and bevel tabs lift 1.5 steps, above the one-step hover state.
     // Folders use the same lightening as the panel.
-    $selectedOffset(_defaultValue, variants) {
+    $selectedOffset(defaultValue, variants) {
+      if (isSegmentedKind(variants.$kind)) return defaultValue;
       if (variants.$kind === "folder") return false;
       return 1.5;
     },
     $lightnessOffset: false,
     $lighten(defaultValue, variants) {
+      if (isSegmentedKind(variants.$kind)) return defaultValue;
       if (variants.$kind === "folder") return defaultValue ?? true;
       return false;
     },
     $rounded: "unset",
     // Disable the button ring but keep its color for the folder focus edge.
-    $focus: false,
+    // Segmented tabs share the ring of the other segments.
+    $focus(_defaultValue, variants) {
+      return isSegmentedKind(variants.$kind);
+    },
     $focusColor: "brand",
     $border(defaultValue, variants) {
       if (variants.$kind !== "folder") return defaultValue;
@@ -235,47 +252,64 @@ export const tabSeparator = buttonSeparator;
  */
 export const tabBar = buttonBar;
 
-/** A horizontally scrolling tab strip with content-sized or stretched tabs. */
+// The strip that joins the panel. A segmented list stands on its own.
+const tabStrip = cx(
+  "flex",
+  "rounded-b-none!",
+  // Add the root edge width below the tabs so the panel can overlap it.
+  // Each folder accounts for its own border or ring when crossing the seam.
+  "[--tabs-float:var(--ak-frame-padding)]",
+  "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
+  // Continue below the seam to fill rounded panel corners and ring overhang.
+  "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px)+var(--tabs-over,0px))]",
+  // Keep the strip out of a separate stacking context so tabs can paint
+  // above the panel.
+  "z-auto",
+  // When the folder edge is wider than strip padding, pull tabs onto the
+  // root edge. Only border width affects the frame margin and concentric
+  // radius.
+  "[--tabs-merge:calc(max(0px,calc(var(--tabs-bordering)-var(--tabs-float)))*var(--tabs-folder,0))]",
+  "[--tabs-pull:calc(max(0px,calc(var(--tabs-border)-var(--tabs-float)))*var(--tabs-folder,0))]",
+  // Extend the scroll box over the root edge so tab edges and corners remain
+  // unclipped.
+  "-mt-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
+  "-mx-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
+  "pt-[calc(var(--tabs-bordering)+var(--tabs-float)-var(--tabs-merge))]",
+  "px-[calc(var(--tabs-bordering)+var(--tabs-float)-var(--tabs-merge))]",
+  "rounded-ss-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
+  "rounded-se-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
+  // Paint within the root edge, though the scroll box extends beyond it.
+  "ui-tabs-well",
+  // Inset hover surfaces beyond the edge overlap by one fifth of the font.
+  "[--tab-inset:calc(0.2em+var(--tabs-merge))]",
+  // Reserve a non-shrinking root-radius spacer for the final folder curve.
+  "after:w-(--tabs-radius) after:shrink-0",
+  "overflow-x-auto overflow-y-clip overscroll-x-contain scrollbar-none",
+  // Scroll the tab's outer curve into view too. This overrides the smaller
+  // frame scroll padding.
+  "scroll-px-(--tabs-radius)",
+  "[scroll-timeline:--tabs-scroll_inline]",
+);
+
+/**
+ * A horizontally scrolling tab strip with content-sized or stretched tabs, or a
+ * segmented control with `$kind="segmented"`.
+ */
 export const tabList = cv({
   extend: [buttonGroup],
-  class: [
-    "flex",
-    "rounded-b-none!",
-    // Add the root edge width below the tabs so the panel can overlap it.
-    // Each folder accounts for its own border or ring when crossing the seam.
-    "[--tabs-float:var(--ak-frame-padding)]",
-    "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
-    // Continue below the seam to fill rounded panel corners and ring overhang.
-    "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px)+var(--tabs-over,0px))]",
-    // Keep the strip out of a separate stacking context so tabs can paint
-    // above the panel.
-    "z-auto",
-    // When the folder edge is wider than strip padding, pull tabs onto the
-    // root edge. Only border width affects the frame margin and concentric
-    // radius.
-    "[--tabs-merge:calc(max(0px,calc(var(--tabs-bordering)-var(--tabs-float)))*var(--tabs-folder,0))]",
-    "[--tabs-pull:calc(max(0px,calc(var(--tabs-border)-var(--tabs-float)))*var(--tabs-folder,0))]",
-    // Extend the scroll box over the root edge so tab edges and corners remain
-    // unclipped.
-    "-mt-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
-    "-mx-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
-    "pt-[calc(var(--tabs-bordering)+var(--tabs-float)-var(--tabs-merge))]",
-    "px-[calc(var(--tabs-bordering)+var(--tabs-float)-var(--tabs-merge))]",
-    "rounded-ss-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
-    "rounded-se-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
-    // Paint within the root edge, though the scroll box extends beyond it.
-    "ui-tabs-well",
-    // Inset hover surfaces beyond the edge overlap by one fifth of the font.
-    "[--tab-inset:calc(0.2em+var(--tabs-merge))]",
-    // Reserve a non-shrinking root-radius spacer for the final folder curve.
-    "after:w-(--tabs-radius) after:shrink-0",
-    "overflow-x-auto overflow-y-clip overscroll-x-contain scrollbar-none",
-    // Scroll the tab's outer curve into view too. This overrides the smaller
-    // frame scroll padding.
-    "scroll-px-(--tabs-radius)",
-    "[scroll-timeline:--tabs-scroll_inline]",
-  ],
   variants: {
+    /**
+     * Sets `strip` for a list that joins the panels, or `segmented` for a list
+     * that stands on its own around segmented tabs.
+     */
+    $kind(value?: "strip" | "segmented") {
+      if (value == null) return;
+      if (value === "segmented") {
+        // Without a Tabs root, the list contains the z-index of its tabs.
+        return ["flex isolate", SEGMENT_GROUP_CLASS];
+      }
+      return tabStrip;
+    },
     /**
      * Sets content-sized tabs with `horizontal`, or equal-width tabs with
      * `stretch`. Only horizontal strips are supported.
@@ -288,16 +322,37 @@ export const tabList = cv({
     },
   },
   defaultVariants: {
-    $joined: false,
+    $kind: "strip",
+    $joined(defaultValue, variants) {
+      if (variants.$kind === "segmented") return defaultValue;
+      return false;
+    },
     // Darken the strip half a step so tabs and panels stand out together.
     $layer: true,
     $darken: 0.5,
-    $cover: true,
-    $p: "unset",
-    $rounded: "unset",
+    $cover(defaultValue, variants) {
+      if (variants.$kind === "segmented") return defaultValue;
+      return true;
+    },
+    $p(defaultValue, variants) {
+      if (variants.$kind === "segmented") return defaultValue;
+      return "unset";
+    },
+    $rounded(defaultValue, variants) {
+      if (variants.$kind === "segmented") return defaultValue;
+      return "unset";
+    },
     // Adjust nested frame rounding for the border overlap; the classes above
     // move the scroll box.
-    $m: "calc(-1 * var(--tabs-pull))",
+    $m(defaultValue, variants) {
+      if (variants.$kind === "segmented") return defaultValue;
+      return "calc(-1 * var(--tabs-pull))";
+    },
+  },
+  refine({ variants, addClass }) {
+    if (variants.$kind !== "segmented") return;
+    if (variants.$layout !== "stretch") return;
+    addClass("w-full");
   },
 });
 

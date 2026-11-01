@@ -1,0 +1,4 @@
+{
+  "title": "Segmented Links with an Inverted Thumb",
+  "description": "A horizontal Nav with $kind=\"segmented\" and $rounded=\"full\" at the top of a feed, around RouterNavLink elements with the same kind and $invert, so the current link is an inverted thumb. Each segment stays a link in a navigation landmark, the current link comes from currentUrl, and the feed below follows the route. Use it for a short row of pages that belong together, and prefer a segmented radio group when an option only sets a value."
+}

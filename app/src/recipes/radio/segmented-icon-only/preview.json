@@ -1,0 +1,4 @@
+{
+  "title": "Icon-Only Segmented Control with Tooltips",
+  "description": "A small round segmented RadioGroup with $size=\"sm\" and $rounded=\"full\", around segments that hold only a RadioCardSlot icon. Each RadioCard has aria-label and sits in a Tooltip, which shows the same word on hover and on keyboard focus. Use it in a toolbar with little room, when the icons are familiar, and prefer labels when people must learn the options."
+}

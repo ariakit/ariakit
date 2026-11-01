@@ -21,6 +21,7 @@ import {
   disclosureGroup,
 } from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
+import { isSegmentedKind, segmentGroup } from "./segment.ts";
 import type { SlotSize } from "./slot-frame.ts";
 import { getSlotSizeClass, isSlotSize } from "./slot-frame.ts";
 import { textFrame } from "./text-frame.ts";
@@ -32,7 +33,7 @@ import { text } from "./text.ts";
  * `$cover`, it takes the parent's padding instead, such as in a shell sidebar.
  */
 export const nav = cv({
-  extend: [frame],
+  extend: [frame, segmentGroup],
   class: [
     // Keep rows at the start when the navigation region stretches.
     "nav content-start gap-(--nav-gap) min-w-0",
@@ -62,7 +63,8 @@ export const nav = cv({
         "[&_.disclosure-content]:overflow-x-visible",
       ],
       horizontal: [
-        "horizontal flex items-start overflow-x-auto overscroll-x-contain [clip-path:inset(-100vmax_0)] [&>.control,&>.nav-list>li>.control]:shrink-0 [&>.control,&>.nav-list>li>.control]:whitespace-nowrap",
+        // A row with no overflow stays still under a sideways swipe.
+        "horizontal flex items-start overflow-x-auto overscroll-x-none [&>.control,&>.nav-list>li>.control]:shrink-0 [&>.control,&>.nav-list>li>.control]:whitespace-nowrap",
         // A bar outside the padding must not let the row scroll vertically.
         "overflow-y-hidden",
         // The wider row gap lines up labels in a column, which a row lacks, so
@@ -111,7 +113,9 @@ export const nav = cv({
      * name on both pages. Set `none` to keep the bar out of view transitions.
      * `Nav` defaults it to a unique name from `useId`, which can differ between
      * pages. Only one link can be current while the bar is named. Browsers skip
-     * a view transition that finds two bars with the same name.
+     * a view transition that finds two bars with the same name. In browsers
+     * with scroll-driven animations, an old bar that a horizontal navigation
+     * clips stays out of the transition, so the bar of the new link fades in.
      */
     $barTransitionName(value?: string) {
       if (value == null) return;
@@ -130,6 +134,14 @@ export const nav = cv({
       // Wider than a bar at every width that the style recipes set, so named
       // bar offsets keep the bar outside its row.
       return defaultValue ?? 1;
+    },
+    // Segments keep the same space between them as around them, as in a control
+    // group.
+    $gap(defaultValue, variants) {
+      if (variants.$kind !== "segmented") return defaultValue;
+      // A navigation has no joined corners, so its cells can't touch.
+      if (variants.$p === "none") return defaultValue;
+      return defaultValue ?? "var(--ak-frame-padding)";
     },
   },
 });
@@ -286,13 +298,6 @@ export const navLink = cv({
   extend: [button],
   class: [
     "justify-start text-wrap",
-    // Idle ink inherits into slots; hover and selection restore full strength.
-    "ak-dark:ak-ink-70",
-    "not-ui-selected:font-normal",
-    // Rows in a horizontal navigation size to their text, so a heavier current
-    // row would shift the rows after it. Its surface or bar marks it instead,
-    // unless navLinkLabel reserves the heavier width from data-text.
-    "[.nav.horizontal>&,.nav.horizontal>.nav-list>li>&]:font-normal",
     // Include optical padding so icon rows align with disclosures. Disable the
     // inherited gap variant below.
     "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]",
@@ -302,6 +307,19 @@ export const navLink = cv({
     $selectedPush: true,
     $selectedInk: 100,
     $gap: "none",
+  },
+  refine({ variants, addClass }) {
+    // Segments keep the ink and weight of the segments on other components.
+    if (isSegmentedKind(variants.$kind)) return;
+    addClass([
+      // Idle ink inherits into slots; hover and selection restore full strength.
+      "ak-dark:ak-ink-70",
+      "not-ui-selected:font-normal",
+      // Rows in a horizontal navigation size to their text, so a heavier current
+      // row would shift the rows after it. Its surface or bar marks it instead,
+      // unless navLinkLabel reserves the heavier width from data-text.
+      "[.nav.horizontal>&,.nav.horizontal>.nav-list>li>&]:font-normal",
+    ]);
   },
 });
 
@@ -395,7 +413,9 @@ export const navLinkBar = cv({
     // The navigation's name lets view transitions move the bar between links.
     // The name must be unique, so it works only while one link is current.
     // Reduced motion keeps the bar out of view transitions.
-    "motion-safe:[view-transition-name:var(--bar-transition-name,none)] [view-transition-class:bar]",
+    "motion-safe:[view-transition-name:var(--nav-bar-name,var(--bar-transition-name,none))] [view-transition-class:bar]",
+    // A horizontal row scrolls, so a bar outside it can't take part.
+    "[.nav.horizontal_&]:ui-nav-bar-clip",
     "[.nav.vertical_&]:top-(--bar-inset) [.nav.vertical_&]:bottom-(--bar-inset)",
     "[.nav.vertical_&]:w-(--bar) [.nav.vertical_&]:inset-e-auto",
     "[.nav.vertical_&]:inset-s-[calc(var(--nav-bar-guide,calc(-1*(var(--bar-offset)+var(--bar))))-var(--control-border,0px))]",

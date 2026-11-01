@@ -14,6 +14,7 @@ import {
 import { focusHighlight } from "./focus.ts";
 import { hover } from "./hover.ts";
 import { hasLayerBackground, isLayerColor } from "./layer.ts";
+import { segment } from "./segment.ts";
 import { selected } from "./selected.ts";
 
 interface BevelLightenVariants {
@@ -39,7 +40,7 @@ function hasBevelLighten(variants: BevelLightenVariants) {
  * styles.
  */
 export const button = cv({
-  extend: [control, hover, focusHighlight, active, selected],
+  extend: [control, hover, focusHighlight, active, selected, segment],
   class: [
     "not-[a]:cursor-default not-[button]:select-none",
     // Use a pointer for navigation and form submission; commands keep the
@@ -62,7 +63,8 @@ export const button = cv({
   variants: {
     /**
      * Sets the button surface. `bevel` adds a gradient and inner shadow; `flat`
-     * paints only the layer.
+     * paints only the layer. The segmented kinds go inside a group with
+     * `$kind="segmented"`, where only the selected button paints.
      */
     $kind: {
       flat: "",

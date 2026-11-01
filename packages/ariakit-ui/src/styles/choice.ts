@@ -1,4 +1,4 @@
-import { cv } from "clava";
+import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import {
   button,
@@ -19,6 +19,7 @@ import {
 import { focusHighlight, focusWithin } from "./focus.ts";
 import { hover } from "./hover.ts";
 import { hasLayerBackground } from "./layer.ts";
+import { isSegmentedKind } from "./segment.ts";
 
 // The box radius wins over the radius that a slot computes for floating and
 // avatar slots. The switch mark can't set it in the same object, so it replaces
@@ -97,7 +98,7 @@ export const choice = cv({
       dot: [
         // Like the check, the bullet takes the fill's readable text color, so
         // it keeps its contrast against the box in checked and disabled states.
-        "after:size-[calc((var(--size)-2*var(--border-width))*0.4)]",
+        "after:size-[calc((var(--size)-2*var(--border-width))*0.5)]",
         "after:rounded-full after:bg-current",
         // The fill changes at once, and the bullet grows from the center.
         "after:scale-0 ui-choice-on:after:scale-100",
@@ -251,38 +252,53 @@ export const choiceFieldLabel = controlLabel;
 /** Secondary choice field text with optional line limits. */
 export const choiceFieldDescription = controlDescription;
 
+// The surface of a card. A segmented kind paints the thumb of its group
+// instead.
+const choiceCardSurface = cx(
+  // Allow a direct description to occupy its own row.
+  "flex-wrap justify-start content-start",
+  "[&_input]:sr-only",
+  // The label reads checked, mixed, and disabled states from its input.
+  "not-ui-disabled-within:ui-checked-within:ak-edge-brand",
+  "not-ui-disabled-within:ui-checked-within:ak-edge-raw",
+  "not-ui-disabled-within:ui-checked-within:ak-layer-brand",
+  "not-ui-disabled-within:ui-checked-within:ak-layer-mix-20",
+  "not-ui-disabled-within:ui-mixed-within:ak-edge-brand",
+  "not-ui-disabled-within:ui-mixed-within:ak-edge-raw",
+  "not-ui-disabled-within:ui-mixed-within:ak-layer-brand",
+  "not-ui-disabled-within:ui-mixed-within:ak-layer-mix-20",
+  // Use the plugin's zero-lighten utility to cancel the default inline
+  // channel.
+  "not-ui-disabled-within:ui-checked-within:ak-layer-lighten-0",
+  "not-ui-disabled-within:ui-mixed-within:ak-layer-lighten-0",
+  // Without a mark, an inset ring adds a second edge pixel to the selected
+  // card, so its state doesn't rest on color alone. The ring takes no space.
+  "inset-ring-(--ak-edge)",
+  "not-has-[.choice-card-check]:ui-checked-within:inset-ring",
+  "not-has-[.choice-card-check]:ui-mixed-within:inset-ring",
+  // Forced colors remove shadows. Use a real border one pixel wider instead.
+  "not-has-[.choice-card-check]:ui-checked-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
+  "not-has-[.choice-card-check]:ui-mixed-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
+);
+
+// The input covers a segment, so it takes the hover and the focus of a tooltip
+// anchored to it. Labels center in the segment instead of filling a card row.
+const choiceCardSegment = cx(
+  // WebKit doesn't stretch an input with inset alone.
+  "[&_input]:absolute [&_input]:inset-0 [&_input]:size-full [&_input]:m-0 [&_input]:opacity-0",
+  "[&_input]:cursor-[inherit]",
+  "*:grow-0 *:text-center",
+);
+
 /** A card label whose tint follows a nested input's checked or mixed state. */
 export const choiceCard = cv({
   extend: [button, focusWithin],
   class: [
     // Let slots read the nested input's disabled state.
     "group/choice",
-    // Allow a direct description to occupy its own row.
-    "flex-wrap justify-start content-start",
-    "[&_input]:sr-only",
-    // The label reads checked, mixed, and disabled states from its input.
-    "not-ui-disabled-within:ui-checked-within:ak-edge-brand",
-    "not-ui-disabled-within:ui-checked-within:ak-edge-raw",
-    "not-ui-disabled-within:ui-checked-within:ak-layer-brand",
-    "not-ui-disabled-within:ui-checked-within:ak-layer-mix-20",
-    "not-ui-disabled-within:ui-mixed-within:ak-edge-brand",
-    "not-ui-disabled-within:ui-mixed-within:ak-edge-raw",
-    "not-ui-disabled-within:ui-mixed-within:ak-layer-brand",
-    "not-ui-disabled-within:ui-mixed-within:ak-layer-mix-20",
-    // Use the plugin's zero-lighten utility to cancel the default inline
-    // channel.
-    "not-ui-disabled-within:ui-checked-within:ak-layer-lighten-0",
-    "not-ui-disabled-within:ui-mixed-within:ak-layer-lighten-0",
-    // Without a mark, an inset ring adds a second edge pixel to the selected
-    // card, so its state doesn't rest on color alone. The ring takes no space.
-    "inset-ring-(--ak-edge)",
-    "not-has-[.choice-card-check]:ui-checked-within:inset-ring",
-    "not-has-[.choice-card-check]:ui-mixed-within:inset-ring",
-    // Forced colors remove shadows. Use a real border one pixel wider instead.
-    "not-has-[.choice-card-check]:ui-checked-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
-    "not-has-[.choice-card-check]:ui-mixed-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
-    // A click can't change a checked radio card, so hover doesn't light it.
-    "ui-settled:ui-hover:ak-state-0",
+    // A click can't change a checked radio card, so hover doesn't light it. It
+    // keeps its selected offset, which the hover state would otherwise replace.
+    "ui-settled:ui-hover:ak-state-(--selected-offset,0)",
     // Group-disabled cards may not receive $disabled. Read the input state and
     // suppress hover and press on the label too.
     "ui-disabled-within:ak-disabled",
@@ -300,6 +316,7 @@ export const choiceCard = cv({
     "ui-disabled-within:forced-colors:**:text-[GrayText]",
     "ui-disabled-within:forced-colors:ui-text:text-[GrayText]",
     "ui-disabled-within:ui-hover:ak-state-0",
+    "ui-disabled-within:ui-hover:ak-ink-0",
     "ui-disabled-within:ui-active:scale-x-100",
     "ui-disabled-within:ui-active:scale-y-100",
   ],
@@ -334,12 +351,22 @@ export const choiceCard = cv({
     $disabled: ["[--disabled-border:var(--ak-edge)]", "ak-edge-5"],
   },
   defaultVariants: {
-    $rounded: "xl",
-    $p: 3,
-    $gapY: "card",
+    $rounded(defaultValue, variants) {
+      if (isSegmentedKind(variants.$kind)) return defaultValue;
+      return "xl";
+    },
+    $p(defaultValue, variants) {
+      if (isSegmentedKind(variants.$kind)) return defaultValue;
+      return 3;
+    },
+    $gapY(defaultValue, variants) {
+      if (isSegmentedKind(variants.$kind)) return defaultValue;
+      return "card";
+    },
     $border: true,
     $darkEdgeWeight(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
+      if (isSegmentedKind(variants.$kind)) return defaultValue;
       if (variants.$edgeRaw) return defaultValue;
       // A caller's edge weight or color applies on every surface.
       if (variants.$edgeWeight != null && variants.$edgeWeight !== "unset") {
@@ -350,7 +377,10 @@ export const choiceCard = cv({
       }
       return "light";
     },
-    $focusOffset: 2,
+    $focusOffset(defaultValue, variants) {
+      if (isSegmentedKind(variants.$kind)) return defaultValue;
+      return 2;
+    },
     // Lighten cards unconditionally instead of darkening them on light
     // surfaces.
     $lightnessOffset: false,
@@ -363,7 +393,10 @@ export const choiceCard = cv({
       return defaultValue;
     },
   },
-  refine({ variants, setVariants }) {
+  refine({ variants, setVariants, addClass }) {
+    addClass(
+      isSegmentedKind(variants.$kind) ? choiceCardSegment : choiceCardSurface,
+    );
     // Fade every disabled card, including the neutral cards that button keeps
     // as the boundary.
     if (!variants.$disabled) return;
