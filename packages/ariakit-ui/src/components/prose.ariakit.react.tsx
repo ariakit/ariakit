@@ -9,7 +9,8 @@ export interface ProseProps
 /**
  * Renders a content container with consistent vertical spacing and styles for
  * paragraphs and strong emphasis. It sets the space around its direct `Heading`
- * children.
+ * children. The text is 1rem, or the text around it inside a `ShellMain` that
+ * sets `$size`.
  * @example
  * <Prose>
  *   <p>Create a project to organize your work.</p>

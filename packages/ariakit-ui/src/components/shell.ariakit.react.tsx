@@ -211,7 +211,8 @@ export interface ShellMainIntroProps
  * column; named main bands can select a wider span. `$py` sets the space above
  * and below it. By default, this space grows with the width of the intro, so
  * open sidebars beside it reduce the space. It sets no text styles, so banners,
- * images, and controls keep their size. Put a title in `Prose`.
+ * images, and controls keep their size unless `ShellMain` sets `$size`. Put a
+ * title in `Prose`.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -258,6 +259,14 @@ export interface ShellMainProps
  * width limit. Use a number or CSS length to align columns across text sizes.
  * Percentages depend on each part's width and can misalign wider headers or
  * intros. Parts can override `$maxWidth`.
+ *
+ * `$size` sets the text size of main and a 42em column, so line length stays
+ * the same at every size. `Prose` follows it, and bars and sidebars keep the
+ * shell's size. Other text and unsized controls in main grow with it, so use it
+ * for reading pages. A nested shell doesn't take the size. With `$size`, define
+ * a variable for `$p`, `$py`, or `$maxWidth` in rem or as a plain length:
+ * Firefox resolves a variable that reads an em-based variable, such as
+ * `--spacing()`, against the parent's text.
  * @example
  * <Shell>
  *   <ShellMain $p={4}>

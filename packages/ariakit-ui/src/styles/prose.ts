@@ -27,8 +27,10 @@ export const prose = cv({
   class: [
     "prose",
     // Use zero specificity so text size and line-height utilities can override
-    // these defaults.
-    "[:where(&)]:text-base/relaxed ak-dark:ak-ink-75 ak-light:ak-ink-90",
+    // these defaults. A sized shell main sets the token to 1em, which resolves
+    // against the parent here, so the column follows the text around it.
+    "[:where(&)]:text-(length:--prose-size,1rem)/relaxed",
+    "ak-dark:ak-ink-75 ak-light:ak-ink-90",
     // Keep markup defaults at zero specificity. Paragraphs and list items
     // restore muted ink inside nested surfaces.
     "[:where(&_:is(p,li))]:ak-dark:ak-ink-75",

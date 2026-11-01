@@ -456,6 +456,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
             </ShellHeader>
             <ShellMain
               $p="var(--nested-gutter)"
+              $maxWidth="48rem"
               className="[--nested-gutter:1rem] @5xl/shell:[--nested-gutter:2rem]"
             >
               {nestedHeaders && (

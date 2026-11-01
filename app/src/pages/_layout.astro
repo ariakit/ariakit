@@ -91,8 +91,13 @@ export interface Props {
    */
   sidebar?: boolean;
   /**
-   * The maximum width of the main content column.
-   * @default "56rem"
+   * The text size of the main content. The column follows it.
+   * @default "lg"
+   */
+  size?: "auto" | "lg";
+  /**
+   * The maximum width of the main content column. Defaults to the column of
+   * the text size.
    */
   maxWidth?: string;
 }
@@ -103,7 +108,8 @@ const {
   examples = [],
   section,
   sidebar = true,
-  maxWidth = "56rem",
+  size = "lg",
+  maxWidth,
 } = Astro.props;
 // Astro serves routes with and without a trailing slash, and every link ends
 // with one.
@@ -465,10 +471,14 @@ const hasSidebar = sidebar && navigation.length > 0;
             </ShellSidebar>
           )
         }
+        {/* The gutter stays in rem when main sets its own text size. Firefox
+            resolves a variable that reads --spacing() against the parent's
+            text, so the gutter would differ between browsers. */}
         <ShellMain
+          $size={size}
           $p="var(--app-gutter)"
           $maxWidth={maxWidth}
-          className="[--app-gutter:--spacing(4)] @3xl/shell:[--app-gutter:--spacing(8)]"
+          className="[--app-gutter:0.875rem] @3xl/shell:[--app-gutter:1.75rem]"
         >
           {/* Page content renders as direct grid items, so preview cards can
               use main bands. */}
@@ -486,7 +496,7 @@ const hasSidebar = sidebar && navigation.length > 0;
                 first row of examples and doesn't tie with it. */}
             {
               examples.length > 0 ? (
-                <ShellMainWide className="relative gap-y-8">
+                <ShellMainWide className="relative gap-y-[1.75rem]">
                   <h2 id={examplesSlug} class="sr-only -top-4">
                     Examples
                   </h2>
