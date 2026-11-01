@@ -26,7 +26,10 @@ export const shell = cv({
     "grid-rows-[[shell-start_header-start]_auto_[header-end_main-start_main-header-start]_auto_[main-header-end_intro-start]_auto_[intro-end_body-start]_minmax(0,1fr)_[body-end_footer-start]_auto_[footer-end_shell-end]]",
     "[--shell-start-1-width:0px] [--shell-start-2-width:0px]",
     "[--shell-end-1-width:0px] [--shell-end-2-width:0px]",
-    "[--shell-header-height:0px] [--shell-main-max-width:48rem]",
+    // Without a main size, Prose is 1rem, so this is 40em of its text.
+    "[--shell-header-height:0px] [--shell-main-max-width:40rem]",
+    // A shell inside a sized main doesn't pass that size on to its Prose.
+    "[.shell-main-sized_&]:[--prose-size:initial]",
     "[--shell-duration:300ms] [--shell-motion:1] motion-reduce:[--shell-motion:0]",
     "[--shell-time:calc(var(--shell-duration)*var(--shell-motion))]",
     "[--shell-ease:cubic-bezier(0.2,0,0,1)]",
@@ -53,36 +56,46 @@ export const shell = cv({
   variants: {
     /**
      * Sets the base text size. Bar heights, sidebar rows, and spacing follow
-     * it; `Prose` keeps its own reading size. `auto` uses `sm`, or the outer
-     * shell's size in a nested shell. Use another value to change a nested
-     * shell's size. Defaults to `auto`.
+     * it; `Prose` stays at 1rem unless `ShellMain` sets `$size`. `auto` uses
+     * `sm`, or the outer shell's size in a nested shell. Use another value to
+     * change a nested shell's size. Defaults to `auto`.
      */
     // Each size also sets the bar step in rem. Firefox resolves a registered em
     // length against the parent font when the element changes its own size. The
     // shell radius divides the theme radius by the text size, so the corner
     // matches Chrome's macOS window (20px at the default radius) at every size
-    // without rounding the shell itself.
+    // without rounding the shell itself. The leading lets parts inside a sized
+    // main return to the shell's line height.
     $size: {
       auto: [
         "text-sm [--shell-header-step:calc(0.875rem/4)]",
         "[--shell-radius:calc(var(--radius)*5/0.875)]",
+        "[--shell-leading:var(--text-sm--line-height)]",
         // A leading utility would set --tw-leading and replace
         // text-* fallbacks.
         "[.shell_&]:[font-size:inherit] [.shell_&]:[line-height:inherit]",
         "[.shell_&]:[--shell-header-step:inherit]",
         "[.shell_&]:[--shell-radius:inherit]",
+        "[.shell_&]:[--shell-leading:inherit]",
+        // The outer shell's size, not the size of a main around this shell. The
+        // extra class outranks the inherited size above.
+        "[.shell_.shell-main-sized_&]:[font-size:calc(var(--shell-header-step)*4)]",
+        "[.shell_.shell-main-sized_&]:[line-height:var(--shell-leading)]",
       ],
       sm: [
         "text-sm [--shell-header-step:calc(0.875rem/4)]",
         "[--shell-radius:calc(var(--radius)*5/0.875)]",
+        "[--shell-leading:var(--text-sm--line-height)]",
       ],
       md: [
         "text-base [--shell-header-step:calc(1rem/4)]",
         "[--shell-radius:calc(var(--radius)*5)]",
+        "[--shell-leading:var(--text-base--line-height)]",
       ],
       lg: [
         "text-lg [--shell-header-step:calc(1.125rem/4)]",
         "[--shell-radius:calc(var(--radius)*5/1.125)]",
+        "[--shell-leading:var(--text-lg--line-height)]",
       ],
     },
     /**
@@ -672,7 +685,7 @@ const contentVariants = {
   },
   /**
    * Sets the maximum width of a centered content column. Numbers scale the
-   * spacing token. Defaults to 48rem.
+   * spacing token. Defaults to 40rem, or 40em when `ShellMain` sets `$size`.
    */
   $maxWidth(value?: ShellWidth) {
     if (value == null) return;
@@ -697,6 +710,12 @@ const contentVariants = {
   },
 };
 
+// The registered width resolves against main's own text, so every part keeps
+// the same column. An unregistered 1em follows the parent where Prose reads it.
+const sizedMain = cx(
+  "shell-main-sized [--prose-size:1em] [--shell-main-max-width:40em]",
+);
+
 /**
  * The main landmark, sharing the shell columns and rows without containment.
  */
@@ -717,10 +736,23 @@ export const shellMain = cv({
   ],
   variants: {
     /**
-     * Sets the shared main gutter. Numbers scale the spacing token and round to
-     * a whole pixel. A CSS length can use container queries on the nearest
-     * shell. Defaults to 3. Use `$py` to set the space above and below the
-     * parts apart from it.
+     * Sets the text size of main and a column of 40em, and `Prose` inside main
+     * follows that text. Bars and sidebars keep the shell's size. `auto` leaves
+     * the shell's text and the shell's column, and `Prose` stays at 1rem. A
+     * shell inside a sized main doesn't pass the size on. Defaults to `auto`.
+     */
+    $size: {
+      auto: "",
+      sm: [sizedMain, "text-sm"],
+      md: [sizedMain, "text-base"],
+      lg: [sizedMain, "text-lg"],
+    },
+    /**
+     * Sets the shared main gutter. Numbers scale the spacing token, so they
+     * follow the text of main, and round to a whole pixel. A CSS length can use
+     * container queries on the nearest shell. Defaults to 3, measured at the
+     * shell's text size. Use `$py` to set the space above and below the parts
+     * apart from it.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
       return contentVariants.$p(value);
@@ -748,13 +780,23 @@ export const shellMain = cv({
      * Sets the shared maximum content width. Numbers scale the spacing token.
      * Parts can override it with `$maxWidth`. Prefer lengths for alignment:
      * percentages resolve against each part, and header or intro widths can
-     * include sidebars.
+     * include sidebars. Defaults to 40rem, or 40em with `$size`.
      */
     $maxWidth(value?: ShellWidth) {
       return contentVariants.$maxWidth(value);
     },
   },
-  defaultVariants: { $p: 3, $py: "gutter" },
+  defaultVariants: {
+    $size: "auto",
+    $py: "gutter",
+    // Bars inset three steps of the shell's text, so the default gutter stays
+    // on their edge when main sets another size. The step is that text over 4.
+    $p(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$size === "auto") return 3;
+      return "round(calc(var(--shell-header-step)*3),1px)";
+    },
+  },
 });
 
 /**
@@ -767,6 +809,10 @@ export const shellMainHeader = cv({
     content,
     "shell-main-header col-start-1 col-end-[calc(2+var(--shell-header-free-1)+var(--shell-header-free-1)*var(--shell-header-free-2))] row-[main-header]",
     "box-border min-h-(--shell-main-header-height) content-center py-0! z-3",
+    // A bar keeps the shell's text inside a sized main. Zero specificity lets
+    // caller text-* classes win.
+    "[:where(.shell-main-sized>&)]:[font-size:calc(var(--shell-header-step)*4)]",
+    "[:where(.shell-main-sized>&)]:[line-height:var(--shell-leading)]",
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
     // Like other bars, a shorter or taller header than `md` shrinks or grows
     // its side insets with the space around its controls. A centered column

@@ -9,8 +9,10 @@
  */
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
+  ShellMainHeader,
   ShellMainContent,
   ShellMainPopout,
   ShellMainFeature,
@@ -39,6 +41,137 @@ type Seam = "border" | "dashed" | "none";
 
 function isSeam(value: string): value is Seam {
   return ["border", "dashed", "none"].includes(value);
+}
+
+type MainSize = "auto" | "sm" | "md" | "lg";
+
+function isMainSize(value: string): value is MainSize {
+  return ["auto", "sm", "md", "lg"].includes(value);
+}
+
+/**
+ * A reading page whose controls set the size of main and the text of a part.
+ */
+export function ReadingScenario({ controls }: ScenarioProps) {
+  const [size, setSize] = useState<MainSize>("auto");
+  const [wider, setWider] = useState(false);
+  const [smallerIntro, setSmallerIntro] = useState(false);
+  return (
+    <Shell>
+      <ShellHeader>
+        <ShellHeaderStart>
+          <span>Site header</span>
+        </ShellHeaderStart>
+        <ShellHeaderEnd>{controls}</ShellHeaderEnd>
+      </ShellHeader>
+      <ShellMain $size={size} $maxWidth={wider ? "50rem" : undefined}>
+        <ShellMainHeader>
+          <div>Page header</div>
+        </ShellMainHeader>
+        <ShellMainIntro className={smallerIntro ? "text-xs" : undefined}>
+          <Prose>
+            <p>Intro prose</p>
+          </Prose>
+        </ShellMainIntro>
+        <ShellMainBody>
+          <div className="flex flex-wrap items-center gap-4">
+            <label>
+              Main size{" "}
+              <select
+                value={size}
+                onChange={(event) => {
+                  const { value } = event.currentTarget;
+                  if (isMainSize(value)) {
+                    setSize(value);
+                  }
+                }}
+              >
+                <option value="auto">auto</option>
+                <option value="sm">sm</option>
+                <option value="md">md</option>
+                <option value="lg">lg</option>
+              </select>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                tabIndex={0}
+                checked={wider}
+                onChange={(event) => setWider(event.currentTarget.checked)}
+              />{" "}
+              Wider column
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                tabIndex={0}
+                checked={smallerIntro}
+                onChange={(event) =>
+                  setSmallerIntro(event.currentTarget.checked)
+                }
+              />{" "}
+              Smaller intro
+            </label>
+          </div>
+          <Prose>
+            <p>Body prose</p>
+          </Prose>
+          <p>Plain text</p>
+          <Button>Unsized button</Button>
+          <div className="text-xs">
+            <Prose>
+              <p>Prose in smaller text</p>
+            </Prose>
+          </div>
+          <Prose className="text-sm/relaxed">
+            <p>Prose with its own size</p>
+          </Prose>
+          <Shell>
+            <ShellHeader>
+              <ShellHeaderStart>
+                <span>Automatic panel header</span>
+              </ShellHeaderStart>
+            </ShellHeader>
+            <ShellMain>
+              <ShellMainBody>
+                <Prose>
+                  <p>Automatic panel prose</p>
+                </Prose>
+              </ShellMainBody>
+            </ShellMain>
+          </Shell>
+          <Shell $size="lg">
+            <ShellHeader>
+              <ShellHeaderStart>
+                <span>Large panel header</span>
+              </ShellHeaderStart>
+            </ShellHeader>
+            <ShellMain>
+              <ShellMainBody>
+                <Prose>
+                  <p>Large panel prose</p>
+                </Prose>
+              </ShellMainBody>
+            </ShellMain>
+          </Shell>
+          <Shell>
+            <ShellHeader>
+              <ShellHeaderStart>
+                <span>Sized panel header</span>
+              </ShellHeaderStart>
+            </ShellHeader>
+            <ShellMain $size="lg">
+              <ShellMainBody>
+                <Prose>
+                  <p>Sized panel prose</p>
+                </Prose>
+              </ShellMainBody>
+            </ShellMain>
+          </Shell>
+        </ShellMainBody>
+      </ShellMain>
+    </Shell>
+  );
 }
 
 export function GeometryScenario({ controls }: ScenarioProps) {

@@ -20,7 +20,7 @@ const CONTROL_HEIGHT = 40;
 const PART_PADDING = 12;
 const HEADER_BORDER = 1;
 const HEADER_HEIGHT = CONTROL_HEIGHT + PART_PADDING * 2;
-const CONTENT_WIDTH = 768;
+const CONTENT_WIDTH = 640;
 // The shell's motion duration.
 const DURATION = 300;
 
@@ -264,6 +264,30 @@ withDeferredVisualLoad(import.meta.dirname, async ({ test, query }) => {
         });
       });
     }
+
+    test("reading size at wide and narrow widths @visual", async ({
+      page,
+      q,
+      visual,
+    }) => {
+      await forEachColorScheme(page, async (colorScheme) => {
+        await selectScenario(q, "reading");
+        await q.combobox("Main size").selectOption("lg");
+        await visual({
+          ...getViewportCapture(
+            page,
+            colorScheme,
+            "ariakit-ui-shell/reading-responsive",
+          ),
+          // The nested shells sit below the first screen.
+          fullPage: true,
+          viewports: {
+            wide: { width: 1440, height: 900 },
+            narrow: { width: 560, height: 900 },
+          },
+        });
+      });
+    });
 
     // https://github.com/ariakit/ariakit/issues/7532
     test("flush band at the shell radius @visual", async ({

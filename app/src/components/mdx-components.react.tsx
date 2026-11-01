@@ -17,6 +17,7 @@ import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react";
 import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
+import { clsx } from "clsx";
 import type { ComponentProps } from "react";
 
 // MDX renders plain elements. These map them to Ariakit UI components so page
@@ -62,6 +63,17 @@ function Ol(props: ComponentProps<"ol">) {
   return <List ordered {...props} />;
 }
 
+// The main body clips its overflow, so a long line must wrap inside its block.
+// Scrolling would need a tab stop on every block for keyboard users in Safari.
+function Pre({ className, ...props }: ComponentProps<"pre">) {
+  return (
+    <pre
+      {...props}
+      className={clsx("whitespace-pre-wrap wrap-anywhere", className)}
+    />
+  );
+}
+
 // The rehypeHtmlComponents plugin also applies these to HTML written as JSX,
 // and leaves the code of a fenced block out.
 const inlineComponents = { a: A, code: Code, kbd: Keycap };
@@ -75,6 +87,7 @@ export const mdxComponents = {
   ol: Ol,
   li: ListItem,
   hr: Separator,
+  pre: Pre,
 };
 
 // A page description renders its own paragraphs, so each one is the description

@@ -34,7 +34,11 @@ const sections = item
   : getReferenceSections(data);
 ---
 
-<section id={item ? undefined : "api"}>
+{/* The main body clips its overflow, so long types wrap inside their block. */}
+<section
+  id={item ? undefined : "api"}
+  class="[&_pre]:whitespace-pre-wrap [&_pre]:wrap-anywhere"
+>
   {
     !item && (
       <>

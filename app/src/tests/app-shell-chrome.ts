@@ -890,11 +890,16 @@ test("app shells in preview cards keep corners concentric with the card", async 
   await expect.poll(getButtonOuterRadius).toBeCloseTo(roundRadius, 1);
 });
 
+// On a wider viewport, the fold only moves the cards: the free space keeps the
+// content centered on the shell at the same width, so the preview pages never
+// resize. At this width, the cards grow when the sidebar folds.
+const growingFoldViewport = { width: 1280, height: 900 };
+
 test("site navigation folds without resizing offscreen preview pages", async ({
   page,
   q,
 }) => {
-  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.setViewportSize(growingFoldViewport);
   await gotoAndSettle(page, recipePath);
   // Chrome loads lazy frames this close to the viewport, but the card stays
   // offscreen.
@@ -936,7 +941,7 @@ test("site navigation folds without resizing visible preview pages on each step"
   page,
   q,
 }) => {
-  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.setViewportSize(growingFoldViewport);
   await gotoAndSettle(page, recipePath);
   const iframe = page.locator('iframe[title="App Shell"]');
   await iframe.scrollIntoViewIfNeeded();
