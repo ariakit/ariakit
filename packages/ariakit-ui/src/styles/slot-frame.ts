@@ -234,6 +234,9 @@ export const slotFrameSlot = cv({
       // Reverse the physical translation for the opposite RTL corner.
       "translate-x-[calc(var(--size)/2)] rtl:-translate-x-[calc(var(--size)/2)]",
       "in-[.control,.badge]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
+      // A floating slot hangs over the surface around its parent, so its border
+      // takes that color and reads as a cut-out.
+      "[.ak-layer>&]:ak-outset",
       // What fills the slot sits inside this border, so a round count stays
       // round. The selector wins over the base --slot-height.
       "[&.slot-frame-slot]:[--slot-height:calc(var(--size)*var(--row-span)-2px)]",
