@@ -305,14 +305,19 @@ const tocLinkPiece = cv({
     // The first half of a smooth bend is a quarter curve from the previous
     // line. A diagonal bend is one slanted line instead. A straight piece
     // leaves it empty.
-    "before:absolute before:top-0 before:box-border before:border-solid before:border-(--toc-line-color)",
-    // An inset, not a width, ends a curve at the edge of the piece, which is the
-    // edge of the line in the next level. A sum of rounded lengths could round
-    // to another device pixel. A slanted line keeps a box as wide as its border,
-    // which is where it rotates.
+    "before:absolute before:top-0 before:box-content before:border-solid before:border-(--toc-line-color)",
+    // Browsers snap a box and its border to device pixels separately, so at
+    // fractional scales a border can be thinner than the line. A border at the
+    // far side of a box keeps the column or row of the line only if the box
+    // adds the border after the content, which ends where the line starts. The
+    // height and the minimum width do that, and an inset as wide as the line
+    // keeps the automatic width below that minimum. Without a far border, the
+    // insets end a curve where the next starts. A slanted line keeps a box as
+    // wide as its border, which is where it rotates.
     "before:inset-s-[calc(var(--toc-outward)*(var(--toc-curve)*var(--toc-bend-lower-width)+(1-var(--toc-curve))*var(--toc-span)))]",
-    "before:inset-e-[calc((1-var(--toc-curve)*var(--toc-outward))*(var(--toc-curve)*var(--toc-bend-lower-width)+(1-var(--toc-curve))*(var(--toc-span)+var(--toc-line))))]",
-    "before:h-[calc(var(--toc-curve)*(var(--toc-bend-height)+var(--toc-line))*(1-var(--toc-bend-lower))+(1-var(--toc-curve))*var(--toc-bent)*hypot(var(--toc-span),var(--toc-bend-height)))]",
+    "before:inset-e-[calc((1-var(--toc-curve)*var(--toc-outward))*(var(--toc-curve)*var(--toc-bend-lower-width)+(1-var(--toc-curve))*(var(--toc-span)+var(--toc-line)))+var(--toc-curve)*var(--toc-outward)*var(--toc-line))]",
+    "before:min-w-[calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-span)-var(--toc-bend-lower-width)))]",
+    "before:h-[calc(var(--toc-curve)*((var(--toc-bend-height)+var(--toc-line))*(1-var(--toc-bend-lower))-var(--toc-line))+(1-var(--toc-curve))*var(--toc-bent)*hypot(var(--toc-span),var(--toc-bend-height)))]",
     "before:border-s-[calc(var(--toc-line)*(var(--toc-curve)*var(--toc-in)+(1-var(--toc-curve))*var(--toc-bent)))]",
     "before:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-outward))]",
     "before:border-be-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
@@ -322,10 +327,11 @@ const tocLinkPiece = cv({
     "before:rotate-[calc(var(--toc-dir)*(1-var(--toc-curve))*(var(--toc-outward)-var(--toc-in))*atan2(var(--toc-span),var(--toc-bend-height)))]",
     // The second half of a smooth bend curves into this row and continues as
     // the line along it. Other pieces draw only the line.
-    "after:absolute after:bottom-0 after:box-border after:border-solid after:border-(--toc-line-color)",
+    "after:absolute after:bottom-0 after:box-content after:border-solid after:border-(--toc-line-color)",
     "after:top-[calc(var(--toc-bent)*(var(--toc-curve)*((var(--toc-bend-height)+var(--toc-line))*(1-var(--toc-bend-lower))-var(--toc-line))+(1-var(--toc-curve))*var(--toc-bend-height)))]",
     "after:inset-s-[calc(var(--toc-in)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line)-var(--toc-bend-lower-width))+(1-var(--toc-curve))*var(--toc-span)))]",
-    "after:inset-e-[calc((1-var(--toc-in))*(var(--toc-span)+var(--toc-line)-var(--toc-curve)*max(var(--toc-line),var(--toc-bend-lower-width))))]",
+    "after:inset-e-[calc((1-var(--toc-in))*(var(--toc-span)+var(--toc-line)-var(--toc-curve)*max(var(--toc-line),var(--toc-bend-lower-width)))+var(--toc-curve)*var(--toc-in)*var(--toc-line))]",
+    "after:min-w-[calc(var(--toc-curve)*var(--toc-in)*(var(--toc-bend-lower-width)-var(--toc-line)))]",
     "after:border-bs-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
     "after:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-in))]",
     "after:border-s-[calc(var(--toc-line)*(1-var(--toc-curve)*var(--toc-in)))]",

@@ -9,8 +9,17 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         const link = links.find((item) => item.textContent === name);
         const guide = link?.querySelector(".toc-link-guide");
         if (!guide) return Number.NaN;
-        const inset = getComputedStyle(guide, pseudo).insetInlineEnd;
-        return guide.getBoundingClientRect().right - Number.parseFloat(inset);
+        const style = getComputedStyle(guide, pseudo);
+        const lengths = [
+          style.left,
+          style.width,
+          style.borderLeftWidth,
+          style.borderRightWidth,
+        ];
+        return lengths.reduce(
+          (sum, length) => sum + Number.parseFloat(length),
+          guide.getBoundingClientRect().left,
+        );
       };
       return {
         bendIn: getEnd("Install", "::after"),
@@ -22,7 +31,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // A display rounds each edge to a device pixel, so edges that differ by a
     // fraction can land on different pixels. The rows have half pixels at this
     // scale, where a difference shows. Fractional scales also snap the borders,
-    // which this geometry can't show.
+    // which this geometry can't show, so test-scale-chrome.ts reads their
+    // pixels.
     test.expect(edges.bendIn).toBeGreaterThan(0);
     test.expect(edges.bendOut).toBeGreaterThan(0);
     test.expect(edges.bendIn).toBe(edges.lineAfterBendIn);
