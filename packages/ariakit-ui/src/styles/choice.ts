@@ -386,9 +386,6 @@ export const choiceCardCheck = cv({
      */
     $floating: [
       "not-ui-choice-on:scale-0",
-      // The check paints outside the card, so it takes its colors from the
-      // surface around the card.
-      "ak-outset",
       // The whole check grows from its center. The scale property is separate
       // from translate, so the check stays on the corner.
       "motion-safe:ui-choice-on:transition-[scale]",
