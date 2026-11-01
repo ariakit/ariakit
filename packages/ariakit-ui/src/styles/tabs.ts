@@ -318,7 +318,7 @@ export const tabList = cv({
       if (value !== "stretch") return;
       // Keep the strip width automatic so negative margins can extend it over
       // the root edge.
-      return "[&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow";
+      return "[&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow [&>.control]:[--stretch-px-scale:0.75]";
     },
   },
   defaultVariants: {
