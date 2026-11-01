@@ -22,6 +22,7 @@ import {
   tocItem,
   tocLabel,
   tocLink,
+  tocLinkDot,
   tocLinkGuide,
   tocLinkMarker,
   tocLinkThumb,
@@ -40,28 +41,17 @@ interface TocEntry {
   href?: string;
   link: React.RefObject<HTMLElement | null>;
   thumb: React.RefObject<HTMLElement | null>;
-  marker: React.RefObject<HTMLElement | null>;
+  markers: React.RefObject<HTMLElement | null>[];
 }
 
 interface TocRegistry {
   register: (id: string, entry: TocEntry) => () => void;
 }
 
-interface TocLevel {
-  /** How many lists hold the link. Top-level links are in one list. */
-  depth: number;
-  ordered: boolean;
-  /** Whether a `TocItem` already renders the list item around the link. */
-  item: boolean;
-}
-
 const TocRegistryContext = React.createContext<TocRegistry | null>(null);
 const TocCurrentContext = React.createContext<string | null>(null);
-const TocLevelContext = React.createContext<TocLevel>({
-  depth: 0,
-  ordered: false,
-  item: false,
-});
+// Whether a `TocItem` already renders the list item around the link.
+const TocItemContext = React.createContext(false);
 
 interface TocSection {
   top: number;
@@ -83,6 +73,10 @@ interface TocSpyState {
 interface TocRow {
   top: number;
   bottom: number;
+}
+
+interface TocMarkerRow extends TocRow {
+  element: HTMLElement;
 }
 
 // Returns the element that a link's hash points to, if any.
@@ -353,6 +347,14 @@ function keepInView({ box, link, start, end }: KeepInViewParams) {
   });
 }
 
+// CSS decides which marker of a row shows, if any.
+function getVisibleMarker(entry: TocEntry) {
+  for (const { current: marker } of entry.markers) {
+    if (marker && isVisible(marker)) return marker;
+  }
+  return null;
+}
+
 function sortEntries(entries: Map<string, TocEntry>) {
   return [...entries].sort(([, a], [, b]) => {
     const linkA = a.link.current;
@@ -405,6 +407,7 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
     const entries = sorted.map(([, entry]) => entry);
     const ids = sorted.map(([id]) => id);
     let rows: (TocRow | null)[] = [];
+    let markers: TocMarkerRow[] = [];
     let state: TocSpyState | null = null;
     let container: HTMLElement | null = null;
     let headings: Element | null = null;
@@ -433,13 +436,18 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
       const rootRect = root.getBoundingClientRect();
       const originTop = rootRect.top + (root.clientTop - root.scrollTop) * zoom;
       const getOffset = (y: number) => (y - originTop) / zoom;
+      markers = [];
       rows = entries.map((entry) => {
         const link = entry.link.current;
         const thumb = entry.thumb.current;
-        const marker = entry.marker.current;
-        if (marker && isVisible(marker)) {
-          const top = getOffset(marker.getBoundingClientRect().top);
-          marker.style.setProperty("--toc-piece-top", `${top}px`);
+        const marker = getVisibleMarker(entry);
+        const markerRect = marker?.getBoundingClientRect();
+        const markerRow = markerRect && {
+          top: getOffset(markerRect.top),
+          bottom: getOffset(markerRect.bottom),
+        };
+        if (marker && markerRow) {
+          markers.push({ ...markerRow, element: marker });
         }
         if (!link) return null;
         if (!thumb) return null;
@@ -448,6 +456,9 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
         const thumbRect = thumb.getBoundingClientRect();
         const thumbTop = getOffset(thumbRect.top);
         thumb.style.setProperty("--toc-piece-top", `${thumbTop}px`);
+        // The thumb stops at a marker. The halo of a dot is shorter than its
+        // row, so a thumb that ran to the row edge would show past the halo.
+        if (markerRow) return markerRow;
         // A piece ends this far from the row edges, so the thumb covers the
         // line along the visible rows and the bends between them.
         const joint = linkRect.bottom - thumbRect.bottom;
@@ -481,15 +492,26 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
       }
       // The range goes on each piece that reads it, which glides it, so a glide
       // restyles only these pieces, not every row.
-      const pieces = entries.flatMap((entry) => {
-        const thumb = entry.thumb.current;
-        const marker = entry.marker.current;
-        return [thumb, marker].filter((piece) => piece != null);
-      });
+      const thumbs = entries.map((entry) => entry.thumb.current);
+      const elements = markers.map((marker) => marker.element);
+      const pieces = [...thumbs, ...elements].filter((piece) => piece != null);
       const setRange = () => {
         for (const piece of pieces) {
           piece.style.setProperty("--toc-thumb-start", `${range.start}px`);
           piece.style.setProperty("--toc-thumb-end", `${range.end}px`);
+        }
+        // A marker fills over time where the thumb arrives, and empties at once
+        // where it leaves, because the thumb has already gone by then. The fill
+        // reads the position of the marker, which goes on with the range,
+        // because a layout read before the first range would start the fill
+        // transition.
+        for (const { element, top, bottom } of markers) {
+          element.style.setProperty("--toc-piece-top", `${top}px`);
+          if (range.start <= top && bottom <= range.end) {
+            element.style.removeProperty("--toc-fill-duration");
+          } else {
+            element.style.setProperty("--toc-fill-duration", "0s");
+          }
         }
       };
       if (ready) {
@@ -498,13 +520,15 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
       }
       ready = true;
       // Reading the style applies the range before the transitions turn back
-      // on, so only later ranges glide.
+      // on, so only later ranges glide. The fill of a marker is a
+      // pseudo-element with its own transition, so it needs its own read.
       for (const piece of pieces) {
         piece.style.transitionDuration = "0s";
       }
       setRange();
       for (const piece of pieces) {
         win.getComputedStyle(piece).getPropertyValue("--toc-thumb-start");
+        win.getComputedStyle(piece, "::after").getPropertyValue("clip-path");
       }
       for (const piece of pieces) {
         piece.style.transitionDuration = "";
@@ -604,6 +628,12 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
     observer.observe(root);
     const lists = new Set<Element>();
     for (const entry of entries) {
+      // CSS can show a marker without resizing its row.
+      for (const { current: marker } of entry.markers) {
+        if (marker) {
+          observer.observe(marker);
+        }
+      }
       const link = entry.link.current;
       if (!link) continue;
       observer.observe(link);
@@ -685,7 +715,8 @@ export interface TocProps
   landmark?: boolean;
   /**
    * Renders the root list as an `ol` and numbers its top-level rows with
-   * markers on the guide. Nested lists stay unnumbered.
+   * markers on the guide. Nested lists stay unnumbered, unless a `TocList` sets
+   * its own marker with `ordered` or `$marker`.
    */
   ordered?: boolean;
   /**
@@ -748,34 +779,28 @@ export function Toc({
   const nestedLandmarks = useNestedLandmarks(landmarks, {
     navigation: isLandmark,
   });
-  const level = React.useMemo(
-    () => ({ depth: 0, ordered: !!ordered, item: false }),
-    [ordered],
-  );
   return (
     <LandmarkContext.Provider value={nestedLandmarks}>
       <TocRegistryContext.Provider value={registry}>
         <TocCurrentContext.Provider value={currentId}>
-          <TocLevelContext.Provider value={level}>
-            <ak.Role.nav
-              // A render prop from the caller still decides the element.
-              render={isLandmark ? undefined : <div />}
-              aria-labelledby={
-                isLandmark && rest["aria-label"] == null ? labelId : undefined
-              }
-              {...toc.jsx({ ...variantProps, $ordered: !!ordered })}
-              {...rest}
-              ref={ref}
-            >
-              {labelElement}
-              {list === false
-                ? children
-                : createRender(TocList, list, {
-                    children,
-                    render: ordered ? <ol /> : undefined,
-                  })}
-            </ak.Role.nav>
-          </TocLevelContext.Provider>
+          <ak.Role.nav
+            // A render prop from the caller still decides the element.
+            render={isLandmark ? undefined : <div />}
+            aria-labelledby={
+              isLandmark && rest["aria-label"] == null ? labelId : undefined
+            }
+            {...toc.jsx({ ...variantProps, $ordered: !!ordered })}
+            {...rest}
+            ref={ref}
+          >
+            {labelElement}
+            {list === false
+              ? children
+              : createRender(TocList, list, {
+                  children,
+                  render: ordered ? <ol /> : undefined,
+                })}
+          </ak.Role.nav>
         </TocCurrentContext.Provider>
       </TocRegistryContext.Provider>
     </LandmarkContext.Provider>
@@ -799,7 +824,15 @@ export function TocLabel(props: TocLabelProps) {
 }
 
 export interface TocListProps
-  extends ak.RoleProps<"ul">, VariantProps<typeof tocList> {}
+  extends ak.RoleProps<"ul">, VariantProps<typeof tocList> {
+  /**
+   * Renders a nested list as an `ol` and numbers its rows with markers on the
+   * guide, unless `$marker` sets another marker. The numbers start at one in
+   * each list. For the root list, set `ordered` on `Toc` instead, which also
+   * widens the gutter of the label.
+   */
+  ordered?: boolean;
+}
 
 /**
  * A list of table of contents rows. Put one in a `TocItem` for nested rows.
@@ -813,19 +846,39 @@ export interface TocListProps
  *     </TocList>
  *   </TocItem>
  * </Toc>
+ * @example
+ * <Toc label="On this page">
+ *   <TocItem>
+ *     <TocLink href="#steps">Steps</TocLink>
+ *     <TocList ordered>
+ *       <TocLink href="#install">Install</TocLink>
+ *       <TocLink href="#configure">Configure</TocLink>
+ *     </TocList>
+ *   </TocItem>
+ * </Toc>
+ * @example
+ * <Toc label="On this page">
+ *   <TocItem>
+ *     <TocLink href="#examples">Examples</TocLink>
+ *     <TocList $marker="dot">
+ *       <TocLink href="#basic">Basic</TocLink>
+ *       <TocLink href="#nested">Nested</TocLink>
+ *     </TocList>
+ *   </TocItem>
+ * </Toc>
  */
-export function TocList(props: TocListProps) {
+export function TocList({ ordered, ...props }: TocListProps) {
   const [variantProps, rest] = splitProps(props, tocList);
-  const level = React.useContext(TocLevelContext);
-  // Links in a new level render their own list items again.
-  const nestedLevel = React.useMemo(
-    () => ({ ...level, depth: level.depth + 1, item: false }),
-    [level],
-  );
+  const $marker = variantProps.$marker ?? (ordered ? "number" : false);
   return (
-    <TocLevelContext.Provider value={nestedLevel}>
-      <ak.Role.ul {...tocList.jsx(variantProps)} {...rest} />
-    </TocLevelContext.Provider>
+    // Links in a new level render their own list items again.
+    <TocItemContext.Provider value={false}>
+      <ak.Role.ul
+        render={ordered ? <ol /> : undefined}
+        {...tocList.jsx({ ...variantProps, $marker })}
+        {...rest}
+      />
+    </TocItemContext.Provider>
   );
 }
 
@@ -847,12 +900,10 @@ export interface TocItemProps
  */
 export function TocItem(props: TocItemProps) {
   const [variantProps, rest] = splitProps(props, tocItem);
-  const level = React.useContext(TocLevelContext);
-  const itemLevel = React.useMemo(() => ({ ...level, item: true }), [level]);
   return (
-    <TocLevelContext.Provider value={itemLevel}>
+    <TocItemContext.Provider value={true}>
       <ak.Role.li {...tocItem.jsx(variantProps)} {...rest} />
-    </TocLevelContext.Provider>
+    </TocItemContext.Provider>
   );
 }
 
@@ -870,8 +921,8 @@ export interface TocLinkProps
 /**
  * A link to a heading on the page. `Toc` marks it with
  * `aria-current="location"` while its section is being read. The guide and
- * thumb pieces, and the number marker of a top-level row in an ordered `Toc`,
- * render after the children and stay hidden from assistive technology.
+ * thumb pieces, and the markers, which only a list with markers shows, render
+ * after the children and stay hidden from assistive technology.
  * @example
  * <Toc label="On this page">
  *   <TocLink href="#overview">Overview</TocLink>
@@ -888,25 +939,23 @@ export function TocLink({ item, ...props }: TocLinkProps) {
   const id = React.useId();
   const registry = React.useContext(TocRegistryContext);
   const currentId = React.useContext(TocCurrentContext);
-  const level = React.useContext(TocLevelContext);
+  const inItem = React.useContext(TocItemContext);
   const linkRef = React.useRef<HTMLAnchorElement>(null);
   const thumbRef = React.useRef<HTMLSpanElement>(null);
-  const markerRef = React.useRef<HTMLSpanElement>(null);
+  const numberRef = React.useRef<HTMLSpanElement>(null);
+  const dotRef = React.useRef<HTMLSpanElement>(null);
   const ref = useMergeRefs(linkRef, rest.ref);
-  const hasMarker = level.ordered && level.depth <= 1;
   const { href } = rest;
 
-  // A marker that appears or goes registers the link again, so the table of
-  // contents measures it.
   useSafeLayoutEffect(() => {
     if (!registry) return;
     return registry.register(id, {
       href,
       link: linkRef,
       thumb: thumbRef,
-      marker: markerRef,
+      markers: [numberRef, dotRef],
     });
-  }, [registry, id, href, hasMarker]);
+  }, [registry, id, href]);
 
   // The pieces come last, so slot styles that look at earlier siblings work as
   // in a nav link.
@@ -914,9 +963,8 @@ export function TocLink({ item, ...props }: TocLinkProps) {
     <>
       <span aria-hidden {...tocLinkGuide.jsx()} />
       <span aria-hidden ref={thumbRef} {...tocLinkThumb.jsx()} />
-      {hasMarker && (
-        <span aria-hidden ref={markerRef} {...tocLinkMarker.jsx()} />
-      )}
+      <span aria-hidden ref={numberRef} {...tocLinkMarker.jsx()} />
+      <span aria-hidden ref={dotRef} {...tocLinkDot.jsx()} />
     </>
   );
   const link = (
@@ -932,7 +980,7 @@ export function TocLink({ item, ...props }: TocLinkProps) {
   if (item === false) {
     return link;
   }
-  if (item == null && level.item) {
+  if (item == null && inItem) {
     return link;
   }
   return createRender(ak.Role.li, item, { children: link });

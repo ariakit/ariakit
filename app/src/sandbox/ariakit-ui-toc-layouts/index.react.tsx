@@ -17,6 +17,8 @@ import { Fragment, useState } from "react";
 interface Entry {
   slug: string;
   text: string;
+  ordered?: boolean;
+  marker?: "dot";
   children?: Entry[];
 }
 
@@ -71,6 +73,48 @@ const nested: Entry[] = [
     ],
   },
   { slug: "rtl-styling", text: "التنسيق" },
+];
+
+// Only the rows of the nested list get numbers, including a row with an
+// unnumbered list of its own.
+const numberedSteps: Entry[] = [
+  { slug: "numbered-overview", text: "Overview" },
+  {
+    slug: "numbered-guide",
+    text: "Guide",
+    ordered: true,
+    children: [
+      { slug: "numbered-install", text: "Install" },
+      {
+        slug: "numbered-configure",
+        text: "Configure",
+        children: [{ slug: "numbered-theme", text: "Theme" }],
+      },
+      { slug: "numbered-deploy", text: "Deploy" },
+    ],
+  },
+  { slug: "numbered-faq", text: "FAQ" },
+];
+
+// Only the rows of the nested list get dots, including a row with a list of its
+// own without dots.
+const dotSteps: Entry[] = [
+  { slug: "dot-overview", text: "Overview" },
+  {
+    slug: "dot-guide",
+    text: "Guide",
+    marker: "dot",
+    children: [
+      { slug: "dot-install", text: "Install" },
+      {
+        slug: "dot-configure",
+        text: "Configure",
+        children: [{ slug: "dot-theme", text: "Theme" }],
+      },
+      { slug: "dot-deploy", text: "Deploy" },
+    ],
+  },
+  { slug: "dot-faq", text: "FAQ" },
 ];
 
 // Links to a heading that doesn't exist, a heading in hidden content, and the
@@ -138,7 +182,7 @@ function Entries({ entries, link }: { entries: Entry[]; link?: LinkProps }) {
         <TocLink href={href} {...link}>
           {entry.text}
         </TocLink>
-        <TocList>
+        <TocList ordered={entry.ordered} $marker={entry.marker}>
           <Entries entries={entry.children} link={link} />
         </TocList>
       </TocItem>
@@ -259,6 +303,22 @@ function ShownLater() {
   );
 }
 
+// The dots show without a change in the rows, so nothing else measures them.
+function DotsShownLater() {
+  const [shown, setShown] = useState(false);
+  const entries = dotSteps.map((entry) => {
+    return shown ? entry : { ...entry, marker: undefined };
+  });
+  return (
+    <div className="grid content-start gap-3">
+      <Button aria-pressed={shown} onClick={() => setShown(!shown)}>
+        Show dots
+      </Button>
+      <Contents label="Dots shown later" entries={entries} />
+    </div>
+  );
+}
+
 // The article and the table of contents zoom, and the content of the article
 // zooms again, so the rects they measure are larger than the CSS lengths of the
 // border and scroll padding of the article, the scroll margin of its headings,
@@ -374,7 +434,15 @@ export default function Example() {
         className="h-48 overflow-auto scroll-pt-5"
       >
         <Prose>
-          <Sections entries={[...deep, ...chapters, ...nested]} />
+          <Sections
+            entries={[
+              ...deep,
+              ...chapters,
+              ...numberedSteps,
+              ...dotSteps,
+              ...nested,
+            ]}
+          />
           <div hidden>
             <Heading id="deep-hidden" render={<h2 />} $level={5}>
               Hidden
@@ -407,13 +475,54 @@ export default function Example() {
           label="Numbers over the thumb"
           entries={chapters}
           ordered
-          $markerRing={false}
+          $markerHighlight={false}
+        />
+        <Contents
+          label="Ringed chapters"
+          entries={chapters}
+          ordered
+          $markerHighlight="ring"
         />
         <Contents
           label="Wide thumb chapters"
           entries={chapters}
           ordered
+          $markerHighlight="ring"
           $thumbWidth={5}
+        />
+        <Contents label="Numbered steps" entries={numberedSteps} />
+        <Contents
+          label="Numbered steps, diagonal"
+          entries={numberedSteps}
+          $guide="diagonal"
+        />
+        <Contents
+          label="Numbered steps, rail"
+          entries={numberedSteps}
+          $guide="rail"
+        />
+        <Contents
+          label="Numbered steps, indent only"
+          entries={numberedSteps}
+          $guide={false}
+        />
+        <Contents
+          label="Chapters, indent only"
+          entries={chapters}
+          ordered
+          $guide={false}
+        />
+        <Contents label="Dot steps" entries={dotSteps} />
+        <Contents
+          label="Dot steps, diagonal"
+          entries={dotSteps}
+          $guide="diagonal"
+        />
+        <Contents label="Dot steps, rail" entries={dotSteps} $guide="rail" />
+        <Contents
+          label="Dot steps, wide thumb"
+          entries={dotSteps}
+          $thumbWidth={3}
         />
         {/* The rows scroll in their own box below the label, which is shorter
             than the rows of the sections on screen. */}
@@ -439,6 +548,11 @@ export default function Example() {
             entries={nested}
             $guide="diagonal"
           />
+          <Contents
+            label="Right to left, numbered steps"
+            entries={numberedSteps}
+          />
+          <Contents label="Right to left, dot steps" entries={dotSteps} />
         </div>
         <Contents label="Uneven targets" entries={uneven} />
       </div>
@@ -446,6 +560,7 @@ export default function Example() {
       <div className="flex flex-wrap items-start gap-6">
         <MissingTargets />
         <ShownLater />
+        <DotsShownLater />
       </div>
       <Zoomed />
       <CollapsedSection />

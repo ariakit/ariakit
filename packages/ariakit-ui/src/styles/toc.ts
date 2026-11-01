@@ -7,8 +7,8 @@ import { nav, navGroupLabel, navLink } from "./nav.ts";
  * A table of contents: a navigation region whose rows sit along a guide that
  * bends into nested lists. A thumb covers the guide along the rows whose
  * sections are on screen, between `--toc-thumb-start` and `--toc-thumb-end`,
- * which the style component sets on each thumb piece and number marker in
- * pixels from the top of this element.
+ * which the style component sets on each thumb piece and marker in pixels from
+ * the top of this element.
  */
 export const toc = cv({
   extend: [nav],
@@ -23,6 +23,10 @@ export const toc = cv({
     // The ring of a marker draws inside the halo, so a wider thumb widens the
     // halo to keep the ring off the number.
     "[--toc-marker-halo:max(--spacing(1),var(--toc-thumb-width))]",
+    // How far a number reaches from the guide. These stay unregistered, so they
+    // resolve in the font of each element that reads them.
+    "[--toc-number-size:calc(1lh-0.3em)]",
+    "[--toc-number-reach:calc(var(--toc-number-size)/2+var(--toc-marker-halo))]",
     // Colors resolve against this element, so pieces inside a current link
     // keep the colors of the surface around the rows. The thumb takes the text
     // color at full strength.
@@ -58,7 +62,12 @@ export const toc = cv({
       // whether a bend curves or runs straight.
       smooth: "toc-smooth [--toc-bends:1] [--toc-curve:1]",
       diagonal: "toc-diagonal [--toc-bends:1] [--toc-curve:0]",
-      rail: "toc-rail [--toc-bends:0] [--toc-curve:1]",
+      rail: [
+        "toc-rail [--toc-bends:0] [--toc-curve:1]",
+        // Numbers of a nested list stay on the guide of the outermost list, so
+        // that list needs the gutter of an ordered toc.
+        "[&:has(.toc-list-numbers)]:[--toc-gutter:calc(var(--toc-guide-offset)+var(--toc-number-reach))]",
+      ],
       false: "toc-unguided",
     },
     /**
@@ -76,45 +85,50 @@ export const toc = cv({
      * of the style component sets it and renders an ordered list.
      */
     $ordered: {
-      true: "toc-ordered [counter-reset:toc]",
+      true: "toc-ordered [counter-reset:toc] [--toc-number-display:grid]",
       false: "",
     },
     /**
-     * Draws a ring in the thumb color outside each number marker where the
-     * thumb passes, so the thumb runs through the marker. With `false`, the
-     * markers cover the thumb. Needs `$ordered` and a guide. Defaults to
-     * `true`.
+     * Sets how a number marker shows that the thumb covers it. `fill` fills the
+     * marker with the thumb color. `ring` draws a ring in the thumb color
+     * outside the marker, so the thumb runs through it. `false` leaves it as it
+     * is. Needs an ordered list and a guide. Defaults to `fill`.
      */
-    $markerRing: {
-      true: "toc-ring",
+    $markerHighlight: {
+      fill: "toc-fill",
+      ring: "toc-ring",
       false: "",
     },
   },
   defaultVariants: {
     $size: "sm",
     $guide: "smooth",
-    $markerRing: true,
+    $markerHighlight: "fill",
     $gap: 0.5,
   },
   refine({ variants, addClass }) {
     // The guide sits in a gutter before the top-level rows. Number markers need
-    // a wider gutter, with room for the halo and ring before the surface of a
-    // current row.
-    if (variants.$ordered) {
+    // a wider gutter to stay inside the toc. Their halo and ring cut into the
+    // surface and the focus ring of a row, which keeps the rows at the same
+    // distance from the guide.
+    if (variants.$guide !== false) {
       addClass([
-        "[--toc-guide-offset:calc((1lh-0.4em)/2+var(--toc-marker-halo)+2px)]",
-        "[--toc-gutter:calc(var(--toc-guide-offset)+(1lh-0.4em)/2+var(--toc-marker-halo))]",
+        "[--toc-guide-offset:--spacing(2)]",
+        variants.$ordered
+          ? "[--toc-gutter:calc(var(--toc-guide-offset)+var(--toc-number-reach))]"
+          : "[--toc-gutter:calc(var(--toc-guide-offset)+(--spacing(1)))]",
       ]);
       return;
     }
-    if (variants.$guide === false) {
-      addClass("[--toc-guide-offset:0px] [--toc-gutter:0px]");
+    // Without a guide, number markers sit apart from the rows.
+    if (variants.$ordered) {
+      addClass([
+        "[--toc-guide-offset:calc(var(--toc-number-reach)+2px)]",
+        "[--toc-gutter:calc(var(--toc-guide-offset)+var(--toc-number-reach))]",
+      ]);
       return;
     }
-    addClass([
-      "[--toc-guide-offset:--spacing(2)]",
-      "[--toc-gutter:calc(var(--toc-guide-offset)+(--spacing(1)))]",
-    ]);
+    addClass("[--toc-guide-offset:0px] [--toc-gutter:0px]");
   },
 });
 
@@ -157,6 +171,35 @@ export const tocList = cv({
     "[--toc-tail:1] [.toc-list_&]:[--toc-tail:inherit]",
     "[&>li:not(:last-child)]:[--toc-tail:0]",
   ],
+  variants: {
+    /**
+     * Sets the marker on the guide at the rows of a nested list. Every link
+     * renders the markers, and these flags inherit to them, so only the rows of
+     * this list show one, and a list inside it sets its own. `number` numbers
+     * the rows, and the `ordered` prop of the style component also sets it and
+     * renders an ordered list. The rows stay in place, so the halo of a number
+     * cuts into the surface of a current row. Without a guide, the list makes
+     * room for the numbers instead. `dot` draws a small dot that fills with the
+     * thumb color while the thumb covers it, and needs a guide. Defaults to
+     * `false`, which shows no marker.
+     */
+    $marker: {
+      number: [
+        "toc-list-numbers",
+        "[--toc-number-display:grid] [--toc-dot-display:none]",
+        "[counter-reset:toc]",
+        "[.toc-unguided_&]:[--toc-guide-offset:calc(var(--toc-number-reach)+2px)]",
+        "[.toc-unguided_.toc-list_&]:ps-[calc(var(--toc-indent)+var(--toc-guide-offset)+var(--toc-number-reach))]",
+      ],
+      dot: "[--toc-number-display:none] [--toc-dot-display:block]",
+      // An ordered toc numbers only the rows of its outermost list.
+      false:
+        "[--toc-dot-display:none] [.toc-list_&]:[--toc-number-display:none]",
+    },
+  },
+  defaultVariants: {
+    $marker: false,
+  },
 });
 
 /** A list item that holds a link and the nested list of its rows. */
@@ -242,6 +285,10 @@ const tocLinkPiece = cv({
     // from the row edges to place the thumb.
     "[--toc-joint:var(--py,0px)]",
     "[--toc-bend-height:calc(var(--nav-gap,0px)+var(--toc-joint)*2)]",
+    // The curve around the corner of a row takes most of a bend, so it follows
+    // that corner: the lower curve of a bend out wraps the top of this row, and
+    // the upper curve of a bend in wraps the bottom of the row before it.
+    "[--toc-bend-lower:calc(0.5+0.15*(var(--toc-outward)-var(--toc-in)))]",
     // The rail keeps the guide of the outermost list at every level.
     "[--toc-x:calc(-1*var(--toc-guide-offset,0px)-(1-var(--toc-bends,1))*var(--toc-depth,0)*var(--toc-indent))]",
     "top-[calc(var(--toc-joint)-(1-var(--toc-first))*var(--toc-bend-height))]",
@@ -255,9 +302,9 @@ const tocLinkPiece = cv({
     // line. A diagonal bend is one slanted line instead. A straight piece
     // leaves it empty.
     "before:absolute before:top-0 before:box-border before:border-solid before:border-(--toc-line-color)",
-    "before:inset-s-[calc(var(--toc-outward)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line))/2+(1-var(--toc-curve))*var(--toc-span)))]",
-    "before:w-[calc(var(--toc-curve)*(var(--toc-span)+var(--toc-line))/2)]",
-    "before:h-[calc(var(--toc-curve)*(var(--toc-bend-height)+var(--toc-line))/2+(1-var(--toc-curve))*var(--toc-bent)*hypot(var(--toc-span),var(--toc-bend-height)))]",
+    "before:inset-s-[calc(var(--toc-outward)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line))*var(--toc-bend-lower)+(1-var(--toc-curve))*var(--toc-span)))]",
+    "before:w-[calc(var(--toc-curve)*(var(--toc-span)+var(--toc-line))*(1-var(--toc-bend-lower)))]",
+    "before:h-[calc(var(--toc-curve)*(var(--toc-bend-height)+var(--toc-line))*(1-var(--toc-bend-lower))+(1-var(--toc-curve))*var(--toc-bent)*hypot(var(--toc-span),var(--toc-bend-height)))]",
     "before:border-s-[calc(var(--toc-line)*(var(--toc-curve)*var(--toc-in)+(1-var(--toc-curve))*var(--toc-bent)))]",
     "before:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-outward))]",
     "before:border-be-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
@@ -268,14 +315,14 @@ const tocLinkPiece = cv({
     // The second half of a smooth bend curves into this row and continues as
     // the line along it. Other pieces draw only the line.
     "after:absolute after:bottom-0 after:box-border after:border-solid after:border-(--toc-line-color)",
-    "after:top-[calc(var(--toc-bent)*(var(--toc-curve)*(var(--toc-bend-height)-var(--toc-line))/2+(1-var(--toc-curve))*var(--toc-bend-height)))]",
-    "after:inset-s-[calc(var(--toc-in)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line))/2+(1-var(--toc-curve))*var(--toc-span)))]",
-    "after:w-[calc(var(--toc-curve)*max(var(--toc-line),(var(--toc-span)+var(--toc-line))/2))]",
+    "after:top-[calc(var(--toc-bent)*(var(--toc-curve)*((var(--toc-bend-height)+var(--toc-line))*(1-var(--toc-bend-lower))-var(--toc-line))+(1-var(--toc-curve))*var(--toc-bend-height)))]",
+    "after:inset-s-[calc(var(--toc-in)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line))*(1-var(--toc-bend-lower))+(1-var(--toc-curve))*var(--toc-span)))]",
+    "after:w-[calc(var(--toc-curve)*max(var(--toc-line),(var(--toc-span)+var(--toc-line))*var(--toc-bend-lower)))]",
     "after:border-bs-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
     "after:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-in))]",
     "after:border-s-[calc(var(--toc-line)*(1-var(--toc-curve)*var(--toc-in)))]",
-    "after:rounded-se-[calc(var(--toc-curve)*var(--toc-in)*(var(--toc-span)+var(--toc-line))/2)_calc(var(--toc-curve)*var(--toc-in)*(var(--toc-bend-height)+var(--toc-line))/2)]",
-    "after:rounded-ss-[calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-span)+var(--toc-line))/2)_calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-bend-height)+var(--toc-line))/2)]",
+    "after:rounded-se-[calc(var(--toc-curve)*var(--toc-in)*(var(--toc-span)+var(--toc-line))*var(--toc-bend-lower))_calc(var(--toc-curve)*var(--toc-in)*(var(--toc-bend-height)+var(--toc-line))*var(--toc-bend-lower))]",
+    "after:rounded-ss-[calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-span)+var(--toc-line))*var(--toc-bend-lower))_calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-bend-height)+var(--toc-line))*var(--toc-bend-lower))]",
   ],
 });
 
@@ -291,16 +338,20 @@ export const tocLinkGuide = cv({
   ],
 });
 
+/** The timing that the thumb glide and the fill of a marker share. */
+const tocGlideTiming = cv({
+  class: "duration-200 ease-[cubic-bezier(0.25,0.7,0.3,1)]",
+});
+
 /**
  * The glide of the thumb range. Each piece that reads the range animates it
  * itself, which restyles only that piece in each frame. The pieces get the same
  * range at the same time, so they glide as one bar through the bends.
  */
 const tocThumbGlide = cv({
-  class: [
-    "transition-[--toc-thumb-start,--toc-thumb-end] duration-200",
-    "ease-[cubic-bezier(0.25,0.7,0.3,1)] motion-reduce:transition-none",
-  ],
+  extend: [tocGlideTiming],
+  class:
+    "transition-[--toc-thumb-start,--toc-thumb-end] motion-reduce:transition-none",
 });
 
 /**
@@ -322,35 +373,83 @@ export const tocLinkThumb = cv({
 });
 
 /**
- * A hidden number marker on the guide at a top-level row of an ordered table of
- * contents. A halo in the surface color cuts the guide around it, and with
- * `$markerRing` on the toc, a ring in the halo lights up where the thumb
- * passes.
+ * Shared geometry of the markers, which center `--toc-marker-size` on the guide
+ * and on the first line of a row. A halo in the surface color cuts the guide
+ * around them.
+ */
+const tocLinkMarkerBase = cv({
+  extend: [tocGlideTiming],
+  class: [
+    // Only the fill transitions, so the colors follow the theme at once and a
+    // glide of the range doesn't restyle the marker in each frame. The fill reads
+    // the timing from here.
+    "transition-none",
+    "absolute pointer-events-none rounded-full z-2",
+    "size-(--toc-marker-size)",
+    "top-[calc(var(--py,0px)+(1lh-var(--toc-marker-size))/2)]",
+    // Like the guide pieces, a marker in a nested list stays on the rail.
+    "inset-s-[calc(-1*var(--toc-guide-offset,0px)-(1-var(--toc-bends,1))*var(--toc-depth,0)*var(--toc-indent)-var(--toc-marker-size)/2)]",
+    // A shadow halo, unlike an outline, paints under the ring.
+    "shadow-[0_0_0_var(--toc-marker-halo)_var(--toc-halo-color)]",
+    // The toc root sets system colors in forced colors.
+    "forced-colors:forced-color-adjust-none",
+    // The clip of a fill, which resolves here because the range doesn't inherit.
+    // It stops at the edges of the marker, so the fill takes the whole transition
+    // however far the range moves, and only the markers that the thumb reaches
+    // animate, which needs lengths instead of percentages. The fill starts from
+    // the side of the thumb. An empty clip passes the edge, so a fractional size
+    // leaves no line. The style component sets the duration to zero on a marker
+    // that the thumb leaves, which empties it at once, and on the first range.
+    "[--toc-fill-clip:inset(min(var(--toc-marker-size)+1px,max(-1px,var(--toc-thumb-start)-var(--toc-piece-top,0px)))_-1px_min(var(--toc-marker-size)+1px,max(-1px,var(--toc-piece-top,0px)+var(--toc-marker-size)-var(--toc-thumb-end)))_-1px)]",
+  ],
+});
+
+/**
+ * A hidden dot on the guide at a row. It's small enough for the halo to fit in
+ * the regular guide offset, so its list keeps the rows in place. The dot fills
+ * with the thumb color while the thumb covers it. Needs a guide.
+ */
+export const tocLinkDot = cv({
+  extend: [tocLinkMarkerBase],
+  class: [
+    "toc-link-dot [display:var(--toc-dot-display,none)] [.toc-unguided_&]:hidden",
+    // A whole number of pixels stays centered on the guide.
+    "[--toc-marker-size:round(0.375em,1px)]",
+    // The guide color can be translucent, and the guide passes under the dot.
+    "[background:linear-gradient(var(--toc-guide-color),var(--toc-guide-color)),var(--toc-halo-color)]",
+    "after:absolute after:inset-0 after:rounded-full after:bg-(--toc-thumb-color)",
+    "after:[clip-path:var(--toc-fill-clip)]",
+    "after:transition-[clip-path] after:duration-[var(--toc-fill-duration,inherit)] after:ease-[inherit]",
+    "motion-reduce:after:transition-none",
+  ],
+});
+
+/**
+ * A hidden number marker on the guide at a row of an ordered list. With
+ * `$markerHighlight` on the toc, the marker fills with the thumb color where
+ * the thumb passes, or a ring in the halo lights up.
  */
 export const tocLinkMarker = cv({
-  extend: [edge, tocThumbGlide],
+  extend: [edge, tocLinkMarkerBase],
   class: [
-    "toc-link-marker absolute pointer-events-none grid place-items-center rounded-full z-2",
+    "toc-link-marker [display:var(--toc-number-display,none)] place-items-center",
     // The marker sits outside the link, on the surface around the rows.
     "[.ak-layer>&]:ak-outset",
-    "[--toc-marker-size:calc(1lh-0.4em)] size-(--toc-marker-size)",
-    "top-[calc(var(--py,0px)+0.2em)]",
-    "inset-s-[calc(-1*var(--toc-guide-offset,0px)-var(--toc-marker-size)/2)]",
+    "[--toc-marker-size:var(--toc-number-size)]",
     "[counter-increment:toc]",
     "before:content-[counter(toc)] before:font-semibold",
     "before:leading-(--toc-marker-size) before:[font-size-adjust:0.45]",
-    // A shadow halo, unlike an outline, paints under the ring.
-    "shadow-[0_0_0_var(--toc-marker-halo)_var(--toc-halo-color)]",
-    // Keep the halo and the ring in forced colors, with system colors.
-    "forced-colors:forced-color-adjust-none",
+    // Keep the ring in forced colors, with system colors.
     "forced-colors:bg-[Canvas] forced-colors:text-[CanvasText]",
     "forced-colors:inset-ring forced-colors:inset-ring-[CanvasText]",
     // The ring is clipped to the thumb range widened by the halo, so a marker
     // is either lit or not while the thumb is still. An empty range, with no
     // section on screen, doesn't widen.
     "[--toc-ring-reach:min(var(--toc-marker-halo),max(0px,(var(--toc-thumb-end)-var(--toc-thumb-start))*1000))]",
-    // Only the ring reads the range, so a marker without one doesn't glide.
-    "[.toc:not(.toc-ring)_&]:transition-none [.toc-unguided_&]:transition-none",
+    // Only the ring glides with the range, so other markers don't restyle in
+    // each frame of a glide.
+    "[.toc-ring:not(.toc-unguided)_&]:transition-[--toc-thumb-start,--toc-thumb-end]",
+    "motion-reduce:[.toc-ring:not(.toc-unguided)_&]:transition-none",
     // The range doesn't inherit, so the ring takes it from the marker.
     "[.toc-ring:not(.toc-unguided)_&]:after:[--toc-thumb-start:inherit]",
     "[.toc-ring:not(.toc-unguided)_&]:after:[--toc-thumb-end:inherit]",
@@ -361,6 +460,24 @@ export const tocLinkMarker = cv({
     "[.toc-ring:not(.toc-unguided)_&]:after:border-(length:--toc-thumb-width)",
     "[.toc-ring:not(.toc-unguided)_&]:after:border-(--toc-thumb-color)",
     "[.toc-ring:not(.toc-unguided)_&]:after:[clip-path:inset(max(-2px,var(--toc-thumb-start)-var(--toc-piece-top,0px)+var(--toc-marker-halo)-var(--toc-ring-reach))_-2px_max(-2px,var(--toc-piece-top,0px)+100%-var(--toc-thumb-end)-var(--toc-marker-halo)-var(--toc-ring-reach))_-2px)]",
+    // The fill repeats the number in the surface color and shows only where the
+    // thumb covers the marker, so the number flips along with the surface.
+    "[.toc-fill:not(.toc-unguided)_&]:after:absolute",
+    "[.toc-fill:not(.toc-unguided)_&]:after:inset-0",
+    "[.toc-fill:not(.toc-unguided)_&]:after:grid",
+    "[.toc-fill:not(.toc-unguided)_&]:after:place-items-center",
+    "[.toc-fill:not(.toc-unguided)_&]:after:rounded-full",
+    "[.toc-fill:not(.toc-unguided)_&]:after:bg-(--toc-thumb-color)",
+    "[.toc-fill:not(.toc-unguided)_&]:after:text-(--toc-halo-color)",
+    "[.toc-fill:not(.toc-unguided)_&]:after:content-[counter(toc)]",
+    "[.toc-fill:not(.toc-unguided)_&]:after:font-semibold",
+    "[.toc-fill:not(.toc-unguided)_&]:after:leading-(--toc-marker-size)",
+    "[.toc-fill:not(.toc-unguided)_&]:after:[font-size-adjust:0.45]",
+    "[.toc-fill:not(.toc-unguided)_&]:after:[clip-path:var(--toc-fill-clip)]",
+    "[.toc-fill:not(.toc-unguided)_&]:after:transition-[clip-path]",
+    "[.toc-fill:not(.toc-unguided)_&]:after:duration-[var(--toc-fill-duration,inherit)]",
+    "[.toc-fill:not(.toc-unguided)_&]:after:ease-[inherit]",
+    "motion-reduce:[.toc-fill:not(.toc-unguided)_&]:after:transition-none",
   ],
   defaultVariants: {
     // The same surface as the counters of an ordered list.

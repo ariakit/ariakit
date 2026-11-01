@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { expectTocThumbStill } from "#app/test-utils/toc.ts";
 
 // Scrolls to the heading and pauses the thumb glides as soon as each table of
 // contents sets its range. A slow frame can outlast the glide, which then
@@ -122,7 +123,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // A glide on the root restyles every row in each frame, so only the thumb
     // pieces and the number markers with rings animate. Read the paused glide
     // halfway to compare the range on the pieces and the rings.
-    const chapters = q.navigation("Twelve chapters");
+    const chapters = q.navigation("Ringed chapters");
     const numbers = q.navigation("Numbers over the thumb");
     await pauseGlides(page, [chapters, numbers], "chapter-12");
     const unringed = await numbers.elementHandle();
@@ -174,6 +175,156 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // The rings glide with the thumb.
     test.expect(glide.ranges).toHaveLength(1);
     test.expect(glide.rings).toEqual(glide.ranges);
+  });
+
+  test("changes the colors of the markers at once with the theme", async ({
+    page,
+    q,
+  }) => {
+    const navs = [q.navigation("Twelve chapters"), q.navigation("Dot steps")];
+    await page.emulateMedia({ colorScheme: "dark" });
+    for (const nav of navs) {
+      const properties = await nav.evaluate((element) => {
+        const animations = element.getAnimations({ subtree: true });
+        return animations.flatMap((animation) => {
+          const { effect } = animation;
+          if (!(effect instanceof KeyframeEffect)) return [];
+          if (!effect.target?.matches(".toc-link-marker, .toc-link-dot")) {
+            return [];
+          }
+          return animation instanceof CSSTransition
+            ? [animation.transitionProperty]
+            : [];
+        });
+      });
+      test.expect(properties).toEqual([]);
+    }
+  });
+
+  test("shows the first range without filling the markers", async ({
+    page,
+    q,
+  }) => {
+    // The transition can end before any later read, so a listener from the
+    // start of the page counts it. No user-facing state tracks the transitions.
+    await page.addInitScript(() => {
+      const runs: string[] = [];
+      Object.assign(window, { fillRuns: runs });
+      document.addEventListener(
+        "transitionrun",
+        (event) => {
+          if (event.pseudoElement !== "::after") return;
+          if (!(event.target instanceof HTMLElement)) return;
+          runs.push(event.target.className);
+        },
+        true,
+      );
+    });
+    await page.reload();
+    const dot = query(q.navigation("Dot steps"))
+      .link("Install")
+      .locator(".toc-link-dot");
+    await test.expect(dot).toHaveAttribute("style", /--toc-piece-top/);
+    // The range is in place above, and transitionrun fires on a later frame.
+    await flushFrames(page);
+    const runs = await page.evaluate(() => {
+      return "fillRuns" in window ? window.fillRuns : null;
+    });
+    test.expect(runs).toEqual([]);
+  });
+
+  test("fills only the markers that the thumb reaches, over time", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Twelve chapters");
+    await page.evaluate(() => {
+      document.getElementById("chapter-1")?.scrollIntoView({ block: "start" });
+    });
+    await test
+      .expect(query(nav).link("Chapter 1"))
+      .toHaveAttribute("aria-current", "location");
+    await expectTocThumbStill(page, nav);
+    await pauseGlides(page, [nav], "chapter-6");
+    const fill = await nav.evaluate((element) => {
+      const animations = element.getAnimations({ subtree: true });
+      const fills = animations.flatMap((animation) => {
+        const { effect } = animation;
+        if (!(effect instanceof KeyframeEffect)) return [];
+        if (effect.pseudoElement !== "::after") return [];
+        return effect.target ? [{ animation, target: effect.target }] : [];
+      });
+      const read = (time: number) => {
+        return fills.map(({ animation, target }) => {
+          animation.currentTime = time;
+          return getComputedStyle(target, "::after").clipPath;
+        });
+      };
+      const start = read(0);
+      const isWithinMarker = (clip: string, index: number) => {
+        const target = fills[index]?.target;
+        if (!(target instanceof HTMLElement)) return false;
+        const insets = [...clip.matchAll(/-?[\d.]+(?=px)/g)].map(Number);
+        return Math.max(...insets) <= target.offsetHeight + 2;
+      };
+      return {
+        links: fills.map(({ target }) => target.parentElement?.textContent),
+        start,
+        middle: read(100),
+        startsAtMarker: start.every(isWithinMarker),
+      };
+    });
+    // The clip stops at the edges of a marker, so the fill takes the whole
+    // transition, and a marker past the thumb stays out of it, however far the
+    // range moves. A marker that the thumb leaves empties at once.
+    test.expect(fill.startsAtMarker).toBe(true);
+    test.expect(fill.links).toContain("Chapter 6");
+    test.expect(fill.links).not.toContain("Chapter 12");
+    test.expect(fill.links).not.toContain("Chapter 1");
+    test.expect(fill.middle).not.toEqual(fill.start);
+  });
+
+  test("shows each marker only at the rows of its own list", async ({ q }) => {
+    const getMarkers = (nav: string, link: string) => {
+      const row = query(q.navigation(nav)).link(link);
+      return {
+        number: row.locator(".toc-link-marker"),
+        dot: row.locator(".toc-link-dot"),
+      };
+    };
+    const expectMarker = async (
+      nav: string,
+      link: string,
+      marker: "number" | "dot" | null,
+    ) => {
+      const { number, dot } = getMarkers(nav, link);
+      await test.expect(number).toBeVisible({ visible: marker === "number" });
+      await test.expect(dot).toBeVisible({ visible: marker === "dot" });
+    };
+    // A nested list has its own marker, which neither the rows around it nor a
+    // list inside it take.
+    await expectMarker("Numbered steps", "Overview", null);
+    await expectMarker("Numbered steps", "Install", "number");
+    await expectMarker("Numbered steps", "Theme", null);
+    await expectMarker("Dot steps", "Overview", null);
+    await expectMarker("Dot steps", "Install", "dot");
+    await expectMarker("Dot steps", "Theme", null);
+    // An ordered table of contents numbers only the rows of its outermost list.
+    await expectMarker("Right to left", "الاستخدام", "number");
+    await expectMarker("Right to left", "مثال بسيط", null);
+    // A table of contents without markers shows none.
+    await expectMarker("Five levels", "Overview", null);
+    await expectMarker("Five levels", "Getting started", null);
+  });
+
+  test("measures dots that show after the first render", async ({ q }) => {
+    const nav = q.navigation("Dots shown later");
+    const dot = query(nav).link("Install").locator(".toc-link-dot");
+    await test.expect(dot).toBeHidden();
+    await q.button("Show dots").click();
+    await test.expect(dot).toBeVisible();
+    // The fill reads the position of the dot, which only a visible dot has.
+    await test.expect(dot).toHaveAttribute("style", /--toc-piece-top:\s*[1-9]/);
   });
 
   test("keeps the current link in view when the rows on screen don't fit", async ({

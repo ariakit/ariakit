@@ -25,6 +25,21 @@ const restingTocs = {
     "right-to-left": "Right to left",
     "right-to-left-diagonal": "Right to left, diagonal",
   },
+  "shows the numbered steps at rest": {
+    "numbered-steps": "Numbered steps",
+    "numbered-steps-diagonal": "Numbered steps, diagonal",
+    "numbered-steps-rail": "Numbered steps, rail",
+    "numbered-steps-indent-only": "Numbered steps, indent only",
+    "chapters-indent-only": "Chapters, indent only",
+    "right-to-left-numbered-steps": "Right to left, numbered steps",
+  },
+  "shows the dot steps at rest": {
+    "dot-steps": "Dot steps",
+    "dot-steps-diagonal": "Dot steps, diagonal",
+    "dot-steps-rail": "Dot steps, rail",
+    "dot-steps-wide-thumb": "Dot steps, wide thumb",
+    "right-to-left-dot-steps": "Right to left, dot steps",
+  },
 };
 
 // Puts a heading where a click on its link would, at the scroll padding.
@@ -61,7 +76,7 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
     });
   }
 
-  test("lights the ring of a two-digit marker unless rings are off @visual", async ({
+  test("highlights a two-digit marker unless highlights are off @visual", async ({
     page,
     q,
     visual,
@@ -78,7 +93,7 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         colorScheme,
         item: `${id}/twelve-chapters-lit`,
       });
-      // Without rings, the markers sit over the thumb.
+      // Without a highlight, the markers sit over the thumb.
       const plain = q.navigation("Numbers over the thumb");
       await test
         .expect(query(plain).link("Chapter 10"))
@@ -88,6 +103,17 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         box: plain,
         colorScheme,
         item: `${id}/numbers-over-thumb`,
+      });
+      // With a ring, the thumb runs through the marker.
+      const ringed = q.navigation("Ringed chapters");
+      await test
+        .expect(query(ringed).link("Chapter 10"))
+        .toHaveAttribute("aria-current", "location");
+      await captureInView({
+        visual,
+        box: ringed,
+        colorScheme,
+        item: `${id}/ringed-chapters-lit`,
       });
       // The ring takes the width of a thumb wider than the marker halo, which
       // widens the halo to keep the ring off the number.
@@ -100,6 +126,56 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         box: wide,
         colorScheme,
         item: `${id}/wide-thumb-chapters-lit`,
+      });
+    });
+  });
+
+  test("fills the dots that the thumb covers @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorScheme(page, async (colorScheme) => {
+      await scrollToHeading(page, "dot-install");
+      const nav = q.navigation("Dot steps");
+      await test
+        .expect(query(nav).link("Install"))
+        .toHaveAttribute("aria-current", "location");
+      await captureInView({
+        visual,
+        box: nav,
+        colorScheme,
+        item: `${id}/dot-steps-lit`,
+      });
+      const rightToLeft = q.navigation("Right to left, dot steps");
+      await captureInView({
+        visual,
+        box: rightToLeft,
+        colorScheme,
+        item: `${id}/right-to-left-dot-steps-lit`,
+      });
+    });
+  });
+
+  test("keeps the dots and their fill in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    // The emulation lasts across the reloads of each color scheme.
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorScheme(page, async (colorScheme) => {
+      await expectMedia(page, "(forced-colors: active)");
+      await scrollToHeading(page, "dot-install");
+      const nav = q.navigation("Dot steps");
+      await test
+        .expect(query(nav).link("Install"))
+        .toHaveAttribute("aria-current", "location");
+      await captureInView({
+        visual,
+        box: nav,
+        colorScheme,
+        item: `${id}/dot-steps-forced-colors`,
       });
     });
   });
@@ -123,6 +199,17 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         box: nav,
         colorScheme,
         item: `${id}/right-to-left-forced-colors`,
+      });
+      await scrollToHeading(page, "chapter-10");
+      const ringed = q.navigation("Ringed chapters");
+      await test
+        .expect(query(ringed).link("Chapter 10"))
+        .toHaveAttribute("aria-current", "location");
+      await captureInView({
+        visual,
+        box: ringed,
+        colorScheme,
+        item: `${id}/ringed-chapters-forced-colors`,
       });
     });
   });

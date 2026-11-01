@@ -312,6 +312,14 @@ body > * {
   initial-value: 0px;
 }
 
+/* Resolve the size of a table of contents marker on the marker, so its number,
+   which has its own line height, reads the same size. */
+@property --toc-marker-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Resolve cell padding in the table's font to align header and body text. */
 @property --table-py {
   syntax: "<length>";
