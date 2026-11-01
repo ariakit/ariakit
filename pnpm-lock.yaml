@@ -510,8 +510,8 @@ importers:
         specifier: 0.6.3
         version: 0.6.3(@playwright/test@1.63.0)
       clava:
-        specifier: 0.7.1
-        version: 0.7.1
+        specifier: 0.7.2
+        version: 0.7.2
       cross-env:
         specifier: 10.1.0
         version: 10.1.0
@@ -930,8 +930,8 @@ importers:
         specifier: workspace:*
         version: link:../ariakit-utils
       clava:
-        specifier: 0.7.1
-        version: 0.7.1
+        specifier: 0.7.2
+        version: 0.7.2
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -5997,8 +5997,8 @@ packages:
     resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
 
-  clava@0.7.1:
-    resolution: {integrity: sha512-2gBMT9H79UmulJk3q6I+sDE/gjhqo7NqWQXI/wSdSLiEKjujSKSQZNl5nskZACmyDBI4WWJ52f8QM0Ek8OdSVA==}
+  clava@0.7.2:
+    resolution: {integrity: sha512-ohm72e1jWFfUo/T7pCHMxYkRnCo1ajvqqOyP1Hw4c3CSDaqrtYBGRS3YE+cdEmuiBZcA7KkplO4yvv6CS4Yzyg==}
 
   client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
@@ -15237,7 +15237,7 @@ snapshots:
 
   ci-info@4.4.0: {}
 
-  clava@0.7.1:
+  clava@0.7.2:
     dependencies:
       clsx: 2.1.1
       csstype: 3.2.3

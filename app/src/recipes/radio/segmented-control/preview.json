@@ -1,0 +1,4 @@
+{
+  "title": "Segmented Control",
+  "description": "A RadioGroup and RadioCard elements with $kind=\"segmented\", where the selected segment rises from a darker group, Tab moves to it, and the arrow keys move to and check the next one. $layout=\"stretch\" gives each segment the same share of the column, whatever the length of its label, and each RadioCard holds a RadioCardSlot icon before a RadioCardLabel. Use it for a short row of options that all stay visible, as the starting point for the other segmented radios, and prefer cards when each option needs a description."
+}

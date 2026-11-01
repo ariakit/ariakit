@@ -1,0 +1,4 @@
+{
+  "title": "Segmented Control with a Flat Thumb and a Badge",
+  "description": "Segments with $kind=\"segmented-flat\", where the selected segment has a flat surface without the bevel of the default kind, and casts a large shadow that the group clips. A Badge with $layer=\"success\" in a RadioCardSlot with $kind=\"box\" shows a discount with a tinted surface and colored text, and it is part of the name of the option. Use it for a softer look than the raised thumb, such as a choice between billing periods."
+}

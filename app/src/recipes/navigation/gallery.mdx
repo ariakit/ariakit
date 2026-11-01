@@ -9,6 +9,7 @@ import { source as s5 } from "./sidebar-sections/preview.astro";
 import P6, { source as s6 } from "./api-reference/preview.astro";
 import P7, { source as s7 } from "./music/preview.astro";
 import P8, { source as s8 } from "./repository/preview.astro";
+import P9, { source as s9 } from "./segmented-links/preview.astro";
 
 <PreviewGrid>
   <PreviewCard source={s0}>
@@ -33,5 +34,8 @@ import P8, { source as s8 } from "./repository/preview.astro";
   </PreviewCard>
   <PreviewCard source={s8} class="col-span-full">
     <P8 />
+  </PreviewCard>
+  <PreviewCard source={s9}>
+    <P9 />
   </PreviewCard>
 </PreviewGrid>

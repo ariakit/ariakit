@@ -252,6 +252,16 @@ const hasSidebar = sidebar && navigation.length > 0;
       :root:active-view-transition-type(page-load) main .control-bar {
         view-transition-name: none;
       }
+      /* The examples in the page content share this document, so a transition
+         in one of them captures the bars of the others. Captured bars paint
+         above the page, even a bar that scrolled behind the top bar, so only
+         the navigation in use takes part. */
+      :root:active-view-transition-type(bar)
+        main
+        .nav:not(:hover, :focus-within)
+        .control-bar {
+        view-transition-name: none;
+      }
     </style>
   </head>
   <body>

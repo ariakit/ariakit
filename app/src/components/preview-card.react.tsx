@@ -193,7 +193,9 @@ export function PreviewCard({
               $p={2}
               $layer="transparent"
               // Browser controls replace the visible title.
-              className={browser ? "sr-only" : "flex-1 font-medium"}
+              className={
+                browser ? "sr-only" : "min-w-0 flex-1 truncate font-medium"
+              }
             >
               {/* A hidden title has no link, which would take focus without
                   showing it. */}
@@ -202,6 +204,8 @@ export function PreviewCard({
               ) : (
                 <a
                   href={`#${sectionId}`}
+                  // A long title truncates, so a tooltip shows the full text.
+                  title={title}
                   className="hover:underline hover:decoration-1 hover:underline-offset-[0.25em]"
                 >
                   {title}
