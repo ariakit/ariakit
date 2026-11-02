@@ -2,7 +2,7 @@ import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("aligns the search field with the page and keeps it clear of the side parts", async ({
+  test("aligns the search field and breadcrumbs with the page, and keeps the field clear of the side parts", async ({
     page,
     q,
   }) => {
@@ -15,10 +15,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
       }
       return box;
     };
+    const breadcrumb = q.navigation("Breadcrumb");
     const expectAligned = async () => {
-      await expect
-        .poll(async () => (await getBox(search)).x - (await getBox(column)).x)
-        .toBeCloseTo(0, 0);
+      for (const part of [search, breadcrumb]) {
+        await expect
+          .poll(async () => {
+            const [partBox, columnBox] = await Promise.all([
+              getBox(part),
+              getBox(column),
+            ]);
+            const start = Math.abs(partBox.x - columnBox.x);
+            const end = Math.abs(
+              partBox.x + partBox.width - (columnBox.x + columnBox.width),
+            );
+            return Math.max(start, end);
+          })
+          .toBeLessThan(0.5);
+      }
     };
     await page.setViewportSize({ width: 1280, height: 620 });
     await expectAligned();
