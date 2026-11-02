@@ -1,7 +1,6 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
-import { splitProps } from "clava";
-import { clsx } from "clsx";
+import { cx, splitProps } from "clava";
 import { CheckIcon, CircleAlertIcon } from "lucide-react";
 import type * as React from "react";
 import {
@@ -681,7 +680,7 @@ export function ComboboxSelect({
           would push the arrow off center. An arrow before the label already
           closes that gap. */}
       <ComboboxItemLabel
-        className={clsx(
+        className={cx(
           "flex-1 text-start",
           chevron !== "before" && "empty:-me-(--gap)!",
         )}
