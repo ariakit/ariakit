@@ -62,16 +62,16 @@ export interface ShellPartProps
 // All bar parts share these variants.
 type BarPartRecipe = typeof shellStart;
 
-/** Renders a header or footer part with its recipe. */
+/** Renders a header, footer, or main header part with its recipe. */
 function renderPartCell(recipe: BarPartRecipe, props: ShellPartProps) {
   const [variantProps, rest] = splitProps(props, recipe);
   return <ak.Role.div {...recipe.jsx(variantProps)} {...rest} />;
 }
 
 /**
- * The start part of a header or footer: a flex cell at the bar's start edge
- * that keeps its content minimum unless it says it can shrink. For a sidebar,
- * use `ShellSidebar` with `$side="start"`.
+ * The start part of a `ShellHeader`, `ShellFooter`, or `ShellMainHeader`: a
+ * flex cell at the start edge that keeps its content minimum unless it says it
+ * can shrink. For a sidebar, use `ShellSidebar` with `$side="start"`.
  * @example
  * <Shell>
  *   <ShellHeader>
@@ -84,8 +84,11 @@ export function ShellStart(props: ShellPartProps) {
 }
 
 /**
- * The center part of a header or footer: a flex cell on the bar's middle while
- * both sides fit, moved over when a side needs more than its half.
+ * The center part of a `ShellHeader`, `ShellFooter`, or `ShellMainHeader`: a
+ * flex cell on the part's middle while both sides fit, moved over when a side
+ * needs more than its half. This isn't main's column. To align with that
+ * column, use `ShellContent` instead. Render one of them, because they share a
+ * track.
  * @example
  * <Shell>
  *   <ShellHeader>
@@ -98,9 +101,9 @@ export function ShellCenter(props: ShellPartProps) {
 }
 
 /**
- * The end part of a header or footer: a flex cell at the bar's end edge that
- * keeps its content minimum unless it says it can shrink. For a sidebar, use
- * `ShellSidebar` with `$side="end"`.
+ * The end part of a `ShellHeader`, `ShellFooter`, or `ShellMainHeader`: a flex
+ * cell at the end edge that keeps its content minimum unless it says it can
+ * shrink. For a sidebar, use `ShellSidebar` with `$side="end"`.
  * @example
  * <Shell>
  *   <ShellHeader>
@@ -119,7 +122,9 @@ export interface ShellHeaderProps
  * The top bar of a shell, sticky by default, as tall as its height token. Its
  * parts, `ShellStart`, `ShellCenter` and `ShellEnd`, sit at the start, on the
  * middle and at the end. Render them in that order: a part after a later one
- * wraps to a new row.
+ * wraps to a new row. To align content with main's column, render
+ * `ShellContent` or a wider band instead of `ShellCenter`. It aligns while it
+ * has room, and the edge next to a wide side part moves to make room.
  *
  * Use `portal` for overlays to escape the bar's stacking context. Portalled
  * elements no longer inherit the shell's tokens.
@@ -144,7 +149,9 @@ export interface ShellFooterProps
  * and a sticky sidebar body ends above it at the end of the page. Set `$sticky`
  * to keep it at the bottom of the viewport, such as for a message composer;
  * sticky sidebars and scrolled-to elements then end above it. Its parts are
- * `ShellStart`, `ShellCenter` and `ShellEnd`, in that order.
+ * `ShellStart`, `ShellCenter` and `ShellEnd`, in that order. To align content
+ * with main's column, render `ShellContent` or a wider band instead of
+ * `ShellCenter`.
  * @example
  * <Shell>
  *   <ShellFooter>
@@ -264,7 +271,10 @@ export interface ShellMainHeaderProps
  * of 48rem and above; `$show="max-3xl"` shows it only below 48rem.
  * `$show={false}` hides it at every width. A hidden header takes no space and
  * has no sticky offset. Direct element children occupy the content column; wrap
- * text in an element such as `div`.
+ * text in an element such as `div`. Use `ShellStart`, `ShellCenter`, and
+ * `ShellEnd` to place parts at its edges and on its middle, like in
+ * `ShellHeader`. Children between the side parts still aim for the content
+ * column.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -310,7 +320,12 @@ export interface ShellContentProps
 
 /**
  * Selects the centered content column inside a main header, intro, body, or
- * wider main band. Direct element children fill this column.
+ * wider main band. Direct element children fill this column. As a direct child
+ * of `ShellHeader` or `ShellFooter`, it aims for the same column of main: it
+ * aligns while it has room, and the edge next to a wide `ShellStart` or
+ * `ShellEnd` moves to make room. On small pages, it stops at the bar's inset.
+ * Use `$size` on `ShellMain` to share a column width with the bars, or
+ * `$maxWidth` and `$gutter` on the bar to match custom values on `ShellMain`.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -334,7 +349,9 @@ export interface ShellPopoutProps
  * Extends past the content column into the popout tracks. Direct element
  * children fill its width. Use `ShellContent` inside to return to the content
  * column. It must be a direct child of a main header, intro, body, or wider
- * main band.
+ * main band. As a direct child of `ShellHeader` or `ShellFooter`, it aligns
+ * with the same span of main while it has room. A band in a bar, or in a main
+ * header with side parts, can't hold other bands.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -356,7 +373,9 @@ export interface ShellFeatureProps
  * Extends past the popout tracks into the feature tracks. Direct element
  * children fill its width. Use a narrower main band inside to select its
  * columns. It must be a direct child of a main header, intro, body, or wide or
- * full band.
+ * full band. As a direct child of `ShellHeader` or `ShellFooter`, it aligns
+ * with the same span of main while it has room. A band in a bar, or in a main
+ * header with side parts, can't hold other bands.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -380,7 +399,9 @@ export interface ShellWideProps
  * this band leaves that offset out, while `ShellFull` covers it. Without the
  * offset, both bands match. Direct element children fill its width. Use a
  * narrower main band inside to select its columns. It must be a direct child of
- * a main header, intro, body, or full band.
+ * a main header, intro, body, or full band. As a direct child of `ShellHeader`
+ * or `ShellFooter`, it aligns with the same span of main while it has room. A
+ * band in a bar, or in a main header with side parts, can't hold other bands.
  * @example
  * <Shell>
  *   <ShellSidebar>
@@ -402,11 +423,14 @@ export interface ShellFullProps
   extends ak.RoleProps<"div">, VariantProps<typeof shellFull> {}
 
 /**
- * Fills a main header, intro, or body's width, including the outer gutters.
- * Direct element children fill its width. Use a narrower main band inside to
- * select its columns. Keep main bands to two nested levels: deeper subgrids can
- * hang Safari. Inline padding and auto margins shift the shared columns; put
- * padding on a child element instead.
+ * Fills a main header, intro, or body's width, including the outer gutters. As
+ * a direct child of `ShellHeader` or `ShellFooter`, it fills the space between
+ * `ShellStart` and `ShellEnd`. Direct element children fill its width.
+ * Elsewhere in main, use a narrower main band to select its columns. A band in
+ * a bar, or in a main header with side parts, can't hold other bands, so render
+ * `ShellContent` directly in that part for that column. Keep main bands to two
+ * nested levels: deeper subgrids can hang Safari. Inline padding and auto
+ * margins shift the shared columns; put padding on a child element instead.
  * @example
  * <Shell>
  *   <ShellMain>

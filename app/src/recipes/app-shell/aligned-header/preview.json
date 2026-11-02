@@ -1,0 +1,5 @@
+{
+  "title": "Header Aligned with the Content Column",
+  "description": "A docs page that aligns a search field in ShellHeader and breadcrumbs in ShellMainHeader with the column in ShellMain by rendering ShellContent between ShellStart and ShellEnd, and keeps them aligned while a sidebar opens and closes. A wide side part moves only the edge next to it. Use it when header content must line up with the page content, and use the root layout when ShellHeader only needs parts at its edges or ShellCenter.",
+  "fullscreen": true
+}

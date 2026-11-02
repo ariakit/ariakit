@@ -21,4 +21,47 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(closing).toBeLessThan(contentCount);
     test.expect(opening).toBeLessThan(contentCount);
   });
+
+  test("keeps content area styles cached when a sidebar closes and opens", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Scenario").selectOption("areas");
+    const toggle = q.checkbox("Start sidebar");
+    const sidebar = q.navigation("Start sidebar");
+    // Below either area's count. The trace can miss a value that only inherits
+    // into a bar, so the checks below compare the values themselves.
+    const areaCount = Math.min(
+      await page.locator('[aria-label="Header area"] *').count(),
+      await page.locator('[aria-label="Main header area"] *').count(),
+    );
+    const readCustomProperties = (name: string) =>
+      q
+        .group(name)
+        .locator("> div")
+        .evaluate((element) => {
+          const entries: Array<[string, string]> = [];
+          for (const [property, values] of element.computedStyleMap()) {
+            if (!property.startsWith("--")) continue;
+            entries.push([property, Array.from(values, String).join(" ")]);
+          }
+          return Object.fromEntries(entries);
+        });
+    const headerValues = await readCustomProperties("Header area");
+    const mainHeaderValues = await readCustomProperties("Main header area");
+    const closing = await largestStyleRecalculation(page, () =>
+      toggle.uncheck(),
+    );
+    await test.expect(sidebar).toBeHidden();
+    test
+      .expect(await readCustomProperties("Header area"))
+      .toEqual(headerValues);
+    test
+      .expect(await readCustomProperties("Main header area"))
+      .toEqual(mainHeaderValues);
+    const opening = await largestStyleRecalculation(page, () => toggle.check());
+    await test.expect(sidebar).toBeVisible();
+    test.expect(closing).toBeLessThan(areaCount);
+    test.expect(opening).toBeLessThan(areaCount);
+  });
 });
