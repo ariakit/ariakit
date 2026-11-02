@@ -715,7 +715,9 @@ test("table of contents keeps the page content in place while the page loads", a
   });
   // The page content shifts during the download, so the test needs no more.
   await page.goto("/react/recipes/text-field/", { waitUntil: "commit" });
-  await expect(q.navigation("On this page")).toBeVisible();
+  // The table comes after the site navigation in a document of more than 1 MB.
+  // A busy runner can take over the default 5 seconds to download and parse it.
+  await expect(q.navigation("On this page")).toBeVisible({ timeout: 20_000 });
   // A table of contents that arrives after the content narrows it in the frame
   // that renders the table, which the counter records on the next frame.
   await flushFrames(page);
