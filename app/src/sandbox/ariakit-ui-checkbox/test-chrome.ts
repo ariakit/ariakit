@@ -2,6 +2,34 @@ import { getBackgroundContrast } from "#app/test-utils/contrast.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  test("shows the pointer on enabled inputs and rows only", async ({ q }) => {
+    const bare = query(q.article("Default")).checkbox("Select row");
+    await test.expect(bare).toHaveCSS("cursor", "pointer");
+    const field = query(q.article("Checkbox field"));
+    await test
+      .expect(field.checkbox("Remember me"))
+      .toHaveCSS("cursor", "pointer");
+    await test.expect(field.text("Remember me")).toHaveCSS("cursor", "pointer");
+    const disabled = query(q.article("Disabled field"));
+    await test
+      .expect(disabled.checkbox("Beta program"))
+      .toHaveCSS("cursor", "not-allowed");
+    await test
+      .expect(disabled.text("Beta program"))
+      .toHaveCSS("cursor", "not-allowed");
+  });
+
+  test("lets a plain cursor utility replace the pointer", async ({ q }) => {
+    const example = query(q.article("Custom cursor"));
+    await test
+      .expect(example.checkbox("Arrow box"))
+      .toHaveCSS("cursor", "default");
+    await test.expect(example.text("Arrow row")).toHaveCSS("cursor", "default");
+    await test
+      .expect(example.checkbox("Arrow row"))
+      .toHaveCSS("cursor", "default");
+  });
+
   test("select all reflects and toggles its children", async ({ q }) => {
     const box = query(q.article("Select all"));
     const parent = box.checkbox("All features");

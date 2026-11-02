@@ -269,6 +269,24 @@ export default function CheckboxExamples() {
       </Example>
 
       <Example
+        title="Custom cursor"
+        description="A plain cursor utility replaces the pointer on a box or a row."
+        code={`
+          <Checkbox className="cursor-default" aria-label="Arrow box" />
+          <CheckboxField className="cursor-default">
+            <CheckboxLabel>Arrow row</CheckboxLabel>
+          </CheckboxField>
+        `}
+      >
+        <div className="flex flex-col gap-2">
+          <Checkbox className="cursor-default" aria-label="Arrow box" />
+          <CheckboxField className="cursor-default">
+            <CheckboxLabel>Arrow row</CheckboxLabel>
+          </CheckboxField>
+        </div>
+      </Example>
+
+      <Example
         title="Field with description"
         description="The box lines up with the first line, and the description sits under the label."
         code={`
