@@ -489,6 +489,96 @@ body > * {
   initial-value: 0px;
 }
 
+@property --shell-bar-start-space {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-end-space {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-padding-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-padding-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-width {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-free {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-offset-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-offset-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-content {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-rest {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-popout {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-feature {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-area {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-track-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-track-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @property --shell-content-end-space {
   syntax: "<length>";
   inherits: false;
@@ -1261,6 +1351,173 @@ body > * {
   &:has(> .shell-sidebar-end ~ .shell-sidebar-end.shell-sidebar-show-max-7xl) {
     --shell-end-2-show-below: 13;
   }
+}
+
+/* The sidebar lengths of a bar: the same lengths that a content grid reads.
+   Every bar resolves them so an area that renders later doesn't animate them
+   from zero. They don't inherit, so a toggle doesn't restyle what the bar holds. */
+@utility shell-bar-spaces {
+  --shell-start-1-space: calc(
+    var(--shell-start-1-width) * var(--shell-start-1-open) *
+      var(--shell-start-1-fit)
+  );
+  --shell-start-2-space: calc(
+    var(--shell-start-2-width) * var(--shell-start-2-open) *
+      var(--shell-start-2-fit)
+  );
+  --shell-end-1-space: calc(
+    var(--shell-end-1-width) * var(--shell-end-1-open) * var(--shell-end-1-fit)
+  );
+  --shell-end-2-space: calc(
+    var(--shell-end-2-width) * var(--shell-end-2-open) * var(--shell-end-2-fit)
+  );
+}
+
+/* What a bar with a content area adds: it animates its sidebar lengths, like a
+   content grid, and sets its own gutter, because main's gutter doesn't reach it. */
+@utility shell-bar-fold {
+  transition-property:
+    --shell-start-1-space, --shell-start-2-space, --shell-end-1-space,
+    --shell-end-2-space;
+  transition-duration: var(--shell-time);
+  transition-timing-function: var(--shell-ease);
+  --shell-start-total: calc(
+    max(0px, var(--shell-start-1-space)) + max(0px, var(--shell-start-2-space))
+  );
+  --shell-end-total: calc(
+    max(0px, var(--shell-end-1-space)) + max(0px, var(--shell-end-2-space))
+  );
+  --shell-comp-end: max(
+    0px,
+    calc(var(--shell-start-total) - var(--shell-end-total))
+  );
+  --shell-comp-start: max(
+    0px,
+    calc(var(--shell-end-total) - var(--shell-start-total))
+  );
+  --shell-popout: 1rem;
+  --shell-feature: 3.5rem;
+  --shell-gutter: round(calc(var(--shell-header-step) * 3), 1px);
+  --shell-bar-start-space: var(--shell-start-total);
+  --shell-bar-end-space: var(--shell-end-total);
+  --shell-bar-padding-start: max(
+    var(--ak-frame-padding),
+    env(safe-area-inset-left)
+  );
+  --shell-bar-padding-end: max(
+    var(--ak-frame-padding),
+    env(safe-area-inset-right)
+  );
+  @variant rtl {
+    --shell-bar-padding-start: max(
+      var(--ak-frame-padding),
+      env(safe-area-inset-right)
+    );
+    --shell-bar-padding-end: max(
+      var(--ak-frame-padding),
+      env(safe-area-inset-left)
+    );
+  }
+}
+
+/* Three tracks that aim the middle one at a column of main, for a part with
+   content areas. A part can't read main's named lines from outside its grid, so
+   this repeats how `centered` in shell.ts shares free space. Keep them in sync.
+   A side track grows to its target and past it only for a wider side part, so
+   only the edge next to that part moves. These values must stay registered and
+   not inherit, or each frame of a fold restyles what the part holds. */
+@utility shell-bar-tracks {
+  --shell-bar-width: calc(
+    100% + var(--shell-bar-padding-start) + var(--shell-bar-padding-end) -
+      var(--shell-bar-start-space) - var(--shell-bar-end-space)
+  );
+  --shell-bar-free: calc(
+    var(--shell-bar-width) - var(--shell-main-max-width) - var(--shell-gutter) -
+      2 * var(--shell-popout) - 2 * var(--shell-feature)
+  );
+  --shell-bar-offset-start: clamp(
+    0px,
+    calc(var(--shell-bar-free) - var(--shell-gutter)),
+    var(--shell-comp-start)
+  );
+  --shell-bar-offset-end: clamp(
+    0px,
+    calc(var(--shell-bar-free) - var(--shell-gutter)),
+    var(--shell-comp-end)
+  );
+  --shell-bar-content: min(
+    var(--shell-main-max-width),
+    max(
+      0px,
+      calc(
+        var(--shell-bar-width) - var(--shell-bar-padding-start) -
+          var(--shell-bar-padding-end)
+      )
+    )
+  );
+  --shell-bar-rest: calc(
+    var(--shell-bar-width) - var(--shell-bar-offset-start) -
+      var(--shell-bar-offset-end) - var(--shell-bar-padding-start) -
+      var(--shell-bar-padding-end) - var(--shell-bar-content)
+  );
+  --shell-bar-popout: clamp(
+    0px,
+    calc(var(--shell-bar-rest) / 4),
+    var(--shell-popout)
+  );
+  --shell-bar-feature: clamp(
+    0px,
+    calc(var(--shell-bar-rest) / 2 - var(--shell-bar-popout)),
+    var(--shell-feature)
+  );
+  --shell-bar-area: var(--shell-bar-content);
+  &:has(> .shell-popout) {
+    --shell-bar-area: calc(
+      var(--shell-bar-content) + 2 * var(--shell-bar-popout)
+    );
+  }
+  &:has(> .shell-feature) {
+    --shell-bar-area: calc(
+      var(--shell-bar-content) + 2 * var(--shell-bar-popout) + 2 *
+        var(--shell-bar-feature)
+    );
+  }
+  &:has(> .shell-wide) {
+    --shell-bar-area: calc(
+      var(--shell-bar-width) - var(--shell-bar-offset-start) -
+        var(--shell-bar-offset-end)
+    );
+  }
+  --shell-bar-track-start: max(
+    0px,
+    calc(
+      var(--shell-bar-start-space) +
+        (
+          var(--shell-bar-width) + var(--shell-bar-offset-start) -
+            var(--shell-bar-offset-end) - var(--shell-bar-area)
+        ) /
+        2 - var(--shell-bar-padding-start)
+    )
+  );
+  --shell-bar-track-end: max(
+    0px,
+    calc(
+      var(--shell-bar-end-space) +
+        (
+          var(--shell-bar-width) - var(--shell-bar-offset-start) +
+            var(--shell-bar-offset-end) - var(--shell-bar-area)
+        ) /
+        2 - var(--shell-bar-padding-end)
+    )
+  );
+  &:has(> .shell-full) {
+    --shell-bar-track-start: 0px;
+    --shell-bar-track-end: 0px;
+  }
+  grid-template-columns:
+    minmax(auto, var(--shell-bar-track-start)) minmax(auto, 1fr)
+    minmax(auto, var(--shell-bar-track-end));
+  column-gap: 0;
 }
 
 /** Resolves the published shell state on each direct part of a shell. */

@@ -190,9 +190,15 @@ const barInsetDefault = "var(--shell-bar-inset)";
 /**
  * Three columns keep the center aligned until a side needs more room. Content
  * minimums come from `1fr`; physical safe-area insets set the minimum side
- * padding.
+ * padding. With a content area, the columns aim the middle one at main's column
+ * instead. Every bar reads the sidebars, because a selector can't let only the
+ * bars with an area through the shell's reset without restyling what they hold
+ * on each toggle.
  */
 const bar = cx(
+  "shell-bar shell-slot-state shell-bar-spaces",
+  "[&:has(>.shell-band)]:shell-bar-fold [&:has(>.shell-band)]:shell-bar-tracks",
+  "[&>.shell-band:has(>.nav.horizontal)]:self-stretch",
   // A horizontal navigation region fills the bar's height, so edge bars in
   // its centered rows meet the bar's edge.
   "[&>.shell-bar-start:has(>.nav.horizontal)]:self-stretch",
@@ -223,6 +229,37 @@ const blur = cx(
   "[@media(prefers-reduced-transparency:reduce)]:bg-(--ak-layer)",
 );
 
+/** The settings of main that a content area in a bar needs to match. */
+const barAreaVariants = {
+  /**
+   * Sets the main gutter that a content area in this bar uses to find main's
+   * column. Set it to the same value as `$p` on `ShellMain`. `$p` stays the
+   * smallest space at the bar's edge. Numbers scale the spacing token and round
+   * to a whole pixel, and they follow the element's text. So when `ShellMain`
+   * sets `$size`, set a CSS length on both. Defaults to the default main
+   * gutter.
+   */
+  $gutter(value?: "none" | (string & {}) | number) {
+    if (value == null) return;
+    return {
+      style: {
+        "--shell-gutter": getPaddingValue(value === "none" ? 0 : value),
+      },
+    };
+  },
+  /**
+   * Sets the width of main's column that a content area in this bar aims for.
+   * Set it to the same value as `$maxWidth` on `ShellMain`. Numbers scale the
+   * spacing token, and they follow the element's text. So when `ShellMain` sets
+   * `$size`, set a CSS length on both. Defaults to the shell's column, which
+   * follows `$size` on `ShellMain`.
+   */
+  $maxWidth(value?: ShellWidth) {
+    if (value == null) return;
+    return { style: { "--shell-main-max-width": getSpacingValue(value) } };
+  },
+};
+
 /**
  * A shell header with three aligned sections and optional sticky positioning.
  */
@@ -237,6 +274,7 @@ export const shellHeader = cv({
     "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-header-height)-var(--shell-header-step)*16)/2,1px)))]",
   ],
   variants: {
+    ...barAreaVariants,
     /**
      * Keeps the header in view within its row and reserves its space. Sticky
      * sidebars and anchors use its height as an offset. Defaults to `true`.
@@ -269,9 +307,14 @@ export const shellHeader = cv({
   },
 });
 
-/** A header or footer section that preserves its content width by default. */
+/**
+ * A header or footer section that preserves its content width by default. Next
+ * to a content area, tracks have no gaps, so an empty side track doesn't move
+ * the area off the column. Each part keeps the space itself.
+ */
 export const shellBarPart = cv({
-  class: "flex items-center gap-2",
+  class:
+    "shell-bar-part flex items-center gap-2 [.shell-main-header>&]:row-start-1",
   variants: {
     /**
      * Lets the section shrink below its content width. Use `truncate` on text
@@ -281,7 +324,11 @@ export const shellBarPart = cv({
      */
     $shrink: {
       true: "max-w-full box-border min-w-0 overflow-clip [overflow-clip-margin:0.25rem]",
-      false: "min-w-auto",
+      // A side track can be narrower than its part, and the part must not wrap
+      // to fit. It takes room from the area instead. With a center part, a main
+      // header has the tracks of a plain bar, so text can wrap like in a bar.
+      false:
+        "min-w-auto [&:has(~.shell-band)]:min-w-max [.shell-band~&]:min-w-max [.shell-main-header:not(:has(>.shell-bar-center))>&]:min-w-max",
     },
     /** Fills the section's track instead of using its resting alignment. */
     $grow: {
@@ -290,17 +337,22 @@ export const shellBarPart = cv({
   },
 });
 
-/** The start section of a shell header or footer. */
+/** The start section of a shell header, footer, or main header. */
 export const shellStart = cv({
   extend: [shellBarPart],
-  class: "shell-bar-start col-1",
+  class:
+    "shell-bar-start col-1 [&:has(~.shell-band)]:me-2 [.shell-main-header>&]:me-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-1",
   variants: {
+    // The track also holds the part's margin, so the cap leaves room for it.
+    $shrink: {
+      true: "[&:has(~.shell-band)]:max-w-[calc(100%-(--spacing(2)))] [.shell-main-header>&]:max-w-[calc(100%-(--spacing(2)))]",
+    },
     /** Fills the part's track instead of resting at the bar's start edge. */
     $grow: { false: "justify-self-start" },
   },
 });
 
-/** The center section of a shell header or footer. */
+/** The center section of a shell header, footer, or main header. */
 export const shellCenter = cv({
   extend: [shellBarPart],
   class: "shell-bar-center col-2",
@@ -314,11 +366,16 @@ export const shellCenter = cv({
   },
 });
 
-/** The end section of a shell header or footer. */
+/** The end section of a shell header, footer, or main header. */
 export const shellEnd = cv({
   extend: [shellBarPart],
-  class: "shell-bar-end col-3",
+  class:
+    "shell-bar-end col-3 [.shell-band~&]:ms-2 [.shell-main-header>&]:ms-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-3",
   variants: {
+    // The track also holds the part's margin, so the cap leaves room for it.
+    $shrink: {
+      true: "[.shell-band~&]:max-w-[calc(100%-(--spacing(2)))] [.shell-main-header>&]:max-w-[calc(100%-(--spacing(2)))]",
+    },
     /** Fills the part's track instead of resting at the bar's end edge. */
     $grow: { false: "justify-self-end" },
   },
@@ -342,6 +399,7 @@ export const shellFooter = cv({
     "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-footer-height)-var(--shell-header-step)*16)/2,1px)))]",
   ],
   variants: {
+    ...barAreaVariants,
     /**
      * Keeps the footer in view at the bottom of the scroll area. Sticky
      * sidebars stop above it, and main content scrolls focused elements above
@@ -625,12 +683,13 @@ const compensation = cx(
 // Limit sidebar compensation to free space, but keep the minimum gutter. The
 // offsets sit outside the wide lines, so the wide span stays centered on the
 // content. `auto` tracks grow by equal amounts, preserving that center; `1fr`
-// loses it.
+// loses it. Only a main header sets a track gutter: its tracks keep their bar
+// inset as a minimum, while the offsets use the same gutter as the body.
 const centered = cx(
   "[--shell-free:calc(100%-var(--shell-content-end-space)-var(--shell-main-max-width)-var(--shell-gutter)-2*var(--shell-popout)-2*var(--shell-feature))]",
   "[--shell-offset-start:clamp(0px,calc(var(--shell-free)-var(--shell-gutter)),var(--shell-comp-start))]",
   "[--shell-offset-end:calc(var(--shell-content-end-space)+clamp(0px,calc(var(--shell-free)-var(--shell-gutter)),var(--shell-comp-end)))]",
-  "grid-cols-[[full-start]_var(--shell-offset-start)_[wide-start]_minmax(var(--shell-gutter),auto)_[feature-start]_minmax(0,var(--shell-feature))_[popout-start]_minmax(0,var(--shell-popout))_[content-start]_minmax(min(var(--shell-main-max-width),max(0px,calc(100%-var(--shell-content-end-space)-2*var(--shell-gutter)))),var(--shell-main-max-width))_[content-end]_minmax(0,var(--shell-popout))_[popout-end]_minmax(0,var(--shell-feature))_[feature-end]_minmax(var(--shell-gutter),auto)_[wide-end]_var(--shell-offset-end)_[full-end]]",
+  "grid-cols-[[full-start]_var(--shell-offset-start)_[wide-start]_minmax(var(--shell-track-gutter,var(--shell-gutter)),auto)_[feature-start]_minmax(0,var(--shell-feature))_[popout-start]_minmax(0,var(--shell-popout))_[content-start]_minmax(min(var(--shell-main-max-width),max(0px,calc(100%-var(--shell-content-end-space)-2*var(--shell-track-gutter,var(--shell-gutter))))),var(--shell-main-max-width))_[content-end]_minmax(0,var(--shell-popout))_[popout-end]_minmax(0,var(--shell-feature))_[feature-end]_minmax(var(--shell-track-gutter,var(--shell-gutter)),auto)_[wide-end]_var(--shell-offset-end)_[full-end]]",
 );
 
 /**
@@ -657,9 +716,13 @@ const content = cx(
   // Publish gutter spacing as frame padding so nested frame corners remain
   // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
-  "ak-frame-p-(--shell-gutter) px-0",
+  // A cover child must reach the edge, so this uses the track gutter when the
+  // part has one.
+  "ak-frame-p-[var(--shell-track-gutter,var(--shell-gutter))] px-0",
   "print:overflow-visible",
-  "*:col-[content] *:min-w-0",
+  // Bands and side parts set their own minimum, so a `min-w-*` class on them can
+  // hold. The zero-specificity list keeps this rule at one class.
+  "*:col-[content] *:not-[:where(.shell-band,.shell-bar-part)]:min-w-0",
   // Fragment targets clear the space above the parts, and at least 1rem, so a
   // table of contents marks the first heading current at the top of the page.
   "[&_[id]]:scroll-mbs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+max(1rem,var(--shell-main-intro-pbs,var(--shell-main-py,var(--shell-gutter)))))]",
@@ -714,8 +777,6 @@ export const shellMain = cv({
   class: [
     "shell-main col-[main-start/shell-end] row-[main-start/body-end] grid grid-cols-subgrid grid-rows-subgrid min-w-0",
     "shell-slot-state",
-    // The main header derives its own gutter from this one.
-    "[--shell-main-gutter:var(--shell-gutter)]",
     // Without `$py`, the body spends its own gutter on its edges next to the
     // bars, and the intro its own `$py`. A nested main doesn't take the space
     // set on an outer one or on an intro around it.
@@ -734,9 +795,24 @@ export const shellMain = cv({
      */
     $size: {
       auto: "",
-      sm: [sizedMain, "text-sm"],
-      md: [sizedMain, "text-base"],
-      lg: [sizedMain, "text-lg"],
+      // Bars read the column from the shell, in rem, because they keep the
+      // shell's text. Each value is 42em at that size's text. The doubled class
+      // wins over the rule that resets this value on a nested shell.
+      sm: [
+        sizedMain,
+        "text-sm",
+        "[.shell.shell:has(>&)]:[--shell-main-max-width:36.75rem]",
+      ],
+      md: [
+        sizedMain,
+        "text-base",
+        "[.shell.shell:has(>&)]:[--shell-main-max-width:42rem]",
+      ],
+      lg: [
+        sizedMain,
+        "text-lg",
+        "[.shell.shell:has(>&)]:[--shell-main-max-width:47.25rem]",
+      ],
     },
     /**
      * Sets the shared main gutter. Numbers scale the spacing token, so they
@@ -806,23 +882,45 @@ export const shellMainHeader = cv({
     "[:where(.shell-main-sized>&)]:[line-height:var(--shell-leading)]",
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
     // Like other bars, a shorter or taller header than `md` shrinks or grows
-    // its side insets with the space around its controls. A centered column
-    // still lines up with the body once both side tracks have room to spare.
-    // Round only the height adjustment, so a raw main gutter still matches the
-    // body. The bar inset rounds the same adjustment, so a header over a
-    // default main gutter stays on the edge of the bars.
-    "[--shell-gutter:max(0px,calc(var(--shell-main-gutter)+round((var(--shell-main-header-height)-var(--shell-header-step)*16)/2,1px)))]",
+    // its side insets with the space around its controls. This is only the
+    // smallest space at the edge. The column keeps the main gutter, so it
+    // matches the body until the edge reaches it, with no query. Round only the
+    // height adjustment, so a raw main gutter still matches the body. The bar
+    // inset rounds the same adjustment, so a header over a default main gutter
+    // stays on the edge of the bars.
+    "[--shell-track-gutter:max(0px,calc(var(--shell-gutter)+round((var(--shell-main-header-height)-var(--shell-header-step)*16)/2,1px)))]",
+    // With a Start, Center, or End part, the header uses the tracks of a bar.
+    // Other children share the middle track, and aim for the same column.
+    "[&:has(>.shell-bar-part)]:shell-bar-tracks",
+    "[&:has(>.shell-bar-part)]:[--shell-bar-end-space:var(--shell-content-end-space)]",
+    "[&:has(>.shell-bar-part)]:[--shell-bar-padding-start:var(--shell-track-gutter)] [&:has(>.shell-bar-part)]:[--shell-bar-padding-end:var(--shell-track-gutter)]",
+    "[&:has(>.shell-bar-part)]:px-(--shell-track-gutter) [&:has(>.shell-bar-part)]:items-center [&:has(>.shell-bar-part)]:content-stretch",
+    "[&:has(>.shell-bar-part)>*]:col-2",
+    "[&:has(>.shell-bar-part):has(>.shell-bar-center)]:grid-cols-[1fr_auto_1fr]",
+    "[&:has(>.shell-bar-part):has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
+    // A horizontal navigation region fills the header's height, like in a bar.
+    "[&:has(>.shell-bar-part)>:has(>.nav.horizontal)]:self-stretch",
+    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:self-stretch [&:has(>.shell-bar-part)>*>.nav.horizontal]:items-center",
+    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:my-0 [&:has(>.shell-bar-part)>*>.nav.horizontal]:py-0",
+    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:[--nav-bar-gap:0px]",
+    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:rounded-none",
+    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-main-header-height)-var(--shell-facing-border,0px))]",
   ],
   variants: {
     ...contentVariants,
     /**
      * Sets the minimum content gutter. Numbers scale the spacing token and
-     * round to a whole pixel. Defaults to the main gutter, adjusted by half the
-     * height difference from an `md` header. `none` removes the space; `unset`
-     * keeps the default.
+     * round to a whole pixel. Defaults to the main gutter, with the smallest
+     * space at the edge adjusted by half the height difference from an `md`
+     * header. `none` removes the space; `unset` keeps the default.
      */
     $p(value?: "unset" | "none" | (string & {}) | number) {
-      return contentVariants.$p(value);
+      if (value == null) return;
+      if (value === "unset") return;
+      const gutter = getPaddingValue(value === "none" ? 0 : value);
+      return {
+        style: { "--shell-gutter": gutter, "--shell-track-gutter": gutter },
+      };
     },
     /**
      * Keeps the main header below the shell's sticky headers. Defaults to true.
@@ -959,7 +1057,10 @@ export const shellMainBody = cv({
 /**
  * A band across named main columns. Children fill its width. Limit nesting to
  * two levels to avoid WebKit hangs. Query containers, auto margins, and inline
- * padding break column alignment.
+ * padding break column alignment. In a bar, or a main header with side parts,
+ * the band is a content area in the middle track, which has no named columns,
+ * so it can't hold other bands. Its width doesn't depend on its content, so a
+ * side part can take room from it. A `min-w-*` class stops it.
  * https://bugs.webkit.org/show_bug.cgi?id=268595
  */
 const mainBand = cv({
@@ -967,6 +1068,8 @@ const mainBand = cv({
   class: [
     "shell-band grid grid-cols-subgrid min-w-0 rounded-none! px-0!",
     "[.shell-content-grid>&]:contain-inline-size [.shell-band>&]:contain-inline-size",
+    "[:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:col-2 [:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:row-start-1",
+    "[:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:contain-inline-size [:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:grid-cols-1",
     "*:col-span-full *:min-w-0",
   ],
   defaultVariants: { $p: "none" },

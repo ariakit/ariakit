@@ -21,4 +21,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(closing).toBeLessThan(contentCount);
     test.expect(opening).toBeLessThan(contentCount);
   });
+
+  test("keeps content area styles cached when a sidebar closes and opens", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Scenario").selectOption("areas");
+    const toggle = q.checkbox("Start sidebar");
+    const sidebar = q.navigation("Start sidebar");
+    const areaCount = await page
+      .locator(
+        '[aria-label="Header area"] *, [aria-label="Main header area"] *',
+      )
+      .count();
+    const closing = await largestStyleRecalculation(page, () =>
+      toggle.uncheck(),
+    );
+    await test.expect(sidebar).toBeHidden();
+    const opening = await largestStyleRecalculation(page, () => toggle.check());
+    await test.expect(sidebar).toBeVisible();
+    test.expect(closing).toBeLessThan(areaCount);
+    test.expect(opening).toBeLessThan(areaCount);
+  });
 });

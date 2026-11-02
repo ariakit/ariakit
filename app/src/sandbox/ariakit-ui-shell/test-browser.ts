@@ -420,6 +420,28 @@ withDeferredVisualLoad(import.meta.dirname, async ({ test, query }) => {
       });
     });
 
+    test("content areas at a wide and a narrow width @visual", async ({
+      page,
+      q,
+      visual,
+    }) => {
+      const viewports = {
+        wide: { width: 1280, height: 400 },
+        narrow: { width: 560, height: 400 },
+      };
+      await forEachColorScheme(page, async (colorScheme) => {
+        await selectScenario(q, "areas");
+        await visual({
+          ...getViewportCapture(
+            page,
+            colorScheme,
+            "ariakit-ui-shell/content-areas",
+          ),
+          viewports,
+        });
+      });
+    });
+
     test("docs site scrolled under the blurred header @visual", async ({
       page,
       visual,
