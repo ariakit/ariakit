@@ -140,6 +140,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.setViewportSize({ width: 480, height: 900 });
     await expect(q.text("Plain text")).toHaveCSS("font-size", "14px");
     await expect(q.text("Body prose")).toHaveCSS("font-size", "16px");
+    await q.combobox("Main size").selectOption("md");
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "16px");
     await q.combobox("Main size").selectOption("sm");
     await expect(q.text("Plain text")).toHaveCSS("font-size", "14px");
     await q.combobox("Main minimum size").selectOption("lg");
