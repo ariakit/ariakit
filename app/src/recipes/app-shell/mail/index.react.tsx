@@ -18,9 +18,9 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderCenter,
-  ShellHeaderStart,
-  ShellHeaderEnd,
+  ShellCenter,
+  ShellStart,
+  ShellEnd,
   ShellSidebar,
   ShellSidebarBody,
   ShellSidebarFooter,
@@ -193,7 +193,7 @@ export default function Example() {
   return (
     <Shell>
       <ShellHeader $blur>
-        <ShellHeaderStart>
+        <ShellStart>
           <Button
             className="@max-3xl/shell:hidden"
             aria-label="Toggle folders"
@@ -208,21 +208,21 @@ export default function Example() {
           <a href="#" className="flex items-center gap-2 font-semibold">
             <Mail strokeWidth={1.5} className="size-5" /> Mail
           </a>
-        </ShellHeaderStart>
-        <ShellHeaderCenter $grow className="hidden @[40rem]/shell-header:flex">
+        </ShellStart>
+        <ShellCenter $grow className="hidden @[40rem]/shell-header:flex">
           <Input
             aria-label="Search mail"
             placeholder="Search mail"
             className="w-full min-w-0"
           />
-        </ShellHeaderCenter>
-        <ShellHeaderEnd>
+        </ShellCenter>
+        <ShellEnd>
           <Button aria-label="Account" $rounded="full">
             <ButtonSlot>
               <CircleUser />
             </ButtonSlot>
           </Button>
-        </ShellHeaderEnd>
+        </ShellEnd>
       </ShellHeader>
       <ShellSidebar
         id={foldersId}

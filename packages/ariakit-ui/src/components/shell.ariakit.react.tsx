@@ -8,19 +8,16 @@ import {
 } from "../react-utils/landmark.react.ts";
 import {
   shell,
-  shellMainContent,
-  shellMainPopout,
-  shellMainFeature,
-  shellMainWide,
-  shellMainFull,
+  shellContent,
+  shellPopout,
+  shellFeature,
+  shellWide,
+  shellFull,
   shellFooter,
-  shellFooterCenter,
-  shellFooterEnd,
-  shellFooterStart,
+  shellCenter,
+  shellEnd,
+  shellStart,
   shellHeader,
-  shellHeaderCenter,
-  shellHeaderEnd,
-  shellHeaderStart,
   shellMainIntro,
   shellMain,
   shellMainBody,
@@ -44,13 +41,13 @@ export interface ShellProps
  * @example
  * <Shell>
  *   <ShellHeader>
- *     <ShellHeaderStart>Docs</ShellHeaderStart>
+ *     <ShellStart>Docs</ShellStart>
  *   </ShellHeader>
  *   <ShellMain>
  *     <ShellMainBody><h1>Getting started</h1></ShellMainBody>
  *   </ShellMain>
  *   <ShellFooter>
- *     <ShellFooterCenter>Ariakit</ShellFooterCenter>
+ *     <ShellCenter>Ariakit</ShellCenter>
  *   </ShellFooter>
  * </Shell>
  */
@@ -59,58 +56,60 @@ export function Shell(props: ShellProps) {
   return <ak.Role.div {...shell.jsx(variantProps)} {...rest} />;
 }
 
-export interface ShellHeaderPartProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellHeaderStart> {}
+export interface ShellPartProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellStart> {}
 
 // All bar parts share these variants.
-type BarPartRecipe = typeof shellHeaderStart;
+type BarPartRecipe = typeof shellStart;
 
 /** Renders a header or footer part with its recipe. */
-function renderPartCell(recipe: BarPartRecipe, props: ShellHeaderPartProps) {
+function renderPartCell(recipe: BarPartRecipe, props: ShellPartProps) {
   const [variantProps, rest] = splitProps(props, recipe);
   return <ak.Role.div {...recipe.jsx(variantProps)} {...rest} />;
 }
 
 /**
- * The start part of a bar: a flex cell at the bar's start edge that keeps its
- * content minimum unless it says it can shrink.
+ * The start part of a header or footer: a flex cell at the bar's start edge
+ * that keeps its content minimum unless it says it can shrink. For a sidebar,
+ * use `ShellSidebar` with `$side="start"`.
  * @example
  * <Shell>
  *   <ShellHeader>
- *     <ShellHeaderStart $shrink>Docs</ShellHeaderStart>
+ *     <ShellStart $shrink>Docs</ShellStart>
  *   </ShellHeader>
  * </Shell>
  */
-export function ShellHeaderStart(props: ShellHeaderPartProps) {
-  return renderPartCell(shellHeaderStart, props);
+export function ShellStart(props: ShellPartProps) {
+  return renderPartCell(shellStart, props);
 }
 
 /**
- * The center part of a bar: a flex cell on the bar's middle while both sides
- * fit, moved over when a side needs more than its half.
+ * The center part of a header or footer: a flex cell on the bar's middle while
+ * both sides fit, moved over when a side needs more than its half.
  * @example
  * <Shell>
  *   <ShellHeader>
- *     <ShellHeaderCenter $grow>Docs</ShellHeaderCenter>
+ *     <ShellCenter $grow>Docs</ShellCenter>
  *   </ShellHeader>
  * </Shell>
  */
-export function ShellHeaderCenter(props: ShellHeaderPartProps) {
-  return renderPartCell(shellHeaderCenter, props);
+export function ShellCenter(props: ShellPartProps) {
+  return renderPartCell(shellCenter, props);
 }
 
 /**
- * The end part of a bar: a flex cell at the bar's end edge that keeps its
- * content minimum unless it says it can shrink.
+ * The end part of a header or footer: a flex cell at the bar's end edge that
+ * keeps its content minimum unless it says it can shrink. For a sidebar, use
+ * `ShellSidebar` with `$side="end"`.
  * @example
  * <Shell>
  *   <ShellHeader>
- *     <ShellHeaderEnd>Account</ShellHeaderEnd>
+ *     <ShellEnd>Account</ShellEnd>
  *   </ShellHeader>
  * </Shell>
  */
-export function ShellHeaderEnd(props: ShellHeaderPartProps) {
-  return renderPartCell(shellHeaderEnd, props);
+export function ShellEnd(props: ShellPartProps) {
+  return renderPartCell(shellEnd, props);
 }
 
 export interface ShellHeaderProps
@@ -118,17 +117,17 @@ export interface ShellHeaderProps
 
 /**
  * The top bar of a shell, sticky by default, as tall as its height token. Its
- * parts, `ShellHeaderStart`, `ShellHeaderCenter` and `ShellHeaderEnd`, sit at
- * the start, on the middle and at the end. Render them in that order: a part
- * after a later one wraps to a new row.
+ * parts, `ShellStart`, `ShellCenter` and `ShellEnd`, sit at the start, on the
+ * middle and at the end. Render them in that order: a part after a later one
+ * wraps to a new row.
  *
  * Use `portal` for overlays to escape the bar's stacking context. Portalled
  * elements no longer inherit the shell's tokens.
  * @example
  * <Shell>
  *   <ShellHeader $blur>
- *     <ShellHeaderStart>Docs</ShellHeaderStart>
- *     <ShellHeaderEnd><a href="/help">Help</a></ShellHeaderEnd>
+ *     <ShellStart>Docs</ShellStart>
+ *     <ShellEnd><a href="/help">Help</a></ShellEnd>
  *   </ShellHeader>
  * </Shell>
  */
@@ -145,60 +144,18 @@ export interface ShellFooterProps
  * and a sticky sidebar body ends above it at the end of the page. Set `$sticky`
  * to keep it at the bottom of the viewport, such as for a message composer;
  * sticky sidebars and scrolled-to elements then end above it. Its parts are
- * `ShellFooterStart`, `ShellFooterCenter` and `ShellFooterEnd`, in that order.
+ * `ShellStart`, `ShellCenter` and `ShellEnd`, in that order.
  * @example
  * <Shell>
  *   <ShellFooter>
- *     <ShellFooterStart>Ariakit</ShellFooterStart>
- *     <ShellFooterEnd><a href="/help">Help</a></ShellFooterEnd>
+ *     <ShellStart>Ariakit</ShellStart>
+ *     <ShellEnd><a href="/help">Help</a></ShellEnd>
  *   </ShellFooter>
  * </Shell>
  */
 export function ShellFooter(props: ShellFooterProps) {
   const [variantProps, rest] = splitProps(props, shellFooter);
   return <ak.Role.footer {...shellFooter.jsx(variantProps)} {...rest} />;
-}
-
-/**
- * The start part of a footer: the same cell as `ShellHeaderStart`, under the
- * footer's name.
- * @example
- * <Shell>
- *   <ShellFooter>
- *     <ShellFooterStart>Ariakit</ShellFooterStart>
- *   </ShellFooter>
- * </Shell>
- */
-export function ShellFooterStart(props: ShellHeaderPartProps) {
-  return renderPartCell(shellFooterStart, props);
-}
-
-/**
- * The center part of a footer: the same cell as `ShellHeaderCenter`, under the
- * footer's name.
- * @example
- * <Shell>
- *   <ShellFooter>
- *     <ShellFooterCenter>Ariakit</ShellFooterCenter>
- *   </ShellFooter>
- * </Shell>
- */
-export function ShellFooterCenter(props: ShellHeaderPartProps) {
-  return renderPartCell(shellFooterCenter, props);
-}
-
-/**
- * The end part of a footer: the same cell as `ShellHeaderEnd`, under the
- * footer's name.
- * @example
- * <Shell>
- *   <ShellFooter>
- *     <ShellFooterEnd>Ariakit</ShellFooterEnd>
- *   </ShellFooter>
- * </Shell>
- */
-export function ShellFooterEnd(props: ShellHeaderPartProps) {
-  return renderPartCell(shellFooterEnd, props);
 }
 
 export interface ShellMainIntroProps
@@ -327,10 +284,10 @@ export interface ShellMainBodyProps
 /**
  * The main content grid. Direct element children use the centered content
  * column. Content that adapts to its width can declare its own query container,
- * so a sidebar fold restyles only that content in WebKit. Use
- * `ShellMainPopout`, `ShellMainFeature`, `ShellMainWide`, or `ShellMainFull` as
- * a direct child to select a wider span. Children are grid items; use `Prose`
- * for text with collapsing margins.
+ * so a sidebar fold restyles only that content in WebKit. Use `ShellPopout`,
+ * `ShellFeature`, `ShellWide`, or `ShellFull` as a direct child to select a
+ * wider span. Children are grid items; use `Prose` for text with collapsing
+ * margins.
  *
  * Fragment links clear the configured sticky headers. For keyboard focus, also
  * set scroll padding on the page's scroll port to their total height, for
@@ -348,8 +305,8 @@ export function ShellMainBody(props: ShellMainBodyProps) {
   return <ak.Role.div {...shellMainBody.jsx(variantProps)} {...rest} />;
 }
 
-export interface ShellMainContentProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellMainContent> {}
+export interface ShellContentProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellContent> {}
 
 /**
  * Selects the centered content column inside a main header, intro, body, or
@@ -358,42 +315,42 @@ export interface ShellMainContentProps
  * <Shell>
  *   <ShellMain>
  *     <ShellMainBody>
- *       <ShellMainFull $layer="brand">
- *         <ShellMainContent><p>Centered content</p></ShellMainContent>
- *       </ShellMainFull>
+ *       <ShellFull $layer="brand">
+ *         <ShellContent><p>Centered content</p></ShellContent>
+ *       </ShellFull>
  *     </ShellMainBody>
  *   </ShellMain>
  * </Shell>
  */
-export function ShellMainContent(props: ShellMainContentProps) {
-  const [variantProps, rest] = splitProps(props, shellMainContent);
-  return <ak.Role.div {...shellMainContent.jsx(variantProps)} {...rest} />;
+export function ShellContent(props: ShellContentProps) {
+  const [variantProps, rest] = splitProps(props, shellContent);
+  return <ak.Role.div {...shellContent.jsx(variantProps)} {...rest} />;
 }
 
-export interface ShellMainPopoutProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellMainPopout> {}
+export interface ShellPopoutProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellPopout> {}
 
 /**
  * Extends past the content column into the popout tracks. Direct element
- * children fill its width. Use `ShellMainContent` inside to return to the
- * content column. It must be a direct child of a main header, intro, body, or
- * wider main band.
+ * children fill its width. Use `ShellContent` inside to return to the content
+ * column. It must be a direct child of a main header, intro, body, or wider
+ * main band.
  * @example
  * <Shell>
  *   <ShellMain>
  *     <ShellMainBody>
- *       <ShellMainPopout><p>Wide content</p></ShellMainPopout>
+ *       <ShellPopout><p>Wide content</p></ShellPopout>
  *     </ShellMainBody>
  *   </ShellMain>
  * </Shell>
  */
-export function ShellMainPopout(props: ShellMainPopoutProps) {
-  const [variantProps, rest] = splitProps(props, shellMainPopout);
-  return <ak.Role.div {...shellMainPopout.jsx(variantProps)} {...rest} />;
+export function ShellPopout(props: ShellPopoutProps) {
+  const [variantProps, rest] = splitProps(props, shellPopout);
+  return <ak.Role.div {...shellPopout.jsx(variantProps)} {...rest} />;
 }
 
-export interface ShellMainFeatureProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellMainFeature> {}
+export interface ShellFeatureProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellFeature> {}
 
 /**
  * Extends past the popout tracks into the feature tracks. Direct element
@@ -404,24 +361,24 @@ export interface ShellMainFeatureProps
  * <Shell>
  *   <ShellMain>
  *     <ShellMainBody>
- *       <ShellMainFeature><p>Featured content</p></ShellMainFeature>
+ *       <ShellFeature><p>Featured content</p></ShellFeature>
  *     </ShellMainBody>
  *   </ShellMain>
  * </Shell>
  */
-export function ShellMainFeature(props: ShellMainFeatureProps) {
-  const [variantProps, rest] = splitProps(props, shellMainFeature);
-  return <ak.Role.div {...shellMainFeature.jsx(variantProps)} {...rest} />;
+export function ShellFeature(props: ShellFeatureProps) {
+  const [variantProps, rest] = splitProps(props, shellFeature);
+  return <ak.Role.div {...shellFeature.jsx(variantProps)} {...rest} />;
 }
 
-export interface ShellMainWideProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellMainWide> {}
+export interface ShellWideProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellWide> {}
 
 /**
  * Extends past the feature tracks to the widest span centered on the content
  * column. An open sidebar shifts the content to keep it centered in the shell;
- * this band leaves that offset out, while `ShellMainFull` covers it. Without
- * the offset, both bands match. Direct element children fill its width. Use a
+ * this band leaves that offset out, while `ShellFull` covers it. Without the
+ * offset, both bands match. Direct element children fill its width. Use a
  * narrower main band inside to select its columns. It must be a direct child of
  * a main header, intro, body, or full band.
  * @example
@@ -431,18 +388,18 @@ export interface ShellMainWideProps
  *   </ShellSidebar>
  *   <ShellMain>
  *     <ShellMainBody>
- *       <ShellMainWide><p>Centered wide content</p></ShellMainWide>
+ *       <ShellWide><p>Centered wide content</p></ShellWide>
  *     </ShellMainBody>
  *   </ShellMain>
  * </Shell>
  */
-export function ShellMainWide(props: ShellMainWideProps) {
-  const [variantProps, rest] = splitProps(props, shellMainWide);
-  return <ak.Role.div {...shellMainWide.jsx(variantProps)} {...rest} />;
+export function ShellWide(props: ShellWideProps) {
+  const [variantProps, rest] = splitProps(props, shellWide);
+  return <ak.Role.div {...shellWide.jsx(variantProps)} {...rest} />;
 }
 
-export interface ShellMainFullProps
-  extends ak.RoleProps<"div">, VariantProps<typeof shellMainFull> {}
+export interface ShellFullProps
+  extends ak.RoleProps<"div">, VariantProps<typeof shellFull> {}
 
 /**
  * Fills a main header, intro, or body's width, including the outer gutters.
@@ -454,14 +411,14 @@ export interface ShellMainFullProps
  * <Shell>
  *   <ShellMain>
  *     <ShellMainBody>
- *       <ShellMainFull $layer="brand"><p>Full-width content</p></ShellMainFull>
+ *       <ShellFull $layer="brand"><p>Full-width content</p></ShellFull>
  *     </ShellMainBody>
  *   </ShellMain>
  * </Shell>
  */
-export function ShellMainFull(props: ShellMainFullProps) {
-  const [variantProps, rest] = splitProps(props, shellMainFull);
-  return <ak.Role.div {...shellMainFull.jsx(variantProps)} {...rest} />;
+export function ShellFull(props: ShellFullProps) {
+  const [variantProps, rest] = splitProps(props, shellFull);
+  return <ak.Role.div {...shellFull.jsx(variantProps)} {...rest} />;
 }
 
 export interface ShellSidebarProps
@@ -511,7 +468,7 @@ function getSidebarPanelRender(landmark: ShellSidebarProps["landmark"]) {
  *   return (
  *     <Shell>
  *       <ShellHeader>
- *         <ShellHeaderStart>
+ *         <ShellStart>
  *           <button
  *             type="button"
  *             aria-expanded={open}
@@ -520,7 +477,7 @@ function getSidebarPanelRender(landmark: ShellSidebarProps["landmark"]) {
  *           >
  *             Docs
  *           </button>
- *         </ShellHeaderStart>
+ *         </ShellStart>
  *       </ShellHeader>
  *       <ShellSidebar
  *         id="docs-nav"

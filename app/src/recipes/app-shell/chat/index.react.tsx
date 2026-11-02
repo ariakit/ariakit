@@ -19,10 +19,10 @@ import {
 import {
   Shell,
   ShellFooter,
-  ShellFooterCenter,
+  ShellCenter,
   ShellHeader,
-  ShellHeaderStart,
-  ShellHeaderEnd,
+  ShellStart,
+  ShellEnd,
   ShellMain,
   ShellMainBody,
   ShellSidebar,
@@ -169,7 +169,7 @@ export default function Example() {
       {/* The nested shell takes the outer shell's main cell. */}
       <Shell>
         <ShellHeader>
-          <ShellHeaderStart $shrink className="flex min-w-0 items-center gap-2">
+          <ShellStart $shrink className="flex min-w-0 items-center gap-2">
             <Button
               className="@max-3xl/shell:hidden"
               aria-label="Toggle channels"
@@ -186,8 +186,8 @@ export default function Example() {
             <span className="ak-ink-70 truncate text-sm">
               Design reviews and component feedback
             </span>
-          </ShellHeaderStart>
-          <ShellHeaderEnd>
+          </ShellStart>
+          <ShellEnd>
             <Button
               className="@max-3xl/shell:hidden"
               aria-label="Toggle members"
@@ -199,7 +199,7 @@ export default function Example() {
                 <Users />
               </ButtonSlot>
             </Button>
-          </ShellHeaderEnd>
+          </ShellEnd>
         </ShellHeader>
         <ShellSidebar
           id={membersId}
@@ -253,7 +253,7 @@ export default function Example() {
           </ShellMainBody>
         </ShellMain>
         <ShellFooter $sticky $blur>
-          <ShellFooterCenter $grow>
+          <ShellCenter $grow>
             <form
               className="flex w-full gap-2"
               onSubmit={(event) => {
@@ -298,7 +298,7 @@ export default function Example() {
                 </ButtonSlot>
               </Button>
             </form>
-          </ShellFooterCenter>
+          </ShellCenter>
         </ShellFooter>
       </Shell>
     </Shell>

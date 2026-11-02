@@ -20,18 +20,16 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderStart,
-  ShellHeaderEnd,
+  ShellStart,
+  ShellEnd,
   ShellFooter,
-  ShellFooterEnd,
-  ShellFooterStart,
   ShellSidebar,
   ShellSidebarBody,
   ShellMain,
   ShellMainIntro,
   ShellMainBody,
-  ShellMainPopout,
-  ShellMainFeature,
+  ShellPopout,
+  ShellFeature,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { BookOpen, Calendar, CircleUser, Hexagon } from "lucide-react";
@@ -42,12 +40,12 @@ export default function Example() {
   return (
     <Shell>
       <ShellHeader $blur $border={false}>
-        <ShellHeaderStart>
+        <ShellStart>
           <a href="#" className="flex items-center gap-2 font-semibold">
             <Hexagon strokeWidth={1.5} className="size-5" /> Field Notes
           </a>
-        </ShellHeaderStart>
-        <ShellHeaderEnd>
+        </ShellStart>
+        <ShellEnd>
           <Button
             aria-label="Reading mode"
             aria-pressed={readingMode}
@@ -58,7 +56,7 @@ export default function Example() {
               <BookOpen />
             </ButtonSlot>
           </Button>
-        </ShellHeaderEnd>
+        </ShellEnd>
       </ShellHeader>
       <ShellMain $maxWidth="40rem">
         <ShellMainIntro $gap={4}>
@@ -87,7 +85,7 @@ export default function Example() {
               <Heading id="measure">Set the measure first</Heading>
               <p>{articleParagraphs[2]}</p>
             </Prose>
-            <ShellMainFeature render={<figure />}>
+            <ShellFeature render={<figure />}>
               <Frame
                 $layer="brand"
                 $hue="blue"
@@ -98,14 +96,14 @@ export default function Example() {
               <figcaption className="ak-ink-70 mt-3 text-center">
                 Light falls across a 40rem reading column.
               </figcaption>
-            </ShellMainFeature>
+            </ShellFeature>
             <Prose className={readingMode ? "text-lg leading-8" : undefined}>
               <Heading id="contrast">Contrast without noise</Heading>
               <p>{articleParagraphs[3]}</p>
               <Heading id="motion">Motion that waits for you</Heading>
               <p>{articleParagraphs[4]}</p>
             </Prose>
-            <ShellMainPopout>
+            <ShellPopout>
               <Text
                 $text="brand"
                 render={<blockquote />}
@@ -114,7 +112,7 @@ export default function Example() {
                 "Good reading design gets out of the way and lets the words do
                 the work."
               </Text>
-            </ShellMainPopout>
+            </ShellPopout>
             <Prose className={readingMode ? "text-lg leading-8" : undefined}>
               <Heading id="keep-reading">Keep reading</Heading>
             </Prose>
@@ -161,10 +159,10 @@ export default function Example() {
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellFooter $border={false}>
-        <ShellFooterStart>
+        <ShellStart>
           <p className="ak-ink-70">© 2026 Field Notes</p>
-        </ShellFooterStart>
-        <ShellFooterEnd $shrink>
+        </ShellStart>
+        <ShellEnd $shrink>
           {/* Demo form: the submit handler only keeps the page in place. */}
           <form
             className="flex w-full max-w-sm gap-2"
@@ -181,7 +179,7 @@ export default function Example() {
               Subscribe
             </Button>
           </form>
-        </ShellFooterEnd>
+        </ShellEnd>
       </ShellFooter>
     </Shell>
   );

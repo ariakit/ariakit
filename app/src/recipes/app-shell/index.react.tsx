@@ -13,11 +13,9 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellFooter,
-  ShellFooterStart,
-  ShellFooterEnd,
+  ShellStart,
+  ShellEnd,
   ShellHeader,
-  ShellHeaderStart,
-  ShellHeaderEnd,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -33,7 +31,7 @@ export default function Example() {
   return (
     <Shell>
       <ShellHeader $blur>
-        <ShellHeaderStart>
+        <ShellStart>
           <Button
             aria-label="Toggle navigation"
             aria-expanded={open}
@@ -49,10 +47,10 @@ export default function Example() {
             <Hexagon strokeWidth={1.5} className="size-5" />
             Acme Docs
           </a>
-        </ShellHeaderStart>
-        <ShellHeaderEnd>
+        </ShellStart>
+        <ShellEnd>
           <Button>Sign in</Button>
-        </ShellHeaderEnd>
+        </ShellEnd>
       </ShellHeader>
       <ShellSidebar
         id={sidebarId}
@@ -98,12 +96,12 @@ export default function Example() {
         </ShellMainBody>
       </ShellMain>
       <ShellFooter>
-        <ShellFooterStart>
+        <ShellStart>
           <span className="ak-ink-70 text-sm">© 2026 Acme, Inc.</span>
-        </ShellFooterStart>
-        <ShellFooterEnd>
+        </ShellStart>
+        <ShellEnd>
           <Link href="#">Back to top</Link>
-        </ShellFooterEnd>
+        </ShellEnd>
       </ShellFooter>
     </Shell>
   );

@@ -21,9 +21,9 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderCenter,
-  ShellHeaderStart,
-  ShellHeaderEnd,
+  ShellCenter,
+  ShellStart,
+  ShellEnd,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -108,7 +108,7 @@ export default function Example() {
       </ShellSidebar>
       <Shell>
         <ShellHeader $blur>
-          <ShellHeaderStart>
+          <ShellStart>
             <div className="flex items-center gap-2">
               <Button
                 aria-label="Toggle sidebar"
@@ -122,19 +122,16 @@ export default function Example() {
               </Button>
               <span className="font-semibold">Overview</span>
             </div>
-          </ShellHeaderStart>
-          <ShellHeaderCenter
-            $grow
-            className="hidden @[40rem]/shell-header:flex"
-          >
+          </ShellStart>
+          <ShellCenter $grow className="hidden @[40rem]/shell-header:flex">
             <Input
               type="search"
               aria-label="Search orders and customers"
               placeholder="Search orders, customers"
               className="w-full min-w-0"
             />
-          </ShellHeaderCenter>
-          <ShellHeaderEnd>
+          </ShellCenter>
+          <ShellEnd>
             <div className="flex items-center gap-2">
               <Button aria-label="Notifications">
                 <ButtonSlot>
@@ -147,7 +144,7 @@ export default function Example() {
                 </ButtonSlot>
               </Button>
             </div>
-          </ShellHeaderEnd>
+          </ShellEnd>
         </ShellHeader>
         <ShellMain $maxWidth="72rem">
           <ShellMainIntro>

@@ -28,19 +28,17 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderEnd,
-  ShellHeaderStart,
+  ShellEnd,
+  ShellStart,
   ShellFooter,
-  ShellFooterStart,
-  ShellFooterEnd,
   ShellSidebar,
   ShellSidebarBody,
   ShellSidebarFooter,
   ShellSidebarHeader,
   ShellMain,
   ShellMainBody,
-  ShellMainContent,
-  ShellMainFull,
+  ShellContent,
+  ShellFull,
   ShellMainHeader,
   ShellMainIntro,
 } from "@ariakit/ui/components/shell.ariakit.react";
@@ -84,7 +82,7 @@ export default function Example() {
         $hue="yellow"
         $chroma="muted"
       >
-        <ShellHeaderStart $shrink className="items-center gap-2">
+        <ShellStart $shrink className="items-center gap-2">
           <Button
             className="@max-3xl/shell:hidden"
             aria-label="Toggle pages"
@@ -112,8 +110,8 @@ export default function Example() {
               Weekly planning
             </span>
           </nav>
-        </ShellHeaderStart>
-        <ShellHeaderEnd className="items-center gap-3">
+        </ShellStart>
+        <ShellEnd className="items-center gap-3">
           <div
             role="group"
             aria-label="Collaborators"
@@ -150,7 +148,7 @@ export default function Example() {
               <PanelRight />
             </ButtonSlot>
           </Button>
-        </ShellHeaderEnd>
+        </ShellEnd>
       </ShellHeader>
       <ShellSidebar
         id={pagesId}
@@ -275,14 +273,14 @@ export default function Example() {
             </HeadingLevel>
             {renderChecklist(tasks)}
           </Prose>
-          <ShellMainFull $layer="brand" $p={6}>
-            <ShellMainContent>
+          <ShellFull $layer="brand" $p={6}>
+            <ShellContent>
               <p className="font-medium">
                 Decision: ship onboarding on Friday. Dark mode moves to the next
                 sprint.
               </p>
-            </ShellMainContent>
-          </ShellMainFull>
+            </ShellContent>
+          </ShellFull>
           <Prose>
             <HeadingLevel level={2}>
               <Heading>Notes</Heading>
@@ -338,12 +336,12 @@ export default function Example() {
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellFooter $sticky $borderType="dashed" $hue="yellow" $chroma="muted">
-        <ShellFooterStart>
+        <ShellStart>
           <span className="ak-ink-70">Saved 12:04</span>
-        </ShellFooterStart>
-        <ShellFooterEnd>
+        </ShellStart>
+        <ShellEnd>
           <span className="ak-ink-70">642 words</span>
-        </ShellFooterEnd>
+        </ShellEnd>
       </ShellFooter>
     </Shell>
   );

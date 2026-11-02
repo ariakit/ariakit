@@ -13,16 +13,15 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellMainHeader,
-  ShellMainContent,
-  ShellMainPopout,
-  ShellMainFeature,
-  ShellMainWide,
-  ShellMainFull,
+  ShellContent,
+  ShellPopout,
+  ShellFeature,
+  ShellWide,
+  ShellFull,
   ShellFooter,
-  ShellFooterStart,
+  ShellStart,
   ShellHeader,
-  ShellHeaderStart,
-  ShellHeaderEnd,
+  ShellEnd,
   ShellMainIntro,
   ShellMain,
   ShellMainBody,
@@ -59,10 +58,10 @@ export function ReadingScenario({ controls }: ScenarioProps) {
   return (
     <Shell>
       <ShellHeader>
-        <ShellHeaderStart>
+        <ShellStart>
           <span>Site header</span>
-        </ShellHeaderStart>
-        <ShellHeaderEnd>{controls}</ShellHeaderEnd>
+        </ShellStart>
+        <ShellEnd>{controls}</ShellEnd>
       </ShellHeader>
       <ShellMain $size={size} $maxWidth={wider ? "50rem" : undefined}>
         <ShellMainHeader>
@@ -130,9 +129,9 @@ export function ReadingScenario({ controls }: ScenarioProps) {
               within the screenshot size limit. */}
           <Shell className="min-h-0!">
             <ShellHeader>
-              <ShellHeaderStart>
+              <ShellStart>
                 <span>Automatic panel header</span>
-              </ShellHeaderStart>
+              </ShellStart>
             </ShellHeader>
             <ShellMain>
               <ShellMainBody>
@@ -144,9 +143,9 @@ export function ReadingScenario({ controls }: ScenarioProps) {
           </Shell>
           <Shell $size="lg" className="min-h-0!">
             <ShellHeader>
-              <ShellHeaderStart>
+              <ShellStart>
                 <span>Large panel header</span>
-              </ShellHeaderStart>
+              </ShellStart>
             </ShellHeader>
             <ShellMain>
               <ShellMainBody>
@@ -158,9 +157,9 @@ export function ReadingScenario({ controls }: ScenarioProps) {
           </Shell>
           <Shell className="min-h-0!">
             <ShellHeader>
-              <ShellHeaderStart>
+              <ShellStart>
                 <span>Sized panel header</span>
-              </ShellHeaderStart>
+              </ShellStart>
             </ShellHeader>
             <ShellMain $size="lg">
               <ShellMainBody>
@@ -209,10 +208,10 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         $border={border}
         $borderType={borderType}
       >
-        <ShellHeaderStart>
+        <ShellStart>
           <span>Layout details</span>
-        </ShellHeaderStart>
-        <ShellHeaderEnd>{controls}</ShellHeaderEnd>
+        </ShellStart>
+        <ShellEnd>{controls}</ShellEnd>
       </ShellHeader>
       <ShellSidebar
         id={startId}
@@ -392,41 +391,41 @@ export function GeometryScenario({ controls }: ScenarioProps) {
           <Frame $rounded="8px" $p={2} aria-label="Inset frame">
             Inset frame
           </Frame>
-          <ShellMainContent aria-label="Content band">
+          <ShellContent aria-label="Content band">
             <p>Content text</p>
-          </ShellMainContent>
-          <ShellMainPopout $p={4} aria-label="Popout band">
+          </ShellContent>
+          <ShellPopout $p={4} aria-label="Popout band">
             <p>Popout text</p>
-            <ShellMainContent>
+            <ShellContent>
               <p>Content inside popout</p>
-            </ShellMainContent>
-          </ShellMainPopout>
-          <ShellMainFeature $p={4} aria-label="Feature band">
+            </ShellContent>
+          </ShellPopout>
+          <ShellFeature $p={4} aria-label="Feature band">
             <p>Feature text</p>
-            <ShellMainContent>
+            <ShellContent>
               <p>Content inside feature</p>
-            </ShellMainContent>
-          </ShellMainFeature>
-          <ShellMainWide $p={4} aria-label="Wide band">
+            </ShellContent>
+          </ShellFeature>
+          <ShellWide $p={4} aria-label="Wide band">
             <p>Wide text</p>
-            <ShellMainContent>
+            <ShellContent>
               <p>Content inside wide</p>
-            </ShellMainContent>
-          </ShellMainWide>
-          <ShellMainFull $p={4} aria-label="Full band">
+            </ShellContent>
+          </ShellWide>
+          <ShellFull $p={4} aria-label="Full band">
             <p>Full text</p>
-            <ShellMainContent>
+            <ShellContent>
               <p>Content inside full</p>
-            </ShellMainContent>
-            <ShellMainPopout aria-label="Nested popout band">
+            </ShellContent>
+            <ShellPopout aria-label="Nested popout band">
               <p>Nested popout text</p>
-            </ShellMainPopout>
-            <ShellMainFeature aria-label="Nested feature band">
+            </ShellPopout>
+            <ShellFeature aria-label="Nested feature band">
               <p>Nested feature text</p>
-            </ShellMainFeature>
-            <ShellMainWide aria-label="Nested wide band">
+            </ShellFeature>
+            <ShellWide aria-label="Nested wide band">
               <p>Nested wide text</p>
-            </ShellMainWide>
+            </ShellWide>
             <table className="w-[1200px]">
               <caption>Wide data table</caption>
               <tbody>
@@ -435,11 +434,11 @@ export function GeometryScenario({ controls }: ScenarioProps) {
                 </tr>
               </tbody>
             </table>
-          </ShellMainFull>
+          </ShellFull>
           <div className="h-[1000px]">
             <p>Scroll to see the contents below the introduction.</p>
           </div>
-          <ShellMainFull $p={0} aria-label="Flush band">
+          <ShellFull $p={0} aria-label="Flush band">
             <Frame
               $rounded="8px"
               $p={6}
@@ -448,7 +447,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
             >
               A band at the shell edge
             </Frame>
-          </ShellMainFull>
+          </ShellFull>
         </ShellMainBody>
       </ShellMain>
       <ShellSidebar
@@ -475,9 +474,9 @@ export function GeometryScenario({ controls }: ScenarioProps) {
         $border={border}
         $borderType={borderType}
       >
-        <ShellFooterStart>
+        <ShellStart>
           <span>Layout footer</span>
-        </ShellFooterStart>
+        </ShellStart>
       </ShellFooter>
     </Shell>
   );
@@ -491,10 +490,10 @@ export function NestedScenario({ controls }: ScenarioProps) {
     <>
       <Shell id="outer-shell" $size="md">
         <ShellHeader $height="sm">
-          <ShellHeaderStart>
+          <ShellStart>
             <span>Outer header</span>
-          </ShellHeaderStart>
-          <ShellHeaderEnd>{controls}</ShellHeaderEnd>
+          </ShellStart>
+          <ShellEnd>{controls}</ShellEnd>
         </ShellHeader>
         <ShellSidebar
           $width="xs"
@@ -513,9 +512,9 @@ export function NestedScenario({ controls }: ScenarioProps) {
             <div className="h-40">Outer introduction</div>
             <Shell id="middle-shell" $size="md">
               <ShellHeader $height={largeHeader ? "lg" : "md"}>
-                <ShellHeaderStart>
+                <ShellStart>
                   <span>Middle header</span>
-                </ShellHeaderStart>
+                </ShellStart>
               </ShellHeader>
               <ShellSidebar
                 $width="sm"
@@ -534,9 +533,9 @@ export function NestedScenario({ controls }: ScenarioProps) {
                   <div className="h-40">Middle introduction</div>
                   <Shell id="inner-shell" $size="md">
                     <ShellHeader $height="lg">
-                      <ShellHeaderStart>
+                      <ShellStart>
                         <span>Inner header</span>
-                      </ShellHeaderStart>
+                      </ShellStart>
                     </ShellHeader>
                     <ShellSidebar
                       $width="xs"
