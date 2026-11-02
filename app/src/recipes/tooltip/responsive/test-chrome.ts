@@ -1,4 +1,4 @@
-import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { withFramework } from "#app/test-utils/preview.ts";
 import { hoverPastShowTimeout } from "#app/test-utils/tooltip.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
@@ -10,15 +10,16 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await share.focus();
     await page.setViewportSize({ width: 360, height: 600 });
     await test.expect(query(share).text("Share")).toBeHidden();
-    // The button measures its label in a ResizeObserver callback, and no state
-    // shows that the callback has run, so the test crosses the frames that
-    // deliver it and the React commit that follows.
-    await flushFrames(page);
+    // The button measures its label in a ResizeObserver callback. The tooltip
+    // can show only after that update commits, which is when focus could go.
+    await share.scrollIntoViewIfNeeded();
+    await share.hover();
+    await test.expect(q.tooltip("Share")).toBeVisible();
     await test.expect(share).toBeFocused();
     await page.setViewportSize({ width: 1280, height: 720 });
     await test.expect(query(share).text("Share")).toBeVisible();
-    // The same callback runs again now that the label shows.
-    await flushFrames(page);
+    // The tooltip closes when the same callback updates the text.
+    await test.expect(q.tooltip()).toHaveCount(0);
     await test.expect(share).toBeFocused();
   });
 

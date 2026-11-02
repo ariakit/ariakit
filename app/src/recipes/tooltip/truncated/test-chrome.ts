@@ -23,26 +23,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await section.evaluate((element) => {
       element.style.width = "60rem";
     });
-    await test.expect
-      .poll(() => link.evaluate((el) => el.scrollWidth > el.clientWidth))
-      .toBe(false);
-    // The link measures itself in a ResizeObserver callback, and no state shows
-    // that the callback has run, so the test crosses the frames that deliver it
-    // and the React commit that follows.
-    await flushFrames(page);
-    await test.expect(link).toBeFocused();
+    // The link measures itself in a ResizeObserver callback. The tooltip closes
+    // when that update commits, which is when focus could go.
     await test.expect(q.tooltip()).toHaveCount(0);
+    await test.expect(link).toBeFocused();
     await section.evaluate((element) => {
       element.style.width = "";
     });
     await test.expect
       .poll(() => link.evaluate((el) => el.scrollWidth > el.clientWidth))
       .toBe(true);
-    // The same callback runs again now that the text is cut off.
+    // The tooltip must stay closed until the next focus or hover, and no state
+    // shows that the callback has run, so the test crosses the frames that
+    // deliver it and the React commit that follows.
     await flushFrames(page);
-    await test.expect(link).toBeFocused();
-    // The tooltip stays closed until the next focus or hover.
     await test.expect(q.tooltip()).toHaveCount(0);
+    await link.scrollIntoViewIfNeeded();
+    await link.hover();
+    await test.expect(q.tooltip(LONG_NAME)).toBeVisible();
+    await test.expect(link).toBeFocused();
   });
 
   test("shows the full text of a link that cuts it off", async ({ q }) => {
