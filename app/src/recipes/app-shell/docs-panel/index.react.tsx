@@ -1,6 +1,12 @@
 import * as ak from "@ariakit/react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import {
+  Breadcrumb,
+  BreadcrumbCurrent,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+} from "@ariakit/ui/components/breadcrumb.ariakit.react";
+import {
   Button,
   ButtonGroup,
   ButtonLabel,
@@ -43,7 +49,7 @@ import {
   ShellSidebarHeader,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
-import { ChevronRight, Hexagon, Palette, PanelLeft, X } from "lucide-react";
+import { Hexagon, Palette, PanelLeft, X } from "lucide-react";
 import { useId, useState } from "react";
 
 export default function Example() {
@@ -164,15 +170,11 @@ export default function Example() {
 
         <ShellMain>
           <ShellMainHeader $blur $show="max-6xl">
-            <nav aria-label="Breadcrumb">
-              <ol className="flex items-center gap-1.5 text-sm">
-                <li className="ak-ink-70">Components</li>
-                <li aria-hidden className="ak-ink-70">
-                  <ChevronRight className="size-3.5" />
-                </li>
-                <li aria-current="page">Combobox</li>
-              </ol>
-            </nav>
+            <Breadcrumb aria-label="Breadcrumb">
+              <BreadcrumbLink href="#components">Components</BreadcrumbLink>
+              <BreadcrumbSeparator $kind="chevron" />
+              <BreadcrumbCurrent>Combobox</BreadcrumbCurrent>
+            </Breadcrumb>
           </ShellMainHeader>
 
           <ShellMainIntro>

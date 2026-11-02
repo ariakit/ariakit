@@ -1,0 +1,4 @@
+{
+  "title": "Leading Icons and Thumbnails",
+  "description": "A trail where each step has a BreadcrumbSlot before a BreadcrumbLabel: an icon for the workspace, a folder for the project, and a small thumbnail for the current file. The slots are decoration, so the text still names each step. Use it to help people spot a workspace or file type in an app header."
+}

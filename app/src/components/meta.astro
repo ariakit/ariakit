@@ -10,10 +10,17 @@
  */
 import { getPageOGImagePath } from "#app/lib/og-image.ts";
 import type { GetPageOGImagePathParams } from "#app/lib/og-image.ts";
+import {
+  getTrailStructuredData,
+  serializeStructuredData,
+} from "#app/lib/trail.ts";
+import type { AppTrail } from "#app/lib/trail.ts";
 
 interface Props extends GetPageOGImagePathParams {
   title?: string;
   description?: string;
+  /** The trail of the page, which search engines read as structured data. */
+  trail?: AppTrail;
 }
 
 const DEFAULT_TITLE = new String();
@@ -24,6 +31,7 @@ const {
   framework,
   pagePath,
   title: pageTitle = DEFAULT_TITLE,
+  trail,
   description = "Toolkit with accessible components, styles, and recipes for your next web app. Built for React, Solid, HTML, and more.",
 } = Astro.props;
 
@@ -69,3 +77,15 @@ const title =
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={ogImage} />
+
+{
+  trail && Astro.site && (
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={serializeStructuredData(
+        getTrailStructuredData(trail, Astro.site),
+      )}
+    />
+  )
+}

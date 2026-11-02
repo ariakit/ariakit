@@ -10,6 +10,31 @@ async function getFieldError(field: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  test("keeps the arrow apart from the icon in a select with an empty label", async ({
+    q,
+  }) => {
+    const gap = await q.combobox("Blank arrow first").evaluate((element) => {
+      const [arrow, icon] = element.querySelectorAll("svg");
+      const arrowEnd = arrow?.getBoundingClientRect().right ?? 0;
+      return (icon?.getBoundingClientRect().left ?? 0) - arrowEnd;
+    });
+    test.expect(gap).toBeGreaterThan(0);
+  });
+
+  test("keeps the arrow at the end of a stretched select with an empty label", async ({
+    q,
+  }) => {
+    const offsets = await q.combobox("Blank prompt").evaluate((element) => {
+      const icon = element.querySelector("svg")?.getBoundingClientRect();
+      const box = element.getBoundingClientRect();
+      return {
+        start: (icon?.left ?? 0) - box.left,
+        end: box.right - (icon?.right ?? 0),
+      };
+    });
+    test.expect(offsets.end).toBeLessThan(offsets.start);
+  });
+
   // https://github.com/ariakit/ariakit/issues/7473
   test("replaces the select placeholder when a region is selected", async ({
     q,

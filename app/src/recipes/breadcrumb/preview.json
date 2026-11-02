@@ -1,0 +1,4 @@
+{
+  "title": "Breadcrumb",
+  "description": "A trail in a navigation landmark, built with Breadcrumb, BreadcrumbLink, BreadcrumbSeparator, and BreadcrumbCurrent, with a house icon in a BreadcrumbSlot as its first step. The icon step takes its name from aria-label and a hover surface from $hoverOffset, and the steps wrap when they run out of room. Use it as the baseline for a page in a hierarchy, before adding other separators, truncation, or menus."
+}

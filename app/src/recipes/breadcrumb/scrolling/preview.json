@@ -1,0 +1,4 @@
+{
+  "title": "Scrolling Trail",
+  "description": "A deep trail with $scroll on Breadcrumb, which keeps one row that scrolls sideways and starts at the current step with no script. Tab order stays in source order, and focusing an earlier link scrolls it into view. Use it in a narrow header where every label must stay whole, and use truncated labels when the row must not scroll."
+}

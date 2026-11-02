@@ -1454,6 +1454,28 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Separators in a wide gap"
+        description="The gap leaves room for a hover surface beside each mark, so the marks stay next to a hovered, selected or focused button."
+        code={`
+          <ButtonGroup $border $gap="lg">
+            <Button>Undo</Button>
+            <ButtonSeparator />
+            <Button>Redo</Button>
+            <ButtonSeparator $kind="slash" />
+            <Button>Revert</Button>
+          </ButtonGroup>
+        `}
+      >
+        <ButtonGroup aria-label="Spaced history" $border $gap="lg">
+          <Button>Undo</Button>
+          <ButtonSeparator />
+          <Button>Redo</Button>
+          <ButtonSeparator $kind="slash" />
+          <Button>Revert</Button>
+        </ButtonGroup>
+      </Example>
+
+      <Example
         title="Chevron separators"
         description="Chevrons for a path. They stay next to a hovered button and turn around in right-to-left text."
         code={`

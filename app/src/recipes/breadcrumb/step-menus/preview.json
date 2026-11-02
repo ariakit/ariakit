@@ -1,0 +1,4 @@
+{
+  "title": "Step Menus for Switching Neighbors",
+  "description": "A trail where the current step keeps its label, and an arrow button beside it is a ComboboxSelect that lists the neighbors, with ComboboxItem rendering a link for each. The selected value comes from the current page and has no setter, so typing on the closed button can't change its label without a page change. Use it to switch project or team from the header, and use the whole-step select when the current step can be the button."
+}

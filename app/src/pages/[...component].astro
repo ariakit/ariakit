@@ -13,6 +13,8 @@ import ApiReference from "#app/components/api-reference.astro";
 import { getReferencePath } from "#app/lib/url.ts";
 import { getGalleryExamples } from "#app/lib/gallery.ts";
 import { descriptionToText } from "#app/lib/content.ts";
+import { getCollectionTrail } from "#app/lib/trail.ts";
+import type { AppTrail } from "#app/lib/trail.ts";
 import PageIntro from "#app/components/page-intro.astro";
 import {
   descriptionComponents,
@@ -91,6 +93,17 @@ const { Content: Description } = description ? await render(description) : {};
 Astro.locals.framework = framework;
 const title = entry.data.title;
 const descriptionText = await descriptionToText(description?.body, framework);
+const trail: AppTrail = getCollectionTrail(framework, "components", title);
+// An API reference page sits one level under the page of its component. The
+// reference of the main component has the same name as the page.
+if (!main && reference) {
+  trail.steps.push({
+    label: title,
+    href: `/${framework}/components/${entry.id}/`,
+  });
+  const { name } = reference.data;
+  trail.current = name === title ? "API reference" : name;
+}
 ---
 
 <Layout {title} {headings} {examples} section="components">
@@ -101,8 +114,9 @@ const descriptionText = await descriptionToText(description?.body, framework);
     {title}
     {framework}
     description={descriptionText}
+    {trail}
   />
-  <PageIntro slot="intro" {title}>
+  <PageIntro slot="intro" {title} {trail}>
     {
       Description && (
         <Description {framework} components={descriptionComponents} />

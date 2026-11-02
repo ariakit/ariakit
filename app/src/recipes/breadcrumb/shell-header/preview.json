@@ -1,0 +1,5 @@
+{
+  "title": "Sticky Trail in a Shell Header",
+  "description": "A full page with the trail in a ShellMainHeader that stays in view while the page scrolls, above a ShellMainIntro and a long ShellMainBody. Use it for app screens where people need the way up at any scroll position. Use the baseline trail above a title when the page has a sidebar or top bar that already shows the section.",
+  "fullscreen": true
+}

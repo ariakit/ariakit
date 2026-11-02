@@ -81,19 +81,14 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // Activity, and each also sits next to a link with an empty value.
     const firstSlash = overview.locator("xpath=following-sibling::*[1]");
     const secondSlash = activity.locator("xpath=following-sibling::*[1]");
-    const transparent = "rgba(0, 0, 0, 0)";
     // Every link carries an empty or false value, so none is current: no link
     // paints a selected surface, and every slash shows.
     await test.expect(overview).toHaveAttribute("aria-current", "");
     await test.expect(activity).toHaveAttribute("aria-current", "false");
     const idle = await getBackground(overview);
     test.expect(await getBackground(activity)).toBe(idle);
-    await test
-      .expect(firstSlash)
-      .not.toHaveCSS("border-right-color", transparent);
-    await test
-      .expect(secondSlash)
-      .not.toHaveCSS("border-right-color", transparent);
+    await test.expect(firstSlash).toHaveCSS("opacity", "1");
+    await test.expect(secondSlash).toHaveCSS("opacity", "1");
     // The token on Activity counts as current. The pointer leaves the group, so
     // only the current link can still hide a slash.
     await activity.click();
@@ -101,11 +96,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.mouse.move(0, 0);
     await test.expect.poll(() => getBackground(activity)).not.toBe(idle);
     await test.expect.poll(() => getBackground(overview)).toBe(idle);
-    // A slash eases its border color over 200ms. One that only the pointer hid
-    // would still read transparent right after the pointer left.
+    // A slash eases its opacity over 200ms. One that only the pointer hid would
+    // still read 0 right after the pointer left.
     await page.waitForTimeout(200);
-    await test.expect(firstSlash).toHaveCSS("border-right-color", transparent);
-    await test.expect(secondSlash).toHaveCSS("border-right-color", transparent);
+    await test.expect(firstSlash).toHaveCSS("opacity", "0");
+    await test.expect(secondSlash).toHaveCSS("opacity", "0");
   });
 
   // https://github.com/ariakit/ariakit/issues/7806
