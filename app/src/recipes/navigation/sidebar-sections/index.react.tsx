@@ -13,7 +13,7 @@ import {
 import {
   Shell,
   ShellHeader,
-  ShellHeaderStart,
+  ShellStart,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -91,7 +91,7 @@ function Site() {
   return (
     <Shell>
       <ShellHeader $blur>
-        <ShellHeaderStart>
+        <ShellStart>
           {/* An icon starts the logo, so its sides keep the frame padding, like
               the leading icon of a button. */}
           <TextFrame
@@ -102,7 +102,7 @@ function Site() {
             <Hexagon strokeWidth={1.5} className="size-5" aria-hidden />
             Acme UI
           </TextFrame>
-        </ShellHeaderStart>
+        </ShellStart>
       </ShellHeader>
       <ShellSidebar>
         <ShellSidebarBody>

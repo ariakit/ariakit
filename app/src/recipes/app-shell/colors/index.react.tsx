@@ -22,13 +22,10 @@ import { Progress } from "@ariakit/ui/components/progress.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderCenter,
-  ShellHeaderStart,
-  ShellHeaderEnd,
+  ShellCenter,
+  ShellStart,
+  ShellEnd,
   ShellFooter,
-  ShellFooterStart,
-  ShellFooterCenter,
-  ShellFooterEnd,
   ShellSidebar,
   ShellSidebarHeader,
   ShellSidebarBody,
@@ -36,8 +33,8 @@ import {
   ShellMain,
   ShellMainIntro,
   ShellMainBody,
-  ShellMainContent,
-  ShellMainFull,
+  ShellContent,
+  ShellFull,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import {
   CircleUser,
@@ -134,7 +131,7 @@ export default function Example() {
 
       <Shell>
         <ShellHeader $layer="brand" $hue="magenta" $chroma="vivid" $contrast>
-          <ShellHeaderStart>
+          <ShellStart>
             <Button
               aria-label="Toggle library"
               aria-expanded={sidebarOpen}
@@ -145,30 +142,27 @@ export default function Example() {
                 <PanelLeft />
               </ButtonSlot>
             </Button>
-          </ShellHeaderStart>
-          <ShellHeaderCenter
-            $grow
-            className="hidden @[40rem]/shell-header:flex"
-          >
+          </ShellStart>
+          <ShellCenter $grow className="hidden @[40rem]/shell-header:flex">
             <Input
               aria-label="Search music"
               placeholder="Search songs, artists, albums"
               className="w-full min-w-0"
             />
-          </ShellHeaderCenter>
-          <ShellHeaderEnd>
+          </ShellCenter>
+          <ShellEnd>
             <Button aria-label="Account">
               <ButtonSlot>
                 <CircleUser />
               </ButtonSlot>
             </Button>
-          </ShellHeaderEnd>
+          </ShellEnd>
         </ShellHeader>
 
         <ShellMain>
           <ShellMainIntro>
-            <ShellMainFull $layer $hue="cyan" $chroma="vivid" $contrast $p={8}>
-              <ShellMainContent>
+            <ShellFull $layer $hue="cyan" $chroma="vivid" $contrast $p={8}>
+              <ShellContent>
                 <div className="@container/album">
                   <div className="flex flex-col items-start gap-6 @md/album:flex-row @md/album:items-end">
                     <Frame
@@ -214,8 +208,8 @@ export default function Example() {
                     </div>
                   </div>
                 </div>
-              </ShellMainContent>
-            </ShellMainFull>
+              </ShellContent>
+            </ShellFull>
           </ShellMainIntro>
 
           <ShellMainBody>
@@ -267,7 +261,7 @@ export default function Example() {
         </ShellMain>
 
         <ShellFooter $sticky $layer="secondary" $blur>
-          <ShellFooterStart $shrink className="min-w-0">
+          <ShellStart $shrink className="min-w-0">
             <div className="flex min-w-0 items-center gap-3">
               <Frame
                 $layer
@@ -282,8 +276,8 @@ export default function Example() {
                 <p className="ak-ink-70 truncate text-xs">{track?.artist}</p>
               </div>
             </div>
-          </ShellFooterStart>
-          <ShellFooterCenter $grow>
+          </ShellStart>
+          <ShellCenter $grow>
             <div className="flex w-full max-w-md flex-col items-center gap-1.5">
               <ButtonGroup aria-label="Playback">
                 <Button
@@ -315,14 +309,14 @@ export default function Example() {
               </ButtonGroup>
               <Progress value={0.4} aria-label="Playback position" />
             </div>
-          </ShellFooterCenter>
-          <ShellFooterEnd>
+          </ShellCenter>
+          <ShellEnd>
             <Button aria-label="Volume">
               <ButtonSlot>
                 <Volume2 />
               </ButtonSlot>
             </Button>
-          </ShellFooterEnd>
+          </ShellEnd>
         </ShellFooter>
       </Shell>
     </Shell>

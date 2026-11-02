@@ -15,7 +15,7 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderStart,
+  ShellStart,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -39,7 +39,7 @@ export default function Example() {
   return (
     <Shell>
       <ShellHeader $blur $height="sm">
-        <ShellHeaderStart>
+        <ShellStart>
           <PopoverProvider placement="bottom-start">
             {/* The button shows the section being read. The popover keeps
                 the table of contents mounted while it's closed, so the
@@ -64,7 +64,7 @@ export default function Example() {
               </Toc>
             </Popover>
           </PopoverProvider>
-        </ShellHeaderStart>
+        </ShellStart>
       </ShellHeader>
       <ShellMain>
         <ShellMainIntro className="pb-3">

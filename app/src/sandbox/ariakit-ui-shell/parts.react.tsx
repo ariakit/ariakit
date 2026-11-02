@@ -10,8 +10,8 @@
 import {
   Shell,
   ShellHeader,
-  ShellHeaderStart,
-  ShellHeaderEnd,
+  ShellStart,
+  ShellEnd,
   ShellMain,
   ShellMainBody,
   ShellMainHeader,
@@ -130,8 +130,8 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
     <Shell $size="md" className={narrowShell ? "max-w-[60rem]" : undefined}>
       {showGlobalHeader && (
         <ShellHeader $border={wideBorder ? 3 : 1}>
-          <ShellHeaderStart>Shell parts</ShellHeaderStart>
-          <ShellHeaderEnd>{controls}</ShellHeaderEnd>
+          <ShellStart>Shell parts</ShellStart>
+          <ShellEnd>{controls}</ShellEnd>
         </ShellHeader>
       )}
       <ShellSidebar
@@ -452,7 +452,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
           </section>
           <Shell id="nested-parts-shell" $size="md" className="mt-4 max-w-3xl">
             <ShellHeader>
-              <ShellHeaderStart>Nested header</ShellHeaderStart>
+              <ShellStart>Nested header</ShellStart>
             </ShellHeader>
             <ShellMain
               $p="var(--nested-gutter)"
@@ -469,7 +469,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
                 {nestedHeaders && (
                   <Shell id="inner-parts-shell" $size="md">
                     <ShellHeader>
-                      <ShellHeaderStart>Inner header</ShellHeaderStart>
+                      <ShellStart>Inner header</ShellStart>
                     </ShellHeader>
                     <ShellMain>
                       <ShellMainHeader $height="lg">

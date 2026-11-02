@@ -16,9 +16,9 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderCenter,
-  ShellHeaderEnd,
-  ShellHeaderStart,
+  ShellCenter,
+  ShellEnd,
+  ShellStart,
   ShellMain,
   ShellMainBody,
   ShellSidebar,
@@ -30,14 +30,14 @@ const sections = ["Introduction", "Installation", "Sidebars", "Centering"];
 
 <Shell $size="md">
   <ShellHeader $blur>
-    <ShellHeaderStart>
+    <ShellStart>
       <Button id="toggle" aria-expanded="false" aria-controls="sidebar">
         Toggle sidebar
       </Button>
       <strong>Static shell</strong>
-    </ShellHeaderStart>
-    <ShellHeaderCenter>Documentation</ShellHeaderCenter>
-    <ShellHeaderEnd $shrink>No component JavaScript</ShellHeaderEnd>
+    </ShellStart>
+    <ShellCenter>Documentation</ShellCenter>
+    <ShellEnd $shrink>No component JavaScript</ShellEnd>
   </ShellHeader>
   <ShellSidebar id="sidebar" open={false}>
     <ShellSidebarBody>

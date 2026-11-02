@@ -291,7 +291,7 @@ export const shellBarPart = cv({
 });
 
 /** The start section of a shell header or footer. */
-export const shellHeaderStart = cv({
+export const shellStart = cv({
   extend: [shellBarPart],
   class: "shell-bar-start col-1",
   variants: {
@@ -301,7 +301,7 @@ export const shellHeaderStart = cv({
 });
 
 /** The center section of a shell header or footer. */
-export const shellHeaderCenter = cv({
+export const shellCenter = cv({
   extend: [shellBarPart],
   class: "shell-bar-center col-2",
   variants: {
@@ -315,7 +315,7 @@ export const shellHeaderCenter = cv({
 });
 
 /** The end section of a shell header or footer. */
-export const shellHeaderEnd = cv({
+export const shellEnd = cv({
   extend: [shellBarPart],
   class: "shell-bar-end col-3",
   variants: {
@@ -365,15 +365,6 @@ export const shellFooter = cv({
     $height: "md",
   },
 });
-
-/** A footer part aligned to the start edge. */
-export const shellFooterStart = shellHeaderStart;
-
-/** A footer part centered while both side parts fit. */
-export const shellFooterCenter = shellHeaderCenter;
-
-/** A footer part aligned to the end edge. */
-export const shellFooterEnd = shellHeaderEnd;
 
 /**
  * A sidebar column that folds to zero width while its panel keeps its full
@@ -651,7 +642,7 @@ const content = cx(
   slotSpaces,
   centered,
   compensation,
-  "shell-content grid justify-stretch min-w-0 rounded-none!",
+  "shell-content-grid grid justify-stretch min-w-0 rounded-none!",
   // Grid items do not collapse margins, so the grid spaces its children.
   "gap-y-(--shell-content-gap) [--shell-content-gap:--spacing(6)]",
   // Keep focused content above a sticky footer when it scrolls into view.
@@ -661,8 +652,8 @@ const content = cx(
   "[&>:is(.control,.badge)]:justify-self-start",
   // A leading or trailing wide or full band touches the bars around the
   // section. The space between the intro and the body stays.
-  "[&:not(.shell-main-intro~*):has(>:is(.shell-main-wide,.shell-main-full):first-child)]:pbs-0",
-  "[&:not(.shell-main-intro):has(>:is(.shell-main-wide,.shell-main-full):last-child)]:pbe-0",
+  "[&:not(.shell-main-intro~*):has(>:is(.shell-wide,.shell-full):first-child)]:pbs-0",
+  "[&:not(.shell-main-intro):has(>:is(.shell-wide,.shell-full):last-child)]:pbe-0",
   // Publish gutter spacing as frame padding so nested frame corners remain
   // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
@@ -974,32 +965,32 @@ export const shellMainBody = cv({
 const mainBand = cv({
   extend: [frame],
   class: [
-    "shell-main-band grid grid-cols-subgrid min-w-0 rounded-none! px-0!",
-    "[.shell-content>&]:contain-inline-size [.shell-main-band>&]:contain-inline-size",
+    "shell-band grid grid-cols-subgrid min-w-0 rounded-none! px-0!",
+    "[.shell-content-grid>&]:contain-inline-size [.shell-band>&]:contain-inline-size",
     "*:col-span-full *:min-w-0",
   ],
   defaultVariants: { $p: "none" },
 });
 
 /** The centered content column, including inside a wider main band. */
-export const shellMainContent = cv({
+export const shellContent = cv({
   extend: [mainBand],
   class:
-    "shell-main-content [.shell-content>&]:col-[content] [.shell-main-band>&]:col-[content]",
+    "shell-content [.shell-content-grid>&]:col-[content] [.shell-band>&]:col-[content]",
 });
 
 /** Extends one step beyond the centered content column. */
-export const shellMainPopout = cv({
+export const shellPopout = cv({
   extend: [mainBand],
   class:
-    "shell-main-popout [.shell-content>&]:col-[popout] [.shell-main-band>&]:col-[popout]",
+    "shell-popout [.shell-content-grid>&]:col-[popout] [.shell-band>&]:col-[popout]",
 });
 
 /** Extends beyond the popout column while leaving the outer gutters. */
-export const shellMainFeature = cv({
+export const shellFeature = cv({
   extend: [mainBand],
   class:
-    "shell-main-feature [.shell-content>&]:col-[feature] [.shell-main-band>&]:col-[feature]",
+    "shell-feature [.shell-content-grid>&]:col-[feature] [.shell-band>&]:col-[feature]",
 });
 
 /**
@@ -1007,15 +998,15 @@ export const shellMainFeature = cv({
  * column. Sidebar compensation stays outside it, so it matches the full band
  * when no sidebar offsets the content.
  */
-export const shellMainWide = cv({
+export const shellWide = cv({
   extend: [mainBand],
   class:
-    "shell-main-wide [.shell-content>&]:col-[wide] [.shell-main-band>&]:col-[wide]",
+    "shell-wide [.shell-content-grid>&]:col-[wide] [.shell-band>&]:col-[wide]",
 });
 
 /** Fills the main section width, including its outer gutters. */
-export const shellMainFull = cv({
+export const shellFull = cv({
   extend: [mainBand],
   class:
-    "shell-main-full [.shell-content>&]:col-[full] [.shell-main-band>&]:col-[full]",
+    "shell-full [.shell-content-grid>&]:col-[full] [.shell-band>&]:col-[full]",
 });

@@ -21,17 +21,14 @@ import {
 import {
   Shell,
   ShellFooter,
-  ShellFooterCenter,
-  ShellFooterEnd,
-  ShellFooterStart,
+  ShellCenter,
+  ShellEnd,
+  ShellStart,
   ShellHeader,
-  ShellHeaderCenter,
-  ShellHeaderEnd,
-  ShellHeaderStart,
   ShellMain,
   ShellMainBody,
-  ShellMainContent,
-  ShellMainFull,
+  ShellContent,
+  ShellFull,
   ShellSidebar,
   ShellSidebarBody,
   ShellSidebarHeader,
@@ -94,7 +91,7 @@ export default function Example() {
   return (
     <Shell>
       <ShellHeader $height="sm" $stackCenter>
-        <ShellHeaderStart $shrink>
+        <ShellStart $shrink>
           <div className="flex min-w-0 items-center gap-2">
             <Button
               aria-label="Toggle layers"
@@ -111,8 +108,8 @@ export default function Example() {
               Spring Sale Landing Page
             </ak.Heading>
           </div>
-        </ShellHeaderStart>
-        <ShellHeaderCenter>
+        </ShellStart>
+        <ShellCenter>
           <ak.RadioProvider
             value={mode}
             setValue={(value) => {
@@ -136,8 +133,8 @@ export default function Example() {
               ))}
             </ak.RadioGroup>
           </ak.RadioProvider>
-        </ShellHeaderCenter>
-        <ShellHeaderEnd>
+        </ShellCenter>
+        <ShellEnd>
           <Button>
             <ButtonSlot>
               <Share2 />
@@ -160,7 +157,7 @@ export default function Example() {
               <PanelRight />
             </ButtonSlot>
           </Button>
-        </ShellHeaderEnd>
+        </ShellEnd>
       </ShellHeader>
 
       <ShellSidebar
@@ -199,7 +196,7 @@ export default function Example() {
 
       <ShellMain $p={6} $maxWidth="56rem">
         <ShellMainBody>
-          <ShellMainFull
+          <ShellFull
             $layer="canvas"
             className="min-h-[60rem] bg-[radial-gradient(rgb(0_0_0/0.14)_1px,transparent_1px)] bg-[size:1.25rem_1.25rem] dark:bg-[radial-gradient(rgb(255_255_255/0.12)_1px,transparent_1px)]"
             onPointerMove={(event) => {
@@ -211,7 +208,7 @@ export default function Example() {
               });
             }}
           >
-            <ShellMainContent className="py-12">
+            <ShellContent className="py-12">
               <Frame
                 $layer
                 $rounded="xl"
@@ -274,8 +271,8 @@ export default function Example() {
                   </div>
                 </div>
               </Frame>
-            </ShellMainContent>
-          </ShellMainFull>
+            </ShellContent>
+          </ShellFull>
         </ShellMainBody>
       </ShellMain>
 
@@ -378,22 +375,22 @@ export default function Example() {
       </ShellSidebar>
 
       <ShellFooter $height="sm">
-        <ShellFooterStart>
+        <ShellStart>
           <span className="tabular-nums ak-ink-70">Zoom 100%</span>
-        </ShellFooterStart>
-        <ShellFooterCenter>
+        </ShellStart>
+        <ShellCenter>
           <span className="tabular-nums ak-ink-70">
             X {cursor.x}, Y {cursor.y}
           </span>
-        </ShellFooterCenter>
-        <ShellFooterEnd>
+        </ShellCenter>
+        <ShellEnd>
           <Badge $layer="success">
             <BadgeSlot aria-hidden>
               <Check />
             </BadgeSlot>
             <BadgeLabel>Saved</BadgeLabel>
           </Badge>
-        </ShellFooterEnd>
+        </ShellEnd>
       </ShellFooter>
     </Shell>
   );

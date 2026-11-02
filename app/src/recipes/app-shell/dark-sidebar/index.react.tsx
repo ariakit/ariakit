@@ -24,8 +24,8 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderEnd,
-  ShellHeaderStart,
+  ShellEnd,
+  ShellStart,
   ShellMain,
   ShellMainBody,
   ShellMainHeader,
@@ -359,7 +359,7 @@ export default function Example() {
 
       <Shell>
         <ShellHeader $height="sm" $blur>
-          <ShellHeaderStart $shrink className="gap-2">
+          <ShellStart $shrink className="gap-2">
             <Button
               aria-label="Toggle sidebar"
               aria-expanded={sidebarOpen}
@@ -380,8 +380,8 @@ export default function Example() {
               />
               <span className="truncate font-semibold">Website redesign</span>
             </span>
-          </ShellHeaderStart>
-          <ShellHeaderEnd>
+          </ShellStart>
+          <ShellEnd>
             <ButtonGroup aria-label="Project actions" $p={0} $gap="sm">
               <Button aria-label="Favorite">
                 <ButtonSlot>
@@ -395,7 +395,7 @@ export default function Example() {
                 <ButtonLabel>Subscribe</ButtonLabel>
               </Button>
             </ButtonGroup>
-          </ShellHeaderEnd>
+          </ShellEnd>
         </ShellHeader>
 
         <ShellMain $maxWidth="64rem">

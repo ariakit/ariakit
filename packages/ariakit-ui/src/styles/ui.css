@@ -622,8 +622,8 @@ body > * {
      update values derived from it. */
   :where(
       & > :not(.shell-slot-state),
-      & > .shell-slot-state > :not(.shell-content),
-      & > .shell-slot-state > .shell-content > *
+      & > .shell-slot-state > :not(.shell-content-grid),
+      & > .shell-slot-state > .shell-content-grid > *
     ) {
     --shell-start-1-open: initial;
     --shell-start-2-open: initial;

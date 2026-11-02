@@ -26,7 +26,7 @@ test("reading pages space gallery cards like the gutter around them", async ({
   await expect(grid).toHaveCSS("column-gap", "28px");
   // This gallery stacks its cards directly in the band, without a grid.
   await gotoAndSettle(page, "/react/recipes/combobox-group/");
-  const band = page.locator(".shell-main-body > .shell-main-wide").first();
+  const band = page.locator(".shell-main-body > .shell-wide").first();
   await expect(band).toHaveCSS("row-gap", "28px");
 });
 

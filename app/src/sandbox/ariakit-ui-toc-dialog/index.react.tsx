@@ -11,8 +11,8 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderEnd,
-  ShellHeaderStart,
+  ShellEnd,
+  ShellStart,
   ShellMain,
   ShellMainBody,
   ShellSidebar,
@@ -83,17 +83,17 @@ export default function Example() {
                   up with the wider padding of the terms, and truncates rather
                   than wrap and grow the header. */}
               <ShellHeader $blur $height="sm">
-                <ShellHeaderStart
+                <ShellStart
                   $shrink
                   className="ps-[calc(var(--spacing)*6-var(--shell-bar-inset))]"
                 >
                   <DialogHeading className="truncate">
                     Terms of service
                   </DialogHeading>
-                </ShellHeaderStart>
-                <ShellHeaderEnd>
+                </ShellStart>
+                <ShellEnd>
                   <DialogDismiss />
-                </ShellHeaderEnd>
+                </ShellEnd>
               </ShellHeader>
               <ShellMain $p={6}>
                 <ShellMainBody>

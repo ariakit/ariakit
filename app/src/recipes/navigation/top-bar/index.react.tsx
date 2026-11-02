@@ -7,9 +7,9 @@ import { Nav } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Shell,
   ShellHeader,
-  ShellHeaderStart,
-  ShellHeaderCenter,
-  ShellHeaderEnd,
+  ShellStart,
+  ShellCenter,
+  ShellEnd,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -35,7 +35,7 @@ function Page() {
   return (
     <Shell>
       <ShellHeader $blur>
-        <ShellHeaderStart>
+        <ShellStart>
           {/* An icon starts the logo, so its sides keep the frame padding, like
               the leading icon of a button. */}
           <TextFrame
@@ -46,8 +46,8 @@ function Page() {
             <Hexagon strokeWidth={1.5} className="size-5" aria-hidden />
             Acme
           </TextFrame>
-        </ShellHeaderStart>
-        <ShellHeaderCenter>
+        </ShellStart>
+        <ShellCenter>
           {/* The header stretches the navigation to its height, so the bar sits
               on the header's bottom edge. The links scroll when they need more
               room than the header has. */}
@@ -56,8 +56,8 @@ function Page() {
               <RouterNavLink key={page} to={getPath(page)} text={page} />
             ))}
           </Nav>
-        </ShellHeaderCenter>
-        <ShellHeaderEnd>
+        </ShellCenter>
+        <ShellEnd>
           <Button aria-label="Notifications">
             <ButtonSlot>
               <Bell />
@@ -68,7 +68,7 @@ function Page() {
               MR
             </ButtonSlot>
           </Button>
-        </ShellHeaderEnd>
+        </ShellEnd>
       </ShellHeader>
       <ShellMain $maxWidth="64rem">
         <ShellMainIntro>

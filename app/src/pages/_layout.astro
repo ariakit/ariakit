@@ -19,16 +19,14 @@ import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Shell,
   ShellFooter,
-  ShellFooterEnd,
-  ShellFooterStart,
+  ShellEnd,
+  ShellStart,
   ShellHeader,
-  ShellHeaderCenter,
-  ShellHeaderEnd,
-  ShellHeaderStart,
+  ShellCenter,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
-  ShellMainWide,
+  ShellWide,
   ShellSidebar,
   ShellSidebarBody,
   ShellSidebarFooter,
@@ -306,7 +304,7 @@ const hasSidebar = sidebar && navigation.length > 0;
         <ShellHeader $height="sm" $blur className="text-sm">
           {/* The global styles give islands the display of their parent, so a
               hidden button would leave an empty flex item and its gap. */}
-          <ShellHeaderStart className="[&>astro-island]:contents!">
+          <ShellStart className="[&>astro-island]:contents!">
             {/* Tooltip buttons are islands, which the layout script wires before
                 they hydrate. The script restores aria-expanded, so hydration
                 ignores that difference. */}
@@ -342,8 +340,8 @@ const hasSidebar = sidebar && navigation.length > 0;
               <LogoIcon size="1.5em" />
               <Logotype size="1.25em" className="@max-xl/shell:hidden" />
             </a>
-          </ShellHeaderStart>
-          <ShellHeaderCenter className="@max-2xl/shell:hidden">
+          </ShellStart>
+          <ShellCenter className="@max-2xl/shell:hidden">
             {/* Astro renders each link apart from the Nav, so the links take the
                 bar themselves. */}
             <Nav
@@ -363,8 +361,8 @@ const hasSidebar = sidebar && navigation.length > 0;
                 ))
               }
             </Nav>
-          </ShellHeaderCenter>
-          <ShellHeaderEnd>
+          </ShellCenter>
+          <ShellEnd>
             {/* The phone menu holds the theme options below 48rem. A viewport
                 query matches the outer shell, which spans the viewport. */}
             {/* The label hides when the open panel narrows the inner shell, so
@@ -381,7 +379,7 @@ const hasSidebar = sidebar && navigation.length > 0;
               <ButtonSlot><SwatchBook /></ButtonSlot>
               <ButtonLabel className="@max-lg/shell:hidden">Theme</ButtonLabel>
             </Button>
-          </ShellHeaderEnd>
+          </ShellEnd>
         </ShellHeader>
         {/* The theme panel restores its state before the header parses, so
             the header toggles sync with it here instead of at the end of the
@@ -506,12 +504,12 @@ const hasSidebar = sidebar && navigation.length > 0;
                 first row of examples and doesn't tie with it. */}
             {
               examples.length > 0 ? (
-                <ShellMainWide className="relative gap-y-[1.75rem]">
+                <ShellWide className="relative gap-y-[1.75rem]">
                   <h2 id={examplesSlug} class="sr-only -top-4">
                     Examples
                   </h2>
                   <slot name="gallery" />
-                </ShellMainWide>
+                </ShellWide>
               ) : (
                 <slot name="gallery" />
               )
@@ -520,10 +518,10 @@ const hasSidebar = sidebar && navigation.length > 0;
           </ShellMainBody>
         </ShellMain>
         <ShellFooter className="text-sm">
-          <ShellFooterStart>
+          <ShellStart>
             <span class="ak-ink-70">© Ariakit FZ-LLC</span>
-          </ShellFooterStart>
-          <ShellFooterEnd>
+          </ShellStart>
+          <ShellEnd>
             <Nav $layout="horizontal" aria-label="Footer" $p="none">
               {
                 sections.map((link) => (
@@ -531,7 +529,7 @@ const hasSidebar = sidebar && navigation.length > 0;
                 ))
               }
             </Nav>
-          </ShellFooterEnd>
+          </ShellEnd>
         </ShellFooter>
       </Shell>
     </Shell>

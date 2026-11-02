@@ -28,17 +28,15 @@ import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import {
   Shell,
   ShellFooter,
-  ShellFooterStart,
-  ShellFooterEnd,
+  ShellStart,
+  ShellEnd,
   ShellHeader,
-  ShellHeaderCenter,
-  ShellHeaderEnd,
-  ShellHeaderStart,
+  ShellCenter,
   ShellMain,
   ShellMainBody,
   ShellMainHeader,
   ShellMainIntro,
-  ShellMainPopout,
+  ShellPopout,
   ShellSidebar,
   ShellSidebarBody,
   ShellSidebarFooter,
@@ -73,7 +71,7 @@ export default function Example() {
     <Shell>
       <Shell $size={appliedTheme.density === "compact" ? "sm" : "md"}>
         <ShellHeader $blur $height="sm">
-          <ShellHeaderStart>
+          <ShellStart>
             <Button
               className="@max-3xl/shell:hidden"
               aria-label="Toggle navigation"
@@ -96,8 +94,8 @@ export default function Example() {
               </Text>
               Forge UI
             </a>
-          </ShellHeaderStart>
-          <ShellHeaderCenter>
+          </ShellStart>
+          <ShellCenter>
             <Nav
               $layout="horizontal"
               aria-label="Main"
@@ -114,8 +112,8 @@ export default function Example() {
                 />
               ))}
             </Nav>
-          </ShellHeaderCenter>
-          <ShellHeaderEnd>
+          </ShellCenter>
+          <ShellEnd>
             <Button
               className="@max-3xl/shell:hidden"
               aria-expanded={customizeOpen}
@@ -133,7 +131,7 @@ export default function Example() {
               </ButtonSlot>
               <ButtonLabel>Customize</ButtonLabel>
             </Button>
-          </ShellHeaderEnd>
+          </ShellEnd>
         </ShellHeader>
 
         <ShellSidebar
@@ -213,7 +211,7 @@ export default function Example() {
               </Prose>
             </section>
 
-            <ShellMainPopout>
+            <ShellPopout>
               <Frame
                 $layer
                 $rounded="xl"
@@ -232,7 +230,7 @@ export default function Example() {
                   ))}
                 </ul>
               </Frame>
-            </ShellMainPopout>
+            </ShellPopout>
 
             <section id="usage">
               <Prose>
@@ -312,12 +310,12 @@ export default function Example() {
         </ShellSidebar>
 
         <ShellFooter>
-          <ShellFooterStart>
+          <ShellStart>
             <span className="ak-ink-70">© 2026 Forge UI</span>
-          </ShellFooterStart>
-          <ShellFooterEnd>
+          </ShellStart>
+          <ShellEnd>
             <Link href="#">Release notes</Link>
-          </ShellFooterEnd>
+          </ShellEnd>
         </ShellFooter>
       </Shell>
 
