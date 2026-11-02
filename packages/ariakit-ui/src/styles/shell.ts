@@ -794,8 +794,9 @@ export const shellMain = cv({
     /**
      * Sets the text size of main and a column of 42em, and `Prose` inside main
      * follows that text. Bars and sidebars keep the shell's size. `auto` leaves
-     * the shell's text and the shell's column, and `Prose` stays at 1rem. A
-     * shell inside a sized main doesn't pass the size on. Defaults to `auto`.
+     * the shell's text and the shell's column, and `Prose` stays at 1rem. `lg`
+     * uses `$minSize` when the shell is narrower than 40rem. A shell inside a
+     * sized main doesn't pass the size on. Defaults to `auto`.
      */
     $size: {
       auto: "",
@@ -817,6 +818,15 @@ export const shellMain = cv({
         "text-lg",
         "[.shell.shell:has(>&)]:[--shell-main-max-width:47.25rem]",
       ],
+    },
+    /**
+     * Sets the text size of a `$size="lg"` main when the shell is narrower than
+     * 40rem. Use `lg` to keep the large text there. Other sizes don't change.
+     * Defaults to `md`.
+     */
+    $minSize: {
+      md: "",
+      lg: "",
     },
     /**
      * Sets the shared main gutter. Numbers scale the spacing token, so they
@@ -859,6 +869,7 @@ export const shellMain = cv({
   },
   defaultVariants: {
     $size: "auto",
+    $minSize: "md",
     $py: "gutter",
     // Bars inset three steps of the shell's text, so the default gutter stays
     // on their edge when main sets another size. The step is that text over 4.
@@ -867,6 +878,13 @@ export const shellMain = cv({
       if (variants.$size === "auto") return 3;
       return "round(calc(var(--shell-header-step)*3),1px)";
     },
+  },
+  refine({ variants, addClass }) {
+    if (variants.$size !== "lg") return;
+    if (variants.$minSize !== "md") return;
+    // A small shell can't hold 42em at this text either, so main and the bars
+    // stay on the same edges.
+    addClass("@max-[40rem]/shell:text-base");
   },
 });
 

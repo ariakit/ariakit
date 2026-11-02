@@ -109,6 +109,45 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.text("Sized panel prose")).toHaveCSS("font-size", "18px");
   });
 
+  test("steps large main text down in a small shell unless the minimum size keeps it", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Main size").selectOption("lg");
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "18px");
+    // At exactly 40rem, this shell keeps the large text. The narrower nested
+    // shell doesn't, so the query reads the nearest shell, not the viewport.
+    // The page fits this height, as a scrollbar would narrow the shell below
+    // 40rem.
+    await page.setViewportSize({ width: 640, height: 1200 });
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "18px");
+    await expect(q.text("Sized panel prose")).toHaveCSS("font-size", "16px");
+    await page.setViewportSize({ width: 480, height: 900 });
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "16px");
+    await expect(q.text("Plain text")).toHaveCSS("line-height", "24px");
+    await expect(q.button("Unsized button")).toHaveCSS("font-size", "16px");
+    await expect(q.text("Body prose")).toHaveCSS("font-size", "16px");
+    await expect(q.text("Page header")).toHaveCSS("font-size", "14px");
+    await expect(q.text("Page header")).toHaveCSS("line-height", "20px");
+    await expect(q.text("Site header")).toHaveCSS("font-size", "14px");
+    await q.combobox("Main minimum size").selectOption("lg");
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "18px");
+    await expect(q.text("Plain text")).toHaveCSS("line-height", "28px");
+    await expect(q.text("Body prose")).toHaveCSS("font-size", "18px");
+  });
+
+  test("keeps other main sizes in a small shell", async ({ page, q }) => {
+    await page.setViewportSize({ width: 480, height: 900 });
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "14px");
+    await expect(q.text("Body prose")).toHaveCSS("font-size", "16px");
+    await q.combobox("Main size").selectOption("sm");
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "14px");
+    await q.combobox("Main minimum size").selectOption("lg");
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "14px");
+    await q.combobox("Main size").selectOption("md");
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "16px");
+  });
+
   test("keeps the default gutter on the edge of the bars", async ({
     page,
     q,
