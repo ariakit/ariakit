@@ -173,6 +173,8 @@ export const choice = cv({
 export const choiceInput = cv({
   extend: [choice, focusHighlight],
   class: [
+    // Zero specificity lets a plain cursor utility replace the pointer.
+    "[:where(&)]:cursor-pointer",
     "not-ui-choice-disabled:group-hover/choice-field:ak-state-(--hover-offset,0)",
     // A click can't change a checked radio, so hover doesn't light it.
     "ui-settled:ui-hover:ak-state-0",
@@ -213,7 +215,11 @@ export const choiceField = cv({
   extend: [control],
   class: [
     "group/choice-field",
-    "justify-start select-none",
+    // Zero specificity lets a plain cursor utility replace the pointer.
+    "[:where(&)]:cursor-pointer justify-start select-none",
+    // The box follows a cursor set on the row. This outranks the pointer on the
+    // input, but not a plain cursor utility on it.
+    "[:where(&)_input:where([type=checkbox],[type=radio])]:cursor-[inherit]",
     // Group-disabled inputs may not pass $disabled to the row. Read their DOM
     // state and dim descendants, including independently colored descriptions.
     "ui-disabled-within:ak-disabled",

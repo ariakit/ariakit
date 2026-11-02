@@ -2,6 +2,22 @@ import { hoverOver, inkAlpha, tabInto } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  test("shows the pointer on enabled buttons only", async ({ q }) => {
+    const command = query(q.article("Default")).button("Cancel");
+    await test.expect(command).toHaveCSS("cursor", "pointer");
+    const submit = query(q.article("Native submit input")).button(
+      "Submit form",
+    );
+    await test.expect(submit).toHaveCSS("cursor", "pointer");
+    const disabled = query(q.article("Disabled")).button("Delete 3");
+    await test.expect(disabled).toHaveCSS("cursor", "not-allowed");
+  });
+
+  test("lets a plain cursor utility replace the pointer", async ({ q }) => {
+    const button = query(q.article("Custom cursor")).button("Keep the arrow");
+    await test.expect(button).toHaveCSS("cursor", "default");
+  });
+
   // The ink inherits through the slot layers, so the icon dims with the label
   // and both come back to full strength under the pointer.
   test("dims the slots with the label and restores them on hover", async ({

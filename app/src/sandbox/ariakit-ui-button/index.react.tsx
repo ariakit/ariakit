@@ -314,7 +314,7 @@ export default function ButtonExamples() {
 
       <Example
         title="Submit"
-        description="A submit button shows the pointer cursor, which a command button does not."
+        description="A button that submits its form."
         code={`
           <Button type="submit" $kind="bevel" $layer="brand">Create account</Button>
         `}
@@ -439,7 +439,7 @@ export default function ButtonExamples() {
 
       <Example
         title="As a link"
-        description="An anchor that looks like a button. It shows the pointer cursor, because it navigates."
+        description="An anchor that looks like a button."
         code={`
           <Button render={<a />}>
             <ButtonLabel>Documentation</ButtonLabel>
@@ -2593,6 +2593,16 @@ export default function ButtonExamples() {
           </Button>
           <Button>Archive</Button>
         </div>
+      </Example>
+
+      <Example
+        title="Custom cursor"
+        description="A plain cursor utility replaces the pointer."
+        code={`
+          <Button className="cursor-default">Keep the arrow</Button>
+        `}
+      >
+        <Button className="cursor-default">Keep the arrow</Button>
       </Example>
     </ExampleGrid>
   );

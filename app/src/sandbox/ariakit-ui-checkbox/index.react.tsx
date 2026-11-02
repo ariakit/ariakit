@@ -1477,6 +1477,24 @@ export default function CheckboxExamples() {
           </CheckboxCardSlot>
         </CheckboxCard>
       </Example>
+
+      <Example
+        title="Custom cursor"
+        description="A plain cursor utility replaces the pointer on a box or a row."
+        code={`
+          <Checkbox className="cursor-default" aria-label="Arrow box" />
+          <CheckboxField className="cursor-default">
+            <CheckboxLabel>Arrow row</CheckboxLabel>
+          </CheckboxField>
+        `}
+      >
+        <div className="flex flex-col gap-2">
+          <Checkbox className="cursor-default" aria-label="Arrow box" />
+          <CheckboxField className="cursor-default">
+            <CheckboxLabel>Arrow row</CheckboxLabel>
+          </CheckboxField>
+        </div>
+      </Example>
     </ExampleGrid>
   );
 }

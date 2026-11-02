@@ -42,10 +42,9 @@ function hasBevelLighten(variants: BevelLightenVariants) {
 export const button = cv({
   extend: [control, hover, focusHighlight, active, selected, segment],
   class: [
-    "not-[a]:cursor-default not-[button]:select-none",
-    // Use a pointer for navigation and form submission; commands keep the
-    // arrow.
-    "[&:where([type='submit'],form_button:only-of-type,a_&)]:not-ui-disabled:cursor-pointer",
+    // Zero specificity lets a plain cursor utility replace the pointer, whatever
+    // the order that Tailwind gives the two rules.
+    "[:where(&)]:cursor-pointer not-[button]:select-none",
     // Map the 0–100 contrast scale to font weights 500–600.
     "font-[calc(500+var(--contrast))]",
     // DOM disabled state can change after render. Keep these rules aligned with

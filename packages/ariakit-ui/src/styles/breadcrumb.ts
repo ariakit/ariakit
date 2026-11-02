@@ -143,6 +143,7 @@ export const breadcrumbLink = cv({
 /** The step of the current page, as text with no interactive state. */
 export const breadcrumbCurrent = cv({
   extend: [breadcrumbStep],
+  class: "cursor-default",
   defaultVariants: {
     $hoverInk: false,
     $active: false,
