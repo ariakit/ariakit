@@ -167,16 +167,6 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
-        title="Custom cursor"
-        description="A plain cursor utility replaces the pointer."
-        code={`
-          <Button className="cursor-default">Keep the arrow</Button>
-        `}
-      >
-        <Button className="cursor-default">Keep the arrow</Button>
-      </Example>
-
-      <Example
         title="Layer disabled"
         description="Disable the layer system while keeping the button's spacing. A bevel still paints its own surface."
         code={`
@@ -2603,6 +2593,16 @@ export default function ButtonExamples() {
           </Button>
           <Button>Archive</Button>
         </div>
+      </Example>
+
+      <Example
+        title="Custom cursor"
+        description="A plain cursor utility replaces the pointer."
+        code={`
+          <Button className="cursor-default">Keep the arrow</Button>
+        `}
+      >
+        <Button className="cursor-default">Keep the arrow</Button>
       </Example>
     </ExampleGrid>
   );
