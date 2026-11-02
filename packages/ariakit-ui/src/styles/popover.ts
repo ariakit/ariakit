@@ -65,6 +65,7 @@ export const popoverDisclosure = cv({
       "aria-expanded:ak-state-(--selected-offset,0)",
       "aria-expanded:ak-state-push-(--selected-push,0)",
       "aria-expanded:ui-hover:ak-state-(--selected-offset,0)",
+      "aria-expanded:ui-hover:ak-state-push-(--selected-push,0)",
     ]);
   },
 });

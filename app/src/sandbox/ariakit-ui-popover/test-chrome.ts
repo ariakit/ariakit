@@ -99,6 +99,28 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(moreInfo).toBeFocused();
   });
 
+  // https://github.com/ariakit/ariakit/pull/8260#discussion_r4442606556
+  test("keeps the selected push of the disclosure while open and hovered", async ({
+    page,
+    q,
+  }) => {
+    const disclosure = q.button("View options");
+    const getBackground = () =>
+      disclosure.evaluate(
+        (element) => getComputedStyle(element).backgroundColor,
+      );
+    const restBackground = await getBackground();
+    await disclosure.click();
+    await test.expect(disclosure).toHaveAttribute("aria-expanded", "true");
+    await page.mouse.move(0, 0);
+    await test
+      .expect(disclosure)
+      .not.toHaveCSS("background-color", restBackground);
+    const openBackground = await getBackground();
+    await disclosure.hover();
+    await test.expect(disclosure).toHaveCSS("background-color", openBackground);
+  });
+
   // https://github.com/ariakit/ariakit/pull/7465#discussion_r3992662589
   test("names an icon-only dismiss whose label prop is undefined", async ({
     q,

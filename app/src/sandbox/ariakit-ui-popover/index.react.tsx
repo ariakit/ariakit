@@ -403,6 +403,29 @@ export default function PopoverExamples() {
         </PopoverProvider>
       </Example>
 
+      <Example
+        title="Selected surface while open"
+        description="The disclosure keeps its selected push while the popover is open, and an explicit hover push doesn't replace it when the pointer returns."
+        code={`
+          <PopoverProvider>
+            <PopoverDisclosure $selectedPush={1} $hoverPush={3}>
+              View options
+            </PopoverDisclosure>
+            <Popover>…</Popover>
+          </PopoverProvider>
+        `}
+      >
+        <PopoverProvider>
+          <PopoverDisclosure $selectedPush={1} $hoverPush={3}>
+            View options
+          </PopoverDisclosure>
+          {/* Portaled and unmounted on hide, like the live popover above. */}
+          <Popover aria-label="View options" portal unmountOnHide>
+            <PopoverDescription>Grid or list.</PopoverDescription>
+          </Popover>
+        </PopoverProvider>
+      </Example>
+
       {/*
         Regression fixtures: an icon-only dismiss whose label prop is present
         but undefined.
