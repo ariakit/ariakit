@@ -3,10 +3,13 @@ import {
   captureInView,
   capturePage,
   expectFocusVisible,
+  expectMedia,
   forEachColorScheme,
   forEachColorSchemeOf,
   getBadgeHeight,
   getCapsOffset,
+  getCapture,
+  hoverOver,
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
@@ -189,6 +192,59 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         item: "ariakit-ui-checkbox/page",
       }),
     );
+  });
+
+  // Hover darkens the selected fill on light surfaces. On dark surfaces, it
+  // keeps the fill, which a darker color would blend into, and lightens the
+  // border.
+  test("shows hover on a checked box @visual", async ({ page, q, visual }) => {
+    await forEachColorSchemeOf(page, ["Default"], async (colorScheme) => {
+      const box = q.article("Default");
+      await hoverOver(query(box).checkbox("Select row"));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-checkbox/checked-hover",
+        }),
+      );
+    });
+  });
+
+  // On dark surfaces, high contrast already makes the border white, so the fill
+  // has to change.
+  test("shows hover on a checked box in high contrast @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ contrast: "more" });
+    await forEachColorSchemeOf(page, ["Default"], async (colorScheme) => {
+      await expectMedia(page, "(prefers-contrast: more)");
+      const box = q.article("Default");
+      await hoverOver(query(box).checkbox("Select row"));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-checkbox/checked-hover",
+        }),
+      );
+    });
+  });
+
+  // A field row has its own hover rule, so it needs the same result.
+  test("shows hover on a checked switch from its row @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorSchemeOf(page, ["Switch mark"], async (colorScheme) => {
+      const box = q.article("Switch mark");
+      await test.expect(query(box).switch("On")).toBeChecked();
+      await hoverOver(query(box).text("On"));
+      await visual(
+        getCapture(box, colorScheme, {
+          item: "ariakit-ui-checkbox/checked-switch-hover",
+        }),
+      );
+    });
   });
 
   test("draws the ring of a focused field on its box @visual", async ({
