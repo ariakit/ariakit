@@ -67,13 +67,9 @@ export default function Example() {
         aria-label="Guides"
       >
         <ShellSidebarBody>
-          <Nav $cover bar={{ $offset: "halfway" }}>
-            {sections.map((section, index) => (
-              <NavLink
-                key={section.id}
-                href={`#${section.id}`}
-                aria-current={index === 0 ? "page" : undefined}
-              >
+          <Nav $cover>
+            {sections.map((section) => (
+              <NavLink key={section.id} href={`#${section.id}`}>
                 {section.title}
               </NavLink>
             ))}

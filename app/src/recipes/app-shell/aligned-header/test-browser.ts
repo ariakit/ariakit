@@ -15,11 +15,34 @@ withFramework(import.meta.dirname, async ({ test }) => {
       }
       return box;
     };
+    const expectAligned = async () => {
+      await expect
+        .poll(async () => (await getBox(search)).x - (await getBox(column)).x)
+        .toBeCloseTo(0, 0);
+    };
     await page.setViewportSize({ width: 1280, height: 620 });
+    await expectAligned();
+    const openColumn = await getBox(column);
+    const toggle = q.button("Toggle navigation");
+    const sidebar = q.navigation("Guides");
+    await toggle.click();
+    await expect(sidebar).toBeHidden();
+    await expectAligned();
+    await toggle.click();
+    await expect(sidebar).toBeVisible();
+    // The panel shows before the column starts to move.
     await expect
-      .poll(async () => (await getBox(search)).x - (await getBox(column)).x)
-      .toBeCloseTo(0, 0);
+      .poll(async () => (await getBox(column)).x)
+      .toBeCloseTo(openColumn.x, 0);
+    await expectAligned();
     await page.setViewportSize({ width: 500, height: 620 });
+    const brand = q.link("Acme Docs");
+    await expect
+      .poll(async () => {
+        const box = await getBox(brand);
+        return (await getBox(search)).x - (box.x + box.width);
+      })
+      .toBeGreaterThan(0);
     const signIn = q.button("Sign in");
     await expect
       .poll(async () => {

@@ -48,6 +48,23 @@ export async function getCenterOffset(inner: Locator, outer: Locator) {
   return innerCenter - outerCenter;
 }
 
+/** Waits until both edges of `part` are on the edges of `target`. */
+export async function expectAligned(part: Locator, target: Locator) {
+  await expect
+    .poll(async () => {
+      const [partBox, targetBox] = await Promise.all([
+        getBox(part),
+        getBox(target),
+      ]);
+      const start = Math.abs(partBox.x - targetBox.x);
+      const end = Math.abs(
+        partBox.x + partBox.width - (targetBox.x + targetBox.width),
+      );
+      return Math.max(start, end);
+    })
+    .toBeLessThan(0.5);
+}
+
 /** Waits until `inner` is centered on `outer` within a pixel. */
 export async function expectCentered(inner: Locator, outer: Locator) {
   await expect

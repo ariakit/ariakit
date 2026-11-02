@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { getBox, selectScenario } from "./test-helpers.ts";
+import { expectAligned, selectScenario } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
@@ -37,17 +37,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           "padding-right",
           `${Math.max(right, 11)}px`,
         );
-        const area = q.group("Header area");
-        const body = q.group("Body band");
-        await expect
-          .poll(async () => {
-            const [areaBox, bodyBox] = await Promise.all([
-              getBox(area),
-              getBox(body),
-            ]);
-            return Math.abs(areaBox.x - bodyBox.x);
-          })
-          .toBeLessThan(0.5);
+        await expectAligned(q.group("Header area"), q.group("Body band"));
       });
     }
   }

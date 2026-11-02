@@ -350,7 +350,8 @@ export interface ShellPopoutProps
  * children fill its width. Use `ShellContent` inside to return to the content
  * column. It must be a direct child of a main header, intro, body, or wider
  * main band. As a direct child of `ShellHeader` or `ShellFooter`, it aligns
- * with the same span of main while it has room.
+ * with the same span of main while it has room. A band in a bar, or in a main
+ * header with side parts, can't hold other bands.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -373,7 +374,8 @@ export interface ShellFeatureProps
  * children fill its width. Use a narrower main band inside to select its
  * columns. It must be a direct child of a main header, intro, body, or wide or
  * full band. As a direct child of `ShellHeader` or `ShellFooter`, it aligns
- * with the same span of main while it has room.
+ * with the same span of main while it has room. A band in a bar, or in a main
+ * header with side parts, can't hold other bands.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -398,7 +400,8 @@ export interface ShellWideProps
  * offset, both bands match. Direct element children fill its width. Use a
  * narrower main band inside to select its columns. It must be a direct child of
  * a main header, intro, body, or full band. As a direct child of `ShellHeader`
- * or `ShellFooter`, it aligns with the same span of main while it has room.
+ * or `ShellFooter`, it aligns with the same span of main while it has room. A
+ * band in a bar, or in a main header with side parts, can't hold other bands.
  * @example
  * <Shell>
  *   <ShellSidebar>
@@ -422,8 +425,10 @@ export interface ShellFullProps
 /**
  * Fills a main header, intro, or body's width, including the outer gutters. As
  * a direct child of `ShellHeader` or `ShellFooter`, it fills the space between
- * `ShellStart` and `ShellEnd`. Direct element children fill its width. Use a
- * narrower main band inside to select its columns. Keep main bands to two
+ * `ShellStart` and `ShellEnd`. Direct element children fill its width.
+ * Elsewhere in main, use a narrower main band to select its columns. A band in
+ * a bar, or in a main header with side parts, can't hold other bands, so render
+ * `ShellContent` directly in that part for that column. Keep main bands to two
  * nested levels: deeper subgrids can hang Safari. Inline padding and auto
  * margins shift the shared columns; put padding on a child element instead.
  * @example

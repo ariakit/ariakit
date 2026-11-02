@@ -1,29 +1,12 @@
-import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import {
+  expectAligned,
   expectCentered,
   getBox,
   getSidebar,
   selectScenario,
 } from "./test-helpers.ts";
-
-/** Waits until both edges of `part` are on the edges of `target`. */
-async function expectAligned(part: Locator, target: Locator) {
-  await expect
-    .poll(async () => {
-      const [partBox, targetBox] = await Promise.all([
-        getBox(part),
-        getBox(target),
-      ]);
-      const start = Math.abs(partBox.x - targetBox.x);
-      const end = Math.abs(
-        partBox.x + partBox.width - (targetBox.x + targetBox.width),
-      );
-      return Math.max(start, end);
-    })
-    .toBeLessThan(0.5);
-}
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
