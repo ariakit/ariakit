@@ -30,14 +30,14 @@ test("reading pages space gallery cards like the gutter around them", async ({
   await expect(band).toHaveCSS("row-gap", "28px");
 });
 
-test("reading pages keep the gutter of the shell's text on a phone", async ({
+test("reading pages use base text and the gutter of the shell's text on a phone", async ({
   page,
   q,
 }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await gotoAndSettle(page, "/react/recipes/text-field/");
   const prose = q.main().locator(":scope > .shell-main-body > .prose");
-  await expect(prose).toHaveCSS("font-size", "18px");
+  await expect(prose).toHaveCSS("font-size", "16px");
   const box = await prose.boundingBox();
   expect(box?.x).toBeCloseTo(14, 0);
   expect(box?.width).toBeCloseTo(362, 0);

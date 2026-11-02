@@ -48,11 +48,18 @@ function isMainSize(value: string): value is MainSize {
   return ["auto", "sm", "md", "lg"].includes(value);
 }
 
+type MainMinSize = "md" | "lg";
+
+function isMainMinSize(value: string): value is MainMinSize {
+  return ["md", "lg"].includes(value);
+}
+
 /**
  * A reading page whose controls set the size of main and the text of a part.
  */
 export function ReadingScenario({ controls }: ScenarioProps) {
   const [size, setSize] = useState<MainSize>("auto");
+  const [minSize, setMinSize] = useState<MainMinSize>("md");
   const [wider, setWider] = useState(false);
   const [smallerIntro, setSmallerIntro] = useState(false);
   return (
@@ -63,7 +70,11 @@ export function ReadingScenario({ controls }: ScenarioProps) {
         </ShellStart>
         <ShellEnd>{controls}</ShellEnd>
       </ShellHeader>
-      <ShellMain $size={size} $maxWidth={wider ? "50rem" : undefined}>
+      <ShellMain
+        $size={size}
+        $minSize={minSize}
+        $maxWidth={wider ? "50rem" : undefined}
+      >
         <ShellMainHeader>
           <div>Page header</div>
         </ShellMainHeader>
@@ -87,6 +98,21 @@ export function ReadingScenario({ controls }: ScenarioProps) {
               >
                 <option value="auto">auto</option>
                 <option value="sm">sm</option>
+                <option value="md">md</option>
+                <option value="lg">lg</option>
+              </select>
+            </label>
+            <label>
+              Main minimum size{" "}
+              <select
+                value={minSize}
+                onChange={(event) => {
+                  const { value } = event.currentTarget;
+                  if (isMainMinSize(value)) {
+                    setMinSize(value);
+                  }
+                }}
+              >
                 <option value="md">md</option>
                 <option value="lg">lg</option>
               </select>

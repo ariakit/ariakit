@@ -230,7 +230,9 @@ export interface ShellMainProps
  * for reading pages. A nested shell doesn't take the size. With `$size`, define
  * a variable for `$p`, `$py`, or `$maxWidth` in rem or as a plain length:
  * Firefox resolves a variable that reads an em-based variable, such as
- * `--spacing()`, against the parent's text.
+ * `--spacing()`, against the parent's text. `$size="lg"` uses 1rem text when
+ * the shell is narrower than 40rem. Set `$minSize="lg"` to keep the large text
+ * there.
  * @example
  * <Shell>
  *   <ShellMain $p={4}>
