@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import {
   hoverPastShowTimeout,
   SHOW_TIMEOUT,
@@ -8,6 +8,42 @@ import {
 const LONG_NAME = "Design review notes for the new onboarding flow";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  test("keeps focus on a link when a resize changes if it cuts its text off", async ({
+    page,
+    q,
+  }) => {
+    const section = q.region("Recent documents");
+    const link = q.link(LONG_NAME);
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Tab");
+    await test.expect(link).toBeFocused();
+    await test.expect(q.tooltip(LONG_NAME)).toBeVisible();
+    // The example has a fixed width, so the test widens it, as a layout that
+    // fits its container would.
+    await section.evaluate((element) => {
+      element.style.width = "60rem";
+    });
+    // The link measures itself in a ResizeObserver callback. The tooltip closes
+    // when that update commits, which is when focus could go.
+    await test.expect(q.tooltip()).toHaveCount(0);
+    await test.expect(link).toBeFocused();
+    await section.evaluate((element) => {
+      element.style.width = "";
+    });
+    await test.expect
+      .poll(() => link.evaluate((el) => el.scrollWidth > el.clientWidth))
+      .toBe(true);
+    // The tooltip must stay closed until the next focus or hover, and no state
+    // shows that the callback has run, so the test crosses the frames that
+    // deliver it and the React commit that follows.
+    await flushFrames(page);
+    await test.expect(q.tooltip()).toHaveCount(0);
+    await link.scrollIntoViewIfNeeded();
+    await link.hover();
+    await test.expect(q.tooltip(LONG_NAME)).toBeVisible();
+    await test.expect(link).toBeFocused();
+  });
+
   test("shows the full text of a link that cuts it off", async ({ q }) => {
     const link = q.link(LONG_NAME);
     // Ariakit resets hover intent on scroll, so the anchor must be in view

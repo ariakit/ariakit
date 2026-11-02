@@ -38,9 +38,10 @@ export interface TooltipProps
   /**
    * The tooltip text, as a string or inline nodes such as `strong`. It renders
    * in a `TooltipText`. Empty text, such as `null`, `false`, a blank string, or
-   * an empty list, renders only the anchor. The anchor remounts when its text
-   * becomes empty or stops being empty, so it loses focus and its state at that
-   * time.
+   * an empty list, turns the tooltip off. The anchor stays mounted when its
+   * text becomes empty or stops being empty, so it keeps its state. It also
+   * keeps focus if it's focusable without a tooltip, such as a button or a
+   * link.
    */
   text?: React.ReactNode;
   /**
@@ -65,9 +66,9 @@ export interface TooltipProps
 /**
  * Shows a tooltip for its child element, which becomes the anchor. Other props
  * go to the `TooltipPopover`, so `className` and variant props style the
- * tooltip, and provider props such as `placement` go to the `TooltipProvider`.
- * The tooltip is visual only, so the anchor needs its own accessible name, such
- * as `aria-label` on an icon button.
+ * tooltip, and store props such as `placement` go to the tooltip store. The
+ * tooltip is visual only, so the anchor needs its own accessible name, such as
+ * `aria-label` on an icon button.
  * @example
  * <Tooltip text="Save changes">
  *   <Button>Save</Button>
@@ -101,31 +102,49 @@ export function Tooltip({
   skipTimeout,
   ...props
 }: TooltipProps) {
-  if (!hasContent(text)) return children;
+  const hasText = hasContent(text);
+  // The store goes straight to the anchor and the popover, as a provider would
+  // also become the context of a disclosure in the anchor, and it would then
+  // open the tooltip instead of its own dialog or popover.
+  const tooltipStore = ak.useTooltipStore({
+    store,
+    // The tooltip closes when its text goes, and doesn't show when it comes
+    // back. A store from outside keeps its open state: if it holds the tooltip
+    // open, forcing it closed would never settle and would freeze the page.
+    open: hasText || store ? open : false,
+    setOpen,
+    defaultOpen,
+    placement,
+    timeout,
+    showTimeout,
+    hideTimeout,
+    skipTimeout,
+  });
   const arrowElement = createOptionalRender(
     TooltipArrow,
     arrow === true ? {} : arrow,
   );
   return (
-    <ak.TooltipProvider
-      store={store}
-      open={open}
-      setOpen={setOpen}
-      defaultOpen={defaultOpen}
-      placement={placement}
-      timeout={timeout}
-      showTimeout={showTimeout}
-      hideTimeout={hideTimeout}
-      skipTimeout={skipTimeout}
-    >
-      <ak.TooltipAnchor render={children} />
-      <TooltipPopover {...props}>
-        {arrowElement}
-        {createOptionalRender(TooltipSlot, startSlot)}
-        <TooltipText>{text}</TooltipText>
-        {createOptionalRender(TooltipSlot, endSlot)}
-      </TooltipPopover>
-    </ak.TooltipProvider>
+    <>
+      {/* The tree keeps one shape, so a change of the text doesn't remount the
+          anchor and move focus out of it. Without text, hover and focus on the
+          anchor don't show the tooltip, so they can't hide another one or skip
+          the next delay. */}
+      <ak.TooltipAnchor
+        store={tooltipStore}
+        render={children}
+        focusable={hasText}
+        showOnHover={hasText}
+      />
+      {hasText && (
+        <TooltipPopover store={tooltipStore} {...props}>
+          {arrowElement}
+          {createOptionalRender(TooltipSlot, startSlot)}
+          <TooltipText>{text}</TooltipText>
+          {createOptionalRender(TooltipSlot, endSlot)}
+        </TooltipPopover>
+      )}
+    </>
   );
 }
 
