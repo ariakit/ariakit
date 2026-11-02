@@ -546,6 +546,43 @@ test("preview grid cards keep their heights and stick within their row", async (
   }
 });
 
+test("preview card viewports follow the theme radius, not the page text size", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/checkbox/");
+  const region = q.region("Checkbox", { exact: true });
+  const card = region.locator("[data-preview-card]");
+  // The handle names the viewport it resizes.
+  const handle = query(region).separator("Resize preview", {
+    includeHidden: true,
+  });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  const main = page.locator("main");
+  const radius = "border-top-left-radius";
+
+  // The card has a border only on dark surfaces.
+  for (const colorScheme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme });
+    await expect(viewport).toHaveCSS(radius, "20px");
+  }
+
+  await main.evaluate((element) => {
+    element.style.setProperty("font-size", "24px");
+  });
+  await expect(viewport).toHaveCSS(radius, "20px");
+  await main.evaluate((element) => {
+    element.style.removeProperty("font-size");
+  });
+
+  await main.evaluate((element) => {
+    element.style.setProperty("--radius", "0px");
+  });
+  await expect(card).toHaveCSS(radius, "0px");
+  await expect(viewport).toHaveCSS(radius, "0px");
+});
+
 test("inline previews scroll only after focus moves into them", async ({
   page,
   q,
