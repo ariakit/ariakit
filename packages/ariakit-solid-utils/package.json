@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
-    "solid-js": "1.9.17",
+    "solid-js": "1.9.18",
     "vitest": "5.0.5"
   },
   "peerDependencies": {
