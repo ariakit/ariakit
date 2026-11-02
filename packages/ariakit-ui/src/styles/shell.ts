@@ -233,7 +233,7 @@ export const shellHeader = cv({
     "shell-header row-[header] box-border min-h-(--shell-header-height) @container/shell-header",
     // Let edge bars in a centered navigation row reach the inner edge.
     "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
-    "z-4",
+    "z-6",
     "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-header-height)-var(--shell-header-step)*16)/2,1px)))]",
   ],
   variants: {
@@ -337,7 +337,7 @@ export const shellFooter = cv({
     // Let edge bars in a centered navigation row reach the inner edge.
     // The bottom safe area pads the footer, so it doesn't hold the row.
     "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
-    "z-3",
+    "z-5",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
     "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-footer-height)-var(--shell-header-step)*16)/2,1px)))]",
   ],
@@ -381,6 +381,10 @@ export const shellSidebar = cv({
     "[.shell-sidebar-end~&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*var(--shell-header-free-1)*(1-var(--shell-end-2-from-main)))]",
     "shell-sidebar flex flex-col box-border rounded-none!",
     "z-2 w-(--shell-slot-width) overflow-clip",
+    // The main header spans a closing column at once, so a column that starts
+    // at main folds above it. An open column stays below the header's popovers.
+    "[&.shell-sidebar-end]:z-[calc(2+2*var(--shell-end-1-from-main)*var(--shell-header-free-1))]",
+    "[.shell-sidebar-end~&.shell-sidebar-end]:z-[calc(2+2*var(--shell-end-2-from-main)*var(--shell-header-free-2))]",
     // Fold beside a closed panel. While HTML streams in, the parser can pause
     // before the panel, so the column's own data-open stands in until then.
     // https://github.com/ariakit/ariakit/issues/8147
