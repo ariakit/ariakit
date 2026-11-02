@@ -183,6 +183,18 @@ export const choiceInput = cv({
     $hoverOffset: 3,
   },
   refine({ variants, addClass }) {
+    if (variants.$hoverOffset) {
+      addClass([
+        // The offset can darken the selected fill, which takes it toward a dark
+        // surface. Keep the fill there, and show hover with a lighter border.
+        // High contrast already makes the border white and the fill stays far
+        // from the surface, so it keeps the offset.
+        "ak-dark:not-contrast-more:ui-choice-on:ui-hover:ak-state-0",
+        "ak-dark:not-contrast-more:ui-choice-on:not-ui-settled:ui-hover:ak-edge-lighten-25",
+        "ak-dark:not-contrast-more:ui-choice-on:not-ui-choice-disabled:group-hover/choice-field:ak-state-0",
+        "ak-dark:not-contrast-more:ui-choice-on:not-ui-settled:not-ui-choice-disabled:group-hover/choice-field:ak-edge-lighten-25",
+      ]);
+    }
     // A system checkbox can't show a switch, so the switch keeps its own marks.
     if (variants.$mark === "switch") return;
     addClass("forced-colors:appearance-auto forced-colors:after:hidden");
