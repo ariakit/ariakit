@@ -150,8 +150,10 @@ export function PreviewCard({
   };
   return (
     // A card that grows to its grid row gives the extra height to the window,
-    // not to the code below it.
-    <div className="grid grid-cols-1 grid-rows-[1fr_auto] gap-2">
+    // not to the code below it. The em-based corners of the card stay the same
+    // at any page text size with a fixed size. Firefox resolves the radius and
+    // padding of an element against its parent font size, so a wrapper sets it.
+    <div className="grid grid-cols-1 grid-rows-[1fr_auto] gap-2 text-base">
       <ak.DisclosureProvider>
         <Frame
           // An interaction anywhere in the window, such as a click on its top
@@ -160,9 +162,11 @@ export function PreviewCard({
           data-preview-card
           tabIndex={-1}
           $border
-          // A little rounder than the macOS browser window, while following the
-          // theme. The viewport corners take this radius minus the padding.
-          $rounded="calc(var(--radius)*7 - var(--spacing)*0.5)"
+          // The viewport corners take this radius minus the padding and border,
+          // so they match the macOS browser window (20px at the default
+          // radius). The first value keeps the card sharp when the theme radius
+          // is zero, since the second never reaches zero.
+          $rounded="min(var(--radius)*7, var(--radius)*5 + var(--ak-frame-padding) + var(--ak-frame-border))"
           $forceRounded
           $lighten={0.3}
           $orientation="vertical"
@@ -716,39 +720,36 @@ function PreviewCardInline({
   return (
     <PreviewCardStage onResize={activate}>
       {({ viewportId }) => (
-        // Match the font size of the preview page. It also makes the em-based
-        // padding reach the 1rem frame cap, so the example keeps its own corner
-        // radius instead of a concentric one. Firefox resolves the padding
-        // against the parent font size, so a wrapper sets it.
-        <div className="grid grid-cols-1 grid-rows-[minmax(0,1fr)] text-base">
-          <Frame
-            ref={viewportRef}
-            id={viewportId}
-            // A click anywhere in the example moves focus into it, which lets
-            // it scroll, like a click in a preview frame.
-            tabIndex={-1}
-            $border
-            $borderType="ring"
-            // The brand border shows that the example scrolls, not the page.
-            $edge={active ? "brand" : undefined}
-            $edgeRaw={active}
-            $layer="canvas"
-            $p={8}
-            className={[
-              "grid grid-cols-1 place-items-center overflow-auto",
-              "min-h-(--preview-card-min-height,auto)",
-              // An example taller than the viewport starts at the top, so all
-              // of it can scroll into view.
-              "content-center-safe",
-              // The global island styles inherit the grid display, which would
-              // size the example to its content. Without their boxes, the
-              // example is a grid item that fits the card.
-              "[&_:is(astro-island,astro-slot,astro-static-slot)]:contents!",
-            ].join(" ")}
-          >
-            {children}
-          </Frame>
-        </div>
+        // The card text matches the font size of the preview page. It also makes
+        // the em-based padding reach the 1rem frame cap, so the example keeps
+        // its own corner radius instead of a concentric one.
+        <Frame
+          ref={viewportRef}
+          id={viewportId}
+          // A click anywhere in the example moves focus into it, which lets it
+          // scroll, like a click in a preview frame.
+          tabIndex={-1}
+          $border
+          $borderType="ring"
+          // The brand border shows that the example scrolls, not the page.
+          $edge={active ? "brand" : undefined}
+          $edgeRaw={active}
+          $layer="canvas"
+          $p={8}
+          className={[
+            "grid grid-cols-1 place-items-center overflow-auto",
+            "min-h-(--preview-card-min-height,auto)",
+            // An example taller than the viewport starts at the top, so all
+            // of it can scroll into view.
+            "content-center-safe",
+            // The global island styles inherit the grid display, which would
+            // size the example to its content. Without their boxes, the
+            // example is a grid item that fits the card.
+            "[&_:is(astro-island,astro-slot,astro-static-slot)]:contents!",
+          ].join(" ")}
+        >
+          {children}
+        </Frame>
       )}
     </PreviewCardStage>
   );
