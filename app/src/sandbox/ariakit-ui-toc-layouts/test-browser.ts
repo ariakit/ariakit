@@ -20,6 +20,7 @@ const restingTocs = {
   },
   "shows the link styles, the chapters, and right to left at rest": {
     "bold-current-link": "Bold current link",
+    "wide-item-padding": "Wide item padding",
     "twelve-chapters": "Twelve chapters",
     "marked-parents": "Marked parents",
     "right-to-left": "Right to left",
@@ -35,6 +36,11 @@ async function scrollToHeading(page: Page, id: string) {
 }
 
 withCaptures(import.meta.dirname, async ({ id, test, query }) => {
+  // A change to the look of the tables of contents also misses the previous
+  // captures. Safari then takes up to about 16 seconds for each capture, and a
+  // test in this file takes up to 12 captures.
+  test.describe.configure({ timeout: 240_000 });
+
   for (const [title, tocs] of Object.entries(restingTocs)) {
     test(`${title} @visual`, async ({ page, q, visual }) => {
       await forEachColorScheme(page, async (colorScheme) => {
