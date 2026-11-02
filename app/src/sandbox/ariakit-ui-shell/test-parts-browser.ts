@@ -72,7 +72,8 @@ async function getFoldPaint(
         };
         return {
           columnWidth: columnBox.width,
-          barCoversColumn: barBox.right >= columnBox.right,
+          barEnd: barBox.right,
+          columnEnd: columnBox.right,
           onTop: getOnTop(),
         };
       } finally {
@@ -261,7 +262,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       expect(fold.columnWidth).toBeGreaterThan(0);
       expect(fold.columnWidth).toBeLessThan(160);
       // The header spans the column at once, which the column must fold over.
-      expect(fold.barCoversColumn).toBe(true);
+      expect(fold.barEnd).toBeCloseTo(fold.columnEnd, 0);
       expect(fold.onTop).toBe("column");
       await expect(column).toHaveCSS("width", "0px");
       await q.checkbox(control).setChecked(!checkedWhenClosed);
@@ -289,7 +290,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const fold = await getFoldPaint(secondColumn, mainHeaderSelector, () =>
       q.checkbox("Open second end sidebar").uncheck(),
     );
-    expect(fold.barCoversColumn).toBe(true);
+    expect(fold.barEnd).toBeCloseTo(fold.columnEnd, 0);
     expect(fold.onTop).toBe("column");
   });
 
@@ -308,7 +309,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const fold = await getFoldPaint(column, selector, () =>
         q.checkbox("Open end sidebar").uncheck(),
       );
-      expect(fold.barCoversColumn).toBe(true);
+      expect(fold.barEnd).toBeCloseTo(fold.columnEnd, 0);
       expect(fold.onTop).toBe("bar");
     });
   }
