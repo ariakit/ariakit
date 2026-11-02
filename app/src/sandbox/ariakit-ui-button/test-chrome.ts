@@ -5,6 +5,10 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   test("shows the pointer on enabled buttons only", async ({ q }) => {
     const command = query(q.article("Default")).button("Cancel");
     await test.expect(command).toHaveCSS("cursor", "pointer");
+    const submit = query(q.article("Native submit input")).button(
+      "Submit form",
+    );
+    await test.expect(submit).toHaveCSS("cursor", "pointer");
     const disabled = query(q.article("Disabled")).button("Delete 3");
     await test.expect(disabled).toHaveCSS("cursor", "not-allowed");
   });
