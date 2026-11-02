@@ -28,8 +28,9 @@ export const prose = cv({
     "prose",
     // Use zero specificity so text size and line-height utilities can override
     // these defaults. A sized shell main sets the token to 1em, which resolves
-    // against the parent here, so the column follows the text around it.
-    "[:where(&)]:text-(length:--prose-size,1rem)/relaxed",
+    // against the parent here, so the column follows the text around it. A
+    // unitless line height keeps smaller text inside in proportion.
+    "[:where(&)]:text-(length:--prose-size,1rem)/[1.75]",
     "ak-dark:ak-ink-75 ak-light:ak-ink-90",
     // Keep markup defaults at zero specificity. Paragraphs and list items
     // restore muted ink inside nested surfaces.
@@ -44,5 +45,8 @@ export const prose = cv({
     // Tighten only the space after a heading, so later children keep the gap.
     // The margin is negative while the gap is larger than this space.
     "[:where(&>:is(h1,h2,h3,h4,h5,h6)+.heading-description)]:mt-[calc(var(--spacing)*3.5-var(--prose-gap))]",
+    // A short lead sits closer together than the paragraphs below it. A direct
+    // property keeps the leading fallbacks of text-* classes.
+    "[:where(&>.heading-description)]:[line-height:1.625]",
   ],
 });
