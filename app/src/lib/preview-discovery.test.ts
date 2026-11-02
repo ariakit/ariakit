@@ -64,15 +64,28 @@ class TestWatcher {
   }
 }
 
+interface PreviewStoreEntry {
+  id: string;
+  data: Record<string, unknown>;
+  digest?: string;
+}
+
 function getPreviewStoreContext(dir: string) {
-  const entries = new Map<string, { data: Record<string, unknown> }>();
+  const entries = new Map<string, PreviewStoreEntry>();
   const watcher = new TestWatcher();
   const store = {
     clear: vi.fn(() => {
       entries.clear();
     }),
+    delete: vi.fn((id: string) => {
+      entries.delete(id);
+    }),
+    keys: vi.fn(() => [...entries.keys()]),
     addModuleImport: vi.fn(),
-    set: vi.fn((entry: { id: string; data: Record<string, unknown> }) => {
+    // Astro skips an entry whose digest did not change.
+    set: vi.fn((entry: PreviewStoreEntry) => {
+      const existing = entries.get(entry.id);
+      if (existing && existing.digest === entry.digest) return false;
       entries.set(entry.id, entry);
       return true;
     }),
@@ -522,6 +535,28 @@ test("preview loader reloads watched metadata changes", async () => {
   await watcher.emit("change", metadataFile);
 
   expect(entries.get("menu")?.data.title).toBe("Menu 2");
+});
+
+test("preview loader does not clear the store on entry file edits", async () => {
+  const dir = await createDir();
+  const loader = previewLoader({
+    roots: [getRecipesRoot(dir)],
+  });
+  const { context, entries, store, watcher } = getPreviewStoreContext(dir);
+  const entryFile = join(dir, "recipes/menu/index.react.tsx");
+  await writeFile(entryFile);
+  await writeFile(
+    join(dir, "recipes/menu/preview.json"),
+    JSON.stringify({ title: "Menu" }),
+  );
+
+  await loader.load(context);
+  await writeFile(entryFile, "export default function Example() {}");
+  await watcher.emit("change", entryFile);
+
+  expect(store.clear).not.toHaveBeenCalled();
+  expect(store.delete).not.toHaveBeenCalled();
+  expect(entries.has("menu")).toBe(true);
 });
 
 test("preview loader stores description metadata", async () => {

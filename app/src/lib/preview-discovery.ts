@@ -450,7 +450,14 @@ async function updatePreviewStore(
   const codegenDir = getPreviewCodegenDir(context.config.root);
   const previewsDir = join(codegenDir, "previews");
   await writePreviewCodegen({ codegenDir, previews });
-  context.store.clear();
+  // Do not clear the store here. Astro rewrites content-assets.mjs after a
+  // clear, which reloads the module runner during the request that the edit
+  // started. This splits React into two copies.
+  const previewIds = new Set(previews.map((preview) => preview.id));
+  for (const id of context.store.keys()) {
+    if (previewIds.has(id)) continue;
+    context.store.delete(id);
+  }
   for (const preview of previews) {
     const rawData = {
       title: preview.title,
@@ -478,6 +485,7 @@ async function updatePreviewStore(
       digest: context.generateDigest({
         data: rawData,
         entryFiles: preview.entryFiles,
+        filePath,
         id: preview.id,
       }),
       ...(filePath ? { deferredRender: true, filePath } : {}),
