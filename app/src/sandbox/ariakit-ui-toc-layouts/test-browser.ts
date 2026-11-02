@@ -20,6 +20,7 @@ const restingTocs = {
   },
   "shows the link styles, the chapters, and right to left at rest": {
     "bold-current-link": "Bold current link",
+    "wide-item-padding": "Wide item padding",
     "twelve-chapters": "Twelve chapters",
     "marked-parents": "Marked parents",
     "right-to-left": "Right to left",

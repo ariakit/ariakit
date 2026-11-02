@@ -397,6 +397,7 @@ export default function Example() {
           entries={deep}
           link={{ $selectedBold: true }}
         />
+        <Contents label="Wide item padding" entries={deep} $itemPadding={3} />
         <Contents label="Twelve chapters" entries={chapters} ordered />
         <Contents
           label="Marked parents"

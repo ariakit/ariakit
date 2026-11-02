@@ -1,5 +1,5 @@
 import { cv } from "clava";
-import { getScaledStyleClass } from "../utils/styles.ts";
+import { getPaddingValue, getScaledStyleClass } from "../utils/styles.ts";
 import { edge } from "./edge.ts";
 import { nav, navGroupLabel, navLink } from "./nav.ts";
 
@@ -81,6 +81,14 @@ export const toc = cv({
       return { style: { "--toc-thumb-base-width": width } };
     },
     /**
+     * Sets the padding of the rows, and the label lines up with them. Numbers
+     * scale the spacing token and round to a whole pixel. Defaults to `1.5`.
+     */
+    $itemPadding(value?: string | number) {
+      if (value == null) return;
+      return { style: { "--nav-py": getPaddingValue(value) } };
+    },
+    /**
      * Numbers the top-level rows with markers on the guide. The `ordered` prop
      * of the style component sets it and renders an ordered list.
      */
@@ -105,6 +113,7 @@ export const toc = cv({
     $guide: "smooth",
     $markerHighlight: "fill",
     $gap: 0.5,
+    $itemPadding: 1.5,
   },
   refine({ variants, addClass }) {
     // The guide sits in a gutter before the top-level rows. Number markers need
@@ -255,6 +264,8 @@ export const tocLink = cv({
     // The guide, thumb, and marker pieces sit inside the link, so press scaling
     // would pull them out of line with the pieces of the other rows.
     $active: false,
+    // Use the length resolved by the toc root, which the label also reads.
+    $p: "var(--nav-py)",
   },
 });
 
