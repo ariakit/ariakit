@@ -22,6 +22,7 @@ import {
 } from "@ariakit/ui/components/combobox.ariakit.react";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
+import { FlagIcon } from "lucide-react";
 import { useState } from "react";
 import type { CSSProperties } from "react";
 import {
@@ -325,6 +326,14 @@ export function SelectPlaceholdersExample() {
           {""}
         </ComboboxSelect>
         <ComboboxSelect aria-label="Zero prompt" placeholder={0} />
+        <ComboboxSelect
+          aria-label="Blank arrow first"
+          displayValue=""
+          chevron="before"
+          icon={<FlagIcon />}
+          $p={1}
+          className="w-fit"
+        />
       </ComboboxProvider>
     </div>
   );

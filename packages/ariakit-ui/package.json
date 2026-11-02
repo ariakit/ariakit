@@ -26,6 +26,7 @@
   },
   "exports": {
     "./components/badge.ariakit.react": "./src/components/badge.ariakit.react.tsx",
+    "./components/breadcrumb.ariakit.react": "./src/components/breadcrumb.ariakit.react.tsx",
     "./components/button.ariakit.react": "./src/components/button.ariakit.react.tsx",
     "./components/checkbox.ariakit.react": "./src/components/checkbox.ariakit.react.tsx",
     "./components/code.ariakit.react": "./src/components/code.ariakit.react.tsx",
@@ -61,6 +62,7 @@
     "./react-utils/use-perceptible-value.react": "./src/react-utils/use-perceptible-value.react.ts",
     "./styles/active": "./src/styles/active.ts",
     "./styles/badge": "./src/styles/badge.ts",
+    "./styles/breadcrumb": "./src/styles/breadcrumb.ts",
     "./styles/button": "./src/styles/button.ts",
     "./styles/checkbox": "./src/styles/checkbox.ts",
     "./styles/choice": "./src/styles/choice.ts",

@@ -253,7 +253,9 @@ export const comboboxSelect = cv({
 /** A select arrow aligned at the end of the control. */
 export const comboboxSelectArrow = cv({
   extend: [buttonSlot],
-  class: "ms-auto",
+  // After an empty label, which fills the free space, the arrow keeps its side
+  // margins, so it stays centered in a select that fits its content.
+  class: "ms-auto [:empty+&]:ms-(--mx,0px)",
 });
 
 /** Select label text with optional truncation. */

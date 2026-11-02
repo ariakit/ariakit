@@ -4,11 +4,42 @@ import {
   expectMedia,
   forEachColorScheme,
   forEachColorSchemeOf,
+  hoverOver,
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
+  test("hides a separator beside a hovered button when the gap is small", async ({
+    q,
+  }) => {
+    const example = query(q.article("Pipe separators"));
+    const undo = example.button("Undo");
+    const mark = undo.locator("+ *");
+    await test.expect(mark).toHaveCSS("opacity", "1");
+    await hoverOver(undo);
+    await test.expect(mark).toHaveCSS("opacity", "0");
+  });
+
+  test("keeps the separators beside a hovered button in a wide gap", async ({
+    page,
+    q,
+  }) => {
+    const example = query(q.article("Separators in a wide gap"));
+    const redo = example.button("Redo");
+    const pipe = redo.locator("xpath=preceding-sibling::*[1]");
+    const slash = redo.locator("+ *");
+    await hoverOver(redo);
+    // A hiding mark would start its 200ms transition here. No state tracks a
+    // mark that stays, so wait past the transition before the assertions.
+    await page.waitForTimeout(300);
+    await test.expect(pipe).toHaveCSS("opacity", "1");
+    await test.expect(slash).toHaveCSS("opacity", "1");
+    const transparent = "rgba(0, 0, 0, 0)";
+    await test.expect(pipe).not.toHaveCSS("border-right-color", transparent);
+    await test.expect(slash).not.toHaveCSS("border-right-color", transparent);
+  });
+
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000661269
   test("keeps a filled control boundary in forced colors @visual", async ({
     page,

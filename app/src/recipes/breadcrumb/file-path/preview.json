@@ -1,0 +1,4 @@
+{
+  "title": "File Path in a File Viewer",
+  "description": "A file viewer whose lightened $cover bar holds a monospaced trail in a TextFrame, with $truncate on each folder's BreadcrumbLabel, above the source of the file in another TextFrame, so the path lines up with the source. An icon Button with a Tooltip beside the landmark copies the whole path, and a status message also reports success or failure for screen readers and touch screens. Use it in a repository or file browser, and use the baseline trail for pages that aren't files."
+}

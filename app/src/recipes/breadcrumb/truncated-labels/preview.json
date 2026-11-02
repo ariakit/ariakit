@@ -1,0 +1,4 @@
+{
+  "title": "Truncated Labels with Tooltips",
+  "description": "One row where $truncate on BreadcrumbLabel clips the two middle steps, longest first, and the first and current steps stay whole. A Tooltip on the link compares the height of the label with its text when it opens, so it shows the full text only while it is clipped, on hover and keyboard focus. Use it in a tight header that must stay one row high, and use the scrolling trail when every label must stay whole."
+}

@@ -1,0 +1,4 @@
+{
+  "title": "Whole-Step Select for Switching Neighbors",
+  "description": "A trail where the whole current step is a ComboboxSelect that shows the page name and an arrow, with ComboboxItem rendering a link for each neighbor. The ancestors stay links, because a select on an ancestor would take two actions to go up, and the selected value comes from the current page. Use it when the current step has no reason to be a link, and use the arrow button form to keep the label apart from the menu."
+}

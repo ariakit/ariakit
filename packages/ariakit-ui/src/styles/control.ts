@@ -455,6 +455,16 @@ const separatorEdge = cx(
   "[.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
 );
 
+// A list item has no sibling controls, only sibling list items that hover
+// through anything inside them, so a list sets its own rules. The delay keeps
+// the marks of a group from flickering while the pointer crosses a gap.
+const separatorShy = cx(
+  "in-[.control-group:hover:not(:has(:hover))]:delay-150",
+  "not-[li]:ui-adjacent-hover:opacity-(--separator-shy-opacity)",
+  "not-[li]:ui-adjacent-selected:opacity-(--separator-shy-opacity)",
+  "not-[li]:ui-adjacent-focus-visible:opacity-(--separator-shy-opacity)",
+);
+
 /** A line, slash, or chevron between horizontal controls. */
 export const controlSeparator = cv({
   extend: [layer],
@@ -462,15 +472,23 @@ export const controlSeparator = cv({
     "[.vertical>&]:hidden",
     // Resolve the separator edge against a layer without painting a background.
     "bg-transparent flex items-center justify-center pointer-events-none",
-    "transition-[border-color] duration-200 ease-out",
+    "transition-opacity duration-200 ease-out",
     "[--border-width:calc(var(--width)*1px)]",
+    // The space between the mark and each control beside it, in a row where the
+    // separator closes the padding of the group.
+    "[--separator-clearance:calc(var(--group-gap,0px)-(var(--ak-frame-padding,0px)+var(--border-width))/2-var(--separator-lean,0px))]",
     "h-(--size) border-e-(length:--border-width) -mx-[calc((var(--ak-frame-padding,0px)+var(--border-width))/2)]",
   ],
   variants: {
     /** Sets the separator shape: a line, slash, or chevron. */
     $kind: {
       pipe: "rounded-full",
-      slash: "rounded-full -skew-15",
+      // The skew moves the ends of the slash toward the controls beside it. A
+      // stretched slash has no size, so this assumes a row of about two lines.
+      slash: [
+        "rounded-full -skew-15",
+        "[--separator-lean:calc(tan(15deg)*var(--size,2lh)/2)]",
+      ],
       chevron: [
         "chevron rounded-se-xs [--border-width:calc(var(--width)*2px)]! border-t-(length:--border-width)",
         // Reverse the chevron rotation and optical offset in RTL rows.
@@ -491,14 +509,22 @@ export const controlSeparator = cv({
     },
     /**
      * Hides the separator beside hovered, selected, or keyboard-focused
-     * controls.
+     * controls, whose surfaces would touch it. `auto` hides it only when the
+     * gap of the group leaves too little room, so a separator in a wide gap
+     * stays. Separators outside a control group have no known gap, so `auto`
+     * hides them too. `true` always hides it, and `false` never does. Chevrons
+     * and `full` separators default to `false`.
      */
-    $shy: [
-      "in-[.control-group:hover:not(:has(:hover))]:delay-150",
-      "ui-adjacent-hover:border-transparent",
-      "ui-adjacent-selected:border-transparent",
-      "ui-adjacent-focus-visible:border-transparent",
-    ],
+    $shy: {
+      // The opacity is 0 with 2px of space or less, and 1 otherwise. Without a
+      // value, the rules have no effect. tan(atan2(a,b)) divides lengths where
+      // Firefox calc() cannot.
+      auto: [
+        separatorShy,
+        "[--separator-shy-opacity:clamp(0,tan(atan2(calc(var(--separator-clearance)-2px),1px))*1000,1)]",
+      ],
+      true: [separatorShy, "[--separator-shy-opacity:0]"],
+    },
     /** Sets the separator's visual stroke width in pixels. */
     $width: {
       1: "[--width:1]",
@@ -515,7 +541,7 @@ export const controlSeparator = cv({
     $shy(defaultValue, variants) {
       if (variants.$kind === "chevron") return defaultValue;
       if (variants.$size === "full") return defaultValue;
-      return defaultValue ?? true;
+      return defaultValue ?? "auto";
     },
   },
   refine({ variants, setVariants }) {
@@ -715,7 +741,7 @@ export const controlGroup = cv({
     },
     /** Sets the gap between controls. `auto` uses the group padding. */
     $gap: {
-      none: "",
+      none: "[--group-gap:0px]",
       auto: "[--group-gap:var(--ak-frame-padding,0px)] gap-(--group-gap)",
       xs: "[--group-gap:--spacing(0.5)] gap-(--group-gap)",
       sm: "[--group-gap:--spacing(1)] gap-(--group-gap)",

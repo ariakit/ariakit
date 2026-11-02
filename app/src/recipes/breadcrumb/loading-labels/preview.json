@@ -1,0 +1,4 @@
+{
+  "title": "Loading Labels with Skeleton",
+  "description": "A trail whose ancestors load after the page, with a Skeleton root around it and a SkeletonLine inside each BreadcrumbLink, so the placeholders shimmer and the steps keep their size. The links get their href when the data arrives, aria-busy stays on the landmark until then, and the current step shows at once. Use it when the trail comes from a slow request."
+}

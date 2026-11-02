@@ -1,6 +1,13 @@
 import * as ak from "@ariakit/react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import {
+  Breadcrumb,
+  BreadcrumbCurrent,
+  BreadcrumbLabel,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+} from "@ariakit/ui/components/breadcrumb.ariakit.react";
+import {
   Button,
   ButtonGroup,
   ButtonLabel,
@@ -44,7 +51,6 @@ import {
 } from "@ariakit/ui/components/shell.ariakit.react";
 import {
   BookOpen,
-  ChevronRight,
   FileText,
   MessageSquare,
   PanelLeft,
@@ -82,7 +88,7 @@ export default function Example() {
         $hue="yellow"
         $chroma="muted"
       >
-        <ShellStart $shrink className="items-center gap-2">
+        <ShellStart $shrink className="items-center gap-3">
           <Button
             className="@max-3xl/shell:hidden"
             aria-label="Toggle pages"
@@ -94,22 +100,15 @@ export default function Example() {
               <PanelLeft />
             </ButtonSlot>
           </Button>
-          <nav
-            aria-label="Breadcrumb"
-            className="flex min-w-0 items-center gap-1 text-sm"
-          >
-            <a href="#" className="ak-ink-70 truncate">
-              Field Notes
-            </a>
-            <ChevronRight className="ak-ink-70 size-4 shrink-0" />
-            <a href="#" className="ak-ink-70 truncate">
-              Projects
-            </a>
-            <ChevronRight className="ak-ink-70 size-4 shrink-0" />
-            <span aria-current="page" className="truncate font-medium">
-              Weekly planning
-            </span>
-          </nav>
+          <Breadcrumb aria-label="Breadcrumb">
+            <BreadcrumbLink href="#">
+              <BreadcrumbLabel $truncate>Projects</BreadcrumbLabel>
+            </BreadcrumbLink>
+            <BreadcrumbSeparator $kind="chevron" />
+            <BreadcrumbCurrent>
+              <BreadcrumbLabel $truncate>Weekly planning</BreadcrumbLabel>
+            </BreadcrumbCurrent>
+          </Breadcrumb>
         </ShellStart>
         <ShellEnd className="items-center gap-3">
           <div

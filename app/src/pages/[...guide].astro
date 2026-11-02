@@ -10,6 +10,7 @@
  */
 import Meta from "#app/components/meta.astro";
 import { filterGuidesByGroup, getGuideDetail } from "#app/lib/content.ts";
+import { getCollectionTrail } from "#app/lib/trail.ts";
 import PageIntro from "#app/components/page-intro.astro";
 import { mdxComponents } from "#app/components/mdx-components.react.tsx";
 import { HeadingDescription } from "@ariakit/ui/components/heading.ariakit.react";
@@ -39,6 +40,11 @@ Astro.locals.framework = framework;
 const title = entry.data.title;
 // Style guides belong to no site section yet.
 const section = type === "styles" ? undefined : type;
+// Only the guides of a framework have a collection page to link to.
+const trail =
+  framework && type !== "styles"
+    ? getCollectionTrail(framework, type, title)
+    : undefined;
 ---
 
 <Layout {title} {headings} {section}>
@@ -50,6 +56,7 @@ const section = type === "styles" ? undefined : type;
     {title}
     pagePath={path}
     description={entry.data.description}
+    {trail}
   />
   <nav aria-label="Guides">
     <a href={groupPath + "/"}>{groupLabel}</a>
@@ -68,7 +75,7 @@ const section = type === "styles" ? undefined : type;
       }
     </ul>
   </nav>
-  <PageIntro slot="intro" {title}>
+  <PageIntro slot="intro" {title} {trail}>
     {
       entry.data.description && (
         <HeadingDescription>{entry.data.description}</HeadingDescription>
