@@ -45,5 +45,8 @@ export const prose = cv({
     // Tighten only the space after a heading, so later children keep the gap.
     // The margin is negative while the gap is larger than this space.
     "[:where(&>:is(h1,h2,h3,h4,h5,h6)+.heading-description)]:mt-[calc(var(--spacing)*3.5-var(--prose-gap))]",
+    // A short lead sits closer together than the paragraphs below it. A direct
+    // property keeps the leading fallbacks of text-* classes.
+    "[:where(&>.heading-description)]:[line-height:1.625]",
   ],
 });
