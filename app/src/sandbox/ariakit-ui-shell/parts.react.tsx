@@ -9,6 +9,7 @@
  */
 import {
   Shell,
+  ShellFooter,
   ShellHeader,
   ShellStart,
   ShellEnd,
@@ -112,6 +113,10 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
   const [endVisibility, setEndVisibility] = useState<Visibility>("default");
   const [secondStart, setSecondStart] = useState(false);
   const [secondEnd, setSecondEnd] = useState(false);
+  const [secondEndFrom, setSecondEndFrom] = useState<Start>("body");
+  const [secondEndOpen, setSecondEndOpen] = useState(true);
+  const [endSticky, setEndSticky] = useState(true);
+  const [stickyFooter, setStickyFooter] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const [visibility, setVisibility] = useState<Visibility>("default");
   const [showIntro, setShowIntro] = useState(true);
@@ -310,6 +315,49 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
               Second end sidebar
             </label>
             <label>
+              Second end sidebar starts at{" "}
+              <select
+                value={secondEndFrom}
+                onChange={(event) => {
+                  if (isStart(event.currentTarget.value)) {
+                    setSecondEndFrom(event.currentTarget.value);
+                  }
+                }}
+              >
+                {starts.map((start) => (
+                  <option key={start}>{start}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={secondEndOpen}
+                onChange={(event) =>
+                  setSecondEndOpen(event.currentTarget.checked)
+                }
+              />{" "}
+              Open second end sidebar
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={endSticky}
+                onChange={(event) => setEndSticky(event.currentTarget.checked)}
+              />{" "}
+              Sticky end sidebar
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={stickyFooter}
+                onChange={(event) =>
+                  setStickyFooter(event.currentTarget.checked)
+                }
+              />{" "}
+              Sticky footer
+            </label>
+            <label>
               <input
                 type="checkbox"
                 checked={showGlobalHeader}
@@ -494,6 +542,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
         $show={visibilityValues[endVisibility]}
         $from={from === "default" ? undefined : from}
         $width="xs"
+        $sticky={endSticky}
         open={endOpen}
         aria-label="Part details"
         landmark="aside"
@@ -504,13 +553,21 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
         <ShellSidebar
           $side="end"
           $show={visibilityValues[endVisibility]}
-          $from="body"
+          $from={secondEndFrom === "default" ? undefined : secondEndFrom}
           $width="xs"
+          open={secondEndOpen}
           aria-label="More details"
           landmark="aside"
         >
-          <ShellSidebarBody>More details start at the body.</ShellSidebarBody>
+          <ShellSidebarBody>
+            More details start at {secondEndFrom}.
+          </ShellSidebarBody>
         </ShellSidebar>
+      )}
+      {stickyFooter && (
+        <ShellFooter $sticky aria-label="Part footer">
+          <ShellStart>Part footer</ShellStart>
+        </ShellFooter>
       )}
     </Shell>
   );

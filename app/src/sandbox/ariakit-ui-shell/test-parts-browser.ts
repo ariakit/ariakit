@@ -1,3 +1,4 @@
+import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
@@ -6,6 +7,80 @@ import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 // body keep it below the sticky headers.
 function getScrollGap(shellWidth: number) {
   return shellWidth < 1024 ? 16 : 32;
+}
+
+const mainHeaderSelector = ":scope > .shell-main > .shell-main-header";
+
+/**
+ * Closes a sidebar column and reports what paints at its center, in line with a
+ * bar of the same shell, halfway through the fold. The width transition pauses
+ * when it starts so CI load cannot skip the frames in which they overlap.
+ */
+async function getFoldPaint(
+  column: Locator,
+  barSelector: string,
+  close: () => Promise<unknown>,
+) {
+  await using folding = await column.evaluateHandle((node) => {
+    const started = new Promise<Animation>((resolve, reject) => {
+      node.addEventListener("transitionrun", function onTransition(event) {
+        if (event.target !== node) return;
+        if (!("propertyName" in event)) return;
+        if (event.propertyName !== "width") return;
+        node.removeEventListener("transitionrun", onTransition);
+        const animation = node
+          .getAnimations()
+          .find(
+            (animation) =>
+              "transitionProperty" in animation &&
+              animation.transitionProperty === "width",
+          );
+        if (!animation) {
+          reject(new Error("Missing width transition"));
+          return;
+        }
+        animation.pause();
+        resolve(animation);
+      });
+    });
+    return { started };
+  });
+  await close();
+  await using animation = await folding.evaluateHandle(
+    ({ started }) => started,
+  );
+  return await column.evaluate(
+    (node, { animation, barSelector }) => {
+      const bar = node.parentElement?.querySelector(barSelector);
+      if (!bar) throw new Error("Missing bar");
+      const duration = Number(animation.effect?.getTiming().duration);
+      if (!duration) throw new Error("Missing fold duration");
+      try {
+        animation.currentTime = duration / 2;
+        // The column reaches the sticky bars only once the page scrolls.
+        window.scrollTo({ top: 300, behavior: "instant" });
+        const columnBox = node.getBoundingClientRect();
+        const barBox = bar.getBoundingClientRect();
+        const top = document.elementFromPoint(
+          columnBox.left + columnBox.width / 2,
+          barBox.top + barBox.height / 2,
+        );
+        const getOnTop = () => {
+          if (node.contains(top)) return "column";
+          if (bar.contains(top)) return "bar";
+          return "other";
+        };
+        return {
+          columnWidth: columnBox.width,
+          barCoversColumn: barBox.right >= columnBox.right,
+          onTop: getOnTop(),
+        };
+      } finally {
+        animation.finish();
+      }
+    },
+    { animation, barSelector },
+  );
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -166,6 +241,77 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(intro).toHaveCSS("padding-block-end", "56px");
     await expect(title).toHaveCSS("scroll-margin-block-start", "96px");
   });
+
+  for (const [trigger, control, checkedWhenClosed] of [
+    ["its toggle", "Open end sidebar", false],
+    ["a narrower shell", "Narrow shell", true],
+  ] as const) {
+    test(`folds an end sidebar that starts at main above the main header through ${trigger}`, async ({
+      q,
+      page,
+    }) => {
+      await q.combobox("End sidebar starts at").selectOption("main");
+      await q.combobox("End sidebar visibility").selectOption("5xl");
+      const column = getSidebar(q, "Part details");
+      const header = page.locator(".shell-main-header");
+      await expect(column).toHaveCSS("width", "160px");
+      const fold = await getFoldPaint(column, mainHeaderSelector, () =>
+        q.checkbox(control).setChecked(checkedWhenClosed),
+      );
+      expect(fold.columnWidth).toBeGreaterThan(0);
+      expect(fold.columnWidth).toBeLessThan(160);
+      // The header spans the column at once, which the column must fold over.
+      expect(fold.barCoversColumn).toBe(true);
+      expect(fold.onTop).toBe("column");
+      await expect(column).toHaveCSS("width", "0px");
+      await q.checkbox(control).setChecked(!checkedWhenClosed);
+      await expect(column).toHaveCSS("width", "160px");
+      // An open column stays below the main header and its popovers.
+      const [columnLevel, headerLevel] = await Promise.all(
+        [column, header].map((locator) =>
+          locator.evaluate((node) => Number(getComputedStyle(node).zIndex)),
+        ),
+      );
+      expect(columnLevel).toBeLessThan(Number(headerLevel));
+    });
+  }
+
+  test("folds a second end sidebar that starts at main above the main header", async ({
+    q,
+  }) => {
+    // The first column leaves the main header's row free, so the header reaches
+    // the second column, and the first column's state doesn't raise the second.
+    await q.combobox("End sidebar starts at").selectOption("body");
+    await q.checkbox("Second end sidebar").check();
+    await q.combobox("Second end sidebar starts at").selectOption("main");
+    const secondColumn = getSidebar(q, "More details");
+    await expect(secondColumn).toHaveCSS("width", "160px");
+    const fold = await getFoldPaint(secondColumn, mainHeaderSelector, () =>
+      q.checkbox("Open second end sidebar").uncheck(),
+    );
+    expect(fold.barCoversColumn).toBe(true);
+    expect(fold.onTop).toBe("column");
+  });
+
+  for (const [bar, selector] of [
+    ["shell header", ":scope > .shell-header"],
+    ["sticky footer", ":scope > .shell-footer"],
+  ] as const) {
+    test(`keeps the ${bar} above a folding end sidebar that isn't sticky`, async ({
+      q,
+    }) => {
+      await q.combobox("End sidebar starts at").selectOption("main");
+      await q.checkbox("Sticky end sidebar").uncheck();
+      await q.checkbox("Sticky footer").check();
+      const column = getSidebar(q, "Part details");
+      await expect(column).toHaveCSS("width", "160px");
+      const fold = await getFoldPaint(column, selector, () =>
+        q.checkbox("Open end sidebar").uncheck(),
+      );
+      expect(fold.barCoversColumn).toBe(true);
+      expect(fold.onTop).toBe("bar");
+    });
+  }
 
   for (const from of ["intro", "body"]) {
     test(`shows the main header above its breakpoint and releases sticky ${from} sidebars below it`, async ({
@@ -453,7 +599,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(middleHeader).toHaveCSS("top", "192px");
     await expect(innerHeader).toHaveCSS("top", "264px");
     await expect(innerMainHeader).toHaveCSS("top", "328px");
-    await page.evaluate(() => window.scrollTo(0, 1200));
+    await page.evaluate(() => window.scrollTo(0, 1400));
     await expect
       .poll(async () => (await getBox(innerHeader)).y)
       .toBeCloseTo(264, 0);
