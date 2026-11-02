@@ -15,8 +15,18 @@ function getDevNextjsPort() {
   return import.meta.env.NEXTJS_PORT;
 }
 
+// A render error after Astro commits a streamed response would reach workerd,
+// which ends the body cleanly and drops the queued chunks. The result is a blank
+// 200. Awaiting the HTML in dev rejects first, so Vite can show its overlay.
+async function bufferDevHtml(response: Response) {
+  if (!response.body) return response;
+  const contentType = response.headers.get("content-type");
+  if (!contentType?.startsWith("text/html")) return response;
+  return new Response(await response.arrayBuffer(), response);
+}
+
 export default {
-  fetch(request, env, context) {
+  async fetch(request, env, context) {
     // Astro middleware only runs after the adapter resolves an SSR route. This
     // wrapper intercepts Next.js previews before the adapter serves 404.html.
     const nextjsExampleId = getNextjsPreviewId(new URL(request.url).pathname);
@@ -32,6 +42,8 @@ export default {
       return Response.redirect(nextjsUrl, 307);
     }
 
-    return server.fetch(request, env, context);
+    const response = await server.fetch(request, env, context);
+    if (!import.meta.env.DEV) return response;
+    return bufferDevHtml(response);
   },
 } satisfies ExportedHandler<Cloudflare.Env>;
