@@ -191,11 +191,13 @@ export const breadcrumbSeparator = cv({
     // Steps sit in list items, where the sibling rules of a group can't see
     // them, and an item can hold more than one control. Only the control that
     // faces the mark counts, and only if it paints a surface: a quiet step
-    // paints nothing on hover.
+    // paints nothing on hover, and an expanded control needs a selected surface.
     "[li:has(>:nth-last-child(1_of_.control):hover:not(.breadcrumb-step-quiet,:disabled,[aria-disabled='true']))+&]:opacity-(--separator-shy-opacity)",
     "has-[+li>:nth-child(1_of_.control):hover:not(.breadcrumb-step-quiet,:disabled,[aria-disabled='true'])]:opacity-(--separator-shy-opacity)",
     "[li:has(>:nth-last-child(1_of_.control):focus-visible)+&]:opacity-(--separator-shy-opacity)",
     "has-[+li>:nth-child(1_of_.control):focus-visible]:opacity-(--separator-shy-opacity)",
+    "[li:has(>:nth-last-child(1_of_.control).popover-disclosure-surface[aria-expanded='true'])+&]:opacity-(--separator-shy-opacity)",
+    "has-[+li>:nth-child(1_of_.control).popover-disclosure-surface[aria-expanded='true']]:opacity-(--separator-shy-opacity)",
   ],
   variants: {
     /** Sets the mark. `none` paints nothing, for custom content in children. */

@@ -32,6 +32,7 @@ export default function Example() {
           <PopoverDisclosure
             aria-label={`Show ${hiddenSteps.length} more steps`}
             $p={1}
+            $selectedOffset
           >
             <ButtonSlot>
               <Ellipsis />

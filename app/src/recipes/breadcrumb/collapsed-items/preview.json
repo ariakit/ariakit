@@ -1,4 +1,4 @@
 {
   "title": "Collapsed Items in a Popover",
-  "description": "A deep trail that keeps the first steps and the current step, and moves the steps between them behind a PopoverDisclosure in a BreadcrumbItem. Its Popover holds a Nav of links, so the hidden steps stay real links. Use it for deep app hierarchies where a wrapped trail takes too much room."
+  "description": "A deep trail that keeps the first steps and the current step, and moves the steps between them behind a PopoverDisclosure in a BreadcrumbItem, whose $selectedOffset keeps a surface while it's open and hides the separators beside it when the gap is small. Its Popover holds a Nav of links, so the hidden steps stay real links. Use it for deep app hierarchies where a wrapped trail takes too much room."
 }
