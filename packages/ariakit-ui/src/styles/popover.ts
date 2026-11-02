@@ -1,6 +1,7 @@
 import { cv } from "clava";
 import { button } from "./button.ts";
 import { frame, frameBase } from "./frame.ts";
+import { hasSelectedSurface } from "./selected.ts";
 
 /**
  * A floating surface with open, close, and backdrop animations. Static markup
@@ -48,9 +49,25 @@ export const popover = cv({
   },
 });
 
-/** A button that opens a popover. */
+/**
+ * A button that opens a popover. `$selectedOffset` and `$selectedPush` also
+ * paint while the popover is open.
+ */
 export const popoverDisclosure = cv({
   extend: [button],
+  refine({ variants, addClass }) {
+    if (!hasSelectedSurface(variants)) return;
+    // Only here, because ui-selected would also match open nav sections,
+    // sidebar toggles, and comboboxes, which stay expanded while people work
+    // elsewhere.
+    addClass([
+      "popover-disclosure-surface [--selected-push:initial]",
+      "aria-expanded:ak-state-(--selected-offset,0)",
+      "aria-expanded:ak-state-push-(--selected-push,0)",
+      "aria-expanded:ui-hover:ak-state-(--selected-offset,0)",
+      "aria-expanded:ui-hover:ak-state-push-(--selected-push,0)",
+    ]);
+  },
 });
 
 /** A button that closes a popover. */
