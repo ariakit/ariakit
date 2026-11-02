@@ -105,20 +105,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const disclosure = q.button("View options");
-    const getBackground = () =>
-      disclosure.evaluate(
-        (element) => getComputedStyle(element).backgroundColor,
-      );
-    const restBackground = await getBackground();
+    const getBackground = (button: typeof disclosure) =>
+      button.evaluate((element) => getComputedStyle(element).backgroundColor);
+    const restBackground = await getBackground(disclosure);
+    // A selected button with the same props shows the expected surface.
+    const selectedBackground = await getBackground(q.button("Current view"));
+    test.expect(selectedBackground).not.toBe(restBackground);
     await disclosure.click();
     await test.expect(disclosure).toHaveAttribute("aria-expanded", "true");
     await page.mouse.move(0, 0);
     await test
       .expect(disclosure)
-      .not.toHaveCSS("background-color", restBackground);
-    const openBackground = await getBackground();
+      .toHaveCSS("background-color", selectedBackground);
     await disclosure.hover();
-    await test.expect(disclosure).toHaveCSS("background-color", openBackground);
+    await test
+      .expect(disclosure)
+      .toHaveCSS("background-color", selectedBackground);
   });
 
   // https://github.com/ariakit/ariakit/pull/7465#discussion_r3992662589
