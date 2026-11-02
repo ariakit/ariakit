@@ -1,5 +1,10 @@
-import { q } from "@ariakit/test";
+import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
+
+test("confirms the copy in a status message", async () => {
+  await click(q.button("Copy path"));
+  expect(q.status()).toHaveTextContent("Copied");
+});
 
 test("links each folder and marks the file", () => {
   const trail = q.within(q.navigation("File path"));

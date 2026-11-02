@@ -94,6 +94,14 @@ for (const { name, path, links, current } of pages) {
       position: links.length + 1,
       name: current,
     });
+    const ancestors: Array<{ name: string; item: string }> =
+      data.itemListElement.slice(0, -1);
+    expect(ancestors.map((item) => item.name)).toEqual(
+      links.map(([label]) => label),
+    );
+    expect(ancestors.map((item) => new URL(item.item).pathname)).toEqual(
+      links.map(([, href]) => href),
+    );
   });
 }
 

@@ -14,6 +14,27 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(trigger).toBeFocused();
   });
 
+  test("follows the page when going back", async ({ page, q }) => {
+    await q.combobox("Switch section").click();
+    await q.option("Areas").click();
+    await test.expect(q.navigation("Breadcrumb")).toContainText("Areas");
+    await page.goBack();
+    await test.expect(q.navigation("Breadcrumb")).toContainText("Projects");
+  });
+
+  test("keeps the step when a link opens in a new tab", async ({
+    context,
+    page,
+    q,
+  }) => {
+    await q.combobox("Switch section").click();
+    const newPage = context.waitForEvent("page");
+    await q.option("Areas").click({ modifiers: ["ControlOrMeta"] });
+    await newPage;
+    await test.expect(q.navigation("Breadcrumb")).toContainText("Projects");
+    await test.expect(page).not.toHaveURL(/#areas$/);
+  });
+
   test("goes to a neighbor on click", async ({ page, q }) => {
     await q.combobox("Switch section").click();
     await q.option("Reading list").click();

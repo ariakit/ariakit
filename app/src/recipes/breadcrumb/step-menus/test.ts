@@ -1,5 +1,10 @@
 import { click, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { afterEach, expect, test } from "vitest";
+
+// The URL hash holds the current step, and the tests share the document.
+afterEach(() => {
+  location.hash = "";
+});
 
 test("lists the neighbors and marks the current one", async () => {
   await click(q.combobox("Switch section"));

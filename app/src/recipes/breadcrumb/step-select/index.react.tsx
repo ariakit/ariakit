@@ -10,17 +10,34 @@ import {
   ComboboxProvider,
   ComboboxSelect,
 } from "@ariakit/ui/components/combobox.ariakit.react";
-import { useState } from "react";
+import { useSyncExternalStore } from "react";
 
-const sections = ["Projects", "Areas", "Reading list"];
+const DEFAULT_SECTION = "Projects";
+const sections = [DEFAULT_SECTION, "Areas", "Reading list"];
 
 function getHref(section: string) {
   return `#${section.toLowerCase().replaceAll(" ", "-")}`;
 }
 
+function subscribe(onChange: () => void) {
+  window.addEventListener("hashchange", onChange);
+  return () => window.removeEventListener("hashchange", onChange);
+}
+
+function getSection() {
+  const section = sections.find((name) => getHref(name) === location.hash);
+  return section ?? DEFAULT_SECTION;
+}
+
+function getServerSection() {
+  return DEFAULT_SECTION;
+}
+
 export default function Example() {
-  // In an app, the current page gives this value.
-  const [section, setSection] = useState("Projects");
+  // In an app, the current page gives this value. Here, the URL hash stands in
+  // for the page, so a link that opens in a new tab changes nothing here, and
+  // the browser's back button changes the step.
+  const section = useSyncExternalStore(subscribe, getSection, getServerSection);
   return (
     <Breadcrumb aria-label="Breadcrumb">
       <BreadcrumbLink href="#field-notes">Field Notes</BreadcrumbLink>
@@ -41,9 +58,7 @@ export default function Example() {
               <ComboboxItem
                 key={name}
                 value={name}
-                render={
-                  <a href={getHref(name)} onClick={() => setSection(name)} />
-                }
+                render={<a href={getHref(name)} />}
               />
             ))}
           </ComboboxPopover>
