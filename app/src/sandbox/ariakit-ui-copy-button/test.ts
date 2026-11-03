@@ -7,17 +7,18 @@ test("names an icon button Copy by default", () => {
 
 test("reports a failure when the value function throws", async () => {
   await click(q.button("Copy broken value"));
-  expect(await q.status.wait("Couldn't copy")).toBeInTheDocument();
+  expect(await q.button.wait("Couldn't copy")).toBeInTheDocument();
 });
 
 test("skips the copy when onClick prevents the default", async () => {
-  const [status] = q.status.all();
-  await click(q.button("Copy secret"));
+  const copy = q.button("Copy secret");
+  await click(copy);
   // A copy would settle after the click, and no state tracks a copy that
-  // doesn't start, so the empty status needs a delay before it means anything.
+  // doesn't start, so the unchanged name needs a delay before it means
+  // anything.
   await sleep();
-  expect(status).toHaveTextContent("");
+  expect(copy).toHaveAccessibleName("Copy secret");
   await click(q.checkbox("I understand this key is secret"));
-  await click(q.button("Copy secret"));
-  await expect.poll(() => status?.textContent).toBe("Copied");
+  await click(copy);
+  expect(await q.button.wait("Copied")).toBe(copy);
 });

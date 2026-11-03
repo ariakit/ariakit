@@ -1,4 +1,4 @@
 {
   "title": "Copy Button",
-  "description": "An icon CopyButton beside a code, with a value string and a label that names the button and fills its tooltip. A click copies the value, changes the icon and the tooltip to report the result, and announces it in a status message for 2 seconds. Use it as the baseline for copying a short text, before adding a visible label or custom feedback."
+  "description": "An icon CopyButton beside a code, with a value string and a label that names the button and fills its tooltip. A click copies the value, and changes the icon, the tooltip, and the accessible name of the button to report the result for 2 seconds. Use it as the baseline for copying a short text, before adding a visible label or custom feedback."
 }

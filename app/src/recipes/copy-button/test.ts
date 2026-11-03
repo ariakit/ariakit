@@ -7,6 +7,5 @@ test("names the icon button and reports the copy", async () => {
   expect(await q.tooltip.wait("Copy invite code")).toBeVisible();
   await click(copy);
   expect(await q.tooltip.wait("Copied")).toBeVisible();
-  expect(q.status()).toHaveTextContent("Copied");
-  expect(copy).toHaveAccessibleName("Copy invite code");
+  expect(copy).toHaveAccessibleName("Copied");
 });

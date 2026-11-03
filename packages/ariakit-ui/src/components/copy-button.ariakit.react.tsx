@@ -17,7 +17,8 @@ export interface CopyButtonProps extends Omit<ButtonProps, "recipe" | "value"> {
    */
   value: string | (() => string);
   /**
-   * The accessible name and the tooltip of a button without children.
+   * The accessible name and the tooltip of a button without children. The
+   * feedback takes their place while it shows.
    * @default "Copy"
    */
   label?: string;
@@ -46,12 +47,9 @@ export interface CopyButtonProps extends Omit<ButtonProps, "recipe" | "value"> {
 
 /**
  * A button that copies text to the clipboard and reports the result with its
- * icon, its tooltip or label, and a status message. Without children, it's an
- * icon button named by `label`. Children become a visible label, and they name
- * the button. The `Button` variants work, and the status message is a visually
- * hidden sibling of the button, so screen readers announce the result. That
- * sibling keeps a `$cover` button from counting as the last child of its frame,
- * so add `$frameEnd` when it is.
+ * icon, its tooltip or label, and its accessible name. Without children, it's
+ * an icon button named by `label`. Children become a visible label, and they
+ * name the button. The `Button` variants work.
  * @example
  * <CopyButton value="https://ariakit.com" label="Copy link" />
  * @example
@@ -73,6 +71,7 @@ export function CopyButton({
   const [feedback, setFeedback] = React.useState<{ failed: boolean }>();
   const hasLabel = hasContent(children);
   const feedbackLabel = feedback?.failed ? failedLabel : copiedLabel;
+  const name = feedback ? feedbackLabel : label;
   const Icon = feedback ? (feedback.failed ? XIcon : CheckIcon) : CopyIcon;
 
   React.useEffect(() => {
@@ -92,45 +91,34 @@ export function CopyButton({
   };
 
   return (
-    <>
-      <Tooltip
-        {...tooltip}
-        text={hasLabel ? null : feedback ? feedbackLabel : label}
+    <Tooltip {...tooltip} text={hasLabel ? null : name}>
+      <Button
+        aria-label={hasLabel ? undefined : name}
+        {...props}
+        onClick={(event) => {
+          onClick?.(event);
+          if (event.defaultPrevented) return;
+          void copy(event.currentTarget);
+        }}
       >
-        <Button
-          aria-label={hasLabel ? undefined : label}
-          {...props}
-          onClick={(event) => {
-            onClick?.(event);
-            if (event.defaultPrevented) return;
-            void copy(event.currentTarget);
-          }}
-        >
-          <ButtonSlot aria-hidden>
-            <Icon />
-          </ButtonSlot>
-          {hasLabel && (
-            // Both texts share one grid cell, so a copy doesn't resize the
-            // button. The children stay in the accessibility tree, so the name
-            // of the button doesn't change.
-            <ButtonLabel
-              $truncate={false}
-              className="grid text-start *:[grid-area:1/1]"
-            >
-              <span className={cx(feedback && "opacity-0")}>{children}</span>
-              <span aria-hidden className={cx(!feedback && "opacity-0")}>
-                {feedbackLabel}
-              </span>
-            </ButtonLabel>
-          )}
-        </Button>
-      </Tooltip>
-      {/* Touch screens don't show tooltips, and screen readers don't read them.
-          The message is outside the button, because a button hides the roles
-          of its children, including this live region. */}
-      <span role="status" className="sr-only">
-        {feedback && feedbackLabel}
-      </span>
-    </>
+        <ButtonSlot aria-hidden>
+          <Icon />
+        </ButtonSlot>
+        {hasLabel && (
+          // Both texts share one grid cell, so a copy doesn't resize the button.
+          // The invisible text also leaves the accessible name, so the feedback
+          // names the button while it shows.
+          <ButtonLabel
+            $truncate={false}
+            className="grid text-center *:[grid-area:1/1]"
+          >
+            <span className={cx(feedback && "invisible")}>{children}</span>
+            <span className={cx(!feedback && "invisible")}>
+              {feedbackLabel}
+            </span>
+          </ButtonLabel>
+        )}
+      </Button>
+    </Tooltip>
   );
 }

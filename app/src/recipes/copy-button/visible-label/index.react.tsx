@@ -7,7 +7,7 @@ export default function Example() {
     <div className="flex flex-wrap items-center justify-center gap-2">
       <CopyButton value={LINK}>Copy link</CopyButton>
       <CopyButton value={LINK} $border>
-        Copy URL
+        Copy<span className="sr-only"> URL</span>
       </CopyButton>
       <CopyButton value={LINK} $kind="bevel">
         Copy address

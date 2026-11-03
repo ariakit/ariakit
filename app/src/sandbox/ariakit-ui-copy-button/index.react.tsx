@@ -24,14 +24,12 @@ function SensitiveValue() {
       </label>
       <CopyButton
         value="secret"
-        $border
+        label="Copy secret"
         onClick={(event) => {
           // The copy doesn't run until the person confirms.
           if (!confirmed) event.preventDefault();
         }}
-      >
-        Copy secret
-      </CopyButton>
+      />
     </div>
   );
 }
@@ -40,11 +38,7 @@ function BrokenValue() {
   const readValue = () => {
     throw new Error("The value isn't available");
   };
-  return (
-    <CopyButton value={readValue} $border>
-      Copy broken value
-    </CopyButton>
-  );
+  return <CopyButton value={readValue} label="Copy broken value" />;
 }
 
 export default function Example() {

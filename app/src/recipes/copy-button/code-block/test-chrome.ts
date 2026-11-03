@@ -22,7 +22,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(tooltipBox && copyBox && tooltipBox.x + tooltipBox.width)
       .toBeLessThanOrEqual(copyBox?.x ?? 0);
     await copy.click();
-    await test.expect(q.status()).toHaveText("Copied");
+    await test.expect(q.button("Copied")).toBeVisible();
     const copied = await page.evaluate(() => navigator.clipboard.readText());
     test.expect(copied).toBe("pnpm add @ariakit/react\npnpm dev");
   });
