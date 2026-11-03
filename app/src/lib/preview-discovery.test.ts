@@ -462,12 +462,12 @@ test("supports hover open metadata", async () => {
   ]);
 });
 
-test("supports compact metadata", async () => {
+test("supports minHeight metadata", async () => {
   const dir = await createDir();
   await writeFile(join(dir, "recipes/tooltip/index.react.tsx"));
   await writeFile(
     join(dir, "recipes/tooltip/preview.json"),
-    JSON.stringify({ title: "Tooltip", compact: true }),
+    JSON.stringify({ title: "Tooltip", minHeight: "16rem" }),
   );
 
   const previews = await discoverPreviews({
@@ -475,21 +475,23 @@ test("supports compact metadata", async () => {
   });
 
   expect(previews).toMatchObject([
-    { id: "tooltip", metadata: { compact: true } },
+    { id: "tooltip", metadata: { minHeight: "16rem" } },
   ]);
 });
 
-test("rejects invalid compact metadata", async () => {
+test("rejects invalid minHeight metadata", async () => {
   const dir = await createDir();
   await writeFile(join(dir, "recipes/tooltip/index.react.tsx"));
   await writeFile(
     join(dir, "recipes/tooltip/preview.json"),
-    JSON.stringify({ title: "Tooltip", compact: "true" }),
+    JSON.stringify({ title: "Tooltip", minHeight: 16 }),
   );
 
   const promise = discoverPreviews({ roots: [getRecipesRoot(dir)] });
 
-  await expect(promise).rejects.toThrow("Invalid compact metadata for tooltip");
+  await expect(promise).rejects.toThrow(
+    "Invalid minHeight metadata for tooltip",
+  );
 });
 
 test("supports metadata-only sandbox previews", async () => {

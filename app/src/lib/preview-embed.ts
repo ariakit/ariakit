@@ -85,10 +85,34 @@ export interface PreviewActiveMessage {
   active: boolean;
 }
 
+/**
+ * Reports the height that a preview frame needs to fit its page. A `null`
+ * height means that the page does not fit its content, so the card keeps the
+ * fallback height of the frame. Frames deployed before this message, such as a
+ * Next.js preview from an older deploy, do not send it.
+ */
+export interface PreviewSizeMessage {
+  type: typeof PREVIEW_MESSAGE_TYPE;
+  action: "size";
+  height: number | null;
+  /**
+   * Whether an open popup scrolls its content. A popup can limit its height to
+   * the room in the frame, so it fits even a short frame, but with little of
+   * its content in view.
+   */
+  scrollingPopup: boolean;
+  /**
+   * Whether the height includes room for an open popup that didn't fit the
+   * frame. The card lets the frame grow past its maximum height for it.
+   */
+  popupRoom: boolean;
+}
+
 export type PreviewFrameMessage =
   | PreviewLocationMessage
   | PreviewScrollMessage
-  | PreviewActiveMessage;
+  | PreviewActiveMessage
+  | PreviewSizeMessage;
 
 /**
  * Prepares a preview page that a preview card embeds. It runs before the page
@@ -110,6 +134,9 @@ export type PreviewFrameMessage =
  *   commands from the card.
  * - The page applies the site theme and the viewport radius that the card
  *   sends.
+ * - A page with `data-preview-content` on an element reports the height of the
+ *   content of that element, plus the room that its open popups need, so the
+ *   card fits the frame to the page.
  *
  * This function is serialized into an inline script, so it must not reference
  * anything outside its own body.
@@ -750,6 +777,7 @@ export function setupPreviewEmbed() {
       case "sync":
         postLocation();
         postActive();
+        postSize();
         break;
       case "back":
         if (!canGoBack()) break;
@@ -793,6 +821,206 @@ export function setupPreviewEmbed() {
         }
         break;
     }
+  });
+
+  // The content element can be taller than its content, since a page leaves
+  // room for popups and centers the example in the viewport. So the box comes
+  // from the elements in its flow, which depends on neither the frame nor that
+  // room.
+  const getContentBox = (content: Element) => {
+    let top = Number.POSITIVE_INFINITY;
+    let bottom = Number.NEGATIVE_INFINITY;
+    const visit = (parent: Element) => {
+      for (const element of parent.children) {
+        const { display, position, marginTop, marginBottom } =
+          getComputedStyle(element);
+        if (display === "none") continue;
+        if (position === "absolute") continue;
+        if (position === "fixed") continue;
+        // Elements such as framework islands can render no box of their own.
+        if (display === "contents") {
+          visit(element);
+          continue;
+        }
+        observeSize(element);
+        const rect = element.getBoundingClientRect();
+        if (!rect.height) continue;
+        top = Math.min(top, rect.top - Number.parseFloat(marginTop));
+        bottom = Math.max(
+          bottom,
+          rect.bottom + Number.parseFloat(marginBottom),
+        );
+      }
+    };
+    visit(content);
+    // Keeps the current height until the page renders its content.
+    if (bottom < top) return null;
+    const { paddingTop, paddingBottom } = getComputedStyle(content);
+    return {
+      offset: top - content.getBoundingClientRect().top,
+      bottom: bottom + window.scrollY,
+      height: Math.ceil(
+        bottom -
+          top +
+          Number.parseFloat(paddingTop) +
+          Number.parseFloat(paddingBottom),
+      ),
+    };
+  };
+
+  // The frame height that fits the popups open now. Popups are out of flow, so
+  // a short frame would clip them. The room stays until the popups close, since
+  // a popup that fits the taller frame would not fit once the frame shrinks.
+  let popupRoom = 0;
+  // The page centers the example, which would move the trigger away from the
+  // room that the frame adds below it.
+  let pinnedContent: HTMLElement | undefined;
+  const pinContent = (content: HTMLElement, offset: number) => {
+    if (pinnedContent) return;
+    pinnedContent = content;
+    content.style.alignItems = "flex-start";
+    content.style.paddingTop = `${Math.max(0, offset)}px`;
+  };
+  const getOpenPopups = () => {
+    const popups = document.querySelectorAll("[data-dialog]");
+    return Array.from(popups, (popup) => {
+      return { popup, rect: popup.getBoundingClientRect() };
+    }).filter(({ rect }) => rect.height > 0);
+  };
+  const scrollsContent = (popup: Element) => {
+    return [popup, ...popup.querySelectorAll("*")].some((element) => {
+      if (element.scrollHeight <= element.clientHeight) return false;
+      return /auto|scroll/.test(getComputedStyle(element).overflowY);
+    });
+  };
+  // Like the popup room, this stays until the popups close, since the popup can
+  // fit its content once the frame grows.
+  let scrollingPopup = false;
+
+  // Removing the pin as the popups close would center the example in the tall
+  // frame until the card shrinks it, so the pin stays until the frame takes the
+  // reported height. A height that the frame already has resizes nothing.
+  let cancelUnpin: (() => void) | undefined;
+  const scheduleUnpin = () => {
+    if (cancelUnpin) return;
+    const unpin = () => {
+      cancelUnpin?.();
+      pinnedContent?.style.removeProperty("align-items");
+      pinnedContent?.style.removeProperty("padding-top");
+      pinnedContent = undefined;
+      // The page measured the pinned content, which can differ from the
+      // centered content in a frame taller than its content.
+      scheduleSize();
+    };
+    if (window.innerHeight === reportedHeight) {
+      unpin();
+      return;
+    }
+    // The frame may keep its height, such as at its minimum height.
+    const timeout = window.setTimeout(unpin, 100);
+    window.addEventListener("resize", unpin);
+    cancelUnpin = () => {
+      cancelUnpin = undefined;
+      clearTimeout(timeout);
+      window.removeEventListener("resize", unpin);
+    };
+  };
+
+  let reportedHeight: number | null | undefined;
+  let reportedScrollingPopup = false;
+  let reportedPopupRoom = false;
+  const postSize = () => {
+    const height = reportedHeight;
+    if (height === undefined) return;
+    window.parent.postMessage(
+      {
+        type,
+        action: "size",
+        height,
+        scrollingPopup: reportedScrollingPopup,
+        popupRoom: reportedPopupRoom,
+      },
+      "*",
+    );
+  };
+  const getFrameHeight = () => {
+    const content = document.querySelector("[data-preview-content]");
+    if (!(content instanceof HTMLElement)) return null;
+    const popups = getOpenPopups();
+    if (!popups.length) {
+      popupRoom = 0;
+      scrollingPopup = false;
+    }
+    const box = getContentBox(content);
+    if (!box) return reportedHeight;
+    for (const { popup, rect } of popups) {
+      observeSize(popup);
+      if (!scrollingPopup && scrollsContent(popup)) {
+        scrollingPopup = true;
+        pinContent(content, box.offset);
+      }
+      if (rect.top >= 0 && rect.bottom <= window.innerHeight) continue;
+      pinContent(content, box.offset);
+      // The popup fits below the example wherever it opens from.
+      const room = box.bottom + rect.height + popupMargin;
+      popupRoom = Math.max(popupRoom, Math.ceil(room));
+    }
+    return Math.max(box.height, popupRoom);
+  };
+  const updateSize = () => {
+    const height = getFrameHeight();
+    const changed =
+      height !== reportedHeight ||
+      scrollingPopup !== reportedScrollingPopup ||
+      !!popupRoom !== reportedPopupRoom;
+    if (changed) {
+      reportedHeight = height;
+      reportedScrollingPopup = scrollingPopup;
+      reportedPopupRoom = !!popupRoom;
+      postSize();
+    }
+    if (!pinnedContent) return;
+    if (popupRoom || scrollingPopup) {
+      cancelUnpin?.();
+      return;
+    }
+    scheduleUnpin();
+  };
+  const sizeObserver = new ResizeObserver(updateSize);
+  const sizeObserved = new WeakSet<Element>();
+  const observeSize = (element: Element) => {
+    if (sizeObserved.has(element)) return;
+    sizeObserved.add(element);
+    sizeObserver.observe(element);
+  };
+  // Popups render and position themselves in the next frames. A burst of
+  // changes updates the size once, even in an example that changes on every
+  // frame.
+  let sizeFrame = 0;
+  const scheduleSize = () => {
+    if (sizeFrame) return;
+    sizeFrame = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        sizeFrame = 0;
+        updateSize();
+      });
+    });
+  };
+  // Reports before the load event reveals the frame, so the frame changes
+  // height behind the loader. A client-side route replaces the elements in the
+  // flow, which the size observer can't report.
+  document.addEventListener("DOMContentLoaded", () => {
+    updateSize();
+    if (!document.querySelector("[data-preview-content]")) return;
+    const mutationObserver = new MutationObserver(scheduleSize);
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-open", "data-enter", "hidden"],
+    });
+    window.addEventListener("transitionend", scheduleSize, true);
+    window.addEventListener("animationend", scheduleSize, true);
   });
 
   const finishOpening = () => {
@@ -876,6 +1104,11 @@ export function isPreviewFrameMessage(
   }
   if (data.action === "active") {
     return hasTypes(data, { active: "boolean" });
+  }
+  if (data.action === "size") {
+    const height: unknown = Reflect.get(data, "height");
+    if (height !== null && !Number.isFinite(height)) return false;
+    return hasTypes(data, { scrollingPopup: "boolean", popupRoom: "boolean" });
   }
   return false;
 }

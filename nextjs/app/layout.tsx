@@ -26,7 +26,12 @@ export default function RootLayout({
             inactive preview card. */}
         <script dangerouslySetInnerHTML={{ __html: previewEmbedScript }} />
       </head>
-      <body className={inter.variable}>{children}</body>
+      {/*
+       * The preview embed script fits the preview card frame to the routes.
+       */}
+      <body data-preview-content="" className={inter.variable}>
+        {children}
+      </body>
     </html>
   );
 }

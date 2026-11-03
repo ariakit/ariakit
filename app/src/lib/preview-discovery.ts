@@ -75,7 +75,7 @@ interface PreviewMetadata {
   description?: string;
   fullscreen?: boolean;
   open?: PreviewOpen;
-  compact?: boolean;
+  minHeight?: string;
   frameworks?: Framework[];
 }
 
@@ -84,7 +84,7 @@ const PREVIEW_METADATA_KEYS = [
   "description",
   "fullscreen",
   "open",
-  "compact",
+  "minHeight",
   "frameworks",
 ] as const;
 
@@ -106,7 +106,7 @@ export const PreviewDataSchema = z.object({
   description: z.string().optional(),
   fullscreen: z.boolean().optional(),
   open: z.union([z.boolean(), z.literal("hover")]).optional(),
-  compact: z.boolean().optional(),
+  minHeight: z.string().optional(),
   frameworks: FrameworkSchema.array(),
   source: z.string(),
 });
@@ -168,7 +168,7 @@ function parsePreviewMetadata(value: unknown, id: string) {
     );
   }
   const metadata: PreviewMetadata = {};
-  const { title, description, fullscreen, open, compact } = value;
+  const { title, description, fullscreen, open, minHeight } = value;
   if (title !== undefined) {
     invariant(typeof title === "string", `Invalid title metadata for ${id}`);
     metadata.title = title;
@@ -194,12 +194,12 @@ function parsePreviewMetadata(value: unknown, id: string) {
     );
     metadata.open = open;
   }
-  if (compact !== undefined) {
+  if (minHeight !== undefined) {
     invariant(
-      typeof compact === "boolean",
-      `Invalid compact metadata for ${id}`,
+      typeof minHeight === "string",
+      `Invalid minHeight metadata for ${id}`,
     );
-    metadata.compact = compact;
+    metadata.minHeight = minHeight;
   }
   const frameworks = parseFrameworks(value.frameworks, id);
   if (frameworks) {
@@ -464,7 +464,7 @@ async function updatePreviewStore(
       description: preview.metadata.description,
       fullscreen: preview.metadata.fullscreen,
       open: preview.metadata.open,
-      compact: preview.metadata.compact,
+      minHeight: preview.metadata.minHeight,
       frameworks: preview.frameworks,
       source: preview.source,
     };

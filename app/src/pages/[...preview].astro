@@ -51,6 +51,10 @@ const fullscreen = entry.data.fullscreen;
 // empty value opens it with a click.
 const open = entry.data.open;
 const openMode = open === "hover" ? "hover" : open ? "" : undefined;
+// The embed script fits the frame to this element. An app shell fills the
+// frame, and an open popup needs room before the frame can measure it, so those
+// keep the fallback height of the card.
+const contentSized = !fullscreen && !open;
 ---
 
 <!doctype html>
@@ -74,6 +78,7 @@ const openMode = open === "hover" ? "hover" : open ? "" : undefined;
         example stays centered in the first viewport, with the same padding as
         an inline preview card. */}
     <div
+      data-preview-content={contentSized ? "" : undefined}
       class:list={[
         "@container size-full",
         !fullscreen &&
