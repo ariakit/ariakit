@@ -369,15 +369,19 @@ export function CheckboxCardGrid(props: CheckboxCardGridProps) {
 export interface CheckboxGroupProps
   extends ak.RoleProps<"fieldset">, VariantProps<typeof checkboxGroup> {
   /**
-   * Legend content, a custom element, or `CheckboxGroupLabel` props. The legend
-   * names the fieldset. Omitted by default; use `aria-label` or
-   * `aria-labelledby` to name a group without a visible label.
+   * Legend content, a `CheckboxGroupLabel` element, or `CheckboxGroupLabel`
+   * props. The legend names the fieldset. An element of another type replaces
+   * it and names the group only if it renders a `CheckboxGroupLabel` or a
+   * `legend`. Omitted by default; use `aria-label` or `aria-labelledby` to name
+   * a group without a visible label.
    */
   label?: React.ReactNode | CheckboxGroupLabelProps;
   /**
-   * Description content, a custom element, or `CheckboxGroupDescription` props.
-   * It goes right after the legend and describes the group before any
-   * `aria-describedby` passed to the group. Omitted by default.
+   * Description content, a `CheckboxGroupDescription` element, or
+   * `CheckboxGroupDescription` props. It goes right after the legend and
+   * describes the group before any `aria-describedby` passed to the group. An
+   * element of another type replaces it and describes the group only if it
+   * renders a `CheckboxGroupDescription`. Omitted by default.
    */
   description?: React.ReactNode | CheckboxGroupDescriptionProps;
 }

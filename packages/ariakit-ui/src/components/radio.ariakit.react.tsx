@@ -67,15 +67,18 @@ export interface RadioGroupProps
    */
   $gap?: VariantProps<typeof buttonGroup>["$gap"];
   /**
-   * Label content, a custom element, or `RadioGroupLabel` props. The label
-   * names the group. Omitted by default; use `aria-label` or `aria-labelledby`
-   * to name a group without a visible label.
+   * Label content, a `RadioGroupLabel` element, or `RadioGroupLabel` props. The
+   * label names the group. An element of another type replaces it and names the
+   * group only if it renders a `RadioGroupLabel`. Omitted by default; use
+   * `aria-label` or `aria-labelledby` to name a group without a visible label.
    */
   label?: React.ReactNode | RadioGroupLabelProps;
   /**
-   * Description content, a custom element, or `RadioGroupDescription` props. It
-   * goes right after the label and describes the group before any
-   * `aria-describedby` passed to the group. Omitted by default.
+   * Description content, a `RadioGroupDescription` element, or
+   * `RadioGroupDescription` props. It goes right after the label and describes
+   * the group before any `aria-describedby` passed to the group. An element of
+   * another type replaces it and describes the group only if it renders a
+   * `RadioGroupDescription`. Omitted by default.
    */
   description?: React.ReactNode | RadioGroupDescriptionProps;
 }
