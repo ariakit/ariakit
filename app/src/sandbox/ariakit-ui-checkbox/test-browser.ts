@@ -139,7 +139,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await test.expect(unchecked).not.toBeChecked();
     const on = await toggleAndGetTransitions(unchecked);
     test.expect(on.translate?.duration).toBeGreaterThan(0);
-    test.expect(on.scale?.duration).toBeGreaterThan(0);
+    // The thumb keeps its size, so only its position animates.
+    test.expect(on.scale).toBeUndefined();
 
     // A switch checked from the start has a settled thumb. The thumb of the
     // switch above may not have moved yet, and turning it off then would cancel
