@@ -47,6 +47,11 @@ async function getContentBottom(frame: FrameLocator) {
 async function gotoPreviewInCard(page: Page, src: string) {
   await gotoAndSettle(page, "/react/recipes/combobox-group/");
   const iframe = await waitForShownFrame(page, "Combobox Group");
+  await loadInFrame(iframe, src);
+  return iframe;
+}
+
+async function loadInFrame(iframe: Locator, src: string) {
   const frame = await (await iframe.elementHandle())?.contentFrame();
   if (!frame) throw new Error("No frame");
   const previousUrl = frame.url();
@@ -59,7 +64,6 @@ async function gotoPreviewInCard(page: Page, src: string) {
   // the one set here. The wait includes the load event.
   await frame.waitForURL((url) => url.href !== previousUrl);
   await iframe.scrollIntoViewIfNeeded();
-  return iframe;
 }
 
 async function gotoSizePreview(page: Page) {
@@ -274,6 +278,25 @@ test("preview card frames stay at the minimum height of their example", async ({
   // The example is shorter than its minimum height.
   await expect.poll(() => getContentHeight(iframe)).toBeLessThan(16 * 16);
   await expect.poll(() => getHeight(iframe)).toBe(16 * 16);
+});
+
+test("fullscreen preview card frames ignore the height that a Next.js page reports", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await gotoAndSettle(page, "/react/recipes/app-shell/");
+  const iframe = await waitForShownFrame(page, "App Shell");
+  // The Next.js root layout marks the body of every route, so the page reports
+  // the height of its content to any card.
+  await loadInFrame(iframe, "/react/previews/preview-card-size-nextjs/");
+  await expect(
+    query(iframe.contentFrame()).text("Short content"),
+  ).toBeVisible();
+  // The page reports its height on DOMContentLoaded, before the load that
+  // loadInFrame waits for, but the report reaches the card in a message task.
+  // No state shows a report that the card ignored.
+  await flushFrames(page);
+  expect(await getHeight(iframe)).toBe(40 * 16);
 });
 
 test("preview card frames keep the fallback height of a page without a content height", async ({
