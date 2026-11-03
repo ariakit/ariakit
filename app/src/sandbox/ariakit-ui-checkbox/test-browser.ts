@@ -194,9 +194,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     );
   });
 
-  // Hover darkens the selected fill on light surfaces. On dark surfaces, it
-  // keeps the fill, which a darker color would blend into, and lightens the
-  // border.
+  // Hover darkens the selected fill. On dark surfaces, the neutral edge keeps
+  // the darker fill apart from the surface.
   test("shows hover on a checked box @visual", async ({ page, q, visual }) => {
     await forEachColorSchemeOf(page, ["Default"], async (colorScheme) => {
       const box = q.article("Default");
@@ -209,8 +208,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  // On dark surfaces, high contrast already makes the border white, so the fill
-  // has to change.
+  // High contrast raises the edge floor, and hover still darkens the fill.
   test("shows hover on a checked box in high contrast @visual", async ({
     page,
     q,

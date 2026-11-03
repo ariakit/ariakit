@@ -28,8 +28,9 @@ export function getContrastRatio(color: number[], otherColor: number[]) {
 
 /**
  * Returns the background of an element painted over the background of a surface
- * behind it, and the surface background, in 8-bit sRGB. Without a surface, it
- * uses the closest ancestor that paints a background.
+ * behind it, its top border painted over both, and the surface background, in
+ * 8-bit sRGB. Without a surface, it uses the closest ancestor that paints a
+ * background.
  */
 export async function getPaintedBackgrounds(
   element: Locator,
@@ -77,9 +78,17 @@ export async function getPaintedBackgrounds(
         .slice(0, 3)
         .map((value) => value / 255);
     };
-    const color = getComputedStyle(node).backgroundColor;
+    const style = getComputedStyle(node);
+    const color = style.backgroundColor;
+    // A background clipped to the padding box leaves the surface under the
+    // border.
+    const backdrop =
+      style.backgroundClip === "border-box"
+        ? [surfaceColor, color]
+        : [surfaceColor];
     return {
       background: paint(surfaceColor, color),
+      edge: paint(...backdrop, style.borderTopColor),
       surface: paint(surfaceColor),
     };
   }, surfaceColor);
@@ -96,4 +105,14 @@ export async function getBackgroundContrast(
 ) {
   const painted = await getPaintedBackgrounds(element, surface);
   return getContrastRatio(painted.background, painted.surface);
+}
+
+/**
+ * Returns the WCAG contrast between the painted top border of an element and
+ * the background of a surface behind it. Without a surface, it uses the closest
+ * ancestor that paints a background.
+ */
+export async function getEdgeContrast(element: Locator, surface?: Locator) {
+  const painted = await getPaintedBackgrounds(element, surface);
+  return getContrastRatio(painted.edge, painted.surface);
 }

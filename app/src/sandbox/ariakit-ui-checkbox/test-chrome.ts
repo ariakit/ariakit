@@ -1,4 +1,8 @@
-import { getBackgroundContrast } from "#app/test-utils/contrast.ts";
+import { hoverOver } from "#app/test-utils/ariakit-ui.ts";
+import {
+  getBackgroundContrast,
+  getEdgeContrast,
+} from "#app/test-utils/contrast.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
@@ -110,10 +114,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(themes).not.toBeChecked();
   });
 
-  // The fill of a checked box is its boundary, so it keeps 3:1 against the
-  // brand surface around it, as WCAG 1.4.11 asks for the state of a control.
+  // A checked box keeps the brand fill, which matches a brand surface, so its
+  // neutral edge keeps the 3:1 boundary that WCAG 1.4.11 asks for the state of
+  // a control.
   // https://github.com/ariakit/ariakit/issues/8080
-  test("keeps a checked box at 3:1 against a brand layer", async ({
+  test("keeps the brand fill of a checked box and its edge at 3:1 on a brand layer", async ({
     page,
     q,
   }) => {
@@ -123,14 +128,32 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         "Fields on a brand layer",
         "Bordered fields on a brand layer",
       ]) {
+        const message = `${example} in ${colorScheme}`;
         const checkbox = query(q.article(example)).checkbox("Email me");
         await test.expect(checkbox).toBeChecked();
         await test.expect
-          .poll(() => getBackgroundContrast(checkbox), {
-            message: `${example} in ${colorScheme}`,
-          })
+          .poll(() => getEdgeContrast(checkbox), { message })
           .toBeGreaterThanOrEqual(3);
+        test
+          .expect(await getBackgroundContrast(checkbox), message)
+          .toBeCloseTo(1, 1);
       }
     }
+  });
+
+  // Hover moves the checked fill toward a dark surface, so the edge keeps the
+  // 3:1 boundary there.
+  test("keeps the edge of a hovered checked box at 3:1 on a dark surface", async ({
+    page,
+    q,
+  }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
+    const checkbox = query(q.article("Default")).checkbox("Select row");
+    await test.expect(checkbox).toBeChecked();
+    const fill = await getBackgroundContrast(checkbox);
+    await hoverOver(checkbox);
+    // The hover offset applies without a transition, so the fill has moved.
+    test.expect(await getBackgroundContrast(checkbox)).toBeLessThan(fill);
+    test.expect(await getEdgeContrast(checkbox)).toBeGreaterThanOrEqual(3);
   });
 });

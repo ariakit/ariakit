@@ -300,7 +300,7 @@ export default function RadioExamples() {
 
       <Example
         title="Group on a brand layer"
-        description="The checked radio moves its fill away from the brand surface, and the unchecked radios sink into it."
+        description="The checked radio keeps its brand fill, and the unchecked radios sink into the surface. A neutral edge outlines each radio."
         code={`
           <Frame $layer="brand" $rounded="xl" $p={4}>
             <RadioGroup>

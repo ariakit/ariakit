@@ -1051,7 +1051,7 @@ export default function CheckboxExamples() {
 
       <Example
         title="Fields on a brand layer"
-        description="A checked box moves its fill away from the brand surface, and an unchecked box sinks into it."
+        description="A checked box keeps its brand fill, and an unchecked box sinks into the surface. A neutral edge outlines both."
         code={`
           <Frame $layer="brand" $rounded="xl" $p={4} className="grid gap-2">
             <CheckboxField defaultChecked>
