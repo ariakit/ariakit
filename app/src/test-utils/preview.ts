@@ -3,6 +3,7 @@ import { query } from "@ariakit/test/playwright";
 import { invariant } from "@ariakit/utils";
 import { errors } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
 import { previewConfig } from "#app/lib/preview-config.ts";
 import {
   getPreviewFrameworksSync,
@@ -104,7 +105,7 @@ export function withFramework(
   if (!id) {
     throw new Error(`Cannot parse preview id from ${dirname}`);
   }
-  const isNextjs = id.includes("nextjs");
+  const isNextjs = isNextjsPreviewId(id);
   const frameworkNames: readonly Framework[] = isNextjs
     ? ["react"]
     : getPreviewFrameworksSync(dirname);

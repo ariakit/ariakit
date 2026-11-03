@@ -1,0 +1,4 @@
+{
+  "title": "Tabs",
+  "description": "The baseline tabs: Tabs holds the selection, TabList builds folder tabs from its tabs record, and each TabPanel in TabPanels names its tab with tabId. The selected tab joins its panel, and arrow keys move between tabs and select them. Use it as the starting point when each tab has its own content."
+}

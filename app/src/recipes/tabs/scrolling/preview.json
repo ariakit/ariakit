@@ -1,0 +1,4 @@
+{
+  "title": "Scrolling Tab Strip",
+  "description": "More tabs than the width can show: TabList scrolls its strip sideways and cuts the last visible tab at the edge, so people can see that more tabs follow. Keyboard focus and selection scroll the tab into view, including its outer curve. Use it for a long or dynamic list of tabs that must stay on one line."
+}

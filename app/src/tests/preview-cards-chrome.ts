@@ -15,8 +15,10 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function gotoNextjsCard(page: Page) {
-  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
-  const iframe = page.locator('iframe[title="Tab with Next.js App Router"]');
+  await gotoAndSettle(page, "/react/recipes/tabs/");
+  const iframe = page.locator(
+    'iframe[title="Tabs with the Next.js App Router"]',
+  );
   await iframe.scrollIntoViewIfNeeded();
   return iframe.contentFrame();
 }
@@ -27,21 +29,21 @@ test("Next.js preview cards stay in sync after the browser moves their frame", a
 }) => {
   const frame = await gotoNextjsCard(page);
   const preview = query(frame);
-  const card = query(q.region("Tab with Next.js App Router"));
+  const card = query(q.region("Tabs with the Next.js App Router"));
   const address = card.textbox("Address");
 
-  await preview.tab("New").click();
-  await expect(address).toHaveValue("/tab-nextjs/new");
+  await preview.tab("Sent").click();
+  await expect(address).toHaveValue("/tabs/nextjs/sent");
   await expect(card.button("Back")).toBeEnabled();
 
   // This is the traversal of the browser back button, which page.goBack()
   // cannot run because it waits for the top-level page to navigate.
   await frame.locator("body").evaluate(() => history.back());
-  await expect(address).toHaveValue("/tab-nextjs");
-  await expect(preview.tabpanel("Hot")).toBeVisible();
+  await expect(address).toHaveValue("/tabs/nextjs");
+  await expect(preview.tabpanel("Inbox")).toBeVisible();
   await expect(card.button("Back")).toBeDisabled();
   await expect(card.button("Forward")).toBeDisabled();
-  await expect(page).toHaveURL(/\/react\/recipes\/tab-nextjs\/$/);
+  await expect(page).toHaveURL(/\/react\/recipes\/tabs\/$/);
 });
 
 test("Next.js preview cards keep their history after fragment links", async ({
@@ -50,11 +52,11 @@ test("Next.js preview cards keep their history after fragment links", async ({
 }) => {
   const frame = await gotoNextjsCard(page);
   const preview = query(frame);
-  const card = query(q.region("Tab with Next.js App Router"));
+  const card = query(q.region("Tabs with the Next.js App Router"));
   const address = card.textbox("Address");
 
-  await preview.tab("New").click();
-  await expect(address).toHaveValue("/tab-nextjs/new");
+  await preview.tab("Sent").click();
+  await expect(address).toHaveValue("/tabs/nextjs/sent");
 
   // The example has no fragment links, which fire popstate like a traversal.
   await frame.locator("body").evaluate((body) => {
@@ -64,13 +66,13 @@ test("Next.js preview cards keep their history after fragment links", async ({
     body.prepend(link);
   });
   await preview.link("Skip to posts").click();
-  await expect(address).toHaveValue("/tab-nextjs/new#posts");
+  await expect(address).toHaveValue("/tabs/nextjs/sent#posts");
   await expect(card.button("Back")).toBeEnabled();
 
   await card.button("Back").click();
-  await expect(address).toHaveValue("/tab-nextjs");
-  await expect(preview.tabpanel("Hot")).toBeVisible();
-  await expect(page).toHaveURL(/\/react\/recipes\/tab-nextjs\/$/);
+  await expect(address).toHaveValue("/tabs/nextjs");
+  await expect(preview.tabpanel("Inbox")).toBeVisible();
+  await expect(page).toHaveURL(/\/react\/recipes\/tabs\/$/);
 });
 
 test("inline preview cards reload their example from its initial state", async ({
@@ -99,7 +101,7 @@ test("browser preview cards keep the reload button in their navigation", async (
   q,
 }) => {
   await gotoNextjsCard(page);
-  const card = query(q.region("Tab with Next.js App Router"));
+  const card = query(q.region("Tabs with the Next.js App Router"));
   await expect(card.button("Reload")).toBeVisible();
   await expect(card.button("Reload preview")).toHaveCount(0);
 });

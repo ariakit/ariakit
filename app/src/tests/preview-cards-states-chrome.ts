@@ -60,7 +60,7 @@ test("preview cards show a static example that opens its popup", async ({
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
 });
 
-test("compact preview cards take the minimum height of inline previews", async ({
+test("preview card frames at the grid minimum height match inline previews", async ({
   page,
   q,
 }) => {

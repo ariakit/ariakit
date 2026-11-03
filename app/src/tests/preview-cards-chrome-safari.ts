@@ -9,35 +9,37 @@ test("Next.js preview cards follow routes in their browser chrome", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
-  const card = query(q.region("Tab with Next.js App Router"));
+  await gotoAndSettle(page, "/react/recipes/tabs/");
+  const card = query(q.region("Tabs with the Next.js App Router"));
   const address = card.textbox("Address");
-  const iframe = page.locator('iframe[title="Tab with Next.js App Router"]');
+  const iframe = page.locator(
+    'iframe[title="Tabs with the Next.js App Router"]',
+  );
   await iframe.scrollIntoViewIfNeeded();
   const preview = query(iframe.contentFrame());
 
-  await expect(address).toHaveValue("/tab-nextjs");
+  await expect(address).toHaveValue("/tabs/nextjs");
   await expect(card.button("Back")).toBeDisabled();
   await expect(card.button("Forward")).toBeDisabled();
 
-  await preview.tab("New").click();
-  await expect(address).toHaveValue("/tab-nextjs/new");
+  await preview.tab("Sent").click();
+  await expect(address).toHaveValue("/tabs/nextjs/sent");
   await expect(card.link("Open preview in a new tab")).toHaveAttribute(
     "href",
-    /\/tab-nextjs\/new$/,
+    /\/tabs\/nextjs\/sent$/,
   );
 
   await card.button("Back").click();
-  await expect(address).toHaveValue("/tab-nextjs");
-  await expect(preview.tabpanel("Hot")).toBeVisible();
+  await expect(address).toHaveValue("/tabs/nextjs");
+  await expect(preview.tabpanel("Inbox")).toBeVisible();
   await expect(card.button("Back")).toBeDisabled();
 
   await card.button("Forward").click();
-  await expect(address).toHaveValue("/tab-nextjs/new");
-  await expect(preview.tabpanel("New")).toBeVisible();
+  await expect(address).toHaveValue("/tabs/nextjs/sent");
+  await expect(preview.tabpanel("Sent")).toBeVisible();
   await expect(card.button("Forward")).toBeDisabled();
   // The frame history stays inside the frame.
-  await expect(page).toHaveURL(/\/react\/recipes\/tab-nextjs\/$/);
+  await expect(page).toHaveURL(/\/react\/recipes\/tabs\/$/);
 });
 
 // Firefox already applies the color scheme of the docs page to its frames, so
@@ -55,8 +57,10 @@ test("Next.js preview cards apply the site theme to their frames", async ({
     },
     new URL(baseURL ?? "").origin,
   );
-  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
-  const iframe = page.locator('iframe[title="Tab with Next.js App Router"]');
+  await gotoAndSettle(page, "/react/recipes/tabs/");
+  const iframe = page.locator(
+    'iframe[title="Tabs with the Next.js App Router"]',
+  );
   await iframe.scrollIntoViewIfNeeded();
   await expect(iframe.locator("xpath=..")).toHaveAttribute(
     "aria-busy",
@@ -78,9 +82,11 @@ test("Next.js preview cards show the loading state while their frame reloads", a
   page,
   q,
 }) => {
-  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
-  const card = query(q.region("Tab with Next.js App Router"));
-  const iframe = page.locator('iframe[title="Tab with Next.js App Router"]');
+  await gotoAndSettle(page, "/react/recipes/tabs/");
+  const card = query(q.region("Tabs with the Next.js App Router"));
+  const iframe = page.locator(
+    'iframe[title="Tabs with the Next.js App Router"]',
+  );
   await iframe.scrollIntoViewIfNeeded();
   const viewport = iframe.locator("xpath=..");
   await expect(viewport).toHaveAttribute("aria-busy", "false");
@@ -113,8 +119,8 @@ test("Next.js preview cards hide the code label in narrow browser chrome", async
   page,
   q,
 }) => {
-  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
-  const card = query(q.region("Tab with Next.js App Router"));
+  await gotoAndSettle(page, "/react/recipes/tabs/");
+  const card = query(q.region("Tabs with the Next.js App Router"));
   const label = query(card.button("Get code")).text("Get code");
   const getLabelWidth = async () => (await label.boundingBox())?.width;
   await expect.poll(getLabelWidth).toBeGreaterThan(1);

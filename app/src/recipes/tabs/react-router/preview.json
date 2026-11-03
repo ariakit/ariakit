@@ -1,0 +1,4 @@
+{
+  "title": "Tabs with React Router",
+  "description": "Tabs whose selection lives in the route with React Router: each Tab renders a Link that does the navigation, Tabs reads selectedId from useLocation, and a single TabPanel renders the matched child route through Outlet. selectOnMove={false} keeps arrow keys from adding history entries, so Enter or a click follows the focused link, and a Back button over a memory router shows one entry for each selection. Use it for client-side routing with React Router, and use the App Router version in a Next.js app."
+}

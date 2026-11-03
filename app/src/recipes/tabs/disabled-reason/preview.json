@@ -1,0 +1,4 @@
+{
+  "title": "Disabled Tab with a Reason",
+  "description": "A disabled tab that explains itself: Tab stays focusable when disabled, Tooltip shows the reason on hover and keyboard focus, and aria-describedby points to the same reason shown below the tabs. Arrow keys still reach the tab, but it can't be selected. Use it when a tab is not available and people need to know why."
+}

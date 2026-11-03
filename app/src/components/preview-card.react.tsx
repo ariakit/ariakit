@@ -31,6 +31,7 @@ import {
   RotateCwIcon,
 } from "lucide-react";
 import type {
+  CSSProperties,
   KeyboardEvent as ReactKeyboardEvent,
   PointerEvent as ReactPointerEvent,
   ReactNode,
@@ -97,10 +98,11 @@ export interface PreviewCardProps {
    */
   fullscreen?: boolean;
   /**
-   * Gives the iframe the minimum height of an inline preview, for a small
-   * example.
+   * The minimum height of the preview, as a CSS length. An inline preview can
+   * grow past it. An iframe can't size to its page, so it takes this height.
+   * Takes precedence over `fullscreen`.
    */
-  compact?: boolean;
+  minHeight?: string;
   /**
    * Renders browser chrome with navigation buttons and the address of the
    * preview page above the iframe.
@@ -131,7 +133,7 @@ export function PreviewCard({
   href,
   inline,
   fullscreen,
-  compact,
+  minHeight,
   browser,
   children,
   code,
@@ -153,7 +155,14 @@ export function PreviewCard({
     // not to the code below it. The em-based corners of the card stay the same
     // at any page text size with a fixed size. Firefox resolves the radius and
     // padding of an element against its parent font size, so a wrapper sets it.
-    <div className="grid grid-cols-1 grid-rows-[1fr_auto] gap-2 text-base">
+    <div
+      className="grid grid-cols-1 grid-rows-[1fr_auto] gap-2 text-base"
+      style={
+        minHeight
+          ? ({ "--preview-card-min-height": minHeight } as CSSProperties)
+          : undefined
+      }
+    >
       <ak.DisclosureProvider>
         <Frame
           // An interaction anywhere in the window, such as a click on its top
@@ -274,10 +283,8 @@ export function PreviewCard({
               frame={frame}
               title={title}
               href={href}
-              // Browser chrome frames a page that navigates between routes, so
-              // it gets the same full page height as fullscreen previews.
-              fullscreen={fullscreen || browser}
-              compact={compact}
+              fullscreen={fullscreen}
+              minHeight={minHeight}
             />
           )}
         </Frame>
@@ -580,19 +587,18 @@ interface PreviewCardViewportProps {
   title: string;
   href: string;
   fullscreen?: boolean;
-  compact?: boolean;
+  minHeight?: string;
 }
 
 function getFrameHeight({
   fullscreen,
-  compact,
-}: Pick<PreviewCardViewportProps, "fullscreen" | "compact">) {
+  minHeight,
+}: Pick<PreviewCardViewportProps, "fullscreen" | "minHeight">) {
+  // The card sets the variable to the minimum height of the example.
+  if (minHeight) return "h-(--preview-card-min-height)";
   // The Ariakit UI spacing scale follows the font size, so the heights are in
   // rem.
   if (fullscreen) return "h-[40rem]";
-  // Outside a preview grid, an inline preview has no minimum height, so a
-  // compact frame keeps the default height there.
-  if (compact) return "h-(--preview-card-min-height,25rem)";
   return "h-[25rem]";
 }
 
@@ -602,7 +608,7 @@ function PreviewCardViewport({
   title,
   href,
   fullscreen,
-  compact,
+  minHeight,
 }: PreviewCardViewportProps) {
   const { ref, viewportRef, ready, setLoaded, activate } = frame;
   const near = useNearViewport(ref);
@@ -639,7 +645,7 @@ function PreviewCardViewport({
               onLoad={() => setLoaded(true)}
               className={[
                 "block w-full border-0 bg-transparent transition-opacity",
-                getFrameHeight({ fullscreen, compact }),
+                getFrameHeight({ fullscreen, minHeight }),
                 "group-data-loading/preview:opacity-0",
                 // Without scripts, nothing reports the load, so the frame shows
                 // right away.

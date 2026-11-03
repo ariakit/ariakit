@@ -180,8 +180,21 @@ test.each([
 });
 
 test("getNextjsPreviewId handles stripped preview ids", () => {
-  expect(getNextjsPreviewId("/react/previews/tab-nextjs/")).toBe("tab-nextjs");
-  expect(getNextjsPreviewId("/react/previews/tab-nextjs")).toBe("tab-nextjs");
+  expect(getNextjsPreviewId("/react/previews/counter-nextjs/")).toBe(
+    "counter-nextjs",
+  );
+  expect(getNextjsPreviewId("/react/previews/counter-nextjs")).toBe(
+    "counter-nextjs",
+  );
+});
+
+test("getNextjsPreviewId handles Next.js examples nested in a recipe", () => {
+  expect(getNextjsPreviewId("/react/previews/tabs/nextjs/")).toBe(
+    "tabs/nextjs",
+  );
+  expect(getNextjsPreviewId("/react/previews/tabs/nextjs-pages/")).toBe(
+    "tabs/nextjs-pages",
+  );
 });
 
 test("getNextjsPreviewId handles nested ids under a Next.js preview", () => {
