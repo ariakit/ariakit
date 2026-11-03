@@ -75,6 +75,14 @@ const SCHEMES: Scheme[] = [
         near: "ak-edge-[#5c3cff]",
       },
       {
+        label: "dark saturated surface",
+        className: "ak-layer ak-layer-blue-800",
+        warning: "ak-edge-yellow-400",
+        danger: "ak-edge-red-400",
+        vivid: "ak-edge-[oklch(57%_0.355_264)]",
+        near: "ak-edge-[#5c3cff]",
+      },
+      {
         label: "dark danger surface",
         className: "ak-layer ak-layer-red-400",
         warning: "ak-edge-yellow-400",
@@ -105,6 +113,10 @@ function Fields({ surface }: { surface: Surface }) {
       <input
         aria-label={`Transparent edge on ${label}`}
         className={`${FIELD} ak-layer-lighten-6 ak-edge-0 ak-edge-contrast`}
+      />
+      <input
+        aria-label={`Saturated fill on ${label}`}
+        className={`${FIELD} ak-layer-blue-600 ak-edge-0 ak-edge-contrast`}
       />
       <input
         aria-label={`Recessed field on ${label}`}

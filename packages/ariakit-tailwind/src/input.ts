@@ -100,6 +100,10 @@ const LAYER_CONTRAST_FORBIDDEN_MARGIN = 0.005;
 // ratio, and most Firefox cases too, but on a few layers the rounding adds up
 // and Firefox lands slightly under the ratio. The readme documents this.
 const CONTRAST_FLOOR_MARGIN = 1.025;
+// A white edge floor stands in a gray for a fill that isn't gray. That gray
+// keeps this encoded margin under the mean of the fill channels, so the Firefox
+// rounding above doesn't take the edge under the ratio.
+const WHITE_EDGE_BACKDROP_MARGIN = 0.02;
 // Luminance plus the WCAG flare term spans 0.05..1.05, a factor of 21. Its log
 // fills the alpha range evenly in contrast terms. The production CSS build
 // keeps six significant digits, so round here to avoid dev/prod drift.
@@ -1677,27 +1681,36 @@ function getEdgeContrastDeclarations(lighter: boolean) {
   // stage keeps the fill channels and stores the lowest alpha that reaches the
   // target once the edge is painted over a backdrop with this sRGB gray value.
   const encodedTarget = getEncodedSrgb(fn.min(target, 1));
+  // Black scales the backdrop toward 0, and white moves it toward 1, so white
+  // takes the same alpha from the distances to 1.
   const getNeutralAlpha = (encodedBackdrop: Value) => {
-    if (!lighter) {
-      return fn.clamp01(
-        fn.sub(1, fn.div(encodedTarget, fn.max(encodedBackdrop, 1e-6))),
-      );
-    }
-    return fn.clamp01(
-      fn.div(
-        fn.sub(encodedTarget, encodedBackdrop),
-        fn.max(fn.sub(1, encodedBackdrop), 1e-6),
-      ),
-    );
+    const edgeTarget = lighter ? fn.sub(1, encodedTarget) : encodedTarget;
+    const backdrop = lighter ? fn.sub(1, encodedBackdrop) : encodedBackdrop;
+    return fn.clamp01(fn.sub(1, fn.div(edgeTarget, fn.max(backdrop, 1e-6))));
   };
   // A border paints over the fill. Black scales every channel by about the same
-  // factor, so the gray equivalent of the clipped fill works. White raises the
-  // darkest channel the least, so using it as the whole fill gives an alpha
-  // that is never too low. Clipping doesn't change which channel is the
-  // darkest, and the encoding raises a negative value to 0.
+  // factor, so the gray equivalent of the clipped fill works. White moves each
+  // encoded channel toward 1, so the darkest channel as the whole fill gives an
+  // alpha that is never too low, but much higher than a saturated fill needs.
+  // Decoding is convex, so a gray at the luminance-weighted mean of the encoded
+  // channels is never lighter than the painted fill either. The floor takes the
+  // lighter gray, which keeps a near-gray fill on the darkest channel. A ring
+  // field keeps the darkest channel too: its fill term also covers part of the
+  // gap that the ring term below leaves on a saturated parent.
   const fillBackdrop = lighter
-    ? getEncodedSrgb(
-        fn.exp`min(${fn.join([packedRed, packedGreen, packedBlue])})`,
+    ? fn.max(
+        getEncodedSrgb(
+          fn.exp`min(${fn.join([packedRed, packedGreen, packedBlue])})`,
+        ),
+        fn.sub(
+          fn.add(
+            fn.mul(0.2126, getEncodedSrgb(fn.clamp01(packedRed))),
+            fn.mul(0.7152, getEncodedSrgb(fn.clamp01(packedGreen))),
+            fn.mul(0.0722, getEncodedSrgb(fn.clamp01(packedBlue))),
+          ),
+          WHITE_EDGE_BACKDROP_MARGIN,
+          fn.exp`sign(${vars.frameRing})`,
+        ),
       )
     : getEncodedSrgb(getClippedLuminance(packedRed, packedGreen, packedBlue));
   // A ring paints outside the border box, over the parent layer. Only the
