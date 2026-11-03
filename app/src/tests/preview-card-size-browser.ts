@@ -170,8 +170,29 @@ test("preview card frames grow to fit an open popup", async ({ page }) => {
   const preview = query(iframe.contentFrame());
   await expect.poll(() => getHeight(iframe)).toBeLessThan(FALLBACK_HEIGHT);
   const height = await getHeight(iframe);
+  const trigger = preview.button("Open popover");
+  const triggerTop = await trigger.evaluate((element) => {
+    return element.getBoundingClientRect().top;
+  });
+  // The example stays pinned until the frame shrinks back. The observer reads
+  // the trigger position right as the pin goes, before the next frame, so an
+  // example that moved in the still tall frame would show here.
+  const unpinnedTops = await trigger.evaluateHandle((element) => {
+    const marked = element.ownerDocument.querySelectorAll(
+      "[data-preview-content]",
+    );
+    const content = marked[marked.length - 1];
+    if (!(content instanceof HTMLElement)) throw new Error("No content");
+    const tops: number[] = [];
+    const observer = new MutationObserver(() => {
+      if (content.style.paddingTop) return;
+      tops.push(element.getBoundingClientRect().top);
+    });
+    observer.observe(content, { attributes: true, attributeFilter: ["style"] });
+    return tops;
+  });
 
-  await preview.button("Open popover").click();
+  await trigger.click();
   const popover = preview.dialog("Tall popover");
   await expect(popover).toBeVisible();
   await expect.poll(() => getHeight(iframe)).toBeGreaterThan(480);
@@ -189,6 +210,11 @@ test("preview card frames grow to fit an open popup", async ({ page }) => {
   await page.keyboard.press("Escape");
   await expect(popover).not.toBeVisible();
   await expect.poll(() => getHeight(iframe)).toBe(height);
+  // The pin can wait for a short timer after the frame shrinks.
+  await expect.poll(() => unpinnedTops.evaluate((tops) => tops.length)).toBe(1);
+  for (const top of await unpinnedTops.jsonValue()) {
+    expect(top).toBeCloseTo(triggerTop, 0);
+  }
 });
 
 test("preview card frames give a popup that scrolls its content the fallback height", async ({
