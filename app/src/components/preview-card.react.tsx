@@ -99,7 +99,8 @@ export interface PreviewCardProps {
   fullscreen?: boolean;
   /**
    * The minimum height of the preview, as a CSS length. A preview can grow past
-   * it. Takes precedence over `fullscreen`.
+   * it. Takes precedence over the `fullscreen` height, but a `fullscreen`
+   * preview keeps this height instead of growing.
    */
   minHeight?: string;
   /**

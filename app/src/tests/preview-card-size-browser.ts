@@ -1,5 +1,5 @@
 import { query } from "@ariakit/test/playwright";
-import type { Locator, Page } from "@playwright/test";
+import type { FrameLocator, Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
@@ -28,6 +28,16 @@ async function getContentHeight(iframe: Locator) {
         Number.parseFloat(paddingTop) +
         Number.parseFloat(paddingBottom),
     );
+  });
+}
+
+// The content of the Next.js size sandbox ends after the bottom margin of its
+// main element.
+async function getContentBottom(frame: FrameLocator) {
+  return frame.locator("main").evaluate((element) => {
+    const { marginBottom } = getComputedStyle(element);
+    const { bottom } = element.getBoundingClientRect();
+    return bottom + window.scrollY + Number.parseFloat(marginBottom);
   });
 }
 
@@ -94,22 +104,24 @@ test("preview card frames follow content that wraps in a narrower card", async (
   page,
   q,
 }) => {
-  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
-  const iframe = await waitForShownFrame(page, "Tab with Next.js App Router");
-  await iframe.scrollIntoViewIfNeeded();
-  const main = iframe.contentFrame().locator("main");
+  const iframe = await gotoPreviewInCard(
+    page,
+    "/react/previews/preview-card-size-nextjs/",
+  );
+  const frame = iframe.contentFrame();
+  await expect(query(frame).link("Long route")).toBeVisible();
   const getOverflow = async () => {
-    return (await getHeight(main)) - (await getHeight(iframe));
+    return (await getContentBottom(frame)) - (await getHeight(iframe));
   };
   await expect.poll(getOverflow).toBe(0);
   const height = await getHeight(iframe);
   const card = query(q.region("Tab with Next.js App Router", { exact: true }));
   const handle = card.separator("Resize preview");
 
-  // The post titles wrap at the narrower width, so the content grows.
-  await handle.press("Shift+ArrowLeft");
-  await handle.press("Shift+ArrowLeft");
-  await expect.poll(() => getHeight(iframe)).toBeGreaterThan(height);
+  // The paragraph wraps onto several more lines at the narrowest width, with
+  // any font, so the content grows.
+  await handle.press("Home");
+  await expect.poll(() => getHeight(iframe)).toBeGreaterThan(height + 40);
   await expect.poll(getOverflow).toBe(0);
 
   await handle.press("End");
@@ -205,14 +217,8 @@ test("preview card frames follow the routes of a Next.js preview", async ({
   const frame = iframe.contentFrame();
   const preview = query(frame);
   await expect(preview.link("Long route")).toBeVisible();
-  // The content ends after the bottom margin of the main element.
   const getOverflow = async () => {
-    const contentBottom = await frame.locator("main").evaluate((element) => {
-      const { marginBottom } = getComputedStyle(element);
-      const { bottom } = element.getBoundingClientRect();
-      return bottom + window.scrollY + Number.parseFloat(marginBottom);
-    });
-    return contentBottom - (await getHeight(iframe));
+    return (await getContentBottom(frame)) - (await getHeight(iframe));
   };
   await expect.poll(getOverflow).toBe(0);
   const shortHeight = await getHeight(iframe);

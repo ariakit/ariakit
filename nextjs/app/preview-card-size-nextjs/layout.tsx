@@ -9,6 +9,12 @@ export default function Layout({ children }: { children: ReactNode }) {
         <Link href="/preview-card-size-nextjs">Short route</Link>
         <Link href="/preview-card-size-nextjs/long">Long route</Link>
       </nav>
+      <p>
+        This paragraph fits on a few lines in a wide card and wraps onto many
+        more lines in a narrow card, so the height of the page follows the width
+        of the card. Each route below it adds its own content, which changes the
+        height of the page as the routes change.
+      </p>
       {children}
     </main>
   );
