@@ -1,0 +1,4 @@
+{
+  "title": "Custom Feedback",
+  "description": "CopyButton with copiedLabel and failedLabel for messages that name the copied thing, and feedbackDuration to keep them for 4 seconds instead of the default 2. The messages show in the visible label, and the status message announces the same text. Use it when the default Copied and Couldn't copy texts don't say enough, or to translate them."
+}

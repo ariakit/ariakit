@@ -1,0 +1,4 @@
+{
+  "title": "Visible Labels",
+  "description": "CopyButton with children as a visible label, in plain, outlined, bevel, and brand styles through Button variants such as $border, $kind, and $layer. The button has no tooltip, and the feedback text replaces the label in the same grid cell, so the accessible name stays the same and the width changes only after a failed copy. Use it when there is room for text, or when the action needs more than an icon to explain it."
+}
