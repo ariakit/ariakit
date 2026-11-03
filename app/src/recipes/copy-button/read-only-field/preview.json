@@ -1,0 +1,4 @@
+{
+  "title": "Read-Only Field",
+  "description": "An icon CopyButton in an InputSlot at the end of an InputGroup with a read-only Input, so the value stays selectable by hand if the copy fails. The field has a visible label, and the button takes its name and tooltip from label. Use it for invite links, API keys, and other values that people read and copy from a form."
+}

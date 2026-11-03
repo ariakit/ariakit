@@ -1,0 +1,29 @@
+import PreviewCard from "#app/components/preview-card.astro";
+import PreviewGrid from "#app/components/preview-grid.astro";
+import P0, { source as s0 } from "./preview.astro";
+import P1, { source as s1 } from "./visible-label/preview.astro";
+import P2, { source as s2 } from "./read-only-field/preview.astro";
+import P3, { source as s3 } from "./code-block/preview.astro";
+import P4, { source as s4 } from "./read-on-click/preview.astro";
+import P5, { source as s5 } from "./custom-feedback/preview.astro";
+
+<PreviewGrid>
+  <PreviewCard source={s0}>
+    <P0 />
+  </PreviewCard>
+  <PreviewCard source={s1}>
+    <P1 />
+  </PreviewCard>
+  <PreviewCard source={s2}>
+    <P2 />
+  </PreviewCard>
+  <PreviewCard source={s3}>
+    <P3 />
+  </PreviewCard>
+  <PreviewCard source={s4}>
+    <P4 />
+  </PreviewCard>
+  <PreviewCard source={s5}>
+    <P5 />
+  </PreviewCard>
+</PreviewGrid>

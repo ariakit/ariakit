@@ -1,0 +1,124 @@
+import { getWindow } from "@ariakit/utils";
+import { cx } from "clava";
+import { CheckIcon, CopyIcon, XIcon } from "lucide-react";
+import * as React from "react";
+import { hasContent } from "../react-utils/create-render.react.ts";
+import type { ButtonProps } from "./button.ariakit.react.tsx";
+import { Button, ButtonLabel, ButtonSlot } from "./button.ariakit.react.tsx";
+import type { TooltipProps } from "./tooltip.ariakit.react.tsx";
+import { Tooltip } from "./tooltip.ariakit.react.tsx";
+
+export interface CopyButtonProps extends Omit<ButtonProps, "recipe" | "value"> {
+  /**
+   * The text to copy. A function runs on each click, for text that only exists
+   * at that moment, such as `location.href` or the content of an editor. It
+   * must return a string right away, as Safari rejects a copy that waits for a
+   * promise. If it throws, the button reports a failed copy.
+   */
+  value: string | (() => string);
+  /**
+   * The accessible name and the tooltip of a button without children. The
+   * feedback takes their place while it shows.
+   * @default "Copy"
+   */
+  label?: string;
+  /**
+   * The text that reports a successful copy.
+   * @default "Copied"
+   */
+  copiedLabel?: string;
+  /**
+   * The text that reports a failed copy, such as when the page isn't in a
+   * secure context or the browser denies access to the clipboard.
+   * @default "Couldn't copy"
+   */
+  failedLabel?: string;
+  /**
+   * How long the feedback stays, in milliseconds. Each copy restarts the time.
+   * @default 2000
+   */
+  feedbackDuration?: number;
+  /**
+   * Props for the `Tooltip` of a button without children, such as `placement`.
+   * A button with children has no tooltip, because its label is visible.
+   */
+  tooltip?: Omit<TooltipProps, "children" | "text">;
+}
+
+/**
+ * A button that copies text to the clipboard and reports the result with its
+ * icon, its tooltip or label, and its accessible name. Without children, it's
+ * an icon button named by `label`. Children become a visible label, and they
+ * name the button. The `Button` variants work.
+ * @example
+ * <CopyButton value="https://ariakit.com" label="Copy link" />
+ * @example
+ * <CopyButton value="https://ariakit.com">Copy link</CopyButton>
+ */
+export function CopyButton({
+  value,
+  label = "Copy",
+  copiedLabel = "Copied",
+  failedLabel = "Couldn't copy",
+  feedbackDuration = 2000,
+  tooltip,
+  onClick,
+  children,
+  ...props
+}: CopyButtonProps) {
+  // Each copy sets a new object, which restarts the timer below, so a copy
+  // during the feedback of an earlier one gets the full duration too.
+  const [feedback, setFeedback] = React.useState<{ failed: boolean }>();
+  const hasLabel = hasContent(children);
+  const feedbackLabel = feedback?.failed ? failedLabel : copiedLabel;
+  const name = feedback ? feedbackLabel : label;
+  const Icon = feedback ? (feedback.failed ? XIcon : CheckIcon) : CopyIcon;
+
+  React.useEffect(() => {
+    if (!feedback) return;
+    const timeout = setTimeout(() => setFeedback(undefined), feedbackDuration);
+    return () => clearTimeout(timeout);
+  }, [feedback, feedbackDuration]);
+
+  const copy = async (element: Element) => {
+    try {
+      const text = typeof value === "function" ? value() : value;
+      await getWindow(element).navigator.clipboard.writeText(text);
+      setFeedback({ failed: false });
+    } catch {
+      setFeedback({ failed: true });
+    }
+  };
+
+  return (
+    <Tooltip {...tooltip} text={hasLabel ? null : name}>
+      <Button
+        aria-label={hasLabel ? undefined : name}
+        {...props}
+        onClick={(event) => {
+          onClick?.(event);
+          if (event.defaultPrevented) return;
+          void copy(event.currentTarget);
+        }}
+      >
+        <ButtonSlot aria-hidden>
+          <Icon />
+        </ButtonSlot>
+        {hasLabel && (
+          // Both texts share one grid cell, so a copy doesn't resize the button.
+          // The invisible text also leaves the accessible name, so the feedback
+          // names the button while it shows.
+          <ButtonLabel
+            $truncate={false}
+            className="grid text-center *:[grid-area:1/1]"
+          >
+            <span className={cx(feedback && "invisible")}>{children}</span>
+            <span className={cx(!feedback && "invisible")}>
+              {feedbackLabel}
+            </span>
+          </ButtonLabel>
+        )}
+      </Button>
+    </Tooltip>
+  );
+}

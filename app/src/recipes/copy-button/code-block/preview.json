@@ -1,0 +1,4 @@
+{
+  "title": "Code Block",
+  "description": "An icon CopyButton in the header of a code block, with a tooltip placed to the left through the tooltip prop, so it stays over the block. The button copies the whole source in value and keeps the code selectable below it. Use it for documentation snippets and terminal commands."
+}
