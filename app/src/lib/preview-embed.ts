@@ -1030,6 +1030,9 @@ export function setupPreviewEmbed() {
     });
     window.addEventListener("transitionend", scheduleSize, true);
     window.addEventListener("animationend", scheduleSize, true);
+    // A media query can change only a margin or padding that the page measures,
+    // which resizes none of the observed boxes.
+    window.addEventListener("resize", scheduleSize);
   });
 
   const finishOpening = () => {

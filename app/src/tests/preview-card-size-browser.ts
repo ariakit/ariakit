@@ -32,9 +32,9 @@ async function getContentHeight(iframe: Locator) {
 }
 
 // The content of the Next.js size sandbox ends after the bottom margin of its
-// main element.
+// footer element.
 async function getContentBottom(frame: FrameLocator) {
-  return frame.locator("main").evaluate((element) => {
+  return frame.locator("footer").evaluate((element) => {
     const { marginBottom } = getComputedStyle(element);
     const { bottom } = element.getBoundingClientRect();
     return bottom + window.scrollY + Number.parseFloat(marginBottom);
@@ -118,18 +118,48 @@ test("preview card frames follow content that wraps in a narrower card", async (
     return (await getContentBottom(frame)) - (await getHeight(iframe));
   };
   await expect.poll(getOverflow).toBe(0);
+  const card = query(q.region("Combobox Group", { exact: true }));
+  const handle = card.separator("Resize preview");
+  // Below the sm breakpoint, so the footer margin stays the same below.
+  await handle.press("Shift+ArrowLeft");
+  await expect(frame.locator("footer")).toHaveCSS("margin-bottom", "16px");
+  await expect.poll(getOverflow).toBe(0);
+  const height = await getHeight(iframe);
+
+  // The paragraph wraps onto more lines at the narrowest width, with any font,
+  // so the content grows.
+  await handle.press("Home");
+  await expect.poll(() => getHeight(iframe)).toBeGreaterThan(height);
+  await expect.poll(getOverflow).toBe(0);
+
+  await handle.press("Shift+ArrowRight");
+  await expect.poll(() => getHeight(iframe)).toBe(height);
+  await expect.poll(getOverflow).toBe(0);
+});
+
+test("preview card frames follow a margin that changes at a breakpoint", async ({
+  page,
+  q,
+}) => {
+  const iframe = await gotoPreviewInCard(
+    page,
+    "/react/previews/preview-card-size-nextjs/",
+  );
+  const frame = iframe.contentFrame();
+  await expect(query(frame).text("Footer")).toBeVisible();
+  const getOverflow = async () => {
+    return (await getContentBottom(frame)) - (await getHeight(iframe));
+  };
+  await expect.poll(getOverflow).toBe(0);
   const height = await getHeight(iframe);
   const card = query(q.region("Combobox Group", { exact: true }));
   const handle = card.separator("Resize preview");
 
-  // The paragraph wraps onto several more lines at the narrowest width, with
-  // any font, so the content grows.
-  await handle.press("Home");
-  await expect.poll(() => getHeight(iframe)).toBeGreaterThan(height + 40);
-  await expect.poll(getOverflow).toBe(0);
-
-  await handle.press("End");
-  await expect.poll(() => getHeight(iframe)).toBe(height);
+  // The frame gets narrower than the sm breakpoint, which shrinks the bottom
+  // margin of the footer from 4rem to 1rem. The main element keeps its maximum
+  // width, so neither element that the page measures changes size.
+  await handle.press("Shift+ArrowLeft");
+  await expect.poll(() => getHeight(iframe)).toBe(height - 48);
   await expect.poll(getOverflow).toBe(0);
 });
 
@@ -214,6 +244,8 @@ test("preview card frames stop at the screen height for content that fills the v
 test("preview card frames follow the routes of a Next.js preview", async ({
   page,
 }) => {
+  // The long route fits below the maximum height of the frame.
+  await page.setViewportSize({ width: 1280, height: 1000 });
   const iframe = await gotoPreviewInCard(
     page,
     "/react/previews/preview-card-size-nextjs/",
