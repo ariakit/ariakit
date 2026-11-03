@@ -124,14 +124,13 @@ export const choice = cv({
         "ui-choice-on:after:translate-x-(--choice-switch-travel)",
         "ui-choice-mixed:after:translate-x-0",
         // The thumb takes the track's readable text color, because the edge
-        // color can fall below 3:1 against the track. It grows on the fill.
+        // color can fall below 3:1 against the track.
         "after:size-(--slot-icon-size) after:rounded-full after:bg-current",
-        "after:scale-75 ui-choice-on:after:scale-100",
         // Unlike the check, the switch animates both ways, because its thumb
         // travels between two resting positions.
         "motion-safe:transition-[background-color,border-color,color]",
         "motion-safe:duration-150 motion-safe:ease-out",
-        "motion-safe:after:transition-[translate,scale]",
+        "motion-safe:after:transition-[translate]",
         "motion-safe:after:duration-150 motion-safe:after:ease-out",
       ],
     },
