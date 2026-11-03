@@ -98,9 +98,9 @@ export interface PreviewCardProps {
    */
   fullscreen?: boolean;
   /**
-   * The minimum height of the preview, as a CSS length. An inline preview can
-   * grow past it. An iframe can't size to its page, so it takes this height.
-   * Takes precedence over `fullscreen`.
+   * The minimum height of the preview, as a CSS length. A preview can grow past
+   * it. Takes precedence over the `fullscreen` height, but a `fullscreen`
+   * preview keeps this height instead of growing.
    */
   minHeight?: string;
   /**
@@ -140,7 +140,9 @@ export function PreviewCard({
 }: PreviewCardProps) {
   // Whether the preview scrolls with the wheel and touches instead of the page.
   const [active, setActive] = useState(false);
-  const frame = usePreviewFrame(href, setActive);
+  // An app shell fills its frame, so a fullscreen frame keeps its height.
+  const fitContent = !fullscreen;
+  const frame = usePreviewFrame(href, setActive, fitContent);
   // An inline example renders again from its initial state, and a frame loads
   // its current page again.
   const reload = () => {
@@ -182,10 +184,7 @@ export function PreviewCard({
           $p={1}
           className={[
             "grid grid-cols-1 grid-rows-[auto_minmax(0,1fr)]",
-            // A preview grid limits the window height, and the viewport row
-            // gives up the difference. A frame has a fixed height that the
-            // limit would cut off, so only inline previews take it.
-            inline ? "max-h-(--preview-card-max-height,none)" : "",
+            getMaxHeight({ inline, popupRoom: frame.popupRoom }),
           ].join(" ")}
         >
           <Frame
@@ -296,22 +295,46 @@ export function PreviewCard({
   );
 }
 
+interface GetMaxHeightParams {
+  inline?: boolean;
+  popupRoom: boolean;
+}
+
+/**
+ * Returns the class that limits the window height. A preview grid sets the
+ * limit, and the viewport row gives up the difference, so a tall example
+ * scrolls inside its card.
+ */
+function getMaxHeight({ inline, popupRoom }: GetMaxHeightParams) {
+  if (inline) return "max-h-(--preview-card-max-height,none)";
+  // The limit would clip a popup that needs room below the example.
+  if (popupRoom) return "";
+  // Content whose height follows the frame, such as an element with the height
+  // of the viewport, would grow the frame with each height that its page
+  // reports. Outside a preview grid, a window stops at the screen height.
+  return "max-h-(--preview-card-max-height,100svh)";
+}
+
 type PreviewFrame = ReturnType<typeof usePreviewFrame>;
 
 /**
  * Follows the location and history of the preview page in the iframe, and sends
  * it the site theme, the viewport radius, and navigation commands. Reports
- * whether the page scrolls to `onActiveChange`.
+ * whether the page scrolls to `onActiveChange`. Unless `fitContent` is false,
+ * the frame takes the height that the page reports.
  */
 function usePreviewFrame(
   href: string,
   onActiveChange: (active: boolean) => void,
+  fitContent: boolean,
 ) {
   const ref = useRef<HTMLIFrameElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const [location, setLocation] = useState(href);
   const [loaded, setLoaded] = useState(false);
   const [opening, setOpening] = useState(false);
+  // Whether the page reports room for a popup that didn't fit the frame.
+  const [popupRoom, setPopupRoom] = useState(false);
   const [history, setHistory] = useState({
     canGoBack: false,
     canGoForward: false,
@@ -353,6 +376,22 @@ function usePreviewFrame(
         scrollPage(iframe, event.data);
         return;
       }
+      if (event.data.action === "size") {
+        if (!fitContent) return;
+        // The class height stays as the fallback for pages that don't report a
+        // height. A popup that scrolls its content gets at least the fallback
+        // height. React renders no style here. See the iframe below.
+        const { height, scrollingPopup } = event.data;
+        if (height == null) {
+          iframe.style.removeProperty("height");
+        } else if (scrollingPopup) {
+          iframe.style.height = `max(${height}px, var(--preview-frame-height))`;
+        } else {
+          iframe.style.height = `${height}px`;
+        }
+        setPopupRoom(event.data.popupRoom);
+        return;
+      }
       // The card effect below follows the activity of the page.
       if (event.data.action === "active") return;
       // Each new document in the frame reports its location while it parses, so
@@ -382,7 +421,7 @@ function usePreviewFrame(
       window.removeEventListener("message", onMessage);
       unsubscribeTheme();
     };
-  }, []);
+  }, [fitContent]);
 
   const send = (action: PreviewCommandMessage["action"]) => {
     sendToFrame(ref.current, action);
@@ -503,6 +542,7 @@ function usePreviewFrame(
     location,
     ready,
     setLoaded,
+    popupRoom,
     history,
     send,
     activate,
@@ -590,16 +630,23 @@ interface PreviewCardViewportProps {
   minHeight?: string;
 }
 
-function getFrameHeight({
+/**
+ * Returns the class that sets the fallback height of a frame, for a page that
+ * doesn't report the height of its content, such as a page with an app shell or
+ * an open popup, or a page from an older Next.js deploy.
+ */
+function getFallbackHeight({
   fullscreen,
   minHeight,
 }: Pick<PreviewCardViewportProps, "fullscreen" | "minHeight">) {
   // The card sets the variable to the minimum height of the example.
-  if (minHeight) return "h-(--preview-card-min-height)";
+  if (minHeight) {
+    return "[--preview-frame-height:var(--preview-card-min-height)]";
+  }
   // The Ariakit UI spacing scale follows the font size, so the heights are in
   // rem.
-  if (fullscreen) return "h-[40rem]";
-  return "h-[25rem]";
+  if (fullscreen) return "[--preview-frame-height:40rem]";
+  return "[--preview-frame-height:25rem]";
 }
 
 function PreviewCardViewport({
@@ -625,16 +672,24 @@ function PreviewCardViewport({
           $edgeRaw={active}
           $layer="canvas"
           $p="none"
-          className="grid grid-cols-1 overflow-clip"
+          className={[
+            // The rows pass a limited window height down to the frame.
+            "grid grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-clip",
+            // A preview grid gives inline previews and frames the same minimum
+            // height. On a screen shorter than it, the viewport extends past
+            // the limited window, so the frame inside isn't clipped.
+            "min-h-(--preview-card-min-height,auto)",
+          ].join(" ")}
         >
           <div
             data-loading={ready ? undefined : ""}
             aria-busy={!ready}
-            className="group/preview grid grid-cols-1 *:[grid-area:1/1]"
+            className="group/preview grid grid-cols-1 grid-rows-[minmax(0,1fr)] *:[grid-area:1/1]"
           >
             {/* The page script in preview-card.astro sets the width of the frame,
-                often before the card hydrates. React renders no style here, so
-                the style attribute is not a mismatch. */}
+                often before the card hydrates, and the card sets its height from
+                the page. React renders no style here, so the style attribute is
+                not a mismatch. */}
             <iframe
               ref={ref}
               suppressHydrationWarning
@@ -645,7 +700,15 @@ function PreviewCardViewport({
               onLoad={() => setLoaded(true)}
               className={[
                 "block w-full border-0 bg-transparent transition-opacity",
-                getFrameHeight({ fullscreen, minHeight }),
+                getFallbackHeight({ fullscreen, minHeight }),
+                "h-(--preview-frame-height)",
+                // A frame taller than a limited window shrinks to its row, and
+                // its page scrolls in it.
+                "max-h-full",
+                // A frame fills a taller viewport, such as at its minimum height
+                // or in a taller grid row, so its page centers the example in
+                // the card.
+                "min-h-full",
                 "group-data-loading/preview:opacity-0",
                 // Without scripts, nothing reports the load, so the frame shows
                 // right away.

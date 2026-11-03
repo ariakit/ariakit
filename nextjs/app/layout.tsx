@@ -26,7 +26,22 @@ export default function RootLayout({
             inactive preview card. */}
         <script dangerouslySetInnerHTML={{ __html: previewEmbedScript }} />
       </head>
-      <body className={inter.variable}>{children}</body>
+      <body className={inter.variable}>
+        {/* Centers the page in the viewport, like the Astro preview page, so
+            the examples don't center themselves. The preview embed script fits
+            the preview card frame to the content of this element. The padding
+            and centering live here because the Ariakit scroll lock sets the
+            padding and position of the body. The maximum width of the children
+            has no specificity, so an example can set its own. A fullscreen
+            preview would need to skip this, but the root layout can't tell
+            which preview it renders. */}
+        <div
+          data-preview-content=""
+          className="flex min-h-dvh flex-col items-center-safe justify-center-safe p-8 [:where(&>*)]:max-w-full"
+        >
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
