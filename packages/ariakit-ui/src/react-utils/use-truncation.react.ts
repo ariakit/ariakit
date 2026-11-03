@@ -70,8 +70,11 @@ function isTruncated(element: HTMLElement) {
  * content. It measures again when the element resizes, when its text or
  * attributes change, and when a font loads. New text, a class, a style, or a
  * font can change the size of the text and keep the size of an element that
- * cuts it off. A hidden element, such as one with `display: none`, counts as if
- * it weren't rendered.
+ * cuts it off. An element without layout boxes, such as one with
+ * `display: none`, counts as if it weren't rendered. An element with
+ * `visibility: hidden` keeps its boxes and still counts: its visibility can
+ * change through an element around it or a state such as hover, and nothing
+ * here would measure it again.
  */
 export function useTruncation(element: HTMLElement | null) {
   const context = React.useContext(TruncationContext);
