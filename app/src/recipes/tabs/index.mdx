@@ -1,0 +1,34 @@
+---
+title: Tabs
+shape: control
+---
+
+## Overview
+
+These examples build tabs with the Ariakit UI `Tabs` components. Tabs show one panel of related content at a time, in the same place on the page. The arrow keys move between tabs, and the selected tab shows its panel.
+
+The gallery starts with folder tabs, where the selected tab joins its panel. Then it shows tabs that filter one list, underlined tabs, a segmented control, and equal-width tabs around forms. The other examples show a strip that scrolls, manual selection for slow panels, and a disabled tab with a reason. The last two examples keep the selected tab in the URL, with React Router and with the Next.js App Router.
+
+## Components
+
+`Tabs` holds the selection and draws the frame around the tabs and panels. `TabList` is the strip. It takes a `tabs` prop with a record or an array, or `Tab` elements as children. `TabPanels` is the surface around the panels, and each `TabPanel` names its tab with `tabId`.
+
+Give each tab an `id` that is unique on the page, and pass `defaultSelectedId` or `selectedId`. Without one of these props, no tab is selected until the tabs mount, so the first paint on the server shows no selected tab.
+
+`TabPanel` with the `single` prop follows the selected tab, so one panel can show the content of each tab. Use it when the tabs are views of the same data, as in the Filtered List example. Otherwise, use one panel for each tab. Hidden panels stay mounted, so they keep their state, as in the Equal-Width Tabs example.
+
+The `$kind` prop of `Tab` sets the look of the tab: `folder`, `flat`, or `bevel`. The `bar` prop adds a bar that marks a selected flat or bevel tab. `TabList` with `$kind="segmented"` is a control that stands on its own, and it goes in a `TabProvider` instead of `Tabs`. Tabs written as children need the same `$kind`.
+
+`TabSlot` puts an icon or a badge next to a label in a `TabLabel`. `TabSeparator` draws a pipe or a chevron between tabs.
+
+In the React Router example, each `Tab` renders a `Link` through the `render` prop, and `Tabs` reads the selected tab from `useLocation`. Only the links navigate, because a `setSelectedId` that also navigates adds a second history entry for each click. `selectOnMove={false}` keeps the arrow keys from adding history entries, so Enter or a click follows the focused link. The example uses a memory router, so the route stays in the preview and a link opened in a new tab has no page. An app can use `BrowserRouter` or `HashRouter` instead.
+
+The Next.js example works in the same way, with a Next.js `Link` and `usePathname`. Each tab is a nested page that renders on the server, and the layout around it stays mounted, so only the panel content changes. Use the address bar above the preview to see the route change when you select a tab.
+
+## Accessibility
+
+`TabList` needs a name, such as `aria-label`. A tab list can hold only tabs and separators hidden from screen readers, so add `aria-hidden` to each `TabSeparator`. A tab also can't hold another control, so put other controls outside the list.
+
+By default, moving to a tab with the arrow keys selects it. Set `selectOnMove` to `false` when a selection starts slow work, so a person who presses an arrow key three times does not start three requests.
+
+Disabled tabs stay focusable, so arrow keys can reach them and a tooltip can show the reason. Screen readers need the same reason, so point `aria-describedby` to visible text, as in the Disabled Tab example.

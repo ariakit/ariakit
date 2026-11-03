@@ -31,6 +31,7 @@
     "./components/checkbox.ariakit.react": "./src/components/checkbox.ariakit.react.tsx",
     "./components/code.ariakit.react": "./src/components/code.ariakit.react.tsx",
     "./components/combobox.ariakit.react": "./src/components/combobox.ariakit.react.tsx",
+    "./components/copy-button.ariakit.react": "./src/components/copy-button.ariakit.react.tsx",
     "./components/dialog.ariakit.react": "./src/components/dialog.ariakit.react.tsx",
     "./components/disclosure.ariakit.react": "./src/components/disclosure.ariakit.react.tsx",
     "./components/frame.ariakit.react": "./src/components/frame.ariakit.react.tsx",

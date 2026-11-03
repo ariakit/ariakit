@@ -9,8 +9,8 @@ import {
 } from "./preview-cards-helpers.ts";
 
 const SIZE_PREVIEW = "/react/previews/popover-preview-card-size/";
-// The height of a frame in browser chrome whose page reports no height.
-const FALLBACK_HEIGHT = 40 * 16;
+// The height of a frame whose page reports no height, outside a preview grid.
+const FALLBACK_HEIGHT = 25 * 16;
 
 async function getHeight(locator: Locator) {
   return locator.evaluate((element) => element.getBoundingClientRect().height);
@@ -41,12 +41,12 @@ async function getContentBottom(frame: FrameLocator) {
   });
 }
 
-// The card of the Next.js recipe is outside a preview grid, so its frame has no
-// minimum height and no grid row to fill. The frame loads another preview, as
-// it does after a link in the page.
+// The Combobox Group card is outside a preview grid and has no minimum height,
+// so its frame has no floor and no grid row to fill. The frame loads another
+// preview, as it does after a link in the page.
 async function gotoPreviewInCard(page: Page, src: string) {
-  await gotoAndSettle(page, "/react/recipes/tab-nextjs/");
-  const iframe = await waitForShownFrame(page, "Tab with Next.js App Router");
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
+  const iframe = await waitForShownFrame(page, "Combobox Group");
   const frame = await (await iframe.elementHandle())?.contentFrame();
   if (!frame) throw new Error("No frame");
   const previousUrl = frame.url();
@@ -115,7 +115,7 @@ test("preview card frames follow content that wraps in a narrower card", async (
   };
   await expect.poll(getOverflow).toBe(0);
   const height = await getHeight(iframe);
-  const card = query(q.region("Tab with Next.js App Router", { exact: true }));
+  const card = query(q.region("Combobox Group", { exact: true }));
   const handle = card.separator("Resize preview");
 
   // The paragraph wraps onto several more lines at the narrowest width, with
@@ -231,6 +231,32 @@ test("preview card frames follow the routes of a Next.js preview", async ({
   await preview.link("Short route").click();
   await expect(preview.text("Short content")).toBeVisible();
   await expect.poll(() => getHeight(iframe)).toBe(shortHeight);
+});
+
+test("preview card frames follow the minimum height of a Next.js example that centers its content", async ({
+  page,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/tabs/");
+  const title = "Tabs with the Next.js App Router";
+  // The frame loads once it comes near the viewport.
+  await page.locator(`iframe[title="${title}"]`).scrollIntoViewIfNeeded();
+  const iframe = await waitForShownFrame(page, title);
+  // The layout of the example centers it in the viewport, so the frame takes
+  // its minimum height of 18rem.
+  await expect.poll(() => getHeight(iframe)).toBe(18 * 16);
+
+  // A larger text size raises the minimum height. A page that reported the
+  // height of its viewport would keep the frame at the larger height after the
+  // text size goes back.
+  const setFontSize = (fontSize: string) => {
+    return page.evaluate((value) => {
+      document.documentElement.style.fontSize = value;
+    }, fontSize);
+  };
+  await setFontSize("24px");
+  await expect.poll(() => getHeight(iframe)).toBe(18 * 24);
+  await setFontSize("");
+  await expect.poll(() => getHeight(iframe)).toBe(18 * 16);
 });
 
 test("preview card frames stay at the minimum height of their example", async ({

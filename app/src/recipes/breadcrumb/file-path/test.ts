@@ -1,9 +1,9 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-test("confirms the copy in a status message", async () => {
+test("confirms the copy in the name of the button", async () => {
   await click(q.button("Copy path"));
-  expect(q.status()).toHaveTextContent("Copied");
+  expect(await q.button.wait("Copied")).toBeInTheDocument();
 });
 
 test("links each folder and marks the file", () => {

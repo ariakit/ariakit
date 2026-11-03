@@ -29,7 +29,7 @@ The parts are also available for a shared tooltip, a custom store, or another sp
 
 Tooltips are visual. The tooltip does not name or describe its anchor for screen readers, so the anchor needs its own accessible name, such as `aria-label` on an icon button. When a tooltip has information that users need, give the anchor the same information as accessible text. The Publish button of the Disabled Action example uses `aria-describedby` for it, and so do the links of the Exact Timestamp example. The anchors with shortcuts have `aria-keyshortcuts`.
 
-Touch screens don't show tooltips, so a tooltip must not have the only copy of important information. The Disabled Action example also shows its reason below the field, and the Copy Feedback example also reports the copy in a status message.
+Touch screens don't show tooltips, so a tooltip must not have the only copy of important information. The Disabled Action example also shows its reason below the field, and the Copy Feedback example also reports the copy with its icon and the name of the button.
 
 The content of a tooltip stays until the user dismisses it, and the pointer can move over it without hiding it, as WCAG requires for content that shows on hover or focus ([Content on Hover or Focus](https://www.w3.org/WAI/WCAG22/Understanding/content-on-hover-or-focus.html)). Escape hides the tooltip and keeps focus on the anchor.
 

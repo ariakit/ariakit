@@ -136,7 +136,9 @@ export type PreviewFrameMessage =
  *   sends.
  * - A page with `data-preview-content` on an element reports the height of the
  *   content of that element, plus the room that its open popups need, so the
- *   card fits the frame to the page.
+ *   card fits the frame to the page. A nested element with the attribute, such
+ *   as the main element of a Next.js layout, replaces the body that the root
+ *   layout marks.
  *
  * This function is serialized into an inline script, so it must not reference
  * anything outside its own body.
@@ -926,6 +928,13 @@ export function setupPreviewEmbed() {
     };
   };
 
+  // The innermost marked element, so a layout can mark an element that centers
+  // the example without the height of the viewport.
+  const getContent = () => {
+    const elements = document.querySelectorAll("[data-preview-content]");
+    return elements[elements.length - 1];
+  };
+
   let reportedHeight: number | null | undefined;
   let reportedScrollingPopup = false;
   let reportedPopupRoom = false;
@@ -944,7 +953,7 @@ export function setupPreviewEmbed() {
     );
   };
   const getFrameHeight = () => {
-    const content = document.querySelector("[data-preview-content]");
+    const content = getContent();
     if (!(content instanceof HTMLElement)) return null;
     const popups = getOpenPopups();
     if (!popups.length) {
@@ -1011,7 +1020,7 @@ export function setupPreviewEmbed() {
   // flow, which the size observer can't report.
   document.addEventListener("DOMContentLoaded", () => {
     updateSize();
-    if (!document.querySelector("[data-preview-content]")) return;
+    if (!getContent()) return;
     const mutationObserver = new MutationObserver(scheduleSize);
     mutationObserver.observe(document.body, {
       childList: true,

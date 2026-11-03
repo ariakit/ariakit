@@ -17,9 +17,6 @@
   --spacing: 0.25em;
   --spacing-px: 1px;
 
-  --duration-tabs: 100ms;
-  --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
-
   --duration-bar: 250ms;
   --ease-bar: cubic-bezier(0.2, 0, 0, 1);
 
@@ -124,13 +121,6 @@ body > * {
   syntax: "<number>";
   inherits: false;
   initial-value: 1;
-}
-
-/* Registration lets folder curves animate their outer corner radius. */
-@property --folder-radius {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 0px;
 }
 
 @keyframes ui-tabs-round-s {
@@ -2162,9 +2152,6 @@ body > * {
       height: calc(var(--folder-radius) + var(--folder-over));
       /* Hide an empty extra band and stop it at the seam. */
       background-size: min(var(--folder-extra, 0px) * 1000000, 100%) var(--folder-radius), auto, auto;
-      transition-property: --folder-radius;
-      transition-duration: var(--duration-tabs);
-      transition-timing-function: var(--ease-tabs);
     }
 
     &::before {

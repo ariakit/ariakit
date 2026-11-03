@@ -1,0 +1,4 @@
+{
+  "title": "Text Read on Click",
+  "description": "CopyButton with a function in value that reads an uncontrolled textarea through a ref on each click, so the page doesn't need to rerender as the person types. The function runs only when the button copies, and it can read browser values such as location.href. Use it when the text is costly to build, lives outside of state, or doesn't exist on the server."
+}

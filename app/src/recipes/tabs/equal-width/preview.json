@@ -1,0 +1,4 @@
+{
+  "title": "Equal-Width Tabs Around Forms",
+  "description": "Sign-in and sign-up forms in folder tabs: $layout=\"stretch\" on TabList gives both tabs the same width across the strip, and each form has its own TabPanel. Hidden panels stay mounted, so each form keeps its values when the selected tab changes. Use it when a card has a few tabs that should fill its width and the panels hold state."
+}

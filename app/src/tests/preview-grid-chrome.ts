@@ -42,6 +42,32 @@ test("preview grid cards of similar heights line up", async ({ page, q }) => {
   );
 });
 
+test("a preview grid browser card fills one column at its minimum height", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 1400 });
+  await gotoAndSettle(page, "/react/recipes/tabs/");
+  const getBox = (locator: Locator) =>
+    locator.evaluate((element) => {
+      const { top, width, height } = element.getBoundingClientRect();
+      return { top, width, height };
+    });
+  const nextjs = q.region("Tabs with the Next.js App Router", { exact: true });
+  const router = q.region("Tabs with React Router", { exact: true });
+  await nextjs.scrollIntoViewIfNeeded();
+  const nextjsBox = await getBox(nextjs);
+  const routerBox = await getBox(router);
+  expect(nextjsBox.width).toBeCloseTo(routerBox.width, 0);
+  expect(nextjsBox.top).toBeCloseTo(routerBox.top, 0);
+  // The example asks for 18rem in its preview.json, which differs from the
+  // 16rem minimum of the grid.
+  const iframe = page.locator(
+    'iframe[title="Tabs with the Next.js App Router"]',
+  );
+  expect((await getBox(iframe)).height).toBeCloseTo(18 * 16, 0);
+});
+
 test("a preview grid card that would sit alone takes the whole row", async ({
   page,
   q,

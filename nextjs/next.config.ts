@@ -19,6 +19,18 @@ const config: NextConfig = {
     root: join(import.meta.dirname, ".."),
   },
 
+  // The Tabs recipe keeps this example at a nested route now, so shared preview
+  // links still reach it.
+  async redirects() {
+    return [
+      {
+        source: "/tab-nextjs/:path*",
+        destination: "/tabs/nextjs",
+        permanent: true,
+      },
+    ];
+  },
+
   // Allow cross-origin iframe embedding from the Astro app
   async headers() {
     return [

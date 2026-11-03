@@ -1,0 +1,4 @@
+{
+  "title": "Manual Selection for Slow Panels",
+  "description": "Tabs whose panels load data on selection: selectOnMove={false} makes arrow keys move focus only, so Enter, Space, or a click selects the tab, and the single TabPanel shows a skeleton with aria-busy until the data arrives. Use it when each selection starts a request or other slow work, and keep the default when panels show at once."
+}

@@ -287,7 +287,6 @@ export function PreviewCard({
               href={href}
               fullscreen={fullscreen}
               minHeight={minHeight}
-              browser={browser}
             />
           )}
         </Frame>
@@ -614,7 +613,6 @@ interface PreviewCardViewportProps {
   href: string;
   fullscreen?: boolean;
   minHeight?: string;
-  browser?: boolean;
 }
 
 /**
@@ -625,16 +623,14 @@ interface PreviewCardViewportProps {
 function getFallbackHeight({
   fullscreen,
   minHeight,
-  browser,
-}: Pick<PreviewCardViewportProps, "fullscreen" | "minHeight" | "browser">) {
+}: Pick<PreviewCardViewportProps, "fullscreen" | "minHeight">) {
   // The card sets the variable to the minimum height of the example.
   if (minHeight) {
     return "[--preview-frame-height:var(--preview-card-min-height)]";
   }
   // The Ariakit UI spacing scale follows the font size, so the heights are in
-  // rem. Browser chrome frames a page that navigates between routes, so it
-  // falls back to a full page height too.
-  if (fullscreen || browser) return "[--preview-frame-height:40rem]";
+  // rem.
+  if (fullscreen) return "[--preview-frame-height:40rem]";
   return "[--preview-frame-height:25rem]";
 }
 
@@ -645,7 +641,6 @@ function PreviewCardViewport({
   href,
   fullscreen,
   minHeight,
-  browser,
 }: PreviewCardViewportProps) {
   const { ref, viewportRef, ready, setLoaded, activate } = frame;
   const near = useNearViewport(ref);
@@ -683,7 +678,7 @@ function PreviewCardViewport({
               onLoad={() => setLoaded(true)}
               className={[
                 "block w-full border-0 bg-transparent transition-opacity",
-                getFallbackHeight({ fullscreen, minHeight, browser }),
+                getFallbackHeight({ fullscreen, minHeight }),
                 "h-(--preview-frame-height)",
                 // Content whose height follows the frame, such as an element
                 // with the height of the viewport, would grow the frame with

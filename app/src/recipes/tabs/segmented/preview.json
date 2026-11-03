@@ -1,0 +1,4 @@
+{
+  "title": "Segmented Tabs",
+  "description": "A segmented control that selects panels: TabProvider shares the selection without a frame, TabList with $kind=\"segmented\" stands on its own above the stat cards, and $layout=\"stretch\" gives each tab the same width. Use it when the panels should not join the tabs, and prefer a segmented radio group when an option only sets a form value."
+}

@@ -1,0 +1,30 @@
+---
+title: Copy Button
+shape: control
+---
+
+## Overview
+
+These examples build copy-to-clipboard buttons with the Ariakit UI `CopyButton` component. A click copies a text and reports the result. After a short time, the button offers to copy again.
+
+The gallery starts with an icon button beside a code. Then it shows buttons with visible labels, a button inside a read-only field, and a button on a code block. The last two examples read the text at the moment of the click and change the feedback.
+
+## Components
+
+`CopyButton` extends `Button` and has no style recipe of its own, so the `button` variants work. Set `$kind`, `$layer`, `$border`, or `$size` as you would on a `Button`. It replaces the native `value` attribute of the button, and it has no `recipe` prop.
+
+Set the text to copy in `value`. A function runs on each click, for text that only exists at that moment, such as `location.href` or the content of an editor. It must return a string right away, because Safari rejects a copy that waits for a promise. If you need to load the text first, load it before the person can click the button.
+
+Without children, the button shows only an icon. `label` names it and goes in its tooltip, and it defaults to "Copy". Set `tooltip` to pass props to the `Tooltip`, such as `placement`.
+
+Children become a visible label, and the button has no tooltip. The feedback shows in place of the label. Both texts share one grid cell, so the button keeps its width after a copy. A failed copy can change the width, because its text takes the place of the copied text in the cell. Both texts are centered in the cell, so a label shorter than the copied text, such as "Copy", keeps room for that text on both sides.
+
+The icon changes to a check after a copy and to an X after a failed copy. `copiedLabel` and `failedLabel` set the feedback text, and `feedbackDuration` sets how long it stays. Each copy restarts this time.
+
+## Accessibility
+
+The feedback also becomes the accessible name of the button while it shows, so a screen reader can read the result on the focused button. Screen readers differ in how they announce a name change, so some may not read it. Touch screens don't show tooltips, so on an icon button the icon is the only visible feedback there.
+
+Name the button after what it copies when the page has more than one, such as "Copy link" or "Copy API key". A name of "Copy" alone tells a screen reader user nothing about the target. To keep a short visible label, put the rest of the name in visually hidden text, as in the Visible Labels example. A name from `aria-label` stays during the feedback, so screen readers don't get the result from it.
+
+The Clipboard API needs a secure context and permission from the browser. If the browser refuses, the button reports the failure. Keep the text visible and selectable when you can, so that people can still copy it by hand.

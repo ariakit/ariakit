@@ -77,7 +77,10 @@ const isReact18 = reactVersion.startsWith("18.");
 
 // Tests of recipes that require React 19, such as through React Router 8. The
 // React 18 suite skips them.
-const react19Tests = ["app/src/recipes/navigation/**"];
+const react19Tests = [
+  "app/src/recipes/navigation/**",
+  "app/src/recipes/tabs/react-router/**",
+];
 
 function getReactTestPatterns() {
   const { include, exclude } = getProjectTestPatterns("react");
