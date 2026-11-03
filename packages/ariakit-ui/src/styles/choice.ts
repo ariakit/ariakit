@@ -52,7 +52,7 @@ export const choice = cv({
     // which can match the canvas. Set the system text color for it to inherit.
     "forced-colors:text-[CanvasText]",
     // A custom child replaces the drawn mark and uses the same size and state.
-    "[--slot-icon-size:calc(var(--size)*0.7)] [&>svg]:stroke-[2.5]",
+    "[&>svg]:stroke-[2.5]",
     "has-[>*]:after:hidden not-ui-choice-on:*:hidden!",
     // The selected fill keeps the brand color on every surface. Like the empty
     // box, a neutral edge keeps the 3:1 boundary. It has no alpha of its own,
@@ -170,6 +170,15 @@ export const choice = cv({
       if (defaultValue === "transparent") return true;
       return defaultValue;
     },
+  },
+  refine({ variants, addClass }) {
+    // The tip of a check points at a corner, which a round box cuts off. There,
+    // a smaller check keeps about the room that a square box gives its sides.
+    if (variants.$mark === "check" && variants.$rounded === "full") {
+      addClass("[--slot-icon-size:calc(var(--size)*0.6)]");
+      return;
+    }
+    addClass("[--slot-icon-size:calc(var(--size)*0.7)]");
   },
 });
 
