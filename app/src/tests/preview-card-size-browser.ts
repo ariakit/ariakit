@@ -161,6 +161,11 @@ test("preview card frames follow a margin that changes at a breakpoint", async (
   await handle.press("Shift+ArrowLeft");
   await expect.poll(() => getHeight(iframe)).toBe(height - 48);
   await expect.poll(getOverflow).toBe(0);
+
+  // Back above the breakpoint, the margin grows to 4rem again.
+  await handle.press("Shift+ArrowRight");
+  await expect.poll(() => getHeight(iframe)).toBe(height);
+  await expect.poll(getOverflow).toBe(0);
 });
 
 test("preview card frames grow to fit an open popup", async ({ page }) => {
