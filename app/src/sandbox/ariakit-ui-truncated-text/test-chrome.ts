@@ -18,6 +18,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await link.scrollIntoViewIfNeeded();
     await link.hover();
     await test.expect(q.tooltip(LONG_NAME)).toBeVisible();
+    // The short name fits again, so the tooltip turns off.
+    await q.button("Rename the document").click();
+    await hoverPastShowTimeout(page, q.link("Roadmap"));
+    await test.expect(q.tooltip()).toHaveCount(0);
   });
 
   test("shows the tooltip after a class makes the text wider than its element", async ({
@@ -61,6 +65,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await notifications.scrollIntoViewIfNeeded();
     await notifications.hover();
     await test.expect(q.tooltip("Notifications")).toBeVisible();
+    // The label shows in full again, so the tooltip turns off.
+    await q.button("Show the label").click();
+    await hoverPastShowTimeout(page, notifications);
+    await test.expect(q.tooltip()).toHaveCount(0);
   });
 
   test("gives static text a tab stop only while it is cut off", async ({
