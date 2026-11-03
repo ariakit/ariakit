@@ -167,14 +167,14 @@ test("returns empty frameworks without preview entry files", async () => {
 test("resolves frameworks from metadata before entry files", async () => {
   const dir = await createDir();
   await writeFile(
-    join(dir, "recipes/tab-nextjs/preview.json"),
+    join(dir, "recipes/tabs/nextjs/preview.json"),
     JSON.stringify({ title: "Tab", frameworks: ["react"] }),
   );
   await writeFile(join(dir, "recipes/separator/index.solid.tsx"));
   await writeFile(join(dir, "recipes/separator/index.react.tsx"));
 
   await expect(
-    resolvePreviewFrameworks(join(dir, "recipes/tab-nextjs"), "tab-nextjs"),
+    resolvePreviewFrameworks(join(dir, "recipes/tabs/nextjs"), "tabs/nextjs"),
   ).resolves.toEqual(["react"]);
   await expect(
     resolvePreviewFrameworks(join(dir, "recipes/separator"), "separator"),
@@ -462,12 +462,12 @@ test("supports hover open metadata", async () => {
   ]);
 });
 
-test("supports compact metadata", async () => {
+test("supports minHeight metadata", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "recipes/tooltip/index.react.tsx"));
+  await writeFile(join(dir, "recipes/tabs/index.react.tsx"));
   await writeFile(
-    join(dir, "recipes/tooltip/preview.json"),
-    JSON.stringify({ title: "Tooltip", compact: true }),
+    join(dir, "recipes/tabs/preview.json"),
+    JSON.stringify({ title: "Tabs", minHeight: "20rem" }),
   );
 
   const previews = await discoverPreviews({
@@ -475,21 +475,21 @@ test("supports compact metadata", async () => {
   });
 
   expect(previews).toMatchObject([
-    { id: "tooltip", metadata: { compact: true } },
+    { id: "tabs", metadata: { minHeight: "20rem" } },
   ]);
 });
 
-test("rejects invalid compact metadata", async () => {
+test("rejects invalid minHeight metadata", async () => {
   const dir = await createDir();
-  await writeFile(join(dir, "recipes/tooltip/index.react.tsx"));
+  await writeFile(join(dir, "recipes/tabs/index.react.tsx"));
   await writeFile(
-    join(dir, "recipes/tooltip/preview.json"),
-    JSON.stringify({ title: "Tooltip", compact: "true" }),
+    join(dir, "recipes/tabs/preview.json"),
+    JSON.stringify({ title: "Tabs", minHeight: 20 }),
   );
 
   const promise = discoverPreviews({ roots: [getRecipesRoot(dir)] });
 
-  await expect(promise).rejects.toThrow("Invalid compact metadata for tooltip");
+  await expect(promise).rejects.toThrow("Invalid minHeight metadata for tabs");
 });
 
 test("supports metadata-only sandbox previews", async () => {

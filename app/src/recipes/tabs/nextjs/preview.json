@@ -1,0 +1,6 @@
+{
+  "title": "Tabs with the Next.js App Router",
+  "description": "Tabs whose selection lives in the URL with the Next.js App Router: each Tab renders a Next.js Link that does the navigation, Tabs reads selectedId from usePathname, and a single TabPanel shows the server-rendered page of the route while the layout stays mounted. selectOnMove={false} keeps arrow keys from starting navigations, so Enter or a click follows the focused link. Use it when tabs must survive reloads, shared links, and Back and Forward navigation in a Next.js app.",
+  "minHeight": "18rem",
+  "frameworks": ["react"]
+}

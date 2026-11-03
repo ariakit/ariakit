@@ -21,9 +21,9 @@ const NEXTJS_DEFAULT_PORT = "3000";
 
 /**
  * Regex pattern to match Next.js preview URLs. Matches:
- * /{framework}/previews/{example}/ where the first example segment contains
- * "nextjs". Examples:
- * - /react/previews/tab-nextjs/
+ * /{framework}/previews/{example}/. `isNextjsPreviewId` then selects the ids of
+ * Next.js previews. Examples:
+ * - /react/previews/tabs/nextjs/
  * - /react/previews/menu-nextjs-app-router/
  * - /react/previews/menu-nextjs/nested/
  */
@@ -127,8 +127,12 @@ export function getNextjsPreviewId(pathname: string): string | null {
 }
 
 export function isNextjsPreviewId(previewId: string) {
-  const [exampleId] = previewId.split("/");
-  return !!exampleId?.toLowerCase().includes("nextjs");
+  const [rootSegment, ...nestedSegments] = previewId.toLowerCase().split("/");
+  if (rootSegment?.includes("nextjs")) return true;
+  // A recipe keeps its Next.js example in a nested folder, such as tabs/nextjs.
+  // Only a folder that starts with the name counts, so a nested name that only
+  // mentions Next.js stays in the Astro app.
+  return nestedSegments.some((segment) => segment.startsWith("nextjs"));
 }
 
 /**

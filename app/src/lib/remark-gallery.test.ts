@@ -43,7 +43,7 @@ import PreviewGrid from "#app/components/preview-grid.astro";
 import { source as s0 } from "./preview.astro";
 import P1, { source as s1 } from "./shortcuts/preview.astro";
 import { source as s2 } from "#app/recipes/combobox-group/preview.astro";
-import s3 from "nextjs/pages/tab-nextjs?source";
+import s3 from "nextjs/pages/tabs/nextjs?source";
 
 <PreviewGrid>
   <PreviewCard source={s1}>
@@ -55,7 +55,7 @@ import s3 from "nextjs/pages/tab-nextjs?source";
 </PreviewGrid>
 `);
   expect(getFrontmatter(code)).toEqual({
-    examples: ["tooltip/shortcuts", "tooltip", "combobox-group", "tab-nextjs"],
+    examples: ["tooltip/shortcuts", "tooltip", "combobox-group", "tabs/nextjs"],
   });
   expect(code.match(/gallery: true/g)).toHaveLength(4);
 });
@@ -64,13 +64,13 @@ test("reads galleries with Windows paths", async () => {
   const code = await compile(
     `
 import PreviewCard from "#app/components/preview-card.astro";
-import s0 from "nextjs/pages/tab-nextjs?source";
+import s0 from "nextjs/pages/tabs/nextjs?source";
 
 <PreviewCard source={s0} />
 `,
-    "C:\\ariakit\\app\\src\\recipes\\tab-nextjs\\gallery.mdx",
+    "C:\\ariakit\\app\\src\\recipes\\tabs\\gallery.mdx",
   );
-  expect(getFrontmatter(code)).toEqual({ examples: ["tab-nextjs"] });
+  expect(getFrontmatter(code)).toEqual({ examples: ["tabs/nextjs"] });
 });
 
 test("fails on a card without a source import", async () => {

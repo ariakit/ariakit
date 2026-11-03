@@ -442,6 +442,312 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Full-width strip with the last tab selected"
+        description="The last tab mirrors the first: its end curve and the panel's end corner shrink together."
+        stretch
+        code={`
+          <Tabs>
+            <TabList $layout="stretch">
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="wide-last-usage">
+          <TabList
+            $layout="stretch"
+            aria-label="Full-width strip with the last tab selected"
+          >
+            <Tab id="wide-last-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="wide-last-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="wide-last-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The end corner follows the last tab.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      {/*
+        Nested tabs fixtures. The inner tabs use $forceRounded, because
+        concentric corners would shrink their radius to the size of a meet value
+        that leaks from the outer tabs, which would hide the leak.
+       */}
+      <Example
+        title="Tabs nested under a stretched strip"
+        description="The inner tabs keep their own corners, though the outer strip is stretched and its last tab is selected."
+        stretch
+        code={`
+          <Tabs>
+            <TabList $layout="stretch">…</TabList>
+            <TabPanels>
+              <TabPanel single>
+                <Tabs>
+                  <TabList>…</TabList>
+                  <TabPanels>…</TabPanels>
+                </Tabs>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="nested-outer-settings">
+          <TabList $layout="stretch" aria-label="Nested outer tabs">
+            <Tab id="nested-outer-profile">
+              <TabLabel>Profile</TabLabel>
+            </Tab>
+            <Tab id="nested-outer-settings">
+              <TabLabel>Settings</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <Tabs defaultSelectedId="nested-inner-general" $forceRounded>
+                <TabList aria-label="Nested inner tabs">
+                  <Tab id="nested-inner-general">
+                    <TabLabel>General</TabLabel>
+                  </Tab>
+                  <Tab id="nested-inner-privacy">
+                    <TabLabel>Privacy</TabLabel>
+                  </Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel single>
+                    <p className="text-sm">
+                      The inner panel keeps its corners.
+                    </p>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Tabs nested under a selected first tab"
+        description="The inner start corner keeps its radius, though the outer first tab is selected."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>…</TabList>
+            <TabPanels>
+              <TabPanel single>
+                <Tabs>…</Tabs>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="nested-first-profile">
+          <TabList aria-label="Tabs nested under a selected first tab outer">
+            <Tab id="nested-first-profile">
+              <TabLabel>Profile</TabLabel>
+            </Tab>
+            <Tab id="nested-first-settings">
+              <TabLabel>Settings</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <Tabs
+                defaultSelectedId="nested-first-inner-privacy"
+                $forceRounded
+              >
+                <TabList aria-label="Tabs nested under a selected first tab inner">
+                  <Tab id="nested-first-inner-general">
+                    <TabLabel>General</TabLabel>
+                  </Tab>
+                  <Tab id="nested-first-inner-privacy">
+                    <TabLabel>Privacy</TabLabel>
+                  </Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel single>
+                    <p className="text-sm">The inner tabs keep their shape.</p>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Folder tabs nested under flat tabs"
+        description="The outer panel keeps square corners. Only its own strip decides whether it holds folder tabs."
+        stretch
+        code={`
+          <Tabs>
+            <TabList><Tab $kind="flat" />…</TabList>
+            <TabPanels>
+              <TabPanel single>
+                <Tabs>…</Tabs>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="nested-flat-outer-profile">
+          <TabList aria-label="Folder tabs nested under flat tabs outer">
+            <Tab id="nested-flat-outer-profile" $kind="flat">
+              <TabLabel>Profile</TabLabel>
+            </Tab>
+            <Tab id="nested-flat-outer-settings" $kind="flat">
+              <TabLabel>Settings</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <Tabs
+                defaultSelectedId="nested-flat-outer-inner-general"
+                $forceRounded
+              >
+                <TabList aria-label="Folder tabs nested under flat tabs inner">
+                  <Tab id="nested-flat-outer-inner-general">
+                    <TabLabel>General</TabLabel>
+                  </Tab>
+                  <Tab id="nested-flat-outer-inner-privacy">
+                    <TabLabel>Privacy</TabLabel>
+                  </Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel single>
+                    <p className="text-sm">The inner tabs keep their shape.</p>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Flat tabs nested under folder tabs"
+        description="The inner panel keeps square corners, though the outer tabs are folders."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>…</TabList>
+            <TabPanels>
+              <TabPanel single>
+                <Tabs>
+                  <TabList>
+                    <Tab $kind="flat" />…
+                  </TabList>
+                  …
+                </Tabs>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="nested-flat-inner-profile">
+          <TabList aria-label="Flat tabs nested under folder tabs outer">
+            <Tab id="nested-flat-inner-profile">
+              <TabLabel>Profile</TabLabel>
+            </Tab>
+            <Tab id="nested-flat-inner-settings">
+              <TabLabel>Settings</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <Tabs
+                defaultSelectedId="nested-flat-inner-inner-general"
+                $forceRounded
+              >
+                <TabList aria-label="Flat tabs nested under folder tabs inner">
+                  <Tab id="nested-flat-inner-inner-general" $kind="flat">
+                    <TabLabel>General</TabLabel>
+                  </Tab>
+                  <Tab id="nested-flat-inner-inner-privacy" $kind="flat">
+                    <TabLabel>Privacy</TabLabel>
+                  </Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel single>
+                    <p className="text-sm">The inner tabs keep their shape.</p>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Square panel corners nested under folder tabs"
+        description="The inner panel keeps the square corners that it asks for."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>…</TabList>
+            <TabPanels>
+              <TabPanel single>
+                <Tabs $panelRoundedTop={false}>…</Tabs>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="nested-square-profile">
+          <TabList aria-label="Square panel corners nested under folder tabs outer">
+            <Tab id="nested-square-profile">
+              <TabLabel>Profile</TabLabel>
+            </Tab>
+            <Tab id="nested-square-settings">
+              <TabLabel>Settings</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <Tabs
+                defaultSelectedId="nested-square-inner-general"
+                $forceRounded
+                $panelRoundedTop={false}
+              >
+                <TabList aria-label="Square panel corners nested under folder tabs inner">
+                  <Tab id="nested-square-inner-general">
+                    <TabLabel>General</TabLabel>
+                  </Tab>
+                  <Tab id="nested-square-inner-privacy">
+                    <TabLabel>Privacy</TabLabel>
+                  </Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel single>
+                    <p className="text-sm">The inner tabs keep their shape.</p>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Edgeless"
         description="The root has no edge, so the tabs and the panel draw none either."
         stretch
@@ -1419,6 +1725,45 @@ export default function TabsExamples() {
           <TabPanels>
             <TabPanel single>
               <p className="text-sm">Scroll the strip to see every tab.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Overflowing strip scrolled to its end"
+        description="At the end of the scroll, the curve of the selected last tab stays clear of the panel's rounded corner."
+        stretch
+        code={`
+          <Tabs>
+            <TabList tabs={[…]} />
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          defaultSelectedId="scrolled-changelog"
+          className="w-64 max-w-full"
+        >
+          <TabList
+            aria-label="Overflowing strip scrolled to its end"
+            ref={(element) => {
+              element?.scrollTo({ left: element.scrollWidth });
+            }}
+            tabs={{
+              "scrolled-overview": "Overview",
+              "scrolled-usage": "Usage",
+              "scrolled-styling": "Styling",
+              "scrolled-changelog": "Changelog",
+            }}
+          />
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The last tab is at the end.</p>
             </TabPanel>
           </TabPanels>
         </Tabs>
