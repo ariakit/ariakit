@@ -9,6 +9,7 @@ const SURFACES = [
   "light danger surface",
   "dark canvas",
   "dark tinted surface",
+  "dark saturated surface",
   "dark danger surface",
   "black surface",
 ];
@@ -16,6 +17,7 @@ const SURFACES = [
 const FLOORED_FIELDS = [
   "Default edge",
   "Transparent edge",
+  "Saturated fill",
   "Recessed field",
   "Raised ring field",
   "Recessed ring field",
@@ -157,6 +159,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await getEdgeContrast(regular),
         2,
       );
+    }
+  });
+
+  // A white edge paints over the fill. The darkest channel of this blue fill is
+  // near 0, so measuring the fill by that channel alone took the edge to about
+  // 6:1 on dark surfaces, twice the ratio.
+  test("keeps a white edge close to the floor over a saturated fill", async ({
+    q,
+  }) => {
+    for (const surface of [
+      "dark canvas",
+      "dark tinted surface",
+      "black surface",
+    ]) {
+      const label = `Saturated fill on ${surface}`;
+      const contrast = await getEdgeContrast(q.textbox(label));
+      expect(contrast, label).toBeGreaterThanOrEqual(3);
+      expect(contrast, label).toBeLessThan(4.5);
     }
   });
 
