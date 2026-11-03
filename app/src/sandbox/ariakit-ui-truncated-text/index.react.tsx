@@ -110,6 +110,26 @@ function CollapsibleItem() {
   );
 }
 
+// A larger font makes the text wider, and the sizes in rem keep the size of the
+// element.
+function EnlargedText() {
+  const [large, setLarge] = useState(false);
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <Tooltip text="Quarterly report">
+        <TruncatedText
+          className={`block w-[10rem] truncate leading-[1.5rem] ${large ? "text-2xl" : ""}`}
+        >
+          Quarterly report
+        </TruncatedText>
+      </Tooltip>
+      <Button $border onClick={() => setLarge((current) => !current)}>
+        {large ? "Shrink the text" : "Enlarge the text"}
+      </Button>
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <div className="flex flex-col items-start gap-8">
@@ -135,6 +155,7 @@ export default function Example() {
           </TruncatedText>
         </Tooltip>
       </div>
+      <EnlargedText />
     </div>
   );
 }

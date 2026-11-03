@@ -50,7 +50,7 @@ export function useTruncationRegistry() {
 
 /**
  * Whether an element cuts off its content, such as with `truncate`,
- * `line-clamp-*`, or `overflow: hidden`.
+ * `line-clamp-*`, or a `$truncate` variant.
  */
 function isTruncated(element: HTMLElement) {
   if (element.scrollWidth > element.clientWidth) return true;
@@ -67,10 +67,11 @@ function isTruncated(element: HTMLElement) {
 
 /**
  * Reports to the nearest `TruncationContext` whether the element cuts off its
- * content. It measures again when the element resizes, when its text changes,
- * and when a font loads. New text or a font can change the size of the text and
- * keep the size of an element that cuts it off. A hidden element, such as one
- * with `display: none`, counts as if it weren't rendered.
+ * content. It measures again when the element resizes, when its text or
+ * attributes change, and when a font loads. New text, a class, a style, or a
+ * font can change the size of the text and keep the size of an element that
+ * cuts it off. A hidden element, such as one with `display: none`, counts as if
+ * it weren't rendered.
  */
 export function useTruncation(element: HTMLElement | null) {
   const context = React.useContext(TruncationContext);
@@ -94,10 +95,12 @@ export function useTruncation(element: HTMLElement | null) {
     const resizeObserver = win.ResizeObserver && new win.ResizeObserver(update);
     resizeObserver?.observe(element);
     // Text can change below the element, such as in a child component that
-    // renders on its own.
+    // renders on its own, and a new class or style can change the size of the
+    // text but not the size of the element.
     const mutationObserver =
       win.MutationObserver && new win.MutationObserver(update);
     mutationObserver?.observe(element, {
+      attributes: true,
       characterData: true,
       childList: true,
       subtree: true,

@@ -20,6 +20,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.tooltip(LONG_NAME)).toBeVisible();
   });
 
+  test("shows the tooltip after a class makes the text wider than its element", async ({
+    page,
+    q,
+  }) => {
+    // The tooltip repeats the text in a portal after the anchor.
+    const text = q.text("Quarterly report").first();
+    await hoverPastShowTimeout(page, text);
+    await test.expect(q.tooltip()).toHaveCount(0);
+    await q.button("Enlarge the text").click();
+    // Ariakit resets hover intent on scroll, so the anchor must be in view
+    // before the pointer moves over it.
+    await text.scrollIntoViewIfNeeded();
+    await text.hover();
+    await test.expect(q.tooltip("Quarterly report")).toBeVisible();
+  });
+
   test("shows the tooltip after the text leaves the anchor", async ({
     page,
     q,
