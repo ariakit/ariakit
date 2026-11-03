@@ -1,0 +1,4 @@
+{
+  "title": "Label and Description",
+  "description": "A resizable list of file buttons where TruncatedText renders both the ButtonLabel and the ButtonDescription inside one Tooltip anchor. The tooltip shows while either text is cut off, and it holds both texts. Use it when an anchor has more than one text that can clip, and use the Labels Inside Buttons example for a single label."
+}

@@ -31,6 +31,6 @@ Give each `Breadcrumb` a name with `aria-label` or `aria-labelledby`, such as "B
 
 `BreadcrumbCurrent` has `aria-current="page"`. To keep the current step as a link, render a `BreadcrumbLink` with `currentUrl` or `aria-current="page"`. This adds a tab stop that goes nowhere new.
 
-`BreadcrumbSeparator` is a list item with `aria-hidden`, so its mark stays out of the accessibility tree. A step with only a slot needs a name from `aria-label`, as in the first example. A clipped label stays in the DOM, so screen readers read all of it, but other users need a tooltip to see it, as in the Truncated Labels example.
+`BreadcrumbSeparator` is a list item with `aria-hidden`, so its mark stays out of the accessibility tree. A step with only a slot needs a name from `aria-label`, as in the first example. A clipped label stays in the DOM, so screen readers read all of it, but other users need a tooltip to see it, as in the Truncated Labels example. There, the label renders through `TruncatedText`, so the tooltip shows only while the label clips.
 
 The step menu examples use items with `render={<a />}`, so they navigate on Enter and open in a new tab on Cmd-click. Assistive technology reads them as options, not links. Pass the current page as `selectedValue`, with no `setSelectedValue`. Typing on the closed trigger then changes nothing, so its label can't disagree with the page. Name the trigger after what it does, such as "Switch section", so that people know a choice goes to another page.

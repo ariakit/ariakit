@@ -1,0 +1,4 @@
+{
+  "title": "Labels Inside Buttons",
+  "description": "A resizable list of buttons with an icon slot, where TruncatedText renders the ButtonLabel, which truncates by default, and the Tooltip wraps the whole button. The button is the anchor, so the tooltip shows on hover and keyboard focus, but only while its label is cut off. Use it when the text that clips is inside the anchor, such as the label of a button, a nav link, or a tab."
+}
