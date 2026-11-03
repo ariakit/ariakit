@@ -54,11 +54,16 @@ export const choice = cv({
     // A custom child replaces the drawn mark and uses the same size and state.
     "[--slot-icon-size:calc(var(--size)*0.7)] [&>svg]:stroke-[2.5]",
     "has-[>*]:after:hidden not-ui-choice-on:*:hidden!",
-    // Separate the selected fill from brand surfaces. The plugin's zero-lighten
-    // utility cancels the default lightening stored in the style attribute.
+    // The selected fill keeps the brand color on every surface. Like the empty
+    // box, a neutral edge keeps the 3:1 boundary. It has no alpha of its own,
+    // so it stays faint or hidden where the fill already passes the floor. The
+    // plugin's zero-lighten utility cancels the default lightening stored in
+    // the style attribute.
     "not-ui-choice-disabled:ui-choice-on:ak-layer-brand",
-    "not-ui-choice-disabled:ui-choice-on:ak-layer-contrast",
-    "ui-choice-on:ak-layer-lighten-0 ui-choice-on:ak-edge-raw",
+    "not-ui-choice-disabled:ui-choice-on:ak-edge-0",
+    "ui-choice-on:ak-layer-lighten-0",
+    // A disabled checked mark draws its edge in the color of its faded fill.
+    "ui-choice-disabled:ui-choice-on:ak-edge-raw",
     // The selected fill keeps its color; the chroma cap is for the raised box.
     "ui-choice-on:ak-layer-max-c-[initial]",
     // Keep disabled marks and empty boxes distinct on light surfaces.
@@ -187,18 +192,6 @@ export const choiceInput = cv({
     $hoverOffset: 3,
   },
   refine({ variants, addClass }) {
-    if (variants.$hoverOffset) {
-      addClass([
-        // The offset can darken the selected fill, which takes it toward a dark
-        // surface. Keep the fill there, and show hover with a lighter border.
-        // High contrast already makes the border white and the fill stays far
-        // from the surface, so it keeps the offset.
-        "ak-dark:not-contrast-more:ui-choice-on:ui-hover:ak-state-0",
-        "ak-dark:not-contrast-more:ui-choice-on:not-ui-settled:ui-hover:ak-edge-lighten-25",
-        "ak-dark:not-contrast-more:ui-choice-on:not-ui-choice-disabled:group-hover/choice-field:ak-state-0",
-        "ak-dark:not-contrast-more:ui-choice-on:not-ui-settled:not-ui-choice-disabled:group-hover/choice-field:ak-edge-lighten-25",
-      ]);
-    }
     // A system checkbox can't show a switch, so the switch keeps its own marks.
     if (variants.$mark === "switch") return;
     addClass("forced-colors:appearance-auto forced-colors:after:hidden");
