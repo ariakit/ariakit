@@ -63,23 +63,51 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(parent).toHaveAttribute("aria-checked", "mixed");
   });
 
-  test("a card grid is a named group of cards", async ({ q }) => {
+  test("names the cards of a grid by the group around it", async ({ q }) => {
     const box = query(q.article("Card grid"));
-    const grid = query(box.group("Features"));
-    await test.expect(grid.checkbox()).toHaveCount(4);
+    // The grid only lays out the cards, so the fieldset is the only group.
+    await test.expect(box.group()).toHaveCount(1);
+    const group = query(box.group("Features"));
+    await test.expect(group.checkbox()).toHaveCount(4);
     await test.expect(box.text("1 of 4 selected")).toBeVisible();
     // The input is visually hidden, so a user clicks the card around it.
-    await grid.text("Alerts").click();
-    await test.expect(grid.checkbox("Alerts")).toBeChecked();
+    await group.text("Alerts").click();
+    await test.expect(group.checkbox("Alerts")).toBeChecked();
     await test.expect(box.text("2 of 4 selected")).toBeVisible();
   });
 
-  // A role prop that is present but undefined, as a wrapper with an optional
-  // role passes it, must keep the grid's own group role.
-  test("keeps the group role of a card grid whose role prop is undefined", async ({
-    q,
-  }) => {
-    await test.expect(q.group("Optional role")).toBeVisible();
+  test("passes a role from the app on to a card grid", async ({ q }) => {
+    const grid = query(q.group("Caller role"));
+    await test.expect(grid.checkbox()).toHaveCount(2);
+  });
+
+  test("names a checkbox group by its legend", async ({ q }) => {
+    const box = query(q.article("Labeled group"));
+    await test
+      .expect(box.group("Email me about"))
+      .toHaveAccessibleDescription("We send at most one email a day.");
+    const group = query(box.group("Email me about"));
+    await test.expect(group.checkbox()).toHaveCount(3);
+    await test.expect(group.checkbox("Comments")).toBeChecked();
+    await group.text("Mentions").click();
+    await test.expect(group.checkbox("Mentions")).toBeChecked();
+  });
+
+  test("disables every checkbox in a disabled group", async ({ q }) => {
+    const group = query(q.group("Beta features"));
+    const summaries = group.checkbox("AI summaries");
+    const themes = group.checkbox("Custom themes");
+    await test.expect(summaries).toBeDisabled();
+    await test.expect(themes).toBeDisabled();
+    await test.expect(summaries).toBeChecked();
+    // Playwright waits for content in a disabled fieldset to become enabled, so
+    // hover checks that the row receives the pointer, and force skips the wait.
+    // The click toggles an enabled box before it resolves, so the box below
+    // would already be checked if the click reached it.
+    const row = group.text("Custom themes");
+    await row.hover();
+    await row.click({ force: true });
+    await test.expect(themes).not.toBeChecked();
   });
 
   // The fill of a checked box is its boundary, so it keeps 3:1 against the

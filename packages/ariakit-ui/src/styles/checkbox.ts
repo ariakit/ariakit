@@ -12,7 +12,11 @@ import {
   choiceFieldContent,
   choiceFieldDescription,
   choiceFieldLabel,
+  choiceGroup,
+  choiceGroupDescription,
+  choiceGroupLabel,
   choiceInput,
+  choiceList,
 } from "./choice.ts";
 
 /**
@@ -67,3 +71,18 @@ export const checkboxCardDescription = choiceCardDescription;
 
 /** A responsive grid of checkbox cards with equal row heights. */
 export const checkboxCardGrid = choiceCardGrid;
+
+/**
+ * A fieldset of checkboxes that stacks its legend, its description, its
+ * checkboxes, and an error with the group gap.
+ */
+export const checkboxGroup = choiceGroup;
+
+/** The legend of a checkbox group, placed first in the group. */
+export const checkboxGroupLabel = choiceGroupLabel;
+
+/** Secondary text of a checkbox group, close under its legend. */
+export const checkboxGroupDescription = choiceGroupDescription;
+
+/** Stacks the checkbox fields or cards of a checkbox group. It adds no role. */
+export const checkboxList = choiceList;

@@ -291,6 +291,9 @@ export const slotFrameSlot = cv({
     $rowSpan: 1,
     $mx(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
+      // A floating slot is out of the row, so it doesn't move the text next to
+      // it. A centered label then stays centered.
+      if (variants.$floating) return "md";
       // A picture already reads as a separate box, so it keeps the default
       // label gap at any size.
       if (variants.$kind === "thumbnail") return "md";
@@ -362,6 +365,10 @@ export const slotFrameText = cv({
      * Fills the free space in its row, so the slots after it sit together at
      * the row end.
      */
-    $grow: "grow text-start",
+    $grow: [
+      // A grown label starts its text, also in a button, which centers it. Zero
+      // specificity lets a caller class center the text again.
+      "grow [:where(&)]:text-start",
+    ],
   },
 });

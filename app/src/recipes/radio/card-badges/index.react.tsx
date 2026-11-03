@@ -7,6 +7,7 @@ import {
   RadioCardGrid,
   RadioCardLabel,
   RadioCardSlot,
+  RadioGroup,
 } from "@ariakit/ui/components/radio.ariakit.react";
 
 const plans = [
@@ -28,36 +29,37 @@ const plans = [
 
 export default function Example() {
   return (
-    <RadioCardGrid
+    <RadioGroup
       label="Plan"
       defaultValue="pro"
-      $minItemSize="11rem"
       className="w-[40rem] max-w-full"
     >
-      {plans.map((plan) => (
-        <RadioCard
-          key={plan.value}
-          value={plan.value}
-          $orientation="vertical"
-          $p={4}
-        >
-          <RadioCardCheck />
-          <RadioCardContent>
-            <RadioCardLabel>{plan.label}</RadioCardLabel>
-            <RadioCardDescription $truncate={false}>
-              {plan.price} per month. {plan.detail}.
-            </RadioCardDescription>
-          </RadioCardContent>
-          {/* A vertical card shows the content below the top row, so the
-              badge can come after the label in the source. The radio is then
-              named "Pro Popular". */}
-          {plan.popular && (
-            <RadioCardSlot $kind="box">
-              <Badge $kind="solid">Popular</Badge>
-            </RadioCardSlot>
-          )}
-        </RadioCard>
-      ))}
-    </RadioCardGrid>
+      <RadioCardGrid $minItemSize="11rem">
+        {plans.map((plan) => (
+          <RadioCard
+            key={plan.value}
+            value={plan.value}
+            $orientation="vertical"
+            $p={4}
+          >
+            <RadioCardCheck />
+            <RadioCardContent>
+              <RadioCardLabel>{plan.label}</RadioCardLabel>
+              <RadioCardDescription $truncate={false}>
+                {plan.price} per month. {plan.detail}.
+              </RadioCardDescription>
+            </RadioCardContent>
+            {/* A vertical card shows the content below the top row, so the
+                badge can come after the label in the source. The radio is
+                then named "Pro Popular". */}
+            {plan.popular && (
+              <RadioCardSlot $kind="box">
+                <Badge $kind="solid">Popular</Badge>
+              </RadioCardSlot>
+            )}
+          </RadioCard>
+        ))}
+      </RadioCardGrid>
+    </RadioGroup>
   );
 }

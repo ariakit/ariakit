@@ -20,4 +20,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         .toBeGreaterThanOrEqual(3);
     }
   });
+
+  test("names the cards of a grid by the group around it and moves between them", async ({
+    page,
+    q,
+  }) => {
+    const box = query(q.article("Cards"));
+    // The grid only lays out the cards, so the group is the only radio group.
+    await test.expect(box.radiogroup()).toHaveCount(1);
+    const group = query(box.radiogroup("Plan"));
+    await test.expect(group.radio()).toHaveCount(3);
+    await test.expect(group.radio("Pro")).toBeChecked();
+    // The input is visually hidden, so a user clicks the card around it.
+    await group.text("Hobby").click();
+    await test.expect(group.radio("Hobby")).toBeChecked();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(group.radio("Pro")).toBeFocused();
+    await test.expect(group.radio("Pro")).toBeChecked();
+  });
 });

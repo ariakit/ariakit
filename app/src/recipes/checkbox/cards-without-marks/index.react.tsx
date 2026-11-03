@@ -3,6 +3,7 @@ import {
   CheckboxCardContent,
   CheckboxCardGrid,
   CheckboxCardLabel,
+  CheckboxGroup,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
 import {
   CookingPot,
@@ -12,7 +13,6 @@ import {
   WavesLadder,
   Wifi,
 } from "lucide-react";
-import { useId } from "react";
 
 const amenities = [
   { value: "wifi", label: "Wi-Fi", icon: Wifi, checked: true },
@@ -24,14 +24,10 @@ const amenities = [
 ];
 
 export default function Example() {
-  const labelId = useId();
   return (
     // The width fits three columns, so the tiles make two full rows.
-    <div className="grid w-[24rem] max-w-full gap-2">
-      <span id={labelId} className="text-sm font-medium">
-        Amenities
-      </span>
-      <CheckboxCardGrid aria-labelledby={labelId} $minItemSize="6rem">
+    <CheckboxGroup label="Amenities" className="w-[24rem] max-w-full">
+      <CheckboxCardGrid $minItemSize="6rem">
         {amenities.map((amenity) => (
           <CheckboxCard
             key={amenity.value}
@@ -53,6 +49,6 @@ export default function Example() {
           </CheckboxCard>
         ))}
       </CheckboxCardGrid>
-    </div>
+    </CheckboxGroup>
   );
 }

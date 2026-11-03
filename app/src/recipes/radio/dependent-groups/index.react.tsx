@@ -2,13 +2,12 @@ import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
   RadioCard,
-  RadioCardContent,
   RadioCardGrid,
   RadioCardLabel,
   RadioCardSlot,
   RadioGroup,
 } from "@ariakit/ui/components/radio.ariakit.react";
-import { useId, useState } from "react";
+import { useState } from "react";
 
 interface TimeSlot {
   time: string;
@@ -62,7 +61,6 @@ function countOpenTimes(day: Day) {
 }
 
 export default function Example() {
-  const hintId = useId();
   const [dayId, setDayId] = useState<string | number | null>("tue");
   const [time, setTime] = useState<string | number | null>(null);
   const day = days.find((item) => item.id === dayId);
@@ -70,7 +68,7 @@ export default function Example() {
     // The width fits three days and four times in a row, so the cards fill
     // their rows.
     <div className="grid w-[24rem] max-w-full gap-6">
-      <RadioCardGrid
+      <RadioGroup
         label="Day"
         value={dayId}
         setValue={(value) => {
@@ -78,42 +76,48 @@ export default function Example() {
           // The times belong to a day, so a new day clears the time.
           setTime(null);
         }}
-        $minItemSize="7rem"
-        className="gap-y-4"
+        $gap="lg"
       >
-        {days.map((item) => {
-          const openTimes = countOpenTimes(item);
-          return (
-            <RadioCard key={item.id} value={item.id} disabled={!openTimes}>
-              <RadioCardContent className="items-center text-center">
-                <RadioCardLabel>
+        {/* The badges hang over the top of each card, so the rows take a
+            larger gap, and the group takes a larger gap to keep its label
+            further from the cards. */}
+        <RadioCardGrid $minItemSize="7rem" $gap="xl">
+          {days.map((item) => {
+            const openTimes = countOpenTimes(item);
+            return (
+              <RadioCard
+                key={item.id}
+                value={item.id}
+                disabled={!openTimes}
+                $p={2}
+              >
+                <RadioCardLabel className="text-center">
                   {item.weekday} {item.date}
                 </RadioCardLabel>
-              </RadioCardContent>
-              <RadioCardSlot $kind="box" $floating>
-                <Badge $kind="solid">
-                  {openTimes ? `${openTimes} open` : "Full"}
-                </Badge>
-              </RadioCardSlot>
-            </RadioCard>
-          );
-        })}
-      </RadioCardGrid>
+                <RadioCardSlot $kind="box" $floating>
+                  <Badge $kind="solid">
+                    {openTimes ? `${openTimes} open` : "Full"}
+                  </Badge>
+                </RadioCardSlot>
+              </RadioCard>
+            );
+          })}
+        </RadioCardGrid>
+      </RadioGroup>
       {day && (
         // Each day has its own times, so its group starts fresh.
         <RadioGroup
           key={day.id}
           label={`Time on ${day.longDate}`}
+          description="Times in São Paulo time (GMT−3)"
           value={time}
           setValue={setTime}
-          aria-describedby={hintId}
-          className="grid gap-1"
+          $gap="lg"
         >
-          <p id={hintId} className="ak-ink-70 text-sm">
-            Times in São Paulo time (GMT−3)
-          </p>
-          {/* The top padding leaves room for the floating badges. */}
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))] gap-x-2 gap-y-4 pt-3">
+          {/* The badges hang over the top of each card, so the rows take a
+              larger gap, and the group takes a larger gap to keep its label
+              further from the cards. */}
+          <RadioCardGrid $minItemSize="4.5rem" $gap="xl">
             {day.times.map((slot) => (
               <RadioCard
                 key={slot.time}
@@ -121,11 +125,9 @@ export default function Example() {
                 disabled={slot.booked}
                 $p={2}
               >
-                <RadioCardContent className="items-center text-center">
-                  <RadioCardLabel className="tabular-nums">
-                    {slot.time}
-                  </RadioCardLabel>
-                </RadioCardContent>
+                <RadioCardLabel className="text-center tabular-nums">
+                  {slot.time}
+                </RadioCardLabel>
                 {slot.booked && (
                   <RadioCardSlot $kind="box" $floating>
                     <Badge $kind="solid">Booked</Badge>
@@ -133,7 +135,7 @@ export default function Example() {
                 )}
               </RadioCard>
             ))}
-          </div>
+          </RadioCardGrid>
         </RadioGroup>
       )}
       <Button

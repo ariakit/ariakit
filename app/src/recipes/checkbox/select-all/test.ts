@@ -4,10 +4,11 @@ import { expect, test } from "vitest";
 const names = ["Contacts", "Messages", "Files", "Calendar events"];
 
 test("starts in the mixed state and checks all items from it", async () => {
-  const all = q.checkbox("All data");
+  const group = q.within(q.group("Data to export"));
+  const all = group.checkbox("All data");
   expect(all).toBePartiallyChecked();
-  expect(q.checkbox("Messages")).toBeChecked();
-  expect(q.checkbox("Files")).not.toBeChecked();
+  expect(group.checkbox("Messages")).toBeChecked();
+  expect(group.checkbox("Files")).not.toBeChecked();
   await click(all);
   expect(all).toBeChecked();
   for (const name of names) {

@@ -7,8 +7,9 @@ import {
   CheckboxCardLabel,
   CheckboxCardLabelRow,
   CheckboxCardSlot,
+  CheckboxGroup,
+  CheckboxList,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
-import { useId } from "react";
 
 const addOns = [
   {
@@ -34,13 +35,9 @@ const addOns = [
 ];
 
 export default function Example() {
-  const labelId = useId();
   return (
-    <div className="grid w-[26rem] max-w-full gap-2">
-      <span id={labelId} className="text-sm font-medium">
-        Add-ons
-      </span>
-      <div role="group" aria-labelledby={labelId} className="grid gap-2">
+    <CheckboxGroup label="Add-ons" className="w-[26rem] max-w-full">
+      <CheckboxList>
         {addOns.map((addOn) => (
           <CheckboxCard key={addOn.value} name="addOns" value={addOn.value}>
             <CheckboxCardCheck />
@@ -62,7 +59,7 @@ export default function Example() {
             <CheckboxCardSlot $kind="text">{addOn.price}</CheckboxCardSlot>
           </CheckboxCard>
         ))}
-      </div>
-    </div>
+      </CheckboxList>
+    </CheckboxGroup>
   );
 }

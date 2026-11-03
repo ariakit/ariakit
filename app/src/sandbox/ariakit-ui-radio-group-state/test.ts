@@ -30,11 +30,11 @@ test("names a group by a fragment label", () => {
   expect(group.radio("Email")).toBeChecked();
 });
 
-test("labels a card grid synced with a store prop", async () => {
-  const grid = q.within(q.radiogroup("Billing"));
-  expect(grid.radio("Monthly")).toBeChecked();
+test("labels a group of cards in a grid synced with a store prop", async () => {
+  const group = q.within(q.radiogroup("Billing"));
+  expect(group.radio("Monthly")).toBeChecked();
   // The card hides its input, so click the card text.
-  await click(grid.text("Yearly"));
+  await click(group.text("Yearly"));
   expect(q.text("Billing: yearly")).toBeInTheDocument();
 });
 

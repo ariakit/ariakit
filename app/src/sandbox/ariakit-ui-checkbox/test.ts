@@ -75,6 +75,45 @@ test("keeps the checkbox role for the other marks", () => {
   expect(q.within(q.article("Checkbox card")).checkbox()).toBeInTheDocument();
 });
 
+test("names the cards of a grid by the group around it", async () => {
+  const box = q.within(q.article("Card grid"));
+  // The grid only lays out the cards, so the fieldset is the only group.
+  expect(box.group.all()).toHaveLength(1);
+  const group = q.within(box.group("Features"));
+  expect(group.checkbox.all()).toHaveLength(4);
+  expect(box.text("1 of 4 selected")).toBeInTheDocument();
+  await click(group.text("Alerts"));
+  expect(group.checkbox("Alerts")).toBeChecked();
+  expect(box.text("2 of 4 selected")).toBeInTheDocument();
+});
+
+test("passes a role from the app on to a card grid", () => {
+  const grid = q.within(q.group("Caller role"));
+  expect(grid.checkbox.all()).toHaveLength(2);
+});
+
+test("names a checkbox group by its legend", async () => {
+  const box = q.within(q.article("Labeled group"));
+  expect(box.group("Email me about")).toHaveAccessibleDescription(
+    "We send at most one email a day.",
+  );
+  const group = q.within(box.group("Email me about"));
+  expect(group.checkbox.all()).toHaveLength(3);
+  expect(group.checkbox("Comments")).toBeChecked();
+  await click(group.text("Mentions"));
+  expect(group.checkbox("Mentions")).toBeChecked();
+});
+
+// happy-dom doesn't disable the inputs of a disabled fieldset, so a click would
+// still toggle them. The Chrome test covers the click.
+test("disables every checkbox in a disabled group", () => {
+  const group = q.within(q.group("Beta features"));
+  const summaries = group.checkbox("AI summaries");
+  expect(summaries).toBeDisabled();
+  expect(summaries).toBeChecked();
+  expect(group.checkbox("Custom themes")).toBeDisabled();
+});
+
 test("keeps the ids that the app gives to the fields", () => {
   const box = q.within(q.article("Select all"));
   const children = q.within(box.group("Features")).checkbox.all();

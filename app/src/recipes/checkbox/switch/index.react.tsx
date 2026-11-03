@@ -1,7 +1,9 @@
 import {
   CheckboxDescription,
   CheckboxField,
+  CheckboxGroup,
   CheckboxLabel,
+  CheckboxList,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
 
 const settings = [
@@ -26,20 +28,21 @@ const settings = [
 
 export default function Example() {
   return (
-    <fieldset className="grid gap-3">
-      <legend className="mb-2 text-sm font-medium">Connections</legend>
-      {settings.map((setting) => (
-        <CheckboxField
-          key={setting.value}
-          $mark="switch"
-          name="connections"
-          value={setting.value}
-          defaultChecked={setting.checked}
-        >
-          <CheckboxLabel>{setting.label}</CheckboxLabel>
-          <CheckboxDescription>{setting.description}</CheckboxDescription>
-        </CheckboxField>
-      ))}
-    </fieldset>
+    <CheckboxGroup label="Connections">
+      <CheckboxList>
+        {settings.map((setting) => (
+          <CheckboxField
+            key={setting.value}
+            $mark="switch"
+            name="connections"
+            value={setting.value}
+            defaultChecked={setting.checked}
+          >
+            <CheckboxLabel>{setting.label}</CheckboxLabel>
+            <CheckboxDescription>{setting.description}</CheckboxDescription>
+          </CheckboxField>
+        ))}
+      </CheckboxList>
+    </CheckboxGroup>
   );
 }

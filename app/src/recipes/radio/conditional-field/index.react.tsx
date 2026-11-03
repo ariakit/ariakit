@@ -6,6 +6,7 @@ import {
 import {
   RadioField,
   RadioGroup,
+  RadioList,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { useId, useState } from "react";
 
@@ -21,12 +22,13 @@ export default function Example() {
         label="How did you hear about us?"
         value={source}
         setValue={setSource}
-        className="grid gap-2"
       >
-        <RadioField value="search">Search engine</RadioField>
-        <RadioField value="friend">A friend or colleague</RadioField>
-        <RadioField value="social">Social media</RadioField>
-        <RadioField value="other">Other</RadioField>
+        <RadioList>
+          <RadioField value="search">Search engine</RadioField>
+          <RadioField value="friend">A friend or colleague</RadioField>
+          <RadioField value="social">Social media</RadioField>
+          <RadioField value="other">Other</RadioField>
+        </RadioList>
       </RadioGroup>
       {/* The field is not one of the options, and the arrow keys would skip it
           inside the group, so it comes after the group. Other is the last

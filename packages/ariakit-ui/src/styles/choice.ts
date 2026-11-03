@@ -11,6 +11,8 @@ import {
   control,
   controlContent,
   controlDescription,
+  controlFieldDescription,
+  controlFieldLabel,
   controlLabel,
   controlLabelRow,
   controlSlot,
@@ -273,6 +275,8 @@ export const choiceFieldDescription = controlDescription;
 // The surface of a card. A segmented kind paints the thumb of its group
 // instead.
 const choiceCardSurface = cx(
+  // Choice groups give cards more room than simple fields.
+  "choice-card",
   // Allow a direct description to occupy its own row.
   "flex-wrap justify-start content-start",
   "[&_input]:sr-only",
@@ -496,10 +500,21 @@ export const choiceCardLabel = cv({
 /** Secondary choice card text that truncates by default. */
 export const choiceCardDescription = buttonDescription;
 
+// The gaps between the items of a list or a grid other than `auto`, with the
+// keywords of a control group.
+const choiceItemsGap = {
+  none: "[:where(&)]:gap-0",
+  xs: "[:where(&)]:gap-0.5",
+  sm: "[:where(&)]:gap-1",
+  md: "[:where(&)]:gap-2",
+  lg: "[:where(&)]:gap-3",
+  xl: "[:where(&)]:gap-4",
+};
+
 /** A responsive grid of choice cards with equal row heights. */
 export const choiceCardGrid = cv({
   class: [
-    "grid auto-rows-fr gap-3",
+    "choice-card-grid grid auto-rows-fr",
     // Let the grid shrink below its cards' text width.
     "min-w-0",
     // Keep the minimum column width within the available space.
@@ -517,8 +532,146 @@ export const choiceCardGrid = cv({
         style: { "--choice-card-min-w": getSpacingValue(value) },
       };
     },
+    /**
+     * Sets the gap between the cards. `auto` takes two thirds of the gap of the
+     * choice group around the grid, so the group label stays further from the
+     * cards than they are from each other. Zero specificity lets caller gap
+     * classes win.
+     * @default "auto"
+     */
+    $gap: {
+      // Outside a group, use the group gap of cards.
+      auto: "[:where(&)]:gap-[calc(var(--choice-group-gap,--spacing(4))*2/3)]",
+      ...choiceItemsGap,
+    },
   },
   defaultVariants: {
     $minItemSize: "10rem",
+    $gap: "auto",
+  },
+});
+
+/**
+ * A labeled group of choice fields or cards, such as a radio group or a
+ * fieldset of checkboxes. It stacks its label, its description, its items, and
+ * its error with the group gap. Put the items in a `choiceList` or a
+ * `choiceCardGrid`, whose gap spaces only the items. Caller classes can replace
+ * the layout, such as to put a label that isn't a legend on the row of the
+ * items.
+ */
+export const choiceGroup = cv({
+  class: [
+    // The label and the description read the disabled state of the group.
+    "choice-group group/choice-group min-w-0",
+    // The label covers the gap with its padding, as in a field.
+    "[--_field-gap:var(--choice-group-gap)] gap-(--choice-group-gap)",
+    // Zero specificity lets caller layout classes win.
+    "[:where(&)]:flex [:where(&)]:flex-col",
+  ],
+  variants: {
+    /**
+     * Sets the gap between the label, the items, and the texts of the group.
+     * Each size gives one spacing step more to a group that holds cards or
+     * fields with descriptions, which have more weight. For example, `md` is
+     * three spacing steps for simple fields and four for cards. A list or a
+     * grid of items with an `auto` gap takes two thirds of it, so the label
+     * stays further from the items than they are from each other.
+     * @default "md"
+     */
+    $gap: {
+      none: "[--choice-group-gap:0px]",
+      xs: [
+        "[--choice-group-gap:--spacing(1)]",
+        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(2)]",
+      ],
+      sm: [
+        "[--choice-group-gap:--spacing(2)]",
+        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(3)]",
+      ],
+      md: [
+        "[--choice-group-gap:--spacing(3)]",
+        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(4)]",
+      ],
+      lg: [
+        "[--choice-group-gap:--spacing(4)]",
+        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(5)]",
+      ],
+      xl: [
+        "[--choice-group-gap:--spacing(5)]",
+        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(6)]",
+      ],
+    },
+  },
+  defaultVariants: {
+    $gap: "md",
+  },
+});
+
+/**
+ * Visible label of a choice group, placed first in the group. It has the same
+ * text style as an input label. A `legend` stays above its fieldset's content,
+ * also when caller classes change the layout of the group.
+ */
+export const choiceGroupLabel = cv({
+  extend: [controlFieldLabel],
+  class: [
+    "choice-group-label",
+    // A legend is drawn above the fieldset's content, out of its flex layout,
+    // so the group gap doesn't follow it. Its bottom padding makes the gap
+    // instead. WebKit ignores a float on a flex child, so floating the legend
+    // into the layout doesn't work there.
+    "[legend&]:mb-0",
+    // Chromium sizes a legend to its text, so it would overflow a narrow group
+    // instead of truncating. Fill the width, like a label in the flex layout.
+    "[legend&]:w-full",
+    // A disabled fieldset or radio group dims its label. Forced colors replace
+    // the ink with the normal text color, so use the system disabled color.
+    "group-ui-disabled/choice-group:ak-ink-0",
+    "group-ui-disabled/choice-group:forced-colors:text-[GrayText]",
+  ],
+});
+
+/**
+ * Secondary text of a choice group, such as a hint about all of its items.
+ * Right after the label, it sits close under it, and the group gap follows it.
+ * Elsewhere in the group, the group gap spaces it, like the hint of a field.
+ */
+export const choiceGroupDescription = cv({
+  extend: [controlFieldDescription],
+  class: [
+    "choice-group-description",
+    // Pull the text from the group gap up to a small gap under the label. The
+    // padding of a legend makes the gap, so the margin also works there. The
+    // field gap holds the group gap resolved in the group's font, which is
+    // larger than this text.
+    "[.choice-group-label+&]:-mt-[calc(var(--_field-gap)-(--spacing(1)))]",
+    "group-ui-disabled/choice-group:ak-ink-0",
+    "group-ui-disabled/choice-group:forced-colors:text-[GrayText]",
+  ],
+});
+
+/**
+ * Stacks the fields or cards of a choice group. It adds no role. Its gap spaces
+ * only the items, so the group label keeps the group gap.
+ */
+export const choiceList = cv({
+  // Zero specificity lets caller layout classes win.
+  class: "choice-list min-w-0 [:where(&)]:flex [:where(&)]:flex-col",
+  variants: {
+    /**
+     * Sets the gap between the items. `auto` takes two thirds of the gap of the
+     * choice group around the list, so the group label stays further from the
+     * items than they are from each other. Zero specificity lets caller gap
+     * classes win.
+     * @default "auto"
+     */
+    $gap: {
+      // Outside a group, use the group gap of simple fields.
+      auto: "[:where(&)]:gap-[calc(var(--choice-group-gap,--spacing(3))*2/3)]",
+      ...choiceItemsGap,
+    },
+  },
+  defaultVariants: {
+    $gap: "auto",
   },
 });

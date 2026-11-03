@@ -8,6 +8,7 @@ import {
   RadioCardLabel,
   RadioCardSlot,
   RadioGroup,
+  RadioList,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { useState } from "react";
@@ -106,81 +107,81 @@ export default function Example() {
             <p className="ak-ink-70">$180</p>
           </div>
           <RadioGroup
-            // The label shows the picked color as text, and it takes a full row
-            // above the swatches.
-            label={{
-              className: "w-full",
-              children: (
-                <>
-                  Color:{" "}
-                  <span className="font-normal">{currentColor?.label}</span>
-                </>
-              ),
-            }}
+            // The label shows the picked color as text.
+            label={
+              <>
+                Color:{" "}
+                <span className="font-normal">{currentColor?.label}</span>
+              </>
+            }
             value={color}
             setValue={setColor}
-            className="flex flex-wrap gap-2"
           >
-            {colors.map((item) => (
-              <RadioCard
-                key={item.value}
-                value={item.value}
-                aria-label={item.label}
-                $rounded="full"
-                $p={1}
-              >
-                {/* The slot paints the color as a layer. Its border keeps a
-                    light or dark color visible on the card. */}
-                <RadioCardSlot
-                  $layer={item.color}
-                  $border
+            {/* The swatches go in a row, and they wrap when it is full. Small
+                swatches take a smaller gap than cards. */}
+            <RadioList $gap="md" className="flex-row flex-wrap">
+              {colors.map((item) => (
+                <RadioCard
+                  key={item.value}
+                  value={item.value}
+                  aria-label={item.label}
                   $rounded="full"
-                  $size="xl"
-                />
-              </RadioCard>
-            ))}
+                  $p={1}
+                >
+                  {/* The slot paints the color as a layer. Its border keeps a
+                      light or dark color visible on the card. */}
+                  <RadioCardSlot
+                    $layer={item.color}
+                    $border
+                    $rounded="full"
+                    $size="xl"
+                  />
+                </RadioCard>
+              ))}
+            </RadioList>
           </RadioGroup>
           {/* The width fits four columns, so the sizes fill the row. */}
-          <RadioCardGrid
+          <RadioGroup
             label="Size"
             value={size}
             setValue={setSize}
-            $minItemSize="3.5rem"
             className="max-w-80"
           >
-            {sizes.map((item) => (
-              <RadioCard
-                key={item.value}
-                value={item.value}
-                disabled={item.soldOut}
-                $p={2}
-              >
-                {item.soldOut ? (
-                  // The line through the size shows that it is not available.
-                  // Screen readers get the same text as the tooltip from the
-                  // description. The anchor stays out of the Tab order, so the
-                  // group keeps one Tab stop.
-                  <Tooltip text="Sold out. Back on 20 November.">
-                    <RadioCardContent
-                      tabIndex={-1}
-                      className="items-center text-center"
-                    >
-                      <RadioCardLabel className="line-through">
-                        {item.label}
-                      </RadioCardLabel>
-                      <RadioCardDescription className="sr-only">
-                        Sold out. Back on 20 November.
-                      </RadioCardDescription>
+            <RadioCardGrid $minItemSize="3.5rem">
+              {sizes.map((item) => (
+                <RadioCard
+                  key={item.value}
+                  value={item.value}
+                  disabled={item.soldOut}
+                  $p={2}
+                >
+                  {item.soldOut ? (
+                    // The line through the size shows that it is not
+                    // available. Screen readers get the same text as the
+                    // tooltip from the description. The anchor stays out of
+                    // the Tab order, so the group keeps one Tab stop.
+                    <Tooltip text="Sold out. Back on 20 November.">
+                      <RadioCardContent
+                        tabIndex={-1}
+                        className="items-center text-center"
+                      >
+                        <RadioCardLabel className="line-through">
+                          {item.label}
+                        </RadioCardLabel>
+                        <RadioCardDescription className="sr-only">
+                          Sold out. Back on 20 November.
+                        </RadioCardDescription>
+                      </RadioCardContent>
+                    </Tooltip>
+                  ) : (
+                    <RadioCardContent className="items-center text-center">
+                      <RadioCardLabel>{item.label}</RadioCardLabel>
                     </RadioCardContent>
-                  </Tooltip>
-                ) : (
-                  <RadioCardContent className="items-center text-center">
-                    <RadioCardLabel>{item.label}</RadioCardLabel>
-                  </RadioCardContent>
-                )}
-              </RadioCard>
-            ))}
-          </RadioCardGrid>
+                  )}
+                </RadioCard>
+              ))}
+            </RadioCardGrid>
+          </RadioGroup>
           <Button
             $kind="bevel"
             $layer="brand"

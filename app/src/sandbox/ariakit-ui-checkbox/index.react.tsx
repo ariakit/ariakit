@@ -24,7 +24,9 @@ import {
   CheckboxCardSlot,
   CheckboxDescription,
   CheckboxField,
+  CheckboxGroup,
   CheckboxLabel,
+  CheckboxList,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
 import type { CheckboxCardCheckProps } from "@ariakit/ui/components/checkbox.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
@@ -165,50 +167,33 @@ function CountedCardGrid() {
   const [selected, setSelected] = useState(["analytics"]);
   return (
     <div className="grid w-full gap-3">
-      <CheckboxCardGrid aria-label="Features" $minItemSize="11rem">
-        {features.map((feature) => (
-          <CheckboxCard
-            key={feature.value}
-            value={feature.value}
-            checked={selected.includes(feature.value)}
-            onChange={(event) => {
-              const { checked } = event.target;
-              setSelected((values) =>
-                toggleValue(values, feature.value, checked),
-              );
-            }}
-          >
-            <CheckboxCardSlot>
-              <feature.icon />
-            </CheckboxCardSlot>
-            <CheckboxCardLabel>{feature.label}</CheckboxCardLabel>
-            <CheckboxCardCheck />
-          </CheckboxCard>
-        ))}
-      </CheckboxCardGrid>
+      <CheckboxGroup aria-label="Features">
+        <CheckboxCardGrid $minItemSize="11rem">
+          {features.map((feature) => (
+            <CheckboxCard
+              key={feature.value}
+              value={feature.value}
+              checked={selected.includes(feature.value)}
+              onChange={(event) => {
+                const { checked } = event.target;
+                setSelected((values) =>
+                  toggleValue(values, feature.value, checked),
+                );
+              }}
+            >
+              <CheckboxCardSlot>
+                <feature.icon />
+              </CheckboxCardSlot>
+              <CheckboxCardLabel>{feature.label}</CheckboxCardLabel>
+              <CheckboxCardCheck />
+            </CheckboxCard>
+          ))}
+        </CheckboxCardGrid>
+      </CheckboxGroup>
       <Text render={<p />} className="ak-ink-70 text-sm">
         {selected.length} of {features.length} selected
       </Text>
     </div>
-  );
-}
-
-interface FeatureGridProps {
-  role?: AriaRole;
-}
-
-// Passes its optional role on as is, so the grid gets a role prop that is
-// present but undefined.
-function FeatureGrid({ role }: FeatureGridProps) {
-  return (
-    <CheckboxCardGrid aria-label="Optional role" role={role} className="w-full">
-      {features.slice(0, 2).map((feature) => (
-        <CheckboxCard key={feature.value} value={feature.value}>
-          <CheckboxCardLabel>{feature.label}</CheckboxCardLabel>
-          <CheckboxCardCheck />
-        </CheckboxCard>
-      ))}
-    </CheckboxCardGrid>
   );
 }
 
@@ -382,6 +367,74 @@ export default function CheckboxExamples() {
         `}
       >
         <SelectAll />
+      </Example>
+
+      <Example
+        title="Labeled group"
+        description="A fieldset whose legend names the group and sits above the rows with the group gap. A description sits close under the legend and describes the group. The list spaces the rows with a smaller gap."
+        code={`
+          <CheckboxGroup
+            label="Email me about"
+            description="We send at most one email a day."
+          >
+            <CheckboxList>
+              <CheckboxField name="email" value="comments" defaultChecked>
+                <CheckboxLabel>Comments</CheckboxLabel>
+              </CheckboxField>
+              <CheckboxField name="email" value="mentions">
+                <CheckboxLabel>Mentions</CheckboxLabel>
+              </CheckboxField>
+              <CheckboxField name="email" value="digest">
+                <CheckboxLabel>Weekly digest</CheckboxLabel>
+              </CheckboxField>
+            </CheckboxList>
+          </CheckboxGroup>
+        `}
+      >
+        <CheckboxGroup
+          label="Email me about"
+          description="We send at most one email a day."
+        >
+          <CheckboxList>
+            <CheckboxField name="email" value="comments" defaultChecked>
+              <CheckboxLabel>Comments</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField name="email" value="mentions">
+              <CheckboxLabel>Mentions</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField name="email" value="digest">
+              <CheckboxLabel>Weekly digest</CheckboxLabel>
+            </CheckboxField>
+          </CheckboxList>
+        </CheckboxGroup>
+      </Example>
+
+      <Example
+        title="Disabled group"
+        description="A disabled fieldset disables every row without a disabled prop on the rows. The legend dims with them, and the checked box keeps its mark on a neutral fill."
+        code={`
+          <CheckboxGroup label="Beta features" disabled>
+            <CheckboxList>
+              <CheckboxField name="beta" value="summaries" defaultChecked>
+                <CheckboxLabel>AI summaries</CheckboxLabel>
+              </CheckboxField>
+              <CheckboxField name="beta" value="themes">
+                <CheckboxLabel>Custom themes</CheckboxLabel>
+              </CheckboxField>
+            </CheckboxList>
+          </CheckboxGroup>
+        `}
+      >
+        <CheckboxGroup label="Beta features" disabled>
+          <CheckboxList>
+            <CheckboxField name="beta" value="summaries" defaultChecked>
+              <CheckboxLabel>AI summaries</CheckboxLabel>
+            </CheckboxField>
+            <CheckboxField name="beta" value="themes">
+              <CheckboxLabel>Custom themes</CheckboxLabel>
+            </CheckboxField>
+          </CheckboxList>
+        </CheckboxGroup>
       </Example>
 
       <Example
@@ -579,81 +632,81 @@ export default function CheckboxExamples() {
         description="Each card is a tile: the icon and the check share the top row, and the label and description fill the row below."
         wide
         code={`
-          <CheckboxCardGrid $minItemSize="14rem">
-            <CheckboxCard value="analytics" $orientation="vertical" $p={4}>
-              <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
-                <ChartBar />
-              </CheckboxCardSlot>
-              <CheckboxCardContent>
-                <CheckboxCardLabel>Analytics</CheckboxCardLabel>
-                <CheckboxCardDescription>Usage and retention</CheckboxCardDescription>
-              </CheckboxCardContent>
-              <CheckboxCardCheck />
-            </CheckboxCard>
-            <CheckboxCard value="alerts" defaultChecked $orientation="vertical" $p={4}>
-              <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
-                <Bell />
-              </CheckboxCardSlot>
-              <CheckboxCardContent>
-                <CheckboxCardLabel>Alerts</CheckboxCardLabel>
-                <CheckboxCardDescription>Email and push</CheckboxCardDescription>
-              </CheckboxCardContent>
-              <CheckboxCardCheck />
-            </CheckboxCard>
-            <CheckboxCard value="exports" $orientation="vertical" $p={4}>
-              <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
-                <Download />
-              </CheckboxCardSlot>
-              <CheckboxCardContent>
-                <CheckboxCardLabel>Exports</CheckboxCardLabel>
-                <CheckboxCardDescription>CSV and JSON</CheckboxCardDescription>
-              </CheckboxCardContent>
-              <CheckboxCardCheck />
-            </CheckboxCard>
-            <CheckboxCard value="api" $orientation="vertical" $p={4}>
-              <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
-                <Code />
-              </CheckboxCardSlot>
-              <CheckboxCardContent>
-                <CheckboxCardLabel>API access</CheckboxCardLabel>
-                <CheckboxCardDescription>Keys and webhooks</CheckboxCardDescription>
-              </CheckboxCardContent>
-              <CheckboxCardCheck />
-            </CheckboxCard>
-          </CheckboxCardGrid>
+          <CheckboxGroup aria-label="Features">
+            <CheckboxCardGrid $minItemSize="14rem">
+              <CheckboxCard value="analytics" $orientation="vertical" $p={4}>
+                <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+                  <ChartBar />
+                </CheckboxCardSlot>
+                <CheckboxCardContent>
+                  <CheckboxCardLabel>Analytics</CheckboxCardLabel>
+                  <CheckboxCardDescription>Usage and retention</CheckboxCardDescription>
+                </CheckboxCardContent>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+              <CheckboxCard value="alerts" defaultChecked $orientation="vertical" $p={4}>
+                <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+                  <Bell />
+                </CheckboxCardSlot>
+                <CheckboxCardContent>
+                  <CheckboxCardLabel>Alerts</CheckboxCardLabel>
+                  <CheckboxCardDescription>Email and push</CheckboxCardDescription>
+                </CheckboxCardContent>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+              <CheckboxCard value="exports" $orientation="vertical" $p={4}>
+                <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+                  <Download />
+                </CheckboxCardSlot>
+                <CheckboxCardContent>
+                  <CheckboxCardLabel>Exports</CheckboxCardLabel>
+                  <CheckboxCardDescription>CSV and JSON</CheckboxCardDescription>
+                </CheckboxCardContent>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+              <CheckboxCard value="api" $orientation="vertical" $p={4}>
+                <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+                  <Code />
+                </CheckboxCardSlot>
+                <CheckboxCardContent>
+                  <CheckboxCardLabel>API access</CheckboxCardLabel>
+                  <CheckboxCardDescription>Keys and webhooks</CheckboxCardDescription>
+                </CheckboxCardContent>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+            </CheckboxCardGrid>
+          </CheckboxGroup>
         `}
       >
-        <CheckboxCardGrid
-          aria-label="Features"
-          $minItemSize="14rem"
-          className="w-full"
-        >
-          {features.map((feature) => (
-            <CheckboxCard
-              key={feature.value}
-              value={feature.value}
-              defaultChecked={feature.value === "alerts"}
-              $orientation="vertical"
-              $p={4}
-            >
-              <CheckboxCardSlot
-                $size="2xl"
-                $layer="brand"
-                $mix={20}
-                $rounded="lg"
+        <CheckboxGroup aria-label="Features" className="w-full">
+          <CheckboxCardGrid $minItemSize="14rem">
+            {features.map((feature) => (
+              <CheckboxCard
+                key={feature.value}
+                value={feature.value}
+                defaultChecked={feature.value === "alerts"}
+                $orientation="vertical"
+                $p={4}
               >
-                <feature.icon />
-              </CheckboxCardSlot>
-              <CheckboxCardContent>
-                <CheckboxCardLabel>{feature.label}</CheckboxCardLabel>
-                <CheckboxCardDescription>
-                  {feature.description}
-                </CheckboxCardDescription>
-              </CheckboxCardContent>
-              <CheckboxCardCheck />
-            </CheckboxCard>
-          ))}
-        </CheckboxCardGrid>
+                <CheckboxCardSlot
+                  $size="2xl"
+                  $layer="brand"
+                  $mix={20}
+                  $rounded="lg"
+                >
+                  <feature.icon />
+                </CheckboxCardSlot>
+                <CheckboxCardContent>
+                  <CheckboxCardLabel>{feature.label}</CheckboxCardLabel>
+                  <CheckboxCardDescription>
+                    {feature.description}
+                  </CheckboxCardDescription>
+                </CheckboxCardContent>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+            ))}
+          </CheckboxCardGrid>
+        </CheckboxGroup>
       </Example>
 
       <Example
@@ -739,24 +792,26 @@ export default function CheckboxExamples() {
 
       <Example
         title="Card grid"
-        description="Cards packed into equal rows. The count under the grid follows the checked cards."
+        description="Cards packed into equal rows. The fieldset around the grid names the cards, and the count under it follows the checked cards."
         code={`
-          <CheckboxCardGrid $minItemSize="11rem">
-            <CheckboxCard value="analytics" checked>
-              <CheckboxCardSlot>
-                <ChartBar />
-              </CheckboxCardSlot>
-              <CheckboxCardLabel>Analytics</CheckboxCardLabel>
-              <CheckboxCardCheck />
-            </CheckboxCard>
-            <CheckboxCard value="alerts" checked={false}>
-              <CheckboxCardSlot>
-                <Bell />
-              </CheckboxCardSlot>
-              <CheckboxCardLabel>Alerts</CheckboxCardLabel>
-              <CheckboxCardCheck />
-            </CheckboxCard>
-          </CheckboxCardGrid>
+          <CheckboxGroup aria-label="Features">
+            <CheckboxCardGrid $minItemSize="11rem">
+              <CheckboxCard value="analytics" checked>
+                <CheckboxCardSlot>
+                  <ChartBar />
+                </CheckboxCardSlot>
+                <CheckboxCardLabel>Analytics</CheckboxCardLabel>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+              <CheckboxCard value="alerts" checked={false}>
+                <CheckboxCardSlot>
+                  <Bell />
+                </CheckboxCardSlot>
+                <CheckboxCardLabel>Alerts</CheckboxCardLabel>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+            </CheckboxCardGrid>
+          </CheckboxGroup>
         `}
       >
         <CountedCardGrid />
@@ -766,53 +821,57 @@ export default function CheckboxExamples() {
         title="Floating check"
         description="The check becomes a stamp in the card's top-end corner, takes its colors from the surface around the card, and shows only while the card is checked."
         code={`
-          <CheckboxCardGrid>
-            <CheckboxCard value="analytics" defaultChecked>
-              <CheckboxCardSlot>
-                <ChartBar />
-              </CheckboxCardSlot>
-              <CheckboxCardLabel>Analytics</CheckboxCardLabel>
-              <CheckboxCardCheck $floating />
-            </CheckboxCard>
-            <CheckboxCard value="alerts">
-              <CheckboxCardSlot>
-                <Bell />
-              </CheckboxCardSlot>
-              <CheckboxCardLabel>Alerts</CheckboxCardLabel>
-              <CheckboxCardCheck $floating />
-            </CheckboxCard>
-            <CheckboxCard value="exports">
-              <CheckboxCardSlot>
-                <Download />
-              </CheckboxCardSlot>
-              <CheckboxCardLabel>Exports</CheckboxCardLabel>
-              <CheckboxCardCheck $floating />
-            </CheckboxCard>
-            <CheckboxCard value="api" defaultChecked>
-              <CheckboxCardSlot>
-                <Code />
-              </CheckboxCardSlot>
-              <CheckboxCardLabel>API access</CheckboxCardLabel>
-              <CheckboxCardCheck $floating />
-            </CheckboxCard>
-          </CheckboxCardGrid>
+          <CheckboxGroup aria-label="Features">
+            <CheckboxCardGrid>
+              <CheckboxCard value="analytics" defaultChecked>
+                <CheckboxCardSlot>
+                  <ChartBar />
+                </CheckboxCardSlot>
+                <CheckboxCardLabel>Analytics</CheckboxCardLabel>
+                <CheckboxCardCheck $floating />
+              </CheckboxCard>
+              <CheckboxCard value="alerts">
+                <CheckboxCardSlot>
+                  <Bell />
+                </CheckboxCardSlot>
+                <CheckboxCardLabel>Alerts</CheckboxCardLabel>
+                <CheckboxCardCheck $floating />
+              </CheckboxCard>
+              <CheckboxCard value="exports">
+                <CheckboxCardSlot>
+                  <Download />
+                </CheckboxCardSlot>
+                <CheckboxCardLabel>Exports</CheckboxCardLabel>
+                <CheckboxCardCheck $floating />
+              </CheckboxCard>
+              <CheckboxCard value="api" defaultChecked>
+                <CheckboxCardSlot>
+                  <Code />
+                </CheckboxCardSlot>
+                <CheckboxCardLabel>API access</CheckboxCardLabel>
+                <CheckboxCardCheck $floating />
+              </CheckboxCard>
+            </CheckboxCardGrid>
+          </CheckboxGroup>
         `}
       >
-        <CheckboxCardGrid aria-label="Features" className="w-full">
-          {features.map((feature, index) => (
-            <CheckboxCard
-              key={feature.value}
-              value={feature.value}
-              defaultChecked={index === 0 || index === features.length - 1}
-            >
-              <CheckboxCardSlot>
-                <feature.icon />
-              </CheckboxCardSlot>
-              <CheckboxCardLabel>{feature.label}</CheckboxCardLabel>
-              <CheckboxCardCheck $floating />
-            </CheckboxCard>
-          ))}
-        </CheckboxCardGrid>
+        <CheckboxGroup aria-label="Features" className="w-full">
+          <CheckboxCardGrid>
+            {features.map((feature, index) => (
+              <CheckboxCard
+                key={feature.value}
+                value={feature.value}
+                defaultChecked={index === 0 || index === features.length - 1}
+              >
+                <CheckboxCardSlot>
+                  <feature.icon />
+                </CheckboxCardSlot>
+                <CheckboxCardLabel>{feature.label}</CheckboxCardLabel>
+                <CheckboxCardCheck $floating />
+              </CheckboxCard>
+            ))}
+          </CheckboxCardGrid>
+        </CheckboxGroup>
       </Example>
 
       <Example
@@ -1093,44 +1152,50 @@ export default function CheckboxExamples() {
         description="On a brand surface, a checked card's tint can blend in, so the check marks show which card is checked."
         code={`
           <Frame $layer="brand" $rounded="xl" $p={4}>
+            <CheckboxGroup aria-label="Add-ons">
+              <CheckboxCardGrid>
+                <CheckboxCard value="exports" defaultChecked>
+                  <CheckboxCardCheck />
+                  <CheckboxCardContent>
+                    <CheckboxCardLabel>Exports</CheckboxCardLabel>
+                    <CheckboxCardDescription>CSV and JSON</CheckboxCardDescription>
+                  </CheckboxCardContent>
+                </CheckboxCard>
+                <CheckboxCard value="api">
+                  <CheckboxCardCheck />
+                  <CheckboxCardContent>
+                    <CheckboxCardLabel>API access</CheckboxCardLabel>
+                    <CheckboxCardDescription>Keys and webhooks</CheckboxCardDescription>
+                  </CheckboxCardContent>
+                </CheckboxCard>
+              </CheckboxCardGrid>
+            </CheckboxGroup>
+          </Frame>
+        `}
+      >
+        <Frame $layer="brand" $rounded="xl" $p={4} className="w-full">
+          <CheckboxGroup aria-label="Add-ons">
             <CheckboxCardGrid>
               <CheckboxCard value="exports" defaultChecked>
                 <CheckboxCardCheck />
                 <CheckboxCardContent>
                   <CheckboxCardLabel>Exports</CheckboxCardLabel>
-                  <CheckboxCardDescription>CSV and JSON</CheckboxCardDescription>
+                  <CheckboxCardDescription>
+                    CSV and JSON
+                  </CheckboxCardDescription>
                 </CheckboxCardContent>
               </CheckboxCard>
               <CheckboxCard value="api">
                 <CheckboxCardCheck />
                 <CheckboxCardContent>
                   <CheckboxCardLabel>API access</CheckboxCardLabel>
-                  <CheckboxCardDescription>Keys and webhooks</CheckboxCardDescription>
+                  <CheckboxCardDescription>
+                    Keys and webhooks
+                  </CheckboxCardDescription>
                 </CheckboxCardContent>
               </CheckboxCard>
             </CheckboxCardGrid>
-          </Frame>
-        `}
-      >
-        <Frame $layer="brand" $rounded="xl" $p={4} className="w-full">
-          <CheckboxCardGrid aria-label="Add-ons">
-            <CheckboxCard value="exports" defaultChecked>
-              <CheckboxCardCheck />
-              <CheckboxCardContent>
-                <CheckboxCardLabel>Exports</CheckboxCardLabel>
-                <CheckboxCardDescription>CSV and JSON</CheckboxCardDescription>
-              </CheckboxCardContent>
-            </CheckboxCard>
-            <CheckboxCard value="api">
-              <CheckboxCardCheck />
-              <CheckboxCardContent>
-                <CheckboxCardLabel>API access</CheckboxCardLabel>
-                <CheckboxCardDescription>
-                  Keys and webhooks
-                </CheckboxCardDescription>
-              </CheckboxCardContent>
-            </CheckboxCard>
-          </CheckboxCardGrid>
+          </CheckboxGroup>
         </Frame>
       </Example>
 
@@ -1143,41 +1208,45 @@ export default function CheckboxExamples() {
         description="A tile card in a right-to-left page. The slot starts at the right edge and the check ends at the left edge."
         code={`
           <div dir="rtl">
-            <CheckboxCardGrid $minItemSize="12rem">
-              <CheckboxCard value="analytics" $orientation="vertical" $p={4}>
-                <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
-                  <ChartBar />
-                </CheckboxCardSlot>
-                <CheckboxCardContent>
-                  <CheckboxCardLabel>التحليلات</CheckboxCardLabel>
-                  <CheckboxCardDescription>الاستخدام والاحتفاظ</CheckboxCardDescription>
-                </CheckboxCardContent>
-                <CheckboxCardCheck />
-              </CheckboxCard>
-            </CheckboxCardGrid>
+            <CheckboxGroup aria-label="الميزات">
+              <CheckboxCardGrid $minItemSize="12rem">
+                <CheckboxCard value="analytics" $orientation="vertical" $p={4}>
+                  <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+                    <ChartBar />
+                  </CheckboxCardSlot>
+                  <CheckboxCardContent>
+                    <CheckboxCardLabel>التحليلات</CheckboxCardLabel>
+                    <CheckboxCardDescription>الاستخدام والاحتفاظ</CheckboxCardDescription>
+                  </CheckboxCardContent>
+                  <CheckboxCardCheck />
+                </CheckboxCard>
+              </CheckboxCardGrid>
+            </CheckboxGroup>
           </div>
         `}
       >
         <div dir="rtl" lang="ar" className="w-full">
-          <CheckboxCardGrid aria-label="الميزات" $minItemSize="12rem">
-            <CheckboxCard value="analytics" $orientation="vertical" $p={4}>
-              <CheckboxCardSlot
-                $size="2xl"
-                $layer="brand"
-                $mix={20}
-                $rounded="lg"
-              >
-                <ChartBar />
-              </CheckboxCardSlot>
-              <CheckboxCardContent>
-                <CheckboxCardLabel>التحليلات</CheckboxCardLabel>
-                <CheckboxCardDescription>
-                  الاستخدام والاحتفاظ
-                </CheckboxCardDescription>
-              </CheckboxCardContent>
-              <CheckboxCardCheck />
-            </CheckboxCard>
-          </CheckboxCardGrid>
+          <CheckboxGroup aria-label="الميزات">
+            <CheckboxCardGrid $minItemSize="12rem">
+              <CheckboxCard value="analytics" $orientation="vertical" $p={4}>
+                <CheckboxCardSlot
+                  $size="2xl"
+                  $layer="brand"
+                  $mix={20}
+                  $rounded="lg"
+                >
+                  <ChartBar />
+                </CheckboxCardSlot>
+                <CheckboxCardContent>
+                  <CheckboxCardLabel>التحليلات</CheckboxCardLabel>
+                  <CheckboxCardDescription>
+                    الاستخدام والاحتفاظ
+                  </CheckboxCardDescription>
+                </CheckboxCardContent>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+            </CheckboxCardGrid>
+          </CheckboxGroup>
         </div>
       </Example>
 
@@ -1186,9 +1255,57 @@ export default function CheckboxExamples() {
         description="A badge in a tile's content or in its top row keeps its own slot spacing. The same badge follows the tiles for comparison."
         stretch
         code={`
+          <CheckboxGroup aria-label="Plans">
+            <CheckboxCardGrid $minItemSize="12rem">
+              <CheckboxCard value="pro" $orientation="vertical" $p={4}>
+                <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+                  <ChartBar />
+                </CheckboxCardSlot>
+                <CheckboxCardContent>
+                  <CheckboxCardLabel>Pro</CheckboxCardLabel>
+                  <Badge $layer="brand">
+                    <BadgeSlot>
+                      <Sparkles />
+                    </BadgeSlot>
+                    <BadgeLabel>Recommended</BadgeLabel>
+                  </Badge>
+                </CheckboxCardContent>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+              <CheckboxCard value="team" $orientation="vertical" $p={4}>
+                <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+                  <ChartBar />
+                </CheckboxCardSlot>
+                <Badge $layer="brand">
+                  <BadgeSlot>
+                    <Sparkles />
+                  </BadgeSlot>
+                  <BadgeLabel>Popular</BadgeLabel>
+                </Badge>
+                <CheckboxCardContent>
+                  <CheckboxCardLabel>Team</CheckboxCardLabel>
+                </CheckboxCardContent>
+                <CheckboxCardCheck />
+              </CheckboxCard>
+            </CheckboxCardGrid>
+          </CheckboxGroup>
+          <Badge $layer="brand">
+            <BadgeSlot>
+              <Sparkles />
+            </BadgeSlot>
+            <BadgeLabel>Recommended</BadgeLabel>
+          </Badge>
+        `}
+      >
+        <CheckboxGroup aria-label="Plans">
           <CheckboxCardGrid $minItemSize="12rem">
             <CheckboxCard value="pro" $orientation="vertical" $p={4}>
-              <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+              <CheckboxCardSlot
+                $size="2xl"
+                $layer="brand"
+                $mix={20}
+                $rounded="lg"
+              >
                 <ChartBar />
               </CheckboxCardSlot>
               <CheckboxCardContent>
@@ -1203,7 +1320,12 @@ export default function CheckboxExamples() {
               <CheckboxCardCheck />
             </CheckboxCard>
             <CheckboxCard value="team" $orientation="vertical" $p={4}>
-              <CheckboxCardSlot $size="2xl" $layer="brand" $mix={20} $rounded="lg">
+              <CheckboxCardSlot
+                $size="2xl"
+                $layer="brand"
+                $mix={20}
+                $rounded="lg"
+              >
                 <ChartBar />
               </CheckboxCardSlot>
               <Badge $layer="brand">
@@ -1218,56 +1340,7 @@ export default function CheckboxExamples() {
               <CheckboxCardCheck />
             </CheckboxCard>
           </CheckboxCardGrid>
-          <Badge $layer="brand">
-            <BadgeSlot>
-              <Sparkles />
-            </BadgeSlot>
-            <BadgeLabel>Recommended</BadgeLabel>
-          </Badge>
-        `}
-      >
-        <CheckboxCardGrid aria-label="Plans" $minItemSize="12rem">
-          <CheckboxCard value="pro" $orientation="vertical" $p={4}>
-            <CheckboxCardSlot
-              $size="2xl"
-              $layer="brand"
-              $mix={20}
-              $rounded="lg"
-            >
-              <ChartBar />
-            </CheckboxCardSlot>
-            <CheckboxCardContent>
-              <CheckboxCardLabel>Pro</CheckboxCardLabel>
-              <Badge $layer="brand">
-                <BadgeSlot>
-                  <Sparkles />
-                </BadgeSlot>
-                <BadgeLabel>Recommended</BadgeLabel>
-              </Badge>
-            </CheckboxCardContent>
-            <CheckboxCardCheck />
-          </CheckboxCard>
-          <CheckboxCard value="team" $orientation="vertical" $p={4}>
-            <CheckboxCardSlot
-              $size="2xl"
-              $layer="brand"
-              $mix={20}
-              $rounded="lg"
-            >
-              <ChartBar />
-            </CheckboxCardSlot>
-            <Badge $layer="brand">
-              <BadgeSlot>
-                <Sparkles />
-              </BadgeSlot>
-              <BadgeLabel>Popular</BadgeLabel>
-            </Badge>
-            <CheckboxCardContent>
-              <CheckboxCardLabel>Team</CheckboxCardLabel>
-            </CheckboxCardContent>
-            <CheckboxCardCheck />
-          </CheckboxCard>
-        </CheckboxCardGrid>
+        </CheckboxGroup>
         {/* A row, so the badge keeps its own width outside the tile. */}
         <div className="flex">
           <Badge $layer="brand">
@@ -1279,18 +1352,33 @@ export default function CheckboxExamples() {
         </div>
       </Example>
       <Example
-        title="Card grid with an optional role"
-        description="A wrapper passes its optional role on to the grid. Without a role, the grid keeps its group role."
+        title="Card grid with a role"
+        description="The grid adds no role of its own and passes a role from the app on as is, so a group role and a label name the cards without a fieldset."
         code={`
-          <CheckboxCardGrid aria-label="Optional role" role={role}>
+          <CheckboxCardGrid role="group" aria-label="Caller role">
             <CheckboxCard value="analytics">
               <CheckboxCardLabel>Analytics</CheckboxCardLabel>
+              <CheckboxCardCheck />
+            </CheckboxCard>
+            <CheckboxCard value="alerts">
+              <CheckboxCardLabel>Alerts</CheckboxCardLabel>
               <CheckboxCardCheck />
             </CheckboxCard>
           </CheckboxCardGrid>
         `}
       >
-        <FeatureGrid />
+        <CheckboxCardGrid
+          role="group"
+          aria-label="Caller role"
+          className="w-full"
+        >
+          {features.slice(0, 2).map((feature) => (
+            <CheckboxCard key={feature.value} value={feature.value}>
+              <CheckboxCardLabel>{feature.label}</CheckboxCardLabel>
+              <CheckboxCardCheck />
+            </CheckboxCard>
+          ))}
+        </CheckboxCardGrid>
       </Example>
       <Example
         title="Card badge"

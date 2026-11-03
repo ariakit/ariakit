@@ -13,17 +13,21 @@ The gallery starts with a plain group of notification settings. Then it shows se
 
 `CheckboxField` is a row with a native checkbox before its text. Put a `CheckboxLabel` and a `CheckboxDescription` in it to show a second line, as in the Descriptions example. The description is the accessible description of the checkbox, so it is not part of its name. Other props, such as `name`, `value`, `checked`, and `required`, go to the checkbox.
 
-A field without a background or a border has no padding, so the checkbox starts at the edge of the row, like the icon of an `InputError`. A `legend`, a hint, and an error message then line up with the checkboxes. To show an error, put an `InputError` after the field, list its id in the `aria-describedby` of the field, and set `aria-invalid`, as in the Error Message example.
+A field without a background or a border has no padding, so the checkbox starts at the edge of the row, like the icon of an `InputError`. The label of a `CheckboxGroup`, a hint, and an error message then line up with the checkboxes. To show an error, put an `InputError` after the field, list its id in the `aria-describedby` of the field, and set `aria-invalid`, as in the Error Message example.
 
 Each checkbox keeps its own state. Set `defaultChecked` to start with a checked box, or set `checked` and `onChange` to control it, as in the Conditional Field example. To keep the values of a group in one array, put the checkboxes in a `CheckboxProvider` from `@ariakit/react` and give each one a `value`, as in the Select All, Selection Limit, and Filter Chips examples. Set `checked="mixed"` to draw a dash for the mixed state, as on All data in the Select All example.
 
-Ariakit UI has no group component for checkboxes, because a group of checkboxes only needs a name. Put the checkboxes in a `fieldset` with a `legend`, as in the first example, or in an element with `role="group"` and an `aria-labelledby` that points to a visible label, as in the card examples. A `disabled` fieldset disables all of its checkboxes.
+`CheckboxGroup` is a `fieldset` that groups checkboxes under a name. Its `label` prop shows a `CheckboxGroupLabel` first in the group. This label is the `legend` of the fieldset, so it names the group. The prop takes text, a `CheckboxGroupLabel` element, or `CheckboxGroupLabel` props. To name a group without a visible label, use `aria-label` or `aria-labelledby`. The group keeps no state, so put a `CheckboxProvider` inside it to keep the values in one array. Set `disabled` on the group to disable all of its checkboxes.
+
+The `description` prop shows a `CheckboxGroupDescription` right after the label, close under it. The group takes it as its accessible description. A group takes one description.
+
+A `CheckboxGroup` stacks its label, its description, its checkboxes, and an error with the group gap. The label has the same text style as an `InputLabel`. By default, the gap is larger when the group has cards or checkboxes with descriptions, because they take more space. Set `$gap` on the group to change it. Put the checkboxes in a `CheckboxList`. Its gap spaces only the checkboxes, and by default it is two thirds of the group gap, so the label stays further from the checkboxes than they are from each other. Set `$gap` on the list to change it, such as `$gap="md"` for the small chips in the Filter Chips example. Layout classes replace its column, such as the row of chips that wraps. Text about the group can also go after the list, such as the status of the Selection Limit example.
 
 `CheckboxCard` is a card with a hidden native checkbox, and its content names the checkbox. `CheckboxCardContent` stacks a `CheckboxCardLabel` and a `CheckboxCardDescription`. `CheckboxCardSlot` holds other content, such as an icon or a price. A `Badge` goes in a slot with `$kind="box"`. To let the description use the full width, put the label and the badge in a `CheckboxCardLabelRow` inside `CheckboxCardContent`, as in the Card Badges example. The badge wraps below the label when the row runs out of room.
 
 `CheckboxCardCheck` draws the round mark of a card. With `$floating`, a check shows on the top-end corner of the checked card only, as in the Floating Check example. A card without a mark shows its checked state with the brand fill and a second edge pixel, as in the Cards Without Marks example. The Filter Chips example sets `$rounded="full"` and `$size="sm"` on the cards.
 
-`CheckboxCardGrid` puts its cards in columns of equal width, with rows of equal height. `$minItemSize` sets the narrowest width of a card before the grid drops a column. The grid has the `group` role, so name it with `aria-labelledby` or `aria-label`.
+`CheckboxCardGrid` puts its cards in columns of equal width, with rows of equal height. `$minItemSize` sets the narrowest width of a card before the grid drops a column. Like `CheckboxList`, its gap is two thirds of the group gap by default. The grid is only a layout, and it has no role. Use it in a `CheckboxGroup` in place of a `CheckboxList`, so the label of the group names the cards, as in the Floating Check example.
 
 A switch is a checkbox with a different mark and role. Set `$mark="switch"` on a `Checkbox` or a `CheckboxField`, as in the Switch example, or on a `CheckboxCard`, as in the Switch Cards example. It draws the switch and sets the `switch` role by default. On a card, the `CheckboxCardCheck` takes the mark from the card.
 
@@ -33,7 +37,7 @@ Set `disabled` on a checkbox or a card to disable it. A disabled checkbox keeps 
 
 Each checkbox is a Tab stop, and Space checks or clears the checkbox that has focus. A disabled checkbox is not a Tab stop. This is the [checkbox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/) of the ARIA Authoring Practices Guide.
 
-The name of a group tells what the options are for. A screen reader reads it when focus moves into the group. A `legend` names its `fieldset`, and `aria-labelledby` names an element with the `group` role.
+The name of a group tells what the options are for. A screen reader reads it when focus moves into the group. A `fieldset` has the `group` role, and its `legend` names it, so the `label` of a `CheckboxGroup` names the group. A `CheckboxList` and a `CheckboxCardGrid` have no role, so only the group needs a name.
 
 A checkbox in the mixed state shows that some of the options it controls are checked, but not all of them. In the Select All example, All data lists the ids of its items in `aria-controls`. A click on All data in the mixed state checks all of the items, and the next click clears them. The items are indented below All data, so the layout shows which checkboxes it controls.
 

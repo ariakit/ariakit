@@ -2,9 +2,11 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
+import { createOptionalRender } from "../react-utils/create-render.react.ts";
 import {
   DescriptionContext,
   useDescription,
+  useDescribedBy,
   useLabelDescription,
 } from "../react-utils/use-description.react.ts";
 import {
@@ -20,7 +22,11 @@ import {
   checkboxContent,
   checkboxDescription,
   checkboxField,
+  checkboxGroup,
+  checkboxGroupDescription,
+  checkboxGroupLabel,
   checkboxLabel,
+  checkboxList,
 } from "../styles/checkbox.ts";
 
 type CheckboxMark = VariantProps<typeof checkbox>["$mark"];
@@ -344,22 +350,148 @@ export interface CheckboxCardGridProps
 
 /**
  * Packs `CheckboxCard`s into equal rows, as many columns as `$minItemSize`
- * allows. It renders a group, like the radio group of `RadioCardGrid`, so name
- * it with `aria-label` or `aria-labelledby`.
+ * allows. Its `$gap` spaces the cards, and the `auto` default takes two thirds
+ * of the group gap. It adds no role, so put it in a `CheckboxGroup` to name the
+ * cards with a legend.
  * @example
- * <CheckboxCardGrid aria-label="Notifications">
- *   <CheckboxCard value="email">Email</CheckboxCard>
- *   <CheckboxCard value="sms">Text message</CheckboxCard>
- * </CheckboxCardGrid>
+ * <CheckboxGroup label="Notifications">
+ *   <CheckboxCardGrid>
+ *     <CheckboxCard value="email">Email</CheckboxCard>
+ *     <CheckboxCard value="sms">Text message</CheckboxCard>
+ *   </CheckboxCardGrid>
+ * </CheckboxGroup>
  */
 export function CheckboxCardGrid(props: CheckboxCardGridProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardGrid);
+  return <ak.Role.div {...checkboxCardGrid.jsx(variantProps)} {...rest} />;
+}
+
+export interface CheckboxGroupProps
+  extends ak.RoleProps<"fieldset">, VariantProps<typeof checkboxGroup> {
+  /**
+   * Legend content, a custom element, or `CheckboxGroupLabel` props. The legend
+   * names the fieldset. Omitted by default; use `aria-label` or
+   * `aria-labelledby` to name a group without a visible label.
+   */
+  label?: React.ReactNode | CheckboxGroupLabelProps;
+  /**
+   * Description content, a custom element, or `CheckboxGroupDescription` props.
+   * It goes right after the legend and describes the group before any
+   * `aria-describedby` passed to the group. Omitted by default.
+   */
+  description?: React.ReactNode | CheckboxGroupDescriptionProps;
+}
+
+/**
+ * A fieldset that groups `CheckboxField`s or `CheckboxCard`s under a legend
+ * with the text style of an `InputLabel`. It stacks its `label`, its
+ * `description`, its checkboxes, and an error with the group gap, which `$gap`
+ * sets. Put the checkboxes in a `CheckboxList` or a `CheckboxCardGrid`, whose
+ * gap is two thirds of the group gap by default, so the legend stays further
+ * from the checkboxes than they are from each other. `disabled` disables every
+ * checkbox in it. Each checkbox keeps its own state; wrap them in the
+ * `CheckboxProvider` of `@ariakit/react` to share an array value.
+ * @example
+ * <CheckboxGroup label="Notify me about">
+ *   <CheckboxList>
+ *     <CheckboxField name="notify" value="comments">Comments</CheckboxField>
+ *     <CheckboxField name="notify" value="mentions">Mentions</CheckboxField>
+ *   </CheckboxList>
+ * </CheckboxGroup>
+ */
+export function CheckboxGroup({
+  label,
+  description,
+  children,
+  ...props
+}: CheckboxGroupProps) {
+  const [variantProps, rest] = splitProps(props, checkboxGroup);
+  const { describedBy, context } = useDescribedBy(rest["aria-describedby"]);
+  const labelElement = createOptionalRender(CheckboxGroupLabel, label);
+  const descriptionElement = createOptionalRender(
+    CheckboxGroupDescription,
+    description,
+  );
+  return (
+    <DescriptionContext.Provider value={context}>
+      <ak.Role.fieldset
+        {...checkboxGroup.jsx(variantProps)}
+        {...rest}
+        aria-describedby={describedBy}
+      >
+        {labelElement}
+        {descriptionElement}
+        {children}
+      </ak.Role.fieldset>
+    </DescriptionContext.Provider>
+  );
+}
+
+export interface CheckboxGroupLabelProps
+  extends ak.RoleProps<"legend">, VariantProps<typeof checkboxGroupLabel> {}
+
+/**
+ * The legend of a `CheckboxGroup`, with the same text style as an `InputLabel`.
+ * It names the group as a direct child of the fieldset. The group's `label`
+ * prop puts it first.
+ * @example
+ * <CheckboxGroup
+ *   label={<CheckboxGroupLabel $truncate>Notify me about</CheckboxGroupLabel>}
+ * >
+ *   <CheckboxList>
+ *     <CheckboxField name="notify" value="comments">Comments</CheckboxField>
+ *   </CheckboxList>
+ * </CheckboxGroup>
+ */
+export function CheckboxGroupLabel(props: CheckboxGroupLabelProps) {
+  const [variantProps, rest] = splitProps(props, checkboxGroupLabel);
+  return <ak.Role.legend {...checkboxGroupLabel.jsx(variantProps)} {...rest} />;
+}
+
+export interface CheckboxGroupDescriptionProps
+  extends ak.RoleProps<"div">, VariantProps<typeof checkboxGroupDescription> {}
+
+/**
+ * Secondary text of a checkbox group, such as a hint about all of its
+ * checkboxes. The group takes it as its accessible description. Right after the
+ * legend, it sits close under it. A group takes one description. Must be nested
+ * inside a `CheckboxGroup`; its `description` prop puts it after the legend.
+ * @example
+ * <CheckboxGroup label="Topics" description="Pick up to three.">
+ *   <CheckboxList>
+ *     <CheckboxField name="topics" value="design">Design</CheckboxField>
+ *     <CheckboxField name="topics" value="sales">Sales</CheckboxField>
+ *   </CheckboxList>
+ * </CheckboxGroup>
+ */
+export function CheckboxGroupDescription(props: CheckboxGroupDescriptionProps) {
+  const [variantProps, rest] = splitProps(props, checkboxGroupDescription);
+  const { id } = useDescription(rest.id);
   return (
     <ak.Role.div
-      {...checkboxCardGrid.jsx(variantProps)}
+      {...checkboxGroupDescription.jsx(variantProps)}
       {...rest}
-      // Preserve the group role when the caller passes undefined.
-      role={rest.role ?? "group"}
+      id={id}
     />
   );
+}
+
+export interface CheckboxListProps
+  extends ak.RoleProps<"div">, VariantProps<typeof checkboxList> {}
+
+/**
+ * Stacks the `CheckboxField`s or `CheckboxCard`s of a `CheckboxGroup`. Its
+ * `$gap` spaces the checkboxes, and the `auto` default takes two thirds of the
+ * group gap. It adds no role.
+ * @example
+ * <CheckboxGroup label="Notify me about">
+ *   <CheckboxList>
+ *     <CheckboxField name="notify" value="comments">Comments</CheckboxField>
+ *     <CheckboxField name="notify" value="mentions">Mentions</CheckboxField>
+ *   </CheckboxList>
+ * </CheckboxGroup>
+ */
+export function CheckboxList(props: CheckboxListProps) {
+  const [variantProps, rest] = splitProps(props, checkboxList);
+  return <ak.Role.div {...checkboxList.jsx(variantProps)} {...rest} />;
 }

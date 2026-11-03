@@ -5,6 +5,7 @@ import {
   RadioField,
   RadioGroup,
   RadioLabel,
+  RadioList,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import {
   Skeleton,
@@ -40,14 +41,16 @@ export default function Example() {
           setLatency(Number(value));
           reload();
         }}
-        className="flex flex-wrap justify-center gap-x-8 gap-y-2 pb-2"
+        className="pb-2"
       >
-        {speeds.map((speed) => (
-          <RadioField key={speed.label} value={String(speed.latency)}>
-            <RadioLabel>{speed.label}</RadioLabel>
-            <RadioDescription>{speed.latency} ms</RadioDescription>
-          </RadioField>
-        ))}
+        <RadioList className="flex-row flex-wrap justify-center gap-x-8 gap-y-2">
+          {speeds.map((speed) => (
+            <RadioField key={speed.label} value={String(speed.latency)}>
+              <RadioLabel>{speed.label}</RadioLabel>
+              <RadioDescription>{speed.latency} ms</RadioDescription>
+            </RadioField>
+          ))}
+        </RadioList>
       </RadioGroup>
       <Frame
         $layer

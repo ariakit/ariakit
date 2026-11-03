@@ -12,9 +12,12 @@ import {
   choiceFieldContent,
   choiceFieldDescription,
   choiceFieldLabel,
+  choiceGroup,
+  choiceGroupDescription,
+  choiceGroupLabel,
   choiceInput,
+  choiceList,
 } from "./choice.ts";
-import { text } from "./text.ts";
 
 /** A native radio input with a circular mark and keyboard focus ring. */
 export const radio = cv({
@@ -88,32 +91,19 @@ export const radioCardLabel = choiceCardLabel;
 export const radioCardDescription = choiceCardDescription;
 
 /**
- * Visible label of a radio group, placed first in the group. It takes a full
- * row when the group is a grid.
+ * A radio group that stacks its label, its description, its radios, and an
+ * error with the group gap.
  */
-export const radioGroupLabel = cv({
-  extend: [text],
-  class: [
-    // :where() lets caller font classes win.
-    "radio-group-label [:where(&)]:text-[0.875em] [:where(&)]:font-medium",
-    "col-span-full",
-    "in-aria-disabled:ak-ink-0",
-    "in-aria-disabled:forced-colors:text-[GrayText]",
-  ],
-});
+export const radioGroup = choiceGroup;
 
-/** A responsive grid of radio cards. */
-export const radioCardGrid = cv({
-  extend: [choiceCardGrid],
-  // The grid makes its rows equal. Size a label row to the label instead, so
-  // the cards keep their own height.
-  class: "has-[>.radio-group-label]:grid-rows-[auto]",
-});
+/** Visible label of a radio group, placed first in the group. */
+export const radioGroupLabel = choiceGroupLabel;
 
-/**
- * Stacks a visible label above a segmented radio group, because the label can't
- * go on the surface of the group. Caller classes can replace the layout.
- */
-export const radioGroupStack = cv({
-  class: "[:where(&)]:flex [:where(&)]:flex-col [:where(&)]:gap-1.5 min-w-0",
-});
+/** Secondary text of a radio group, close under its label. */
+export const radioGroupDescription = choiceGroupDescription;
+
+/** Stacks the radio fields or cards of a radio group. It adds no role. */
+export const radioList = choiceList;
+
+/** A responsive grid of radio cards with equal row heights. */
+export const radioCardGrid = choiceCardGrid;

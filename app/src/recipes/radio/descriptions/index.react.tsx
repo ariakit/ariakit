@@ -3,6 +3,7 @@ import {
   RadioField,
   RadioGroup,
   RadioLabel,
+  RadioList,
 } from "@ariakit/ui/components/radio.ariakit.react";
 
 const options = [
@@ -25,17 +26,15 @@ const options = [
 
 export default function Example() {
   return (
-    <RadioGroup
-      label="Who can open this link?"
-      defaultValue="team"
-      className="grid gap-3"
-    >
-      {options.map((option) => (
-        <RadioField key={option.value} value={option.value}>
-          <RadioLabel>{option.label}</RadioLabel>
-          <RadioDescription>{option.description}</RadioDescription>
-        </RadioField>
-      ))}
+    <RadioGroup label="Who can open this link?" defaultValue="team">
+      <RadioList>
+        {options.map((option) => (
+          <RadioField key={option.value} value={option.value}>
+            <RadioLabel>{option.label}</RadioLabel>
+            <RadioDescription>{option.description}</RadioDescription>
+          </RadioField>
+        ))}
+      </RadioList>
     </RadioGroup>
   );
 }

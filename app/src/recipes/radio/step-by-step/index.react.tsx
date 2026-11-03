@@ -10,6 +10,7 @@ import {
   RadioCardLabelRow,
   RadioCardSlot,
   RadioGroup,
+  RadioList,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { useState } from "react";
 
@@ -154,40 +155,40 @@ export default function Example() {
           <p className="ak-ink-70 text-sm">
             Question {step + 1} of {questions.length}
           </p>
-          {/* Each question has its own group. min-w-0 and a column that can
-              shrink let the cards fit a narrow chat. */}
+          {/* Each question has its own group. */}
           <RadioGroup
             key={question.id}
             label={question.text}
             value={value}
             setValue={setValue}
-            className="grid min-w-0 grid-cols-1 gap-2"
           >
-            {question.options.map((option) => (
-              <RadioCard
-                key={option.value}
-                value={option.value}
-                autoFocus={moveFocus && option.value === focusValue}
-              >
-                <RadioCardCheck />
-                <RadioCardContent>
-                  {/* The badge shares a row with the label, so the
-                      description takes the full width of the card. In a
-                      narrow chat, the badge wraps below the label. */}
-                  <RadioCardLabelRow>
-                    <RadioCardLabel>{option.label}</RadioCardLabel>
-                    {option.recommended && (
-                      <RadioCardSlot $kind="box">
-                        <Badge $kind="solid">Recommended</Badge>
-                      </RadioCardSlot>
-                    )}
-                  </RadioCardLabelRow>
-                  <RadioCardDescription $truncate={false}>
-                    {option.description}
-                  </RadioCardDescription>
-                </RadioCardContent>
-              </RadioCard>
-            ))}
+            <RadioList>
+              {question.options.map((option) => (
+                <RadioCard
+                  key={option.value}
+                  value={option.value}
+                  autoFocus={moveFocus && option.value === focusValue}
+                >
+                  <RadioCardCheck />
+                  <RadioCardContent>
+                    {/* The badge shares a row with the label, so the
+                        description takes the full width of the card. In a
+                        narrow chat, the badge wraps below the label. */}
+                    <RadioCardLabelRow>
+                      <RadioCardLabel>{option.label}</RadioCardLabel>
+                      {option.recommended && (
+                        <RadioCardSlot $kind="box">
+                          <Badge $kind="solid">Recommended</Badge>
+                        </RadioCardSlot>
+                      )}
+                    </RadioCardLabelRow>
+                    <RadioCardDescription $truncate={false}>
+                      {option.description}
+                    </RadioCardDescription>
+                  </RadioCardContent>
+                </RadioCard>
+              ))}
+            </RadioList>
           </RadioGroup>
           <div className="flex flex-wrap justify-between gap-2">
             <div className="flex gap-2">

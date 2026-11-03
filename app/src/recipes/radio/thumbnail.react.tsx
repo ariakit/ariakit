@@ -9,8 +9,10 @@ import {
   radioCardLabel,
   radioContent,
   radioField,
+  radioGroup,
   radioGroupLabel,
   radioLabel,
+  radioList,
 } from "@ariakit/ui/styles/radio";
 import { clsx } from "clsx";
 
@@ -43,7 +45,7 @@ const fields = [
 export default function Thumbnail() {
   return (
     <div className="grid gap-4">
-      <div className="grid gap-2">
+      <div {...radioGroup.jsx()}>
         <span {...radioGroupLabel.jsx()}>Shipping</span>
         <div className="flex gap-2">
           {shippingOptions.map((option) => (
@@ -65,7 +67,7 @@ export default function Thumbnail() {
           ))}
         </div>
       </div>
-      <div className="grid gap-2">
+      <div {...radioList.jsx()}>
         {deliveryOptions.map((option) => (
           <div key={option.id} {...radioField.jsx()}>
             <span

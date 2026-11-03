@@ -15,6 +15,7 @@ import {
   RadioCardLabel,
   RadioField,
   RadioGroup,
+  RadioList,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { useState } from "react";
 
@@ -24,12 +25,16 @@ export default function Example() {
   const billing = ak.useStoreState(billingStore, "value");
   return (
     <div className="grid gap-8">
-      <RadioGroup label="Plan" defaultValue="pro" className="grid gap-2">
-        <RadioField value="hobby">Hobby</RadioField>
-        <RadioField value="pro">Pro</RadioField>
-        <RadioField value="enterprise">Enterprise</RadioField>
+      <RadioGroup label="Plan" defaultValue="pro">
+        <RadioList>
+          <RadioField value="hobby">Hobby</RadioField>
+          <RadioField value="pro">Pro</RadioField>
+          <RadioField value="enterprise">Enterprise</RadioField>
+        </RadioList>
       </RadioGroup>
 
+      {/* The rows below put the label on the row of the radios, so the group
+          gap spaces all of them. */}
       <RadioGroup
         label={
           <>
@@ -37,7 +42,8 @@ export default function Example() {
           </>
         }
         defaultValue="email"
-        className="flex gap-4"
+        $gap="xl"
+        className="flex-row"
       >
         <RadioField value="email">Email</RadioField>
         <RadioField value="none">None</RadioField>
@@ -47,7 +53,8 @@ export default function Example() {
         label="Theme"
         aria-label="Color theme"
         defaultValue="light"
-        className="flex gap-4"
+        $gap="xl"
+        className="flex-row"
       >
         <RadioField value="light">Light</RadioField>
         <RadioField value="dark">Dark</RadioField>
@@ -58,7 +65,8 @@ export default function Example() {
           label="Size"
           value={size}
           setValue={setSize}
-          className="flex gap-4"
+          $gap="xl"
+          className="flex-row"
         >
           <RadioField value="s">Small</RadioField>
           <RadioField value="m">Medium</RadioField>
@@ -69,34 +77,36 @@ export default function Example() {
       </div>
 
       <div className="grid gap-2">
-        <RadioCardGrid label="Billing" store={billingStore}>
-          <RadioCard value="monthly">
-            <RadioCardLabel>Monthly</RadioCardLabel>
-          </RadioCard>
-          <RadioCard value="yearly">
-            <RadioCardLabel>Yearly</RadioCardLabel>
-          </RadioCard>
-        </RadioCardGrid>
+        <RadioGroup label="Billing" store={billingStore}>
+          <RadioCardGrid>
+            <RadioCard value="monthly">
+              <RadioCardLabel>Monthly</RadioCardLabel>
+            </RadioCard>
+            <RadioCard value="yearly">
+              <RadioCardLabel>Yearly</RadioCardLabel>
+            </RadioCard>
+          </RadioCardGrid>
+        </RadioGroup>
         <p>Billing: {billing}</p>
       </div>
 
-      <RadioGroup
-        label="Shipping"
-        defaultValue="express"
-        className="grid gap-2"
-      >
-        <RadioField value="standard">Standard</RadioField>
-        <RadioField value="express">Express</RadioField>
-        {/* The nested group starts where the text of Express starts: after
-            the box and the gap of a field without padding. */}
-        <RadioGroup
-          label="Delivery window"
-          defaultValue="morning"
-          className="grid gap-2 ps-[1.4375em]"
-        >
-          <RadioField value="morning">Morning</RadioField>
-          <RadioField value="evening">Evening</RadioField>
-        </RadioGroup>
+      <RadioGroup label="Shipping" defaultValue="express">
+        <RadioList>
+          <RadioField value="standard">Standard</RadioField>
+          <RadioField value="express">Express</RadioField>
+          {/* The nested group starts where the text of Express starts: after
+              the box and the gap of a field without padding. */}
+          <RadioGroup
+            label="Delivery window"
+            defaultValue="morning"
+            className="ps-[1.4375em]"
+          >
+            <RadioList>
+              <RadioField value="morning">Morning</RadioField>
+              <RadioField value="evening">Evening</RadioField>
+            </RadioList>
+          </RadioGroup>
+        </RadioList>
       </RadioGroup>
 
       <ak.Toolbar aria-label="Formatting" className="flex items-center gap-4">
@@ -104,7 +114,8 @@ export default function Example() {
         <RadioGroup
           label="Alignment"
           defaultValue="start"
-          className="flex items-center gap-4"
+          $gap="xl"
+          className="flex-row items-center"
         >
           <RadioField value="start">Start</RadioField>
           <RadioField value="center">Center</RadioField>

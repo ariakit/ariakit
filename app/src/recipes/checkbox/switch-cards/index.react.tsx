@@ -5,9 +5,10 @@ import {
   CheckboxCardDescription,
   CheckboxCardLabel,
   CheckboxCardSlot,
+  CheckboxGroup,
+  CheckboxList,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
 import { Bell, CalendarDays, Mail } from "lucide-react";
-import { useId } from "react";
 
 const channels = [
   {
@@ -33,13 +34,9 @@ const channels = [
 ];
 
 export default function Example() {
-  const labelId = useId();
   return (
-    <div className="grid w-[24rem] max-w-full gap-2">
-      <span id={labelId} className="text-sm font-medium">
-        Channels
-      </span>
-      <div role="group" aria-labelledby={labelId} className="grid gap-2">
+    <CheckboxGroup label="Channels" className="w-[24rem] max-w-full">
+      <CheckboxList>
         {channels.map((channel) => (
           <CheckboxCard
             key={channel.value}
@@ -60,7 +57,7 @@ export default function Example() {
             <CheckboxCardCheck />
           </CheckboxCard>
         ))}
-      </div>
-    </div>
+      </CheckboxList>
+    </CheckboxGroup>
   );
 }

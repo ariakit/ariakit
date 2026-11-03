@@ -3,6 +3,7 @@ import {
   RadioCardContent,
   RadioCardGrid,
   RadioCardLabel,
+  RadioGroup,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { Angry, Frown, Laugh, Meh, Smile } from "lucide-react";
 
@@ -17,26 +18,29 @@ const ratings = [
 export default function Example() {
   return (
     // The width fits five columns, so the cards fill the row.
-    <RadioCardGrid
+    <RadioGroup
       label="How was the support you got?"
-      $minItemSize="3.5rem"
       className="w-[24rem] max-w-full"
     >
-      {ratings.map((rating) => (
-        <RadioCard
-          key={rating.value}
-          value={rating.value}
-          $orientation="vertical"
-          $p={2}
-          $px="0.25rem"
-        >
-          <RadioCardContent className="items-center gap-1 text-center">
-            {/* The face is decoration, and the word names the option. */}
-            <rating.icon aria-hidden className="size-7" strokeWidth={1.5} />
-            <RadioCardLabel className="text-sm">{rating.label}</RadioCardLabel>
-          </RadioCardContent>
-        </RadioCard>
-      ))}
-    </RadioCardGrid>
+      <RadioCardGrid $minItemSize="3.5rem">
+        {ratings.map((rating) => (
+          <RadioCard
+            key={rating.value}
+            value={rating.value}
+            $orientation="vertical"
+            $p={2}
+            $px="0.25rem"
+          >
+            <RadioCardContent className="items-center gap-1 text-center">
+              {/* The face is decoration, and the word names the option. */}
+              <rating.icon aria-hidden className="size-7" strokeWidth={1.5} />
+              <RadioCardLabel className="text-sm">
+                {rating.label}
+              </RadioCardLabel>
+            </RadioCardContent>
+          </RadioCard>
+        ))}
+      </RadioCardGrid>
+    </RadioGroup>
   );
 }
