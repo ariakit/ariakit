@@ -633,18 +633,19 @@ export const choiceGroupLabel = cv({
 
 /**
  * Secondary text of a choice group, such as a hint about all of its items.
- * Right after the label, it sits close under it, and the group gap follows it.
- * Elsewhere in the group, the group gap spaces it, like the hint of a field.
+ * Right after the label, it sits close under it, never further than the group
+ * gap, and the group gap follows it. Elsewhere in the group, the group gap
+ * spaces it, like the hint of a field.
  */
 export const choiceGroupDescription = cv({
   extend: [controlFieldDescription],
   class: [
     "choice-group-description",
-    // Pull the text from the group gap up to a small gap under the label. The
-    // padding of a legend makes the gap, so the margin also works there. The
-    // field gap holds the group gap resolved in the group's font, which is
-    // larger than this text.
-    "[.choice-group-label+&]:-mt-[calc(var(--_field-gap)-(--spacing(1)))]",
+    // Pull the text from the group gap up to a small gap under the label, or to
+    // the group gap when it is smaller, such as none. The padding of a legend
+    // makes the gap, so the margin also works there. The field gap holds the
+    // group gap resolved in the group's font, which is larger than this text.
+    "[.choice-group-label+&]:-mt-[max(0px,var(--_field-gap)-(--spacing(1)))]",
     "group-ui-disabled/choice-group:ak-ink-0",
     "group-ui-disabled/choice-group:forced-colors:text-[GrayText]",
   ],
