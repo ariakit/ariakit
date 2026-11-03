@@ -32,12 +32,22 @@ async function getContentHeight(iframe: Locator) {
 }
 
 // The content of the Next.js size sandbox ends after the bottom margin of its
-// footer element.
+// footer element and the bottom padding of the element around it.
 async function getContentBottom(frame: FrameLocator) {
   return frame.locator("footer").evaluate((element) => {
     const { marginBottom } = getComputedStyle(element);
+    const content = element.closest("[data-preview-content]");
+    if (!content) {
+      throw new Error("No content");
+    }
+    const { paddingBottom } = getComputedStyle(content);
     const { bottom } = element.getBoundingClientRect();
-    return bottom + window.scrollY + Number.parseFloat(marginBottom);
+    return (
+      bottom +
+      window.scrollY +
+      Number.parseFloat(marginBottom) +
+      Number.parseFloat(paddingBottom)
+    );
   });
 }
 
@@ -183,10 +193,9 @@ test("preview card frames grow to fit an open popup", async ({ page }) => {
   // the trigger position right as the pin goes, before the next frame, so an
   // example that moved in the still tall frame would show here.
   const unpinnedTops = await trigger.evaluateHandle((element) => {
-    const marked = element.ownerDocument.querySelectorAll(
+    const content = element.ownerDocument.querySelector(
       "[data-preview-content]",
     );
-    const content = marked[marked.length - 1];
     if (!(content instanceof HTMLElement)) throw new Error("No content");
     const tops: number[] = [];
     const observer = new MutationObserver(() => {
@@ -220,6 +229,41 @@ test("preview card frames grow to fit an open popup", async ({ page }) => {
   for (const top of await unpinnedTops.jsonValue()) {
     expect(top).toBeCloseTo(triggerTop, 0);
   }
+});
+
+test("preview card frames keep a centered Next.js example in place while a popup needs room", async ({
+  page,
+}) => {
+  // The popover doesn't fit below its trigger in the frame, so the frame grows.
+  await page.setViewportSize({ width: 1280, height: 720 });
+  const iframe = await gotoPreviewInCard(
+    page,
+    "/react/previews/preview-card-size-nextjs/",
+  );
+  const frame = iframe.contentFrame();
+  await expect
+    .poll(
+      async () => (await getContentBottom(frame)) - (await getHeight(iframe)),
+    )
+    .toBe(0);
+  const height = await getHeight(iframe);
+  const trigger = query(frame).button("Open popover");
+  const getTriggerPosition = () => {
+    return trigger.evaluate((element) => {
+      const { left, top } = element.getBoundingClientRect();
+      return { left, top };
+    });
+  };
+  const position = await getTriggerPosition();
+
+  // The Next.js root layout centers the example in a column, so the pin keeps
+  // it from moving on both axes while the frame grows below it.
+  await trigger.click();
+  await expect(query(frame).dialog("Tall popover")).toBeVisible();
+  await expect.poll(() => getHeight(iframe)).toBeGreaterThan(height);
+  const pinnedPosition = await getTriggerPosition();
+  expect(pinnedPosition.left).toBeCloseTo(position.left, 0);
+  expect(pinnedPosition.top).toBeCloseTo(position.top, 0);
 });
 
 test("preview card frames give a popup that scrolls its content the fallback height", async ({
@@ -300,7 +344,7 @@ test("preview card frames follow the routes of a Next.js preview", async ({
   await expect.poll(() => getHeight(iframe)).toBe(shortHeight);
 });
 
-test("preview card frames follow the minimum height of a Next.js example that centers its content", async ({
+test("preview card frames follow the minimum height of a centered Next.js example", async ({
   page,
 }) => {
   await gotoAndSettle(page, "/react/recipes/tabs/");
@@ -308,8 +352,8 @@ test("preview card frames follow the minimum height of a Next.js example that ce
   // The frame loads once it comes near the viewport.
   await page.locator(`iframe[title="${title}"]`).scrollIntoViewIfNeeded();
   const iframe = await waitForShownFrame(page, title);
-  // The layout of the example centers it in the viewport, so the frame takes
-  // its minimum height of 18rem.
+  // The Next.js root layout centers the example in the viewport, so the frame
+  // takes its minimum height of 18rem.
   await expect.poll(() => getHeight(iframe)).toBe(18 * 16);
 
   // A larger text size raises the minimum height. A page that reported the
@@ -349,8 +393,8 @@ test("fullscreen preview card frames ignore the height that a Next.js page repor
   await page.setViewportSize({ width: 1600, height: 900 });
   await gotoAndSettle(page, "/react/recipes/app-shell/");
   const iframe = await waitForShownFrame(page, "App Shell");
-  // The Next.js root layout marks the body of every route, so the page reports
-  // the height of its content to any card.
+  // The Next.js root layout marks a wrapper around every route, so the page
+  // reports the height of its content to any card.
   await loadInFrame(iframe, "/react/previews/preview-card-size-nextjs/");
   await expect(
     query(iframe.contentFrame()).text("Short content"),

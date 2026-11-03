@@ -136,9 +136,7 @@ export type PreviewFrameMessage =
  *   sends.
  * - A page with `data-preview-content` on an element reports the height of the
  *   content of that element, plus the room that its open popups need, so the
- *   card fits the frame to the page. A nested element with the attribute, such
- *   as the main element of a Next.js layout, replaces the body that the root
- *   layout marks.
+ *   card fits the frame to the page.
  *
  * This function is serialized into an inline script, so it must not reference
  * anything outside its own body.
@@ -880,7 +878,11 @@ export function setupPreviewEmbed() {
   const pinContent = (content: HTMLElement, offset: number) => {
     if (pinnedContent) return;
     pinnedContent = content;
-    content.style.alignItems = "flex-start";
+    // A column centers the example with justify-content, and a row with
+    // align-items.
+    const column = getComputedStyle(content).flexDirection.startsWith("column");
+    const property = column ? "justify-content" : "align-items";
+    content.style.setProperty(property, "flex-start");
     content.style.paddingTop = `${Math.max(0, offset)}px`;
   };
   const getOpenPopups = () => {
@@ -907,6 +909,7 @@ export function setupPreviewEmbed() {
     if (cancelUnpin) return;
     const unpin = () => {
       cancelUnpin?.();
+      pinnedContent?.style.removeProperty("justify-content");
       pinnedContent?.style.removeProperty("align-items");
       pinnedContent?.style.removeProperty("padding-top");
       pinnedContent = undefined;
@@ -928,13 +931,6 @@ export function setupPreviewEmbed() {
     };
   };
 
-  // The innermost marked element, so a layout can mark an element that centers
-  // the example without the height of the viewport.
-  const getContent = () => {
-    const elements = document.querySelectorAll("[data-preview-content]");
-    return elements[elements.length - 1];
-  };
-
   let reportedHeight: number | null | undefined;
   let reportedScrollingPopup = false;
   let reportedPopupRoom = false;
@@ -953,7 +949,7 @@ export function setupPreviewEmbed() {
     );
   };
   const getFrameHeight = () => {
-    const content = getContent();
+    const content = document.querySelector("[data-preview-content]");
     if (!(content instanceof HTMLElement)) return null;
     const popups = getOpenPopups();
     if (!popups.length) {
@@ -1020,7 +1016,7 @@ export function setupPreviewEmbed() {
   // flow, which the size observer can't report.
   document.addEventListener("DOMContentLoaded", () => {
     updateSize();
-    if (!getContent()) return;
+    if (!document.querySelector("[data-preview-content]")) return;
     const mutationObserver = new MutationObserver(scheduleSize);
     mutationObserver.observe(document.body, {
       childList: true,
