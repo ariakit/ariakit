@@ -1,0 +1,34 @@
+---
+title: Truncated Text
+shape: control
+---
+
+## Overview
+
+These examples build text that can be cut off with the Ariakit UI `TruncatedText` component. A tooltip around the text shows the full text, but only while the text is cut off. When the text has room again, the tooltip goes away.
+
+The gallery starts with links in a panel that you can resize. Then it shows labels inside buttons, titles clamped to two lines, and buttons with a label and a description. Drag the corner of a panel to see a tooltip come and go.
+
+## Components
+
+`TruncatedText` measures its element and tells the `Tooltip` around it whether the text is cut off. While no text is cut off, the tooltip is off, as if it had no `text`. The anchor stays mounted when the tooltip turns on or off, so it keeps its state. It also keeps focus if it's focusable without a tooltip, such as a link or a button.
+
+`TruncatedText` has no styles. The element that it renders must cut the text off, so set the clipping styles on that element, such as `truncate`, `line-clamp-2`, or a `$truncate` variant. Pass the element in `render`, as in `<TruncatedText render={<ButtonLabel />}>`.
+
+`TruncatedText` can be the anchor itself or text inside the anchor. A link that cuts its own text off is both, as in the first example. A button cuts off the text of its label, so the label renders through `TruncatedText`, and the `Tooltip` wraps the button. Put the tooltip on the element that gets focus, such as the button or the link, so that keyboard focus shows it too.
+
+The text counts as cut off when it is wider than its element, or when it is taller than its element by more than half a line, such as when a line clamp hides a line. Glyphs that are taller than a short line don't count. The measure runs again when the element resizes, when its text or attributes change, and when a font loads. This includes text that a child component renders and a class that makes the text larger. A style that changes on an element around it, such as a bolder font on a selected item, doesn't trigger a new measure unless the element also resizes.
+
+An anchor can hold more than one `TruncatedText`. The tooltip then shows while any of them is cut off, as in the Label and Description example. A `TruncatedText` with `display: none`, such as a label hidden at narrow widths, counts as if it weren't there, so the tooltip then works as it would without it. Text with `visibility: hidden` still counts, because its visibility can change through an element around it or a state such as hover, which doesn't trigger a new measure. Use `display: none` to take a text out. A `TruncatedText` outside a tooltip anchor measures nothing.
+
+While the text is cut off, the tooltip shows the rest of the text on the page, not a label, so it doesn't invert the page colors. It uses the popover surface with an edge, as with `$invert={false}`. Set `$invert` or another style prop on the `Tooltip` to change it.
+
+The `text` of the tooltip is separate from the text that is cut off, so it can hold more, such as the label and the description together. The Breadcrumb recipe uses `TruncatedText` for the labels of the steps that clip.
+
+## Accessibility
+
+A cut-off text stays in the DOM, so screen readers read all of it, and it still names its link or button. The tooltip is for people who see the screen. Touch screens don't show tooltips, so don't cut off text that people need to read on a touch screen, or give them another way to see it, such as a details page.
+
+Put the tooltip on an element that gets keyboard focus, such as a link or a button. When the anchor is static text, such as a cell of a table, the tooltip gives it a tab stop while the text is cut off, so a keyboard user can show the tooltip. The tab stop goes away when the text shows in full, so static text that has focus then loses it.
+
+Avoid cutting off text when you can. Let the text wrap, give the container more room, or show less important text elsewhere.

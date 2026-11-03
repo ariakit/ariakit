@@ -1,0 +1,4 @@
+{
+  "title": "Truncated Text",
+  "description": "A resizable panel of links that cut long titles off with truncate, where each link renders through TruncatedText inside a Tooltip, so the link is both the anchor and the text that clips. The tooltip shows the full title only while the link cuts it off, and it comes and goes as the panel resizes. Use it as the baseline for any element that clips its own text."
+}

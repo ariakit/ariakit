@@ -7,6 +7,10 @@ import {
   hasContent,
 } from "../react-utils/create-render.react.ts";
 import {
+  TruncationContext,
+  useTruncationRegistry,
+} from "../react-utils/use-truncation.react.ts";
+import {
   tooltip,
   tooltipArrow,
   tooltipSlot,
@@ -41,7 +45,9 @@ export interface TooltipProps
    * an empty list, turns the tooltip off. The anchor stays mounted when its
    * text becomes empty or stops being empty, so it keeps its state. It also
    * keeps focus if it's focusable without a tooltip, such as a button or a
-   * link.
+   * link. A `TruncatedText` in the anchor also turns the tooltip off while its
+   * text shows in full. While it is cut off, the tooltip uses the popover
+   * surface with an edge, as with `$invert={false}`, unless `$invert` is set.
    */
   text?: React.ReactNode;
   /**
@@ -102,7 +108,10 @@ export function Tooltip({
   skipTimeout,
   ...props
 }: TooltipProps) {
-  const hasText = hasContent(text);
+  const truncation = useTruncationRegistry();
+  // A TruncatedText in the anchor keeps the tooltip off while none of its text
+  // is cut off.
+  const hasText = hasContent(text) && truncation.truncated !== false;
   // The store goes straight to the anchor and the popover, as a provider would
   // also become the context of a disclosure in the anchor, and it would then
   // open the tooltip instead of its own dialog or popover.
@@ -130,14 +139,23 @@ export function Tooltip({
           anchor and move focus out of it. Without text, hover and focus on the
           anchor don't show the tooltip, so they can't hide another one or skip
           the next delay. */}
-      <ak.TooltipAnchor
-        store={tooltipStore}
-        render={children}
-        focusable={hasText}
-        showOnHover={hasText}
-      />
+      <TruncationContext.Provider value={truncation.context}>
+        <ak.TooltipAnchor
+          store={tooltipStore}
+          render={children}
+          focusable={hasText}
+          showOnHover={hasText}
+        />
+      </TruncationContext.Provider>
       {hasText && (
-        <TooltipPopover store={tooltipStore} {...props}>
+        <TooltipPopover
+          store={tooltipStore}
+          // The full text of a TruncatedText extends the text on the page, so
+          // it keeps the popover surface and edge instead of a label that
+          // inverts the page colors.
+          $invert={truncation.truncated ? false : undefined}
+          {...props}
+        >
           {arrowElement}
           {createOptionalRender(TooltipSlot, startSlot)}
           <TooltipText>{text}</TooltipText>

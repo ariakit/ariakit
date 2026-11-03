@@ -7,36 +7,23 @@ import {
   BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
-import { useRef, useState } from "react";
+import { TruncatedText } from "@ariakit/ui/components/truncated-text.ariakit.react";
 
 interface ClippedStepProps {
   href: string;
   children: string;
 }
 
-// A clipped label shows the first line of its text, so the rest overflows
-// downward.
-function isClipped(label: HTMLElement | null) {
-  if (!label) return false;
-  return label.scrollHeight > label.clientHeight;
-}
-
 function ClippedStep({ href, children }: ClippedStepProps) {
-  const labelRef = useRef<HTMLSpanElement>(null);
-  const [open, setOpen] = useState(false);
   return (
     <BreadcrumbItem>
-      {/* The anchor is the link, so the tooltip shows on keyboard focus. Text
-          that isn't clipped needs no tooltip. */}
-      <Tooltip
-        text={children}
-        open={open}
-        setOpen={(next) => setOpen(next && isClipped(labelRef.current))}
-      >
+      {/* The anchor is the link, so the tooltip shows on keyboard focus. The
+          label inside it clips, and the tooltip shows only while it does. */}
+      <Tooltip text={children}>
         <BreadcrumbLink href={href} item={false}>
-          <BreadcrumbLabel ref={labelRef} $truncate>
+          <TruncatedText render={<BreadcrumbLabel $truncate />}>
             {children}
-          </BreadcrumbLabel>
+          </TruncatedText>
         </BreadcrumbLink>
       </Tooltip>
     </BreadcrumbItem>

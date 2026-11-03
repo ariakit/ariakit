@@ -1,0 +1,4 @@
+{
+  "title": "Clamped Lines",
+  "description": "Article titles clamped to two lines, where a span inside each link renders through TruncatedText with line-clamp-2, so the tooltip shows the full title only for the titles that need more lines. The span clamps instead of the link, whose padding for the focus ring would show part of the next line, and its taller lines keep the hover underline of the last line inside the clamp. Use it when text can wrap but must stop after a set number of lines, and use the baseline for text on one line."
+}

@@ -1,6 +1,7 @@
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
-import { useEffect, useId, useState } from "react";
+import { TruncatedText } from "@ariakit/ui/components/truncated-text.ariakit.react";
+import { useId } from "react";
 
 const documents = [
   "Roadmap",
@@ -11,38 +12,6 @@ const documents = [
 
 function getHref(name: string) {
   return `#${name.toLowerCase().replaceAll(/\W+/g, "-")}`;
-}
-
-interface TruncatedLinkProps {
-  href: string;
-  children: string;
-}
-
-function TruncatedLink({ href, children }: TruncatedLinkProps) {
-  const [element, setElement] = useState<HTMLAnchorElement | null>(null);
-  const [truncated, setTruncated] = useState(false);
-
-  // The text is cut off when it is wider than the link. A change of the link's
-  // width can cut it off or show all of it.
-  useEffect(() => {
-    if (!element) return;
-    const observer = new ResizeObserver(() => {
-      setTruncated(element.scrollWidth > element.clientWidth);
-    });
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [element]);
-
-  return (
-    // The tooltip opens to the right, so it doesn't cover the next link in the
-    // list. It also fits the viewport, so a long title wraps instead of going
-    // off the screen there.
-    <Tooltip text={truncated ? children : null} placement="right" fitViewport>
-      <Link ref={setElement} href={href} className="block truncate">
-        {children}
-      </Link>
-    </Tooltip>
-  );
 }
 
 export default function Example() {
@@ -60,7 +29,20 @@ export default function Example() {
       <ul className="grid grid-cols-1 gap-2 text-sm">
         {documents.map((name) => (
           <li key={name}>
-            <TruncatedLink href={getHref(name)}>{name}</TruncatedLink>
+            {/* The tooltip opens to the right, so it doesn't cover the next
+                link in the list. It also fits the viewport, so a long title
+                wraps instead of going off the screen there. */}
+            <Tooltip text={name} placement="right" fitViewport>
+              {/* The link cuts its own text off, so it is the anchor and the
+                  truncated text. */}
+              <TruncatedText
+                render={
+                  <Link href={getHref(name)} className="block truncate" />
+                }
+              >
+                {name}
+              </TruncatedText>
+            </Tooltip>
           </li>
         ))}
       </ul>
