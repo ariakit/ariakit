@@ -296,24 +296,117 @@ test("preview card frames give a popup that scrolls its content the fallback hei
   await expect.poll(() => getHeight(iframe)).toBe(height);
 });
 
-test("preview card frames stop at the screen height for content that fills the viewport", async ({
+function getCard(iframe: Locator) {
+  return iframe.locator("xpath=ancestor::*[@data-preview-card][1]");
+}
+
+// Checks that a card stops at the maximum height while its page reports the
+// height of content that follows the frame, and that the frame fits the card.
+async function expectCardToStopAt(
+  page: Page,
+  iframe: Locator,
+  maxHeight: number,
+) {
+  const card = getCard(iframe);
+  const preview = query(iframe.contentFrame());
+  // Each height that the page reports makes the content taller again.
+  await preview.button("Fill the viewport").click();
+  await expect.poll(() => getHeight(card)).toBeCloseTo(maxHeight, 0);
+  // A card without a maximum height would keep growing on the following frames,
+  // since each report reaches the card in a message task and the resized frame
+  // reports again on its next rendering update. No state shows a growth that
+  // didn't happen.
+  await flushFrames(page, 10);
+  expect(await getHeight(card)).toBeCloseTo(maxHeight, 0);
+  await expectFrameToFitViewport(iframe);
+}
+
+// Checks that the viewport around a frame, which clips it, shows all of it, so
+// the page can scroll to its end.
+async function expectFrameToFitViewport(iframe: Locator) {
+  const viewport = iframe.locator("xpath=../..");
+  const viewportBox = await viewport.boundingBox();
+  const frameBox = await iframe.boundingBox();
+  if (!viewportBox || !frameBox) throw new Error("No box");
+  expect(frameBox.y + frameBox.height).toBeLessThanOrEqual(
+    viewportBox.y + viewportBox.height,
+  );
+}
+
+// Returns the maximum card height that the preview grid around the frame sets.
+async function getGridMaxHeight(iframe: Locator) {
+  return iframe
+    .locator("xpath=ancestor::*[contains(@class,'preview-grid')][1]")
+    .evaluate((grid) => {
+      const probe = grid.ownerDocument.createElement("div");
+      probe.style.cssText =
+        "position: absolute; height: var(--preview-card-max-height)";
+      grid.append(probe);
+      const { height } = probe.getBoundingClientRect();
+      probe.remove();
+      return height;
+    });
+}
+
+test("preview cards stop at the screen height for content that fills the viewport", async ({
   page,
 }) => {
   const iframe = await gotoSizePreview(page);
-  const preview = query(iframe.contentFrame());
   await expect.poll(() => getHeight(iframe)).toBeLessThan(FALLBACK_HEIGHT);
   const screenHeight = await page.evaluate(() => window.innerHeight);
-  const maxHeight = Math.max(FALLBACK_HEIGHT, screenHeight);
+  await expectCardToStopAt(page, iframe, screenHeight);
+});
 
-  // Each height that the page reports makes the content taller again.
-  await preview.button("Fill the viewport").click();
-  await expect.poll(() => getHeight(iframe)).toBe(maxHeight);
-  // A frame without a maximum height would keep growing on the following
-  // frames, since each report reaches the card in a message task and the
-  // resized frame reports again on its next rendering update. No state shows a
-  // growth that didn't happen.
-  await flushFrames(page, 10);
-  expect(await getHeight(iframe)).toBe(maxHeight);
+test("preview cards in a preview grid stop at the grid height for content that fills the viewport", async ({
+  page,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/tooltip/");
+  // The frame loads lazily, as it comes near the viewport.
+  const title = "Collapsing Labels";
+  await page.locator(`iframe[title="${title}"]`).scrollIntoViewIfNeeded();
+  const iframe = await waitForShownFrame(page, title);
+  await loadInFrame(iframe, SIZE_PREVIEW);
+  await waitForFrameHydration(iframe);
+  // The grid limits its cards to the room below the sticky headers.
+  const gridHeight = await getGridMaxHeight(iframe);
+  const screenHeight = await page.evaluate(() => window.innerHeight);
+  expect(gridHeight).toBeGreaterThan(0);
+  expect(gridHeight).toBeLessThan(screenHeight);
+  await expectCardToStopAt(page, iframe, gridHeight);
+});
+
+test("preview card frames fit their viewport in a grid card shorter than its minimum height", async ({
+  page,
+}) => {
+  // The grid limit leaves less room for the frame than the 16rem minimum height
+  // of the grid.
+  await page.setViewportSize({ width: 1280, height: 320 });
+  await gotoAndSettle(page, "/react/recipes/tooltip/");
+  const title = "Collapsing Labels";
+  await page.locator(`iframe[title="${title}"]`).scrollIntoViewIfNeeded();
+  const iframe = await waitForShownFrame(page, title);
+  await waitForFrameHydration(iframe);
+  const card = getCard(iframe);
+  expect(await getHeight(card)).toBeCloseTo(await getGridMaxHeight(iframe), 0);
+  expect(await getHeight(iframe)).toBe(16 * 16);
+  await expectFrameToFitViewport(iframe);
+});
+
+test("fullscreen preview cards in a preview grid stop at the grid height", async ({
+  page,
+}) => {
+  // The fullscreen frame is 40rem tall, more than the grid limit on this
+  // screen.
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await gotoAndSettle(page, "/react/recipes/table-of-contents/");
+  const iframe = await waitForShownFrame(page, "Table of Contents");
+  const gridHeight = await getGridMaxHeight(iframe);
+  expect(gridHeight).toBeLessThan(40 * 16);
+  await expect
+    .poll(() => getHeight(getCard(iframe)))
+    .toBeCloseTo(gridHeight, 0);
+  expect(await getHeight(iframe)).toBeLessThan(40 * 16);
+  await expectFrameToFitViewport(iframe);
 });
 
 test("preview card frames follow the routes of a Next.js preview", async ({
