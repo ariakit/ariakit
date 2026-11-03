@@ -3,8 +3,10 @@ import {
   CheckboxCard,
   CheckboxCardCheck,
   CheckboxCardLabel,
+  CheckboxGroup,
+  CheckboxList,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
-import { useId, useState } from "react";
+import { useState } from "react";
 
 const teams = [
   { value: "design", label: "Design" },
@@ -23,7 +25,6 @@ const roles = [
 ];
 
 export default function Example() {
-  const labelId = useId();
   const [selected, setSelected] = useState(["engineering"]);
   // Without a filter, all roles show.
   const visibleRoles = selected.length
@@ -31,15 +32,10 @@ export default function Example() {
     : roles;
   return (
     <div className="grid w-[24rem] max-w-full gap-4">
-      <div className="grid gap-2">
-        <span id={labelId} className="text-sm font-medium">
-          Filter by team
-        </span>
-        <div
-          role="group"
-          aria-labelledby={labelId}
-          className="flex flex-wrap gap-2"
-        >
+      <CheckboxGroup label="Filter by team">
+        {/* The chips go in a row, and they wrap when it is full. Small chips
+            take a smaller gap than cards. */}
+        <CheckboxList $gap="md" className="flex-row flex-wrap">
           <ak.CheckboxProvider value={selected} setValue={setSelected}>
             {teams.map((team) => (
               <CheckboxCard
@@ -54,8 +50,8 @@ export default function Example() {
               </CheckboxCard>
             ))}
           </ak.CheckboxProvider>
-        </div>
-      </div>
+        </CheckboxList>
+      </CheckboxGroup>
       <p role="status" className="text-sm font-medium">
         {visibleRoles.length} open{" "}
         {visibleRoles.length === 1 ? "role" : "roles"}

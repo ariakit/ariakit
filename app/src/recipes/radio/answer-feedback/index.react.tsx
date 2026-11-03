@@ -9,6 +9,7 @@ import {
   RadioCardLabel,
   RadioCardSlot,
   RadioGroup,
+  RadioList,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { CircleCheck } from "lucide-react";
 import { useState } from "react";
@@ -33,32 +34,35 @@ export default function Example() {
         value={answer}
         setValue={setAnswer}
         disabled={checked}
-        className="grid gap-2"
       >
-        {options.map((option) => (
-          <RadioCard key={option.value} value={option.value}>
-            <RadioCardCheck />
-            <RadioCardContent>
-              <RadioCardLabel $truncate={false}>{option.label}</RadioCardLabel>
-            </RadioCardContent>
-            {/* After the check, words mark the answers, so color doesn't
-                do it alone. */}
-            {checked && option.value === correctAnswer && (
-              <RadioCardSlot $kind="box">
-                <Badge $kind="solid" $layer="success">
-                  Correct answer
-                </Badge>
-              </RadioCardSlot>
-            )}
-            {checked && option.value === answer && !isCorrect && (
-              <RadioCardSlot $kind="box">
-                <Badge $kind="solid" $layer="danger">
-                  Your answer
-                </Badge>
-              </RadioCardSlot>
-            )}
-          </RadioCard>
-        ))}
+        <RadioList>
+          {options.map((option) => (
+            <RadioCard key={option.value} value={option.value}>
+              <RadioCardCheck />
+              <RadioCardContent>
+                <RadioCardLabel $truncate={false}>
+                  {option.label}
+                </RadioCardLabel>
+              </RadioCardContent>
+              {/* After the check, words mark the answers, so color doesn't
+                  do it alone. */}
+              {checked && option.value === correctAnswer && (
+                <RadioCardSlot $kind="box">
+                  <Badge $kind="solid" $layer="success">
+                    Correct answer
+                  </Badge>
+                </RadioCardSlot>
+              )}
+              {checked && option.value === answer && !isCorrect && (
+                <RadioCardSlot $kind="box">
+                  <Badge $kind="solid" $layer="danger">
+                    Your answer
+                  </Badge>
+                </RadioCardSlot>
+              )}
+            </RadioCard>
+          ))}
+        </RadioList>
       </RadioGroup>
       <div role="status">
         {checked && isCorrect && (

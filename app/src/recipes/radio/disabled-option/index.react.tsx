@@ -6,6 +6,7 @@ import {
   RadioCardLabel,
   RadioCardSlot,
   RadioGroup,
+  RadioList,
 } from "@ariakit/ui/components/radio.ariakit.react";
 
 interface Method {
@@ -67,25 +68,27 @@ interface ShippingMethodsProps {
 
 function ShippingMethods({ label, methods }: ShippingMethodsProps) {
   return (
-    <RadioGroup label={label} defaultValue="standard" className="grid gap-2">
-      {methods.map((method) => (
-        <RadioCard
-          key={method.value}
-          value={method.value}
-          disabled={method.disabled}
-        >
-          <RadioCardCheck />
-          <RadioCardContent>
-            <RadioCardLabel>{method.label}</RadioCardLabel>
-            {/* The description of the disabled card tells why it is not
-                available, so it wraps instead of cutting the reason off. */}
-            <RadioCardDescription $truncate={false}>
-              {method.detail}
-            </RadioCardDescription>
-          </RadioCardContent>
-          <RadioCardSlot $kind="text">{method.price}</RadioCardSlot>
-        </RadioCard>
-      ))}
+    <RadioGroup label={label} defaultValue="standard">
+      <RadioList>
+        {methods.map((method) => (
+          <RadioCard
+            key={method.value}
+            value={method.value}
+            disabled={method.disabled}
+          >
+            <RadioCardCheck />
+            <RadioCardContent>
+              <RadioCardLabel>{method.label}</RadioCardLabel>
+              {/* The description of the disabled card tells why it is not
+                  available, so it wraps instead of cutting the reason off. */}
+              <RadioCardDescription $truncate={false}>
+                {method.detail}
+              </RadioCardDescription>
+            </RadioCardContent>
+            <RadioCardSlot $kind="text">{method.price}</RadioCardSlot>
+          </RadioCard>
+        ))}
+      </RadioList>
     </RadioGroup>
   );
 }

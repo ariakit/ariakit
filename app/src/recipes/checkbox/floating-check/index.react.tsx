@@ -4,10 +4,10 @@ import {
   CheckboxCardContent,
   CheckboxCardGrid,
   CheckboxCardLabel,
+  CheckboxGroup,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
 import { clsx } from "clsx";
 import { Building2, Mountain, Trees, Waves } from "lucide-react";
-import { useId } from "react";
 
 const photos = [
   {
@@ -39,14 +39,12 @@ const photos = [
 ];
 
 export default function Example() {
-  const labelId = useId();
   return (
     // The width fits two columns, so the photos make a square.
-    <div className="grid w-[22rem] max-w-full gap-2">
-      <span id={labelId} className="text-sm font-medium">
-        Photos to share
-      </span>
-      <CheckboxCardGrid aria-labelledby={labelId} $minItemSize="9rem">
+    <CheckboxGroup label="Photos to share" className="w-[22rem] max-w-full">
+      {/* The checks hang over the top of each card, so the rows take a larger
+          gap. */}
+      <CheckboxCardGrid $minItemSize="9rem" $gap="lg">
         {photos.map((photo) => (
           <CheckboxCard
             key={photo.value}
@@ -73,6 +71,6 @@ export default function Example() {
           </CheckboxCard>
         ))}
       </CheckboxCardGrid>
-    </div>
+    </CheckboxGroup>
   );
 }

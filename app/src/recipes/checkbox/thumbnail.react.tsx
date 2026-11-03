@@ -10,6 +10,9 @@ import {
   checkboxCardLabel,
   checkboxCardLabelRow,
   checkboxCardSlot,
+  checkboxGroup,
+  checkboxGroupLabel,
+  checkboxList,
 } from "@ariakit/ui/styles/checkbox";
 import { clsx } from "clsx";
 
@@ -52,38 +55,40 @@ const addOns: AddOnData[] = [
 
 export default function Thumbnail() {
   return (
-    <div className="grid w-[22em] max-w-full gap-2">
-      <span className="text-sm font-medium">Add-ons</span>
-      {addOns.map((addOn) => (
-        <div key={addOn.id} {...checkboxCard.jsx()}>
-          <span
-            {...checkboxCardCheck.jsx()}
-            aria-checked={addOn.checked ? "true" : "false"}
-          />
-          <span {...checkboxCardContent.jsx()}>
-            <span {...checkboxCardLabelRow.jsx()}>
-              <span {...checkboxCardLabel.jsx()}>{addOn.label}</span>
-              {addOn.badge && (
-                <span {...checkboxCardSlot.jsx({ $kind: "box" })}>
-                  <span {...badge.jsx({ $kind: "solid" })}>
-                    <span {...badgeLabel.jsx()}>{addOn.badge}</span>
+    <div {...checkboxGroup.jsx({ className: "w-[22em] max-w-full" })}>
+      <span {...checkboxGroupLabel.jsx()}>Add-ons</span>
+      <div {...checkboxList.jsx()}>
+        {addOns.map((addOn) => (
+          <div key={addOn.id} {...checkboxCard.jsx()}>
+            <span
+              {...checkboxCardCheck.jsx()}
+              aria-checked={addOn.checked ? "true" : "false"}
+            />
+            <span {...checkboxCardContent.jsx()}>
+              <span {...checkboxCardLabelRow.jsx()}>
+                <span {...checkboxCardLabel.jsx()}>{addOn.label}</span>
+                {addOn.badge && (
+                  <span {...checkboxCardSlot.jsx({ $kind: "box" })}>
+                    <span {...badge.jsx({ $kind: "solid" })}>
+                      <span {...badgeLabel.jsx()}>{addOn.badge}</span>
+                    </span>
                   </span>
+                )}
+              </span>
+              {addOn.description ? (
+                <span {...checkboxCardDescription.jsx()}>
+                  {addOn.description}
                 </span>
+              ) : (
+                <SkeletonLine $weight="light" className="w-2/3" />
               )}
             </span>
-            {addOn.description ? (
-              <span {...checkboxCardDescription.jsx()}>
-                {addOn.description}
-              </span>
-            ) : (
-              <SkeletonLine $weight="light" className="w-2/3" />
-            )}
-          </span>
-          <span {...checkboxCardSlot.jsx({ $kind: "text" })}>
-            {addOn.price}
-          </span>
-        </div>
-      ))}
+            <span {...checkboxCardSlot.jsx({ $kind: "text" })}>
+              {addOn.price}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

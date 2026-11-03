@@ -3,6 +3,7 @@ import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   RadioField,
   RadioGroup,
+  RadioList,
 } from "@ariakit/ui/components/radio.ariakit.react";
 import { useState } from "react";
 
@@ -36,13 +37,14 @@ export default function Example() {
         value={choice}
         setValue={setChoice}
         disabled={voted}
-        className="grid gap-2"
       >
-        {features.map((feature) => (
-          <RadioField key={feature.value} value={feature.value}>
-            {feature.label}
-          </RadioField>
-        ))}
+        <RadioList>
+          {features.map((feature) => (
+            <RadioField key={feature.value} value={feature.value}>
+              {feature.label}
+            </RadioField>
+          ))}
+        </RadioList>
       </RadioGroup>
       <div className="flex flex-wrap items-center gap-3">
         {/* The button keeps focus after the vote, so it stays focusable while

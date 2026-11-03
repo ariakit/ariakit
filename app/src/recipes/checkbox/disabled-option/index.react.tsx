@@ -4,8 +4,9 @@ import {
   CheckboxCardContent,
   CheckboxCardDescription,
   CheckboxCardLabel,
+  CheckboxGroup,
+  CheckboxList,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
-import { useId } from "react";
 
 const categories = [
   {
@@ -34,13 +35,9 @@ const categories = [
 ];
 
 export default function Example() {
-  const labelId = useId();
   return (
-    <div className="grid w-[24rem] max-w-full gap-2">
-      <span id={labelId} className="text-sm font-medium">
-        Cookies
-      </span>
-      <div role="group" aria-labelledby={labelId} className="grid gap-2">
+    <CheckboxGroup label="Cookies" className="w-[24rem] max-w-full">
+      <CheckboxList>
         {categories.map((category) => (
           <CheckboxCard
             key={category.value}
@@ -60,7 +57,7 @@ export default function Example() {
             </CheckboxCardContent>
           </CheckboxCard>
         ))}
-      </div>
-    </div>
+      </CheckboxList>
+    </CheckboxGroup>
   );
 }

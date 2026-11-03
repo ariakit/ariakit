@@ -308,7 +308,10 @@ export const controlFieldContent = cv({
   class: "control-field-content flex min-w-0 flex-col gap-(--_field-gap)",
 });
 
-/** Label text above or beside a field's control. */
+/**
+ * Label text above or beside a field's control. The labels of choice groups
+ * extend it, so all labels in a form look the same.
+ */
 export const controlFieldLabel = cv({
   extend: [text],
   class: [
@@ -320,6 +323,9 @@ export const controlFieldLabel = cv({
     // ui-field-disabled reads the field's entry controls, including updates
     // after render.
     "group-ui-field-disabled/field:ak-ink-0",
+    // Forced colors replace the ink with the normal text color. Use the system
+    // disabled color instead.
+    "group-ui-field-disabled/field:forced-colors:text-[GrayText]",
   ],
   variants: {
     /** Truncates the label to one line with an ellipsis. */

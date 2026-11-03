@@ -74,6 +74,18 @@ export function useDescription(id?: string) {
   };
 }
 
+/**
+ * Connects an element to a description nested in it. Give `describedBy` to the
+ * element's `aria-describedby`, and give `context` to a `DescriptionContext`
+ * provider around the description. The caller's ids follow the description's.
+ */
+export function useDescribedBy(ariaDescribedBy?: string) {
+  const { descriptionId, context } = useDescriptionRegistry();
+  const describedBy =
+    [descriptionId, ariaDescribedBy].filter(Boolean).join(" ") || undefined;
+  return { describedBy, context };
+}
+
 export interface UseLabelDescriptionProps {
   id?: string;
   "aria-describedby"?: string;
@@ -87,13 +99,9 @@ export interface UseLabelDescriptionProps {
  */
 export function useLabelDescription(props: UseLabelDescriptionProps) {
   const defaultId = React.useId();
-  const { descriptionId, context } = useDescriptionRegistry();
+  const { describedBy, context } = useDescribedBy(props["aria-describedby"]);
   // Assistive technologies such as Dragon and Voice Control don't recognize a
   // label that only wraps its input, so the label also points at the input.
   const id = props.id ?? defaultId;
-  // Keep the caller's descriptions after the label's own.
-  const describedBy =
-    [descriptionId, props["aria-describedby"]].filter(Boolean).join(" ") ||
-    undefined;
   return { id, describedBy, context };
 }
