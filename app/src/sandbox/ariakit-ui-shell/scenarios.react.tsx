@@ -42,10 +42,11 @@ function isSeam(value: string): value is Seam {
   return ["border", "dashed", "none"].includes(value);
 }
 
-type MainSize = "auto" | "sm" | "md" | "lg";
+// The default option leaves the size unset, so main takes the default variant.
+type MainSize = "default" | "auto" | "sm" | "md" | "lg";
 
 function isMainSize(value: string): value is MainSize {
-  return ["auto", "sm", "md", "lg"].includes(value);
+  return ["default", "auto", "sm", "md", "lg"].includes(value);
 }
 
 type MainMinSize = "md" | "lg";
@@ -71,7 +72,7 @@ export function ReadingScenario({ controls }: ScenarioProps) {
         <ShellEnd>{controls}</ShellEnd>
       </ShellHeader>
       <ShellMain
-        $size={size}
+        $size={size === "default" ? undefined : size}
         $minSize={minSize}
         $maxWidth={wider ? "50rem" : undefined}
       >
@@ -96,6 +97,7 @@ export function ReadingScenario({ controls }: ScenarioProps) {
                   }
                 }}
               >
+                <option value="default">default</option>
                 <option value="auto">auto</option>
                 <option value="sm">sm</option>
                 <option value="md">md</option>
@@ -152,14 +154,16 @@ export function ReadingScenario({ controls }: ScenarioProps) {
             <p>Prose with its own size</p>
           </Prose>
           {/* Each panel takes its content height, so one capture holds all three
-              within the screenshot size limit. */}
+              within the screenshot size limit. The first two mains keep the
+              shell's text, so their Prose shows whether the size of the outer
+              main stops at the nested shell. */}
           <Shell className="min-h-0!">
             <ShellHeader>
               <ShellStart>
                 <span>Automatic panel header</span>
               </ShellStart>
             </ShellHeader>
-            <ShellMain>
+            <ShellMain $size="auto">
               <ShellMainBody>
                 <Prose>
                   <p>Automatic panel prose</p>
@@ -173,7 +177,7 @@ export function ReadingScenario({ controls }: ScenarioProps) {
                 <span>Large panel header</span>
               </ShellStart>
             </ShellHeader>
-            <ShellMain>
+            <ShellMain $size="auto">
               <ShellMainBody>
                 <Prose>
                   <p>Large panel prose</p>
