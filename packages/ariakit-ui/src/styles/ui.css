@@ -1880,13 +1880,16 @@ body > * {
 }
 
 /* Any nonempty aria-current value except "false" is current. Keep this check
-   consistent across selected variants. */
+   consistent across selected variants. data-selected="true" marks an element
+   that looks selected but has no selectable role, such as the title of a code
+   block, which looks like a selected tab. */
 @custom-variant ui-selected {
   &:is(
     :checked,
     label:has(input:checked),
     [aria-checked="true"],
     [aria-selected="true"],
+    [data-selected="true"],
     [aria-current]:not([aria-current=""], [aria-current="false"])
   ) {
     @slot;
@@ -1900,6 +1903,7 @@ body > * {
   &:is(
     [aria-current]:not([aria-current=""], [aria-current="false"]),
     [role="tab"][aria-selected="true"],
+    [data-selected="true"],
     [role="radio"][aria-checked="true"],
     input[type="radio"]:checked,
     label:has(input[type="radio"]:checked)

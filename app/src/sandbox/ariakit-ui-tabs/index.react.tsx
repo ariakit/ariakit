@@ -21,6 +21,7 @@ import {
   TabSlot,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
+import { tab, tabList } from "@ariakit/ui/styles/tabs";
 import { BookOpenIcon, BracesIcon, EyeIcon } from "lucide-react";
 import { useState } from "react";
 import {
@@ -1213,6 +1214,64 @@ export default function TabsExamples() {
             <TabPanel single>
               <p className="text-sm">Press Enter to select a focused tab.</p>
             </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Static folder"
+        description='A folder that is not a tab, such as a file name over its code. data-selected="true" makes it look selected, and it meets the panel like a selected first tab.'
+        stretch
+        code={`
+          <Tabs>
+            <div {...tabList.jsx()}>
+              <div {...tab.jsx()} data-selected="true">
+                <TabLabel>counter.tsx</TabLabel>
+              </div>
+            </div>
+            <TabPanels>
+              …
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs>
+          <div {...tabList.jsx()}>
+            <div {...tab.jsx()} data-selected="true">
+              <TabLabel>counter.tsx</TabLabel>
+            </div>
+          </div>
+          <TabPanels>
+            <p className="text-sm">The code of the file.</p>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Stretched static folder"
+        description="A static folder that fills its strip is both the first and the last folder, so it meets both panel corners like a selected tab in a full-width strip."
+        stretch
+        code={`
+          <Tabs>
+            <div {...tabList.jsx({ $layout: "stretch" })}>
+              <div {...tab.jsx()} data-selected="true">
+                <TabLabel>counter.tsx</TabLabel>
+              </div>
+            </div>
+            <TabPanels>
+              …
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs>
+          <div {...tabList.jsx({ $layout: "stretch" })}>
+            <div {...tab.jsx()} data-selected="true">
+              <TabLabel>counter.tsx</TabLabel>
+            </div>
+          </div>
+          <TabPanels>
+            <p className="text-sm">The code of the file.</p>
           </TabPanels>
         </Tabs>
       </Example>
