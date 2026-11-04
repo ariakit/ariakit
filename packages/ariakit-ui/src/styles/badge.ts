@@ -18,7 +18,7 @@ export const badge = cv({
     // Letter spacing inherits as a length, so the spacing of a large heading
     // around a badge would crowd its smaller text. The direct property keeps
     // the letter spacing fallback of text-* classes.
-    "[:where(&)]:[letter-spacing:normal]",
+    "ui-base:[letter-spacing:normal]",
     // Center short counts in the minimum width, and position floating slots.
     "relative justify-center",
     // Keep badges aligned with surrounding text while allowing flex and grid

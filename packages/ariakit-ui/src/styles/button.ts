@@ -44,10 +44,10 @@ export const button = cv({
   class: [
     // Zero specificity lets a plain cursor utility replace the pointer, whatever
     // the order that Tailwind gives the two rules.
-    "[:where(&)]:cursor-pointer not-[button]:select-none",
+    "ui-base:cursor-pointer not-[button]:select-none",
     // Map the 0–100 contrast scale to font weights 500–600. Zero specificity
     // lets a weight class on the button win, whatever its order.
-    "[:where(&)]:font-[calc(500+var(--contrast))]",
+    "ui-base:font-[calc(500+var(--contrast))]",
     // DOM disabled state can change after render. Keep these rules aligned with
     // control.$disabled; the prop also removes hover and press variants.
     "ui-disabled:cursor-not-allowed!",
@@ -145,7 +145,7 @@ export const buttonLabel = cv({
   extend: [controlLabel],
   class: [
     // Zero specificity lets a weight class on the label win in every state.
-    "data-text:group-ui-selected/control:[:where(&)]:font-[calc(500+var(--contrast))]",
+    "data-text:group-ui-selected/control:ui-base:font-[calc(500+var(--contrast))]",
     // A zero-height copy of data-text at the selected weight sets the label
     // width, so the control keeps its size when it becomes selected.
     "data-text:before:block data-text:before:h-0 data-text:before:overflow-hidden",
@@ -161,7 +161,7 @@ export const buttonLabel = cv({
     // In the control row, the text stays in the middle of the reserved width at
     // both weights. A label in a content column keeps the start of the column.
     // Zero specificity lets an alignment class on the label win.
-    addClass("[.control>&]:data-text:[:where(&)]:text-center");
+    addClass("[.control>&]:data-text:ui-base:text-center");
   },
 });
 

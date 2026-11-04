@@ -14,7 +14,7 @@ export const breadcrumb = cv({
     // A row that can't shrink below its content never scrolls.
     "breadcrumb min-w-0",
     // Zero specificity lets caller text-* classes win.
-    "[:where(&)]:text-sm",
+    "ui-base:text-sm",
     "[--breadcrumb-gap:--spacing(1)]",
   ],
   variants: {

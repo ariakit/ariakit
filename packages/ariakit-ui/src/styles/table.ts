@@ -12,9 +12,9 @@ import { text } from "./text.ts";
 
 const tableEdgeInputs = cx(
   // Inherited inputs are defaults; explicit edge utilities on a part win.
-  "[:where(&)]:ak-edge-color-(--table-edge-color)",
-  "[:where(&)]:ak-edge-alpha-(--table-edge-alpha,0.1)",
-  "[:where(&)]:ak-edge-push-(--table-edge-push,1)",
+  "ui-base:ak-edge-color-(--table-edge-color)",
+  "ui-base:ak-edge-alpha-(--table-edge-alpha,0.1)",
+  "ui-base:ak-edge-push-(--table-edge-push,1)",
 );
 
 // Resolve edge colors on each cell so hover and selection surfaces keep

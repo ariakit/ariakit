@@ -189,7 +189,7 @@ export const choiceInput = cv({
   extend: [choice, focusHighlight],
   class: [
     // Zero specificity lets a plain cursor utility replace the pointer.
-    "[:where(&)]:cursor-pointer",
+    "ui-base:cursor-pointer",
     "not-ui-choice-disabled:group-hover/choice-field:ak-state-(--hover-offset,0)",
     // A click can't change a checked radio, so hover doesn't light it.
     "ui-settled:ui-hover:ak-state-0",
@@ -219,7 +219,7 @@ export const choiceField = cv({
   class: [
     "group/choice-field",
     // Zero specificity lets a plain cursor utility replace the pointer.
-    "[:where(&)]:cursor-pointer justify-start select-none",
+    "ui-base:cursor-pointer justify-start select-none",
     // The box follows a cursor set on the row. This outranks the pointer on the
     // input, but not a plain cursor utility on it.
     "[:where(&)_input:where([type=checkbox],[type=radio])]:cursor-[inherit]",
@@ -362,7 +362,7 @@ export const choiceCard = cv({
         // Keep shorter badges from stretching to the tallest slot. Zero
         // specificity lets caller alignment classes override this.
         // https://github.com/ariakit/ariakit/issues/7599
-        "[:where(&)]:items-start",
+        "ui-base:items-start",
         "[&>.control-content]:basis-full [&>.control-content]:order-1",
       ],
     },
@@ -508,12 +508,12 @@ export const choiceCardDescription = buttonDescription;
 // The gaps between the items of a list or a grid other than `auto`, with the
 // keywords of a control group.
 const choiceItemsGap = {
-  none: "[:where(&)]:gap-0",
-  xs: "[:where(&)]:gap-0.5",
-  sm: "[:where(&)]:gap-1",
-  md: "[:where(&)]:gap-2",
-  lg: "[:where(&)]:gap-3",
-  xl: "[:where(&)]:gap-4",
+  none: "ui-base:gap-0",
+  xs: "ui-base:gap-0.5",
+  sm: "ui-base:gap-1",
+  md: "ui-base:gap-2",
+  lg: "ui-base:gap-3",
+  xl: "ui-base:gap-4",
 };
 
 /** A responsive grid of choice cards with equal row heights. */
@@ -546,7 +546,7 @@ export const choiceCardGrid = cv({
      */
     $gap: {
       // Outside a group, use the group gap of cards.
-      auto: "[:where(&)]:gap-[calc(var(--choice-group-gap,--spacing(4))*2/3)]",
+      auto: "ui-base:gap-[calc(var(--choice-group-gap,--spacing(4))*2/3)]",
       ...choiceItemsGap,
     },
   },
@@ -571,7 +571,7 @@ export const choiceGroup = cv({
     // The label covers the gap with its padding, as in a field.
     "[--_field-gap:var(--choice-group-gap)] gap-(--choice-group-gap)",
     // Zero specificity lets caller layout classes win.
-    "[:where(&)]:flex [:where(&)]:flex-col",
+    "ui-base:flex ui-base:flex-col",
   ],
   variants: {
     /**
@@ -662,7 +662,7 @@ export const choiceGroupDescription = cv({
  */
 export const choiceList = cv({
   // Zero specificity lets caller layout classes win.
-  class: "choice-list min-w-0 [:where(&)]:flex [:where(&)]:flex-col",
+  class: "choice-list min-w-0 ui-base:flex ui-base:flex-col",
   variants: {
     /**
      * Sets the gap between the items. `auto` takes two thirds of the gap of the
@@ -673,7 +673,7 @@ export const choiceList = cv({
      */
     $gap: {
       // Outside a group, use the group gap of simple fields.
-      auto: "[:where(&)]:gap-[calc(var(--choice-group-gap,--spacing(3))*2/3)]",
+      auto: "ui-base:gap-[calc(var(--choice-group-gap,--spacing(3))*2/3)]",
       ...choiceItemsGap,
     },
   },

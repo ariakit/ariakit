@@ -15,10 +15,10 @@ export const heading = cv({
     // direct properties keep the leading and letter spacing fallbacks of text-*
     // classes.
     "[:where(&:not(li_*))]:[line-height:round(calc(1em+0.25rem),1px)]",
-    "[:where(&)]:[letter-spacing:calc(0.025rem-0.036em)]",
+    "ui-base:[letter-spacing:calc(0.025rem-0.036em)]",
     // The balance shorthand would also reset the wrap mode, and a heading in a
     // nowrap parent would then wrap.
-    "[:where(&)]:[text-wrap-style:balance]",
+    "ui-base:[text-wrap-style:balance]",
     "[--heading-size-1:2.25em] [--heading-size-2:1.75em]",
     "[--heading-size-3:1.4em] [--heading-size-4:1.2em] [--heading-size-5:1em]",
     // Size h1–h5 by element; other elements inherit. Zero specificity lets

@@ -368,7 +368,7 @@ export const slotFrameText = cv({
     $grow: [
       // A grown label starts its text, also in a button, which centers it. Zero
       // specificity lets a caller class center the text again.
-      "grow [:where(&)]:text-start",
+      "grow ui-base:text-start",
     ],
   },
 });

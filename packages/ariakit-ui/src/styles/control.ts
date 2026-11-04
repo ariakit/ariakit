@@ -247,7 +247,7 @@ export const controlField = cv({
       vertical: "flex flex-col",
       horizontal: [
         "grid items-baseline",
-        "[:where(&)]:grid-cols-(--field-columns,max-content_minmax(0,1fr))",
+        "ui-base:grid-cols-(--field-columns,max-content_minmax(0,1fr))",
         // The label pads its end instead of a column gap, so a click there
         // also reaches the control. Set --field-column-gap to change it.
         "gap-x-0 [--_field-column-gap:var(--field-column-gap,--spacing(3))]",
@@ -290,9 +290,9 @@ export const controlField = cv({
 export const controlFieldGrid = cv({
   class: [
     // The container query reads the grid's own width, which contains its
-    // inline size. :where() lets caller widths, gaps, and columns win.
-    "control-field-grid @container/field-grid grid min-w-0 [:where(&)]:w-full",
-    "[:where(&)]:gap-y-7 [:where(&)]:grid-cols-[max-content_minmax(0,1fr)]",
+    // inline size. Zero specificity lets caller widths, gaps, and columns win.
+    "control-field-grid @container/field-grid grid min-w-0 ui-base:w-full",
+    "ui-base:gap-y-7 ui-base:grid-cols-[max-content_minmax(0,1fr)]",
     // Every child takes a full row. Only direct fields use the columns as
     // their own, so a field in another child, such as a fieldset, uses its
     // own columns.
@@ -315,8 +315,8 @@ export const controlFieldContent = cv({
 export const controlFieldLabel = cv({
   extend: [text],
   class: [
-    // :where() lets caller font classes win.
-    "control-field-label [:where(&)]:text-[0.875em] [:where(&)]:font-medium",
+    // Zero specificity lets caller font classes win.
+    "control-field-label ui-base:text-[0.875em] ui-base:font-medium",
     // Cover the gap below the label, so a click there also reaches the
     // control. The negative margin keeps the layout.
     "pb-(--_field-gap) -mb-(--_field-gap)",
@@ -337,7 +337,7 @@ export const controlFieldLabel = cv({
 export const controlFieldDescription = cv({
   extend: [text],
   class: [
-    "control-field-description ak-ink-70 [:where(&)]:text-[0.875em]",
+    "control-field-description ak-ink-70 ui-base:text-[0.875em]",
     "group-ui-field-disabled/field:ak-ink-0",
   ],
 });
@@ -356,7 +356,7 @@ export const controlFieldDescription = cv({
  */
 export const controlFieldError = cv({
   extend: [slotFrame],
-  class: "control-field-error [:where(&)]:text-[0.875em]",
+  class: "control-field-error ui-base:text-[0.875em]",
   variants: {
     /**
      * Sets the gap between the icon and the text. `auto` uses
