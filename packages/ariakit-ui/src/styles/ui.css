@@ -12,6 +12,7 @@
   --font-sans:
     "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
 
   --radius: 0.25em;
   --spacing: 0.25em;
