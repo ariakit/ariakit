@@ -1,4 +1,4 @@
 {
   "title": "Underlined Tabs",
-  "description": "Tabs with no frame around them: $border={false} and $p=\"none\" remove the root edge and padding, $p on TabList sets the strip padding, a bottom border divides the strip from the panels, $kind=\"flat\" removes the folder shape, and the bar prop underlines the selected tab. The panels sit directly on the page surface. Use it for tabs at the top of a page section, and prefer the baseline folder tabs when the tabs and panel should read as one card."
+  "description": "Tabs with no frame around them: $border={false} removes the root edge, $p on Tabs sets the space around the tabs, a bottom border divides the strip from the panels, $kind=\"flat\" removes the folder shape, and the bar prop underlines the selected tab. The panels sit directly on the page surface. Use it for tabs at the top of a page section, and prefer the baseline folder tabs when the tabs and panel should read as one card."
 }
