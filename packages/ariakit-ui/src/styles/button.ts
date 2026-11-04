@@ -35,6 +35,22 @@ function hasBevelLighten(variants: BevelLightenVariants) {
   return true;
 }
 
+interface LightnessShiftVariants {
+  $lighten?: string | number | boolean;
+  $darken?: string | number | boolean;
+  $lightnessPush?: string | number | boolean;
+}
+
+/**
+ * Whether `$lighten`, `$darken`, or `$lightnessPush` moves the layer. `0` and
+ * `false` add no class.
+ */
+function hasLightnessShift(variants: LightnessShiftVariants) {
+  if (variants.$lighten) return true;
+  if (variants.$darken) return true;
+  return !!variants.$lightnessPush;
+}
+
 /**
  * An interactive control with hover, focus, press, selected, and disabled
  * styles.
@@ -83,12 +99,12 @@ export const button = cv({
     $active: true,
     $lightnessOffset(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
+      // An explicit lightness shift replaces the offset. The offset would add
+      // to it, and on light surfaces it would darken a lightened button.
+      if (hasLightnessShift(variants)) return false;
       // Neutral bevels use their gradient and explicit lightening. Colored or
-      // disabled bevels use the ordinary offset unless $lighten overrides it.
-      if (variants.$kind === "bevel") {
-        if (hasBevelLighten(variants)) return false;
-        return variants.$lighten == null;
-      }
+      // disabled bevels use the ordinary offset.
+      if (variants.$kind === "bevel") return !hasBevelLighten(variants);
       if (variants.$layer === "transparent") return false;
       return true;
     },
