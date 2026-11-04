@@ -74,19 +74,19 @@ type CardShape = (typeof entries)[number]["data"]["shape"];
 // Larger shapes come first, so dense grid flow can fill the gaps that they
 // leave with smaller cards. Entries keep their title order within a shape.
 const shapeOrder = {
-  screen: 0,
-  popup: 1,
-  section: 2,
-  control: 3,
+  full: 0,
+  tall: 1,
+  wide: 2,
+  cell: 3,
 } satisfies Record<CardShape, number>;
 
-// Narrow lists show one card per row, so wide shapes span two columns only
-// once the grid has them.
+// Narrow lists show one card per row, so full and wide cards span two columns
+// only once the grid has them.
 const shapeClass = {
-  screen: "row-span-2 @md/cards:col-span-2",
-  popup: "row-span-2",
-  section: "@md/cards:col-span-2",
-  control: "",
+  full: "row-span-2 @md/cards:col-span-2",
+  tall: "row-span-2",
+  wide: "@md/cards:col-span-2",
+  cell: "",
 } satisfies Record<CardShape, string>;
 
 // The thumbnail stage keeps corners concentric with the card while this

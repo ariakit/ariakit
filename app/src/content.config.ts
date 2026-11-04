@@ -41,12 +41,14 @@ const guides = defineCollection({
   }),
 });
 
-// The card size on the recipe and component list pages. Pick the shape that
-// fits the thumbnail scene: a whole screen, a popup that opens down from a
-// trigger, a section that runs across a page, or a single control.
+// The card size on the recipe and component list pages. Pick the size that fits
+// the thumbnail scene, not the kind of component. Use cell for a scene that
+// reads well in one grid cell, wide for a horizontal scene, such as a toolbar
+// or a page section, tall for a vertical scene, such as a menu that opens down
+// from a trigger, and full for a whole screen or app layout.
 const ThumbnailShapeSchema = z
-  .enum(["screen", "popup", "section", "control"])
-  .default("control");
+  .enum(["full", "tall", "wide", "cell"])
+  .default("cell");
 
 const components = defineCollection({
   loader: componentLoader({
