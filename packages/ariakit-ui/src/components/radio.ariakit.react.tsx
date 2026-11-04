@@ -2,7 +2,10 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
-import { createOptionalRender } from "../react-utils/create-render.react.ts";
+import {
+  createOptionalRender,
+  getChildrenText,
+} from "../react-utils/create-render.react.ts";
 import {
   DescriptionContext,
   useDescription,
@@ -104,8 +107,12 @@ export interface RadioGroupProps
  * </RadioGroup>
  * @example
  * <RadioGroup label="View" defaultValue="list" $kind="segmented">
- *   <RadioCard value="list" $kind="segmented">List</RadioCard>
- *   <RadioCard value="grid" $kind="segmented">Grid</RadioCard>
+ *   <RadioCard value="list" $kind="segmented">
+ *     <RadioCardLabel>List</RadioCardLabel>
+ *   </RadioCard>
+ *   <RadioCard value="grid" $kind="segmented">
+ *     <RadioCardLabel>Grid</RadioCardLabel>
+ *   </RadioCard>
  * </RadioGroup>
  */
 export function RadioGroup({
@@ -481,7 +488,16 @@ export function RadioCardLabelRow(props: RadioCardLabelRowProps) {
 }
 
 export interface RadioCardLabelProps
-  extends ak.RoleProps<"span">, VariantProps<typeof radioCardLabel> {}
+  extends ak.RoleProps<"span">, VariantProps<typeof radioCardLabel> {
+  /**
+   * The label text, rendered when `children` is omitted. Defaults to the text
+   * of `children` that are only text and numbers. A checked segment shows its
+   * label in a heavier weight only when the label has this text, because the
+   * text reserves the heavier width in advance and keeps the segment size. Keep
+   * it equal to the visible text of custom `children`.
+   */
+  text?: string;
+}
 
 /**
  * Main text of the card. Must be nested inside a `RadioCard`. Truncates to one
@@ -493,9 +509,21 @@ export interface RadioCardLabelProps
  *   </RadioCard>
  * </RadioGroup>
  */
-export function RadioCardLabel(props: RadioCardLabelProps) {
+export function RadioCardLabel({
+  text,
+  children = text,
+  ...props
+}: RadioCardLabelProps) {
   const [variantProps, rest] = splitProps(props, radioCardLabel);
-  return <ak.Role.span {...radioCardLabel.jsx(variantProps)} {...rest} />;
+  return (
+    <ak.Role.span
+      data-text={text ?? getChildrenText(children)}
+      {...radioCardLabel.jsx(variantProps)}
+      {...rest}
+    >
+      {children}
+    </ak.Role.span>
+  );
 }
 
 export interface RadioCardDescriptionProps

@@ -96,6 +96,16 @@ function BarPlacement() {
   );
 }
 
+interface MessageProps {
+  children: string;
+}
+
+// A message component, such as one from a translation library, makes the label
+// children an element, so the label can't read its text.
+function Message({ children }: MessageProps) {
+  return <>{children}</>;
+}
+
 interface ActivityTabsProps {
   name: string;
   pinned?: boolean;
@@ -1488,6 +1498,315 @@ export default function TabsExamples() {
           <TabPanels>
             <TabPanel single>
               <p className="text-sm">Three files changed in this commit.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Grown tab labels"
+        description="A grown label fills a stretched tab and starts its text, so the badge sits at the end of the tab."
+        stretch
+        code={`
+          <Tabs>
+            <TabList $layout="stretch">
+              <Tab>
+                <TabLabel $grow>Inbox</TabLabel>
+                <TabSlot $kind="box">
+                  <Badge $kind="solid" $round>3</Badge>
+                </TabSlot>
+              </Tab>
+              …
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="grown-inbox">
+          <TabList aria-label="Grown tab labels" $layout="stretch">
+            <Tab id="grown-inbox">
+              <TabLabel $grow>Inbox</TabLabel>
+              <TabSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  3
+                </Badge>
+              </TabSlot>
+            </Tab>
+            <Tab id="grown-archive">
+              <TabLabel $grow>Archive</TabLabel>
+              <TabSlot $kind="box">
+                <Badge $round>12</Badge>
+              </TabSlot>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">Three unread messages.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Tab labels with layout classes"
+        description="Layout classes on a label apply as $grow does: grow fills a stretched tab, so the badge sits at the end, and text-start starts the text."
+        stretch
+        code={`
+          <Tabs>
+            <TabList $layout="stretch">
+              <Tab>
+                <TabLabel className="grow text-start">Inbox</TabLabel>
+                <TabSlot $kind="box">
+                  <Badge $kind="solid" $round>3</Badge>
+                </TabSlot>
+              </Tab>
+              …
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="layout-class-inbox">
+          <TabList
+            aria-label="Tab labels with layout classes"
+            $layout="stretch"
+          >
+            <Tab id="layout-class-inbox">
+              <TabLabel className="grow text-start">Inbox</TabLabel>
+              <TabSlot $kind="box">
+                <Badge $kind="solid" $round>
+                  3
+                </Badge>
+              </TabSlot>
+            </Tab>
+            <Tab id="layout-class-archive">
+              <TabLabel className="grow text-start">Archive</TabLabel>
+              <TabSlot $kind="box">
+                <Badge $round>12</Badge>
+              </TabSlot>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">Three unread messages.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Semibold tab labels"
+        description="A weight class on the labels applies to every tab, including the selected one."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>
+              <Tab>
+                <TabLabel className="font-semibold">Preview</TabLabel>
+              </Tab>
+              …
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="semibold-code">
+          <TabList aria-label="Semibold tab labels">
+            <Tab id="semibold-preview">
+              <TabLabel className="font-semibold">Preview</TabLabel>
+            </Tab>
+            <Tab id="semibold-code">
+              <TabLabel className="font-semibold">Code</TabLabel>
+            </Tab>
+            <Tab id="semibold-usage">
+              <TabLabel className="font-semibold">Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">Every label is semibold.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Medium tabs"
+        description="A weight class on the tabs replaces the normal weight of idle tabs. A weight above the button weight goes on the labels instead."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>
+              <Tab className="font-medium">Preview</Tab>
+              …
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="medium-code">
+          <TabList aria-label="Medium tabs">
+            <Tab id="medium-preview" className="font-medium">
+              Preview
+            </Tab>
+            <Tab id="medium-code" className="font-medium">
+              Code
+            </Tab>
+            <Tab id="medium-usage" className="font-medium">
+              Usage
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">Every tab is medium.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Tabs with bigint counts"
+        description="Text with a bigint, such as a count from a database, sets the label text, so the selected label turns heavier and the tabs don't move."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>
+              <Tab>Files {fileCount}</Tab>
+              <Tab>Issues {issueCount}</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="bigint-files">
+          <TabList aria-label="Tabs with bigint counts">
+            <Tab id="bigint-files">Files {BigInt(10)}</Tab>
+            <Tab id="bigint-issues">Issues {BigInt(3)}</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">Counts can be bigints.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Rich tab labels"
+        description="A label with an element child sets text to its visible text, so the label turns heavier while selected and the tabs don't move."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>
+              <Tab>
+                <TabLabel text="Code" />
+              </Tab>
+              <Tab>
+                <TabLabel text="Pull requests">
+                  <Message>Pull requests</Message>
+                </TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel text="Actions">
+                  <Message>Actions</Message>
+                </TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="rich-code">
+          <TabList aria-label="Rich tab labels">
+            <Tab id="rich-code">
+              <TabLabel text="Code" />
+            </Tab>
+            <Tab id="rich-pulls">
+              <TabLabel text="Pull requests">
+                <Message>Pull requests</Message>
+              </TabLabel>
+            </Tab>
+            <Tab id="rich-actions">
+              <TabLabel text="Actions">
+                <Message>Actions</Message>
+              </TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The selected label is heavier.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Rich tab labels without text"
+        description="Without text, a label with an element child keeps the normal weight while selected, so the tabs don't move."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>
+              <Tab>
+                <TabLabel>
+                  <Message>Code</Message>
+                </TabLabel>
+              </Tab>
+              …
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="untexted-code">
+          <TabList aria-label="Rich tab labels without text">
+            <Tab id="untexted-code">
+              <TabLabel>
+                <Message>Code</Message>
+              </TabLabel>
+            </Tab>
+            <Tab id="untexted-pulls">
+              <TabLabel>
+                <Message>Pull requests</Message>
+              </TabLabel>
+            </Tab>
+            <Tab id="untexted-actions">
+              <TabLabel>
+                <Message>Actions</Message>
+              </TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">Every label keeps the normal weight.</p>
             </TabPanel>
           </TabPanels>
         </Tabs>

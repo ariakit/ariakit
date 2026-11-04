@@ -20,6 +20,11 @@ const segmentBase = cx(
   // A press can't change a settled segment, so its surface doesn't react. It
   // keeps its selected offset, which the hover state would otherwise replace.
   "ui-settled:ui-hover:ak-state-(--selected-offset,0)",
+  // Segments size to their text, so a heavier thumb would move the segments
+  // after it. Only a label with data-text turns heavier, because it keeps that
+  // width. This sorts after the zero-specificity button weight, so it wins, and
+  // a weight class on the segment still wins over both.
+  "[:where(&)]:font-normal",
 );
 
 /** The classes of each segmented kind, for extenders that replace `$kind`. */
@@ -58,6 +63,16 @@ export const segment = cv({
     $lightnessOffset(defaultValue, variants) {
       if (!isSegmentedKind(variants.$kind)) return defaultValue;
       return false;
+    },
+    // Idle segments dim their text, which inherits into slots. Hover and the
+    // thumb restore full ink.
+    $ink(defaultValue, variants) {
+      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+      return defaultValue ?? 80;
+    },
+    $selectedInk(defaultValue, variants) {
+      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+      return defaultValue ?? 100;
     },
     $selectedPush(defaultValue, variants) {
       if (!isSegmentedKind(variants.$kind)) return defaultValue;

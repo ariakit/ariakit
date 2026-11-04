@@ -45,8 +45,9 @@ export const button = cv({
     // Zero specificity lets a plain cursor utility replace the pointer, whatever
     // the order that Tailwind gives the two rules.
     "[:where(&)]:cursor-pointer not-[button]:select-none",
-    // Map the 0–100 contrast scale to font weights 500–600.
-    "font-[calc(500+var(--contrast))]",
+    // Map the 0–100 contrast scale to font weights 500–600. Zero specificity
+    // lets a weight class on the button win, whatever its order.
+    "[:where(&)]:font-[calc(500+var(--contrast))]",
     // DOM disabled state can change after render. Keep these rules aligned with
     // control.$disabled; the prop also removes hover and press variants.
     "ui-disabled:cursor-not-allowed!",
@@ -128,11 +129,39 @@ export const button = cv({
   },
 });
 
-/** A button label that truncates to one line by default. */
+/**
+ * A button label that truncates to one line by default.
+ *
+ * Set `data-text` to the label text to show the label of a selected, checked,
+ * or current control in the button weight while the control uses a lighter
+ * weight, as tabs and segments do. The label keeps the width of that heavier
+ * text in advance, so the control keeps its size. Directly in a control, the
+ * label centers its text in that width unless `$grow` is set. Weight and
+ * alignment classes on the label apply in every state. A selected label with
+ * `data-text` keeps the button weight over a weight class on the control, so a
+ * weight above the button weight goes on the label.
+ */
 export const buttonLabel = cv({
   extend: [controlLabel],
+  class: [
+    // Zero specificity lets a weight class on the label win in every state.
+    "data-text:group-ui-selected/control:[:where(&)]:font-[calc(500+var(--contrast))]",
+    // A zero-height copy of data-text at the selected weight sets the label
+    // width, so the control keeps its size when it becomes selected.
+    "data-text:before:block data-text:before:h-0 data-text:before:overflow-hidden",
+    "data-text:before:invisible data-text:before:content-[attr(data-text)]",
+    "data-text:before:font-[calc(500+var(--contrast))]",
+  ],
   defaultVariants: {
     $truncate: true,
+  },
+  refine({ variants, addClass }) {
+    // A grown label starts its text in the free space of the control.
+    if (variants.$grow) return;
+    // In the control row, the text stays in the middle of the reserved width at
+    // both weights. A label in a content column keeps the start of the column.
+    // Zero specificity lets an alignment class on the label win.
+    addClass("[.control>&]:data-text:[:where(&)]:text-center");
   },
 });
 

@@ -137,7 +137,15 @@ export function ButtonContent(props: ButtonContentProps) {
 }
 
 export interface ButtonLabelProps
-  extends ak.RoleProps<"span">, VariantProps<typeof buttonLabel> {}
+  extends ak.RoleProps<"span">, VariantProps<typeof buttonLabel> {
+  /**
+   * The label text, rendered when `children` is omitted. A current segment
+   * shows its label in a heavier weight only when this is set, because the text
+   * reserves the heavier width in advance and keeps the segment size. Keep it
+   * equal to the visible text of custom `children`.
+   */
+  text?: string;
+}
 
 /**
  * The main text of a button. Truncates to one line by default; set
@@ -146,10 +154,27 @@ export interface ButtonLabelProps
  * <Button>
  *   <ButtonLabel>Save changes</ButtonLabel>
  * </Button>
+ * @example
+ * <ButtonGroup aria-label="Pages" $kind="segmented">
+ *   <Button $kind="segmented" render={<a href="/first" aria-current="page" />}>
+ *     <ButtonLabel text="First" />
+ *   </Button>
+ *   <Button $kind="segmented" render={<a href="/second" />}>
+ *     <ButtonLabel text="Second" />
+ *   </Button>
+ * </ButtonGroup>
  */
-export function ButtonLabel(props: ButtonLabelProps) {
+export function ButtonLabel({
+  text,
+  children = text,
+  ...props
+}: ButtonLabelProps) {
   const [variantProps, rest] = splitProps(props, buttonLabel);
-  return <ak.Role.span {...buttonLabel.jsx(variantProps)} {...rest} />;
+  return (
+    <ak.Role.span data-text={text} {...buttonLabel.jsx(variantProps)} {...rest}>
+      {children}
+    </ak.Role.span>
+  );
 }
 
 export interface ButtonDescriptionProps

@@ -305,15 +305,17 @@ export const navLink = cv({
   defaultVariants: {
     $lightnessOffset: false,
     $selectedPush: true,
+    // Idle links dim their text, which inherits into slots. Hover and the
+    // current link restore full ink.
+    $ink: 80,
     $selectedInk: 100,
     $gap: "none",
   },
   refine({ variants, addClass }) {
-    // Segments keep the ink and weight of the segments on other components.
+    // Segments take their weight from the segmented kinds, like the segments of
+    // other components.
     if (isSegmentedKind(variants.$kind)) return;
     addClass([
-      // Idle ink inherits into slots; hover and selection restore full strength.
-      "ak-dark:ak-ink-70",
       "not-ui-selected:font-normal",
       // Rows in a horizontal navigation size to their text, so a heavier current
       // row would shift the rows after it. Its surface or bar marks it instead,
@@ -349,16 +351,12 @@ export const navLinkLabel = cv({
   class: [
     "group-has-[>.control-description]/control-content:ak-ink-100",
     "group-has-[>.control-description]/control-content:font-[calc(500+var(--contrast))]",
-    // A zero-height copy of data-text at the current weight sets the label
-    // width, so the row keeps its size when the link becomes current.
-    "data-text:group-ui-selected/control:font-[calc(500+var(--contrast))]",
-    "data-text:before:block data-text:before:h-0 data-text:before:overflow-hidden",
-    "data-text:before:invisible data-text:before:content-[attr(data-text)]",
-    "data-text:before:font-[calc(500+var(--contrast))]",
-    // A horizontal row caps the label at the reserved width and centers the
-    // text in it, so both sides of the text share the extra space. Taking the
-    // free space of a wider row, or the width of a longer description, would
-    // move the text away from the start.
+    // buttonLabel reserves the width of the heavier text from data-text, so
+    // the row keeps its size when the link becomes current. A horizontal row
+    // caps the label at the reserved width and centers the text in it, so both
+    // sides of the text share the extra space. Taking the free space of a
+    // wider row, or the width of a longer description, would move the text
+    // away from the start.
     "in-[.nav.horizontal>.control,.nav.horizontal>.nav-list>li>.control]:data-text:max-w-fit",
     "in-[.nav.horizontal>.control,.nav.horizontal>.nav-list>li>.control]:data-text:text-center",
   ],
