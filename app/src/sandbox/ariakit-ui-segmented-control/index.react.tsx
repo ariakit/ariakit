@@ -299,6 +299,19 @@ export default function SegmentedControlExamples() {
       </Example>
 
       <Example
+        title="Disabled checked cell"
+        description="A checked and disabled cell keeps the disabled ink, also on the second edge pixel that marks it in high contrast."
+        code={`<RadioCard value="list" disabled $kind="segmented-flat" $edgeWeight="normal" />`}
+      >
+        <Segments
+          name="Disabled checked cell"
+          {...joinedGroup}
+          item={joinedCell}
+          disabledLabel="List"
+        />
+      </Example>
+
+      <Example
         title="Visible label"
         description="The label goes above the surface of the group."
         code={`<RadioGroup label="View" $kind="segmented" />`}

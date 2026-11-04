@@ -200,14 +200,11 @@ export const tab = cv({
       // after it. Only a label with data-text turns heavier, because it keeps
       // that width. font-normal sorts after the button weight, so it wins.
       const weight = "font-normal";
-      // Idle ink inherits into slots; hover and selection restore full
-      // strength, like navigation links.
-      const ink = "ak-dark:ak-ink-70";
-      if (value === "folder") return [tabFolder, noRing, weight, ink];
+      if (value === "folder") return [tabFolder, noRing, weight];
       if (value === "bevel") {
-        return [tabBox, noRing, weight, ink, "ui-selected:ui-bevel-button"];
+        return [tabBox, noRing, weight, "ui-selected:ui-bevel-button"];
       }
-      return [tabBox, noRing, weight, ink];
+      return [tabBox, noRing, weight];
     },
   },
   defaultVariants: {
@@ -221,7 +218,9 @@ export const tab = cv({
       return 1.5;
     },
     $lightnessOffset: false,
-    // Selected tabs restore the full ink that idle tabs dim on dark layers.
+    // Idle tabs dim their text, which inherits into slots, like navigation
+    // links. Hover and selection restore full ink.
+    $ink: 80,
     $selectedInk: 100,
     $lighten(defaultValue, variants) {
       if (isSegmentedKind(variants.$kind)) return defaultValue;

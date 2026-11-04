@@ -311,6 +311,9 @@ const choiceCardSegment = cx(
   "[&_input]:absolute [&_input]:inset-0 [&_input]:size-full [&_input]:m-0 [&_input]:opacity-0",
   "[&_input]:cursor-[inherit]",
   "*:grow-0 *:text-center",
+  // A checked segment restores full ink, so a disabled one needs the disabled
+  // ink at a higher specificity.
+  "ui-disabled-within:ui-selected:ak-ink-0",
 );
 
 /** A card label whose tint follows a nested input's checked or mixed state. */
@@ -334,8 +337,9 @@ export const choiceCard = cv({
     "ui-disabled-within:not-forced-colors:ui-text:ak-ink-0",
     "ui-disabled-within:ak-edge-5 ui-disabled-within:ak-layer-fade-80",
     // Forced colors replace the ink with the normal text color. Use the system
-    // disabled color instead; the label's edge follows the text color.
-    "ui-disabled-within:forced-colors:text-[GrayText]",
+    // disabled color instead; the label's edge follows the text color. It's
+    // important because hover and selected ink rules are more specific.
+    "ui-disabled-within:forced-colors:text-[GrayText]!",
     "ui-disabled-within:forced-colors:**:text-[GrayText]",
     "ui-disabled-within:forced-colors:ui-text:text-[GrayText]",
     "ui-disabled-within:ui-hover:ak-state-0",

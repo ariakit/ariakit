@@ -24,8 +24,6 @@ const segmentBase = cx(
   // after it. Only a label with data-text turns heavier, because it keeps that
   // width. font-normal sorts after the button weight, so it wins.
   "font-normal",
-  // Idle ink inherits into slots; hover and the thumb restore full strength.
-  "ak-dark:ak-ink-70",
 );
 
 /** The classes of each segmented kind, for extenders that replace `$kind`. */
@@ -64,6 +62,12 @@ export const segment = cv({
     $lightnessOffset(defaultValue, variants) {
       if (!isSegmentedKind(variants.$kind)) return defaultValue;
       return false;
+    },
+    // Idle segments dim their text, which inherits into slots. Hover and the
+    // thumb restore full ink.
+    $ink(defaultValue, variants) {
+      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+      return defaultValue ?? 80;
     },
     $selectedInk(defaultValue, variants) {
       if (!isSegmentedKind(variants.$kind)) return defaultValue;

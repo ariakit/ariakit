@@ -305,16 +305,17 @@ export const navLink = cv({
   defaultVariants: {
     $lightnessOffset: false,
     $selectedPush: true,
+    // Idle links dim their text, which inherits into slots. Hover and the
+    // current link restore full ink.
+    $ink: 80,
     $selectedInk: 100,
     $gap: "none",
   },
   refine({ variants, addClass }) {
-    // Segments take their ink and weight from the segmented kinds, like the
-    // segments of other components.
+    // Segments take their weight from the segmented kinds, like the segments of
+    // other components.
     if (isSegmentedKind(variants.$kind)) return;
     addClass([
-      // Idle ink inherits into slots; hover and selection restore full strength.
-      "ak-dark:ak-ink-70",
       "not-ui-selected:font-normal",
       // Rows in a horizontal navigation size to their text, so a heavier current
       // row would shift the rows after it. Its surface or bar marks it instead,
