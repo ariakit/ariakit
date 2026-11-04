@@ -111,6 +111,14 @@ body > * {
   initial-value: 0;
 }
 
+/* Resolve the tab indent at the root so strip, tab, and panel fonts cannot
+   change it. */
+@property --tabs-indent {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Animate corner rounding from square (0) to round (1), with round defaults. */
 @property --tabs-round-s {
   syntax: "<number>";

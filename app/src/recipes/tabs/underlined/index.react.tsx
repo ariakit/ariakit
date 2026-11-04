@@ -11,16 +11,11 @@ export default function Example() {
     <Tabs
       defaultSelectedId="account-profile"
       $border={false}
-      $p="none"
+      $p={1.5}
       $rounded="2xl"
       className="w-[28rem] max-w-full"
     >
-      <TabList
-        aria-label="Account"
-        $darken={false}
-        $p={1.5}
-        className="border-b"
-      >
+      <TabList aria-label="Account" $darken={false} className="border-b">
         <Tab id="account-profile" $kind="flat" bar>
           Profile
         </Tab>

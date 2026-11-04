@@ -407,6 +407,61 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Indented without padding or root edge"
+        description="$indent moves the tabs away from the panel edge without padding above them. The selected first tab meets a rounded panel corner, and the tabs keep the full radius."
+        stretch
+        code={`
+          <Tabs $p="none" $edgeHidden $indent={3}>
+            <TabList $darken={false}>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          $p="none"
+          $edgeHidden
+          $indent={3}
+          defaultSelectedId="indented-preview"
+        >
+          <TabList
+            $darken={false}
+            aria-label="Indented without padding or root edge"
+          >
+            <Tab id="indented-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="indented-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="indented-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">
+                The first tab sits away from the panel edge.
+              </p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Full-width strip"
         description="The tabs share the strip's width, and the strip still reaches both ends of the root."
         stretch

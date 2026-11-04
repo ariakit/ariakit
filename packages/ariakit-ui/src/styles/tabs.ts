@@ -1,4 +1,5 @@
 import { cv, cx } from "clava";
+import { getPaddingValue } from "../utils/styles.ts";
 import {
   button,
   buttonBar,
@@ -37,15 +38,18 @@ export const tabs = cv({
     "[--tabs-ring:var(--ak-frame-ring)]",
     "[--tabs-bordering:calc(var(--tabs-border)+var(--tabs-ring))]",
     "[--tabs-layer:var(--ak-layer)]",
+    // The space where a selected outer folder meets the panel. Without
+    // $indent, it follows the root padding.
+    "[--tabs-indent:var(--tabs-padding)]",
     // Nested tabs set their own values instead of inheriting them.
     "[--tabs-meet:initial] [--tabs-meet-end:initial] [--tabs-folder:initial]",
     // A selected first folder meets the panel halfway across the available
-    // padding and border. Rings may overlap at this seam; an opaque backing
+    // indent and border. Rings may overlap at this seam; an opaque backing
     // would separate them from underlying shadows.
-    "has-[>:first-child>.ui-folder[aria-selected='true']:nth-child(1_of_.control)]:[--tabs-meet:calc((var(--tabs-padding)+min(var(--tabs-padding),var(--tabs-border)))/2)]",
+    "has-[>:first-child>.ui-folder[aria-selected='true']:nth-child(1_of_.control)]:[--tabs-meet:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-border)))/2)]",
     // A stretched strip has no room after its last tab, so a selected last
     // folder meets the panel in the same way at the end.
-    "has-[>:first-child.tabs-stretch>.ui-folder[aria-selected='true']:nth-last-child(1_of_.control)]:[--tabs-meet-end:calc((var(--tabs-padding)+min(var(--tabs-padding),var(--tabs-border)))/2)]",
+    "has-[>:first-child.tabs-stretch>.ui-folder[aria-selected='true']:nth-last-child(1_of_.control)]:[--tabs-meet-end:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-border)))/2)]",
     // Scope the scroll timeline so the sibling panel can follow it.
     "[timeline-scope:--tabs-scroll]",
     // Only the tabs of this root's own strip count, not those of nested tabs.
@@ -70,6 +74,23 @@ export const tabs = cv({
       true: "[--tabs-notch:calc(var(--tabs-radius)*var(--tabs-folder,0))]",
       // An explicit zero keeps nested tabs from inheriting the outer notch.
       false: "[--tabs-notch:0px]",
+    },
+    /**
+     * Sets the space between the root edge and the strip ends, where a selected
+     * outer folder meets the panel. Unlike `$p`, it keeps the space above the
+     * tabs and their radius. Without it, the strip ends use the strip padding
+     * and the panel corners use the root padding. `none` removes the space.
+     * Numbers multiply the spacing token and round to a whole pixel.
+     */
+    $indent(value?: "none" | (string & {}) | number) {
+      if (value == null) return;
+      // The marker lets the strip use this value in place of its own padding.
+      return {
+        class: "tabs-indent",
+        style: {
+          "--tabs-indent": getPaddingValue(value === "none" ? 0 : value),
+        },
+      };
     },
   },
   defaultVariants: {
@@ -129,7 +150,7 @@ const tabFolder = cx(
   // Borders meet the root edge inside the box; rings need an offset so their
   // outside edge lands at the same position.
   "mt-[min(var(--tabs-merge),var(--ak-frame-ring))]",
-  "first:ms-[min(var(--tabs-merge),var(--ak-frame-ring))]",
+  "first:ms-[min(var(--tabs-merge-x),var(--ak-frame-ring))]",
   // Extend selected folders over the panel seam. Extra bottom padding and a
   // negative margin preserve label position and row height.
   "[--tab-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
@@ -281,6 +302,8 @@ const tabStrip = cx(
   // Each folder accounts for its own border or ring when crossing the seam.
   "[--tabs-float:var(--ak-frame-padding)]",
   "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
+  // A root indent replaces the strip padding only beside the outer tabs.
+  "[--tabs-float-x:var(--tabs-float)] [.tabs-indent>&]:[--tabs-float-x:var(--tabs-indent)]",
   // Continue below the seam to fill rounded panel corners and ring overhang.
   "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px)+var(--tabs-over,0px))]",
   // Keep the strip out of a separate stacking context so tabs can paint
@@ -290,13 +313,14 @@ const tabStrip = cx(
   // root edge. Only border width affects the frame margin and concentric
   // radius.
   "[--tabs-merge:calc(max(0px,calc(var(--tabs-bordering)-var(--tabs-float)))*var(--tabs-folder,0))]",
+  "[--tabs-merge-x:calc(max(0px,calc(var(--tabs-bordering)-var(--tabs-float-x)))*var(--tabs-folder,0))]",
   "[--tabs-pull:calc(max(0px,calc(var(--tabs-border)-var(--tabs-float)))*var(--tabs-folder,0))]",
   // Extend the scroll box over the root edge so tab edges and corners remain
   // unclipped.
   "-mt-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
   "-mx-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
   "pt-[calc(var(--tabs-bordering)+var(--tabs-float)-var(--tabs-merge))]",
-  "px-[calc(var(--tabs-bordering)+var(--tabs-float)-var(--tabs-merge))]",
+  "px-[calc(var(--tabs-bordering)+var(--tabs-float-x)-var(--tabs-merge-x))]",
   "rounded-ss-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
   "rounded-se-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
   // Paint within the root edge, though the scroll box extends beyond it.
@@ -306,7 +330,7 @@ const tabStrip = cx(
   // Reserve a non-shrinking spacer for the final folder curve. Beside a rounded
   // panel corner, it also keeps that curve clear of the corner, less the strip
   // padding that already separates them.
-  "after:w-[max(var(--tabs-radius),calc(var(--tabs-radius)+var(--tabs-notch,0px)-var(--tabs-float)+var(--tabs-merge)))] after:shrink-0",
+  "after:w-[max(var(--tabs-radius),calc(var(--tabs-radius)+var(--tabs-notch,0px)-var(--tabs-float-x)+var(--tabs-merge-x)))] after:shrink-0",
   "overflow-x-auto overflow-y-clip overscroll-x-contain scrollbar-none",
   // Scroll the tab's outer curve into view too. This overrides the smaller
   // frame scroll padding.
@@ -343,7 +367,7 @@ export const tabList = cv({
       // Keep the strip width automatic so negative margins can extend it over
       // the root edge. Without the end spacer, the last tab mirrors the first:
       // same inset from the root edge, and a selected folder meets the panel.
-      return "tabs-stretch after:hidden [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow [&>.control]:[--stretch-px-scale:0.75] [&>.ui-folder:last-child]:me-[min(var(--tabs-merge),var(--ak-frame-ring))]";
+      return "tabs-stretch after:hidden [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow [&>.control]:[--stretch-px-scale:0.75] [&>.ui-folder:last-child]:me-[min(var(--tabs-merge-x),var(--ak-frame-ring))]";
     },
   },
   defaultVariants: {
