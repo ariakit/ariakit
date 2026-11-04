@@ -41,6 +41,10 @@ export const prose = cv({
     // Adjacent headings stay closer. Zero specificity lets caller mt-* classes
     // win, and em values follow the size of each heading.
     "[:where(&>:not(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6))]:mt-4",
+    // A column after a popout, feature, or full band between two columns, such
+    // as a code block, a figure, or a callout in an article, continues the same
+    // text, so its first heading starts a new part too.
+    "[:where(:is(.shell-popout,.shell-feature,.shell-full)+&>:is(h1,h2,h3,h4,h5,h6):first-child)]:mt-4",
     "[:where(&>:is(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6))]:mt-[0.35em]",
     // Tighten only the space after a heading, so later children keep the gap.
     // The margin is negative while the gap is larger than this space.

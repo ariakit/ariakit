@@ -17,4 +17,20 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       test.expect(labelBox?.y).toBe(bodyBox?.y);
     });
   });
+
+  // A band sits between two Prose columns, and the column after it continues
+  // the text. Its first heading must start a new part like one in the text.
+  test("spaces a heading after a band like a heading after a paragraph", async ({
+    q,
+  }) => {
+    const afterParagraph = await q
+      .heading("Why calm matters")
+      .evaluate((element) => getComputedStyle(element).marginTop);
+    test.expect(afterParagraph).not.toBe("0px");
+    for (const name of ["Contrast without noise", "Keep reading"]) {
+      await test
+        .expect(q.heading(name))
+        .toHaveCSS("margin-top", afterParagraph);
+    }
+  });
 });
