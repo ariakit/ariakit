@@ -75,10 +75,12 @@ const files = Object.entries(source.files);
     match. */
 }
 <script>
+  import { setupPreviewCardBars } from "#app/lib/preview-card-bars.ts";
   import { setupPreviewCardLinks } from "#app/lib/preview-card-links.ts";
   import { setupPreviewFrames } from "#app/lib/preview-frames.ts";
 
   setupPreviewFrames();
+  setupPreviewCardBars();
   setupPreviewCardLinks();
 </script>
 

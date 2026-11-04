@@ -188,15 +188,22 @@ export function PreviewCard({
           ].join(" ")}
         >
           <Frame
+            // TODO: Make the bar a size container again, and remove
+            // preview-card-bars.ts, once Chrome Stable fixes the layout bugs
+            // that its query hit.
+            // https://issues.chromium.org/issues/578117951
+            // https://github.com/ariakit/ariakit/issues/8283
+            // A page script marks narrow browser chrome, for the label below.
+            // It can mark the bar before the card hydrates. See
+            // preview-card-bars.ts.
+            data-preview-bar={browser || undefined}
+            suppressHydrationWarning={browser}
             $cover
             // Slightly more than the card padding, to suit the rounder corners.
             $p={1.5}
             className={[
               "flex items-center gap-2 text-sm",
-              // Only browser chrome queries the bar width, for the label below.
-              // WebKit restyles everything inside query containers that change
-              // size on each step of a sidebar fold, which adds up across cards.
-              browser ? "@container/bar" : "",
+              browser ? "group/bar" : "",
             ].join(" ")}
           >
             <TextFrame
@@ -238,7 +245,13 @@ export function PreviewCard({
                 </ButtonSlot>
                 <ButtonLabel
                   // The address needs the room in narrow browser chrome.
-                  className={browser ? "@max-lg/bar:sr-only" : undefined}
+                  // Without scripts, nothing marks a narrow bar, and the code
+                  // can't open, so the label hides.
+                  className={
+                    browser
+                      ? "group-data-narrow/bar:sr-only noscript:sr-only"
+                      : undefined
+                  }
                 >
                   Get code
                 </ButtonLabel>
