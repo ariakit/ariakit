@@ -1,12 +1,20 @@
 import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
-import { tab, tabList, tabPanels, tabs } from "@ariakit/ui/styles/tabs";
+import {
+  tab,
+  tabLabel,
+  tabList,
+  tabPanels,
+  tabs,
+} from "@ariakit/ui/styles/tabs";
 
 export default function Thumbnail() {
   return (
     <div {...tabs.jsx({ className: "w-[19em] max-w-full" })}>
       <div {...tabList.jsx()}>
         <div {...tab.jsx()} aria-selected="true">
-          Overview
+          <span {...tabLabel.jsx()} data-text="Overview">
+            Overview
+          </span>
           {/* Card thumbnails scale the scene with a transform, which can leave
               the folder's bottom edge on a fractional pixel exactly over the
               panel border, so that border shows through as a faint line. A
@@ -16,10 +24,14 @@ export default function Thumbnail() {
           <span className="absolute inset-x-0 -bottom-px h-[3px] bg-(--ak-layer)" />
         </div>
         <div {...tab.jsx()} aria-selected="false">
-          Activity
+          <span {...tabLabel.jsx()} data-text="Activity">
+            Activity
+          </span>
         </div>
         <div {...tab.jsx()} aria-selected="false">
-          Files
+          <span {...tabLabel.jsx()} data-text="Files">
+            Files
+          </span>
         </div>
       </div>
       <div {...tabPanels.jsx({ className: "grid gap-2.5" })}>

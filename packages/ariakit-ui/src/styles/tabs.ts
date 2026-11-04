@@ -196,11 +196,18 @@ export const tab = cv({
       // Tab kinds supply their own focus indicators. The button ring would
       // cross the folder seam and be clipped by the strip.
       const noRing = "ui-focus-visible:outline-none";
-      if (value === "folder") return [tabFolder, noRing];
+      // Tabs size to their text, so a heavier selected tab would move the tabs
+      // after it. Only a label with data-text turns heavier, because it keeps
+      // that width. font-normal sorts after the button weight, so it wins.
+      const weight = "font-normal";
+      // Idle ink inherits into slots; hover and selection restore full
+      // strength, like navigation links.
+      const ink = "ak-dark:ak-ink-70";
+      if (value === "folder") return [tabFolder, noRing, weight, ink];
       if (value === "bevel") {
-        return [tabBox, noRing, "ui-selected:ui-bevel-button"];
+        return [tabBox, noRing, weight, ink, "ui-selected:ui-bevel-button"];
       }
-      return [tabBox, noRing];
+      return [tabBox, noRing, weight, ink];
     },
   },
   defaultVariants: {
@@ -214,6 +221,8 @@ export const tab = cv({
       return 1.5;
     },
     $lightnessOffset: false,
+    // Selected tabs restore the full ink that idle tabs dim on dark layers.
+    $selectedInk: 100,
     $lighten(defaultValue, variants) {
       if (isSegmentedKind(variants.$kind)) return defaultValue;
       if (variants.$kind === "folder") return defaultValue ?? true;
@@ -247,7 +256,12 @@ export const tab = cv({
 /** A tab slot for an icon, avatar, badge, or shortcut. */
 export const tabSlot = buttonSlot;
 
-/** Tab label text with optional truncation. */
+/**
+ * Tab label text with optional truncation. Set `data-text` to the label text to
+ * show the label of a selected tab in a heavier weight without moving the tabs,
+ * as `buttonLabel` describes. Without `data-text`, the label keeps the normal
+ * weight.
+ */
 export const tabLabel = buttonLabel;
 
 /** A divider between tabs. */

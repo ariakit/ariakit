@@ -1,12 +1,13 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { Fragment, isValidElement } from "react";
+import { Fragment } from "react";
 import type { ComponentProps } from "react";
 import {
   appendOptionalChild,
   createOptionalRender,
   createRender,
+  getChildrenText,
 } from "../react-utils/create-render.react.ts";
 import {
   tab,
@@ -99,7 +100,9 @@ export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {
 }
 
 /**
- * Renders a tab that selects its associated panel.
+ * Renders a tab that selects its associated panel. Plain text and numbers go in
+ * a `TabLabel` automatically, so the label turns heavier while the tab is
+ * selected without moving the tabs after it.
  * @example
  * <Tabs>
  *   <TabList aria-label="Project">
@@ -112,12 +115,14 @@ export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {
  *   </TabPanels>
  * </Tabs>
  */
-export function Tab({ bar, ...props }: TabProps) {
+export function Tab({ bar, children, ...props }: TabProps) {
   const [variantProps, rest] = splitProps(props, tab);
   const barElement = createOptionalRender(TabBar, bar === true ? {} : bar);
+  const text = getChildrenText(children);
+  const label = text == null ? children : <TabLabel text={text} />;
   return (
     <ak.Tab {...tab.jsx(variantProps)} {...rest}>
-      {appendOptionalChild(rest.children, barElement)}
+      {appendOptionalChild(label, barElement)}
     </ak.Tab>
   );
 }
@@ -134,40 +139,17 @@ export interface TabListProps
     | Record<string, React.ReactNode | TabProps>;
 }
 
-interface TextTabProps extends TabProps {
-  /** Text to wrap in a `TabLabel`. */
-  children: string | number;
-}
-
-function isText(value: unknown): value is string | number {
-  return typeof value === "string" || typeof value === "number";
-}
-
-function hasTextChildren(tab: React.ReactNode | TabProps): tab is TextTabProps {
-  if (!tab || typeof tab !== "object") return false;
-  if (isValidElement(tab)) return false;
-  if (!("children" in tab)) return false;
-  return isText(tab.children);
-}
-
 /**
  * Renders one entry of the `tabs` prop. Text, alone or as the `children` of a
- * props object, is a label, so it goes in a `TabLabel` and holds one line like
- * the label of a tab written as JSX. Nullish and boolean entries, such as
- * `canEdit && "Settings"`, render no tab.
+ * props object, goes in a `TabLabel` through `Tab`, like the text of a tab
+ * written as JSX. Nullish and boolean entries, such as `canEdit && "Settings"`,
+ * render no tab.
  */
 function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
   // createRender turns null into a default element, so empty entries must
   // return here. Otherwise they render unnamed tabs.
   if (tab == null) return null;
   if (typeof tab === "boolean") return null;
-  if (isText(tab)) {
-    return createRender(Tab, { children: <TabLabel>{tab}</TabLabel> }, props);
-  }
-  if (hasTextChildren(tab)) {
-    const children = <TabLabel>{tab.children}</TabLabel>;
-    return createRender(Tab, { ...tab, children }, props);
-  }
   return createRender(Tab, tab, props);
 }
 
@@ -251,7 +233,16 @@ export function TabSeparator(props: TabSeparatorProps) {
 }
 
 export interface TabLabelProps
-  extends ComponentProps<"span">, VariantProps<typeof tabLabel> {}
+  extends ComponentProps<"span">, VariantProps<typeof tabLabel> {
+  /**
+   * The label text, rendered when `children` is omitted. Defaults to the text
+   * of `children` that are only text and numbers. A selected tab shows its
+   * label in a heavier weight only when the label has this text, because the
+   * text reserves the heavier width in advance and keeps the tab size. Keep it
+   * equal to the visible text of custom `children`.
+   */
+  text?: string;
+}
 
 /**
  * Renders tab label text with optional truncation.
@@ -264,10 +255,31 @@ export interface TabLabelProps
  *     <TabPanel tabId="overview">Project details</TabPanel>
  *   </TabPanels>
  * </Tabs>
+ * @example
+ * <Tabs>
+ *   <TabList aria-label="Repository">
+ *     <Tab id="api">
+ *       <TabLabel text="API">
+ *         <abbr title="Application programming interface">API</abbr>
+ *       </TabLabel>
+ *     </Tab>
+ *   </TabList>
+ *   <TabPanels>
+ *     <TabPanel tabId="api">Endpoints and types</TabPanel>
+ *   </TabPanels>
+ * </Tabs>
  */
-export function TabLabel(props: TabLabelProps) {
+export function TabLabel({ text, children = text, ...props }: TabLabelProps) {
   const [variantProps, rest] = splitProps(props, tabLabel);
-  return <span {...tabLabel.jsx(variantProps)} {...rest} />;
+  return (
+    <span
+      data-text={text ?? getChildrenText(children)}
+      {...tabLabel.jsx(variantProps)}
+      {...rest}
+    >
+      {children}
+    </span>
+  );
 }
 
 export interface TabSlotProps

@@ -11,6 +11,7 @@ import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonGroup,
+  ButtonLabel,
   ButtonSeparator,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
@@ -130,7 +131,9 @@ export default function SegmentedControlExamples() {
         description="The default kind. The selected segment takes the surface around the group and a bevel."
         code={`
           <RadioGroup aria-label="Raised" $kind="segmented">
-            <RadioCard value="list" $kind="segmented">List</RadioCard>
+            <RadioCard value="list" $kind="segmented">
+              <RadioCardLabel>List</RadioCardLabel>
+            </RadioCard>
           </RadioGroup>
         `}
       >
@@ -140,7 +143,7 @@ export default function SegmentedControlExamples() {
       <Example
         title="Flat"
         description="The selected segment has no bevel and casts a shadow that the group clips."
-        code={`<RadioCard value="list" $kind="segmented-flat">List</RadioCard>`}
+        code={`<RadioCard value="list" $kind="segmented-flat"><RadioCardLabel>List</RadioCardLabel></RadioCard>`}
       >
         <Segments name="Flat" item={{ $kind: "segmented-flat" }} />
       </Example>
@@ -415,32 +418,33 @@ export default function SegmentedControlExamples() {
       <Example
         title="Navigation"
         description="Links in a landmark, with the current one as the thumb."
-        code={`<Nav $kind="segmented" $layout="horizontal"><NavLink $kind="segmented" /></Nav>`}
+        code={`<Nav $kind="segmented" $layout="horizontal"><NavLink $kind="segmented" text="Day" /></Nav>`}
       >
         <Nav aria-label="Range" $kind="segmented" $layout="horizontal">
-          <NavLink $kind="segmented" href="#day" aria-current="page">
-            Day
-          </NavLink>
-          <NavLink $kind="segmented" href="#week">
-            Week
-          </NavLink>
+          <NavLink
+            $kind="segmented"
+            href="#day"
+            aria-current="page"
+            text="Day"
+          />
+          <NavLink $kind="segmented" href="#week" text="Week" />
         </Nav>
       </Example>
 
       <Example
         title="Buttons"
         description="Plain buttons take the kind too, such as links without a landmark."
-        code={`<ButtonGroup $kind="segmented"><Button $kind="segmented" render={<a />} /></ButtonGroup>`}
+        code={`<ButtonGroup $kind="segmented"><Button $kind="segmented" render={<a />}><ButtonLabel text="First" /></Button></ButtonGroup>`}
       >
         <ButtonGroup aria-label="Pages" $kind="segmented">
           <Button
             $kind="segmented"
             render={<a href="#first" aria-current="page" />}
           >
-            First
+            <ButtonLabel text="First" />
           </Button>
           <Button $kind="segmented" render={<a href="#second" />}>
-            Second
+            <ButtonLabel text="Second" />
           </Button>
         </ButtonGroup>
       </Example>

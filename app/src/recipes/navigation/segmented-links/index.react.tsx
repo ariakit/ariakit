@@ -41,9 +41,8 @@ function Feed() {
               $kind="segmented"
               $size="sm"
               $invert
-            >
-              {label}
-            </RouterNavLink>
+              text={label}
+            />
           ))}
         </Nav>
       </Frame>
