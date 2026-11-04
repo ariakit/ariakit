@@ -20,8 +20,12 @@ const textLists = [
 // The label of these tabs has an element child and no text prop.
 const untextedLists = ["Rich tab labels without text"];
 
-// The labels of these tabs have a weight class.
-const semiboldLists = ["Semibold tab labels"];
+// The labels or the tabs of these lists have a weight class, which applies to
+// every tab in the default contrast.
+const weightClassLists = [
+  { name: "Semibold tab labels", weight: 600 },
+  { name: "Medium tabs", weight: 500 },
+];
 
 // The weight of the first text in each tab, which comes from its label.
 function getWeights(tabs: Locator) {
@@ -78,21 +82,20 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     });
   }
 
-  for (const name of semiboldLists) {
-    test(`keeps the weight class of the labels on every tab in ${name}`, async ({
-      q,
-    }) => {
+  for (const { name, weight } of weightClassLists) {
+    test(`keeps the weight class on every tab in ${name}`, async ({ q }) => {
       const list = query(q.tablist(name));
       for (const tab of await list.tab().all()) {
         await tab.click();
         await test.expect(tab).toHaveAttribute("aria-selected", "true");
         const weights = await getWeights(list.tab());
-        test.expect(new Set(weights)).toEqual(new Set([600]));
+        test.expect(new Set(weights)).toEqual(new Set([weight]));
       }
     });
   }
 
-  for (const name of [...textLists, ...untextedLists, ...semiboldLists]) {
+  const weightClassNames = weightClassLists.map(({ name }) => name);
+  for (const name of [...textLists, ...untextedLists, ...weightClassNames]) {
     test(`keeps the width of each tab when the selection moves in ${name}`, async ({
       q,
     }) => {

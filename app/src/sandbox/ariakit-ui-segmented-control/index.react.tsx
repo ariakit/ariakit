@@ -346,6 +346,14 @@ export default function SegmentedControlExamples() {
       </Example>
 
       <Example
+        title="Medium segments"
+        description="A weight class on the segments replaces the normal weight of idle segments. A weight above the button weight goes on the labels instead."
+        code={`<RadioCard value="list" $kind="segmented" className="font-medium" />`}
+      >
+        <Segments name="Medium" item={{ className: "font-medium" }} />
+      </Example>
+
+      <Example
         title="Tabs"
         description="Tabs take the kind of the list from the tabs prop or their own."
         code={`<TabList tabs={tabs} $kind="segmented" />`}

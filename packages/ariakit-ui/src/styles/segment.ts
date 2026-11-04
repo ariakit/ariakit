@@ -22,8 +22,9 @@ const segmentBase = cx(
   "ui-settled:ui-hover:ak-state-(--selected-offset,0)",
   // Segments size to their text, so a heavier thumb would move the segments
   // after it. Only a label with data-text turns heavier, because it keeps that
-  // width. font-normal sorts after the button weight, so it wins.
-  "font-normal",
+  // width. This sorts after the zero-specificity button weight, so it wins, and
+  // a weight class on the segment still wins over both.
+  "[:where(&)]:font-normal",
 );
 
 /** The classes of each segmented kind, for extenders that replace `$kind`. */

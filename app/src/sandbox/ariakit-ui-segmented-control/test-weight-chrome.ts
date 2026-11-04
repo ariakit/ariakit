@@ -81,4 +81,21 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       }
     });
   }
+
+  // The segments of this group have a weight class, which applies to every
+  // segment in the default contrast.
+  test("keeps the weight class on every segment in Medium", async ({ q }) => {
+    const group = query(q.radiogroup("Medium"));
+    const items = group.radio();
+    const widths = await getWidths(items);
+    for (const segment of await items.all()) {
+      await segment.click();
+      await test.expect(segment).toBeChecked();
+      const weights = await getWeights(items);
+      test.expect(new Set(weights)).toEqual(new Set([500]));
+      // The press scales the segment down for a moment, so the widths are
+      // polled.
+      await test.expect.poll(() => getWidths(items)).toEqual(widths);
+    }
+  });
 });

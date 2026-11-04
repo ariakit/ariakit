@@ -1643,6 +1643,44 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Medium tabs"
+        description="A weight class on the tabs replaces the normal weight of idle tabs. A weight above the button weight goes on the labels instead."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>
+              <Tab className="font-medium">Preview</Tab>
+              …
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="medium-code">
+          <TabList aria-label="Medium tabs">
+            <Tab id="medium-preview" className="font-medium">
+              Preview
+            </Tab>
+            <Tab id="medium-code" className="font-medium">
+              Code
+            </Tab>
+            <Tab id="medium-usage" className="font-medium">
+              Usage
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">Every tab is medium.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Tabs with bigint counts"
         description="Text with a bigint, such as a count from a database, sets the label text, so the selected label turns heavier and the tabs don't move."
         stretch

@@ -198,8 +198,9 @@ export const tab = cv({
       const noRing = "ui-focus-visible:outline-none";
       // Tabs size to their text, so a heavier selected tab would move the tabs
       // after it. Only a label with data-text turns heavier, because it keeps
-      // that width. font-normal sorts after the button weight, so it wins.
-      const weight = "font-normal";
+      // that width. This sorts after the zero-specificity button weight, so it
+      // wins, and a weight class on the tab still wins over both.
+      const weight = "[:where(&)]:font-normal";
       if (value === "folder") return [tabFolder, noRing, weight];
       if (value === "bevel") {
         return [tabBox, noRing, weight, "ui-selected:ui-bevel-button"];
