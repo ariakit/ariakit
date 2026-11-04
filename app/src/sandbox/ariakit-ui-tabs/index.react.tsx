@@ -1643,6 +1643,37 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Tabs with bigint counts"
+        description="Text with a bigint, such as a count from a database, sets the label text, so the selected label turns heavier and the tabs don't move."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>
+              <Tab>Files {fileCount}</Tab>
+              <Tab>Issues {issueCount}</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="bigint-files">
+          <TabList aria-label="Tabs with bigint counts">
+            <Tab id="bigint-files">Files {BigInt(10)}</Tab>
+            <Tab id="bigint-issues">Issues {BigInt(3)}</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">Counts can be bigints.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Rich tab labels"
         description="A label with an element child sets text to its visible text, so the label turns heavier while selected and the tabs don't move."
         stretch

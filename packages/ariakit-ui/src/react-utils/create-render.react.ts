@@ -23,17 +23,24 @@ export function hasContent(children: React.ReactNode) {
 
 /**
  * Returns the text of children that are only text and numbers, such as
- * `{count} files`. Returns `undefined` for other children, such as elements.
+ * `{count} files`. Numbers include bigints, which React 19 renders as text.
+ * Returns `undefined` for other children, such as elements.
  */
 export function getChildrenText(children: React.ReactNode) {
   const nodes = React.Children.toArray(children);
   if (!nodes.length) return;
   let text = "";
   for (const node of nodes) {
-    if (typeof node !== "string" && typeof node !== "number") return;
+    if (!isTextNode(node)) return;
     text += node;
   }
   return text;
+}
+
+function isTextNode(node: unknown): node is string | number | bigint {
+  if (typeof node === "string") return true;
+  if (typeof node === "number") return true;
+  return typeof node === "bigint";
 }
 
 /** Like `createRender`, but nullish values and `false` omit the element. */

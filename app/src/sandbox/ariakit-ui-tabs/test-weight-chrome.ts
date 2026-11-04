@@ -2,8 +2,9 @@ import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 // Folder, flat, and bevel tabs, with label text from TabLabel children, from
-// Tab children, alone or mixed with an expression, from the tabs prop, from a
-// grown label, and from the text prop of a label with an element child.
+// Tab children, alone or mixed with an expression or a bigint, from the tabs
+// prop, from a grown label, and from the text prop of a label with an element
+// child.
 const textLists = [
   "Folder tabs",
   "Flat tabs",
@@ -11,6 +12,7 @@ const textLists = [
   "Bar placement",
   "Project updates",
   "Tabs record",
+  "Tabs with bigint counts",
   "Grown tab labels",
   "Rich tab labels",
 ];
