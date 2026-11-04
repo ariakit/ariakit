@@ -46,10 +46,10 @@ export const tabs = cv({
     // A selected first folder meets the panel halfway across the available
     // indent and border. Rings may overlap at this seam; an opaque backing
     // would separate them from underlying shadows.
-    "has-[>:first-child>.ui-folder[aria-selected='true']:nth-child(1_of_.control)]:[--tabs-meet:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-border)))/2)]",
+    "has-[>:first-child>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-child(1_of_.control)]:[--tabs-meet:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-border)))/2)]",
     // A stretched strip has no room after its last tab, so a selected last
     // folder meets the panel in the same way at the end.
-    "has-[>:first-child.tabs-stretch>.ui-folder[aria-selected='true']:nth-last-child(1_of_.control)]:[--tabs-meet-end:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-border)))/2)]",
+    "has-[>:first-child.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-last-child(1_of_.control)]:[--tabs-meet-end:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-border)))/2)]",
     // Scope the scroll timeline so the sibling panel can follow it.
     "[timeline-scope:--tabs-scroll]",
     // Only the tabs of this root's own strip count, not those of nested tabs.
