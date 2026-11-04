@@ -796,7 +796,9 @@ export const shellMain = cv({
      * follows that text. Bars and sidebars keep the shell's size. `auto` leaves
      * the shell's text and the shell's column, and `Prose` stays at 1rem. `lg`
      * uses `$minSize` when the shell is narrower than 40rem. A shell inside a
-     * sized main doesn't pass the size on. Defaults to `auto`.
+     * sized main doesn't pass the size on. Defaults to `md`, the size of
+     * reading pages, such as docs and articles. Use `auto` for an app screen
+     * that keeps the text of the shell.
      */
     $size: {
       auto: "",
@@ -868,7 +870,7 @@ export const shellMain = cv({
     },
   },
   defaultVariants: {
-    $size: "auto",
+    $size: "md",
     $minSize: "md",
     $py: "gutter",
     // Bars inset three steps of the shell's text, so the default gutter stays

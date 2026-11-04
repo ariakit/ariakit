@@ -168,7 +168,8 @@ export default function Example() {
           </ShellSidebarBody>
         </ShellSidebar>
 
-        <ShellMain>
+        {/* Main keeps the text of the shell, so the density applies to it. */}
+        <ShellMain $size="auto">
           <ShellMainHeader $blur $show="max-6xl">
             <Breadcrumb aria-label="Breadcrumb">
               <BreadcrumbLink href="#components">Components</BreadcrumbLink>

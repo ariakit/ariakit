@@ -9,9 +9,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await selectScenario(q, "reading");
   });
 
-  test("keeps the shell's text and a 42rem column without a main size", async ({
-    q,
-  }) => {
+  test("sets the md text and column without a main size", async ({ q }) => {
+    await q.combobox("Main size").selectOption("default");
+    await expect(q.text("Body prose")).toHaveCSS("font-size", "16px");
+    await expect(q.text("Plain text")).toHaveCSS("font-size", "16px");
+    await expect(q.button("Unsized button")).toHaveCSS("font-size", "16px");
+    await expect(q.text("Page header")).toHaveCSS("font-size", "14px");
+    expect((await getBox(q.text("Body prose"))).width).toBeCloseTo(672, 0);
+  });
+
+  test("keeps the shell's text and a 42rem column at auto", async ({ q }) => {
+    await expect(q.combobox("Main size")).toHaveValue("auto");
     await expect(q.text("Body prose")).toHaveCSS("font-size", "16px");
     await expect(q.text("Plain text")).toHaveCSS("font-size", "14px");
     await expect(q.button("Unsized button")).toHaveCSS("font-size", "14px");
