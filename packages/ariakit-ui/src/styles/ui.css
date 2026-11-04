@@ -1598,6 +1598,10 @@ body > * {
   }
 }
 
+/* Zero specificity, so any caller class overrides the default it sets. Place it
+   last in a variant stack so that it wraps the whole selector. */
+@custom-variant ui-base (:where(&));
+
 @custom-variant ui-disclosure-open {
   @container style(--disclosure-open: 1) {
     @slot;

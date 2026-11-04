@@ -35,7 +35,7 @@ export const kbd = cv({
         "[font-size-adjust:0.49]",
         // Leave room for the lip and ring, including Firefox's taller font
         // box, without increasing paragraph line spacing.
-        "[:where(&)]:text-[0.875em]",
+        "ui-base:text-[0.875em]",
         // Lift the cap so its face and label center on the surrounding
         // capitals, and the lip hangs below like a shadow. Centering the whole
         // box with the lip reads low in large text.
@@ -84,7 +84,7 @@ export const kbd = cv({
         // With 0.15em padding around the capitals, the chip is 1.3 times its
         // text size. This size makes it as tall as the surrounding em box, so
         // it fills a slot like an icon and never pushes lines apart.
-        "[:where(&)]:text-[calc(1em/1.3)]",
+        "ui-base:text-[calc(1em/1.3)]",
         // Trim the line box to the capitals, so they center in the chip.
         // Rounded font metrics otherwise lift them by up to a pixel. Padding
         // restores the height where trimming is supported.

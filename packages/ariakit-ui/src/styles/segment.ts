@@ -24,7 +24,7 @@ const segmentBase = cx(
   // after it. Only a label with data-text turns heavier, because it keeps that
   // width. This sorts after the zero-specificity button weight, so it wins, and
   // a weight class on the segment still wins over both.
-  "[:where(&)]:font-normal",
+  "ui-base:font-normal",
 );
 
 /** The classes of each segmented kind, for extenders that replace `$kind`. */
@@ -156,8 +156,8 @@ export const SEGMENT_GROUP_CLASS = cx(
   // The thumb takes the surface around the group, so it stands out from the
   // darker group on light and dark surfaces.
   "[--segmented-surface:var(--ak-layer-parent)]",
-  // :where() lets the stretch layout and caller widths win.
-  "[:where(&)]:w-fit",
+  // Zero specificity lets the stretch layout and caller widths win.
+  "ui-base:w-fit",
 );
 
 /**

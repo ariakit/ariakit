@@ -200,7 +200,7 @@ export const tab = cv({
       // after it. Only a label with data-text turns heavier, because it keeps
       // that width. This sorts after the zero-specificity button weight, so it
       // wins, and a weight class on the tab still wins over both.
-      const weight = "[:where(&)]:font-normal";
+      const weight = "ui-base:font-normal";
       if (value === "folder") return [tabFolder, noRing, weight];
       if (value === "bevel") {
         return [tabBox, noRing, weight, "ui-selected:ui-bevel-button"];

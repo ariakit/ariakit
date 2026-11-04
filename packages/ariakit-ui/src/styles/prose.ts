@@ -30,7 +30,7 @@ export const prose = cv({
     // these defaults. A sized shell main sets the token to 1em, which resolves
     // against the parent here, so the column follows the text around it. A
     // unitless line height keeps smaller text inside in proportion.
-    "[:where(&)]:text-(length:--prose-size,1rem)/[1.75]",
+    "ui-base:text-(length:--prose-size,1rem)/[1.75]",
     "ak-dark:ak-ink-75 ak-light:ak-ink-90",
     // Keep markup defaults at zero specificity. Paragraphs and list items
     // restore muted ink inside nested surfaces.
