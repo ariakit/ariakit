@@ -131,11 +131,15 @@ export const frameBase = cv({
     },
     /**
      * Specifies how the border is rendered. Setting it to `auto` uses either a
-     * border or a ring, depending on the parent layer's lightness.
+     * border or a ring, depending on the parent layer's lightness. `appearance`
+     * draws a ring when the parent layer is light and a border when it is dark,
+     * without the swap that `auto` makes for a lightened or darkened layer.
      */
     $borderType: {
       unset: "",
       auto: "ak-frame-bordering-(--border-width)",
+      appearance:
+        "ak-light:ak-frame-ring-(--border-width) ak-dark:ak-frame-border-(--border-width)",
       border: "ak-frame-border-(--border-width)",
       ring: "ak-frame-ring-(--border-width)",
       // Inset shadows disappear in forced colors; use a real border with the
@@ -147,8 +151,11 @@ export const frameBase = cv({
     },
     /**
      * Sets the border width in pixels. `true` uses `1px`; `inherit` uses the
-     * parent frame's width and color. `false` removes the border even with an
-     * inherited width or explicit `$borderType`.
+     * parent frame's width and color. With `$cover`, `inherit` draws a border
+     * that covers a parent ring it lies on and paints the parent layer beneath
+     * it, so it looks like the ring when the parent layer matches the surface
+     * around the parent. `false` removes the border even with an inherited
+     * width or explicit `$borderType`.
      */
     $border(value?: "inherit" | boolean | number) {
       if (value == null) return;
@@ -185,6 +192,15 @@ export const frameBase = cv({
       }
       return defaultValue;
     },
+  },
+  refine({ variants, addClass }) {
+    if (variants.$border !== "inherit") return;
+    if (!variants.$cover) return;
+    // A cover frame lies on the parent edge. A border covers a parent ring and
+    // paints the parent layer beneath it, so the edge keeps one color when that
+    // layer matches the surface around the parent. Without an inherited edge,
+    // such as on a shell seam, this class paints nothing.
+    addClass("ak-frame-backdrop");
   },
 });
 

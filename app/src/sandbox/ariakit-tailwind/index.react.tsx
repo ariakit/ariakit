@@ -615,6 +615,22 @@ export default function Example() {
               />
             </div>
           </Layer>
+          <Layer
+            label="bordering inherit backdrop"
+            className="ak-layer ak-frame ak-frame-p-1 ak-frame-bordering-4 flex-col"
+          >
+            <Layer className="ak-layer ak-layer-lighten-20 ak-frame ak-frame-p-1 ak-frame-cover ak-frame-bordering-inherit ak-frame-backdrop ak-edge-inherit" />
+            <Layer className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-cover ak-frame-bordering-inherit ak-frame-backdrop ak-edge-inherit" />
+            <Layer
+              label="border"
+              className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
+            >
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-cover ak-frame-bordering-inherit ak-frame-backdrop ak-edge-inherit"
+              />
+            </Layer>
+          </Layer>
           {/*
            * ak-outset reads the layer around its parent layer, like a bar
            * painted outside its control. Each ak-outset child hangs below its

@@ -1599,6 +1599,7 @@
   --ak-frame-margin: var(--_ak-frame-margin);
   --ak-frame-border: var(--_ak-frame-border);
   --ak-frame-ring: var(--_ak-frame-ring);
+  --ak-frame-backdrop: color-mix(in oklab, var(--_ak-frame-border-backdrop, var(--ak-layer)), var(--ak-layer-parent, canvas) calc(sign(var(--ak-frame-ring)) * 100%));
   padding: var(--ak-frame-padding);
   scroll-padding: var(--ak-frame-padding);
   border-radius: var(--ak-frame-radius);
@@ -1927,16 +1928,17 @@
   --tw-ring-shadow: var(--_ak-frame-join-ring-shadow, var(--tw-ring-inset,) 0 0 0 calc(var(--ak-frame-ring) + var(--tw-ring-offset-width)) oklch(from var(--tw-ring-color, --theme(--default-ring-color, currentColor)) l c h / calc(alpha * sign(var(--ak-frame-ring)))));
   @container (style(--_context-2: even)) or (not style(--_context-2)) {
     --_ak-frame-bordering: max(var(--_ak-fpbbc-even, 0px), var(--_ak-fpbgc-even, 0px));
+    --_ak-frame-on-parent-ring: sign(var(--_ak-fpbgc-even, 0px));
     --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
     @variant ak-dark {
-      --_ak-frame-border: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
-      border-width: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
-      --_ak-frame-ring: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
+      --_ak-frame-border: calc(max((1 - var(--_ak-fbd)), var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
+      border-width: calc(max((1 - var(--_ak-fbd)), var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
+      --_ak-frame-ring: calc(var(--_ak-fbd) * (1 - var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
     }
     @variant ak-light {
-      --_ak-frame-border: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
-      border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
-      --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+      --_ak-frame-border: calc(max(var(--_ak-fbd), var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
+      border-width: calc(max(var(--_ak-fbd), var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
+      --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * (1 - var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
     }
     @variant forced-colors {
       --_ak-frame-border: var(--_ak-frame-bordering);
@@ -1946,16 +1948,17 @@
   }
   @container style(--_context-2: odd) {
     --_ak-frame-bordering: max(var(--_ak-fpbbc-odd, 0px), var(--_ak-fpbgc-odd, 0px));
+    --_ak-frame-on-parent-ring: sign(var(--_ak-fpbgc-odd, 0px));
     --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
     @variant ak-dark {
-      --_ak-frame-border: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
-      border-width: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
-      --_ak-frame-ring: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
+      --_ak-frame-border: calc(max((1 - var(--_ak-fbd)), var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
+      border-width: calc(max((1 - var(--_ak-fbd)), var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
+      --_ak-frame-ring: calc(var(--_ak-fbd) * (1 - var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
     }
     @variant ak-light {
-      --_ak-frame-border: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
-      border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
-      --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+      --_ak-frame-border: calc(max(var(--_ak-fbd), var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
+      border-width: calc(max(var(--_ak-fbd), var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
+      --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * (1 - var(--_ak-frame-backdrop-on)) * var(--_ak-frame-bordering));
     }
     @variant forced-colors {
       --_ak-frame-border: var(--_ak-frame-bordering);
@@ -1963,6 +1966,21 @@
       --_ak-frame-ring: 0px;
     }
   }
+}
+
+@utility ak-frame-backdrop {
+  --_ak-frame-backdrop-on: 1;
+  --_ak-frame-border-backdrop: color-mix(in oklab, var(--ak-layer), var(--_ak-frame-backdrop, var(--ak-layer-parent, canvas)) calc(var(--_ak-frame-on-parent-ring) * 100%));
+  background-image: linear-gradient(oklch(from var(--ak-layer) l c h / calc(alpha * var(--_ak-frame-on-parent-ring))) 0 0), linear-gradient(oklch(from var(--_ak-frame-backdrop, var(--ak-layer-parent, canvas)) l c h / calc(alpha * var(--_ak-frame-on-parent-ring))) 0 0);
+  background-clip: padding-box, border-box;
+}
+
+@utility ak-frame-backdrop-* {
+  --_ak-frame-backdrop: --value(--color-*, [*]);
+  --_ak-frame-backdrop-on: 1;
+  --_ak-frame-border-backdrop: color-mix(in oklab, var(--ak-layer), var(--_ak-frame-backdrop, var(--ak-layer-parent, canvas)) calc(var(--_ak-frame-on-parent-ring) * 100%));
+  background-image: linear-gradient(oklch(from var(--ak-layer) l c h / calc(alpha * var(--_ak-frame-on-parent-ring))) 0 0), linear-gradient(oklch(from var(--_ak-frame-backdrop, var(--ak-layer-parent, canvas)) l c h / calc(alpha * var(--_ak-frame-on-parent-ring))) 0 0);
+  background-clip: padding-box, border-box;
 }
 
 @utility ak-frame-bordering-* {
@@ -2509,6 +2527,11 @@
   initial-value: 0px;
 }
 
+@property --ak-frame-backdrop {
+  syntax: "*";
+  inherits: false;
+}
+
 @property --_ak-frame-join-ring-shadow {
   syntax: "*";
   inherits: false;
@@ -2916,6 +2939,28 @@
   syntax: "<length>";
   inherits: false;
   initial-value: 0px;
+}
+
+@property --_ak-frame-backdrop {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-frame-border-backdrop {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-frame-backdrop-on {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-frame-on-parent-ring {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
 }
 
 @property --_ak-frame-bordering-context {

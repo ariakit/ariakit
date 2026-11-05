@@ -765,6 +765,9 @@ const frameVars = {
   frameMargin: ak.prop.len("frame-margin", { initial: "0px" }),
   frameBorder: ak.prop.len("frame-border", { initial: "0px" }),
   frameRing: ak.prop.len("frame-ring", { initial: "0px" }),
+  // The surface under the frame edge. Custom edge drawings paint it under their
+  // strokes so they match the frame edge.
+  frameBackdrop: ak.prop("frame-backdrop"),
   frameJoinRingShadow: _ak.prop("frame-join-ring-shadow"),
   frameParentRadiusContext: _ak.var("fprc"),
   frameParentPaddingContext: _ak.var("fppc"),
@@ -871,6 +874,14 @@ const inputs = {
   frameBorder: _ak.prop.len("frame-border", { initial: "0px" }),
   frameRing: _ak.prop.len("frame-ring", { initial: "0px" }),
   frameBordering: _ak.prop.len("frame-bordering", { initial: "0px" }),
+  // The surface ak-frame-backdrop paints under an inherited border, and the
+  // surface that the border covers there.
+  frameBackdrop: _ak.prop("frame-backdrop"),
+  frameBorderBackdrop: _ak.prop("frame-border-backdrop"),
+  // Set by ak-frame-backdrop, so an inherited adaptive edge stays a border.
+  frameBackdropOn: _ak.prop.zero("frame-backdrop-on"),
+  // Set by ak-frame-bordering-inherit where its edge lies on a parent ring.
+  frameOnParentRing: _ak.prop.zero("frame-on-parent-ring"),
   frameBorderingContext: _ak.prop.zero("frame-bordering-context"),
   frameRow: _ak.prop.zero("frame-row", { inherits: true }),
   frameStart: _ak.prop.zero("frame-start"),
@@ -3081,6 +3092,17 @@ utility(
   set(vars.frameMargin, inputs.frameMargin),
   set(vars.frameBorder, inputs.frameBorder),
   set(vars.frameRing, inputs.frameRing),
+  // A ring paints over the parent layer. A border paints over the element's
+  // own layer, unless ak-frame-backdrop paints another surface under it.
+  set(
+    vars.frameBackdrop,
+    fn.colorMix(
+      "oklab",
+      fn.var(inputs.frameBorderBackdrop, vars.layer),
+      vars.layerParent,
+      fn.mul(fn.exp`sign(${vars.frameRing})`, "100%"),
+    ),
+  ),
   set.padding(vars.framePadding),
   set.scrollPadding(vars.framePadding),
   set.borderRadius(vars.frameRadius),
@@ -3366,14 +3388,20 @@ utility(
   getLayerEdgeContextDeclarations(),
 );
 
-function getFrameBorderingDarkLight() {
+/**
+ * Picks a border or a ring for an adaptive edge. A `bordered` flag of 1 keeps a
+ * border in every case.
+ */
+function getFrameBorderingDarkLight(bordered?: VarProperty) {
   // When the layer is darkening relative to its parent (ak-layer-darken-*),
   // reverse the border/ring condition so the edge style matches the visual
   // context: border for darker surfaces, ring for lighter ones.
   const isDarkening = vars.frameBorderingDarkening;
   const isLightening = fn.invert(vars.frameBorderingDarkening);
-  const borderVal = fn.mul(isLightening, inputs.frameBordering);
-  const ringVal = fn.mul(isDarkening, inputs.frameBordering);
+  const getBorder = (factor: Value) =>
+    fn.mul(bordered ? fn.max(factor, bordered) : factor, inputs.frameBordering);
+  const getRing = (factor: Value) =>
+    fn.mul(factor, bordered ? fn.invert(bordered) : 1, inputs.frameBordering);
   return [
     set(
       vars.frameBorderingDarkening,
@@ -3381,15 +3409,15 @@ function getFrameBorderingDarkLight() {
     ),
     at.variant(
       dark,
-      set(inputs.frameBorder, borderVal),
-      set.borderWidth(borderVal),
-      set(inputs.frameRing, ringVal),
+      set(inputs.frameBorder, getBorder(isLightening)),
+      set.borderWidth(getBorder(isLightening)),
+      set(inputs.frameRing, getRing(isDarkening)),
     ),
     at.variant(
       light,
-      set(inputs.frameBorder, ringVal),
-      set.borderWidth(ringVal),
-      set(inputs.frameRing, borderVal),
+      set(inputs.frameBorder, getBorder(isDarkening)),
+      set.borderWidth(getBorder(isDarkening)),
+      set(inputs.frameRing, getRing(isLightening)),
     ),
     // Forced colors remove ring shadows. Use a real edge and update the frame
     // geometry with it, leaving the outline available for keyboard focus.
@@ -3414,16 +3442,55 @@ utility(
 utility(
   "frame-bordering-inherit",
   getFrameRingDeclarations(true),
-  frameContext.read(({ inherit }) => [
-    set(
-      inputs.frameBordering,
-      fn.max(
-        inherit(vars.frameParentBorderingBorderContext, "0px"),
-        inherit(vars.frameParentBorderingRingContext, "0px"),
+  frameContext.read(({ inherit }) => {
+    const parentRing = inherit(vars.frameParentBorderingRingContext, "0px");
+    return [
+      set(
+        inputs.frameBordering,
+        fn.max(
+          inherit(vars.frameParentBorderingBorderContext, "0px"),
+          parentRing,
+        ),
       ),
+      set(inputs.frameOnParentRing, fn.exp`sign(${parentRing})`),
+      ...getFrameBorderingDarkLight(inputs.frameBackdropOn),
+    ];
+  }),
+);
+
+/**
+ * Makes an inherited adaptive edge a border. Where it lies on a parent ring,
+ * this paints the backdrop under the border, so the border looks like the ring
+ * over that surface and covers the parent ring instead of adding to it. Without
+ * ak-frame-bordering-inherit, the layers stay transparent. Forced colors remove
+ * the gradients and turn the parent ring into a border.
+ */
+function getFrameBackdropDeclarations() {
+  const onRing = inputs.frameOnParentRing;
+  const backdrop = fn.var(inputs.frameBackdrop, vars.layerParent);
+  // Off a parent ring, both layers are transparent, so the element paints as it
+  // does with a plain border.
+  const getLayer = (color: string | VarProperty) =>
+    fn.exp`linear-gradient(${fn.oklch(color, { a: fn.mul(alpha, onRing) })} 0 0)`;
+  return [
+    set(inputs.frameBackdropOn, 1),
+    set(
+      inputs.frameBorderBackdrop,
+      fn.colorMix("oklab", vars.layer, backdrop, fn.mul(onRing, "100%")),
     ),
-    ...getFrameBorderingDarkLight(),
-  ]),
+    set.backgroundImage(
+      fn.join([getLayer(vars.layer), getLayer(backdrop)], ", "),
+    ),
+    set.backgroundClip("padding-box, border-box"),
+  ];
+}
+
+utility("frame-backdrop", getFrameBackdropDeclarations());
+
+utility(
+  "frame-backdrop-*",
+  set(inputs.frameBackdrop, fn.value(color, "[*]")),
+  getFrameBackdropDeclarations(),
 );
 
 utility(
