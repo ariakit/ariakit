@@ -114,5 +114,43 @@ export default defineConfig({
       files: ["**/*.solid.*", "packages/ariakit-solid*/**"],
       rules: disabledReactRules,
     },
+    {
+      // A .server module runs only on the server. A value import from a module
+      // that the browser can load, such as an example or its shared data, would
+      // bundle it, and Shiki with it. Type imports leave no code.
+      files: ["**/*.{ts,tsx}"],
+      rules: {
+        "no-restricted-imports": [
+          "error",
+          {
+            patterns: [
+              {
+                regex: "\\.server(\\.tsx?)?$",
+                allowTypeImports: true,
+                message:
+                  "Import only types from a .server module. Pass its results as props from the server file instead.",
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      // These modules never reach the browser, so they can use .server values:
+      // other .server modules, tests and their helpers, and the app pages.
+      files: [
+        "**/*.server.{ts,tsx}",
+        "**/*.test*.{ts,tsx}",
+        "**/test.{ts,tsx}",
+        "**/test-*.{ts,tsx}",
+        "**/tests/**",
+        "**/perf*-chrome.{ts,tsx}",
+        "**/test-utils/**",
+        "app/src/pages/**",
+      ],
+      rules: {
+        "no-restricted-imports": "off",
+      },
+    },
   ],
 });

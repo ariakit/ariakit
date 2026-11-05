@@ -103,6 +103,7 @@
     "./styles/toc": "./src/styles/toc.ts",
     "./styles/tooltip": "./src/styles/tooltip.ts",
     "./styles/ui.css": "./src/styles/ui.css",
+    "./utils/highlight.server": "./src/utils/highlight.server.ts",
     "./utils/includes": "./src/utils/includes.ts",
     "./utils/is-current-page": "./src/utils/is-current-page.ts",
     "./utils/keys": "./src/utils/keys.ts",
@@ -114,13 +115,17 @@
     "@ariakit/react-utils": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
     "@ariakit/utils": "workspace:*",
+    "@shikijs/langs": "4.5.0",
+    "@shikijs/themes": "4.5.0",
     "clava": "0.7.2",
     "lucide-react": "1.66.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "shiki": "4.5.0",
     "solid-js": "1.9.18"
   },
   "devDependencies": {
-    "@ariakit/scripts": "workspace:*"
+    "@ariakit/scripts": "workspace:*",
+    "@types/hast": "3.0.5"
   }
 }

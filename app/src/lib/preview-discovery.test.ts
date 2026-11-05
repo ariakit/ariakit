@@ -142,6 +142,22 @@ test("requires preview metadata for recipes", async () => {
   await expect(promise).rejects.toThrow("Missing preview.json for menu");
 });
 
+test("finds the server file next to preview entry files", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "sandbox/menu/index.react.tsx"));
+  await writeFile(join(dir, "sandbox/menu/index.server.ts"));
+  await writeFile(join(dir, "sandbox/tabs/index.react.tsx"));
+  // A server file without an entry file creates no preview.
+  await writeFile(join(dir, "sandbox/draft/index.server.ts"));
+
+  const previews = await discoverPreviews({ roots: [getSandboxRoot(dir)] });
+
+  expect(previews.map((preview) => [preview.id, preview.serverFile])).toEqual([
+    ["menu", join(dir, "sandbox/menu/index.server.ts")],
+    ["tabs", undefined],
+  ]);
+});
+
 test("infers frameworks from preview entry files", async () => {
   const dir = await createDir();
   await writeFile(join(dir, "recipes/separator/index.solid.tsx"));

@@ -164,6 +164,43 @@ test("wraps preview entries with framework hydration markers", async () => {
   `);
 });
 
+test("passes the result of the server file to each example", async () => {
+  const dir = await createDir();
+  const codegenDir = join(dir, "codegen");
+  const preview = getPreview(dir);
+  preview.serverFile = join(dir, "sandbox/menu/index.server.ts");
+
+  await writePreviewCodegen({ codegenDir, previews: [preview] });
+
+  const astro = await fs.readFile(
+    join(codegenDir, "previews/menu/preview.astro"),
+    "utf8",
+  );
+  expect(astro).toContain(
+    'import { load } from "../../../sandbox/menu/index.server.ts";',
+  );
+  expect(astro).toContain(
+    'const props = await load(getPreviewLoadContext("menu"));',
+  );
+  expect(astro).toContain(
+    '<ReactExample client:load isolated={Astro.locals.previewIsolated} {...props} slot="react" />',
+  );
+});
+
+test("renders examples without a server file with no props", async () => {
+  const dir = await createDir();
+  const codegenDir = join(dir, "codegen");
+
+  await writePreviewCodegen({ codegenDir, previews: [getPreview(dir)] });
+
+  const astro = await fs.readFile(
+    join(codegenDir, "previews/menu/preview.astro"),
+    "utf8",
+  );
+  expect(astro).not.toContain("await load(");
+  expect(astro).not.toContain("{...props}");
+});
+
 test("generates deferred preview content modules", async () => {
   const dir = await createDir();
   const codegenDir = join(dir, "codegen");
@@ -198,6 +235,12 @@ test("regenerates previews only for structural files", async () => {
   ).toBe(true);
   expect(
     shouldRegeneratePreview(join(srcDir, "recipes/menu/preview.json"), roots),
+  ).toBe(true);
+  expect(
+    shouldRegeneratePreview(
+      join(srcDir, "recipes/menu/index.server.ts"),
+      roots,
+    ),
   ).toBe(true);
   expect(
     shouldRegeneratePreview(join(srcDir, "recipes/menu/style.css"), roots),
