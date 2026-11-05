@@ -44,19 +44,15 @@ export const tabs = cv({
     // Nested tabs set their own values instead of inheriting them.
     "[--tabs-meet:initial] [--tabs-meet-end:initial] [--tabs-folder:initial]",
     // A selected first folder meets the panel halfway across the available
-    // indent and border. Rings may overlap at this seam; an opaque backing
-    // would separate them from underlying shadows.
-    "has-[>:first-child>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-child(1_of_.control)]:[--tabs-meet:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-border)))/2)]",
+    // indent and edge. The panel border covers a root ring too.
+    "has-[>:first-child>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-child(1_of_.control)]:[--tabs-meet:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-bordering)))/2)]",
     // A stretched strip has no room after its last tab, so a selected last
     // folder meets the panel in the same way at the end.
-    "has-[>:first-child.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-last-child(1_of_.control)]:[--tabs-meet-end:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-border)))/2)]",
+    "has-[>:first-child.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-last-child(1_of_.control)]:[--tabs-meet-end:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-bordering)))/2)]",
     // Scope the scroll timeline so the sibling panel can follow it.
     "[timeline-scope:--tabs-scroll]",
     // Only the tabs of this root's own strip count, not those of nested tabs.
     "has-[>*>.ui-folder]:[--tabs-folder:1]",
-    // Reserve the ring folder's three-pixel overhang so focusing a tab does
-    // not scroll the strip vertically.
-    "[--tabs-over:calc(max(0px,calc(min(var(--tabs-ring)*1000000,3px)-var(--tabs-ring)))*var(--tabs-folder,0))]",
   ],
   variants: {
     /**
@@ -142,21 +138,51 @@ const tabBox = cx(
   "not-ui-selected:ui-focus-visible:bg-(--ak-layer)",
 );
 
+// A real border with the root edge width and color. On the root edge, it covers
+// a root ring with its own surface instead of adding a second translucent edge,
+// so its sides keep one color.
+const tabsBorder = cx(
+  "ak-edge-inherit",
+  "[--border-width:var(--tabs-bordering)]",
+);
+
+// On light surfaces, that border weighs 5 above the root edge, which
+// ak-edge-inherit makes the base color, so alpha reads its opacity. A hidden
+// root edge, such as an adaptive one, keeps it hidden.
+const tabsBorderWeight = cx(
+  "ak-light:ak-edge-alpha-[calc(alpha_+_min(0.05,alpha))]",
+);
+
+interface TabsBorderWeightVariants {
+  $border?: unknown;
+  $edgeRaw?: unknown;
+  $edgeWeight?: unknown;
+}
+
+/**
+ * Whether a folder tab or panel takes the default border weight. A weight of
+ * its own or `$edgeRaw` replaces it, and it needs the border from the root.
+ */
+function hasTabsBorderWeight(variants: TabsBorderWeightVariants) {
+  if (variants.$edgeWeight != null) return false;
+  if (variants.$edgeRaw) return false;
+  if (variants.$border === false) return false;
+  if (variants.$border === "inherit") return false;
+  return true;
+}
+
 // Selected folders join the panel; unselected folders use an inset hover
 // surface.
 const tabFolder = cx(
   "ui-folder",
+  tabsBorder,
   tabCurves,
-  // Borders meet the root edge inside the box; rings need an offset so their
-  // outside edge lands at the same position.
-  "mt-[min(var(--tabs-merge),var(--ak-frame-ring))]",
-  "first:ms-[min(var(--tabs-merge-x),var(--ak-frame-ring))]",
   // Extend selected folders over the panel seam. Extra bottom padding and a
   // negative margin preserve label position and row height.
   "[--tab-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
   "ui-selected:pb-[calc(var(--py)+var(--tab-reach))]",
   "ui-selected:-mb-(--tab-reach)",
-  "not-ui-selected:border-transparent not-ui-selected:ring-0",
+  "not-ui-selected:border-transparent",
   "not-ui-selected:ui-hover:border-transparent",
   tabSelectedEdge,
   // Inset the unselected hover and focus surface from the padding box,
@@ -175,13 +201,12 @@ const tabFolder = cx(
   // Thicken the selected focus edge inward to at least 2px or 1.5 times its
   // resting width. Limit growth to available padding so layout stays fixed;
   // folder curves use the same extra width.
-  "ui-selected:ui-focus-visible:[--tab-focus-extra:min(max(1px,calc(2px-var(--ak-frame-border)-var(--ak-frame-ring)),round(up,calc((var(--ak-frame-border)+var(--ak-frame-ring))/2),1px)),var(--py,0px),var(--px,0px))]",
+  "ui-selected:ui-focus-visible:[--tab-focus-extra:min(max(1px,calc(2px-var(--ak-frame-border)),round(up,calc(var(--ak-frame-border)/2),1px)),var(--py,0px),var(--px,0px))]",
   "ui-selected:ui-focus-visible:border-t-[calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
   "ui-selected:ui-focus-visible:border-x-[calc(var(--ak-frame-border)+var(--tab-focus-extra))]",
   "ui-selected:ui-focus-visible:pt-[calc(var(--py,0px)-var(--tab-focus-extra))]",
   "ui-selected:ui-focus-visible:px-[calc(var(--px,0px)-var(--tab-focus-extra))]",
   "ui-selected:ui-focus-visible:border-(--ak-outline)",
-  "ui-selected:ui-focus-visible:ring-(--ak-outline)",
   "ui-selected:ui-focus-visible:[--folder-edge:var(--ak-outline)]",
   "ui-selected:ui-focus-visible:[--folder-extra:var(--tab-focus-extra)]",
 );
@@ -256,9 +281,13 @@ export const tab = cv({
       return isSegmentedKind(variants.$kind);
     },
     $focusColor: "brand",
-    $border(defaultValue, variants) {
+    // A width from $border would otherwise draw a ring on light surfaces.
+    // Folders keep a border, so it covers a root ring.
+    $borderType(defaultValue, variants) {
       if (variants.$kind !== "folder") return defaultValue;
-      return defaultValue ?? "inherit";
+      if (defaultValue == null) return "border";
+      if (defaultValue === "auto") return "border";
+      return defaultValue;
     },
   },
   refine({ variants, addClass }) {
@@ -267,9 +296,18 @@ export const tab = cv({
     if (!hasSelectedSurface(variants)) {
       addClass(selectedHoverClass);
     }
-    if (variants.$kind === "folder") return;
+    if (variants.$kind === "folder" && hasTabsBorderWeight(variants)) {
+      addClass(tabsBorderWeight);
+    }
     if (variants.$border != null) return;
-    // Keep the forced-colors fallback edge only on the selected tab.
+    // Replace the 1px forced-colors fallback edge on unselected tabs. Folders
+    // keep the root edge width, so an edgeless root keeps them borderless.
+    if (variants.$kind === "folder") {
+      addClass(
+        "not-ui-selected:forced-colors:ak-frame-border-(--border-width)",
+      );
+      return;
+    }
     addClass("not-ui-selected:forced-colors:ak-frame-border-0");
   },
 });
@@ -299,22 +337,21 @@ const tabStrip = cx(
   "flex",
   "rounded-b-none!",
   // Add the root edge width below the tabs so the panel can overlap it.
-  // Each folder accounts for its own border or ring when crossing the seam.
+  // Each folder accounts for its own border when crossing the seam.
   "[--tabs-float:var(--ak-frame-padding)]",
   "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
   // A root indent replaces the strip padding only beside the outer tabs.
   "[--tabs-float-x:var(--tabs-float)] [.tabs-indent>&]:[--tabs-float-x:var(--tabs-indent)]",
-  // Continue below the seam to fill rounded panel corners and ring overhang.
-  "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px)+var(--tabs-over,0px))]",
+  // Continue below the seam to fill rounded panel corners.
+  "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px))]",
   // Keep the strip out of a separate stacking context so tabs can paint
   // above the panel.
   "z-auto",
-  // When the folder edge is wider than strip padding, pull tabs onto the
-  // root edge. Only border width affects the frame margin and concentric
-  // radius.
+  // When the root edge is wider than strip padding, pull tabs onto it. Folder
+  // borders lie on a root ring too, so its width also affects the frame margin
+  // and concentric radius.
   "[--tabs-merge:calc(max(0px,calc(var(--tabs-bordering)-var(--tabs-float)))*var(--tabs-folder,0))]",
   "[--tabs-merge-x:calc(max(0px,calc(var(--tabs-bordering)-var(--tabs-float-x)))*var(--tabs-folder,0))]",
-  "[--tabs-pull:calc(max(0px,calc(var(--tabs-border)-var(--tabs-float)))*var(--tabs-folder,0))]",
   // Extend the scroll box over the root edge so tab edges and corners remain
   // unclipped.
   "-mt-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
@@ -367,7 +404,7 @@ export const tabList = cv({
       // Keep the strip width automatic so negative margins can extend it over
       // the root edge. Without the end spacer, the last tab mirrors the first:
       // same inset from the root edge, and a selected folder meets the panel.
-      return "tabs-stretch after:hidden [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow [&>.control]:[--stretch-px-scale:0.75] [&>.ui-folder:last-child]:me-[min(var(--tabs-merge-x),var(--ak-frame-ring))]";
+      return "tabs-stretch after:hidden [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow [&>.control]:[--stretch-px-scale:0.75]";
     },
   },
   defaultVariants: {
@@ -395,7 +432,7 @@ export const tabList = cv({
     // move the scroll box.
     $m(defaultValue, variants) {
       if (variants.$kind === "segmented") return defaultValue;
-      return "calc(-1 * var(--tabs-pull))";
+      return "calc(-1 * var(--tabs-merge))";
     },
   },
   refine({ variants, addClass }) {
@@ -410,9 +447,10 @@ export const tabPanels = cv({
   extend: [frame],
   class: [
     "relative z-1 overflow-clip",
-    // Overlap the strip notch, root edge, and reserved ring overhang so the
-    // selected folder covers the seam.
-    "-mt-[calc(var(--tabs-notch,0px)+var(--tabs-bordering)+var(--tabs-over,0px))]",
+    tabsBorder,
+    // Overlap the strip notch and root edge so the selected folder covers the
+    // seam.
+    "-mt-[calc(var(--tabs-notch,0px)+var(--tabs-bordering))]",
     // Use root corner geometry, reducing the start radius beside the first
     // selected folder, and the end radius beside a last one in a stretched
     // strip.
@@ -424,6 +462,10 @@ export const tabPanels = cv({
     $lighten: true,
     $p: 3,
     $cover: true,
-    $border: "inherit",
+    $borderType: "border",
+  },
+  refine({ variants, addClass }) {
+    if (!hasTabsBorderWeight(variants)) return;
+    addClass(tabsBorderWeight);
   },
 });
