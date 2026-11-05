@@ -41,6 +41,10 @@ export const tabs = cv({
     // Let the root shrink in flex and grid layouts so overflowing tabs can
     // scroll.
     "min-w-0",
+    // Without padding, a root edge drawn as a ring leaves nothing between the
+    // root and the strip or panels. In block flow, their negative margins
+    // would then collapse through the root and move the root instead.
+    "ui-base:flow-root",
     // Copy root geometry before descendant frames replace it; edge widths do
     // not inherit.
     "[--tabs-padding:var(--ak-frame-padding)]",

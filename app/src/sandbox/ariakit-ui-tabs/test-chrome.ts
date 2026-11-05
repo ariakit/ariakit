@@ -106,6 +106,41 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     test.expect(await recording).toHaveLength(1);
   });
 
+  // The page visual capture cannot show this: the light ring moves by 1px on a
+  // near-white page, below the comparison threshold.
+  test("keeps the strip and panels on the root edge in block flow", async ({
+    page,
+    q,
+  }) => {
+    // In dark mode, the root edge is a real border, which keeps the margins
+    // inside the root.
+    await page.emulateMedia({ colorScheme: "light" });
+    const getEdgeOffsets = (title: string) =>
+      query(q.article(title))
+        .tab("Preview")
+        .evaluate((tab) => {
+          const root = tab.closest(".tabs");
+          if (!root) {
+            throw new Error("Missing tabs root");
+          }
+          const panels = root.querySelector(":scope > [role=tablist] + *");
+          if (!panels) {
+            throw new Error("Missing tab panels");
+          }
+          const rootBox = root.getBoundingClientRect();
+          const tabTop = tab.getBoundingClientRect().top - rootBox.top;
+          const panelsBottom =
+            rootBox.bottom - panels.getBoundingClientRect().bottom;
+          return [tabTop, panelsBottom];
+        });
+    // In a flex container, the tab and panels cover the root ring.
+    const flexOffsets = await getEdgeOffsets("Without padding");
+    test.expect(flexOffsets).toEqual([-1, -1]);
+    test
+      .expect(await getEdgeOffsets("Without padding in block flow"))
+      .toEqual(flexOffsets);
+  });
+
   // Regression fixtures.
   for (const name of ["Project", "Team"]) {
     // https://github.com/ariakit/ariakit/pull/5240#discussion_r3973781700
