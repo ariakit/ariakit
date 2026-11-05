@@ -54,7 +54,7 @@ export function SmallThumbnail() {
         $cover: true,
         $p: 2,
         // The panel clips content that does not fit, so the root keeps the slot
-        // height when ring tabs reserve extra room on dark surfaces.
+        // height.
         className: "flex min-h-0 flex-col",
       })}
     >
