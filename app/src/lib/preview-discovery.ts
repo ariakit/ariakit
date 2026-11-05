@@ -98,6 +98,12 @@ export interface DiscoveredPreview {
   source: string;
   frameworks: Framework[];
   entryFiles: Partial<Record<Framework, string>>;
+  /**
+   * The `index.server.ts` file next to the entry files. The preview calls its
+   * `load` function on the server and passes the result to the example as
+   * props.
+   */
+  serverFile?: string;
   metadata: PreviewMetadata;
 }
 
@@ -231,15 +237,24 @@ export function isPreviewEntryFile(filename: string) {
   return !!getFrameworkByFilename(filename);
 }
 
+/**
+ * The file of a preview that runs only on the server. Its `load` function
+ * returns the props of the example, such as code that Shiki highlights at build
+ * time.
+ */
+export const PREVIEW_SERVER_FILE_NAME = "index.server.ts";
+
 export function shouldRegeneratePreview(
   file: string,
   roots: ResolvedPreviewRoot[],
   metadataFileName = "preview.json",
 ) {
   const filename = basename(file);
-  if (filename !== metadataFileName) {
-    if (!isPreviewEntryFile(filename)) return false;
-  }
+  const isPreviewFile =
+    filename === metadataFileName ||
+    filename === PREVIEW_SERVER_FILE_NAME ||
+    isPreviewEntryFile(filename);
+  if (!isPreviewFile) return false;
   return roots.some((root) => isInDirectory(file, root.dir));
 }
 
@@ -338,6 +353,7 @@ interface AddPreviewParams {
   context: DiscoverRootContext;
   dir: string;
   entryFiles: Partial<Record<Framework, string>>;
+  serverFile?: string;
   metadata?: PreviewMetadata;
 }
 
@@ -345,6 +361,7 @@ function addPreview({
   context,
   dir,
   entryFiles,
+  serverFile,
   metadata = {},
 }: AddPreviewParams) {
   const id = getPreviewId(context.root, dir);
@@ -368,6 +385,7 @@ function addPreview({
     source: context.root.kind,
     frameworks,
     entryFiles,
+    ...(serverFile && { serverFile }),
     metadata,
   });
 }
@@ -385,8 +403,13 @@ async function discoverRoot(
   }
   const entryFiles = getPreviewEntryFiles(dir, entries);
   let metadata: PreviewMetadata | undefined;
+  let serverFile: string | undefined;
   for (const entry of entries) {
     if (!entry.isFile()) continue;
+    if (entry.name === PREVIEW_SERVER_FILE_NAME) {
+      serverFile = join(dir, entry.name);
+      continue;
+    }
     if (entry.name === metadataFileName) {
       metadata = await readPreviewMetadata(
         join(dir, entry.name),
@@ -412,7 +435,7 @@ async function discoverRoot(
       !createsPreview,
     `Missing description metadata for ${getPreviewId(context.root, dir)}`,
   );
-  addPreview({ context, dir, entryFiles, metadata });
+  addPreview({ context, dir, entryFiles, serverFile, metadata });
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
     if (isDirectoryIgnored(entry.name)) continue;
@@ -485,6 +508,7 @@ async function updatePreviewStore(
       digest: context.generateDigest({
         data: rawData,
         entryFiles: preview.entryFiles,
+        serverFile: preview.serverFile,
         filePath,
         id: preview.id,
       }),

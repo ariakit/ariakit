@@ -22,8 +22,18 @@ interface PreviewHydrationProps {
   isolated?: boolean;
 }
 
-export function withPreviewHydration(Preview: ComponentType, id: string) {
-  return function PreviewHydration({ isolated }: PreviewHydrationProps) {
+/**
+ * Wraps an example for its preview island. Other props, such as the result of
+ * the `load` function of its server file, go to the example.
+ */
+export function withPreviewHydration<P extends object>(
+  Preview: ComponentType<P>,
+  id: string,
+) {
+  return function PreviewHydration({
+    isolated,
+    ...props
+  }: PreviewHydrationProps & P) {
     const [reloadCount, setReloadCount] = useState(0);
     const [mounted, setMounted] = useState(!isolated);
     useEffect(() => {
@@ -42,7 +52,9 @@ export function withPreviewHydration(Preview: ComponentType, id: string) {
     if (!mounted) {
       return <></>;
     }
-    // A new key mounts the example again, which resets its state.
-    return <Preview key={reloadCount} />;
+    // A new key mounts the example again, which resets its state. The rest of
+    // the props is P without isolated, which TypeScript can't prove for a
+    // generic P.
+    return <Preview key={reloadCount} {...(props as P)} />;
   };
 }

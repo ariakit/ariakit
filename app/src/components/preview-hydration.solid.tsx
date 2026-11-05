@@ -14,8 +14,15 @@ import {
   subscribePreviewReload,
 } from "#app/lib/preview-hydration.ts";
 
-export function withPreviewHydration(Preview: Component, id: string) {
-  return function PreviewHydration() {
+/**
+ * Wraps an example for its preview island. Its props, such as the result of the
+ * `load` function of its server file, go to the example.
+ */
+export function withPreviewHydration<P extends object>(
+  Preview: Component<P>,
+  id: string,
+) {
+  return function PreviewHydration(props: P) {
     const [reloadCount, setReloadCount] = createSignal(0);
     onMount(() => {
       markPreviewHydrated();
@@ -27,7 +34,7 @@ export function withPreviewHydration(Preview: Component, id: string) {
     // Each reload creates the example again, which resets its state.
     const preview = createMemo(() => {
       reloadCount();
-      return <Preview />;
+      return <Preview {...props} />;
     });
     return <>{preview()}</>;
   };

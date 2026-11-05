@@ -140,6 +140,19 @@ function generatePreviewWrapper(preview: DiscoveredPreview, file: string) {
   const sourceImports: string[] = [];
   const sourceEntries: string[] = [];
   const componentEntries: string[] = [];
+  // The server file runs only here, while Astro renders the page. Its result
+  // becomes props of each example, so the browser never loads its imports.
+  let loadProps = "";
+  let propsSpread = "";
+  if (preview.serverFile) {
+    const serverImportPath = getRelativeImportPath(file, preview.serverFile);
+    componentImports.push(
+      `import { getPreviewLoadContext } from "#app/lib/code-files.ts";`,
+      `import { load } from ${JSON.stringify(serverImportPath)};`,
+    );
+    loadProps = `\nconst props = await load(getPreviewLoadContext(${JSON.stringify(preview.id)}));\n`;
+    propsSpread = " {...props}";
+  }
   for (const framework of frameworks) {
     const entryFile = preview.entryFiles[framework];
     invariant(entryFile, `Missing ${framework} entry file for ${preview.id}`);
@@ -168,10 +181,10 @@ function generatePreviewWrapper(preview: DiscoveredPreview, file: string) {
     const isolated =
       framework === "react" ? " isolated={Astro.locals.previewIsolated}" : "";
     componentEntries.push(
-      `  <${variable}Example${directive}${isolated} slot=${JSON.stringify(framework)} />`,
+      `  <${variable}Example${directive}${isolated}${propsSpread} slot=${JSON.stringify(framework)} />`,
     );
   }
-  return `---\nimport PreviewFramework from "#app/components/preview-framework.astro";\n${componentImports.join("\n")}\n\n${sourceImports.join("\n")}\n\nexport const source = {\n${sourceEntries.join("\n")}\n};\n---\n\n<PreviewFramework>\n${componentEntries.join("\n")}\n</PreviewFramework>\n`;
+  return `---\nimport PreviewFramework from "#app/components/preview-framework.astro";\n${componentImports.join("\n")}\n\n${sourceImports.join("\n")}\n\nexport const source = {\n${sourceEntries.join("\n")}\n};\n${loadProps}---\n\n<PreviewFramework>\n${componentEntries.join("\n")}\n</PreviewFramework>\n`;
 }
 
 function generatePreviewContent() {
