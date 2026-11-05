@@ -361,6 +361,91 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Without padding in block flow"
+        description="The root sits in a block container instead of a flex one. The tabs and panels still sit on the root's edge, so the selected tab and the panels each show one edge, not two."
+        stretch
+        code={`
+          <div>
+            <Tabs $p="none">
+              <TabList>
+                <Tab>
+                  <TabLabel>Preview</TabLabel>
+                </Tab>
+                <Tab>
+                  <TabLabel>Code</TabLabel>
+                </Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel single>
+                  …
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </div>
+        `}
+      >
+        <div>
+          <Tabs $p="none" defaultSelectedId="flush-block-preview">
+            <TabList aria-label="Without padding in block flow">
+              <Tab id="flush-block-preview">
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab id="flush-block-code">
+                <TabLabel>Code</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                <p className="text-sm">The root is a block-level box.</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </div>
+      </Example>
+
+      <Example
+        title="Flex root"
+        description="A display class on the root replaces its default display. Here, the root is a flex column, and the panels grow to fill its height."
+        stretch
+        code={`
+          <Tabs className="flex h-40 flex-col">
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels className="grow">
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          defaultSelectedId="flex-root-preview"
+          className="flex h-40 flex-col"
+        >
+          <TabList aria-label="Flex root">
+            <Tab id="flex-root-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="flex-root-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels className="grow">
+            <TabPanel single>
+              <p className="text-sm">The panels fill the root.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Without padding or root edge"
         description="The selected tab and panel keep their borders. The root has no padding or visible border, and the strip keeps the root's background color."
         stretch
