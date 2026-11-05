@@ -935,14 +935,49 @@ Sharing a name between radius and spacing tokens lets one modifier set both valu
 
 ### Borders and rings
 
-All three utilities accept no argument (defaults to `1px`), named widths (`0`, `1`, `2`, `4`, `8`), or arbitrary values (`[3px]`).
+The first three utilities accept no argument (defaults to `1px`), named widths (`0`, `1`, `2`, `4`, `8`), or arbitrary values (`[3px]`).
 
-| Utility                                             | Description                                                                                                                                                                         |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-frame-border` / `ak-frame-border-<width>`       | Applies a border whose width is factored into nested-frame radius calculations.                                                                                                     |
-| `ak-frame-ring` / `ak-frame-ring-<width>`           | Applies a ring with the same treatment. Rings draw outside the border-box without shifting layout.                                                                                  |
-| `ak-frame-bordering` / `ak-frame-bordering-<width>` | Adaptive edge: chooses a border or ring based on parent layer appearance and the layer's explicit lighten or darken relationship, keeping surfaces visually separated across modes. |
-| `ak-frame-bordering-inherit`                        | Inherits the nearest ancestor frame border, ring, or bordering width, skipping intermediate frames that do not explicitly set one; falls back to `0px`.                             |
+| Utility                                             | Description                                                                                                                                                                                    |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-frame-border` / `ak-frame-border-<width>`       | Applies a border whose width is factored into nested-frame radius calculations.                                                                                                                |
+| `ak-frame-ring` / `ak-frame-ring-<width>`           | Applies a ring with the same treatment. Rings draw outside the border-box without shifting layout.                                                                                             |
+| `ak-frame-bordering` / `ak-frame-bordering-<width>` | Adaptive edge: chooses a border or ring based on parent layer appearance and the layer's explicit lighten or darken relationship, keeping surfaces visually separated across modes.            |
+| `ak-frame-bordering-inherit`                        | Inherits the nearest ancestor frame border, ring, or bordering width, skipping intermediate frames that do not explicitly set one; falls back to `0px`.                                        |
+| `ak-frame-backdrop` / `ak-frame-backdrop-<color>`   | Makes `ak-frame-bordering-inherit` a border. On a parent ring, it paints a backdrop under that border, so it looks like the ring over that surface. The backdrop defaults to the parent layer. |
+
+#### Inherited borders on a parent ring
+
+A cover frame stretches past the parent padding by its own border width, so its edge lies on the parent edge. An inherited ring there paints on the same pixels as the parent ring, which doubles the translucent edge. A border covers the parent edge instead, but it paints over the element's own surface, while a ring paints over the surface behind it.
+
+Add `ak-frame-backdrop` beside `ak-frame-bordering-inherit` for this case. The inherited edge becomes a border, and on a parent ring it paints the parent layer under that border. The parent ring paints over the surface around the parent, so the border looks like the ring when the parent layer matches that surface, as with a parent whose `ak-layer` has no modifier or color. On a parent border, such as on dark surfaces, it is a plain border. Add `ak-edge-inherit` for the parent edge color.
+
+```html
+<div class="ak-layer ak-frame ak-frame-xl/2 ak-frame-bordering">
+  <p>Ring on light surfaces, border on dark ones</p>
+  <!-- Its sides look like the parent ring, even on a lighter surface -->
+  <div
+    class="ak-layer ak-layer-lighten-2 ak-frame ak-frame-cover ak-frame-bordering-inherit ak-frame-backdrop ak-edge-inherit"
+  ></div>
+</div>
+```
+
+`ak-frame-backdrop-<color>` does the same with another backdrop. It accepts theme colors, arbitrary values, and custom properties. On a parent whose layer differs from the surface around it, such as a lightened, darkened, numeric, or color layer, pass that surface, so the border still looks like the ring:
+
+```html
+<div
+  class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-xl/2 ak-frame-bordering [--card-surface:var(--ak-layer-parent)]"
+>
+  <div
+    class="ak-layer ak-frame ak-frame-cover ak-frame-bordering-inherit ak-frame-backdrop-(--card-surface) ak-edge-inherit"
+  ></div>
+</div>
+```
+
+Several frames that form one shape can share a backdrop the same way, through a custom property from a common ancestor.
+
+The backdrop is a background layer, and a background layer in the element's own color covers it inside the border. So `ak-frame-backdrop` sets `background-image` and `background-clip`, and a background image on the same element is not supported. On a parent ring, an `ak-layer-transparent` element paints its resolved layer, as joined frames do. Without `ak-frame-bordering-inherit`, the background layers stay transparent. Forced colors remove the background layers and the ring, and the border keeps the parent edge width.
+
+`--ak-frame-backdrop` holds the surface under the frame edge: the parent layer under a ring, the backdrop under an inherited border on a parent ring, and the element's own layer under any other border. Paint it under custom edge drawings, such as curved corners, so they match the frame edge.
 
 ### Cover and flow
 

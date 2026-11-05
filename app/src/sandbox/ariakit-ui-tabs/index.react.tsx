@@ -365,8 +365,8 @@ export default function TabsExamples() {
         description="The selected tab and panel keep their borders. The root has no padding or visible border, and the strip keeps the root's background color."
         stretch
         code={`
-          <Tabs $p="none" $edgeHidden>
-            <TabList $darken={false}>
+          <Tabs $p="none" $edgeHidden $darken={false}>
+            <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
               </Tab>
@@ -385,8 +385,13 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs $p="none" $edgeHidden defaultSelectedId="flush-hidden-preview">
-          <TabList $darken={false} aria-label="Without padding or root edge">
+        <Tabs
+          $p="none"
+          $edgeHidden
+          $darken={false}
+          defaultSelectedId="flush-hidden-preview"
+        >
+          <TabList aria-label="Without padding or root edge">
             <Tab id="flush-hidden-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
@@ -412,8 +417,8 @@ export default function TabsExamples() {
         description="$indent moves the tabs away from the panel edge without padding above them. The selected first tab meets a rounded panel corner, and the tabs keep the full radius."
         stretch
         code={`
-          <Tabs $p="none" $edgeHidden $indent={3}>
-            <TabList $darken={false}>
+          <Tabs $p="none" $edgeHidden $indent={3} $darken={false}>
+            <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
               </Tab>
@@ -436,12 +441,10 @@ export default function TabsExamples() {
           $p="none"
           $edgeHidden
           $indent={3}
+          $darken={false}
           defaultSelectedId="indented-preview"
         >
-          <TabList
-            $darken={false}
-            aria-label="Indented without padding or root edge"
-          >
+          <TabList aria-label="Indented without padding or root edge">
             <Tab id="indented-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
@@ -898,6 +901,100 @@ export default function TabsExamples() {
           <TabPanels>
             <TabPanel single>
               <p className="text-sm">A folder with no card around it.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Adaptive root edge"
+        description="The root, the selected tab, and the panel show their edges only in high-contrast mode. Hidden, the panel border leaves no strip-colored line around the panel."
+        stretch
+        code={`
+          <Tabs $edgeWeight="adaptive">
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $edgeWeight="adaptive" defaultSelectedId="adaptive-code">
+          <TabList aria-label="Adaptive root edge">
+            <Tab id="adaptive-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="adaptive-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="adaptive-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The edges show with more contrast.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Adaptive root edge without padding"
+        description="The selected tab lies on the hidden root edge and leaves no strip-colored line above it."
+        stretch
+        code={`
+          <Tabs $edgeWeight="adaptive" $p="none">
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          $edgeWeight="adaptive"
+          $p="none"
+          defaultSelectedId="adaptive-flush-code"
+        >
+          <TabList aria-label="Adaptive root edge without padding">
+            <Tab id="adaptive-flush-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="adaptive-flush-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="adaptive-flush-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The edges show with more contrast.</p>
             </TabPanel>
           </TabPanels>
         </Tabs>

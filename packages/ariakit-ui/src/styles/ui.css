@@ -2136,6 +2136,8 @@ body > * {
     --folder-ring: var(--ak-frame-ring, 0px);
     --folder-border: var(--ak-frame-border, 0px);
     --folder-bordering: calc(var(--ak-frame-border, 0px) + var(--ak-frame-ring, 0px));
+    /* The surface under the frame edge, which does not inherit into the curves. */
+    --folder-under: var(--ak-frame-backdrop, var(--ak-layer-parent));
     /* Each folder chooses border or ring, even when it inherits its edge. */
     --folder-over: min(var(--folder-ring) * 1000000, 3px);
     /* Cover the panel edge; consumers add any gap between the row and seam. */
@@ -2157,8 +2159,10 @@ body > * {
       --folder-border: var(--folder-edge) var(--folder-outer-border), var(--folder-edge) var(--folder-inner-border);
       --folder-bg: var(--ak-layer) var(--folder-inner-bg);
       --folder-gradient: var(--folder-transparent), var(--folder-border), var(--folder-bg);
-      --folder-backdrop-ring: calc(var(--folder-outer-border) + var(--folder-ring));
-      --folder-backdrop: transparent var(--folder-outer-border), var(--ak-layer-parent) var(--folder-outer-border), var(--ak-layer-parent) var(--folder-backdrop-ring), var(--ak-layer) var(--folder-backdrop-ring);
+      /* Paint the surface under the frame edge beneath the whole stroke, so the
+         curves composite like the straight sides of a ring or border. */
+      --folder-backdrop-edge: calc(var(--folder-outer-border) + var(--folder-bordering));
+      --folder-backdrop: transparent var(--folder-outer-border), var(--folder-under) var(--folder-outer-border), var(--folder-under) var(--folder-backdrop-edge), var(--ak-layer) var(--folder-backdrop-edge);
       /* Smooth the extra band separately to support edgeless folders. */
       --folder-extra-smoothness: min(0.2px, var(--folder-extra, 0px));
       --folder-extra-inner: calc(var(--folder-inner) + var(--folder-extra, 0px));

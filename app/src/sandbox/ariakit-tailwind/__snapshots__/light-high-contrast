@@ -129,6 +129,19 @@
           "host": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[11px] border-[4px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0)_0px_0px_0px_0px]"
         }
       },
+      "bordering inherit backdrop": {
+        "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[15px] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_4px]",
+        "children": {
+          "20": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[4px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-8px] ml-[-8px] shadow-[oklch(0_0.0011_197.14_/_0)_0px_0px_0px_0px]",
+          "20 (2)": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] border-[4px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-8px] ml-[-8px] shadow-[oklch(0_0.0011_197.14_/_0)_0px_0px_0px_0px]",
+          "border": {
+            "class": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[11px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px]",
+            "children": {
+              "host": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-b-[11px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] mr-[-5px] mb-[-5px] ml-[-5px] shadow-[oklch(0_0.0011_197.14_/_0)_0px_0px_0px_0px]"
+            }
+          }
+        }
+      },
       "ak-outset": {
         "class": "bg-[oklch(0_0.0368_260.048)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0368_260.048_/_0.4334)] p-[4px]",
         "children": {

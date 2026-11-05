@@ -16,6 +16,17 @@ import {
 } from "./segment.ts";
 import { hasSelectedSurface, selectedHoverClass } from "./selected.ts";
 
+interface TabsEdgeVariants {
+  $edgeWeight?: unknown;
+}
+
+/** Whether the tabs root edge is hidden at rest by its weight. */
+function hidesTabsEdge(variants: TabsEdgeVariants) {
+  if (variants.$edgeWeight === "adaptive") return true;
+  if (variants.$edgeWeight === 0) return true;
+  return false;
+}
+
 /**
  * A tab container that shares its surface, edges, and geometry with the tab
  * strip and panels.
@@ -37,7 +48,13 @@ export const tabs = cv({
     "[--tabs-border:var(--ak-frame-border)]",
     "[--tabs-ring:var(--ak-frame-ring)]",
     "[--tabs-bordering:calc(var(--tabs-border)+var(--tabs-ring))]",
-    "[--tabs-layer:var(--ak-layer)]",
+    // The root layer is the strip color, so the strip inherits it and the
+    // panel draws its border over it. Selected tabs and the panel lighten from
+    // the layer around the root instead.
+    "[--tabs-layer:var(--ak-layer-parent)]",
+    // The darkened layer would paint the strip color under the root's own
+    // edge. The strip paints it inside the edge.
+    "bg-transparent!",
     // The space where a selected outer folder meets the panel. Without
     // $indent, it follows the root padding.
     "[--tabs-indent:var(--tabs-padding)]",
@@ -93,13 +110,27 @@ export const tabs = cv({
     $rounded: "xl",
     $p: 1,
     $border: true,
+    // Darken the strip half a step so tabs and panels stand out together.
+    $darken: 0.5,
+    // That darkening would swap the adaptive edge to a border on light surfaces
+    // and a ring on dark ones.
+    $borderType(defaultValue) {
+      if (defaultValue === "auto") return "appearance";
+      return defaultValue;
+    },
     $panelRoundedTop: true,
   },
-  refine({ variants, setVariants }) {
+  refine({ variants, setVariants, addClass }) {
+    if (hidesTabsEdge(variants)) {
+      // The panel and folders paint another surface under their borders, where
+      // the strip color would show as a line around the hidden edge.
+      addClass("tabs-edge-hidden-at-rest");
+    }
     if (variants.$border !== false) return;
     // An explicit false must publish zero edge width instead of inheriting the
-    // parent frame edge. Set the type because frame treats zero as no border.
-    setVariants({ $border: 0, $borderType: "auto" });
+    // parent frame edge. Set the type because frame treats zero as no border,
+    // and a zero-width ring can paint corner arcs in Firefox.
+    setVariants({ $border: 0, $borderType: "border" });
   },
 });
 
@@ -138,36 +169,36 @@ const tabBox = cx(
   "not-ui-selected:ui-focus-visible:bg-(--ak-layer)",
 );
 
-// A real border with the root edge width and color. On the root edge, it covers
-// a root ring with its own surface instead of adding a second translucent edge,
-// so its sides keep one color.
+// The root edge color, and its width for an explicit $borderType and forced
+// colors.
 const tabsBorder = cx(
   "ak-edge-inherit",
   "[--border-width:var(--tabs-bordering)]",
 );
 
-// On light surfaces, that border weighs 5 above the root edge, which
-// ak-edge-inherit makes the base color, so alpha reads its opacity. A hidden
-// root edge, such as an adaptive one, keeps it hidden.
-const tabsBorderWeight = cx(
-  "ak-light:ak-edge-alpha-[calc(alpha_+_min(0.05,alpha))]",
+// A folder border with the root edge width. On a root ring, it covers the ring
+// instead of adding a second translucent edge. Like the panel, it paints the
+// strip color beneath itself, so both draw the edge as over the strip on all
+// sides, which differs from the root ring over the page. Under an edge hidden
+// at rest, the folder paints its own surface there instead, so it leaves no
+// line on the hidden ring, and its curves still cover the straight borders.
+const tabsInheritedBorder = cx(
+  "ak-frame-bordering-inherit ak-frame-backdrop",
+  "[.tabs-edge-hidden-at-rest>*>&]:ak-frame-backdrop-(--ak-layer)",
 );
 
-interface TabsBorderWeightVariants {
+interface TabsBorderVariants {
   $border?: unknown;
-  $edgeRaw?: unknown;
-  $edgeWeight?: unknown;
+  $borderType?: unknown;
 }
 
 /**
- * Whether a folder tab or panel takes the default border weight. A weight of
- * its own or `$edgeRaw` replaces it, and it needs the border from the root.
+ * Whether a folder tab or panel draws the root edge as its border. An explicit
+ * width or border type draws its own border instead.
  */
-function hasTabsBorderWeight(variants: TabsBorderWeightVariants) {
-  if (variants.$edgeWeight != null) return false;
-  if (variants.$edgeRaw) return false;
-  if (variants.$border === false) return false;
-  if (variants.$border === "inherit") return false;
+function inheritsTabsBorder(variants: TabsBorderVariants) {
+  if (variants.$border != null) return false;
+  if (variants.$borderType != null) return false;
   return true;
 }
 
@@ -282,10 +313,9 @@ export const tab = cv({
     },
     $focusColor: "brand",
     // A width from $border would otherwise draw a ring on light surfaces.
-    // Folders keep a border, so it covers a root ring.
+    // Folders keep a border, so it joins the panel.
     $borderType(defaultValue, variants) {
       if (variants.$kind !== "folder") return defaultValue;
-      if (defaultValue == null) return "border";
       if (defaultValue === "auto") return "border";
       return defaultValue;
     },
@@ -296,8 +326,10 @@ export const tab = cv({
     if (!hasSelectedSurface(variants)) {
       addClass(selectedHoverClass);
     }
-    if (variants.$kind === "folder" && hasTabsBorderWeight(variants)) {
-      addClass(tabsBorderWeight);
+    if (variants.$kind === "folder" && inheritsTabsBorder(variants)) {
+      // Unselected folders have no visible border or fill, so they skip the
+      // surface that the border paints beneath it.
+      addClass([tabsInheritedBorder, "not-ui-selected:bg-none"]);
     }
     if (variants.$border != null) return;
     // Replace the 1px forced-colors fallback edge on unselected tabs. Folders
@@ -413,9 +445,13 @@ export const tabList = cv({
       if (variants.$kind === "segmented") return defaultValue;
       return false;
     },
-    // Darken the strip half a step so tabs and panels stand out together.
+    // The strip inherits the root layer, which Tabs darkens. A segmented list
+    // stands on its own, so it darkens itself.
     $layer: true,
-    $darken: 0.5,
+    $darken(defaultValue, variants) {
+      if (variants.$kind === "segmented") return 0.5;
+      return defaultValue;
+    },
     $cover(defaultValue, variants) {
       if (variants.$kind === "segmented") return defaultValue;
       return true;
@@ -459,13 +495,26 @@ export const tabPanels = cv({
     "ui-tabs-round",
   ],
   defaultVariants: {
+    // Lighten from the layer around the root, like selected tabs, not from the
+    // root layer, which is the strip color.
+    $layer: "var(--tabs-layer)",
     $lighten: true,
     $p: 3,
     $cover: true,
-    $borderType: "border",
+    // A width from $border would otherwise draw a ring on light surfaces.
+    $borderType(defaultValue) {
+      if (defaultValue === "auto") return "border";
+      return defaultValue;
+    },
   },
   refine({ variants, addClass }) {
-    if (!hasTabsBorderWeight(variants)) return;
-    addClass(tabsBorderWeight);
+    if (!inheritsTabsBorder(variants)) return;
+    // The root layer, which is the strip color, is the backdrop by default.
+    // Under an edge hidden at rest, the border lies on the hidden root ring,
+    // outside the root, so it paints the layer around the root.
+    addClass([
+      "ak-frame-bordering-inherit ak-frame-backdrop",
+      "[.tabs-edge-hidden-at-rest>&]:ak-frame-backdrop-(--tabs-layer)",
+    ]);
   },
 });
