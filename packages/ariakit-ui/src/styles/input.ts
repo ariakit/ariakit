@@ -85,9 +85,9 @@ export const input = cv({
     // caret and text at their start. The outer field draws the shape.
     "[:is(&_&)]:rounded-none",
     // Nested fields fill the free space beside the slots and can shrink below
-    // the native width that a flex item keeps by default. :where() lets
-    // callers give one a fixed width with flex-none.
-    "[:is(&_&)]:min-w-0 [:where(&_&)]:flex-1",
+    // the native width that a flex item keeps by default. Zero specificity
+    // lets callers give one a fixed width with flex-none.
+    "[:is(&_&)]:min-w-0 [&_&]:ui-base:flex-1",
   ],
   variants: {
     /**
@@ -139,8 +139,8 @@ export const input = cv({
      */
     $fitContent: {
       true: [
-        // :where() lets callers set a width, such as a minimum for the value.
-        "field-sizing-content [:where(&:not(textarea))]:w-fit",
+        // Zero specificity lets callers set a width, such as a minimum.
+        "field-sizing-content not-[textarea]:ui-base:w-fit",
         // Entry controls in a group stop filling the free space, so the group
         // fits them. Browsers without field sizing keep the native width.
         "[&_:is(input,textarea)]:field-sizing-content [&_:is(input,textarea)]:flex-initial",

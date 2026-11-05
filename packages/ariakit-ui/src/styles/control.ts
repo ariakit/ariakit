@@ -296,7 +296,7 @@ export const controlFieldGrid = cv({
     // Every child takes a full row. Only direct fields use the columns as
     // their own, so a field in another child, such as a fieldset, uses its
     // own columns.
-    "[:where(&>*)]:col-span-full [&>.control-field]:[--field-columns:subgrid]",
+    "*:ui-base:col-span-full [&>.control-field]:[--field-columns:subgrid]",
   ],
 });
 
