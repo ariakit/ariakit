@@ -709,7 +709,7 @@ const content = cx(
   // Grid items do not collapse margins, so the grid spaces its children.
   "gap-y-(--shell-content-gap) [--shell-content-gap:--spacing(6)]",
   // Keep focused content above a sticky footer when it scrolls into view.
-  "[:where(&)_*]:scroll-mbe-(--shell-foot)",
+  "**:ui-base:scroll-mbe-(--shell-foot)",
   // Keep controls and badges at their content width instead of stretching to
   // the column.
   "[&>:is(.control,.badge)]:justify-self-start",
@@ -902,8 +902,8 @@ export const shellMainHeader = cv({
     "box-border min-h-(--shell-main-header-height) content-center py-0! z-3",
     // A bar keeps the shell's text inside a sized main. Zero specificity lets
     // caller text-* classes win.
-    "[:where(.shell-main-sized>&)]:[font-size:calc(var(--shell-header-step)*4)]",
-    "[:where(.shell-main-sized>&)]:[line-height:var(--shell-leading)]",
+    "[.shell-main-sized>&]:ui-base:[font-size:calc(var(--shell-header-step)*4)]",
+    "[.shell-main-sized>&]:ui-base:[line-height:var(--shell-leading)]",
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
     // Like other bars, a shorter or taller header than `md` shrinks or grows
     // its side insets with the space around its controls. This is only the

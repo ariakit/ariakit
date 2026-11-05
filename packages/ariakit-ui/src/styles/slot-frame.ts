@@ -164,7 +164,7 @@ export const slotFrameSlot = cv({
     "mx-(--mx,0px) my-(--my)",
     // Keep separate keys of a chord left to right, with a gap between them
     // that a caller gap class can replace.
-    "[:where(&:has(>kbd+kbd))]:gap-[0.25em] [&:has(>kbd+kbd):dir(rtl)]:flex-row-reverse",
+    "has-[>kbd+kbd]:ui-base:gap-[0.25em] [&:has(>kbd+kbd):dir(rtl)]:flex-row-reverse",
   ],
   variants: {
     /** Sets the slot size. */
