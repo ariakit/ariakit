@@ -141,6 +141,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toEqual(flexOffsets);
   });
 
+  // The root sets its default display with zero specificity, so a display
+  // class on the root wins. If it did not, this card would change only in
+  // low-contrast fills and edges, which the page visual capture can miss.
+  test("keeps a display class on the root", async ({ q }) => {
+    const display = await query(q.article("Flex root"))
+      .tab("Preview")
+      .evaluate((tab) => {
+        const root = tab.closest(".tabs");
+        if (!root) {
+          throw new Error("Missing tabs root");
+        }
+        return getComputedStyle(root).display;
+      });
+    test.expect(display).toBe("flex");
+  });
+
   // Regression fixtures.
   for (const name of ["Project", "Team"]) {
     // https://github.com/ariakit/ariakit/pull/5240#discussion_r3973781700
