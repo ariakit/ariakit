@@ -569,6 +569,8 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
 
     const scheduleUpdate = () => {
       if (frame) return;
+      // https://github.com/oxc-project/oxc/pull/28820
+      // oxlint-disable-next-line react/immutability -- remove after oxlint 1.92.0
       frame = win.requestAnimationFrame(() => {
         frame = 0;
         observeContent();

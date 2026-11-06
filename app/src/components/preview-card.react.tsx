@@ -513,6 +513,8 @@ function usePreviewFrame(
     let blurTimeout = 0;
     const onBlur = () => {
       clearTimeout(blurTimeout);
+      // https://github.com/oxc-project/oxc/pull/28820
+      // oxlint-disable-next-line react/immutability -- remove after oxlint 1.92.0
       blurTimeout = window.setTimeout(() => {
         if (isInCard(doc.activeElement)) return;
         deactivate();
@@ -1290,6 +1292,8 @@ function useInactiveScroll(
     let updateFrame = 0;
     const scheduleUpdate = () => {
       if (updateFrame) return;
+      // https://github.com/oxc-project/oxc/pull/28820
+      // oxlint-disable-next-line react/immutability -- remove after oxlint 1.92.0
       updateFrame = requestAnimationFrame(() => {
         updateFrame = 0;
         updateScrollLock();

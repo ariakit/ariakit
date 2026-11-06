@@ -1206,6 +1206,8 @@ export function useCollectionRenderer<T extends Item = any>({
       let firstRun = true;
       const observer = new ResizeObserver(() => {
         if (firstRun) {
+          // https://github.com/oxc-project/oxc/pull/28820
+          // oxlint-disable-next-line react/immutability -- remove after oxlint 1.92.0
           firstRun = false;
           return;
         }

@@ -29,6 +29,8 @@ function useRadixSelectOpenState() {
       // Browsers may run microtasks between event listeners, so clear the
       // marker in the next task, after Radix handles this event.
       window.clearTimeout(resetTimer);
+      // https://github.com/oxc-project/oxc/pull/28820
+      // oxlint-disable-next-line react/immutability -- remove after oxlint 1.92.0
       resetTimer = window.setTimeout(() => {
         isWindowResizingRef.current = false;
       }, 0);
