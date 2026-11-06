@@ -317,26 +317,6 @@ export default function BadgeExamples() {
       </Example>
 
       <Example
-        title="Relative size in a heading"
-        description="A negative size keeps the badge two steps smaller than the heading around it, so it grows with the heading."
-        code={`
-          <Heading $level={1}>
-            Changelog
-            <Badge $layer="brand" $size={-2}>
-              <BadgeLabel>Latest</BadgeLabel>
-            </Badge>
-          </Heading>
-        `}
-      >
-        <Heading $level={1}>
-          Changelog{" "}
-          <Badge $layer="brand" $size={-2}>
-            <BadgeLabel>Latest</BadgeLabel>
-          </Badge>
-        </Heading>
-      </Example>
-
-      <Example
         title="Default size in a heading"
         description="The badge keeps its own small text and normal letter spacing, so the tighter letters of the heading don't crowd it."
         code={`
@@ -673,6 +653,31 @@ export default function BadgeExamples() {
             Border
           </Badge>
         </div>
+      </Example>
+
+      {/*
+        This box stays last. It's taller than the other boxes in its row and has
+        a fractional height, so earlier in the grid it would move the boxes in
+        later rows off whole pixels and change their page captures.
+       */}
+      <Example
+        title="Relative size in a heading"
+        description="A negative size keeps the badge two steps smaller than the heading around it, so it grows with the heading."
+        code={`
+          <Heading $level={1}>
+            Changelog
+            <Badge $layer="brand" $size={-2}>
+              <BadgeLabel>Latest</BadgeLabel>
+            </Badge>
+          </Heading>
+        `}
+      >
+        <Heading $level={1}>
+          Changelog{" "}
+          <Badge $layer="brand" $size={-2}>
+            <BadgeLabel>Latest</BadgeLabel>
+          </Badge>
+        </Heading>
       </Example>
     </ExampleGrid>
   );
