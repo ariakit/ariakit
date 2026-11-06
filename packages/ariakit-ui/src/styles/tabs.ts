@@ -20,6 +20,15 @@ interface TabsEdgeVariants {
   $edgeWeight?: unknown;
 }
 
+// The space that a full panel corner and a full folder curve need side by side.
+const TABS_FULL_MEET = "(var(--tabs-notch,0px) + var(--tabs-radius))";
+
+// Fits that space between the outer root edge and the first folder. The folder
+// also sits past the root edge, by at most the indent, so the indent leaves
+// that edge out. A root edge wider than the indent pulls the folder onto it, so
+// the folder sits twice the indent away, and half of the space is enough.
+const TABS_AUTO_INDENT = `max(${TABS_FULL_MEET} - var(--tabs-bordering), ${TABS_FULL_MEET} / 2)`;
+
 /** Whether the tabs root edge is hidden at rest by its weight. */
 function hidesTabsEdge(variants: TabsEdgeVariants) {
   if (variants.$edgeWeight === "adaptive") return true;
@@ -64,8 +73,9 @@ export const tabs = cv({
     "[--tabs-indent:var(--tabs-padding)]",
     // Nested tabs set their own values instead of inheriting them.
     "[--tabs-meet:initial] [--tabs-meet-end:initial] [--tabs-folder:initial]",
-    // A selected first folder meets the panel halfway across the available
-    // indent and edge. The panel border covers a root ring too.
+    // A selected first folder shares the available indent and edge with the
+    // panel corner, which takes up to half. The panel border covers a root
+    // ring too.
     "has-[>:first-child>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-child(1_of_.control)]:[--tabs-meet:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-bordering)))/2)]",
     // A stretched strip has no room after its last tab, so a selected last
     // folder meets the panel in the same way at the end.
@@ -96,11 +106,23 @@ export const tabs = cv({
      * Sets the space between the root edge and the strip ends, where a selected
      * outer folder meets the panel. Unlike `$p`, it keeps the space above the
      * tabs and their radius. Without it, the strip ends use the strip padding
-     * and the panel corners use the root padding. `none` removes the space.
-     * Numbers multiply the spacing token and round to a whole pixel.
+     * and the panel corners use the root padding. `auto` makes this space and
+     * the root edge together as wide as the panel corner radius plus the folder
+     * curve radius, so both stay full beside a selected outer folder. Like
+     * other values, it takes the place of the padding there instead of adding
+     * to it. It has no effect on tabs without folders. `none` removes the
+     * space. Numbers multiply the spacing token and round to a whole pixel.
      */
-    $indent(value?: "none" | (string & {}) | number) {
+    $indent(value?: "none" | "auto" | (string & {}) | number) {
       if (value == null) return;
+      if (value === "auto") {
+        // With this marker, the strip uses the value only beside folders, which
+        // have the curves that it makes room for.
+        return {
+          class: "tabs-indent-auto",
+          style: { "--tabs-indent": TABS_AUTO_INDENT },
+        };
+      }
       // The marker lets the strip use this value in place of its own padding.
       return {
         class: "tabs-indent",
@@ -138,10 +160,11 @@ export const tabs = cv({
   },
 });
 
-// The side curves of a selected folder shrink where it meets the panel corner.
+// Where a selected folder meets the panel corner, its side curve takes the
+// space that the corner leaves, so a square corner leaves all of it.
 const tabCurves = cx(
-  "ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius)))]",
-  "ui-selected:after:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet-end,var(--tabs-radius)))]",
+  "ui-selected:before:[--folder-radius:min(var(--tabs-radius),calc(2*var(--tabs-meet,var(--tabs-radius))-min(var(--tabs-notch,0px),var(--tabs-meet,var(--tabs-radius)))))]",
+  "ui-selected:after:[--folder-radius:min(var(--tabs-radius),calc(2*var(--tabs-meet-end,var(--tabs-radius))-min(var(--tabs-notch,0px),var(--tabs-meet-end,var(--tabs-radius)))))]",
 );
 
 // Forced colors remove the fill, the only mark of a selected folder under a
@@ -378,6 +401,9 @@ const tabStrip = cx(
   "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
   // A root indent replaces the strip padding only beside the outer tabs.
   "[--tabs-float-x:var(--tabs-float)] [.tabs-indent>&]:[--tabs-float-x:var(--tabs-indent)]",
+  // An automatic indent only makes room for folder curves, so other tabs keep
+  // the strip padding.
+  "[.tabs-indent-auto>&]:[--tabs-float-x:calc(var(--tabs-float)+(var(--tabs-indent)-var(--tabs-float))*var(--tabs-folder,0))]",
   // Continue below the seam to fill rounded panel corners.
   "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px))]",
   // Keep the strip out of a separate stacking context so tabs can paint
