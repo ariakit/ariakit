@@ -33,7 +33,7 @@ export default function Example() {
             <Skeleton
               loading={loading}
               $animate={animation.value}
-              render={<Frame $layer $lighten $rounded="xl" $border $p={2} />}
+              render={<Frame $lighten $rounded="xl" $border $p={2} />}
               className="grid gap-3 shadow-xs"
             >
               <SkeletonBox $rounded="lg" className="aspect-square w-full">

@@ -12,7 +12,7 @@ export interface LayerProps
  * @example
  * <Layer $layer="brand">
  *   <Text $text>Project details</Text>
- *   <Layer $layer $lighten>
+ *   <Layer $lighten>
  *     <Text $text>Updated today</Text>
  *   </Layer>
  * </Layer>

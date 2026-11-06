@@ -228,7 +228,6 @@ export default function Example() {
         id={foldersId}
         open={foldersOpen}
         $width="xs"
-        $layer
         $darken={1}
         aria-label="Mailboxes"
         landmark="nav"

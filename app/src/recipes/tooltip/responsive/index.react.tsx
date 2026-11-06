@@ -49,7 +49,6 @@ export default function Example() {
   return (
     // Drag the corner to make the bar narrower.
     <Frame
-      $layer
       $lighten
       $border
       $rounded="xl"

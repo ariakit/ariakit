@@ -21,7 +21,6 @@ export default function Example() {
     // Drag the corner to make the panel narrower or wider.
     <Frame
       render={<section aria-labelledby={headingId} />}
-      $layer
       $lighten
       $border
       $rounded="xl"

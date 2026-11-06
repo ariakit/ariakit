@@ -31,7 +31,7 @@ export default function Example() {
   return (
     <ak.Toolbar
       aria-label="Text formatting"
-      render={<ButtonGroup $layer $lighten $border $rounded="xl" $p={1} />}
+      render={<ButtonGroup $lighten $border $rounded="xl" $p={1} />}
     >
       {tools.map((tool) => (
         <Tooltip

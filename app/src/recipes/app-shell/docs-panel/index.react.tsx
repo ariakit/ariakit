@@ -216,7 +216,6 @@ export default function Example() {
 
             <ShellPopout>
               <Frame
-                $layer
                 $rounded="xl"
                 $p={4}
                 $border

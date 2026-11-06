@@ -69,12 +69,7 @@ export default function Thumbnail() {
 
 export function SmallThumbnail() {
   return (
-    <Frame
-      $layer
-      $lighten
-      $p={5.5}
-      className="flex flex-col justify-center gap-3"
-    >
+    <Frame $lighten $p={5.5} className="flex flex-col justify-center gap-3">
       <SkeletonLine
         $weight="bold"
         className="w-2/5 text-[1.1em] leading-none"

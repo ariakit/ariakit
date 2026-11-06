@@ -126,7 +126,7 @@ function Site() {
                   }}
                   content={{
                     guide: false,
-                    body: { $layer: true, $darken: 0.25 },
+                    body: { $darken: 0.25 },
                   }}
                 >
                   <NavList>

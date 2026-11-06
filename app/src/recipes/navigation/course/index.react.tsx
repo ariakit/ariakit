@@ -90,7 +90,6 @@ function Course() {
   const { pathname } = useLocation();
   return (
     <Frame
-      $layer
       $lighten={0.5}
       $rounded="2xl"
       $border

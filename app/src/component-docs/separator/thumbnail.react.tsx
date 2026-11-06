@@ -22,7 +22,6 @@ const rows = [
 export default function Thumbnail() {
   return (
     <Frame
-      $layer
       $lighten
       $rounded="xl"
       $border
@@ -81,7 +80,7 @@ export default function Thumbnail() {
 
 export function SmallThumbnail() {
   return (
-    <Frame $layer $lighten $p={5.5} className="flex flex-col justify-between">
+    <Frame $lighten $p={5.5} className="flex flex-col justify-between">
       {rows.map((row, index) => (
         <Fragment key={row.id}>
           {index > 0 && (

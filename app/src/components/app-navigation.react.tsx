@@ -92,7 +92,7 @@ export function AppNavigation({
               button={{ children: group.label, indicator: "chevron-down-end" }}
               content={{
                 guide: false,
-                body: { $layer: true, $darken: 0.25 },
+                body: { $darken: 0.25 },
               }}
             >
               <NavList>
