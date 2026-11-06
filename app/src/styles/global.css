@@ -57,21 +57,24 @@ astro-static-slot {
 }
 
 /* A preview page inside a preview card. See app/src/lib/preview-embed.ts. The
-   page scrolls only after the person clicks or tabs into it. Until then, the
-   browser passes wheel scrolling to the docs page. */
+   page scrolls vertically only after the person clicks or tabs into it, or
+   scrolls it horizontally. Until then, vertical wheel scrolling goes to the
+   docs page. A horizontal scroll does not move the docs page, so the page
+   keeps it. */
 :root[data-preview-embedded] {
   scrollbar-gutter: stable;
   &:not([data-preview-active]) {
-    overflow: hidden;
+    overflow-y: hidden;
   }
 }
 
-/* On a touch screen, inactive preview frames and inline previews stop their
-   scroll containers, so a touch over them scrolls the docs page instead.
-   Contained overscroll would still keep the touch from the docs page. */
+/* On a touch screen, inactive preview frames and inline previews stop the
+   vertical scrolling of their scroll containers, so a vertical touch over them
+   scrolls the docs page instead. Contained overscroll would still keep the
+   touch from the docs page. */
 [data-preview-scroll-lock] {
-  overflow: hidden !important;
-  overscroll-behavior: auto !important;
+  overflow-y: hidden !important;
+  overscroll-behavior-y: auto !important;
 }
 
 /* App shells round nested corners to the card viewport instead of a browser

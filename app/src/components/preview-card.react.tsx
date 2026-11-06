@@ -407,6 +407,7 @@ function usePreviewFrame(
       }
       // The card effect below follows the activity of the page.
       if (event.data.action === "active") return;
+      if (event.data.action === "activate") return;
       // Each new document in the frame reports its location while it parses, so
       // it gets the theme before it renders.
       postTheme();
@@ -457,6 +458,16 @@ function usePreviewFrame(
     const onMessage = (event: MessageEvent) => {
       if (event.source !== ref.current?.contentWindow) return;
       if (!isPreviewFrameMessage(event.data)) return;
+      // The person scrolled the inactive page horizontally. The card takes
+      // focus from another frame, as a click on the card does.
+      if (event.data.action === "activate") {
+        if (card instanceof HTMLElement && isFocusInOtherFrame(card)) {
+          card.focus({ preventScroll: true });
+          return;
+        }
+        activate();
+        return;
+      }
       if (event.data.action !== "active") return;
       frameActive = event.data.active;
       // Focus can move from the frame to another preview frame without an event
@@ -1194,6 +1205,49 @@ function isScrollContainer(element: Element) {
 }
 
 /**
+ * Returns a function that tells the direction of the wheel gesture that an
+ * event belongs to. A gesture is a run of events close in time, such as a swipe
+ * on a trackpad with its momentum. It scrolls horizontally once it moved more
+ * sideways than up or down, so a vertical swipe that drifts sideways still
+ * scrolls the page. Trackpads start a gesture with deltas of a pixel or two, so
+ * a gesture that leans sideways stays undecided until it moves further.
+ */
+function createWheelGesture() {
+  let movedX = 0;
+  let movedY = 0;
+  let time = Number.NEGATIVE_INFINITY;
+  return (event: WheelEvent) => {
+    if (event.timeStamp - time > 200) {
+      movedX = 0;
+      movedY = 0;
+    }
+    time = event.timeStamp;
+    // Browsers on Windows and Linux can report a wheel with Shift, which
+    // scrolls horizontally, as a vertical delta.
+    const shifted = event.shiftKey && !event.deltaX;
+    // Lines and pages are whole steps of a mouse wheel.
+    const scale =
+      event.deltaMode === WheelEvent.DOM_DELTA_PIXEL ? 1 : WHEEL_LINE_HEIGHT;
+    movedX += Math.abs(shifted ? event.deltaY : event.deltaX) * scale;
+    movedY += Math.abs(shifted ? 0 : event.deltaY) * scale;
+    if (movedX <= movedY) return "vertical";
+    if (movedX < 10) return "undecided";
+    return "horizontal";
+  };
+}
+
+/**
+ * Returns whether focus is in a frame outside the card, such as another preview
+ * frame. Going back to that frame moves no focus in this document, so a card
+ * that a horizontal scroll activated without focus would stay active.
+ */
+function isFocusInOtherFrame(card: Element) {
+  const focused = card.ownerDocument.activeElement;
+  if (focused?.localName !== "iframe") return false;
+  return !card.contains(focused);
+}
+
+/**
  * Returns whether the document shows classic scrollbars, which take room.
  * Stopping a scroll container would hide its scrollbar and reflow its content,
  * as on a laptop with a touch screen. Phones and tablets show overlay
@@ -1217,12 +1271,12 @@ function hasScrollOverflow(element: Element) {
 }
 
 /**
- * Lets an inline preview scroll only after a click, a tap, or focus moves into
- * its card, as a preview frame does. Until then, wheel events and touches over
- * its scroll containers scroll the page, so scrolling the page over the card
- * does not get stuck in it. Reports whether the preview scrolls to
- * `onActiveChange`. Returns a function that activates the preview, such as when
- * the person resizes it with the handle.
+ * Lets an inline preview scroll only after a click, a tap, focus moves into its
+ * card, or a horizontal scroll, as a preview frame does. Until then, vertical
+ * wheel events and touches over its scroll containers scroll the page, so
+ * scrolling the page over the card does not get stuck in it. Reports whether
+ * the preview scrolls to `onActiveChange`. Returns a function that activates
+ * the preview, such as when the person resizes it with the handle.
  */
 function useInactiveScroll(
   ref: RefObject<HTMLElement | null>,
@@ -1243,6 +1297,9 @@ function useInactiveScroll(
     // can also fall back to the body, such as when a focused button becomes
     // disabled, which keeps a preview frame active too.
     activeRef.current = card.contains(doc.activeElement);
+    // A horizontal scroll activates the preview without moving focus, so focus
+    // can stay on the docs page until it moves again.
+    let scrollFocus: Element | null = null;
     const isInCard = (target: EventTarget | null) => {
       return target instanceof Node && card.contains(target);
     };
@@ -1253,6 +1310,7 @@ function useInactiveScroll(
       // event in this document.
       if (!focused) return true;
       if (focused === doc.body) return true;
+      if (focused === scrollFocus) return true;
       return card.contains(focused);
     };
 
@@ -1321,6 +1379,19 @@ function useInactiveScroll(
     // Runs in the capture phase, before the handle activates the preview.
     const updateActive = (event: Event) => {
       activeRef.current = isInCard(event.target);
+      scrollFocus = null;
+      scheduleUpdate();
+    };
+    // A horizontal scroll does not move the page, so an inactive preview keeps
+    // it and becomes active, which lets it scroll vertically too. The card
+    // takes focus from another frame, as a click on the card does.
+    const activateFromScroll = () => {
+      if (card instanceof HTMLElement && isFocusInOtherFrame(card)) {
+        card.focus({ preventScroll: true });
+        return;
+      }
+      activeRef.current = true;
+      scrollFocus = doc.activeElement;
       scheduleUpdate();
     };
     // A touch or pen in the card can start a scroll of the page, so only the
@@ -1358,13 +1429,79 @@ function useInactiveScroll(
       }
       return false;
     };
+    // A container with contained overscroll, such as a popover, keeps a
+    // horizontal scroll from its ancestors.
+    const scrollsHorizontally = (target: EventTarget | null) => {
+      let element = target instanceof Element ? target : null;
+      while (element) {
+        const style = getComputedStyle(element);
+        if (/auto|scroll/.test(style.overflowX)) {
+          if (element.scrollWidth > element.clientWidth) return true;
+          if (style.overscrollBehaviorX !== "auto") return false;
+        }
+        if (element === viewport) return false;
+        element = element.parentElement;
+      }
+      return false;
+    };
+    const getWheelDirection = createWheelGesture();
     const onWheel = (event: WheelEvent) => {
       if (isActive()) return;
       // Pinch zoom on trackpads sends wheel events with ctrlKey.
       if (event.ctrlKey) return;
+      const direction = getWheelDirection(event);
+      if (direction !== "vertical" && scrollsHorizontally(event.target)) {
+        if (direction === "horizontal") {
+          activateFromScroll();
+          return;
+        }
+        // The first deltas of a horizontal gesture would scroll the page a few
+        // pixels, so they scroll nothing until the direction is clear.
+        // Preventing them, instead of letting them through, keeps the later
+        // events of the gesture cancelable.
+        event.preventDefault();
+        return;
+      }
       if (!isInScrollContainer(event.target)) return;
       event.preventDefault();
       scrollPage(viewport, event);
+    };
+    // A touch that scrolls the example or one of its containers, and moves more
+    // sideways than up or down, activates the preview. Changing the overflow of
+    // the scroller during the touch could cancel it in iOS Safari, as stopping
+    // it does, so the preview becomes active once the touch ends.
+    let touchStart: { target: Node; x: number; y: number } | null = null;
+    let touchScrolled = false;
+    const onTouchStart = (event: TouchEvent) => {
+      touchScrolled = false;
+      touchStart = null;
+      // A pinch zoom with more fingers does not scroll a container.
+      if (event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      if (!touch) return;
+      if (!(event.target instanceof Node)) return;
+      touchStart = { target: event.target, x: touch.clientX, y: touch.clientY };
+    };
+    const onScroll = (event: Event) => {
+      if (!touchStart) return;
+      if (!(event.target instanceof Element)) return;
+      if (!event.target.contains(touchStart.target)) return;
+      touchScrolled = true;
+    };
+    const onTouchEnd = (event: TouchEvent) => {
+      if (event.touches.length) return;
+      const start = touchStart;
+      const scrolled = touchScrolled;
+      touchStart = null;
+      touchScrolled = false;
+      if (!start || !scrolled) return;
+      if (isActive()) return;
+      const touch = event.changedTouches[0];
+      if (!touch) return;
+      const movedX = Math.abs(touch.clientX - start.x);
+      const movedY = Math.abs(touch.clientY - start.y);
+      if (movedX <= movedY) return;
+      activateFromScroll();
     };
     observeScrollLock();
     // Focus can already be in the card, such as when a person tabbed into it
@@ -1380,6 +1517,11 @@ function useInactiveScroll(
     window.addEventListener("resize", scheduleUpdate);
     card.addEventListener("click", onClick, true);
     viewport.addEventListener("wheel", onWheel, { passive: false });
+    viewport.addEventListener("touchstart", onTouchStart, { passive: true });
+    // Scroll events on elements don't bubble, so the listener captures them.
+    viewport.addEventListener("scroll", onScroll, true);
+    viewport.addEventListener("touchend", onTouchEnd);
+    viewport.addEventListener("touchcancel", onTouchEnd);
     return () => {
       cancelAnimationFrame(updateFrame);
       scrollLockObserver.disconnect();
@@ -1395,6 +1537,10 @@ function useInactiveScroll(
       window.removeEventListener("resize", scheduleUpdate);
       card.removeEventListener("click", onClick, true);
       viewport.removeEventListener("wheel", onWheel);
+      viewport.removeEventListener("touchstart", onTouchStart);
+      viewport.removeEventListener("scroll", onScroll, true);
+      viewport.removeEventListener("touchend", onTouchEnd);
+      viewport.removeEventListener("touchcancel", onTouchEnd);
     };
   }, [ref, onActiveChange]);
 

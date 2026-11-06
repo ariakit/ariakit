@@ -1,8 +1,15 @@
 import { query } from "@ariakit/test/playwright";
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
-import { gotoAndSettle } from "#app/test-utils/preview.ts";
+import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
+import {
+  getViewportEdge,
+  waitForArticle,
+  waitForFrameHydration,
+  waitForShownFrame,
+  widenExample,
+} from "./preview-cards-helpers.ts";
 
 // Frames without the Navigation API, such as WebKit frames, keep their own
 // entries. Removing the API in Chrome frames runs the same code while Chrome
@@ -104,4 +111,128 @@ test("browser preview cards keep the reload button in their navigation", async (
   const card = query(q.region("Tabs with the Next.js App Router"));
   await expect(card.button("Reload")).toBeVisible();
   await expect(card.button("Reload preview")).toHaveCount(0);
+});
+
+interface Point {
+  x: number;
+  y: number;
+}
+
+// Playwright sends each wheel event when the previous one is done, so their
+// timing varies. Chrome takes the time of each event from the DevTools
+// Protocol, which sets how the preview groups events into gestures.
+async function openWheel(page: Page, point: Point) {
+  const session = await page.context().newCDPSession(page);
+  return {
+    send: (deltaX: number, deltaY: number, timestamp: number) =>
+      session.send("Input.dispatchMouseEvent", {
+        type: "mouseWheel",
+        ...point,
+        deltaX,
+        deltaY,
+        timestamp,
+      }),
+    [Symbol.asyncDispose]: () => session.detach(),
+  };
+}
+
+// The first event of a gesture scrolls the docs page, so the next events land
+// further down in the preview, which must still be under the point.
+function isUnderPoint(target: Locator, { x, y }: Point) {
+  return target.evaluate(
+    (element, point) => {
+      const hit = element.ownerDocument.elementFromPoint(point.x, point.y);
+      return !!hit && element.contains(hit);
+    },
+    { x, y },
+  );
+}
+
+test("inline previews judge the direction of a whole wheel gesture", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await gotoAndSettle(page, "/react/recipes/skeleton/");
+  const article = q.region("Paragraph Lines", { exact: true });
+  await waitForArticle(article);
+  const handle = query(article).separator("Resize preview", {
+    includeHidden: true,
+  });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  await widenExample(viewport);
+  await expect
+    .poll(() => viewport.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+  await viewport.evaluate((element) => element.scrollIntoView());
+  const box = await viewport.boundingBox();
+  if (!box) throw new Error("The viewport has no bounding box.");
+  const point = { x: box.x + 24, y: box.y + 120 };
+  const getPageScroll = () => page.evaluate(() => window.scrollY);
+  const getScrollLeft = () => viewport.evaluate((el) => el.scrollLeft);
+  const inactiveEdge = await getViewportEdge(viewport);
+  await using wheel = await openWheel(page, point);
+  const start = Date.now() / 1000;
+
+  // A sideways event 16ms into a vertical gesture belongs to it, so the gesture
+  // still scrolls the docs page.
+  const pageScroll = await getPageScroll();
+  await wheel.send(0, 100, start);
+  await expect.poll(getPageScroll).toBeGreaterThan(pageScroll);
+  expect(await isUnderPoint(viewport, point)).toBe(true);
+  await wheel.send(20, 0, start + 0.016);
+  // The card would show an activation on the next frame, which no state reports
+  // before it.
+  await flushFrames(page);
+  expect(await getScrollLeft()).toBe(0);
+  expect(await getViewportEdge(viewport)).toBe(inactiveEdge);
+
+  // The same event after the gesture ended starts a horizontal gesture.
+  await wheel.send(20, 0, start + 0.4);
+  await expect.poll(getScrollLeft).toBeGreaterThan(0);
+  await expect.poll(() => getViewportEdge(viewport)).not.toBe(inactiveEdge);
+});
+
+test("preview card frames judge the direction of a whole wheel gesture", async ({
+  page,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  const frame = await waitForFrameHydration(iframe);
+  // The card activates the frame for the page, so it waits for the card to
+  // hydrate too, which can come after the frame.
+  await waitForShownFrame(page, "Combobox Group");
+  const html = frame.locator("html");
+  await widenExample(frame.locator("body"));
+  await expect
+    .poll(() => html.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+  await iframe.scrollIntoViewIfNeeded();
+  const box = await iframe.boundingBox();
+  if (!box) throw new Error("The frame has no bounding box.");
+  // The popup contains its overscroll, so the wheel starts above it.
+  const point = { x: box.x + box.width / 2, y: box.y + 16 };
+  const getPageScroll = () => page.evaluate(() => window.scrollY);
+  const getScrollLeft = () => html.evaluate((el) => el.scrollLeft);
+  await using wheel = await openWheel(page, point);
+  const start = Date.now() / 1000;
+
+  // A sideways event 16ms into a vertical gesture belongs to it, so the gesture
+  // still scrolls the docs page.
+  const pageScroll = await getPageScroll();
+  await wheel.send(0, 100, start);
+  await expect.poll(getPageScroll).toBeGreaterThan(pageScroll);
+  expect(await isUnderPoint(iframe, point)).toBe(true);
+  await wheel.send(20, 0, start + 0.016);
+  // The card would activate the frame with messages between the documents,
+  // which no state reports until the frame becomes active.
+  await flushFrames(page);
+  expect(await getScrollLeft()).toBe(0);
+  await expect(html).not.toHaveAttribute("data-preview-active", "");
+
+  // The same event after the gesture ended starts a horizontal gesture.
+  await wheel.send(20, 0, start + 0.4);
+  await expect.poll(getScrollLeft).toBeGreaterThan(0);
+  await expect(html).toHaveAttribute("data-preview-active", "");
 });

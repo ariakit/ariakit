@@ -75,6 +75,18 @@ export interface PreviewScrollMessage {
 }
 
 /**
+ * Asks the card to activate a preview frame after the person scrolled the
+ * inactive page horizontally, so the page scrolls vertically too. The card
+ * activates the frame as a click on the card does. Frames deployed before this
+ * message, such as a Next.js preview from an older deploy, do not send it, and
+ * cards deployed before it ignore it.
+ */
+export interface PreviewActivateMessage {
+  type: typeof PREVIEW_MESSAGE_TYPE;
+  action: "activate";
+}
+
+/**
  * Reports to the card whether a preview frame scrolls, so the card can show it.
  * Frames deployed before this message, such as a Next.js preview from an older
  * deploy, do not send it.
@@ -111,6 +123,7 @@ export interface PreviewSizeMessage {
 export type PreviewFrameMessage =
   | PreviewLocationMessage
   | PreviewScrollMessage
+  | PreviewActivateMessage
   | PreviewActiveMessage
   | PreviewSizeMessage;
 
@@ -498,11 +511,11 @@ export function setupPreviewEmbed() {
     });
   };
 
-  // The stylesheet stops the root scroller of an inactive page, so the browser
-  // passes its wheel scrolling to the docs page. Inner scroll containers still
-  // scroll, so their wheel events go to the card instead. A container with
-  // contained overscroll, such as a popover, also keeps the wheel from the docs
-  // page when its content fits.
+  // The stylesheet stops the vertical scrolling of the root scroller of an
+  // inactive page, so the browser passes its vertical wheel scrolling to the
+  // docs page. Inner scroll containers still scroll, so their wheel events go
+  // to the card instead. A container with contained overscroll, such as a
+  // popover, also keeps the wheel from the docs page when its content fits.
   const isScrollContainer = (element: Element) => {
     const style = getComputedStyle(element);
     const scrollsY =
@@ -521,7 +534,59 @@ export function setupPreviewEmbed() {
       if (isScrollContainer(element)) return true;
       element = element.parentElement;
     }
+    // An inactive root still scrolls horizontally, and Safari then keeps
+    // vertical wheel scrolling in it. Other browsers would pass it on
+    // themselves, but the card scrolls the docs page for all of them.
+    const { overflowX } = getComputedStyle(root);
+    if (!/auto|scroll/.test(overflowX)) return false;
+    return root.scrollWidth > root.clientWidth;
+  };
+  // A horizontal scroll does not move the docs page, so an inactive page lets
+  // it through and asks the card to activate the page, as a click on the card
+  // does. The page then scrolls vertically too.
+  const requestActivation = () => {
+    window.parent.postMessage({ type, action: "activate" }, "*");
+  };
+  // The root takes part too, since an inactive root only stops vertically. A
+  // container with contained overscroll, such as a popover, keeps a horizontal
+  // scroll from its ancestors.
+  const scrollsHorizontally = (target: EventTarget | null) => {
+    let element = target instanceof Element ? target : null;
+    while (element) {
+      const style = getComputedStyle(element);
+      if (/auto|scroll/.test(style.overflowX)) {
+        if (element.scrollWidth > element.clientWidth) return true;
+        if (style.overscrollBehaviorX !== "auto") return false;
+      }
+      element = element.parentElement;
+    }
     return false;
+  };
+  // A wheel gesture is a run of events close in time, such as a swipe on a
+  // trackpad with its momentum. It scrolls horizontally once it moved more
+  // sideways than up or down, so a vertical swipe that drifts sideways still
+  // scrolls the docs page. Trackpads start a gesture with deltas of a pixel or
+  // two, so a gesture that leans sideways stays undecided until it moves
+  // further.
+  let wheelX = 0;
+  let wheelY = 0;
+  let wheelTime = Number.NEGATIVE_INFINITY;
+  const getWheelDirection = (event: WheelEvent) => {
+    if (event.timeStamp - wheelTime > 200) {
+      wheelX = 0;
+      wheelY = 0;
+    }
+    wheelTime = event.timeStamp;
+    // Browsers on Windows and Linux can report a wheel with Shift, which
+    // scrolls horizontally, as a vertical delta.
+    const shifted = event.shiftKey && !event.deltaX;
+    // Lines and pages are whole steps of a mouse wheel.
+    const scale = event.deltaMode === WheelEvent.DOM_DELTA_PIXEL ? 1 : 40;
+    wheelX += Math.abs(shifted ? event.deltaY : event.deltaX) * scale;
+    wheelY += Math.abs(shifted ? 0 : event.deltaY) * scale;
+    if (wheelX <= wheelY) return "vertical";
+    if (wheelX < 10) return "undecided";
+    return "horizontal";
   };
   window.addEventListener(
     "wheel",
@@ -529,6 +594,19 @@ export function setupPreviewEmbed() {
       if (root.hasAttribute("data-preview-active")) return;
       // Pinch zoom on trackpads sends wheel events with ctrlKey.
       if (event.ctrlKey) return;
+      const direction = getWheelDirection(event);
+      if (direction !== "vertical" && scrollsHorizontally(event.target)) {
+        if (direction === "horizontal") {
+          requestActivation();
+          return;
+        }
+        // The first deltas of a horizontal gesture would scroll the docs page a
+        // few pixels, so they scroll nothing until the direction is clear.
+        // Preventing them, instead of letting them through, keeps the later
+        // events of the gesture cancelable.
+        event.preventDefault();
+        return;
+      }
       if (!isInScrollContainer(event.target)) return;
       event.preventDefault();
       window.parent.postMessage(
@@ -620,6 +698,57 @@ export function setupPreviewEmbed() {
     }
     updateScrollLock();
   };
+  // A touch that scrolls the page or one of its containers, and moves more
+  // sideways than up or down, activates the page. Changing the overflow of the
+  // scroller during the touch could cancel it in iOS Safari, as stopping it
+  // does, so the page asks for activation once the touch ends.
+  let touchStart: { target: Node; x: number; y: number } | null = null;
+  let touchScrolled = false;
+  window.addEventListener(
+    "touchstart",
+    (event) => {
+      if (!event.isTrusted) return;
+      touchScrolled = false;
+      touchStart = null;
+      // A pinch zoom with more fingers does not scroll a container.
+      if (event.touches.length !== 1) return;
+      const touch = event.touches[0];
+      if (!touch) return;
+      if (!(event.target instanceof Node)) return;
+      touchStart = { target: event.target, x: touch.clientX, y: touch.clientY };
+    },
+    { capture: true, passive: true },
+  );
+  // Scroll events on elements don't bubble, so the listener captures them.
+  window.addEventListener(
+    "scroll",
+    (event) => {
+      if (!touchStart) return;
+      const scroller = event.target === document ? root : event.target;
+      if (!(scroller instanceof Element)) return;
+      if (!scroller.contains(touchStart.target)) return;
+      touchScrolled = true;
+    },
+    { capture: true, passive: true },
+  );
+  const onTouchEnd = (event: TouchEvent) => {
+    if (event.touches.length) return;
+    const start = touchStart;
+    const scrolled = touchScrolled;
+    touchStart = null;
+    touchScrolled = false;
+    if (!start || !scrolled) return;
+    if (root.hasAttribute("data-preview-active")) return;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    const movedX = Math.abs(touch.clientX - start.x);
+    const movedY = Math.abs(touch.clientY - start.y);
+    if (movedX <= movedY) return;
+    requestActivation();
+  };
+  window.addEventListener("touchend", onTouchEnd, true);
+  window.addEventListener("touchcancel", onTouchEnd, true);
+
   // Hydration would report the attribute on server-rendered containers as a
   // mismatch, so the lock waits for the preview island to hydrate. Next.js
   // pages don't mark the root, so React can still report it there, but only
@@ -1110,6 +1239,7 @@ export function isPreviewFrameMessage(
       deltaMode: "number",
     });
   }
+  if (data.action === "activate") return true;
   if (data.action === "active") {
     return hasTypes(data, { active: "boolean" });
   }
