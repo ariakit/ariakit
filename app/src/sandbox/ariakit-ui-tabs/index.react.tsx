@@ -317,7 +317,7 @@ export default function TabsExamples() {
 
       <Example
         title="With padding"
-        description="Padding on the root moves the tabs away from its edge, and the selected first tab keeps its start curve. The strip and the panel still reach the root's edge. Folder tabs take that padding from their own, so the strip grows only a little."
+        description="Padding on the root moves the tabs away from its edge. The selected first tab keeps its full start curve, and the root edge cuts the part that does not fit, so the panel corner stays square. The strip and the panel still reach the root's edge. Folder tabs take that padding from their own, so the strip grows only a little."
         stretch
         code={`
           <Tabs $p={1}>
@@ -699,11 +699,11 @@ export default function TabsExamples() {
       </Example>
 
       <Example
-        title="Cut folder curve"
-        description='$folderCurve="cut" keeps the full curve of the selected first tab, and the root edge cuts it. The full curve does not fit, so the panel corner stays square.'
+        title="Adaptive folder curve"
+        description='$folderCurve="adapt" shrinks the curve of the selected first tab and the panel corner together, so both fit the padding instead of the root edge cutting the curve.'
         stretch
         code={`
-          <Tabs $p={1} $folderCurve="cut">
+          <Tabs $p={1} $folderCurve="adapt">
             <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -723,32 +723,34 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs $p={1} $folderCurve="cut" defaultSelectedId="cut-preview">
-          <TabList aria-label="Cut folder curve">
-            <Tab id="cut-preview">
+        <Tabs $p={1} $folderCurve="adapt" defaultSelectedId="adapt-preview">
+          <TabList aria-label="Adaptive folder curve">
+            <Tab id="adapt-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
-            <Tab id="cut-code">
+            <Tab id="adapt-code">
               <TabLabel>Code</TabLabel>
             </Tab>
-            <Tab id="cut-usage">
+            <Tab id="adapt-usage">
               <TabLabel>Usage</TabLabel>
             </Tab>
           </TabList>
           <TabPanels>
             <TabPanel single>
-              <p className="text-sm">The root edge cuts the tab curve.</p>
+              <p className="text-sm">
+                The tab curve and the panel corner share the padding.
+              </p>
             </TabPanel>
           </TabPanels>
         </Tabs>
       </Example>
 
       <Example
-        title="Cut folder curve beside a rounded panel corner"
-        description="When the indent has room for the full curve, nothing is cut, and the panel corner rounds with the space left after the curve."
+        title="Full folder curve beside a rounded panel corner"
+        description="When the indent has room for the full curve of the selected first tab, the root edge cuts nothing, and the panel corner rounds with the space left after the curve."
         stretch
         code={`
-          <Tabs $p={1} $indent={4} $folderCurve="cut">
+          <Tabs $p={1} $indent={4}>
             <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -768,13 +770,8 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs
-          $p={1}
-          $indent={4}
-          $folderCurve="cut"
-          defaultSelectedId="cut-corner-preview"
-        >
-          <TabList aria-label="Cut folder curve beside a rounded panel corner">
+        <Tabs $p={1} $indent={4} defaultSelectedId="cut-corner-preview">
+          <TabList aria-label="Full folder curve beside a rounded panel corner">
             <Tab id="cut-corner-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
@@ -796,11 +793,11 @@ export default function TabsExamples() {
       </Example>
 
       <Example
-        title="Full-width strip with a cut curve on the last tab"
-        description="In a stretched strip, the selected last tab cuts its end curve in the same way, and the panel's end corner stays square."
+        title="Full-width strip with an adaptive curve on the last tab"
+        description='With $folderCurve="adapt", the end curve of the selected last tab and the end corner of the panel shrink together.'
         stretch
         code={`
-          <Tabs $p={1} $folderCurve="cut">
+          <Tabs $p={1} $folderCurve="adapt">
             <TabList $layout="stretch">
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -820,24 +817,24 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs $p={1} $folderCurve="cut" defaultSelectedId="cut-last-usage">
+        <Tabs $p={1} $folderCurve="adapt" defaultSelectedId="adapt-last-usage">
           <TabList
             $layout="stretch"
-            aria-label="Full-width strip with a cut curve on the last tab"
+            aria-label="Full-width strip with an adaptive curve on the last tab"
           >
-            <Tab id="cut-last-preview">
+            <Tab id="adapt-last-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
-            <Tab id="cut-last-code">
+            <Tab id="adapt-last-code">
               <TabLabel>Code</TabLabel>
             </Tab>
-            <Tab id="cut-last-usage">
+            <Tab id="adapt-last-usage">
               <TabLabel>Usage</TabLabel>
             </Tab>
           </TabList>
           <TabPanels>
             <TabPanel single>
-              <p className="text-sm">The root edge cuts the end curve.</p>
+              <p className="text-sm">The end corner follows the last tab.</p>
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -845,7 +842,7 @@ export default function TabsExamples() {
 
       <Example
         title="Cut folder curve without outer edge"
-        description="Without the outer edge, the cut still shows the edge, so it continues from the curve into the edge of the panel."
+        description='Without the outer edge, the curve adapts by default. With $folderCurve="cut", the cut still shows the edge, so it continues from the curve into the edge of the panel.'
         stretch
         code={`
           <Tabs $p={1} $folderCurve="cut" $outerEdge={false} $darken={false}>
@@ -892,61 +889,6 @@ export default function TabsExamples() {
             </TabPanel>
           </TabPanels>
         </Tabs>
-      </Example>
-
-      <Example
-        title="Cut folder curve right to left"
-        description="The cut curve mirrors with the selected first tab on the right."
-        stretch
-        code={`
-          <div dir="rtl">
-            <Tabs rtl $p={1} $folderCurve="cut">
-              <TabList>
-                <Tab>
-                  <TabLabel>المسودات</TabLabel>
-                </Tab>
-                <Tab>
-                  <TabLabel>قيد المراجعة</TabLabel>
-                </Tab>
-                <Tab>
-                  <TabLabel>المنشورة</TabLabel>
-                </Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel single>
-                  …
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </div>
-        `}
-      >
-        {/* Drafts, In review and Published, with an Arabic panel line. */}
-        <div dir="rtl" lang="ar">
-          <Tabs
-            rtl
-            $p={1}
-            $folderCurve="cut"
-            defaultSelectedId="cut-rtl-drafts"
-          >
-            <TabList aria-label="مراحل النشر مع منحنى مقصوص">
-              <Tab id="cut-rtl-drafts">
-                <TabLabel>المسودات</TabLabel>
-              </Tab>
-              <Tab id="cut-rtl-review">
-                <TabLabel>قيد المراجعة</TabLabel>
-              </Tab>
-              <Tab id="cut-rtl-published">
-                <TabLabel>المنشورة</TabLabel>
-              </Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel single>
-                <p className="text-sm">ثلاث مسودات قيد التحرير الآن.</p>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </div>
       </Example>
 
       <Example
@@ -1043,7 +985,7 @@ export default function TabsExamples() {
 
       <Example
         title="Full-width strip with the last tab selected"
-        description="The last tab mirrors the first: its end curve and the panel's end corner shrink together."
+        description="The last tab mirrors the first: the root edge cuts its full end curve, and the panel's end corner stays square."
         stretch
         code={`
           <Tabs $p={1}>
@@ -2701,7 +2643,7 @@ export default function TabsExamples() {
 
       <Example
         title="Right to left"
-        description="The curves and the chevrons mirror. The selected first tab meets the panel's start corner on the right. The rtl prop makes the arrow keys follow the same direction."
+        description="The curves and the chevrons mirror. The selected first tab meets the panel's start corner on the right, where the root edge cuts its curve. The rtl prop makes the arrow keys follow the same direction."
         stretch
         code={`
           <div dir="rtl">

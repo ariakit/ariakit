@@ -98,11 +98,12 @@ export const tabs = cv({
     },
     /**
      * Sets how the curve of a selected outer folder fits beside the panel
-     * corner. `adapt` shrinks the curve and the corner together so that both
-     * fit the indent. `cut` keeps the full curve and cuts it at the root edge,
-     * as if the root clipped its overflow, and the cut shows the edge even with
-     * `$outerEdge={false}`. The panel corner then stays square until the full
-     * curve fits, and rounds with the space left after it. Defaults to `adapt`.
+     * corner. `cut` keeps the full curve and cuts it at the root edge, as if
+     * the root clipped its overflow. The panel corner then stays square until
+     * the full curve fits, and rounds with the space left after it. `adapt`
+     * shrinks the curve and the corner together so that both fit the indent.
+     * Defaults to `cut`, or to `adapt` with `$outerEdge={false}`. An explicit
+     * `cut` there still draws the edge along the cut.
      */
     $folderCurve: {
       adapt: "",
@@ -163,7 +164,14 @@ export const tabs = cv({
       return defaultValue;
     },
     $outerEdge: true,
-    $folderCurve: "adapt",
+    // The root edge shows the line that cuts a curve. Without it, nothing
+    // explains the cut, so the curve shrinks to fit instead. An extender's
+    // default stays.
+    $folderCurve(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$outerEdge === false) return "adapt";
+      return "cut";
+    },
     $panelRoundedTop: true,
   },
   refine({ variants, setVariants, addClass }) {
@@ -190,10 +198,12 @@ const tabCurves = cx(
 // A cut curve keeps the full radius and drops the part past the outer side of
 // the root edge, where the curve paints the edge across the cut. A selected
 // outer folder starts twice the meet from that side, and its border is as wide
-// as the root edge, so the curve passes the side by the radius less both.
+// as the root edge, so the curve passes the side by the radius less both. A
+// folder on that side, with no meet, has no room past its own border, so it has
+// no curve, like an adapted one.
 const tabCutCurves = cx(
-  "[.tabs-folder-cut>*>&]:ui-selected:before:[--folder-radius:var(--tabs-radius)]",
-  "[.tabs-folder-cut>*>&]:ui-selected:after:[--folder-radius:var(--tabs-radius)]",
+  "[.tabs-folder-cut>*>&]:ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius))*1000000)]",
+  "[.tabs-folder-cut>*>&]:ui-selected:after:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet-end,var(--tabs-radius))*1000000)]",
   "[.tabs-folder-cut>*>&]:ui-selected:before:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-bordering))]",
   "[.tabs-folder-cut>*>&]:ui-selected:after:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-bordering))]",
 );
