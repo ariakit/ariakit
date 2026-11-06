@@ -563,7 +563,7 @@ export const controlSeparator = cv({
  */
 export type BarOffset = "halfway" | "edge" | (string & {}) | number;
 
-const NAMED_BAR_OFFSETS = {
+const barOffsetClasses = {
   halfway: "[--bar-offset:calc((var(--bar-gap)-var(--bar))/2)]",
   edge: "[--bar-offset:calc(var(--bar-gap)-var(--bar))]",
 };
@@ -571,14 +571,14 @@ const NAMED_BAR_OFFSETS = {
 /** Checks whether a bar offset is `halfway` or `edge`. */
 export function isNamedBarOffset(
   value: unknown,
-): value is keyof typeof NAMED_BAR_OFFSETS {
+): value is keyof typeof barOffsetClasses {
   if (typeof value !== "string") return false;
-  return Object.hasOwn(NAMED_BAR_OFFSETS, value);
+  return Object.hasOwn(barOffsetClasses, value);
 }
 
 /** Resolves a named bar offset into its `--bar-offset` class. */
-export function getNamedBarOffsetClass(value: keyof typeof NAMED_BAR_OFFSETS) {
-  return NAMED_BAR_OFFSETS[value];
+export function getNamedBarOffsetClass(value: keyof typeof barOffsetClasses) {
+  return barOffsetClasses[value];
 }
 
 /**

@@ -10,9 +10,9 @@ import {
 } from "./button.ts";
 import { frame } from "./frame.ts";
 import {
-  SEGMENT_GROUP_CLASS,
-  SEGMENT_KIND_CLASSES,
   isSegmentedKind,
+  segmentGroupClass,
+  segmentKindClasses,
 } from "./segment.ts";
 import { hasSelectedSurface, selectedHoverClass } from "./selected.ts";
 
@@ -335,9 +335,9 @@ export const tab = cv({
       value?: "flat" | "bevel" | "folder" | "segmented" | "segmented-flat",
     ) {
       if (value == null) return;
-      if (value === "segmented") return SEGMENT_KIND_CLASSES.segmented;
+      if (value === "segmented") return segmentKindClasses.segmented;
       if (value === "segmented-flat") {
-        return SEGMENT_KIND_CLASSES["segmented-flat"];
+        return segmentKindClasses["segmented-flat"];
       }
       // Tab kinds supply their own focus indicators. The button ring would
       // cross the folder seam and be clipped by the strip.
@@ -503,7 +503,7 @@ export const tabList = cv({
       if (value == null) return;
       if (value === "segmented") {
         // Without a Tabs root, the list contains the z-index of its tabs.
-        return ["flex isolate", SEGMENT_GROUP_CLASS];
+        return ["flex isolate", segmentGroupClass];
       }
       return tabStrip;
     },

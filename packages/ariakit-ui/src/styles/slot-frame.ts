@@ -74,7 +74,7 @@ export const slotFrame = cv({
 // requested size.
 const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
 
-const SLOT_SIZE_CLASSES = {
+const slotSizeClasses = {
   unset: "",
   xs: "[--size:1ex]",
   sm: "[--size:1cap]",
@@ -85,12 +85,12 @@ const SLOT_SIZE_CLASSES = {
   full: "[--size:calc(1lh+var(--py)*2/var(--row-span))]",
 };
 
-export type SlotSize = keyof typeof SLOT_SIZE_CLASSES;
+export type SlotSize = keyof typeof slotSizeClasses;
 
 /** Checks whether a value is a named slot size. */
 export function isSlotSize(value: unknown): value is SlotSize {
   if (typeof value !== "string") return false;
-  return Object.hasOwn(SLOT_SIZE_CLASSES, value);
+  return Object.hasOwn(slotSizeClasses, value);
 }
 
 /**
@@ -99,7 +99,7 @@ export function isSlotSize(value: unknown): value is SlotSize {
  */
 export function getSlotSizeClass(value: unknown) {
   if (!isSlotSize(value)) return;
-  return SLOT_SIZE_CLASSES[value];
+  return slotSizeClasses[value];
 }
 
 /** Whether a fill or a border draws a box around the content. */
@@ -147,7 +147,7 @@ export const slotFrameSlot = cv({
   ],
   variants: {
     /** Sets the slot size. */
-    $size: SLOT_SIZE_CLASSES,
+    $size: slotSizeClasses,
     /**
      * Sets horizontal spacing around the slot. Named values adjust sibling
      * elements, so wrap adjacent text in a label. `closeGap` reduces the gap;
