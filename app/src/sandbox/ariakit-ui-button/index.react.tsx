@@ -393,14 +393,14 @@ export default function ButtonExamples() {
 
       <Example
         title="Relative size"
-        description="In larger text, a named size keeps the size of its Tailwind text class, and a negative number stays one step smaller than the text around it."
+        description="In larger text, a named size keeps the size of its Tailwind text class, and a number multiplies the size of the text around it."
         code={`
           <div className="text-lg">
             Ready to publish?
             <Button $kind="bevel" $size="sm">
               <ButtonLabel>Fixed</ButtonLabel>
             </Button>
-            <Button $kind="bevel" $size={-1}>
+            <Button $kind="bevel" $size={0.875}>
               <ButtonLabel>Relative</ButtonLabel>
             </Button>
           </div>
@@ -411,7 +411,7 @@ export default function ButtonExamples() {
           <Button $kind="bevel" $size="sm">
             <ButtonLabel>Fixed</ButtonLabel>
           </Button>
-          <Button $kind="bevel" $size={-1}>
+          <Button $kind="bevel" $size={0.875}>
             <ButtonLabel>Relative</ButtonLabel>
           </Button>
         </div>
@@ -2649,6 +2649,46 @@ export default function ButtonExamples() {
         `}
       >
         <Button className="cursor-default">Keep the arrow</Button>
+      </Example>
+
+      {/*
+        This box stays last. It's taller than the other boxes in its row and has
+        a fractional height, so earlier in the grid it would move the boxes in
+        later rows off whole pixels and change their page captures.
+       */}
+      <Example
+        title="Relative size with a description"
+        description="A number keeps the line-height ratio of the text around the button, and so does the description inside it."
+        code={`
+          <div className="text-lg">
+            <Button $lightnessOffset $rounded="xl" $p={3} $size={0.875}>
+              <ButtonContent>
+                <ButtonLabel>Publish</ButtonLabel>
+                <ButtonDescription $truncate={false}>
+                  Share the draft with your team and ask for a review before it goes live.
+                </ButtonDescription>
+              </ButtonContent>
+            </Button>
+          </div>
+        `}
+      >
+        <div className="text-lg">
+          <Button
+            $lightnessOffset
+            $rounded="xl"
+            $p={3}
+            $size={0.875}
+            className="max-w-72 justify-start text-start"
+          >
+            <ButtonContent>
+              <ButtonLabel>Publish</ButtonLabel>
+              <ButtonDescription $truncate={false}>
+                Share the draft with your team and ask for a review before it
+                goes live.
+              </ButtonDescription>
+            </ButtonContent>
+          </Button>
+        </div>
       </Example>
     </ExampleGrid>
   );

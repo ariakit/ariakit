@@ -662,11 +662,11 @@ export default function BadgeExamples() {
        */}
       <Example
         title="Relative size in a heading"
-        description="A negative size keeps the badge two steps smaller than the heading around it, so it grows with the heading."
+        description="A number multiplies the font size and the line height of the heading around it, so the badge grows with the heading."
         code={`
           <Heading $level={1}>
             Changelog
-            <Badge $layer="brand" $size={-2}>
+            <Badge $layer="brand" $size={0.75}>
               <BadgeLabel>Latest</BadgeLabel>
             </Badge>
           </Heading>
@@ -674,7 +674,7 @@ export default function BadgeExamples() {
       >
         <Heading $level={1}>
           Changelog{" "}
-          <Badge $layer="brand" $size={-2}>
+          <Badge $layer="brand" $size={0.75}>
             <BadgeLabel>Latest</BadgeLabel>
           </Badge>
         </Heading>
