@@ -8,6 +8,7 @@ import {
   createOptionalRender,
   createRender,
   getChildrenText,
+  prependOptionalSeparator,
 } from "../react-utils/create-render.react.ts";
 import {
   tab,
@@ -97,6 +98,14 @@ export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {
    * Children of a `render` element replace it, so pass them to the tab instead.
    */
   bar?: boolean | React.ReactElement | TabBarProps;
+  /**
+   * A separator before the tab, as `true`, an element, or `TabSeparator` props.
+   * It renders as a sibling of the tab, hidden from assistive technologies.
+   * Pass `!!index` when mapping tabs to separate each tab from the one before
+   * it. Filter out the tabs that don't render first, so the first tab that
+   * renders has index 0.
+   */
+  separator?: boolean | React.ReactElement | TabSeparatorProps;
 }
 
 /**
@@ -114,16 +123,26 @@ export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {
  *     <TabPanel tabId="activity">Recent changes</TabPanel>
  *   </TabPanels>
  * </Tabs>
+ * @example
+ * <TabList aria-label="Project">
+ *   {pages.map((page, index) => (
+ *     <Tab key={page.id} id={page.id} separator={!!index}>
+ *       {page.label}
+ *     </Tab>
+ *   ))}
+ * </TabList>
  */
-export function Tab({ bar, children, ...props }: TabProps) {
+export function Tab({ bar, separator, children, ...props }: TabProps) {
   const [variantProps, rest] = splitProps(props, tab);
   const barElement = createOptionalRender(TabBar, bar === true ? {} : bar);
   const text = getChildrenText(children);
   const label = text == null ? children : <TabLabel text={text} />;
-  return (
+  return prependOptionalSeparator(
+    TabSeparator,
+    separator,
     <ak.Tab {...tab.jsx(variantProps)} {...rest}>
       {appendOptionalChild(label, barElement)}
-    </ak.Tab>
+    </ak.Tab>,
   );
 }
 
@@ -213,17 +232,22 @@ export interface TabSeparatorProps
   extends ComponentProps<"div">, VariantProps<typeof tabSeparator> {}
 
 /**
- * Renders a visual divider between tabs.
+ * Renders a visual divider between tabs. Pass it, or its props, to the
+ * `separator` prop of `Tab` so it renders before the tab, hidden from assistive
+ * technologies.
  * @example
  * <Tabs>
  *   <TabList aria-label="Project">
  *     <Tab id="overview">Overview</Tab>
- *     <TabSeparator aria-hidden />
- *     <Tab id="activity">Activity</Tab>
+ *     <Tab id="activity" separator>Activity</Tab>
+ *     <Tab id="members" separator={<TabSeparator $kind="slash" />}>
+ *       Members
+ *     </Tab>
  *   </TabList>
  *   <TabPanels>
  *     <TabPanel tabId="overview">Project details</TabPanel>
  *     <TabPanel tabId="activity">Recent changes</TabPanel>
+ *     <TabPanel tabId="members">Team members</TabPanel>
  *   </TabPanels>
  * </Tabs>
  */

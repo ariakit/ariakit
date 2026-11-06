@@ -4,10 +4,8 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  TabSeparator,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
-import { Fragment } from "react";
 import {
   Link,
   MemoryRouter,
@@ -49,12 +47,14 @@ function MailTabs() {
       >
         <TabList aria-label="Mail">
           {pages.map((page, index) => (
-            <Fragment key={page.path}>
-              {index > 0 && <TabSeparator aria-hidden />}
-              <Tab id={page.path} render={<Link to={page.path} />}>
-                {page.label}
-              </Tab>
-            </Fragment>
+            <Tab
+              key={page.path}
+              id={page.path}
+              render={<Link to={page.path} />}
+              separator={!!index}
+            >
+              {page.label}
+            </Tab>
           ))}
         </TabList>
         <TabPanels>

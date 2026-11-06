@@ -69,6 +69,38 @@ export function appendOptionalChild(
   return React.createElement(React.Fragment, null, children, element);
 }
 
+interface SeparatorBaseProps {
+  "aria-hidden"?: React.AriaAttributes["aria-hidden"];
+}
+
+/**
+ * Places an optional separator before an element as its sibling, hidden from
+ * assistive technologies. The separator takes the value of a `separator` prop:
+ * `true`, an element, or separator props. Both keep their positions in one
+ * fragment when the separator toggles, so the element keeps its state and
+ * focus.
+ * @example
+ * return prependOptionalSeparator(TabSeparator, separator, <ak.Tab />);
+ */
+export function prependOptionalSeparator<P extends SeparatorBaseProps>(
+  Separator: React.ComponentType<P>,
+  separator: boolean | React.ReactElement | P | undefined,
+  element: React.ReactNode,
+) {
+  const separatorElement: React.ReactElement<SeparatorBaseProps> | null =
+    separator === true
+      ? React.createElement(Separator)
+      : createOptionalRender(Separator, separator);
+  // A separator only draws a mark, so assistive technologies skip it, unless
+  // the element sets aria-hidden itself. This also covers a plain element.
+  const hiddenElement =
+    separatorElement &&
+    React.cloneElement(separatorElement, {
+      "aria-hidden": separatorElement.props["aria-hidden"] ?? true,
+    });
+  return React.createElement(React.Fragment, null, hiddenElement, element);
+}
+
 /**
  * Creates a React element from a component and a flexible prop value, merging
  * default props and supporting an element, a props object, or plain children.

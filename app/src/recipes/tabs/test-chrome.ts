@@ -22,4 +22,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("ArrowRight");
     await test.expect(q.tab("Overview")).toBeFocused();
   });
+
+  test("hides the separator before a tab while the tab is selected", async ({
+    q,
+  }) => {
+    const members = q.tab("Members");
+    const mark = members.locator("xpath=preceding-sibling::*[1]");
+    await test.expect(mark).toHaveAttribute("aria-hidden", "true");
+    await test.expect(mark).toHaveCSS("opacity", "1");
+    await members.click();
+    await test.expect(members).toHaveAttribute("aria-selected", "true");
+    // The click leaves the pointer on Members, which would also hide the mark,
+    // so hover another tab. Overview is no longer selected, so the mark after
+    // it shows, and hiding it again on hover crosses its whole transition.
+    const overview = q.tab("Overview");
+    const overviewMark = overview.locator("xpath=following-sibling::*[1]");
+    await test.expect(overviewMark).toHaveCSS("opacity", "1");
+    await overview.hover();
+    await test.expect(overviewMark).toHaveCSS("opacity", "0");
+    await test.expect(mark).toHaveCSS("opacity", "0");
+  });
 });

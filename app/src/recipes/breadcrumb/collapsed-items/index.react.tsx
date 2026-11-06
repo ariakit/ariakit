@@ -3,7 +3,6 @@ import {
   BreadcrumbCurrent,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import { ButtonSlot } from "@ariakit/ui/components/button.ariakit.react";
 import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
@@ -24,8 +23,7 @@ export default function Example() {
   return (
     <Breadcrumb aria-label="Breadcrumb">
       <BreadcrumbLink href="#northwind">Northwind</BreadcrumbLink>
-      <BreadcrumbSeparator />
-      <BreadcrumbItem>
+      <BreadcrumbItem separator>
         <PopoverProvider placement="bottom-start">
           {/* A name that counts the steps says more than "...", which some
               screen readers don't read. */}
@@ -49,10 +47,10 @@ export default function Example() {
           </Popover>
         </PopoverProvider>
       </BreadcrumbItem>
-      <BreadcrumbSeparator />
-      <BreadcrumbLink href="#dashboards">Dashboards</BreadcrumbLink>
-      <BreadcrumbSeparator />
-      <BreadcrumbCurrent>Latency by region</BreadcrumbCurrent>
+      <BreadcrumbLink href="#dashboards" separator>
+        Dashboards
+      </BreadcrumbLink>
+      <BreadcrumbCurrent separator>Latency by region</BreadcrumbCurrent>
     </Breadcrumb>
   );
 }

@@ -5,6 +5,7 @@ import type * as React from "react";
 import {
   appendOptionalChild,
   createOptionalRender,
+  prependOptionalSeparator,
 } from "../react-utils/create-render.react.ts";
 import {
   button,
@@ -32,17 +33,30 @@ export type ButtonProps<
      * `render` element replace it, so pass them to the button instead.
      */
     bar?: boolean | React.ReactElement | ButtonBarProps;
+    /**
+     * A separator before the button, as `true`, an element, or
+     * `ButtonSeparator` props. It renders as a sibling of the button, hidden
+     * from assistive technologies. Pass `!!index` when mapping the buttons of a
+     * `ButtonGroup` to separate each button from the one before it.
+     */
+    separator?: boolean | React.ReactElement | ButtonSeparatorProps;
   };
 
 /**
  * A button with shared control styles.
  * @example
  * <Button>Save changes</Button>
+ * @example
+ * <ButtonGroup aria-label="Edit history">
+ *   <Button>Undo</Button>
+ *   <Button separator>Redo</Button>
+ * </ButtonGroup>
  */
 export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
   recipe,
   $disabled,
   bar,
+  separator,
   ...props
 }: ButtonProps<R>) {
   const styles = recipe ?? button;
@@ -52,13 +66,15 @@ export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
     props["aria-disabled"] === true ||
     props["aria-disabled"] === "true";
   const barElement = createOptionalRender(ButtonBar, bar === true ? {} : bar);
-  return (
+  return prependOptionalSeparator(
+    ButtonSeparator,
+    separator,
     <ak.Button
       {...styles.jsx({ ...variantProps, $disabled: $disabled ?? disabled })}
       {...rest}
     >
       {appendOptionalChild(props.children, barElement)}
-    </ak.Button>
+    </ak.Button>,
   );
 }
 
@@ -105,12 +121,13 @@ export interface ButtonSeparatorProps
   extends ak.RoleProps<"div">, VariantProps<typeof buttonSeparator> {}
 
 /**
- * A visual divider between grouped buttons.
+ * A visual divider between grouped buttons. Pass it, or its props, to the
+ * `separator` prop of `Button` or `RadioCard` so it renders before the control,
+ * hidden from assistive technologies.
  * @example
  * <ButtonGroup aria-label="Edit history">
  *   <Button>Undo</Button>
- *   <ButtonSeparator />
- *   <Button>Redo</Button>
+ *   <Button separator={<ButtonSeparator $kind="slash" />}>Redo</Button>
  * </ButtonGroup>
  */
 export function ButtonSeparator(props: ButtonSeparatorProps) {

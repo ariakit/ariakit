@@ -3,10 +3,8 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  TabSeparator,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
-import { Fragment } from "react";
 
 const pages = {
   "docs-overview": "Overview",
@@ -24,10 +22,9 @@ export default function Example() {
     <Tabs defaultSelectedId="docs-overview" className="w-[26rem] max-w-full">
       <TabList aria-label="Documentation">
         {Object.entries(pages).map(([id, label], index) => (
-          <Fragment key={id}>
-            {index > 0 && <TabSeparator aria-hidden />}
-            <Tab id={id}>{label}</Tab>
-          </Fragment>
+          <Tab key={id} id={id} separator={!!index}>
+            {label}
+          </Tab>
         ))}
       </TabList>
       <TabPanels>

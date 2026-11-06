@@ -19,3 +19,13 @@ test("moves between tabs and selects them with the arrow keys", async () => {
   await press.ArrowRight();
   expect(q.tab("Overview")).toHaveFocus();
 });
+
+test("puts a hidden separator before each tab after the first", () => {
+  expect(q.tab("Overview").previousElementSibling).toBeNull();
+  for (const name of ["Activity", "Members"]) {
+    const mark = q.tab(name).previousElementSibling;
+    expect(mark).toHaveAttribute("aria-hidden", "true");
+    expect(mark).not.toHaveRole("tab");
+  }
+  expect(q.tab.all()).toHaveLength(3);
+});

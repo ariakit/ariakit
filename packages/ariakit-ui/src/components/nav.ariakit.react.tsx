@@ -527,10 +527,11 @@ export function NavDisclosure({
   );
 }
 
-// The button content box clips, so a bar inside it could never show.
+// The button content box clips, so a bar inside it could never show. Nav rows
+// stack vertically, where control separators don't show.
 export interface NavButtonProps extends Omit<
   ButtonProps<typeof navButton>,
-  "recipe" | "bar"
+  "recipe" | "bar" | "separator"
 > {}
 
 /**

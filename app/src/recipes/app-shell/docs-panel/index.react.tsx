@@ -4,7 +4,6 @@ import {
   Breadcrumb,
   BreadcrumbCurrent,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import {
   Button,
@@ -173,8 +172,9 @@ export default function Example() {
           <ShellMainHeader $blur $show="max-6xl">
             <Breadcrumb aria-label="Breadcrumb">
               <BreadcrumbLink href="#components">Components</BreadcrumbLink>
-              <BreadcrumbSeparator $kind="chevron" />
-              <BreadcrumbCurrent>Combobox</BreadcrumbCurrent>
+              <BreadcrumbCurrent separator={{ $kind: "chevron" }}>
+                Combobox
+              </BreadcrumbCurrent>
             </Breadcrumb>
           </ShellMainHeader>
 

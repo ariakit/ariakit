@@ -3,7 +3,6 @@ import {
   Breadcrumb,
   BreadcrumbCurrent,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 
 interface TrailProps {
@@ -18,12 +17,16 @@ function Trail({ label, separator, hoverOffset }: TrailProps) {
       <BreadcrumbLink href="#garden" $hoverOffset={hoverOffset}>
         Garden
       </BreadcrumbLink>
-      <BreadcrumbSeparator {...separator} />
-      <BreadcrumbLink href="#tools" $hoverOffset={hoverOffset}>
+      <BreadcrumbLink
+        href="#tools"
+        separator={separator}
+        $hoverOffset={hoverOffset}
+      >
         Tools
       </BreadcrumbLink>
-      <BreadcrumbSeparator {...separator} />
-      <BreadcrumbCurrent>Pruning shears</BreadcrumbCurrent>
+      <BreadcrumbCurrent separator={separator}>
+        Pruning shears
+      </BreadcrumbCurrent>
     </Breadcrumb>
   );
 }

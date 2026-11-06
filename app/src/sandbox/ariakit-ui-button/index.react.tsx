@@ -1500,6 +1500,28 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Separators from the separator prop"
+        description="Each button after the first renders a rule before it, hidden from assistive technologies. A rule hides next to a hovered, selected or focused button."
+        code={`
+          <ButtonGroup $border>
+            {["Cut", "Copy", "Paste"].map((label, index) => (
+              <Button key={label} separator={!!index}>
+                {label}
+              </Button>
+            ))}
+          </ButtonGroup>
+        `}
+      >
+        <ButtonGroup aria-label="Clipboard" $border>
+          {["Cut", "Copy", "Paste"].map((label, index) => (
+            <Button key={label} separator={!!index}>
+              {label}
+            </Button>
+          ))}
+        </ButtonGroup>
+      </Example>
+
+      <Example
         title="Separators in a wide gap"
         description="The gap leaves room for a hover surface beside each mark, so the marks stay next to a hovered, selected or focused button."
         code={`

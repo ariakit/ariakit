@@ -4,7 +4,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLabel,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { TruncatedText } from "@ariakit/ui/components/truncated-text.ariakit.react";
@@ -12,11 +11,12 @@ import { TruncatedText } from "@ariakit/ui/components/truncated-text.ariakit.rea
 interface ClippedStepProps {
   href: string;
   children: string;
+  separator?: boolean;
 }
 
-function ClippedStep({ href, children }: ClippedStepProps) {
+function ClippedStep({ href, children, separator }: ClippedStepProps) {
   return (
-    <BreadcrumbItem>
+    <BreadcrumbItem separator={separator}>
       {/* The anchor is the link, so the tooltip shows on keyboard focus. The
           label inside it clips, and the tooltip shows only while it does. */}
       <Tooltip text={children}>
@@ -35,16 +35,13 @@ export default function Example() {
     <div className="w-[22rem] max-w-full">
       <Breadcrumb aria-label="Breadcrumb">
         <BreadcrumbLink href="#northwind">Northwind</BreadcrumbLink>
-        <BreadcrumbSeparator />
-        <ClippedStep href="#regional-operations">
+        <ClippedStep href="#regional-operations" separator>
           Regional operations and logistics
         </ClippedStep>
-        <BreadcrumbSeparator />
-        <ClippedStep href="#distribution-centers">
+        <ClippedStep href="#distribution-centers" separator>
           Northern Europe distribution centers
         </ClippedStep>
-        <BreadcrumbSeparator />
-        <BreadcrumbCurrent>Audit</BreadcrumbCurrent>
+        <BreadcrumbCurrent separator>Audit</BreadcrumbCurrent>
       </Breadcrumb>
     </div>
   );

@@ -1,4 +1,4 @@
 {
   "title": "Custom Separators",
-  "description": "Four trails whose BreadcrumbSeparator sets $kind to slash, chevron, or pipe, and one with $kind set to none and a dot in its children, with each separator setting its own kind because the steps share no state. The chevron trail also sets $hoverOffset on its links, for a hover surface that suits an app header. Use it to match the mark to the surrounding design."
+  "description": "Four trails that pass BreadcrumbSeparator props to the separator prop of each step after the first: $kind set to slash, chevron, or pipe, and $kind set to none with a dot in its children. Each step sets its own kind because the steps share no state. The chevron trail also sets $hoverOffset on its links, for a hover surface that suits an app header. Use it to match the mark to the surrounding design."
 }

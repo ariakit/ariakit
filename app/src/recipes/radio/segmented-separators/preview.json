@@ -1,4 +1,4 @@
 {
   "title": "Segmented Control with Separators and a Disabled Option",
-  "description": "A round segmented RadioGroup with a ButtonSeparator between segments that hold an icon and a label, and $px for wider segments. Each separator hides beside a selected, hovered, or keyboard-focused segment, so a line never touches the thumb, and a RadioCard with disabled stays visible while the arrow keys skip it. Use it when several options sit close together and the plain group reads as one block."
+  "description": "A round segmented RadioGroup with the separator prop on each RadioCard after the first, which puts a ButtonSeparator between segments that hold an icon and a label, and $px for wider segments. Each separator hides beside a selected, hovered, or keyboard-focused segment, so a line never touches the thumb, and a RadioCard with disabled stays visible while the arrow keys skip it. Use it when several options sit close together and the plain group reads as one block."
 }

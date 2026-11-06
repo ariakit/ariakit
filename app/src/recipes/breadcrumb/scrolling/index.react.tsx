@@ -2,7 +2,6 @@ import {
   Breadcrumb,
   BreadcrumbCurrent,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 
 export default function Example() {
@@ -10,16 +9,13 @@ export default function Example() {
     <div className="w-[20rem] max-w-full">
       <Breadcrumb aria-label="Breadcrumb" $scroll>
         <BreadcrumbLink href="#northwind">Northwind</BreadcrumbLink>
-        <BreadcrumbSeparator />
-        <BreadcrumbLink href="#regional-operations">
+        <BreadcrumbLink href="#regional-operations" separator>
           Regional operations
         </BreadcrumbLink>
-        <BreadcrumbSeparator />
-        <BreadcrumbLink href="#distribution-centers">
+        <BreadcrumbLink href="#distribution-centers" separator>
           Distribution centers
         </BreadcrumbLink>
-        <BreadcrumbSeparator />
-        <BreadcrumbCurrent>Warehouse checklist</BreadcrumbCurrent>
+        <BreadcrumbCurrent separator>Warehouse checklist</BreadcrumbCurrent>
       </Breadcrumb>
     </div>
   );

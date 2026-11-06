@@ -2,7 +2,6 @@ import {
   Breadcrumb,
   BreadcrumbCurrent,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import {
   Button,
@@ -14,7 +13,7 @@ import {
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
 import { RotateCw } from "lucide-react";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const ancestors = [
   { label: "Northwind", href: "#northwind", width: "w-[4.9em]" },
@@ -36,19 +35,20 @@ export default function Example() {
     <div className="grid justify-items-start gap-3">
       <Skeleton loading={loading}>
         <Breadcrumb aria-label="Breadcrumb" aria-busy={loading}>
-          {ancestors.map((ancestor) => (
-            <Fragment key={ancestor.href}>
-              {/* The placeholder sits in the step, so the step keeps its
-                  padding and height. Without a href, it isn't a link yet. */}
-              <BreadcrumbLink href={loading ? undefined : ancestor.href}>
-                <SkeletonLine className={ancestor.width}>
-                  {ancestor.label}
-                </SkeletonLine>
-              </BreadcrumbLink>
-              <BreadcrumbSeparator />
-            </Fragment>
+          {/* The placeholder sits in the step, so the step keeps its padding
+              and height. Without a href, it isn't a link yet. */}
+          {ancestors.map((ancestor, index) => (
+            <BreadcrumbLink
+              key={ancestor.href}
+              href={loading ? undefined : ancestor.href}
+              separator={!!index}
+            >
+              <SkeletonLine className={ancestor.width}>
+                {ancestor.label}
+              </SkeletonLine>
+            </BreadcrumbLink>
           ))}
-          <BreadcrumbCurrent>Latency by region</BreadcrumbCurrent>
+          <BreadcrumbCurrent separator>Latency by region</BreadcrumbCurrent>
         </Breadcrumb>
       </Skeleton>
       <Button

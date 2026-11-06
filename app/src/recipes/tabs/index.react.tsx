@@ -3,7 +3,6 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  TabSeparator,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 
@@ -12,10 +11,12 @@ export default function Example() {
     <Tabs defaultSelectedId="project-overview" className="w-[28rem] max-w-full">
       <TabList aria-label="Project">
         <Tab id="project-overview">Overview</Tab>
-        <TabSeparator aria-hidden />
-        <Tab id="project-activity">Activity</Tab>
-        <TabSeparator aria-hidden />
-        <Tab id="project-members">Members</Tab>
+        <Tab id="project-activity" separator>
+          Activity
+        </Tab>
+        <Tab id="project-members" separator>
+          Members
+        </Tab>
       </TabList>
       <TabPanels>
         <TabPanel tabId="project-overview">

@@ -2,7 +2,6 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import {
   ComboboxItem,
@@ -41,8 +40,7 @@ export default function Example() {
   return (
     <Breadcrumb aria-label="Breadcrumb">
       <BreadcrumbLink href="#field-notes">Field Notes</BreadcrumbLink>
-      <BreadcrumbSeparator />
-      <BreadcrumbItem>
+      <BreadcrumbItem separator>
         {/* The current page owns the value, so the provider has no setter.
             With a default value, typing on the closed button would change its
             value without leaving the page. */}

@@ -433,8 +433,15 @@ export const tabSlot = buttonSlot;
  */
 export const tabLabel = buttonLabel;
 
-/** A divider between tabs. */
-export const tabSeparator = buttonSeparator;
+/** A divider between tabs. Defaults to the `sm` size. */
+export const tabSeparator = cv({
+  extend: [buttonSeparator],
+  defaultVariants: {
+    // A mark as tall as the font, not the line, sits lighter beside short tab
+    // labels.
+    $size: "sm",
+  },
+});
 
 /**
  * A thin bar inside a flat or bevel tab that marks it while selected. The tab
