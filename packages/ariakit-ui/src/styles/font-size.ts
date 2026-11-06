@@ -1,7 +1,7 @@
 import type { StyleClassValue } from "clava";
 import { cv } from "clava";
 
-const NAMED_FONT_SIZES = {
+const fontSizeClasses = {
   auto: "",
   xs: "text-xs",
   sm: "text-sm",
@@ -10,11 +10,11 @@ const NAMED_FONT_SIZES = {
   xl: "text-xl",
 };
 
-export type FontSizeName = keyof typeof NAMED_FONT_SIZES;
+export type FontSizeName = keyof typeof fontSizeClasses;
 
 function isFontSizeName(value: unknown): value is FontSizeName {
   if (typeof value !== "string") return false;
-  return Object.hasOwn(NAMED_FONT_SIZES, value);
+  return Object.hasOwn(fontSizeClasses, value);
 }
 
 /**
@@ -26,7 +26,7 @@ function isFontSizeName(value: unknown): value is FontSizeName {
 export function getFontSizeClass(
   value: unknown,
 ): StyleClassValue | string | undefined {
-  if (isFontSizeName(value)) return NAMED_FONT_SIZES[value];
+  if (isFontSizeName(value)) return fontSizeClasses[value];
   if (typeof value !== "number") return;
   if (!Number.isFinite(value)) return;
   if (value <= 0) return;

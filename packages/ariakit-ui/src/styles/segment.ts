@@ -28,7 +28,7 @@ const segmentBase = cx(
 );
 
 /** The classes of each segmented kind, for extenders that replace `$kind`. */
-export const SEGMENT_KIND_CLASSES = {
+export const segmentKindClasses = {
   // The bevel without the button states, which would react to hover and press.
   segmented: cx(segmentBase, "ui-selected:ui-bevel"),
   "segmented-flat": segmentBase,
@@ -45,7 +45,7 @@ export const segment = cv({
      * Sets the selected surface: `segmented` raises the thumb with a bevel, and
      * `segmented-flat` keeps it flat with a shadow. Both lighten the thumb.
      */
-    $kind: SEGMENT_KIND_CLASSES,
+    $kind: segmentKindClasses,
     /**
      * Casts a large shadow from the selected surface, which the group clips.
      * It's on by default for `segmented-flat`.
@@ -152,7 +152,7 @@ export const segment = cv({
 /**
  * The classes of the segmented group kind, for extenders that replace `$kind`.
  */
-export const SEGMENT_GROUP_CLASS = cx(
+export const segmentGroupClass = cx(
   // The thumb takes the surface around the group, so it stands out from the
   // darker group on light and dark surfaces.
   "[--segmented-surface:var(--ak-layer-parent)]",
@@ -176,7 +176,7 @@ export const segmentGroup = cv({
      * for an edge around it.
      */
     $kind: {
-      segmented: SEGMENT_GROUP_CLASS,
+      segmented: segmentGroupClass,
     },
   },
   defaultVariants: {
