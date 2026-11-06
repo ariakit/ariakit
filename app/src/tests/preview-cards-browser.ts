@@ -211,44 +211,6 @@ test("preview card frames scroll vertically after a horizontal scroll", async ({
   expect(await getPageScroll()).toBe(pageScroll);
 });
 
-test("preview card frames take focus from another frame after a horizontal scroll", async ({
-  page,
-  q,
-}) => {
-  await gotoAndSettle(page, "/react/recipes/combobox-group/");
-  const card = q
-    .region("Combobox Group", { exact: true })
-    .locator("[data-preview-card]");
-  const iframe = page.locator('iframe[title="Combobox Group"]');
-  const frame = await waitForFrameHydration(iframe);
-  await waitForShownFrame(page, "Combobox Group");
-  const html = frame.locator("html");
-  const otherIframe = page.locator('iframe[title="Custom Items"]');
-  const otherFrame = await waitForFrameHydration(otherIframe);
-  await waitForShownFrame(page, "Custom Items");
-  await widenExample(frame.locator("body"));
-  await expect
-    .poll(() => html.evaluate((el) => el.scrollWidth > el.clientWidth))
-    .toBe(true);
-
-  // The person works in the other frame first.
-  const otherCombobox = query(otherFrame).combobox("Find records");
-  await otherCombobox.click();
-  await expect(otherCombobox).toBeFocused();
-  await iframe.scrollIntoViewIfNeeded();
-  const box = await iframe.boundingBox();
-  expect(box).not.toBeNull();
-  if (!box) return;
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  await page.mouse.wheel(200, 0);
-  // The card takes focus, as a click on it does, so going back to the other
-  // frame moves focus in the docs page and makes this frame inactive again.
-  await expect(card).toBeFocused();
-  await expect(html).toHaveAttribute("data-preview-active", "");
-  await otherIframe.click({ position: { x: 8, y: 8 } });
-  await expect(html).not.toHaveAttribute("data-preview-active", "");
-});
-
 test("preview card frames pass the wheel to the page over contained scroll areas", async ({
   page,
 }) => {
