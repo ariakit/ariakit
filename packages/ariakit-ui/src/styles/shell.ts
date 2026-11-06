@@ -22,7 +22,23 @@ export const shell = cv({
     // only a frame with a definite height.
     "[.ak-frame_&:not(.shell_*)]:rounded-(--ak-frame-radius)!",
     "[.ak-frame_&:not(.shell_*)]:min-h-[min(100cqb,100%)]",
-    "grid-cols-[[shell-start]_auto_auto_[main-start]_minmax(0,1fr)_[main-end]_auto_auto_[shell-end]]",
+    // The page tracks hold the box of a shell directly inside a shell with
+    // `$maxWidth`. They are zero otherwise.
+    "grid-cols-[[page-start]_var(--shell-page-track)_[shell-start_start-1-start]_auto_[start-1-end_start-2-start]_auto_[start-2-end_main-start]_minmax(0,1fr)_[main-end_end-1-start]_auto_[end-1-end_end-2-start]_auto_[end-2-end_shell-end]_var(--shell-page-track)_[page-end]]",
+    // Each level copies its width to an alternating channel, so a shell reads
+    // the width of the shell around it even when it sets its own. These
+    // mutually exclusive selectors support three shell levels.
+    "[&:not(.shell_*)]:[--shell-max-width-a:var(--shell-max-width)]",
+    "[.shell_&:not(.shell_.shell_*)]:[--shell-max-width-b:var(--shell-max-width)]",
+    "[.shell_.shell_&]:[--shell-max-width-a:var(--shell-max-width)]",
+    // The tracks resolve against this shell's width. The page space stays
+    // unresolved until a bar reads it, so its container units measure this
+    // shell, not the shell around it.
+    "[--shell-page-space:0px]",
+    "[.shell-paged>&:not(.shell_.shell_*)]:[--shell-page-track:max(0px,calc((100%-var(--shell-max-width-a))/2))]",
+    "[.shell-paged>&:not(.shell_.shell_*)]:[--shell-page-space:max(0px,calc((100cqi-var(--shell-max-width-a))/2))]",
+    "[.shell_.shell-paged>&]:[--shell-page-track:max(0px,calc((100%-var(--shell-max-width-b))/2))]",
+    "[.shell_.shell-paged>&]:[--shell-page-space:max(0px,calc((100cqi-var(--shell-max-width-b))/2))]",
     "grid-rows-[[shell-start_header-start]_auto_[header-end_main-start_main-header-start]_auto_[main-header-end_intro-start]_auto_[intro-end_body-start]_minmax(0,1fr)_[body-end_footer-start]_auto_[footer-end_shell-end]]",
     "[--shell-start-1-width:0px] [--shell-start-2-width:0px]",
     "[--shell-end-1-width:0px] [--shell-end-2-width:0px]",
@@ -106,6 +122,34 @@ export const shell = cv({
       if (value == null) return;
       const duration = typeof value === "number" ? `${value}ms` : value;
       return { style: { "--shell-duration": duration } };
+    },
+    /**
+     * Sets the default maximum width of the content areas in this shell's
+     * header and footer, of a `ShellMain` in this shell, and of a `Shell`
+     * directly inside it, where it is the box that holds that shell's sidebars
+     * and main. The shell, its bars, and its own sidebars keep the full width.
+     * Next to that inner shell, the areas in the bars take this width less the
+     * bar's padding on each side, so they start where parts at the bar's edges
+     * do, inside the box. With the default padding and height, that is on the
+     * rows of its sidebars. A `$maxWidth` on a bar or on `ShellMain` replaces
+     * the default for that part. On the inner `Shell`, it sets the defaults for
+     * that shell's parts, and the box keeps this width. `$show` on the inner
+     * shell's sidebars measures that shell's full width, so keep it at or below
+     * this width. Numbers count quarters of the shell's text size, like the
+     * default spacing token. Other values must be CSS lengths, not percentages.
+     */
+    $maxWidth(value?: ShellWidth) {
+      if (value == null) return;
+      // The step is in rem, so Firefox doesn't resolve a number against the
+      // parent's text when the shell sets its own size.
+      const width =
+        typeof value === "number"
+          ? `calc(var(--shell-header-step) * (${value}))`
+          : value;
+      return {
+        class: "shell-paged",
+        style: { "--shell-max-width": width, "--shell-main-max-width": width },
+      };
     },
   },
   defaultVariants: {
@@ -210,9 +254,27 @@ const bar = cx(
   "[&>*>.nav.horizontal]:[--nav-bar-gap:0px]",
   // The region scrolls, so rounded corners would clip a bar at its edge.
   "[&>*>.nav.horizontal]:rounded-none",
-  "col-[shell] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
-  "pl-[max(var(--ak-frame-padding),env(safe-area-inset-left))]",
-  "pr-[max(var(--ak-frame-padding),env(safe-area-inset-right))]",
+  // The same goes for a part in a content area, which stretches with its area.
+  "[&>.shell-band:has(>.shell-bar-part>.nav.horizontal)]:self-stretch [&>.shell-band>.shell-bar-part:has(>.nav.horizontal)]:self-stretch",
+  "[&>.shell-band>.shell-bar-part>.nav.horizontal]:self-stretch [&>.shell-band>.shell-bar-part>.nav.horizontal]:items-center",
+  "[&>.shell-band>.shell-bar-part>.nav.horizontal]:my-0 [&>.shell-band>.shell-bar-part>.nav.horizontal]:py-0",
+  "[&>.shell-band>.shell-bar-part>.nav.horizontal]:[--nav-bar-gap:0px] [&>.shell-band>.shell-bar-part>.nav.horizontal]:rounded-none",
+  "col-[page] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
+  // Next to a shell inside a shell with `$maxWidth`, a content area starts the
+  // bar's padding inside that shell's box, like parts at the bar's edges and in
+  // that shell's own bars. With the default padding, that is on the rows of its
+  // sidebars at the default bar height. It skips compensation, so an outer
+  // sidebar doesn't move it off the box. The
+  // bar looks for that shell among its siblings: a `:has()` on the outer shell
+  // would restyle the whole page on each sidebar toggle in Chrome.
+  "[.shell-paged>&:has(~.shell)]:[--shell-main-max-width:calc(var(--shell-max-width)-2*var(--ak-frame-padding))]",
+  "[.shell-paged>.shell~&]:[--shell-main-max-width:calc(var(--shell-max-width)-2*var(--ak-frame-padding))]",
+  "[.shell-paged>&:has(~.shell)]:[--shell-comp-start:0px] [.shell-paged>&:has(~.shell)]:[--shell-comp-end:0px]",
+  "[.shell-paged>.shell~&]:[--shell-comp-start:0px] [.shell-paged>.shell~&]:[--shell-comp-end:0px]",
+  // In that inner shell, the bar spans the shell and its parts start at the
+  // box. The safe area stays the smallest space from the screen edge.
+  "pl-[max(calc(var(--ak-frame-padding)+var(--shell-page-space)),env(safe-area-inset-left))]",
+  "pr-[max(calc(var(--ak-frame-padding)+var(--shell-page-space)),env(safe-area-inset-right))]",
   // A growing center receives twice the free space and stays centered while
   // each side fits within one quarter.
   "[&:has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
@@ -251,8 +313,9 @@ const barAreaVariants = {
    * Sets the width of main's column that a content area in this bar aims for.
    * Set it to the same value as `$maxWidth` on `ShellMain`. Numbers scale the
    * spacing token, and they follow the element's text. So when `ShellMain` sets
-   * `$size`, set a CSS length on both. Defaults to the shell's column, which
-   * follows `$size` on `ShellMain`.
+   * `$size`, set a CSS length on both. Defaults to `$maxWidth` on the shell,
+   * less the bar's padding on each side next to a shell directly inside it, or
+   * to the shell's column, which follows `$size` on `ShellMain`.
    */
   $maxWidth(value?: ShellWidth) {
     if (value == null) return;
@@ -270,6 +333,7 @@ export const shellHeader = cv({
     "shell-header row-[header] box-border min-h-(--shell-header-height) @container/shell-header",
     // Let edge bars in a centered navigation row reach the inner edge.
     "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
+    "[&>.shell-band>.shell-bar-part>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
     "z-6",
     "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-header-height)-var(--shell-header-step)*16)/2,1px)))]",
   ],
@@ -293,11 +357,20 @@ export const shellHeader = cv({
     $blur: blur,
     /**
      * Moves the center section to a full-width second row below 40rem. Supply a
-     * matching `$height` class for the taller layout.
+     * matching `$height` class for the taller layout. A center section in a
+     * content area keeps its row even when CSS hides it, so render it only
+     * where it shows.
      */
     $stackCenter: [
       "@max-[40rem]/shell-header:[&>.shell-bar-center]:col-span-full",
       "@max-[40rem]/shell-header:[&>.shell-bar-center]:row-start-2",
+      // In a content area, the extra class outranks the row of its parts. The
+      // area spans both rows of the header, so parts outside it stay on the
+      // first row with its start and end parts.
+      "@max-[40rem]/shell-header:[&>.shell-band>.shell-bar-center.shell-bar-part]:col-span-full",
+      "@max-[40rem]/shell-header:[&>.shell-band>.shell-bar-center.shell-bar-part]:row-start-2",
+      "@max-[40rem]/shell-header:[&>.shell-band:has(>.shell-bar-center)]:row-end-[span_2]",
+      "@max-[40rem]/shell-header:[&>.shell-band:has(>.shell-bar-center)]:grid-rows-subgrid",
     ],
   },
   defaultVariants: {
@@ -314,7 +387,7 @@ export const shellHeader = cv({
  */
 export const shellBarPart = cv({
   class:
-    "shell-bar-part flex items-center gap-2 [.shell-main-header>&]:row-start-1",
+    "shell-bar-part flex items-center gap-2 [.shell-main-header>&]:row-start-1 [.shell-bar>.shell-band>&]:row-start-1",
   variants: {
     /**
      * Lets the section shrink below its content width. Use `truncate` on text
@@ -341,7 +414,7 @@ export const shellBarPart = cv({
 export const shellStart = cv({
   extend: [shellBarPart],
   class:
-    "shell-bar-start col-1 [&:has(~.shell-band)]:me-2 [.shell-main-header>&]:me-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-1",
+    "shell-bar-start col-1 [&:has(~.shell-band)]:me-2 [.shell-main-header>&]:me-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-1 [.shell-bar>.shell-band>&]:col-1",
   variants: {
     // The track also holds the part's margin, so the cap leaves room for it.
     $shrink: {
@@ -355,7 +428,7 @@ export const shellStart = cv({
 /** The center section of a shell header, footer, or main header. */
 export const shellCenter = cv({
   extend: [shellBarPart],
-  class: "shell-bar-center col-2",
+  class: "shell-bar-center col-2 [.shell-bar>.shell-band>&]:col-2",
   variants: {
     /**
      * Gives the center twice the free width. It stays centered while both sides
@@ -370,7 +443,7 @@ export const shellCenter = cv({
 export const shellEnd = cv({
   extend: [shellBarPart],
   class:
-    "shell-bar-end col-3 [.shell-band~&]:ms-2 [.shell-main-header>&]:ms-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-3",
+    "shell-bar-end col-3 [.shell-band~&]:ms-2 [.shell-main-header>&]:ms-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-3 [.shell-bar>.shell-band>&]:col-3",
   variants: {
     // The track also holds the part's margin, so the cap leaves room for it.
     $shrink: {
@@ -394,6 +467,7 @@ export const shellFooter = cv({
     // Let edge bars in a centered navigation row reach the inner edge.
     // The bottom safe area pads the footer, so it doesn't hold the row.
     "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
+    "[&>.shell-band>.shell-bar-part>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
     "z-5",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
     "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-footer-height)-var(--shell-header-step)*16)/2,1px)))]",
@@ -457,8 +531,9 @@ export const shellSidebar = cv({
      * first start column is outermost and the first end column is innermost.
      */
     $side: {
-      start: "shell-sidebar-start col-1 [.shell-sidebar-start~&]:col-2",
-      end: "shell-sidebar-end col-4 [.shell-sidebar-end~&]:col-5",
+      start:
+        "shell-sidebar-start col-[start-1] [.shell-sidebar-start~&]:col-[start-2]",
+      end: "shell-sidebar-end col-[end-1] [.shell-sidebar-end~&]:col-[end-2]",
     },
     /**
      * Sets this sidebar's width and publishes it to the shell. `3xs` fits a
@@ -743,7 +818,8 @@ const contentVariants = {
   },
   /**
    * Sets the maximum width of a centered content column. Numbers scale the
-   * spacing token. Defaults to 42rem, or 42em when `ShellMain` sets `$size`.
+   * spacing token. Defaults to `$maxWidth` on the shell, or to 42rem, or 42em
+   * when `ShellMain` sets `$size`.
    */
   $maxWidth(value?: ShellWidth) {
     if (value == null) return;
@@ -780,6 +856,8 @@ const sizedMain = cx(
 export const shellMain = cv({
   class: [
     "shell-main col-[main-start/shell-end] row-[main-start/body-end] grid grid-cols-subgrid grid-rows-subgrid min-w-0",
+    // The shell's `$maxWidth` sets the column unless main sets its own.
+    "[.shell-paged>&]:[--shell-main-max-width:var(--shell-max-width)]",
     "shell-slot-state",
     // Without `$py`, the body spends its own gutter on its edges next to the
     // bars, and the intro its own `$py`. A nested main doesn't take the space
@@ -863,7 +941,8 @@ export const shellMain = cv({
      * Sets the shared maximum content width. Numbers scale the spacing token.
      * Parts can override it with `$maxWidth`. Prefer lengths for alignment:
      * percentages resolve against each part, and header or intro widths can
-     * include sidebars. Defaults to 42rem, or 42em with `$size`.
+     * include sidebars. Defaults to `$maxWidth` on the shell, or to 42rem, or
+     * 42em with `$size`.
      */
     $maxWidth(value?: ShellWidth) {
       return contentVariants.$maxWidth(value);
@@ -918,6 +997,7 @@ export const shellMainHeader = cv({
     "[&:has(>.shell-bar-part)]:shell-bar-tracks",
     "[&:has(>.shell-bar-part)]:[--shell-bar-end-space:var(--shell-content-end-space)]",
     "[&:has(>.shell-bar-part)]:[--shell-bar-padding-start:var(--shell-track-gutter)] [&:has(>.shell-bar-part)]:[--shell-bar-padding-end:var(--shell-track-gutter)]",
+    "[&:has(>.shell-bar-part)]:[--shell-bar-edge-start:var(--shell-track-gutter)] [&:has(>.shell-bar-part)]:[--shell-bar-edge-end:var(--shell-track-gutter)]",
     "[&:has(>.shell-bar-part)]:px-(--shell-track-gutter) [&:has(>.shell-bar-part)]:items-center [&:has(>.shell-bar-part)]:content-stretch",
     "[&:has(>.shell-bar-part)>*]:col-2",
     "[&:has(>.shell-bar-part):has(>.shell-bar-center)]:grid-cols-[1fr_auto_1fr]",
@@ -1094,7 +1174,13 @@ const mainBand = cv({
     "[.shell-content-grid>&]:contain-inline-size [.shell-band>&]:contain-inline-size",
     "[:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:col-2 [:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:row-start-1",
     "[:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:contain-inline-size [:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:grid-cols-1",
-    "*:col-span-full *:min-w-0",
+    // In a bar, the band holds start, center, and end parts in the tracks of a
+    // bar, so they line up with the area. The extra class outranks the single
+    // track above.
+    "[.shell-bar>&.shell-band:has(>.shell-bar-part)]:grid-cols-[1fr_auto_1fr] [.shell-bar>&.shell-band:has(>.shell-bar-part)]:items-center [.shell-bar>&.shell-band:has(>.shell-bar-part)]:gap-2",
+    "[.shell-bar>&.shell-band:has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
+    // Parts keep their content minimum unless they set `$shrink`.
+    "*:col-span-full *:not-[:where(.shell-bar-part)]:min-w-0",
   ],
   defaultVariants: { $p: "none" },
 });

@@ -37,7 +37,9 @@ export interface ShellProps
  * from optional parts, in one CSS grid. Each sidebar declares its width and the
  * header declares its height. Parts must be direct children and place
  * themselves by kind and side, so DOM order is free for reading order. A nested
- * shell takes the main cell of the shell around it.
+ * shell takes the main cell of the shell around it. `$maxWidth` holds the
+ * sidebars and main of a directly nested shell in a centered box, while the
+ * bars keep the full width and line up their content areas with the box.
  * @example
  * <Shell>
  *   <ShellHeader>
@@ -71,7 +73,9 @@ function renderPartCell(recipe: BarPartRecipe, props: ShellPartProps) {
 /**
  * The start part of a `ShellHeader`, `ShellFooter`, or `ShellMainHeader`: a
  * flex cell at the start edge that keeps its content minimum unless it says it
- * can shrink. For a sidebar, use `ShellSidebar` with `$side="start"`.
+ * can shrink. In a `ShellContent` or a wider band in a bar, it sits at the
+ * start of that area instead. For a sidebar, use `ShellSidebar` with
+ * `$side="start"`.
  * @example
  * <Shell>
  *   <ShellHeader>
@@ -88,7 +92,8 @@ export function ShellStart(props: ShellPartProps) {
  * flex cell on the part's middle while both sides fit, moved over when a side
  * needs more than its half. This isn't main's column. To align with that
  * column, use `ShellContent` instead. Render one of them, because they share a
- * track.
+ * track. In a `ShellContent` or a wider band in a bar, it sits on the middle of
+ * that area.
  * @example
  * <Shell>
  *   <ShellHeader>
@@ -103,7 +108,8 @@ export function ShellCenter(props: ShellPartProps) {
 /**
  * The end part of a `ShellHeader`, `ShellFooter`, or `ShellMainHeader`: a flex
  * cell at the end edge that keeps its content minimum unless it says it can
- * shrink. For a sidebar, use `ShellSidebar` with `$side="end"`.
+ * shrink. In a `ShellContent` or a wider band in a bar, it sits at the end of
+ * that area instead. For a sidebar, use `ShellSidebar` with `$side="end"`.
  * @example
  * <Shell>
  *   <ShellHeader>
@@ -324,11 +330,16 @@ export interface ShellContentProps
 /**
  * Selects the centered content column inside a main header, intro, body, or
  * wider main band. Direct element children fill this column. As a direct child
- * of `ShellHeader` or `ShellFooter`, it aims for the same column of main: it
- * aligns while it has room, and the edge next to a wide `ShellStart` or
- * `ShellEnd` moves to make room. On small pages, it stops at the bar's inset.
- * Use `$size` on `ShellMain` to share a column width with the bars, or
- * `$maxWidth` and `$gutter` on the bar to match custom values on `ShellMain`.
+ * of `ShellHeader` or `ShellFooter`, it aims for the same column of main, or,
+ * next to a shell directly inside a shell with `$maxWidth`, for that shell's
+ * box less the bar's padding on each side: it aligns while it has room, and the
+ * edge next to a wide `ShellStart` or `ShellEnd` moves to make room. On small
+ * pages, it stops at the bar's inset. Use `$size` on `ShellMain` or `$maxWidth`
+ * on `Shell` to share a column width with the bars, or `$maxWidth` and
+ * `$gutter` on the bar to match custom values on `ShellMain`. In a bar, it can
+ * hold `ShellStart`, `ShellCenter`, and `ShellEnd`, which then line up with the
+ * area instead of the bar's edges. The area's width doesn't follow these parts,
+ * so set `$shrink` on long parts for small pages.
  * @example
  * <Shell>
  *   <ShellMain>

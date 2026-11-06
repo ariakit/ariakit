@@ -57,6 +57,7 @@ import {
 import { createContext, useContext, useId, useState } from "react";
 import type { ReactNode } from "react";
 import { AreasScenario } from "./areas.react.tsx";
+import { PageScenario } from "./page.react.tsx";
 import { PartsScenario } from "./parts.react.tsx";
 import {
   GeometryScenario,
@@ -84,6 +85,7 @@ const scenarios = {
   parts: "Main and sidebar parts",
   reading: "Reading size",
   areas: "Content areas",
+  page: "Page box",
 } as const;
 
 type ScenarioId = keyof typeof scenarios;
@@ -945,6 +947,7 @@ const scenarioComponents = {
   parts: () => <PartsScenario controls={<ScenarioControls />} />,
   reading: () => <ReadingScenario controls={<ScenarioControls />} />,
   areas: () => <AreasScenario controls={<ScenarioControls />} />,
+  page: () => <PageScenario controls={<ScenarioControls />} />,
 } satisfies Record<ScenarioId, () => ReactNode>;
 
 export default function ShellExamples() {
