@@ -4,28 +4,13 @@ import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
 import {
+  getViewportEdge,
   routeExampleModules,
+  waitForArticle,
   waitForFrameHydration,
   waitForShownFrame,
   widenExample,
 } from "./preview-cards-helpers.ts";
-
-// The article example announces that it loaded 1.8 seconds after it hydrates,
-// and its card hydrates when it scrolls into view. On a slow runner, the card
-// can take longer than the assertion timeout to hydrate, so the wait uses the
-// test budget, like the resize handle wait below.
-// https://github.com/ariakit/ariakit/issues/8006
-async function waitForArticle(article: Locator) {
-  await article.scrollIntoViewIfNeeded();
-  const status = query(article).status();
-  await status.filter({ hasText: "Article loaded" }).waitFor();
-}
-
-// The viewport edge is a ring. The border color follows the edge color even
-// with no border to paint, so it would not show that the edge changed.
-async function getViewportEdge(viewport: Locator) {
-  return viewport.evaluate((element) => getComputedStyle(element).boxShadow);
-}
 
 // The brand token and the computed edge write the same color in different
 // formats, so an element with the brand color resolves the token as the browser
@@ -187,10 +172,13 @@ test("preview card frames scroll vertically after a horizontal scroll", async ({
   if (!box) return;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   // A vertical scroll still scrolls the docs page, even when the gesture drifts
-  // sideways.
+  // sideways. The drift stays under the 10 pixels that make a gesture
+  // horizontal, so the preview stays inactive whether or not it comes within
+  // 200ms of the vertical event. Tests in preview-cards-chrome.ts set the event
+  // times to cover a larger drift within the gesture.
   const inactiveScroll = await getPageScroll();
   await page.mouse.wheel(0, 100);
-  await page.mouse.wheel(20, 0);
+  await page.mouse.wheel(8, 0);
   await expect.poll(getPageScroll).toBeGreaterThan(inactiveScroll);
   // The card would activate the frame with messages between the documents,
   // which no state reports until the frame becomes active.
@@ -768,10 +756,13 @@ test("inline previews scroll vertically after a horizontal scroll", async ({
   if (!box) return;
   await page.mouse.move(box.x + 24, box.y + 120);
   // A vertical scroll still scrolls the docs page, even when the gesture drifts
-  // sideways.
+  // sideways. The drift stays under the 10 pixels that make a gesture
+  // horizontal, so the preview stays inactive whether or not it comes within
+  // 200ms of the vertical event. Tests in preview-cards-chrome.ts set the event
+  // times to cover a larger drift within the gesture.
   const inactiveScroll = await getPageScroll();
   await page.mouse.wheel(0, 100);
-  await page.mouse.wheel(20, 0);
+  await page.mouse.wheel(8, 0);
   await expect.poll(getPageScroll).toBeGreaterThan(inactiveScroll);
   // The card would show an activation on the next frame, which no state reports
   // before it.

@@ -1,3 +1,4 @@
+import { query } from "@ariakit/test/playwright";
 import type { Locator, Page, Route } from "@playwright/test";
 
 // Helpers for the preview card tests in this folder.
@@ -41,6 +42,23 @@ export async function widenExample(scroller: Locator) {
     example.style.minWidth = "3000px";
     example.style.minHeight = "3000px";
   });
+}
+
+// The article example announces that it loaded 1.8 seconds after it hydrates,
+// and its card hydrates when it scrolls into view. On a slow runner, the card
+// can take longer than the assertion timeout to hydrate, so the wait uses the
+// test budget, like the resize handle waits in the preview card tests.
+// https://github.com/ariakit/ariakit/issues/8006
+export async function waitForArticle(article: Locator) {
+  await article.scrollIntoViewIfNeeded();
+  const status = query(article).status();
+  await status.filter({ hasText: "Article loaded" }).waitFor();
+}
+
+// The viewport edge is a ring. The border color follows the edge color even
+// with no border to paint, so it would not show that the edge changed.
+export async function getViewportEdge(viewport: Locator) {
+  return viewport.evaluate((element) => getComputedStyle(element).boxShadow);
 }
 
 // Routes the modules that the islands in preview frames import to hydrate their
