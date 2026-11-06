@@ -27,6 +27,22 @@ export async function waitForShownFrame(page: Page, title: string) {
   return iframe;
 }
 
+// A narrow card or a wide example can leave the example wider than its
+// scroller. The example also stays taller than its scroller, so it can scroll
+// vertically too.
+export async function widenExample(scroller: Locator) {
+  await scroller.evaluate((element) => {
+    // Islands and slots wrap the example without boxes, next to styles.
+    const example = [...element.querySelectorAll("*")].find((child) => {
+      const { display } = getComputedStyle(child);
+      return display !== "contents" && display !== "none";
+    });
+    if (!(example instanceof HTMLElement)) throw new Error("No example");
+    example.style.minWidth = "3000px";
+    example.style.minHeight = "3000px";
+  });
+}
+
 // Routes the modules that the islands in preview frames import to hydrate their
 // examples. Returns the paths of the frames whose modules it routed, so a test
 // can check that it changed the example it asserts on.

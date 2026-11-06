@@ -3,6 +3,7 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
+import { widenExample } from "./preview-cards-helpers.ts";
 
 interface Point {
   x: number;
@@ -39,9 +40,11 @@ interface SwipeParams {
   page: Page;
   from: Point;
   /**
-   * How far the finger moves up, or down when it is negative.
+   * How far the finger moves up, or down when it is negative. With a horizontal
+   * swipe, how far it moves left, or right when it is negative.
    */
   distance: number;
+  horizontal?: boolean;
   /**
    * Lifts the finger while it moves fast, so the page keeps scrolling.
    */
@@ -51,8 +54,18 @@ interface SwipeParams {
 // Unless the swipe flings, the finger rests before it lifts, as the event
 // timestamps tell Chrome, so the scroll stops with it. Chrome would take the
 // next tap during a fling as a tap that stops the fling.
-async function swipe({ page, from, distance, fling = false }: SwipeParams) {
+async function swipe({
+  page,
+  from,
+  distance,
+  horizontal = false,
+  fling = false,
+}: SwipeParams) {
   const { x, y } = from;
+  const getPoint = (moved: number) => {
+    if (horizontal) return { x: x - moved, y };
+    return { x, y: y - moved };
+  };
   await using touchscreen = await openTouchscreen(page);
   const steps = 10;
   const stepTime = fling ? 0.008 : 0.016;
@@ -61,11 +74,11 @@ async function swipe({ page, from, distance, fling = false }: SwipeParams) {
   const end = fling ? moveEnd : moveEnd + 0.3;
   await touchscreen.send("touchStart", [{ x, y }], start);
   for (let step = 1; step <= steps; step++) {
-    const point = { x, y: y - (distance * step) / steps };
+    const point = getPoint((distance * step) / steps);
     await touchscreen.send("touchMove", [point], start + step * stepTime);
   }
   if (!fling) {
-    await touchscreen.send("touchMove", [{ x, y: y - distance }], end);
+    await touchscreen.send("touchMove", [getPoint(distance)], end);
   }
   await touchscreen.send("touchEnd", [], end);
 }
@@ -125,6 +138,10 @@ function getPageScroll(page: Page) {
 
 function getScrollTop(locator: Locator) {
   return locator.evaluate((element) => element.scrollTop);
+}
+
+function getScrollLeft(locator: Locator) {
+  return locator.evaluate((element) => element.scrollLeft);
 }
 
 test("preview card frames pass touch scrolling to the page until activated", async ({
@@ -296,6 +313,81 @@ test("inline previews pass touch scrolling to the page until tapped", async ({
   expect(activeScroll).toBeGreaterThan(0);
   await swipe({ page, from: await getCenter(viewport), distance: -100 });
   await expect.poll(() => getScrollTop(viewport)).toBeLessThan(activeScroll);
+});
+
+test("preview card frames scroll vertically after a horizontal swipe", async ({
+  page,
+}) => {
+  const { frame, listbox } = await getComboboxFrame(page);
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  const root = frame.locator("html");
+  await widenExample(frame.locator("body"));
+  await expect
+    .poll(() => root.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+  await expect(listbox).toHaveCSS("overflow-y", "hidden");
+  // A vertical swipe still scrolls the docs page.
+  const inactiveScroll = await getPageScroll(page);
+  await swipe({ page, from: await getCenter(listbox), distance: 100 });
+  await expect.poll(() => getPageScroll(page)).toBeGreaterThan(inactiveScroll);
+  expect(await getScrollLeft(root)).toBe(0);
+  await expect(root).not.toHaveAttribute("data-preview-active", "");
+
+  // A horizontal swipe does not move the docs page, so the frame takes it. The
+  // popup contains its overscroll, so the swipe starts above it.
+  const box = await iframe.boundingBox();
+  if (!box) throw new Error("The frame has no bounding box.");
+  await swipe({
+    page,
+    from: { x: box.x + box.width / 2, y: box.y + 16 },
+    distance: 100,
+    horizontal: true,
+  });
+  await expect.poll(() => getScrollLeft(root)).toBeGreaterThan(0);
+  await expect(root).toHaveAttribute("data-preview-active", "");
+  await expect(listbox).toHaveCSS("overflow-y", "auto");
+  const pageScroll = await getPageScroll(page);
+  const rootScroll = await getScrollTop(root);
+  await swipe({
+    page,
+    from: { x: box.x + box.width / 2, y: box.y + 16 },
+    distance: 100,
+  });
+  await expect.poll(() => getScrollTop(root)).toBeGreaterThan(rootScroll);
+  expect(await getPageScroll(page)).toBe(pageScroll);
+});
+
+test("inline previews scroll vertically after a horizontal swipe", async ({
+  page,
+  q,
+}) => {
+  const card = q.region("Slots", { exact: true });
+  const viewport = await getSlotsViewport(page, card);
+  await widenExample(viewport);
+  await expect
+    .poll(() => viewport.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+  await expect(viewport).toHaveCSS("overflow-y", "hidden");
+  // A vertical swipe still scrolls the docs page.
+  const inactiveScroll = await getPageScroll(page);
+  await swipe({ page, from: await getCenter(viewport), distance: 100 });
+  await expect.poll(() => getPageScroll(page)).toBeGreaterThan(inactiveScroll);
+  expect(await getScrollTop(viewport)).toBe(0);
+  await expect(viewport).toHaveCSS("overflow-y", "hidden");
+
+  // A horizontal swipe does not move the docs page, so the example takes it.
+  await swipe({
+    page,
+    from: await getCenter(viewport),
+    distance: 100,
+    horizontal: true,
+  });
+  await expect.poll(() => getScrollLeft(viewport)).toBeGreaterThan(0);
+  await expect(viewport).toHaveCSS("overflow-y", "auto");
+  const pageScroll = await getPageScroll(page);
+  await swipe({ page, from: await getCenter(viewport), distance: 100 });
+  await expect.poll(() => getScrollTop(viewport)).toBeGreaterThan(0);
+  expect(await getPageScroll(page)).toBe(pageScroll);
 });
 
 test("inline previews stay inactive after a tap that stops the page", async ({

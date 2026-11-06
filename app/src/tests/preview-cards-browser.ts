@@ -7,6 +7,7 @@ import {
   routeExampleModules,
   waitForFrameHydration,
   waitForShownFrame,
+  widenExample,
 } from "./preview-cards-helpers.ts";
 
 // The article example announces that it loaded 1.8 seconds after it hydrates,
@@ -149,6 +150,103 @@ test("preview card frames do not scroll or take focus until activated", async ({
   await flushFrames(page);
   await page.mouse.wheel(0, 200);
   await expect.poll(getFrameScroll).toBeGreaterThan(frameScroll);
+});
+
+test("preview card frames scroll vertically after a horizontal scroll", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
+  const region = q.region("Combobox Group", { exact: true });
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  const frame = await waitForFrameHydration(iframe);
+  // The card activates the frame for the page, so it waits for the card to
+  // hydrate too, which can come after the frame.
+  await waitForShownFrame(page, "Combobox Group");
+  // The handle names the viewport it resizes.
+  const handle = query(region).separator("Resize preview", {
+    includeHidden: true,
+  });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  const html = frame.locator("html");
+  const getFrameScroll = () =>
+    html.evaluate((element) => ({
+      left: element.scrollLeft,
+      top: element.scrollTop,
+    }));
+  const getPageScroll = () => page.evaluate(() => window.scrollY);
+  await widenExample(frame.locator("body"));
+  await expect
+    .poll(() => html.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+  await iframe.scrollIntoViewIfNeeded();
+  const frameScroll = await getFrameScroll();
+  const box = await iframe.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  // A vertical scroll still scrolls the docs page.
+  const inactiveScroll = await getPageScroll();
+  await page.mouse.wheel(0, 100);
+  await expect.poll(getPageScroll).toBeGreaterThan(inactiveScroll);
+  expect(await getFrameScroll()).toEqual(frameScroll);
+  await expect(html).not.toHaveAttribute("data-preview-active", "");
+  const pageScroll = await getPageScroll();
+  // The preview takes a wheel gesture as horizontal once it moved more sideways
+  // than up or down, and a gesture ends 200ms after its last event.
+  await page.waitForTimeout(250);
+
+  // A horizontal scroll does not move the docs page, so the frame takes it.
+  await page.mouse.wheel(200, 0);
+  await expect
+    .poll(async () => (await getFrameScroll()).left)
+    .toBeGreaterThan(frameScroll.left);
+  await expect(html).toHaveAttribute("data-preview-active", "");
+  await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
+
+  // WebKit applies the new root overflow to wheel scrolling on a later
+  // rendering update, which no page state reports.
+  await flushFrames(page);
+  await page.mouse.wheel(0, 200);
+  await expect
+    .poll(async () => (await getFrameScroll()).top)
+    .toBeGreaterThan(frameScroll.top);
+  expect(await getPageScroll()).toBe(pageScroll);
+});
+
+test("preview card frames take focus from another frame after a horizontal scroll", async ({
+  page,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  const frame = await waitForFrameHydration(iframe);
+  await waitForShownFrame(page, "Combobox Group");
+  const html = frame.locator("html");
+  const otherIframe = page.locator('iframe[title="Custom Items"]');
+  const otherFrame = await waitForFrameHydration(otherIframe);
+  await waitForShownFrame(page, "Custom Items");
+  await widenExample(frame.locator("body"));
+  await expect
+    .poll(() => html.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+
+  // The person works in the other frame first.
+  const otherCombobox = query(otherFrame).combobox("Find records");
+  await otherCombobox.click();
+  await expect(otherCombobox).toBeFocused();
+  await iframe.scrollIntoViewIfNeeded();
+  const box = await iframe.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.wheel(200, 0);
+  await expect(html).toHaveAttribute("data-preview-active", "");
+
+  // Going back to the other frame makes this one inactive again.
+  await otherCombobox.click();
+  await expect(otherCombobox).toBeFocused();
+  await expect(html).not.toHaveAttribute("data-preview-active", "");
 });
 
 test("preview card frames pass the wheel to the page over contained scroll areas", async ({
@@ -622,6 +720,93 @@ test("inline previews scroll only after focus moves into them", async ({
   await expect(viewport).toBeFocused();
   await page.mouse.wheel(0, 100);
   await expect.poll(getViewportScroll).toBeGreaterThan(0);
+});
+
+test("inline previews scroll vertically after a horizontal scroll", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
+  await gotoAndSettle(page, "/react/recipes/skeleton/");
+  const article = q.region("Paragraph Lines", { exact: true });
+  await waitForArticle(article);
+  const handle = query(article).separator("Resize preview", {
+    includeHidden: true,
+  });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  const getViewportScroll = () =>
+    viewport.evaluate((element) => ({
+      left: element.scrollLeft,
+      top: element.scrollTop,
+    }));
+  const getPageScroll = () => page.evaluate(() => window.scrollY);
+  await widenExample(viewport);
+  await expect
+    .poll(() =>
+      viewport.evaluate(
+        (el) =>
+          el.scrollWidth > el.clientWidth && el.scrollHeight > el.clientHeight,
+      ),
+    )
+    .toBe(true);
+  await viewport.evaluate((element) => element.scrollIntoView());
+  const box = await viewport.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  await page.mouse.move(box.x + 24, box.y + 120);
+  // A vertical scroll still scrolls the docs page.
+  const inactiveScroll = await getPageScroll();
+  await page.mouse.wheel(0, 100);
+  await expect.poll(getPageScroll).toBeGreaterThan(inactiveScroll);
+  expect(await getViewportScroll()).toEqual({ left: 0, top: 0 });
+  expect(await hasBrandViewportEdge(viewport)).toBe(false);
+  const pageScroll = await getPageScroll();
+  // The preview takes a wheel gesture as horizontal once it moved more sideways
+  // than up or down, and a gesture ends 200ms after its last event.
+  await page.waitForTimeout(250);
+
+  // A horizontal scroll does not move the docs page, so the example takes it.
+  await page.mouse.wheel(100, 0);
+  await expect
+    .poll(async () => (await getViewportScroll()).left)
+    .toBeGreaterThan(0);
+  await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
+  await page.mouse.wheel(0, 100);
+  await expect
+    .poll(async () => (await getViewportScroll()).top)
+    .toBeGreaterThan(0);
+  expect(await getPageScroll()).toBe(pageScroll);
+});
+
+test("inline previews scroll a trail that starts at its end horizontally", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await gotoAndSettle(page, "/react/recipes/breadcrumb/");
+  const article = q.region("Scrolling Trail", { exact: true });
+  await article.scrollIntoViewIfNeeded();
+  const handle = query(article).separator("Resize preview", {
+    includeHidden: true,
+  });
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  // The trail scrolls in a reversed row, so it starts at a scroll position of
+  // zero and scrolls toward its start with negative positions.
+  const trail = query(viewport).navigation("Breadcrumb");
+  await expect
+    .poll(() => trail.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+  const getTrailScroll = () => trail.evaluate((el) => el.scrollLeft);
+  expect(await getTrailScroll()).toBe(0);
+  const box = await trail.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.wheel(-100, 0);
+  await expect.poll(getTrailScroll).toBeLessThan(0);
+  await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
 });
 
 test("inline previews scroll after a click on their card", async ({
