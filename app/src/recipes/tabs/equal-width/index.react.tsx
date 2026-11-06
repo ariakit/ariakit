@@ -22,7 +22,6 @@ export default function Example() {
   return (
     <Tabs
       defaultSelectedId="access-sign-in"
-      $p="none"
       $rounded="2xl"
       className="w-[22rem] max-w-full"
     >

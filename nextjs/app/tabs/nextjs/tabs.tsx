@@ -5,10 +5,12 @@ import {
   TabList,
   TabPanel,
   TabPanels,
+  TabSeparator,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Fragment } from "react";
 import type { ReactNode } from "react";
 
 const pages = [
@@ -30,17 +32,18 @@ export function MailTabs({ children }: MailTabsProps) {
     <Tabs
       selectedId={pathname}
       selectOnMove={false}
+      $outerEdge={false}
+      $darken={false}
       className="w-[28rem] max-w-full"
     >
       <TabList aria-label="Mail">
-        {pages.map((page) => (
-          <Tab
-            key={page.path}
-            id={page.path}
-            render={<Link href={page.path} />}
-          >
-            {page.label}
-          </Tab>
+        {pages.map((page, index) => (
+          <Fragment key={page.path}>
+            {index > 0 && <TabSeparator aria-hidden />}
+            <Tab id={page.path} render={<Link href={page.path} />}>
+              {page.label}
+            </Tab>
+          </Fragment>
         ))}
       </TabList>
       <TabPanels>

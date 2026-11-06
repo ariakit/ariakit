@@ -1,8 +1,10 @@
 import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
 import {
+  Tab,
   TabList,
   TabPanel,
   TabPanels,
+  TabSeparator,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import { useEffect, useState } from "react";
@@ -34,14 +36,13 @@ export default function Example() {
       selectOnMove={false}
       className="w-[28rem] max-w-full"
     >
-      <TabList
-        aria-label="Reports"
-        tabs={{
-          "reports-sales": "Sales",
-          "reports-traffic": "Traffic",
-          "reports-support": "Support",
-        }}
-      />
+      <TabList aria-label="Reports">
+        <Tab id="reports-sales">Sales</Tab>
+        <TabSeparator aria-hidden />
+        <Tab id="reports-traffic">Traffic</Tab>
+        <TabSeparator aria-hidden />
+        <Tab id="reports-support">Support</Tab>
+      </TabList>
       <TabPanels>
         <TabPanel single aria-busy={loading}>
           {loading ? (

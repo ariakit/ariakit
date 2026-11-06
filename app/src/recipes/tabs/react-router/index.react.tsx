@@ -4,8 +4,10 @@ import {
   TabList,
   TabPanel,
   TabPanels,
+  TabSeparator,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
+import { Fragment } from "react";
 import {
   Link,
   MemoryRouter,
@@ -39,16 +41,20 @@ function MailTabs() {
           links navigate: a setSelectedId that also navigates would add a second
           history entry for each click. Without selection on move, the arrow
           keys add no entries, and Enter follows the focused link. */}
-      <Tabs selectedId={location.pathname} selectOnMove={false}>
+      <Tabs
+        selectedId={location.pathname}
+        selectOnMove={false}
+        $outerEdge={false}
+        $darken={false}
+      >
         <TabList aria-label="Mail">
-          {pages.map((page) => (
-            <Tab
-              key={page.path}
-              id={page.path}
-              render={<Link to={page.path} />}
-            >
-              {page.label}
-            </Tab>
+          {pages.map((page, index) => (
+            <Fragment key={page.path}>
+              {index > 0 && <TabSeparator aria-hidden />}
+              <Tab id={page.path} render={<Link to={page.path} />}>
+                {page.label}
+              </Tab>
+            </Fragment>
           ))}
         </TabList>
         <TabPanels>

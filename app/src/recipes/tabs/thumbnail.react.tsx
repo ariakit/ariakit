@@ -4,6 +4,7 @@ import {
   tabLabel,
   tabList,
   tabPanels,
+  tabSeparator,
   tabs,
 } from "@ariakit/ui/styles/tabs";
 
@@ -23,11 +24,13 @@ export default function Thumbnail() {
               moving its bottom curves. */}
           <span className="absolute inset-x-0 -bottom-px h-[3px] bg-(--ak-layer)" />
         </div>
+        <div {...tabSeparator.jsx()} aria-hidden />
         <div {...tab.jsx()} aria-selected="false">
           <span {...tabLabel.jsx()} data-text="Activity">
             Activity
           </span>
         </div>
+        <div {...tabSeparator.jsx()} aria-hidden />
         <div {...tab.jsx()} aria-selected="false">
           <span {...tabLabel.jsx()} data-text="Files">
             Files

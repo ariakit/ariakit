@@ -87,10 +87,16 @@ export const tabs = cv({
   ],
   variants: {
     /**
-     * Hides the root edge while tabs and panels keep theirs. Preserves edge
-     * width so seams and corners remain aligned.
+     * Shows the root edge around the strip and panels. With `false`, only the
+     * selected folder and the panels draw the edge. The root keeps the edge
+     * width, so seams and corners stay aligned. Pair it with `$darken={false}`
+     * so that the strip also takes the color around the root. Defaults to
+     * `true`.
      */
-    $edgeHidden: "border-transparent ring-transparent",
+    $outerEdge(value?: boolean) {
+      if (value !== false) return;
+      return "border-transparent ring-transparent";
+    },
     /**
      * Rounds panel corners under folder tabs. The first selected folder reduces
      * the start corner, and the last selected folder of a stretched strip
@@ -134,7 +140,7 @@ export const tabs = cv({
   },
   defaultVariants: {
     $rounded: "xl",
-    $p: 1,
+    $p: "none",
     $border: true,
     // Darken the strip half a step so tabs and panels stand out together.
     $darken: 0.5,
@@ -323,6 +329,15 @@ export const tab = cv({
       return 1.5;
     },
     $lightnessOffset: false,
+    // The strip padding shows above and below the tabs, so folders take it from
+    // their own padding, and padding on Tabs makes the strip only a little
+    // taller. They keep at least 1.5 spacing steps.
+    $p(defaultValue, variants) {
+      if (variants.$kind !== "folder") return defaultValue;
+      // Replace only the control padding, so an extender's default stays.
+      if (defaultValue !== 2) return defaultValue;
+      return "round(max(var(--spacing) * 1.5, var(--spacing) * 2 - var(--tabs-float, 0px)), 1px)";
+    },
     // Idle tabs dim their text, which inherits into slots, like navigation
     // links. Hover and selection restore full ink.
     $ink: 80,
