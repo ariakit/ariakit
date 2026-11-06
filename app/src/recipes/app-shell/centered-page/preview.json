@@ -1,0 +1,5 @@
+{
+  "title": "Centered Page with Full-Width Bars",
+  "description": "A docs site that sets $maxWidth on the outer Shell and nests a Shell with a navigation sidebar, main, and an On this page sidebar, so they sit in a centered box while ShellHeader and ShellFooter span the page. The bars put ShellStart, ShellCenter, and ShellEnd inside ShellContent, so the logo, the search field, and the actions line up with the sidebar rows. Use it when the page content stops at a maximum width on wide screens, and use the aligned header layout when the bars only need to match the column of ShellMain.",
+  "fullscreen": true
+}

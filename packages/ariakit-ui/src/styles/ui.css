@@ -435,6 +435,35 @@ body > * {
   initial-value: 672px;
 }
 
+/* A shell's `$maxWidth` resolves at that shell, so its main, its bars, and the
+   shell inside it read one length. Alternating channels carry it to the shell
+   inside without a same-element custom-property cycle. */
+@property --shell-max-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 672px;
+}
+
+@property --shell-max-width-a {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 672px;
+}
+
+@property --shell-max-width-b {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 672px;
+}
+
+/* The space on each side of the box of a shell inside a shell with
+   `$maxWidth`. Only that shell's columns read it. */
+@property --shell-page-track {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* Animate occupied sidebar widths to keep main content centered during folding.
    Disable inheritance so nested shells account only for their own sidebars. */
 @property --shell-start-1-space {
@@ -507,6 +536,18 @@ body > * {
 }
 
 @property --shell-bar-padding-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-edge-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-edge-end {
   syntax: "<length-percentage>";
   inherits: false;
   initial-value: 0px;
@@ -1397,26 +1438,37 @@ body > * {
   --shell-popout: 1rem;
   --shell-feature: 3.5rem;
   --shell-gutter: round(calc(var(--shell-header-step) * 3), 1px);
-  --shell-bar-start-space: var(--shell-start-total);
-  --shell-bar-end-space: var(--shell-end-total);
-  --shell-bar-padding-start: max(
-    var(--ak-frame-padding),
-    env(safe-area-inset-left)
+  /* In a shell inside a shell with `$maxWidth`, the page space puts main and
+     the parts inside the box. The edge is the smallest space for the content
+     past the page space, and the safe area counts from the screen edge. */
+  --shell-bar-start-space: calc(
+    var(--shell-start-total) + var(--shell-page-space)
   );
-  --shell-bar-padding-end: max(
+  --shell-bar-end-space: calc(var(--shell-end-total) + var(--shell-page-space));
+  --shell-bar-edge-start: max(
     var(--ak-frame-padding),
-    env(safe-area-inset-right)
+    calc(env(safe-area-inset-left) - var(--shell-page-space))
+  );
+  --shell-bar-edge-end: max(
+    var(--ak-frame-padding),
+    calc(env(safe-area-inset-right) - var(--shell-page-space))
   );
   @variant rtl {
-    --shell-bar-padding-start: max(
+    --shell-bar-edge-start: max(
       var(--ak-frame-padding),
-      env(safe-area-inset-right)
+      calc(env(safe-area-inset-right) - var(--shell-page-space))
     );
-    --shell-bar-padding-end: max(
+    --shell-bar-edge-end: max(
       var(--ak-frame-padding),
-      env(safe-area-inset-left)
+      calc(env(safe-area-inset-left) - var(--shell-page-space))
     );
   }
+  --shell-bar-padding-start: calc(
+    var(--shell-bar-edge-start) + var(--shell-page-space)
+  );
+  --shell-bar-padding-end: calc(
+    var(--shell-bar-edge-end) + var(--shell-page-space)
+  );
 }
 
 /* Three tracks that aim the middle one at a column of main, for a part with
@@ -1449,15 +1501,15 @@ body > * {
     max(
       0px,
       calc(
-        var(--shell-bar-width) - var(--shell-bar-padding-start) -
-          var(--shell-bar-padding-end)
+        var(--shell-bar-width) - var(--shell-bar-edge-start) -
+          var(--shell-bar-edge-end)
       )
     )
   );
   --shell-bar-rest: calc(
     var(--shell-bar-width) - var(--shell-bar-offset-start) -
-      var(--shell-bar-offset-end) - var(--shell-bar-padding-start) -
-      var(--shell-bar-padding-end) - var(--shell-bar-content)
+      var(--shell-bar-offset-end) - var(--shell-bar-edge-start) -
+      var(--shell-bar-edge-end) - var(--shell-bar-content)
   );
   --shell-bar-popout: clamp(
     0px,

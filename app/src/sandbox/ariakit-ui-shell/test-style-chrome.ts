@@ -64,4 +64,35 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(closing).toBeLessThan(areaCount);
     test.expect(opening).toBeLessThan(areaCount);
   });
+
+  test("keeps the header area styles cached when a sidebar in the page box closes and opens", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await q.combobox("Scenario").selectOption("page");
+    const toggle = q.checkbox("Start sidebar");
+    const sidebar = q.navigation("Start sidebar");
+    const area = q.group("Header area");
+    const areaCount = await area.locator("*").count();
+    const readCustomProperties = () =>
+      q.group("Area center").evaluate((element) => {
+        const entries: Array<[string, string]> = [];
+        for (const [property, values] of element.computedStyleMap()) {
+          if (!property.startsWith("--")) continue;
+          entries.push([property, Array.from(values, String).join(" ")]);
+        }
+        return Object.fromEntries(entries);
+      });
+    const values = await readCustomProperties();
+    const closing = await largestStyleRecalculation(page, () =>
+      toggle.uncheck(),
+    );
+    await test.expect(sidebar).toBeHidden();
+    test.expect(await readCustomProperties()).toEqual(values);
+    const opening = await largestStyleRecalculation(page, () => toggle.check());
+    await test.expect(sidebar).toBeVisible();
+    test.expect(closing).toBeLessThan(areaCount);
+    test.expect(opening).toBeLessThan(areaCount);
+  });
 });
