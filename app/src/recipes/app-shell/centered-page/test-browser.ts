@@ -37,17 +37,26 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
-  test("keeps the logo on the sidebar rows below the box width", async ({
+  test("keeps the bar parts on the sidebar rows below the box width", async ({
     page,
     q,
   }) => {
     await page.setViewportSize({ width: 1100, height: 800 });
     const link = query(q.navigation("Guides")).link("Installation");
+    const tocLink = query(q.complementary("On this page")).link("Installation");
     await expect(link).toBeVisible();
+    await expect(tocLink).toBeVisible();
     const logo = await getBox(q.link("Acme Docs"));
     const row = await getBox(link);
     expect(logo.x).toBeCloseTo(row.x, 0);
     expect(row.x).toBeLessThan(20);
+    const tocRow = await getBox(tocLink);
+    const rowEnd = tocRow.x + tocRow.width;
+    expect(rowEnd).toBeGreaterThan(1080);
+    for (const part of [q.button("Sign in"), q.link("Back to top")]) {
+      const box = await getBox(part);
+      expect(box.x + box.width).toBeCloseTo(rowEnd, 0);
+    }
   });
 
   test("fits the header on a 320px page", async ({ page, q }) => {

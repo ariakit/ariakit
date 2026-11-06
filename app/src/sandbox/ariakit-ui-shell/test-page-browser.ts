@@ -75,23 +75,23 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await q.checkbox("End sidebar").setChecked(endOpen);
       await expectEdges(q.group("Header area"), start, end);
       await expectEdges(q.group("Footer area"), start, end);
+      const [partStart, partEnd] = await getOuterEdges(
+        q.group("Area start"),
+        q.group("Area end"),
+      );
+      expect(partStart).toBeCloseTo(start, 0);
+      expect(partEnd).toBeCloseTo(end, 0);
+      // The parts share one row and the center part stays on the box's middle.
+      const area = await getBox(q.group("Header area"));
+      for (const name of ["Area start", "Area center", "Area end"]) {
+        const part = await getBox(q.group(name));
+        expect(part.y).toBeCloseTo(area.y, 0);
+      }
+      await expectCentered(
+        q.group("Area center"),
+        page.locator(".shell-header").first(),
+      );
     }
-    const [partStart, partEnd] = await getOuterEdges(
-      q.group("Area start"),
-      q.group("Area end"),
-    );
-    expect(partStart).toBeCloseTo(start, 0);
-    expect(partEnd).toBeCloseTo(end, 0);
-    // The parts share one row and the center part stays on the box's middle.
-    const area = await getBox(q.group("Header area"));
-    for (const name of ["Area start", "Area center", "Area end"]) {
-      const part = await getBox(q.group(name));
-      expect(part.y).toBeCloseTo(area.y, 0);
-    }
-    await expectCentered(
-      q.group("Area center"),
-      page.locator(".shell-header").first(),
-    );
   });
 
   test("lines up the bar parts with the sidebar items in RTL", async ({
