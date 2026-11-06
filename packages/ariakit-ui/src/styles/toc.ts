@@ -41,8 +41,8 @@ export const toc = cv({
   variants: {
     /**
      * Sets the font size of the label and the rows, which also scales their
-     * padding and the guide. Named steps use the Tailwind text scale. Numbers
-     * from `-2` to `2` are steps from the parent font size, so `-1` is
+     * padding and the guide. Named steps use the Tailwind text scale. The
+     * numbers `-2`, `-1`, `1`, and `2` scale the parent font size, so `-1` is
      * `0.875em`. `auto` inherits the parent font size. Defaults to `sm`.
      */
     $size: fontSizeVariants.$size,
