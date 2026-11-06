@@ -288,9 +288,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     q,
     page,
   }) => {
-    // The sidebars always show, so close them before they cover the options.
-    await q.checkbox("Start sidebar").uncheck();
-    await q.checkbox("End sidebar").uncheck();
     await q.checkbox("Long parts").check();
     await page.setViewportSize({ width: 400, height: 900 });
     const [start, center, end] = await Promise.all([
@@ -306,9 +303,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     q,
     page,
   }) => {
-    // The sidebars always show, so close them before they cover the options.
-    await q.checkbox("Start sidebar").uncheck();
-    await q.checkbox("End sidebar").uncheck();
     await q.checkbox("Stack center").check();
     await q.checkbox("Edge parts").check();
     await page.setViewportSize({ width: 500, height: 900 });

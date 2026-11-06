@@ -202,12 +202,9 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
           </ShellEnd>
         </ShellHeader>
       )}
-      <ShellSidebar
-        landmark="nav"
-        aria-label="Start sidebar"
-        $show
-        open={startOpen}
-      >
+      {/* The default `$show` folds the sidebars below 48rem, so the options in
+          main stay reachable on narrow pages. */}
+      <ShellSidebar landmark="nav" aria-label="Start sidebar" open={startOpen}>
         <ShellSidebarBody>
           <SidebarItems
             label="Start items"
@@ -220,7 +217,6 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
         landmark="aside"
         aria-label="End sidebar"
         $side="end"
-        $show
         open={endOpen}
       >
         <ShellSidebarBody>
