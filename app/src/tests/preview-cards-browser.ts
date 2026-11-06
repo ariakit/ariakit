@@ -801,6 +801,11 @@ test("inline previews scroll a trail that starts at its end horizontally", async
   const handle = query(article).separator("Resize preview", {
     includeHidden: true,
   });
+  // The card hydrates when it scrolls into view, and then measures the width
+  // that the handle can resize to. Its wheel listener comes with hydration.
+  await handle.and(page.locator("[data-enabled]")).waitFor({
+    state: "attached",
+  });
   const viewportId = await handle.getAttribute("aria-controls");
   const viewport = page.locator(`[id="${viewportId}"]`);
   // The trail scrolls in a reversed row, so it starts at a scroll position of
