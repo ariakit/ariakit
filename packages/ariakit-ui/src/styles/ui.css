@@ -2109,6 +2109,10 @@ body > * {
 /**
  * Joins selected tabs to the panel with curved outer corners. Set --folder-edge
  * and --folder-extra to extend the tab's focus edge inward along the curves.
+ * Set --folder-cut on a curve to cut that length from its far end. The cut side
+ * then paints a side border as wide as the folder edge, like a folder border
+ * that lies on the cut. A negative value puts the cut past the far end, where
+ * the side border paints only the part that overlaps the curve.
  */
 @utility ui-folder {
   position: relative;
@@ -2167,26 +2171,48 @@ body > * {
       --folder-extra-smoothness: min(0.2px, var(--folder-extra, 0px));
       --folder-extra-inner: calc(var(--folder-inner) + var(--folder-extra, 0px));
       --folder-extra-gradient: transparent calc(var(--folder-inner-border) - var(--folder-extra-smoothness)), var(--folder-edge) var(--folder-inner-border), var(--folder-edge) calc(var(--folder-extra-inner) - var(--folder-extra-smoothness)), transparent calc(var(--folder-extra-inner) + var(--folder-extra-smoothness));
+      /* A cut narrows the box from the far end and moves the gradients with
+         it, so the rest of the curve keeps its place. A clip path would change
+         the antialiasing at the side next to the tab. */
+      --folder-cut-length: max(0px, var(--folder-cut, 0px));
+      /* The side border of a cut keeps the focus extra, like the folder sides.
+         It fills the far end of the narrowed box, as much of it as reaches the
+         box, so a curve without a cut paints none. */
+      --folder-side: calc(var(--folder-bordering) + var(--folder-extra, 0px));
+      --folder-side-width: clamp(0px, var(--folder-cut, -1 * var(--folder-side)) + var(--folder-side), var(--folder-side));
+      /* Below the outer arc, the side border paints the edge over the surface
+         under the frame edge, like the stroke beside it. */
+      --folder-side-edge: transparent var(--folder-outer-bg), var(--folder-edge) var(--folder-outer-border);
+      --folder-side-under: transparent var(--folder-outer-bg), var(--folder-under) var(--folder-outer-border);
       content: "";
       pointer-events: none;
-      width: calc(var(--folder-radius) + var(--folder-extra, 0px));
+      width: calc(var(--folder-radius) + var(--folder-extra, 0px) - var(--folder-cut-length));
       height: calc(var(--folder-radius) + var(--folder-over));
       /* Hide an empty extra band and stop it at the seam. */
-      background-size: min(var(--folder-extra, 0px) * 1000000, 100%) var(--folder-radius), auto, auto;
+      background-size:
+        min(var(--folder-extra, 0px) * 1000000, 100%) var(--folder-radius),
+        var(--folder-side-width) 100%,
+        var(--folder-side-width) 100%,
+        auto,
+        auto;
+      background-image: radial-gradient(circle at var(--folder-center), var(--folder-extra-gradient)),
+        radial-gradient(circle at var(--folder-center), var(--folder-side-edge)),
+        radial-gradient(circle at var(--folder-center), var(--folder-side-under)),
+        radial-gradient(circle at var(--folder-center), var(--folder-gradient)),
+        radial-gradient(circle at var(--folder-center), var(--folder-backdrop));
     }
 
     &::before {
       inset-inline-end: 100%;
-      background-image: radial-gradient(circle at 0 0, var(--folder-extra-gradient)),
-        radial-gradient(circle at 0 0, var(--folder-gradient)),
-        radial-gradient(circle at 0 0, var(--folder-backdrop));
+      --folder-center: calc(-1 * var(--folder-cut-length)) 0;
     }
 
     &::after {
       inset-inline-start: 100%;
-      background-image: radial-gradient(circle at 100% 0, var(--folder-extra-gradient)),
-        radial-gradient(circle at 100% 0, var(--folder-gradient)),
-        radial-gradient(circle at 100% 0, var(--folder-backdrop));
+      /* Each layer ends at the right side of the box, with the gradient center
+         past it. Only the side border needs a position for that. */
+      --folder-center: calc(100% + var(--folder-cut-length)) 0;
+      background-position: 0 0, 100% 0, 100% 0, 0 0, 0 0;
     }
 
     /* Mirror physical gradient centers to match the logical insets in RTL. */

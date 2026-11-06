@@ -699,6 +699,257 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Cut folder curve"
+        description='$folderCurve="cut" keeps the full curve of the selected first tab, and the root edge cuts it. The full curve does not fit, so the panel corner stays square.'
+        stretch
+        code={`
+          <Tabs $p={1} $folderCurve="cut">
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $p={1} $folderCurve="cut" defaultSelectedId="cut-preview">
+          <TabList aria-label="Cut folder curve">
+            <Tab id="cut-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="cut-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="cut-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The root edge cuts the tab curve.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Cut folder curve beside a rounded panel corner"
+        description="When the indent has room for the full curve, nothing is cut, and the panel corner rounds with the space left after the curve."
+        stretch
+        code={`
+          <Tabs $p={1} $indent={4} $folderCurve="cut">
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          $p={1}
+          $indent={4}
+          $folderCurve="cut"
+          defaultSelectedId="cut-corner-preview"
+        >
+          <TabList aria-label="Cut folder curve beside a rounded panel corner">
+            <Tab id="cut-corner-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="cut-corner-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="cut-corner-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">
+                The panel corner takes the space after the curve.
+              </p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Full-width strip with a cut curve on the last tab"
+        description="In a stretched strip, the selected last tab cuts its end curve in the same way, and the panel's end corner stays square."
+        stretch
+        code={`
+          <Tabs $p={1} $folderCurve="cut">
+            <TabList $layout="stretch">
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $p={1} $folderCurve="cut" defaultSelectedId="cut-last-usage">
+          <TabList
+            $layout="stretch"
+            aria-label="Full-width strip with a cut curve on the last tab"
+          >
+            <Tab id="cut-last-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="cut-last-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="cut-last-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The root edge cuts the end curve.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Cut folder curve without outer edge"
+        description="Without the outer edge, the cut still shows the edge, so it continues from the curve into the edge of the panel."
+        stretch
+        code={`
+          <Tabs $p={1} $folderCurve="cut" $outerEdge={false} $darken={false}>
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          $p={1}
+          $folderCurve="cut"
+          $outerEdge={false}
+          $darken={false}
+          defaultSelectedId="cut-edgeless-preview"
+        >
+          <TabList aria-label="Cut folder curve without outer edge">
+            <Tab id="cut-edgeless-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="cut-edgeless-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="cut-edgeless-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The cut joins the edge of the panel.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Cut folder curve right to left"
+        description="The cut curve mirrors with the selected first tab on the right."
+        stretch
+        code={`
+          <div dir="rtl">
+            <Tabs rtl $p={1} $folderCurve="cut">
+              <TabList>
+                <Tab>
+                  <TabLabel>المسودات</TabLabel>
+                </Tab>
+                <Tab>
+                  <TabLabel>قيد المراجعة</TabLabel>
+                </Tab>
+                <Tab>
+                  <TabLabel>المنشورة</TabLabel>
+                </Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel single>
+                  …
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </div>
+        `}
+      >
+        {/* Drafts, In review and Published, with an Arabic panel line. */}
+        <div dir="rtl" lang="ar">
+          <Tabs
+            rtl
+            $p={1}
+            $folderCurve="cut"
+            defaultSelectedId="cut-rtl-drafts"
+          >
+            <TabList aria-label="مراحل النشر مع منحنى مقصوص">
+              <Tab id="cut-rtl-drafts">
+                <TabLabel>المسودات</TabLabel>
+              </Tab>
+              <Tab id="cut-rtl-review">
+                <TabLabel>قيد المراجعة</TabLabel>
+              </Tab>
+              <Tab id="cut-rtl-published">
+                <TabLabel>المنشورة</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                <p className="text-sm">ثلاث مسودات قيد التحرير الآن.</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </div>
+      </Example>
+
+      <Example
         title="Automatic indent with flat tabs"
         description='Flat tabs have no curves, so $indent="auto" has no effect, and the strip keeps its own padding.'
         stretch
