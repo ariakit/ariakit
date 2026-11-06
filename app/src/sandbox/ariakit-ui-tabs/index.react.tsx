@@ -553,7 +553,7 @@ export default function TabsExamples() {
         description='$indent="auto" leaves room for the full panel corner and the full curve of the selected first tab. It replaces the root padding beside the tabs, and the padding above them stays.'
         stretch
         code={`
-          <Tabs $indent="auto">
+          <Tabs $p={1} $indent="auto">
             <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -573,7 +573,7 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs $indent="auto" defaultSelectedId="auto-indent-preview">
+        <Tabs $p={1} $indent="auto" defaultSelectedId="auto-indent-preview">
           <TabList aria-label="Indented to full radii">
             <Tab id="auto-indent-preview">
               <TabLabel>Preview</TabLabel>
@@ -600,7 +600,7 @@ export default function TabsExamples() {
         description='With square panel corners, $indent="auto" leaves room only for the full curve of the selected first tab.'
         stretch
         code={`
-          <Tabs $indent="auto" $panelRoundedTop={false}>
+          <Tabs $p={1} $indent="auto" $panelRoundedTop={false}>
             <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -621,6 +621,7 @@ export default function TabsExamples() {
         `}
       >
         <Tabs
+          $p={1}
           $indent="auto"
           $panelRoundedTop={false}
           defaultSelectedId="auto-indent-square-preview"
@@ -649,7 +650,7 @@ export default function TabsExamples() {
         description='When the root edge is wider than half of both radii, $indent="auto" still leaves exactly enough room for them.'
         stretch
         code={`
-          <Tabs $indent="auto" $rounded="xs" $border={3}>
+          <Tabs $p={1} $indent="auto" $rounded="xs" $border={3}>
             <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -670,6 +671,7 @@ export default function TabsExamples() {
         `}
       >
         <Tabs
+          $p={1}
           $indent="auto"
           $rounded="xs"
           $border={3}
@@ -1054,7 +1056,7 @@ export default function TabsExamples() {
             <TabList>…</TabList>
             <TabPanels>
               <TabPanel single>
-                <Tabs $panelRoundedTop={false}>…</Tabs>
+                <Tabs $p={1} $panelRoundedTop={false}>…</Tabs>
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -1073,6 +1075,7 @@ export default function TabsExamples() {
             <TabPanel single>
               <Tabs
                 defaultSelectedId="nested-square-inner-general"
+                $p={1}
                 $forceRounded
                 $panelRoundedTop={false}
               >
