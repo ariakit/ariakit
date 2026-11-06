@@ -2,6 +2,7 @@ import { cv } from "clava";
 import { getPaddingValue, getScaledStyleClass } from "../utils/styles.ts";
 import { edge } from "./edge.ts";
 import { nav, navGroupLabel, navLink } from "./nav.ts";
+import { fontSizeVariants } from "./slot-frame.ts";
 
 /**
  * A table of contents: a navigation region whose rows sit along a guide that
@@ -40,17 +41,11 @@ export const toc = cv({
   variants: {
     /**
      * Sets the font size of the label and the rows, which also scales their
-     * padding and the guide. `auto` inherits the parent font size. Defaults to
-     * `sm`.
+     * padding and the guide. Named steps use the Tailwind text scale. Numbers
+     * from `-2` to `2` are steps from the parent font size, so `-1` is
+     * `0.875em`. `auto` inherits the parent font size. Defaults to `sm`.
      */
-    $size: {
-      auto: "",
-      xs: "text-xs",
-      sm: "text-sm",
-      md: "text-base",
-      lg: "text-lg",
-      xl: "text-xl",
-    },
+    $size: fontSizeVariants.$size,
     /**
      * Sets the look of the guide along the rows: `smooth` bends into nested
      * lists with curves, `diagonal` with slanted lines, `rail` keeps one

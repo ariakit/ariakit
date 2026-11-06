@@ -13,7 +13,10 @@ import { text } from "./text.ts";
  */
 export const fontSizeVariants = {
   /**
-   * Sets the font size used by padding, gaps, and icons. `auto` inherits the
+   * Sets the font size used by padding, gaps, and icons. Named steps use the
+   * Tailwind text scale, so `sm` always has the size of `text-sm`. Numbers from
+   * `-2` to `2` scale the parent font size instead: `-1` is `0.875em`, so it
+   * matches `sm` in 16px text and is 15.75px in 18px text. `auto` inherits the
    * parent font size.
    * @default "auto"
    */
@@ -24,6 +27,12 @@ export const fontSizeVariants = {
     md: "text-base",
     lg: "text-lg",
     xl: "text-xl",
+    // Each relative step has the ratio and the line height of the Tailwind step
+    // that it matches in 16px text. A leading-* class still wins.
+    [-2]: "text-[0.75em]/(--tw-leading,var(--text-xs--line-height))",
+    [-1]: "text-[0.875em]/(--tw-leading,var(--text-sm--line-height))",
+    [1]: "text-[1.125em]/(--tw-leading,var(--text-lg--line-height))",
+    [2]: "text-[1.25em]/(--tw-leading,var(--text-xl--line-height))",
   },
 };
 

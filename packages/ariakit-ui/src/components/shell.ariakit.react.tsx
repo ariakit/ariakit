@@ -226,14 +226,14 @@ export interface ShellMainProps
  *
  * `$size` sets the text size of main and a 42em column, so line length stays
  * the same at every size. `Prose` follows it, and bars and sidebars keep the
- * shell's size. Other text and unsized controls in main grow with it. It
- * defaults to `md`, for reading pages. Set `$size="auto"` for an app screen
- * that keeps the shell's text. A nested shell doesn't take the size. With a
- * size, define a variable for `$p`, `$py`, or `$maxWidth` in rem or as a plain
- * length: Firefox resolves a variable that reads an em-based variable, such as
- * `--spacing()`, against the parent's text. `$size="lg"` uses 1rem text when
- * the shell is narrower than 40rem. Set `$minSize="lg"` to keep the large text
- * there.
+ * shell's size. Other text in main grows with it, and so do controls without
+ * `$size` or with a relative `$size`, such as `-1`. It defaults to `md`, for
+ * reading pages. Set `$size="auto"` for an app screen that keeps the shell's
+ * text. A nested shell doesn't take the size. With a size, define a variable
+ * for `$p`, `$py`, or `$maxWidth` in rem or as a plain length: Firefox resolves
+ * a variable that reads an em-based variable, such as `--spacing()`, against
+ * the parent's text. `$size="lg"` uses 1rem text when the shell is narrower
+ * than 40rem. Set `$minSize="lg"` to keep the large text there.
  * @example
  * <Shell>
  *   <ShellMain $p={4}>

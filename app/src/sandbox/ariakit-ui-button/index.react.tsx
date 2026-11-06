@@ -392,6 +392,32 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Relative size"
+        description="In larger text, a named size keeps the size of its Tailwind text class, and a negative number stays one step smaller than the text around it."
+        code={`
+          <div className="text-lg">
+            Ready to publish?
+            <Button $kind="bevel" $size="sm">
+              <ButtonLabel>Fixed</ButtonLabel>
+            </Button>
+            <Button $kind="bevel" $size={-1}>
+              <ButtonLabel>Relative</ButtonLabel>
+            </Button>
+          </div>
+        `}
+      >
+        <div className="flex flex-wrap items-baseline gap-3 text-lg">
+          <span>Ready to publish?</span>
+          <Button $kind="bevel" $size="sm">
+            <ButtonLabel>Fixed</ButtonLabel>
+          </Button>
+          <Button $kind="bevel" $size={-1}>
+            <ButtonLabel>Relative</ButtonLabel>
+          </Button>
+        </div>
+      </Example>
+
+      <Example
         title="Pill"
         description="A full radius with more side padding, so the text keeps its distance from the round ends."
         code={`
