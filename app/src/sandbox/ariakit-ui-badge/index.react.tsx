@@ -654,6 +654,31 @@ export default function BadgeExamples() {
           </Badge>
         </div>
       </Example>
+
+      {/*
+        This box stays last. It's taller than the other boxes in its row and has
+        a fractional height, so earlier in the grid it would move the boxes in
+        later rows off whole pixels and change their page captures.
+       */}
+      <Example
+        title="Relative size in a heading"
+        description="A number multiplies the font size and the line height of the heading around it, so the badge grows with the heading."
+        code={`
+          <Heading $level={1}>
+            Changelog
+            <Badge $layer="brand" $size={0.75}>
+              <BadgeLabel>Latest</BadgeLabel>
+            </Badge>
+          </Heading>
+        `}
+      >
+        <Heading $level={1}>
+          Changelog{" "}
+          <Badge $layer="brand" $size={0.75}>
+            <BadgeLabel>Latest</BadgeLabel>
+          </Badge>
+        </Heading>
+      </Example>
     </ExampleGrid>
   );
 }

@@ -1,31 +1,12 @@
 import type { VariantProps } from "clava";
 import { cv } from "clava";
 import { includes } from "../utils/includes.ts";
+import { fontSize } from "./font-size.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
 import { hasLayerBackground, isLayerColor } from "./layer.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
-
-/**
- * The `$size` variant of slot frames and control groups. It sets the font size
- * that their padding, gaps, and slots scale with.
- */
-export const fontSizeVariants = {
-  /**
-   * Sets the font size used by padding, gaps, and icons. `auto` inherits the
-   * parent font size.
-   * @default "auto"
-   */
-  $size: {
-    auto: "",
-    xs: "text-xs",
-    sm: "text-sm",
-    md: "text-base",
-    lg: "text-lg",
-    xl: "text-xl",
-  },
-};
 
 /**
  * A text frame that lays out slots and text in a row. Its gaps and the margins
@@ -35,7 +16,7 @@ export const fontSizeVariants = {
  * it, and so can static elements, such as field errors.
  */
 export const slotFrame = cv({
-  extend: [textFrame, text],
+  extend: [textFrame, text, fontSize],
   class: [
     "flex",
     // Subtract glyph side bearings from gaps for optical text alignment.
@@ -45,7 +26,6 @@ export const slotFrame = cv({
     "*:[--control-inline:initial]",
   ],
   variants: {
-    ...fontSizeVariants,
     /**
      * Sets the gap between the element's content and its siblings. With
      * `$p="none"`, `md` is `0.4375em`, and the other steps are a side bearing
@@ -73,7 +53,6 @@ export const slotFrame = cv({
     },
   },
   defaultVariants: {
-    $size: "auto",
     $gap: "md",
     $gapY: "auto",
   },

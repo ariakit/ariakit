@@ -1,11 +1,11 @@
 import type { VariantProps } from "clava";
 import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
+import { fontSize } from "./font-size.ts";
 import { frame } from "./frame.ts";
 import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
 import { segmentGroup } from "./segment.ts";
 import {
-  fontSizeVariants,
   hasSlotSurface,
   slotFrame,
   slotFrameSlot,
@@ -711,7 +711,7 @@ export const controlBar = cv({
 
 /** A control group with shared spacing and optional joined edges. */
 export const controlGroup = cv({
-  extend: [frame, segmentGroup],
+  extend: [frame, segmentGroup, fontSize],
   class: [
     // Bars inside the controls reach the group's padding edge.
     "control-group [--control-bar-gap:var(--ak-frame-padding)]",
@@ -721,7 +721,6 @@ export const controlGroup = cv({
     "[&>.control]:ui-selected:forced-colors:ak-frame-border-[length:max(1px,var(--border-width,1px))]",
   ],
   variants: {
-    ...fontSizeVariants,
     /**
      * Joins adjacent control edges in a single row or column with no gap.
      * Active controls own their shared edges; later active controls win ties.
@@ -757,7 +756,6 @@ export const controlGroup = cv({
     },
   },
   defaultVariants: {
-    $size: "auto",
     $rounded: "xl",
     $layout: "horizontal",
     $p: 1,

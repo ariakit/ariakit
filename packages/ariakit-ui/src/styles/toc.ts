@@ -1,6 +1,7 @@
 import { cv } from "clava";
 import { getPaddingValue, getScaledStyleClass } from "../utils/styles.ts";
 import { edge } from "./edge.ts";
+import { fontSize } from "./font-size.ts";
 import { nav, navGroupLabel, navLink } from "./nav.ts";
 
 /**
@@ -8,10 +9,11 @@ import { nav, navGroupLabel, navLink } from "./nav.ts";
  * bends into nested lists. A thumb covers the guide along the rows whose
  * sections are on screen, between `--toc-thumb-start` and `--toc-thumb-end`,
  * which the style component sets on each thumb piece and marker in pixels from
- * the top of this element.
+ * the top of this element. `$size` sets the font size of the label and the
+ * rows, which also scales their padding and the guide. It defaults to `sm`.
  */
 export const toc = cv({
-  extend: [nav],
+  extend: [nav, fontSize],
   class: [
     "toc",
     "[--toc-indent:--spacing(3)]",
@@ -38,19 +40,6 @@ export const toc = cv({
     "forced-colors:[--toc-halo-color:Canvas]",
   ],
   variants: {
-    /**
-     * Sets the font size of the label and the rows, which also scales their
-     * padding and the guide. `auto` inherits the parent font size. Defaults to
-     * `sm`.
-     */
-    $size: {
-      auto: "",
-      xs: "text-xs",
-      sm: "text-sm",
-      md: "text-base",
-      lg: "text-lg",
-      xl: "text-xl",
-    },
     /**
      * Sets the look of the guide along the rows: `smooth` bends into nested
      * lists with curves, `diagonal` with slanted lines, `rail` keeps one
