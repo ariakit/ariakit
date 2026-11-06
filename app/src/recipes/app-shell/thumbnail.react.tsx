@@ -171,7 +171,7 @@ function Header() {
 
 function Sidebar() {
   return (
-    <Region $layer $darken={0.5} className="border-e">
+    <Region $darken={0.5} className="border-e">
       <div {...nav.jsx({ $p: 2 })}>
         <ul {...navList.jsx()}>
           {links.map((link) => (
@@ -295,7 +295,6 @@ function Overview() {
 export default function Thumbnail() {
   return (
     <Frame
-      $layer
       $lighten
       $rounded="2xl"
       $border
@@ -312,7 +311,6 @@ export default function Thumbnail() {
 export function SmallThumbnail() {
   return (
     <Frame
-      $layer
       $lighten
       $p="none"
       className="grid grid-cols-[--spacing(20.5)_1fr] grid-rows-[auto_1fr]"

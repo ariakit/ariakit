@@ -549,6 +549,201 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Indented to full radii"
+        description='$indent="auto" leaves room for the full panel corner and the full curve of the selected first tab. It replaces the root padding beside the tabs, and the padding above them stays.'
+        stretch
+        code={`
+          <Tabs $indent="auto">
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $indent="auto" defaultSelectedId="auto-indent-preview">
+          <TabList aria-label="Indented to full radii">
+            <Tab id="auto-indent-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="auto-indent-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="auto-indent-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">
+                The panel corner and the tab curve keep the full radius.
+              </p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Indented to a full radius beside square panel corners"
+        description='With square panel corners, $indent="auto" leaves room only for the full curve of the selected first tab.'
+        stretch
+        code={`
+          <Tabs $indent="auto" $panelRoundedTop={false}>
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          $indent="auto"
+          $panelRoundedTop={false}
+          defaultSelectedId="auto-indent-square-preview"
+        >
+          <TabList aria-label="Indented to a full radius beside square panel corners">
+            <Tab id="auto-indent-square-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="auto-indent-square-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="auto-indent-square-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The tab curve keeps the full radius.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Indented to full radii with a thick root edge"
+        description='When the root edge is wider than half of both radii, $indent="auto" still leaves exactly enough room for them.'
+        stretch
+        code={`
+          <Tabs $indent="auto" $rounded="xs" $border={3}>
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          $indent="auto"
+          $rounded="xs"
+          $border={3}
+          defaultSelectedId="auto-indent-thick-preview"
+        >
+          <TabList aria-label="Indented to full radii with a thick root edge">
+            <Tab id="auto-indent-thick-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="auto-indent-thick-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="auto-indent-thick-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">
+                The thick edge fills part of the indent.
+              </p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Automatic indent with flat tabs"
+        description='Flat tabs have no curves, so $indent="auto" has no effect, and the strip keeps its own padding.'
+        stretch
+        code={`
+          <Tabs $indent="auto">
+            <TabList $p={3}>
+              <Tab $kind="flat">
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab $kind="flat">
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab $kind="flat">
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $indent="auto" defaultSelectedId="auto-indent-flat-preview">
+          <TabList $p={3} aria-label="Automatic indent with flat tabs">
+            <Tab $kind="flat" id="auto-indent-flat-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab $kind="flat" id="auto-indent-flat-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab $kind="flat" id="auto-indent-flat-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">
+                The strip padding stays the same on every side.
+              </p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Full-width strip"
         description="The tabs share the strip's width, and the strip still reaches both ends of the root."
         stretch

@@ -72,7 +72,6 @@ function Thumbnail({ title, children }: ThumbnailProps) {
   return (
     <li className="grid grid-rows-[1fr_auto] gap-2">
       <Frame
-        $layer
         $darken={0.25}
         $rounded="xl"
         $border
@@ -80,14 +79,7 @@ function Thumbnail({ title, children }: ThumbnailProps) {
         aria-hidden
         className="grid content-center text-[0.625rem]"
       >
-        <Frame
-          $layer
-          $lighten
-          $rounded="lg"
-          $border
-          $p={3}
-          className="shadow-xs"
-        >
+        <Frame $lighten $rounded="lg" $border $p={3} className="shadow-xs">
           {children}
         </Frame>
       </Frame>

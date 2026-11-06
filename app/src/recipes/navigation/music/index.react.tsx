@@ -59,14 +59,7 @@ function getPath(title: string) {
 export default function Example() {
   return (
     <ExampleRouter initialPath={getPath("Liked Songs")}>
-      <Frame
-        $layer
-        $lighten={0.5}
-        $rounded="2xl"
-        $border
-        $p={2}
-        className="w-72"
-      >
+      <Frame $lighten={0.5} $rounded="2xl" $border $p={2} className="w-72">
         <Nav aria-label="Music" list={false} $cover>
           <NavList>
             <RouterNavLink to={getPath("Home")}>

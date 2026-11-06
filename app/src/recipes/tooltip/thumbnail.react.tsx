@@ -66,14 +66,7 @@ export default function Thumbnail() {
     // The card is too short for two rows, so narrow cards show only the toolbar.
     <div className="@container/tooltip w-[19em] max-w-full">
       <div className="flex items-center justify-center gap-4 pt-10">
-        <Frame
-          $layer
-          $lighten
-          $rounded="xl"
-          $border
-          $p={1}
-          className="shadow-sm"
-        >
+        <Frame $lighten $rounded="xl" $border $p={1} className="shadow-sm">
           <div {...buttonGroup.jsx()}>
             {tools.map((tool) => (
               <span
@@ -118,7 +111,6 @@ export default function Thumbnail() {
             </Frame>
           ))}
           <Frame
-            $layer
             $lightnessOffset
             $rounded="full"
             $p="none"
@@ -135,7 +127,6 @@ export default function Thumbnail() {
 export function SmallThumbnail() {
   return (
     <Frame
-      $layer
       $lighten
       $p="none"
       className="flex flex-col items-center justify-center gap-4"
@@ -144,7 +135,6 @@ export function SmallThumbnail() {
           small for its text. The arrow takes the pill color and points to the
           hovered button. */}
       <Frame
-        $layer
         $invert
         $rounded="sm"
         $forceRounded

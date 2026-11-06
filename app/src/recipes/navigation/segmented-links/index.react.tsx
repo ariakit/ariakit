@@ -18,7 +18,6 @@ function Feed() {
   const feed = feeds.find((item) => item.path === pathname);
   return (
     <Frame
-      $layer
       $lighten={0.5}
       $rounded="2xl"
       $border
@@ -50,7 +49,6 @@ function Feed() {
         render={<ul />}
         aria-hidden
         $cover
-        $layer
         $darken={0.5}
         $p={4}
         className="grid min-h-60 content-start gap-5"

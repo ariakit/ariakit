@@ -172,7 +172,6 @@ function Badge({ className }: { className?: string }) {
 function Panel({ className, ...props }: FrameProps) {
   return (
     <Frame
-      $layer
       $lighten
       $rounded="xl"
       $border
@@ -254,9 +253,7 @@ function Sidebar() {
               <ChevronsUpDown />
             </span>
           </span>
-          <span
-            {...button.jsx({ $kind: "bevel", $layer: true, $invert: true })}
-          >
+          <span {...button.jsx({ $kind: "bevel", $invert: true })}>
             <span {...buttonSlot.jsx()}>
               <SquarePen />
             </span>
@@ -439,7 +436,7 @@ export default function Thumbnail() {
 
 export function SmallThumbnail() {
   return (
-    <Frame $layer $lighten $p="none" className="grid grid-cols-2">
+    <Frame $lighten $p="none" className="grid grid-cols-2">
       <Frame
         $rounded="none"
         $forceRounded
@@ -461,7 +458,7 @@ export function SmallThumbnail() {
           </div>
         ))}
       </Frame>
-      <Frame $layer $darken={0.5} $rounded="none" $forceRounded $p="none" />
+      <Frame $darken={0.5} $rounded="none" $forceRounded $p="none" />
     </Frame>
   );
 }

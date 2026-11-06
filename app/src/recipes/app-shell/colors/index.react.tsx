@@ -67,7 +67,6 @@ export default function Example() {
         id={sidebarId}
         open={sidebarOpen}
         $show={true}
-        $layer
         $hue="magenta"
         $chroma="muted"
         $darken={1}
@@ -161,7 +160,7 @@ export default function Example() {
 
         <ShellMain>
           <ShellMainIntro>
-            <ShellFull $layer $hue="cyan" $chroma="vivid" $contrast $p={8}>
+            <ShellFull $hue="cyan" $chroma="vivid" $contrast $p={8}>
               <ShellContent>
                 <div className="@container/album">
                   <div className="flex flex-col items-start gap-6 @md/album:flex-row @md/album:items-end">
@@ -264,7 +263,6 @@ export default function Example() {
           <ShellStart $shrink className="min-w-0">
             <div className="flex min-w-0 items-center gap-3">
               <Frame
-                $layer
                 $hue="magenta"
                 $rounded="md"
                 className="grid size-10 shrink-0 place-items-center"

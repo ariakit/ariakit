@@ -53,7 +53,6 @@ export default function Example() {
         </RadioList>
       </RadioGroup>
       <Frame
-        $layer
         $lighten
         $rounded="xl"
         $border
@@ -143,7 +142,6 @@ function Timeline() {
 
   return (
     <Frame
-      $layer
       $darken={0.25}
       $rounded="lg"
       $p={3}

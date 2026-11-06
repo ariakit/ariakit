@@ -95,12 +95,7 @@ export default function Thumbnail() {
 
 export function SmallThumbnail() {
   return (
-    <Frame
-      $layer
-      $lighten
-      $p={5.5}
-      className="flex flex-col justify-center gap-4"
-    >
+    <Frame $lighten $p={5.5} className="flex flex-col justify-center gap-4">
       {fields.map((field) => (
         <div
           key={field.id}
