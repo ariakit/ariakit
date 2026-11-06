@@ -134,11 +134,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           return [tabTop, panelsBottom];
         });
     // In a flex container, the tab and panels cover the root ring.
-    const flexOffsets = await getEdgeOffsets("Without padding");
+    const flexOffsets = await getEdgeOffsets("Default");
     test.expect(flexOffsets).toEqual([-1, -1]);
-    test
-      .expect(await getEdgeOffsets("Without padding in block flow"))
-      .toEqual(flexOffsets);
+    test.expect(await getEdgeOffsets("Block flow")).toEqual(flexOffsets);
   });
 
   // The root sets its default display with zero specificity, so a display
@@ -225,11 +223,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         await page.emulateMedia({ colorScheme, contrast });
         for (const [name, selected] of [
           ["Folder tabs", "Code"],
-          ["Without padding", "Preview"],
+          ["Default", "Preview"],
+          ["With padding", "Preview"],
           ["Thick edge", "Code"],
           ["Bold edge", "Usage"],
-          ["Hidden root edge", "Code"],
-          ["Adaptive root edge", "Code"],
+          ["Darkened strip without outer edge", "Code"],
+          ["Adaptive root edge with padding", "Code"],
         ] as const) {
           const tab = query(q.article(name)).tab(selected);
           await test.expect(tab).toHaveAttribute("aria-selected", "true");
@@ -283,11 +282,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // Light surfaces draw the root edge as a ring, which the borders lie on.
     await page.emulateMedia({ colorScheme: "light" });
     for (const [name, selected, panelSurface, tabSurface] of [
-      ["Without padding", "Preview", "strip", "strip"],
+      ["Default", "Preview", "strip", "strip"],
       // A hidden root ring would leave the strip color as a line around the
       // panel, which lies outside the root, so the panel takes the page. The
       // folder takes its own surface.
-      ["Adaptive root edge", "Code", "page", "folder"],
+      ["Adaptive root edge with padding", "Code", "page", "folder"],
     ] as const) {
       const tab = query(q.article(name)).tab(selected);
       await test.expect(tab).toHaveAttribute("aria-selected", "true");
@@ -344,9 +343,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // Light surfaces draw the root edge as a ring. Without padding, the top
     // border of the selected folder lies on that ring, outside the root.
     await page.emulateMedia({ colorScheme: "light" });
-    const tab = query(q.article("Adaptive root edge without padding")).tab(
-      "Code",
-    );
+    const tab = query(q.article("Adaptive root edge")).tab("Code");
     await test.expect(tab).toHaveAttribute("aria-selected", "true");
     await tab.scrollIntoViewIfNeeded();
     const box = await tab.boundingBox();
@@ -379,7 +376,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // curve of the selected folder overlaps its side border and the panel's top
     // border.
     await page.emulateMedia({ colorScheme: "light", contrast: "more" });
-    const tab = query(q.article("Adaptive root edge")).tab("Code");
+    const tab = query(q.article("Adaptive root edge with padding")).tab("Code");
     await test.expect(tab).toHaveAttribute("aria-selected", "true");
     await tab.scrollIntoViewIfNeeded();
     const box = await tab.boundingBox();

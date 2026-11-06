@@ -215,7 +215,7 @@ export default function TabsExamples() {
     <ExampleGrid>
       <Example
         title="Default"
-        description="The selected tab drops its bottom corners and merges into its panel. Each tab has its own panel."
+        description="The selected tab drops its bottom corners and merges into its panel. Each tab has its own panel. The tabs sit on the root's edge, and the selected first tab takes the root's corner, so it has no start curve."
         stretch
         code={`
           <Tabs>
@@ -316,11 +316,11 @@ export default function TabsExamples() {
       </Example>
 
       <Example
-        title="Without padding"
-        description="The tabs sit on the root's edge, and the selected first tab takes the root's corner, so it has no start curve."
+        title="With padding"
+        description="Padding on the root moves the tabs away from its edge, and the selected first tab keeps its start curve. The strip and the panel still reach the root's edge. Folder tabs take that padding from their own, so the strip grows only a little."
         stretch
         code={`
-          <Tabs $p="none">
+          <Tabs $p={1}>
             <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -340,33 +340,33 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs $p="none" defaultSelectedId="flush-preview">
-          <TabList aria-label="Without padding">
-            <Tab id="flush-preview">
+        <Tabs $p={1} defaultSelectedId="padded-preview">
+          <TabList aria-label="With padding">
+            <Tab id="padded-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
-            <Tab id="flush-code">
+            <Tab id="padded-code">
               <TabLabel>Code</TabLabel>
             </Tab>
-            <Tab id="flush-usage">
+            <Tab id="padded-usage">
               <TabLabel>Usage</TabLabel>
             </Tab>
           </TabList>
           <TabPanels>
             <TabPanel single>
-              <p className="text-sm">The strip has no padding.</p>
+              <p className="text-sm">The root has padding.</p>
             </TabPanel>
           </TabPanels>
         </Tabs>
       </Example>
 
       <Example
-        title="Without padding in block flow"
+        title="Block flow"
         description="The root sits in a block container instead of a flex one. The tabs and panels still sit on the root's edge, so the selected tab and the panels each show one edge, not two."
         stretch
         code={`
           <div>
-            <Tabs $p="none">
+            <Tabs>
               <TabList>
                 <Tab>
                   <TabLabel>Preview</TabLabel>
@@ -385,8 +385,8 @@ export default function TabsExamples() {
         `}
       >
         <div>
-          <Tabs $p="none" defaultSelectedId="flush-block-preview">
-            <TabList aria-label="Without padding in block flow">
+          <Tabs defaultSelectedId="flush-block-preview">
+            <TabList aria-label="Block flow">
               <Tab id="flush-block-preview">
                 <TabLabel>Preview</TabLabel>
               </Tab>
@@ -446,11 +446,11 @@ export default function TabsExamples() {
       </Example>
 
       <Example
-        title="Without padding or root edge"
-        description="The selected tab and panel keep their borders. The root has no padding or visible border, and the strip keeps the root's background color."
+        title="Without outer edge"
+        description="The selected tab and panel keep their borders. The root has no visible border, and the strip keeps the color around the root."
         stretch
         code={`
-          <Tabs $p="none" $edgeHidden $darken={false}>
+          <Tabs $outerEdge={false} $darken={false}>
             <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -471,12 +471,11 @@ export default function TabsExamples() {
         `}
       >
         <Tabs
-          $p="none"
-          $edgeHidden
+          $outerEdge={false}
           $darken={false}
           defaultSelectedId="flush-hidden-preview"
         >
-          <TabList aria-label="Without padding or root edge">
+          <TabList aria-label="Without outer edge">
             <Tab id="flush-hidden-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
@@ -498,11 +497,11 @@ export default function TabsExamples() {
       </Example>
 
       <Example
-        title="Indented without padding or root edge"
+        title="Indented without outer edge"
         description="$indent moves the tabs away from the panel edge without padding above them. The selected first tab meets a rounded panel corner, and the tabs keep the full radius."
         stretch
         code={`
-          <Tabs $p="none" $edgeHidden $indent={3} $darken={false}>
+          <Tabs $outerEdge={false} $indent={3} $darken={false}>
             <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -523,13 +522,12 @@ export default function TabsExamples() {
         `}
       >
         <Tabs
-          $p="none"
-          $edgeHidden
+          $outerEdge={false}
           $indent={3}
           $darken={false}
           defaultSelectedId="indented-preview"
         >
-          <TabList aria-label="Indented without padding or root edge">
+          <TabList aria-label="Indented without outer edge">
             <Tab id="indented-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
@@ -600,7 +598,7 @@ export default function TabsExamples() {
         description="The last tab mirrors the first: its end curve and the panel's end corner shrink together."
         stretch
         code={`
-          <Tabs>
+          <Tabs $p={1}>
             <TabList $layout="stretch">
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -620,7 +618,7 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs defaultSelectedId="wide-last-usage">
+        <Tabs $p={1} defaultSelectedId="wide-last-usage">
           <TabList
             $layout="stretch"
             aria-label="Full-width strip with the last tab selected"
@@ -753,7 +751,7 @@ export default function TabsExamples() {
         description="The outer panel keeps square corners. Only its own strip decides whether it holds folder tabs."
         stretch
         code={`
-          <Tabs>
+          <Tabs $p={1}>
             <TabList><Tab $kind="flat" />…</TabList>
             <TabPanels>
               <TabPanel single>
@@ -763,7 +761,7 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs defaultSelectedId="nested-flat-outer-profile">
+        <Tabs $p={1} defaultSelectedId="nested-flat-outer-profile">
           <TabList aria-label="Folder tabs nested under flat tabs outer">
             <Tab id="nested-flat-outer-profile" $kind="flat">
               <TabLabel>Profile</TabLabel>
@@ -806,7 +804,7 @@ export default function TabsExamples() {
             <TabList>…</TabList>
             <TabPanels>
               <TabPanel single>
-                <Tabs>
+                <Tabs $p={1}>
                   <TabList>
                     <Tab $kind="flat" />…
                   </TabList>
@@ -830,6 +828,7 @@ export default function TabsExamples() {
             <TabPanel single>
               <Tabs
                 defaultSelectedId="nested-flat-inner-inner-general"
+                $p={1}
                 $forceRounded
               >
                 <TabList aria-label="Flat tabs nested under folder tabs inner">
@@ -947,11 +946,11 @@ export default function TabsExamples() {
       </Example>
 
       <Example
-        title="Hidden root edge"
-        description="The root paints its own edge transparent. The selected tab and the panel keep drawing it."
+        title="Darkened strip without outer edge"
+        description="The root paints its own edge transparent but keeps its padding and the darker strip. The selected tab and the panel keep drawing the edge."
         stretch
         code={`
-          <Tabs $edgeHidden>
+          <Tabs $outerEdge={false} $p={1}>
             <TabList>
               <Tab>
                 <TabLabel>Preview</TabLabel>
@@ -971,8 +970,8 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs $edgeHidden defaultSelectedId="hidden-code">
-          <TabList aria-label="Hidden root edge">
+        <Tabs $outerEdge={false} $p={1} defaultSelectedId="hidden-code">
+          <TabList aria-label="Darkened strip without outer edge">
             <Tab id="hidden-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
@@ -992,8 +991,53 @@ export default function TabsExamples() {
       </Example>
 
       <Example
-        title="Adaptive root edge"
+        title="Adaptive root edge with padding"
         description="The root, the selected tab, and the panel show their edges only in high-contrast mode. Hidden, the panel border leaves no strip-colored line around the panel."
+        stretch
+        code={`
+          <Tabs $edgeWeight="adaptive" $p={1}>
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $edgeWeight="adaptive" $p={1} defaultSelectedId="adaptive-code">
+          <TabList aria-label="Adaptive root edge with padding">
+            <Tab id="adaptive-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="adaptive-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="adaptive-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The edges show with more contrast.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Adaptive root edge"
+        description="The selected tab lies on the hidden root edge and leaves no strip-colored line above it."
         stretch
         code={`
           <Tabs $edgeWeight="adaptive">
@@ -1016,57 +1060,8 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs $edgeWeight="adaptive" defaultSelectedId="adaptive-code">
+        <Tabs $edgeWeight="adaptive" defaultSelectedId="adaptive-flush-code">
           <TabList aria-label="Adaptive root edge">
-            <Tab id="adaptive-preview">
-              <TabLabel>Preview</TabLabel>
-            </Tab>
-            <Tab id="adaptive-code">
-              <TabLabel>Code</TabLabel>
-            </Tab>
-            <Tab id="adaptive-usage">
-              <TabLabel>Usage</TabLabel>
-            </Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel single>
-              <p className="text-sm">The edges show with more contrast.</p>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Example>
-
-      <Example
-        title="Adaptive root edge without padding"
-        description="The selected tab lies on the hidden root edge and leaves no strip-colored line above it."
-        stretch
-        code={`
-          <Tabs $edgeWeight="adaptive" $p="none">
-            <TabList>
-              <Tab>
-                <TabLabel>Preview</TabLabel>
-              </Tab>
-              <Tab>
-                <TabLabel>Code</TabLabel>
-              </Tab>
-              <Tab>
-                <TabLabel>Usage</TabLabel>
-              </Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel single>
-                …
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        `}
-      >
-        <Tabs
-          $edgeWeight="adaptive"
-          $p="none"
-          defaultSelectedId="adaptive-flush-code"
-        >
-          <TabList aria-label="Adaptive root edge without padding">
             <Tab id="adaptive-flush-preview">
               <TabLabel>Preview</TabLabel>
             </Tab>
@@ -1270,7 +1265,7 @@ export default function TabsExamples() {
         description="A flat tab is a plain button in the strip. The selected tab lifts off the strip as a pill."
         stretch
         code={`
-          <Tabs>
+          <Tabs $p={1}>
             <TabList>
               <Tab $kind="flat">
                 <TabLabel>Preview</TabLabel>
@@ -1290,7 +1285,7 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs defaultSelectedId="flat-code">
+        <Tabs $p={1} defaultSelectedId="flat-code">
           <TabList aria-label="Flat tabs">
             <Tab $kind="flat" id="flat-preview">
               <TabLabel>Preview</TabLabel>
@@ -1315,7 +1310,7 @@ export default function TabsExamples() {
         description="The selected tab rises with the gradient and inner shadow of a push button."
         stretch
         code={`
-          <Tabs>
+          <Tabs $p={1}>
             <TabList>
               <Tab $kind="bevel">
                 <TabLabel>Preview</TabLabel>
@@ -1335,7 +1330,7 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs defaultSelectedId="bevel-code">
+        <Tabs $p={1} defaultSelectedId="bevel-code">
           <TabList aria-label="Bevel tabs">
             <Tab $kind="bevel" id="bevel-preview">
               <TabLabel>Preview</TabLabel>
@@ -1463,7 +1458,7 @@ export default function TabsExamples() {
         description="Arrow keys move focus without selecting. The brand fill marks the focused tab."
         stretch
         code={`
-          <Tabs selectOnMove={false}>
+          <Tabs $p={1} selectOnMove={false}>
             <TabList>
               <Tab $kind="flat">
                 <TabLabel>Preview</TabLabel>
@@ -1483,7 +1478,7 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs selectOnMove={false} defaultSelectedId="manual-flat-code">
+        <Tabs $p={1} selectOnMove={false} defaultSelectedId="manual-flat-code">
           <TabList aria-label="Flat tabs without select on move">
             <Tab $kind="flat" id="manual-flat-preview">
               <TabLabel>Preview</TabLabel>
@@ -1508,7 +1503,7 @@ export default function TabsExamples() {
         description="A pill marks the selected tab while the tab panels have no border."
         stretch
         code={`
-          <Tabs $border={false}>
+          <Tabs $border={false} $p={1}>
             <TabList>
               <Tab $kind="flat">
                 <TabLabel>Preview</TabLabel>
@@ -1528,7 +1523,11 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs $border={false} defaultSelectedId="borderless-flat-preview">
+        <Tabs
+          $border={false}
+          $p={1}
+          defaultSelectedId="borderless-flat-preview"
+        >
           <TabList aria-label="Borderless flat tabs">
             <Tab $kind="flat" id="borderless-flat-preview">
               <TabLabel>Preview</TabLabel>
@@ -1553,7 +1552,7 @@ export default function TabsExamples() {
         description="A bevel pill marks the selected tab while the tab panels have no border."
         stretch
         code={`
-          <Tabs $border={false}>
+          <Tabs $border={false} $p={1}>
             <TabList>
               <Tab $kind="bevel">
                 <TabLabel>Preview</TabLabel>
@@ -1573,7 +1572,7 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs $border={false} defaultSelectedId="borderless-bevel-usage">
+        <Tabs $border={false} $p={1} defaultSelectedId="borderless-bevel-usage">
           <TabList aria-label="Borderless bevel tabs">
             <Tab $kind="bevel" id="borderless-bevel-preview">
               <TabLabel>Preview</TabLabel>
@@ -1598,7 +1597,7 @@ export default function TabsExamples() {
         description="A bar underlines the selected tab, and the tab keeps its own fill."
         stretch
         code={`
-          <Tabs>
+          <Tabs $p={1}>
             <TabList>
               <Tab $kind="flat" bar>
                 <TabLabel>Preview</TabLabel>
@@ -1618,7 +1617,7 @@ export default function TabsExamples() {
           </Tabs>
         `}
       >
-        <Tabs defaultSelectedId="bar-code">
+        <Tabs $p={1} defaultSelectedId="bar-code">
           <TabList aria-label="Tab bar">
             <Tab $kind="flat" id="bar-preview" bar>
               <TabLabel>Preview</TabLabel>
@@ -2257,7 +2256,7 @@ export default function TabsExamples() {
         stretch
         code={`
           <div dir="rtl">
-            <Tabs rtl>
+            <Tabs rtl $p={1}>
               <TabList>
                 <Tab>
                   <TabLabel>المسودات</TabLabel>
@@ -2282,7 +2281,7 @@ export default function TabsExamples() {
       >
         {/* Drafts, In review and Published, with an Arabic panel line. */}
         <div dir="rtl" lang="ar">
-          <Tabs rtl defaultSelectedId="rtl-drafts">
+          <Tabs rtl $p={1} defaultSelectedId="rtl-drafts">
             <TabList aria-label="مراحل النشر">
               <Tab id="rtl-drafts">
                 <TabLabel>المسودات</TabLabel>
@@ -2517,7 +2516,7 @@ export default function TabsExamples() {
           description="The label stays on one line and shows an ellipsis when the tab reaches its maximum width."
           stretch
           code={`
-            <Tabs>
+            <Tabs $p={1}>
               <TabList>
                 <Tab $kind="${kind}" className="max-w-40">
                   <TabLabel>Project settings and permissions</TabLabel>
@@ -2532,7 +2531,7 @@ export default function TabsExamples() {
             </Tabs>
           `}
         >
-          <Tabs defaultSelectedId={`long-${kind}-settings`}>
+          <Tabs $p={1} defaultSelectedId={`long-${kind}-settings`}>
             <TabList aria-label={`${kind} tab with a long label`}>
               <Tab
                 id={`long-${kind}-settings`}

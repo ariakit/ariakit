@@ -1,4 +1,4 @@
 {
   "title": "Filtered List with Count Badges",
-  "description": "Tabs that filter one list of issues: selectedId lives in state, a single TabPanel follows the selected tab and renders the matching rows, and each tab has an icon in a TabSlot and a count in a Badge. Use it when the tabs are views of the same data, and prefer one TabPanel per tab when the content of each tab is different."
+  "description": "Tabs that filter one list of issues: selectedId lives in state, a single TabPanel follows the selected tab and renders the matching rows, and each tab has an icon in a TabSlot and a count in a Badge, while $p on Tabs moves the tabs away from the frame edge. Use it when the tabs are views of the same data, and prefer one TabPanel per tab when the content of each tab is different."
 }

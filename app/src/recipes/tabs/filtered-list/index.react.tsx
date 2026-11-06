@@ -38,6 +38,7 @@ export default function Example() {
     <Tabs
       selectedId={selectedId}
       setSelectedId={setSelectedId}
+      $p={1}
       $rounded="2xl"
       className="w-[28rem] max-w-full"
     >
