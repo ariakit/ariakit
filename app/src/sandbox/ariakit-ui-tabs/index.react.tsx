@@ -317,7 +317,7 @@ export default function TabsExamples() {
 
       <Example
         title="With padding"
-        description="Padding on the root moves the tabs away from its edge, and the selected first tab keeps its start curve. The strip and the panel still reach the root's edge. Folder tabs take that padding from their own, so the strip grows only a little."
+        description="Padding on the root moves the tabs away from its edge. The selected first tab keeps its full start curve, and the root edge cuts the part that does not fit, so the panel corner stays square. The strip and the panel still reach the root's edge. Folder tabs take that padding from their own, so the strip grows only a little."
         stretch
         code={`
           <Tabs $p={1}>
@@ -699,6 +699,199 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Adaptive folder curve"
+        description='$folderCurve="adapt" shrinks the curve of the selected first tab and the panel corner together, so both fit the padding instead of the root edge cutting the curve.'
+        stretch
+        code={`
+          <Tabs $p={1} $folderCurve="adapt">
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $p={1} $folderCurve="adapt" defaultSelectedId="adapt-preview">
+          <TabList aria-label="Adaptive folder curve">
+            <Tab id="adapt-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="adapt-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="adapt-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">
+                The tab curve and the panel corner share the padding.
+              </p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Full folder curve beside a rounded panel corner"
+        description="When the indent has room for the full curve of the selected first tab, the root edge cuts nothing, and the panel corner rounds with the space left after the curve."
+        stretch
+        code={`
+          <Tabs $p={1} $indent={4}>
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $p={1} $indent={4} defaultSelectedId="cut-corner-preview">
+          <TabList aria-label="Full folder curve beside a rounded panel corner">
+            <Tab id="cut-corner-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="cut-corner-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="cut-corner-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">
+                The panel corner takes the space after the curve.
+              </p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Full-width strip with an adaptive curve on the last tab"
+        description='With $folderCurve="adapt", the end curve of the selected last tab and the end corner of the panel shrink together.'
+        stretch
+        code={`
+          <Tabs $p={1} $folderCurve="adapt">
+            <TabList $layout="stretch">
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs $p={1} $folderCurve="adapt" defaultSelectedId="adapt-last-usage">
+          <TabList
+            $layout="stretch"
+            aria-label="Full-width strip with an adaptive curve on the last tab"
+          >
+            <Tab id="adapt-last-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="adapt-last-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="adapt-last-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The end corner follows the last tab.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Cut folder curve without outer edge"
+        description='Without the outer edge, the curve adapts by default. With $folderCurve="cut", the cut still shows the edge, so it continues from the curve into the edge of the panel.'
+        stretch
+        code={`
+          <Tabs $p={1} $folderCurve="cut" $outerEdge={false} $darken={false}>
+            <TabList>
+              <Tab>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs
+          $p={1}
+          $folderCurve="cut"
+          $outerEdge={false}
+          $darken={false}
+          defaultSelectedId="cut-edgeless-preview"
+        >
+          <TabList aria-label="Cut folder curve without outer edge">
+            <Tab id="cut-edgeless-preview">
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="cut-edgeless-code">
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="cut-edgeless-usage">
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The cut joins the edge of the panel.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Automatic indent with flat tabs"
         description='Flat tabs have no curves, so $indent="auto" has no effect, and the strip keeps its own padding.'
         stretch
@@ -792,7 +985,7 @@ export default function TabsExamples() {
 
       <Example
         title="Full-width strip with the last tab selected"
-        description="The last tab mirrors the first: its end curve and the panel's end corner shrink together."
+        description="The last tab mirrors the first: the root edge cuts its full end curve, and the panel's end corner stays square."
         stretch
         code={`
           <Tabs $p={1}>
@@ -2450,7 +2643,7 @@ export default function TabsExamples() {
 
       <Example
         title="Right to left"
-        description="The curves and the chevrons mirror. The selected first tab meets the panel's start corner on the right. The rtl prop makes the arrow keys follow the same direction."
+        description="The curves and the chevrons mirror. The selected first tab meets the panel's start corner on the right, where the root edge cuts its curve. The rtl prop makes the arrow keys follow the same direction."
         stretch
         code={`
           <div dir="rtl">

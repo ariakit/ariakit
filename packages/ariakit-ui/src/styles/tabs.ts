@@ -93,9 +93,22 @@ export const tabs = cv({
      * so that the strip also takes the color around the root. Defaults to
      * `true`.
      */
-    $outerEdge(value?: boolean) {
-      if (value !== false) return;
-      return "border-transparent ring-transparent";
+    $outerEdge: {
+      false: "border-transparent ring-transparent",
+    },
+    /**
+     * Sets how the curve of a selected outer folder fits beside the panel
+     * corner. `cut` keeps the full curve and cuts it at the root edge, as if
+     * the root clipped its overflow. The panel corner then stays square until
+     * the full curve fits, and rounds with the space left after it. `adapt`
+     * shrinks the curve and the corner together so that both fit the indent.
+     * Defaults to `cut`, or to `adapt` with `$outerEdge={false}`. An explicit
+     * `cut` there still draws the edge along the cut.
+     */
+    $folderCurve: {
+      adapt: "",
+      // The strip tabs and panels of this root read the marker.
+      cut: "tabs-folder-cut",
     },
     /**
      * Rounds panel corners under folder tabs. The first selected folder reduces
@@ -150,6 +163,15 @@ export const tabs = cv({
       if (defaultValue === "auto") return "appearance";
       return defaultValue;
     },
+    $outerEdge: true,
+    // The root edge shows the line that cuts a curve. Without it, nothing
+    // explains the cut, so the curve shrinks to fit instead. An extender's
+    // default stays.
+    $folderCurve(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$outerEdge === false) return "adapt";
+      return "cut";
+    },
     $panelRoundedTop: true,
   },
   refine({ variants, setVariants, addClass }) {
@@ -171,6 +193,19 @@ export const tabs = cv({
 const tabCurves = cx(
   "ui-selected:before:[--folder-radius:min(var(--tabs-radius),calc(2*var(--tabs-meet,var(--tabs-radius))-min(var(--tabs-notch,0px),var(--tabs-meet,var(--tabs-radius)))))]",
   "ui-selected:after:[--folder-radius:min(var(--tabs-radius),calc(2*var(--tabs-meet-end,var(--tabs-radius))-min(var(--tabs-notch,0px),var(--tabs-meet-end,var(--tabs-radius)))))]",
+);
+
+// A cut curve keeps the full radius and drops the part past the outer side of
+// the root edge, where the curve paints the edge across the cut. A selected
+// outer folder starts twice the meet from that side, and its border is as wide
+// as the root edge, so the curve passes the side by the radius less both. A
+// folder on that side, with no meet, has no room past its own border, so it has
+// no curve, like an adapted one.
+const tabCutCurves = cx(
+  "[.tabs-folder-cut>*>&]:ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius))*1000000)]",
+  "[.tabs-folder-cut>*>&]:ui-selected:after:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet-end,var(--tabs-radius))*1000000)]",
+  "[.tabs-folder-cut>*>&]:ui-selected:before:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-bordering))]",
+  "[.tabs-folder-cut>*>&]:ui-selected:after:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-bordering))]",
 );
 
 // Forced colors remove the fill, the only mark of a selected folder under a
@@ -241,6 +276,7 @@ const tabFolder = cx(
   "ui-folder",
   tabsBorder,
   tabCurves,
+  tabCutCurves,
   // Extend selected folders over the panel seam. Extra bottom padding and a
   // negative margin preserve label position and row height.
   "[--tab-reach:calc(var(--tabs-float)+var(--folder-reach,0px))]",
@@ -537,6 +573,10 @@ export const tabPanels = cv({
     // strip.
     "rounded-ss-[calc(min(var(--tabs-notch,0px),var(--tabs-meet,var(--tabs-notch,0px)))*var(--tabs-round-s,1))]",
     "rounded-se-[calc(min(var(--tabs-notch,0px),var(--tabs-meet-end,var(--tabs-notch,0px)))*var(--tabs-round-e,1))]",
+    // A cut folder curve keeps its full radius, so the corner takes only the
+    // space past the curve.
+    "[.tabs-folder-cut>&]:rounded-ss-[calc(min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-radius)))*var(--tabs-round-s,1))]",
+    "[.tabs-folder-cut>&]:rounded-se-[calc(min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-radius)))*var(--tabs-round-e,1))]",
     "ui-tabs-round",
   ],
   defaultVariants: {

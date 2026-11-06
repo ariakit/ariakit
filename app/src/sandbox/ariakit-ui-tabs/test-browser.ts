@@ -81,6 +81,29 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
+  // The root edge cuts the curve of the selected first tab. The focus edge
+  // thickens the tab sides, so the side border that closes the cut thickens
+  // with them.
+  test("paints the focus edge along a cut folder curve @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorSchemeOf(page, ["With padding"], async (colorScheme) => {
+      const box = q.article("With padding");
+      const preview = query(box).tab("Preview");
+      await tabTo(page, preview);
+      await expectFocusVisible(preview);
+      await test.expect(preview).toHaveAttribute("aria-selected", "true");
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-tabs/focused-cut-folder-tab",
+      });
+    });
+  });
+
   // Focus kept the selected offset of flat and bevel tabs, so the brand fill
   // fell under 3:1 against a dark strip, also while hovered. Without the
   // offset, a selected push alone lightens the fill under 3:1 in light mode.
