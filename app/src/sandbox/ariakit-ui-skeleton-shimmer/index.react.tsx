@@ -89,7 +89,6 @@ interface PersonCardProps {
 function PersonCard({ person }: PersonCardProps) {
   return (
     <Frame
-      $layer
       $lighten
       $rounded="xl"
       $border

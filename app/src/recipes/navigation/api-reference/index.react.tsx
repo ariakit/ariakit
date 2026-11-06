@@ -58,7 +58,6 @@ export default function Example() {
   return (
     <ExampleRouter initialPath={getPath("Retrieve a customer")}>
       <Frame
-        $layer
         $lighten={0.5}
         $rounded="2xl"
         $border

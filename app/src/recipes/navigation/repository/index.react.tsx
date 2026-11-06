@@ -35,7 +35,6 @@ const tabs = [
 function Repository() {
   return (
     <Frame
-      $layer
       $lighten={0.5}
       $rounded="2xl"
       $border
@@ -51,7 +50,7 @@ function Repository() {
           <span>acme</span>
           <span className="ak-ink-60">/</span>
           <span className="font-semibold">web-app</span>
-          <Badge $layer $darken={0.5}>
+          <Badge $darken={0.5}>
             <BadgeLabel>Public</BadgeLabel>
           </Badge>
         </span>
@@ -92,7 +91,6 @@ function Repository() {
         render={<ul />}
         aria-hidden
         $cover
-        $layer
         $darken={0.5}
         $p={5}
         className="grid gap-3"

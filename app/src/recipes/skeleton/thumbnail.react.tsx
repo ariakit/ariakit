@@ -9,7 +9,6 @@ import {
 export default function Thumbnail() {
   return (
     <Frame
-      $layer
       $lighten
       $rounded="xl"
       $border
@@ -36,7 +35,7 @@ export default function Thumbnail() {
 
 export function SmallThumbnail() {
   return (
-    <Frame $layer $lighten $p={5.5} className="flex flex-col gap-4.5">
+    <Frame $lighten $p={5.5} className="flex flex-col gap-4.5">
       <div className="flex items-center gap-4.5">
         <SkeletonCircle $weight="medium" className="size-11.5 shrink-0" />
         <div className="grid flex-1 gap-1">

@@ -52,7 +52,6 @@ export default function Example() {
   const currentSection = sections.find((section) => section.id === current);
   return (
     <Frame
-      $layer
       $lighten
       $border
       $rounded="2xl"
@@ -67,7 +66,6 @@ export default function Example() {
           aria-label="Main"
           bar
           $cover
-          $layer
           $darken={0.5}
           $p={2}
           className="shrink-0 border-e"

@@ -26,11 +26,11 @@ export default function Example() {
         {ranges.map((range) => (
           <TabPanel key={range.id} tabId={range.id}>
             <dl className="grid grid-cols-2 gap-3">
-              <Frame $layer $lighten $rounded="xl" $border $p={4}>
+              <Frame $lighten $rounded="xl" $border $p={4}>
                 <dt className="ak-ink-70 text-sm">Visits</dt>
                 <dd className="text-2xl font-semibold">{range.visits}</dd>
               </Frame>
-              <Frame $layer $lighten $rounded="xl" $border $p={4}>
+              <Frame $lighten $rounded="xl" $border $p={4}>
                 <dt className="ak-ink-70 text-sm">Sign-ups</dt>
                 <dd className="text-2xl font-semibold">{range.signups}</dd>
               </Frame>

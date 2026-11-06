@@ -151,7 +151,6 @@ interface PostCardProps {
 function PostCard({ post, image }: PostCardProps) {
   return (
     <Frame
-      $layer
       $lighten
       $rounded="xl"
       $border

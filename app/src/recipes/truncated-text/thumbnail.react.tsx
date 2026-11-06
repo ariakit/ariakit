@@ -11,7 +11,6 @@ const TITLE = "Pricing experiments for the team plan";
 export default function Thumbnail() {
   return (
     <Frame
-      $layer
       $lighten
       $rounded="xl"
       $border
@@ -48,7 +47,7 @@ export default function Thumbnail() {
 // A line that ends in three dots stands for text that is cut off.
 export function SmallThumbnail() {
   return (
-    <Frame $layer $lighten $p={3} className="flex items-center gap-2.5">
+    <Frame $lighten $p={3} className="flex items-center gap-2.5">
       <SkeletonLine $weight="medium" className="flex-1 text-[1.25em]" />
       <span className="flex shrink-0 gap-1.5">
         <SkeletonCircle $weight="bold" className="size-3.5" />

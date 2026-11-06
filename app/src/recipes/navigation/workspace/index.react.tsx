@@ -98,7 +98,6 @@ export default function Example() {
   return (
     <ExampleRouter initialPath={getPath("Engineering", "Issues")}>
       <Frame
-        $layer
         $lighten={0.5}
         $rounded="2xl"
         $border
@@ -121,7 +120,7 @@ export default function Example() {
               <ChevronsUpDown />
             </ButtonSlot>
           </Button>
-          <Button aria-label="New issue" $kind="bevel" $layer $invert>
+          <Button aria-label="New issue" $kind="bevel" $invert>
             <ButtonSlot>
               <SquarePen />
             </ButtonSlot>

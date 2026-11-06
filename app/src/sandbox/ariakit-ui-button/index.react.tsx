@@ -206,18 +206,18 @@ export default function ButtonExamples() {
         title="Shifted layer"
         description="A layer with an explicit lightness shift. The shift replaces the default lift, so a lightened button stays lighter than a light surface."
         code={`
-          <Button $layer $lighten={0.5} $border>Show fewer lines</Button>
-          <Button $layer $darken={0.5} $border>Show more lines</Button>
-          <Button $layer $lightnessPush $border>Show all lines</Button>
+          <Button $lighten={0.5} $border>Show fewer lines</Button>
+          <Button $darken={0.5} $border>Show more lines</Button>
+          <Button $lightnessPush $border>Show all lines</Button>
         `}
       >
-        <Button $layer $lighten={0.5} $border>
+        <Button $lighten={0.5} $border>
           Show fewer lines
         </Button>
-        <Button $layer $darken={0.5} $border>
+        <Button $darken={0.5} $border>
           Show more lines
         </Button>
-        <Button $layer $lightnessPush $border>
+        <Button $lightnessPush $border>
           Show all lines
         </Button>
       </Example>

@@ -1079,7 +1079,6 @@ function PreviewCardResizeHandle({
         $rounded="full"
         $forceRounded
         $p="none"
-        $layer
         $contrast
         className={[
           "h-10 w-1 transition-[height] duration-150",

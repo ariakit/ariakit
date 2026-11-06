@@ -162,7 +162,7 @@ export default function Thumbnail() {
 
 export function SmallThumbnail() {
   return (
-    <Frame $layer $lighten className="flex flex-col">
+    <Frame $lighten className="flex flex-col">
       <Frame
         $cover
         $darken
@@ -186,7 +186,6 @@ export function SmallThumbnail() {
           className="mx-2 w-1/4 text-[0.9em] leading-none"
         />
         <Frame
-          $layer
           $lightnessPush
           $rounded="md"
           $forceRounded

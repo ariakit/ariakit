@@ -25,7 +25,6 @@ export default function Example() {
   const { data, loading } = useRequest(account);
   return (
     <Frame
-      $layer
       $lighten
       $rounded="xl"
       $border

@@ -35,7 +35,6 @@ function Row({ width, current, visible }: RowData) {
       {visible && (
         <Frame
           render={<span />}
-          $layer
           $invert
           $rounded="full"
           $p="none"
@@ -148,7 +147,7 @@ export default function Thumbnail() {
 
 export function SmallThumbnail() {
   return (
-    <Frame $layer $lighten $p={3} className="grid content-start text-[0.9em]">
+    <Frame $lighten $p={3} className="grid content-start text-[0.9em]">
       {smallRows.map((row) => (
         <Row key={row.id} {...row} />
       ))}

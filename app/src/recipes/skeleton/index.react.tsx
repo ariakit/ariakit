@@ -26,7 +26,6 @@ export default function Example() {
   const { data: user, loading } = useRequest(profile);
   return (
     <Frame
-      $layer
       $lighten
       $rounded="2xl"
       $border

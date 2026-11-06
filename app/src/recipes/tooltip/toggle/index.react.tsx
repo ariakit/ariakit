@@ -17,7 +17,6 @@ export default function Example() {
       aria-label="Call controls"
       $joined={false}
       $gap="sm"
-      $layer
       $lighten
       $border
       $rounded="xl"

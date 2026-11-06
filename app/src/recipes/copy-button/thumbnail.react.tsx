@@ -11,7 +11,6 @@ import { CheckIcon } from "lucide-react";
 export default function Thumbnail() {
   return (
     <Frame
-      $layer
       $lighten
       $rounded="xl"
       $border
@@ -42,7 +41,7 @@ export default function Thumbnail() {
 
 export function SmallThumbnail() {
   return (
-    <Frame $layer $lighten $p={3} className="flex items-center gap-3">
+    <Frame $lighten $p={3} className="flex items-center gap-3">
       <SkeletonLine $weight="medium" className="flex-1 text-[1.25em]" />
       <SkeletonBox
         $weight="bold"
