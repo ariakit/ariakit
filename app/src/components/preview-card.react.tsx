@@ -1205,12 +1205,12 @@ function isScrollContainer(element: Element) {
 }
 
 /**
- * Returns a function that tells whether a wheel event belongs to a gesture that
- * scrolls horizontally. A gesture is a run of events close in time, such as a
- * swipe on a trackpad with its momentum. It scrolls horizontally once it moved
- * more sideways than up or down, so a vertical swipe that drifts sideways still
- * scrolls the page. Trackpads start a gesture with deltas of a pixel or two,
- * before its direction shows.
+ * Returns a function that tells the direction of the wheel gesture that an
+ * event belongs to. A gesture is a run of events close in time, such as a swipe
+ * on a trackpad with its momentum. It scrolls horizontally once it moved more
+ * sideways than up or down, so a vertical swipe that drifts sideways still
+ * scrolls the page. Trackpads start a gesture with deltas of a pixel or two, so
+ * a gesture that leans sideways stays undecided until it moves further.
  */
 function createWheelGesture() {
   let movedX = 0;
@@ -1230,7 +1230,9 @@ function createWheelGesture() {
       event.deltaMode === WheelEvent.DOM_DELTA_PIXEL ? 1 : WHEEL_LINE_HEIGHT;
     movedX += Math.abs(shifted ? event.deltaY : event.deltaX) * scale;
     movedY += Math.abs(shifted ? 0 : event.deltaY) * scale;
-    return movedX > movedY && movedX >= 10;
+    if (movedX <= movedY) return "vertical";
+    if (movedX < 10) return "undecided";
+    return "horizontal";
   };
 }
 
@@ -1442,13 +1444,22 @@ function useInactiveScroll(
       }
       return false;
     };
-    const isHorizontalWheel = createWheelGesture();
+    const getWheelDirection = createWheelGesture();
     const onWheel = (event: WheelEvent) => {
       if (isActive()) return;
       // Pinch zoom on trackpads sends wheel events with ctrlKey.
       if (event.ctrlKey) return;
-      if (isHorizontalWheel(event) && scrollsHorizontally(event.target)) {
-        activateFromScroll();
+      const direction = getWheelDirection(event);
+      if (direction !== "vertical" && scrollsHorizontally(event.target)) {
+        if (direction === "horizontal") {
+          activateFromScroll();
+          return;
+        }
+        // The first deltas of a horizontal gesture would scroll the page a few
+        // pixels, so they scroll nothing until the direction is clear.
+        // Preventing them, instead of letting them through, keeps the later
+        // events of the gesture cancelable.
+        event.preventDefault();
         return;
       }
       if (!isInScrollContainer(event.target)) return;

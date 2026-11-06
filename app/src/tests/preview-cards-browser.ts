@@ -186,10 +186,15 @@ test("preview card frames scroll vertically after a horizontal scroll", async ({
   expect(box).not.toBeNull();
   if (!box) return;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  // A vertical scroll still scrolls the docs page.
+  // A vertical scroll still scrolls the docs page, even when the gesture drifts
+  // sideways.
   const inactiveScroll = await getPageScroll();
   await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(20, 0);
   await expect.poll(getPageScroll).toBeGreaterThan(inactiveScroll);
+  // The card would activate the frame with messages between the documents,
+  // which no state reports until the frame becomes active.
+  await flushFrames(page);
   expect(await getFrameScroll()).toEqual(frameScroll);
   await expect(html).not.toHaveAttribute("data-preview-active", "");
   const pageScroll = await getPageScroll();
@@ -198,6 +203,9 @@ test("preview card frames scroll vertically after a horizontal scroll", async ({
   await page.waitForTimeout(250);
 
   // A horizontal scroll does not move the docs page, so the frame takes it.
+  // Trackpads start a gesture with small deltas in both directions, before its
+  // direction shows, and those don't scroll the docs page either.
+  await page.mouse.wheel(4, 2);
   await page.mouse.wheel(200, 0);
   await expect
     .poll(async () => (await getFrameScroll()).left)
@@ -755,10 +763,15 @@ test("inline previews scroll vertically after a horizontal scroll", async ({
   expect(box).not.toBeNull();
   if (!box) return;
   await page.mouse.move(box.x + 24, box.y + 120);
-  // A vertical scroll still scrolls the docs page.
+  // A vertical scroll still scrolls the docs page, even when the gesture drifts
+  // sideways.
   const inactiveScroll = await getPageScroll();
   await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(20, 0);
   await expect.poll(getPageScroll).toBeGreaterThan(inactiveScroll);
+  // The card would show an activation on the next frame, which no state reports
+  // before it.
+  await flushFrames(page);
   expect(await getViewportScroll()).toEqual({ left: 0, top: 0 });
   expect(await hasBrandViewportEdge(viewport)).toBe(false);
   const pageScroll = await getPageScroll();
@@ -767,6 +780,9 @@ test("inline previews scroll vertically after a horizontal scroll", async ({
   await page.waitForTimeout(250);
 
   // A horizontal scroll does not move the docs page, so the example takes it.
+  // Trackpads start a gesture with small deltas in both directions, before its
+  // direction shows, and those don't scroll the docs page either.
+  await page.mouse.wheel(4, 2);
   await page.mouse.wheel(100, 0);
   await expect
     .poll(async () => (await getViewportScroll()).left)

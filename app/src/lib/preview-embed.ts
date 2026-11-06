@@ -566,11 +566,12 @@ export function setupPreviewEmbed() {
   // trackpad with its momentum. It scrolls horizontally once it moved more
   // sideways than up or down, so a vertical swipe that drifts sideways still
   // scrolls the docs page. Trackpads start a gesture with deltas of a pixel or
-  // two, before its direction shows.
+  // two, so a gesture that leans sideways stays undecided until it moves
+  // further.
   let wheelX = 0;
   let wheelY = 0;
   let wheelTime = Number.NEGATIVE_INFINITY;
-  const isHorizontalWheel = (event: WheelEvent) => {
+  const getWheelDirection = (event: WheelEvent) => {
     if (event.timeStamp - wheelTime > 200) {
       wheelX = 0;
       wheelY = 0;
@@ -583,7 +584,9 @@ export function setupPreviewEmbed() {
     const scale = event.deltaMode === WheelEvent.DOM_DELTA_PIXEL ? 1 : 40;
     wheelX += Math.abs(shifted ? event.deltaY : event.deltaX) * scale;
     wheelY += Math.abs(shifted ? 0 : event.deltaY) * scale;
-    return wheelX > wheelY && wheelX >= 10;
+    if (wheelX <= wheelY) return "vertical";
+    if (wheelX < 10) return "undecided";
+    return "horizontal";
   };
   window.addEventListener(
     "wheel",
@@ -591,8 +594,17 @@ export function setupPreviewEmbed() {
       if (root.hasAttribute("data-preview-active")) return;
       // Pinch zoom on trackpads sends wheel events with ctrlKey.
       if (event.ctrlKey) return;
-      if (isHorizontalWheel(event) && scrollsHorizontally(event.target)) {
-        requestActivation();
+      const direction = getWheelDirection(event);
+      if (direction !== "vertical" && scrollsHorizontally(event.target)) {
+        if (direction === "horizontal") {
+          requestActivation();
+          return;
+        }
+        // The first deltas of a horizontal gesture would scroll the docs page a
+        // few pixels, so they scroll nothing until the direction is clear.
+        // Preventing them, instead of letting them through, keeps the later
+        // events of the gesture cancelable.
+        event.preventDefault();
         return;
       }
       if (!isInScrollContainer(event.target)) return;
