@@ -5,7 +5,6 @@ import {
   BreadcrumbCurrent,
   BreadcrumbLabel,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import {
   Button,
@@ -104,8 +103,7 @@ export default function Example() {
             <BreadcrumbLink href="#">
               <BreadcrumbLabel $truncate>Projects</BreadcrumbLabel>
             </BreadcrumbLink>
-            <BreadcrumbSeparator $kind="chevron" />
-            <BreadcrumbCurrent>
+            <BreadcrumbCurrent separator={{ $kind: "chevron" }}>
               <BreadcrumbLabel $truncate>Weekly planning</BreadcrumbLabel>
             </BreadcrumbCurrent>
           </Breadcrumb>

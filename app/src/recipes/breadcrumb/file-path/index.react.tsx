@@ -3,12 +3,10 @@ import {
   BreadcrumbCurrent,
   BreadcrumbLabel,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import { CopyButton } from "@ariakit/ui/components/copy-button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
-import { Fragment } from "react";
 
 const folders = ["src", "components", "ui"];
 const file = "breadcrumb.tsx";
@@ -41,15 +39,19 @@ export default function Example() {
       >
         <TextFrame $p={0.5} className="min-w-0">
           <Breadcrumb aria-label="File path" $gap={0.5} className="font-mono">
-            {folders.map((folder) => (
-              <Fragment key={folder}>
-                <BreadcrumbLink href={`#${folder}`} $p={0.5}>
-                  <BreadcrumbLabel $truncate>{folder}</BreadcrumbLabel>
-                </BreadcrumbLink>
-                <BreadcrumbSeparator />
-              </Fragment>
+            {folders.map((folder, index) => (
+              <BreadcrumbLink
+                key={folder}
+                href={`#${folder}`}
+                separator={!!index}
+                $p={0.5}
+              >
+                <BreadcrumbLabel $truncate>{folder}</BreadcrumbLabel>
+              </BreadcrumbLink>
             ))}
-            <BreadcrumbCurrent $p={0.5}>{file}</BreadcrumbCurrent>
+            <BreadcrumbCurrent separator $p={0.5}>
+              {file}
+            </BreadcrumbCurrent>
           </Breadcrumb>
         </TextFrame>
         <CopyButton

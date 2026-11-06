@@ -1,4 +1,3 @@
-import { ButtonSeparator } from "@ariakit/ui/components/button.ariakit.react";
 import {
   RadioCard,
   RadioCardLabel,
@@ -11,7 +10,6 @@ import {
   CalendarRangeIcon,
   SunIcon,
 } from "lucide-react";
-import { Fragment } from "react";
 
 const ranges = [
   { label: "Day", Icon: SunIcon },
@@ -30,20 +28,19 @@ export default function Example() {
       $rounded="full"
     >
       {ranges.map(({ label, Icon, disabled }, index) => (
-        <Fragment key={label}>
-          {index > 0 && <ButtonSeparator aria-hidden />}
-          <RadioCard
-            value={label}
-            disabled={disabled}
-            $kind="segmented"
-            $px="xl"
-          >
-            <RadioCardSlot>
-              <Icon aria-hidden />
-            </RadioCardSlot>
-            <RadioCardLabel>{label}</RadioCardLabel>
-          </RadioCard>
-        </Fragment>
+        <RadioCard
+          key={label}
+          value={label}
+          disabled={disabled}
+          separator={!!index}
+          $kind="segmented"
+          $px="xl"
+        >
+          <RadioCardSlot>
+            <Icon aria-hidden />
+          </RadioCardSlot>
+          <RadioCardLabel>{label}</RadioCardLabel>
+        </RadioCard>
       ))}
     </RadioGroup>
   );

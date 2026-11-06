@@ -2,7 +2,6 @@ import {
   Breadcrumb,
   BreadcrumbCurrent,
   BreadcrumbLink,
-  BreadcrumbSeparator,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import {
   Heading,
@@ -45,10 +44,10 @@ export default function Example() {
         <ShellMainHeader $blur>
           <Breadcrumb aria-label="Breadcrumb">
             <BreadcrumbLink href="#garden">Garden</BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbLink href="#tools">Tools</BreadcrumbLink>
-            <BreadcrumbSeparator />
-            <BreadcrumbCurrent>Pruning shears</BreadcrumbCurrent>
+            <BreadcrumbLink href="#tools" separator>
+              Tools
+            </BreadcrumbLink>
+            <BreadcrumbCurrent separator>Pruning shears</BreadcrumbCurrent>
           </Breadcrumb>
         </ShellMainHeader>
         <ShellMainIntro>

@@ -15,6 +15,14 @@ test("keeps the separators out of the list", () => {
   expect(trail.listitem.all()).toHaveLength(4);
 });
 
+test("puts a hidden separator before each step after the first", () => {
+  const steps = q.within(q.navigation("Breadcrumb")).listitem.all();
+  expect(steps[0]?.previousElementSibling).toBeNull();
+  for (const step of steps.slice(1)) {
+    expect(step.previousElementSibling).toHaveAttribute("aria-hidden", "true");
+  }
+});
+
 test("stops only on the links when tabbing", async () => {
   await press.Tab();
   expect(q.link("Home")).toHaveFocus();

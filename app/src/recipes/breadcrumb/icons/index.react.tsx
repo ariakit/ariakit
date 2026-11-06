@@ -3,7 +3,6 @@ import {
   BreadcrumbCurrent,
   BreadcrumbLabel,
   BreadcrumbLink,
-  BreadcrumbSeparator,
   BreadcrumbSlot,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import { Building2, Folder } from "lucide-react";
@@ -21,15 +20,13 @@ export default function Example() {
         </BreadcrumbSlot>
         <BreadcrumbLabel>Northwind</BreadcrumbLabel>
       </BreadcrumbLink>
-      <BreadcrumbSeparator />
-      <BreadcrumbLink href="#field-photos">
+      <BreadcrumbLink href="#field-photos" separator>
         <BreadcrumbSlot>
           <Folder />
         </BreadcrumbSlot>
         <BreadcrumbLabel>Field photos</BreadcrumbLabel>
       </BreadcrumbLink>
-      <BreadcrumbSeparator />
-      <BreadcrumbCurrent>
+      <BreadcrumbCurrent separator>
         <BreadcrumbSlot>
           <img src={thumbnail} alt="" className="size-full rounded-xs" />
         </BreadcrumbSlot>

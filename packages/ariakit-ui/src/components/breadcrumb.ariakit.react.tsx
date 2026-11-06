@@ -2,7 +2,10 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import type * as React from "react";
-import { createRender } from "../react-utils/create-render.react.ts";
+import {
+  createRender,
+  prependOptionalSeparator,
+} from "../react-utils/create-render.react.ts";
 import {
   breadcrumb,
   breadcrumbCurrent,
@@ -30,8 +33,7 @@ export interface BreadcrumbProps
  * @example
  * <Breadcrumb aria-label="Breadcrumb">
  *   <BreadcrumbLink href="/recipes">Recipes</BreadcrumbLink>
- *   <BreadcrumbSeparator />
- *   <BreadcrumbCurrent>Navigation</BreadcrumbCurrent>
+ *   <BreadcrumbCurrent separator>Navigation</BreadcrumbCurrent>
  * </Breadcrumb>
  */
 export function Breadcrumb({ list, children, ...props }: BreadcrumbProps) {
@@ -59,22 +61,39 @@ export function BreadcrumbList(props: BreadcrumbListProps) {
   return <ak.Role.ol {...breadcrumbList.jsx(variantProps)} {...rest} />;
 }
 
+type BreadcrumbSeparatorValue =
+  | boolean
+  | React.ReactElement
+  | BreadcrumbSeparatorProps;
+
 export interface BreadcrumbItemProps
-  extends ak.RoleProps<"li">, VariantProps<typeof breadcrumbItem> {}
+  extends ak.RoleProps<"li">, VariantProps<typeof breadcrumbItem> {
+  /**
+   * A separator before the item, as `true`, an element, or
+   * `BreadcrumbSeparator` props. It renders as a sibling list item, hidden from
+   * assistive technologies.
+   */
+  separator?: BreadcrumbSeparatorValue;
+}
 
 /**
  * A list item for a step that composes more than one element, such as a link
  * beside a button. `BreadcrumbLink` and `BreadcrumbCurrent` render one by
- * default, so set `item={false}` on them inside it.
+ * default, so set `item={false}` on them inside it, and set `separator` on the
+ * item instead.
  * @example
- * <BreadcrumbItem>
+ * <BreadcrumbItem separator>
  *   <BreadcrumbLink href="/projects" item={false}>Projects</BreadcrumbLink>
  *   <Button aria-label="More">...</Button>
  * </BreadcrumbItem>
  */
-export function BreadcrumbItem(props: BreadcrumbItemProps) {
+export function BreadcrumbItem({ separator, ...props }: BreadcrumbItemProps) {
   const [variantProps, rest] = splitProps(props, breadcrumbItem);
-  return <ak.Role.li {...breadcrumbItem.jsx(variantProps)} {...rest} />;
+  return prependOptionalSeparator(
+    BreadcrumbSeparator,
+    separator,
+    <ak.Role.li {...breadcrumbItem.jsx(variantProps)} {...rest} />,
+  );
 }
 
 interface BreadcrumbStepProps {
@@ -83,16 +102,30 @@ interface BreadcrumbStepProps {
    * `false` inside a `BreadcrumbItem`.
    */
   item?: React.ReactElement | BreadcrumbItemProps | false;
+  /**
+   * A separator before the step, as `true`, an element, or
+   * `BreadcrumbSeparator` props. It renders as a sibling list item, hidden from
+   * assistive technologies. Pass `!!index` when mapping steps to separate each
+   * step from the one before it. With `item={false}`, the step has no list item
+   * of its own, so set `separator` on the `BreadcrumbItem` around it instead.
+   */
+  separator?: BreadcrumbSeparatorValue;
 }
 
 function renderStep(
   step: React.ReactElement,
-  item: BreadcrumbStepProps["item"],
+  { item, separator }: BreadcrumbStepProps,
 ) {
+  // Without its own list item, the step is inside a BreadcrumbItem, where the
+  // separator list item would nest.
   if (item === false) {
     return step;
   }
-  return createRender(BreadcrumbItem, item, { children: step });
+  return prependOptionalSeparator(
+    BreadcrumbSeparator,
+    separator,
+    createRender(BreadcrumbItem, item, { children: step }),
+  );
 }
 
 export interface BreadcrumbLinkProps
@@ -117,6 +150,7 @@ export interface BreadcrumbLinkProps
 export function BreadcrumbLink({
   currentUrl,
   item,
+  separator,
   ...props
 }: BreadcrumbLinkProps) {
   const [variantProps, rest] = splitProps(props, breadcrumbLink);
@@ -127,7 +161,7 @@ export function BreadcrumbLink({
       {...breadcrumbLink.jsx(variantProps)}
       {...rest}
     />,
-    item,
+    { item, separator },
   );
 }
 
@@ -146,7 +180,11 @@ export interface BreadcrumbCurrentProps
  *   <BreadcrumbCurrent>Navigation</BreadcrumbCurrent>
  * </Breadcrumb>
  */
-export function BreadcrumbCurrent({ item, ...props }: BreadcrumbCurrentProps) {
+export function BreadcrumbCurrent({
+  item,
+  separator,
+  ...props
+}: BreadcrumbCurrentProps) {
   const [variantProps, rest] = splitProps(props, breadcrumbCurrent);
   return renderStep(
     <ak.Role.span
@@ -154,7 +192,7 @@ export function BreadcrumbCurrent({ item, ...props }: BreadcrumbCurrentProps) {
       {...breadcrumbCurrent.jsx(variantProps)}
       {...rest}
     />,
-    item,
+    { item, separator },
   );
 }
 
@@ -209,12 +247,14 @@ export interface BreadcrumbSeparatorProps
  * A hidden list item with the mark between two steps. Set `$kind` to change the
  * mark, or `$kind="none"` to show custom content from the children. It hides
  * beside a control that paints a surface on hover or keyboard focus when the
- * gap leaves too little room. Set `$shy` to change this.
+ * gap leaves too little room. Set `$shy` to change this. Pass it, or its props,
+ * to the `separator` prop of a step so it renders before the step.
  * @example
  * <Breadcrumb aria-label="Breadcrumb">
  *   <BreadcrumbLink href="/recipes">Recipes</BreadcrumbLink>
- *   <BreadcrumbSeparator $kind="chevron" />
- *   <BreadcrumbCurrent>Navigation</BreadcrumbCurrent>
+ *   <BreadcrumbCurrent separator={{ $kind: "chevron" }}>
+ *     Navigation
+ *   </BreadcrumbCurrent>
  * </Breadcrumb>
  */
 export function BreadcrumbSeparator(props: BreadcrumbSeparatorProps) {

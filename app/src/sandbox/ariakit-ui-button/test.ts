@@ -41,3 +41,15 @@ test.skipIf(version.startsWith("18."))(
     expect(image()).toHaveAttribute("src", expect.stringContaining("6366f1"));
   },
 );
+
+test("renders a hidden rule before each button after the first", () => {
+  const example = q.within(q.article("Separators from the separator prop"));
+  const group = q.within(example.group("Clipboard"));
+  expect(group.button("Cut").previousElementSibling).toBeNull();
+  for (const name of ["Copy", "Paste"]) {
+    const mark = group.button(name).previousElementSibling;
+    expect(mark).toHaveAttribute("aria-hidden", "true");
+    expect(mark).not.toHaveRole("button");
+  }
+  expect(group.button.all()).toHaveLength(3);
+});

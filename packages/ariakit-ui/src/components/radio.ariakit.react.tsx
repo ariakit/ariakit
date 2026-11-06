@@ -5,6 +5,7 @@ import * as React from "react";
 import {
   createOptionalRender,
   getChildrenText,
+  prependOptionalSeparator,
 } from "../react-utils/create-render.react.ts";
 import {
   DescriptionContext,
@@ -33,6 +34,8 @@ import {
   radioList,
 } from "../styles/radio.ts";
 import { isSegmentedKind } from "../styles/segment.ts";
+import type { ButtonSeparatorProps } from "./button.ariakit.react.tsx";
+import { ButtonSeparator } from "./button.ariakit.react.tsx";
 
 export interface RadioProviderProps extends ak.RadioProviderProps {}
 
@@ -356,7 +359,15 @@ export function RadioDescription(props: RadioDescriptionProps) {
 }
 
 export interface RadioCardProps
-  extends ak.RadioProps, VariantProps<typeof radioCard> {}
+  extends ak.RadioProps, VariantProps<typeof radioCard> {
+  /**
+   * A separator before the card, as `true`, an element, or `ButtonSeparator`
+   * props. It renders as a sibling of the card, hidden from assistive
+   * technologies. Pass `!!index` when mapping the segments of a segmented
+   * `RadioGroup` to separate each segment from the one before it.
+   */
+  separator?: boolean | React.ReactElement | ButtonSeparatorProps;
+}
 
 /**
  * A selectable card with a visually hidden radio input, styled from its checked
@@ -373,8 +384,13 @@ export interface RadioCardProps
  *     <RadioCard value="phone">Phone</RadioCard>
  *   </RadioCardGrid>
  * </RadioGroup>
+ * @example
+ * <RadioGroup aria-label="Range" $kind="segmented">
+ *   <RadioCard value="day" $kind="segmented">Day</RadioCard>
+ *   <RadioCard value="week" $kind="segmented" separator>Week</RadioCard>
+ * </RadioGroup>
  */
-export function RadioCard({ children, ...props }: RadioCardProps) {
+export function RadioCard({ separator, children, ...props }: RadioCardProps) {
   const [variantProps, rest] = splitProps(props, radioCard);
   const { id, describedBy, context } = useLabelDescription(rest);
   // Labels cannot match :disabled, so mirror the input state. A segment reads
@@ -383,7 +399,9 @@ export function RadioCard({ children, ...props }: RadioCardProps) {
   const disabled = isSegmentedKind(variantProps.$kind)
     ? undefined
     : rest.disabled;
-  return (
+  return prependOptionalSeparator(
+    ButtonSeparator,
+    separator,
     <DescriptionContext.Provider value={context}>
       <label
         htmlFor={id}
@@ -395,7 +413,7 @@ export function RadioCard({ children, ...props }: RadioCardProps) {
         <ak.Radio {...rest} id={id} aria-describedby={describedBy} />
         {children}
       </label>
-    </DescriptionContext.Provider>
+    </DescriptionContext.Provider>,
   );
 }
 

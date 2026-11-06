@@ -21,7 +21,7 @@ Give each tab an `id` that is unique on the page, and pass `defaultSelectedId` o
 
 The `$kind` prop of `Tab` sets the look of the tab: `folder`, `flat`, or `bevel`. The `bar` prop adds a bar that marks a selected flat or bevel tab. `TabList` with `$kind="segmented"` is a control that stands on its own, and it goes in a `TabProvider` instead of `Tabs`. Tabs written as children need the same `$kind`.
 
-`TabSlot` puts an icon or a badge next to a label in a `TabLabel`. `TabSeparator` draws a pipe or a chevron between tabs. A pipe hides beside the selected, hovered, or focused tab.
+`TabSlot` puts an icon or a badge next to a label in a `TabLabel`. Set `separator` on a `Tab` to draw a pipe before it, or pass `TabSeparator` props, such as `$kind="chevron"`, to change the mark. Pass `separator={!!index}` when you map tabs, so each tab after the first gets one. A pipe hides beside the selected, hovered, or focused tab.
 
 In the React Router example, each `Tab` renders a `Link` through the `render` prop, and `Tabs` reads the selected tab from `useLocation`. Only the links navigate, because a `setSelectedId` that also navigates adds a second history entry for each click. `selectOnMove={false}` keeps the arrow keys from adding history entries, so Enter or a click follows the focused link. The example uses a memory router, so the route stays in the preview and a link opened in a new tab has no page. An app can use `BrowserRouter` or `HashRouter` instead.
 
@@ -29,7 +29,7 @@ The Next.js example works in the same way, with a Next.js `Link` and `usePathnam
 
 ## Accessibility
 
-`TabList` needs a name, such as `aria-label`. A tab list can hold only tabs and separators hidden from screen readers, so add `aria-hidden` to each `TabSeparator`. A tab also can't hold another control, so put other controls outside the list.
+`TabList` needs a name, such as `aria-label`. A tab list can hold only tabs and separators hidden from screen readers. The `separator` prop hides its `TabSeparator` for you, so add `aria-hidden` only to a `TabSeparator` that you render yourself. A tab also can't hold another control, so put other controls outside the list.
 
 By default, moving to a tab with the arrow keys selects it. Set `selectOnMove` to `false` when a selection starts slow work, so a person who presses an arrow key three times does not start three requests.
 

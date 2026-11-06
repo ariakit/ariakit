@@ -4,7 +4,6 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  TabSeparator,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import { useEffect, useState } from "react";
@@ -38,10 +37,12 @@ export default function Example() {
     >
       <TabList aria-label="Reports">
         <Tab id="reports-sales">Sales</Tab>
-        <TabSeparator aria-hidden />
-        <Tab id="reports-traffic">Traffic</Tab>
-        <TabSeparator aria-hidden />
-        <Tab id="reports-support">Support</Tab>
+        <Tab id="reports-traffic" separator>
+          Traffic
+        </Tab>
+        <Tab id="reports-support" separator>
+          Support
+        </Tab>
       </TabList>
       <TabPanels>
         <TabPanel single aria-busy={loading}>

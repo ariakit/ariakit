@@ -1,4 +1,4 @@
 {
   "title": "Tabs",
-  "description": "The baseline tabs: Tabs holds the selection, TabList holds folder tabs with a TabSeparator pipe between them, and each TabPanel in TabPanels names its tab with tabId. The selected tab joins its panel, the pipes beside it hide, and arrow keys move between tabs and select them. Use it as the starting point when each tab has its own content."
+  "description": "The baseline tabs: Tabs holds the selection, TabList holds folder tabs, and the separator prop puts a pipe before each Tab after the first, and each TabPanel in TabPanels names its tab with tabId. The selected tab joins its panel, the pipes beside it hide, and arrow keys move between tabs and select them. Use it as the starting point when each tab has its own content."
 }

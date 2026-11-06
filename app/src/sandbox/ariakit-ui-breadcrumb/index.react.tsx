@@ -160,6 +160,19 @@ export default function BreadcrumbSandbox() {
           </BreadcrumbLink>
         </Breadcrumb>
       </Example>
+
+      <Example
+        title="Separator element"
+        description="A plain list item passed to separator stays out of the list that screen readers count."
+        code={`
+          <BreadcrumbCurrent separator={<li>›</li>}>Tools</BreadcrumbCurrent>
+        `}
+      >
+        <Breadcrumb aria-label="Separator element">
+          <BreadcrumbLink href="#garden">Garden</BreadcrumbLink>
+          <BreadcrumbCurrent separator={<li>›</li>}>Tools</BreadcrumbCurrent>
+        </Breadcrumb>
+      </Example>
     </ExampleGrid>
   );
 }

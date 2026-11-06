@@ -21,6 +21,18 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await test.expect(mark).toHaveCSS("opacity", "0");
   });
 
+  test("hides a rule from the separator prop beside a hovered button", async ({
+    q,
+  }) => {
+    const example = query(q.article("Separators from the separator prop"));
+    const copy = example.button("Copy");
+    const mark = copy.locator("xpath=preceding-sibling::*[1]");
+    await test.expect(mark).toHaveAttribute("aria-hidden", "true");
+    await test.expect(mark).toHaveCSS("opacity", "1");
+    await hoverOver(copy);
+    await test.expect(mark).toHaveCSS("opacity", "0");
+  });
+
   test("keeps the separators beside a hovered button in a wide gap", async ({
     page,
     q,

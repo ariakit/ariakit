@@ -3,7 +3,6 @@ import {
   TabList,
   TabPanel,
   TabPanels,
-  TabSeparator,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
@@ -17,13 +16,13 @@ export default function Example() {
       <Tabs defaultSelectedId="team-members">
         <TabList aria-label="Team">
           <Tab id="team-members">Members</Tab>
-          <TabSeparator aria-hidden />
-          <Tab id="team-roles">Roles</Tab>
-          <TabSeparator aria-hidden />
+          <Tab id="team-roles" separator>
+            Roles
+          </Tab>
           {/* Tabs stay focusable when disabled, so keyboard users get the
               tooltip too. Screen readers read the reason as the description. */}
           <Tooltip text={reason}>
-            <Tab id="team-audit" disabled aria-describedby={reasonId}>
+            <Tab id="team-audit" disabled aria-describedby={reasonId} separator>
               Audit log
             </Tab>
           </Tooltip>
