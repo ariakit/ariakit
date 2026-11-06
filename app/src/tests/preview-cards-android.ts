@@ -337,6 +337,7 @@ test("preview card frames scroll vertically after a horizontal swipe", async ({
   // popup contains its overscroll, so the swipe starts above it.
   const box = await iframe.boundingBox();
   if (!box) throw new Error("The frame has no bounding box.");
+  const pageScroll = await getPageScroll(page);
   await swipe({
     page,
     from: { x: box.x + box.width / 2, y: box.y + 16 },
@@ -346,7 +347,7 @@ test("preview card frames scroll vertically after a horizontal swipe", async ({
   await expect.poll(() => getScrollLeft(root)).toBeGreaterThan(0);
   await expect(root).toHaveAttribute("data-preview-active", "");
   await expect(listbox).toHaveCSS("overflow-y", "auto");
-  const pageScroll = await getPageScroll(page);
+  expect(await getPageScroll(page)).toBe(pageScroll);
   const rootScroll = await getScrollTop(root);
   await swipe({
     page,
@@ -376,6 +377,7 @@ test("inline previews scroll vertically after a horizontal swipe", async ({
   await expect(viewport).toHaveCSS("overflow-y", "hidden");
 
   // A horizontal swipe does not move the docs page, so the example takes it.
+  const pageScroll = await getPageScroll(page);
   await swipe({
     page,
     from: await getCenter(viewport),
@@ -384,10 +386,59 @@ test("inline previews scroll vertically after a horizontal swipe", async ({
   });
   await expect.poll(() => getScrollLeft(viewport)).toBeGreaterThan(0);
   await expect(viewport).toHaveCSS("overflow-y", "auto");
-  const pageScroll = await getPageScroll(page);
+  expect(await getPageScroll(page)).toBe(pageScroll);
   await swipe({ page, from: await getCenter(viewport), distance: 100 });
   await expect.poll(() => getScrollTop(viewport)).toBeGreaterThan(0);
   expect(await getPageScroll(page)).toBe(pageScroll);
+});
+
+test("preview card frames become active after a horizontal flick", async ({
+  page,
+}) => {
+  const { frame } = await getComboboxFrame(page);
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  const root = frame.locator("html");
+  await widenExample(frame.locator("body"));
+  await expect
+    .poll(() => root.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+  // The finger lifts while it moves fast, and the frame keeps scrolling after
+  // the touch ends. The popup contains its overscroll, so the flick starts
+  // above it.
+  const box = await iframe.boundingBox();
+  if (!box) throw new Error("The frame has no bounding box.");
+  await swipe({
+    page,
+    from: { x: box.x + box.width / 2, y: box.y + 16 },
+    distance: 100,
+    horizontal: true,
+    fling: true,
+  });
+  await expect.poll(() => getScrollLeft(root)).toBeGreaterThan(0);
+  await expect(root).toHaveAttribute("data-preview-active", "");
+});
+
+test("inline previews become active after a horizontal flick", async ({
+  page,
+  q,
+}) => {
+  const card = q.region("Slots", { exact: true });
+  const viewport = await getSlotsViewport(page, card);
+  await widenExample(viewport);
+  await expect
+    .poll(() => viewport.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+  // The finger lifts while it moves fast, and the example keeps scrolling after
+  // the touch ends.
+  await swipe({
+    page,
+    from: await getCenter(viewport),
+    distance: 100,
+    horizontal: true,
+    fling: true,
+  });
+  await expect.poll(() => getScrollLeft(viewport)).toBeGreaterThan(0);
+  await expect(viewport).toHaveCSS("overflow-y", "auto");
 });
 
 test("inline previews stay inactive after a tap that stops the page", async ({

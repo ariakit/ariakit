@@ -1466,11 +1466,10 @@ function useInactiveScroll(
       event.preventDefault();
       scrollPage(viewport, event);
     };
-    // The stopped containers still scroll horizontally, so a touch that scrolls
-    // one of them and moves more sideways than up or down activates the
-    // preview. Changing the overflow of the scroller during the touch could
-    // cancel it in iOS Safari, as stopping it does, so the preview becomes
-    // active once the touch ends.
+    // A touch that scrolls the example or one of its containers, and moves more
+    // sideways than up or down, activates the preview. Changing the overflow of
+    // the scroller during the touch could cancel it in iOS Safari, as stopping
+    // it does, so the preview becomes active once the touch ends.
     let touchStart: { target: Node; x: number; y: number } | null = null;
     let touchScrolled = false;
     const onTouchStart = (event: TouchEvent) => {
@@ -1486,7 +1485,6 @@ function useInactiveScroll(
     const onScroll = (event: Event) => {
       if (!touchStart) return;
       if (!(event.target instanceof Element)) return;
-      if (!scrollLocked.has(event.target)) return;
       if (!event.target.contains(touchStart.target)) return;
       touchScrolled = true;
     };

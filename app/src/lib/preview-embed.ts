@@ -698,11 +698,10 @@ export function setupPreviewEmbed() {
     }
     updateScrollLock();
   };
-  // The stopped containers and the inactive root still scroll horizontally, so
-  // a touch that scrolls one of them and moves more sideways than up or down
-  // activates the page. Changing the overflow of the scroller during the touch
-  // could cancel it in iOS Safari, as stopping it does, so the page asks for
-  // activation once the touch ends.
+  // A touch that scrolls the page or one of its containers, and moves more
+  // sideways than up or down, activates the page. Changing the overflow of the
+  // scroller during the touch could cancel it in iOS Safari, as stopping it
+  // does, so the page asks for activation once the touch ends.
   let touchStart: { target: Node; x: number; y: number } | null = null;
   let touchScrolled = false;
   window.addEventListener(
@@ -727,7 +726,6 @@ export function setupPreviewEmbed() {
       if (!touchStart) return;
       const scroller = event.target === document ? root : event.target;
       if (!(scroller instanceof Element)) return;
-      if (scroller !== root && !scrollLocked.has(scroller)) return;
       if (!scroller.contains(touchStart.target)) return;
       touchScrolled = true;
     },
