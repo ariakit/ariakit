@@ -514,6 +514,47 @@ export default function CarouselExamples() {
           </CarouselTabList>
         </Carousel>
       </Example>
+
+      <Example
+        title="Slides with links"
+        description="One slide per view with fades, and each slide is a link. The row is a fraction of a pixel wider than a whole width, like a third of a column, so a link that fills its slide reads wider than the space between the fades. A link that takes keyboard focus keeps its slide in view."
+        code={`<CarouselSlide><Frame render={<a href="#project" />} /></CarouselSlide>`}
+        wide
+      >
+        <Carousel
+          aria-label="Projects with links"
+          className="w-[25.02rem] max-w-full"
+        >
+          <CarouselViewport $fade>
+            {projects.map((project) => (
+              <CarouselSlide key={project.title}>
+                <Frame
+                  // Safari moves Tab to a link only with a tab index.
+                  render={
+                    <a
+                      href={`#${getSlideId("project", project.title)}`}
+                      tabIndex={0}
+                    />
+                  }
+                  $layer="brand"
+                  $mix={20}
+                  $rounded="xl"
+                  $p={4}
+                  className="grid h-36 content-end gap-1"
+                >
+                  <h3 className="font-medium">{project.title}</h3>
+                  <p className="text-sm">{project.text}</p>
+                </Frame>
+              </CarouselSlide>
+            ))}
+          </CarouselViewport>
+          <CarouselTabList>
+            {projects.map((project) => (
+              <CarouselTab key={project.title} />
+            ))}
+          </CarouselTabList>
+        </Carousel>
+      </Example>
     </ExampleGrid>
   );
 }

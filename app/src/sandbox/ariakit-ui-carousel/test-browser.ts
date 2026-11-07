@@ -212,6 +212,29 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     test.expect(await getScrollLeft(viewport)).toBe(40);
   });
 
+  // A fractional row width makes a link that fills its slide read wider than
+  // the space between the fades, so the carousel centers it, and a scroll by
+  // that fraction of a pixel would snap to the next slide.
+  test("keeps the slide of a focused link in view at a fractional width", async ({
+    page,
+    q,
+  }) => {
+    await reduceMotion(page);
+    const box = query(q.article("Slides with links"));
+    await box.button("Previous slide").focus();
+    for (const name of [/^Dashboard/, /^Mobile app/]) {
+      const link = box.link(name);
+      // Firefox focuses the viewport that scrolls before the first slide.
+      await test
+        .expect(async () => {
+          await page.keyboard.press("Tab");
+          await test.expect(link).toBeFocused({ timeout: 1000 });
+        })
+        .toPass();
+      await test.expect(link).toBeInViewport({ ratio: 1 });
+    }
+  });
+
   test("moves focus to the other button at the end of a row", async ({
     page,
     q,

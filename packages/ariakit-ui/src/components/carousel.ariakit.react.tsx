@@ -370,11 +370,21 @@ function useCarousel({
       if (!item) return;
       const padding = getScrollPadding(viewport);
       const clearWidth = viewport.clientWidth - padding.start - padding.end;
-      const fits = item.getBoundingClientRect().width <= clearWidth;
-      item.scrollIntoView({
-        block: "nearest",
-        inline: fits ? "nearest" : "center",
-      });
+      const itemRect = item.getBoundingClientRect();
+      if (itemRect.width <= clearWidth) {
+        item.scrollIntoView({ block: "nearest", inline: "nearest" });
+        return;
+      }
+      // Chrome and Firefox miss the middle of a row whose scroll padding takes
+      // the whole row, so the carousel measures it. A scroll to a position
+      // snaps to the closest item, where a scroll by an offset would snap to
+      // the next one.
+      const viewportRect = viewport.getBoundingClientRect();
+      const viewportStart = viewportRect.left + viewport.clientLeft;
+      const viewportCenter = viewportStart + viewport.clientWidth / 2;
+      const itemCenter = itemRect.left + itemRect.width / 2;
+      const left = viewport.scrollLeft + itemCenter - viewportCenter;
+      viewport.scrollTo({ left });
     };
 
     updateRef.current = update;
