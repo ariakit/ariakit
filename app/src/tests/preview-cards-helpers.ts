@@ -115,3 +115,33 @@ export async function routeExampleModules(
   });
   return routedFrames;
 }
+
+// The resize handle of a card names the viewport that it resizes, even while
+// the handle is hidden.
+export async function getPreviewViewport(article: Locator) {
+  const handle = query(article).separator("Resize preview", {
+    includeHidden: true,
+  });
+  const viewportId = await handle.getAttribute("aria-controls");
+  return article.page().locator(`[id="${viewportId}"]`);
+}
+
+// The box of the example in an inline preview viewport, from the edges of the
+// viewport.
+export async function getExampleBox(viewport: Locator) {
+  return viewport.evaluate((element) => {
+    // Islands and slots wrap the example without boxes, next to styles.
+    const example = [...element.querySelectorAll("*")].find((child) => {
+      const { display } = getComputedStyle(child);
+      return display !== "contents" && display !== "none";
+    });
+    if (!example) throw new Error("No example");
+    const area = element.getBoundingClientRect();
+    const box = example.getBoundingClientRect();
+    return {
+      top: box.top - area.top,
+      bottom: area.bottom - box.bottom,
+      height: box.height,
+    };
+  });
+}

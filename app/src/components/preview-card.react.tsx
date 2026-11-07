@@ -708,7 +708,21 @@ function PreviewCardViewport({
           <div
             data-loading={ready ? undefined : ""}
             aria-busy={!ready}
-            className="group/preview grid grid-cols-1 grid-rows-[minmax(0,1fr)] *:[grid-area:1/1]"
+            className={[
+              "group/preview grid grid-cols-1 grid-rows-[minmax(0,1fr)] *:[grid-area:1/1]",
+              // The frame fills this box, and so does the loader, which then
+              // shows where the page centers the example. A frame taller than a
+              // limited window shrinks to its row, and its page scrolls in it.
+              "max-h-full",
+              // The box keeps the minimum height of the card. The height that a
+              // grid row adds goes below it, as in an inline preview, so the
+              // example stays in place when the row changes. A fullscreen page,
+              // such as an app shell, fills the whole card.
+              "self-start",
+              fullscreen
+                ? "min-h-full"
+                : "min-h-[var(--preview-card-min-height,100%)]",
+            ].join(" ")}
           >
             {/* The page script in preview-card.astro sets the width of the frame,
                 often before the card hydrates, and the card sets its height from
@@ -726,13 +740,9 @@ function PreviewCardViewport({
                 "block w-full border-0 bg-transparent transition-opacity",
                 getFallbackHeight({ fullscreen, minHeight }),
                 "h-(--preview-frame-height)",
-                // A frame taller than a limited window shrinks to its row, and
-                // its page scrolls in it.
-                "max-h-full",
-                // A frame fills a taller viewport, such as at its minimum height
-                // or in a taller grid row, so its page centers the example in
-                // the card.
-                "min-h-full",
+                // The frame fills its box between the minimum height and the
+                // limited window height.
+                "max-h-full min-h-full",
                 "group-data-loading/preview:opacity-0",
                 // Without scripts, nothing reports the load, so the frame shows
                 // right away.
@@ -832,9 +842,13 @@ function PreviewCardInline({
           className={[
             "grid grid-cols-1 place-items-center overflow-auto",
             "min-h-(--preview-card-min-height,auto)",
-            // An example taller than the viewport starts at the top, so all
-            // of it can scroll into view.
-            "content-center-safe",
+            // The example is centered only within the minimum height. The
+            // height that a grid row adds goes below it, so the example stays
+            // in place when its own height or its row changes, such as when a
+            // tab shows a shorter file. A taller example sets the height of
+            // the row, so it starts at the top and can scroll into view.
+            "content-start",
+            "grid-rows-[minmax(max-content,max(0px,var(--preview-card-min-height,0px)-2*var(--ak-frame-padding)))]",
             // The global island styles inherit the grid display, which would
             // size the example to its content. Without their boxes, the
             // example is a grid item that fits the card.
