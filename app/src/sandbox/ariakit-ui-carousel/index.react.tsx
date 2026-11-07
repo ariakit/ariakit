@@ -252,15 +252,24 @@ function NestedRows() {
 function GrowingRow() {
   const [count, setCount] = useState(3);
   const [wide, setWide] = useState(false);
+  const [gap, setGap] = useState(2);
   return (
     <div className="grid w-full gap-3">
-      <FilterRow label="Growing filters" count={count} wide={wide} />
+      <FilterRow
+        label="Growing filters"
+        count={count}
+        wide={wide}
+        viewport={{ $gap: gap }}
+      />
       <div className="flex flex-wrap gap-2">
         <Button $layer $border onClick={() => setCount(filters.length)}>
           Show all filters
         </Button>
         <Button $layer $border onClick={() => setWide(true)}>
           Widen filters
+        </Button>
+        <Button $layer $border onClick={() => setGap(6)}>
+          Widen gaps
         </Button>
       </div>
     </div>
@@ -358,7 +367,7 @@ export default function CarouselExamples() {
 
       <Example
         title="Growing row"
-        description="The end button shows once added or wider items overflow the row."
+        description="The end button shows once added or wider items overflow the row, and wider gaps enable it again at the end."
         code={`<CarouselViewport>{items}</CarouselViewport>`}
         stretch
       >

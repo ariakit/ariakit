@@ -308,6 +308,31 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await test.expect.poll(() => getScrollLeft(viewport)).toBeGreaterThan(0);
   });
 
+  // https://github.com/ariakit/ariakit/pull/8323#discussion_r4499748237
+  test("enables the end button once wider gaps grow a row at its end", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    await reduceMotion(page);
+    const box = query(q.article("Growing row"));
+    const viewport = box.toolbar("Growing filters");
+    const next = box.button("Scroll forward", { includeHidden: true });
+    await box.button("Show all filters").click();
+    await test.expect(next).toBeVisible();
+    await viewport.evaluate((node) => {
+      node.scrollTo({ left: node.scrollWidth, behavior: "instant" });
+    });
+    await test.expect(next).toHaveAttribute("aria-disabled", "true");
+    const end = await getScrollLeft(viewport);
+    // A wider gap adds scroll width past the end, while the row and its items
+    // keep their sizes and the scroll position stays.
+    await box.button("Widen gaps").click();
+    await test.expect(next).not.toHaveAttribute("aria-disabled", "true");
+    await next.click();
+    await test.expect.poll(() => getScrollLeft(viewport)).toBeGreaterThan(end);
+  });
+
   test("lands the slide buttons on slides", async ({ page, q }) => {
     await reduceMotion(page);
     const box = query(q.article("Slides"));

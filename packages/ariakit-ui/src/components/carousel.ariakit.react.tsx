@@ -380,12 +380,20 @@ function useCarousel({
       subtree: true,
       characterData: true,
     });
+    // A class or style on the viewport, such as a wider $gap, can change the
+    // scroll width while no box resizes.
+    const attributeObserver = new win.MutationObserver(schedule);
+    attributeObserver.observe(viewport, {
+      attributes: true,
+      attributeFilter: ["class", "style"],
+    });
     return () => {
       win.cancelAnimationFrame(frame);
       clearTimeout(statusTimer);
       viewport.removeEventListener("scroll", onScroll);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
+      attributeObserver.disconnect();
       updateRef.current = undefined;
     };
   }, [viewport, kind, renderedItems, onSelectedIdChange]);
