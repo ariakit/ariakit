@@ -151,9 +151,11 @@ body > * {
 }
 
 /**
- * Squares panel corners where tabs extend past the scroll viewport. Keep round
- * corners when scrolling or scroll-driven animations are unavailable. Use
- * longhands because the animation shorthand resets the timeline and range.
+ * Squares panel corners where tabs extend past the scroll viewport, for a strip
+ * that doesn't fade. A strip that fades keeps its ends clear of the corners
+ * instead, so its panel uses ui-tabs-open-start and ui-tabs-open-end. Keep
+ * round corners when scrolling or scroll-driven animations are unavailable.
+ * Use longhands because the animation shorthand resets the timeline and range.
  */
 @utility ui-tabs-round {
   @supports (animation-timeline: scroll()) {
@@ -164,6 +166,80 @@ body > * {
     animation-range:
       0 var(--ak-frame-radius),
       calc(100% - var(--ak-frame-radius)) 100%;
+  }
+}
+
+/* How far each corner opens from where a selected outer folder covers it to a
+   full corner, from 0 to 1 once the strip fades the folder out. */
+@property --tabs-open-s {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tabs-open-e {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes ui-tabs-open-s {
+  from {
+    --tabs-open-s: 0;
+  }
+  to {
+    --tabs-open-s: 1;
+  }
+}
+
+/* The end corner opens while the strip scrolls away from its end, which runs
+   backward on the scroll timeline. */
+@keyframes ui-tabs-open-e {
+  from {
+    --tabs-open-e: 1;
+  }
+  to {
+    --tabs-open-e: 0;
+  }
+}
+
+/**
+ * Opens the start corner of a panel while its selected first folder scrolls
+ * out, for a strip that fades. It follows the fade at the start of the strip,
+ * so the corner rounds only where the fade already hides the folder. The panel
+ * can't read the fade size from the strip, its sibling, so the range uses the
+ * default fade size of a carousel. Keep the reduced corner when scrolling or
+ * scroll-driven animations are unavailable.
+ */
+@utility ui-tabs-open-start {
+  @supports (animation-timeline: scroll()) {
+    animation-name: ui-tabs-open-s;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --tabs-scroll;
+    animation-range: 2px calc(var(--spacing) * 8 + 2px);
+  }
+}
+
+/**
+ * Squares the end corner of a panel while its selected last folder leaves the
+ * end of a strip that fades, as ui-tabs-round does, because the fade at the end
+ * grows too slowly to hide the folder there. Then the corner opens again only
+ * as fast as the fade clears the end, so it's round once the fade fully hides
+ * the folder. The range uses the default fade size of a carousel, as in
+ * ui-tabs-open-start, which this replaces: the start corner is full beside a
+ * selected last folder.
+ */
+@utility ui-tabs-open-end {
+  @supports (animation-timeline: scroll()) {
+    animation-name: ui-tabs-round-e, ui-tabs-open-e;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --tabs-scroll, --tabs-scroll;
+    animation-range:
+      calc(100% - var(--ak-frame-radius)) 100%,
+      calc(100% - var(--spacing) * 8 - 2px)
+        calc(100% - var(--ak-frame-radius));
   }
 }
 
@@ -201,6 +277,14 @@ body > * {
 }
 
 @property --carousel-overhang {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* The space at each end that the fade keeps clear without a button, such as
+   beside a round corner. A button that covers more space clears that instead. */
+@property --carousel-clear {
   syntax: "<length>";
   inherits: true;
   initial-value: 0px;
@@ -304,7 +388,8 @@ body > * {
 @utility ui-carousel-fade {
   @supports (animation-timeline: scroll()) {
     --carousel-mask-inset: calc(
-      var(--carousel-overhang, 0px) + var(--carousel-button-space)
+      var(--carousel-overhang, 0px) +
+        max(var(--carousel-button-space), var(--carousel-clear))
     );
     --carousel-mask-fade: calc(
       var(--carousel-mask-inset) + var(--carousel-fade-size)

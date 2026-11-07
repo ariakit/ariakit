@@ -124,8 +124,11 @@ export const tabs = cv({
     /**
      * Rounds panel corners under folder tabs. The first selected folder reduces
      * the start corner, and the last selected folder of a stretched strip
-     * reduces the end corner. Scrolling squares each clipped side. Other tab
-     * kinds and `false` keep square corners.
+     * reduces the end corner. A strip that fades keeps the corners round while
+     * it scrolls. The reduced start corner opens as the first folder fades out,
+     * and the end corner squares while a selected last folder leaves the end,
+     * until the fade hides it. Without the fade, scrolling squares each clipped
+     * side. Other tab kinds and `false` keep square corners.
      */
     $panelRoundedTop: {
       true: "[--tabs-notch:calc(var(--tabs-radius)*var(--tabs-folder,0))]",
@@ -526,7 +529,7 @@ const tabStrip = cx(
   // The strip reaches over the root padding and edge, where the fade and the
   // scroll buttons start.
   "[--carousel-overhang:calc(var(--tabs-padding)+var(--tabs-bordering))]",
-  "[--carousel-inset:calc(var(--carousel-overhang)+var(--carousel-button-space)+var(--carousel-fade-size))]",
+  "[--carousel-inset:calc(var(--carousel-overhang)+max(var(--carousel-button-space),var(--carousel-clear))+var(--carousel-fade-size))]",
   // Scroll the tab clear of the fade and the buttons, and its outer curve into
   // view too. This overrides the smaller frame scroll padding.
   "scroll-px-[max(var(--tabs-radius),var(--carousel-inset))]",
@@ -570,9 +573,14 @@ export const tabList = cv({
      * to `true` for a strip.
      */
     $fade: {
-      // A strip outside tabListCarousel has no buttons and paints its own
-      // color, which a fade would fade too.
-      true: "carousel-fade [.tab-list-carousel>&]:ui-carousel-fade",
+      true: [
+        // A strip outside tabListCarousel has no buttons and paints its own
+        // color, which a fade would fade too.
+        "carousel-fade [.tab-list-carousel>&]:ui-carousel-fade",
+        // The fade keeps each end clear of the round panel corner below it, so
+        // a tab that passes over the corner doesn't show.
+        "[.tab-list-carousel>&]:[--carousel-clear:var(--tabs-notch,0px)]",
+      ],
       false: carouselNoFadeClass,
     },
     /**
@@ -678,14 +686,26 @@ export const tabPanels = cv({
     "-mt-[calc(var(--tabs-notch,0px)+var(--tabs-bordering))]",
     // Use root corner geometry, reducing the start radius beside the first
     // selected folder, and the end radius beside a last one in a stretched
-    // strip.
-    "rounded-ss-[calc(min(var(--tabs-notch,0px),var(--tabs-meet,var(--tabs-notch,0px)))*var(--tabs-round-s,1))]",
-    "rounded-se-[calc(min(var(--tabs-notch,0px),var(--tabs-meet-end,var(--tabs-notch,0px)))*var(--tabs-round-e,1))]",
+    // strip. --tabs-round-s and --tabs-round-e square each corner while tabs
+    // pass over it.
+    "[--tabs-corner-s:calc(min(var(--tabs-notch,0px),var(--tabs-meet,var(--tabs-notch,0px)))*var(--tabs-round-s,1))]",
+    "[--tabs-corner-e:calc(min(var(--tabs-notch,0px),var(--tabs-meet-end,var(--tabs-notch,0px)))*var(--tabs-round-e,1))]",
     // A cut folder curve keeps its full radius, so the corner takes only the
     // space past the curve.
-    "[.tabs-folder-cut>&]:rounded-ss-[calc(min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-radius)))*var(--tabs-round-s,1))]",
-    "[.tabs-folder-cut>&]:rounded-se-[calc(min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-radius)))*var(--tabs-round-e,1))]",
+    "[.tabs-folder-cut>&]:[--tabs-corner-s:calc(min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-radius)))*var(--tabs-round-s,1))]",
+    "[.tabs-folder-cut>&]:[--tabs-corner-e:calc(min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-radius)))*var(--tabs-round-e,1))]",
+    // Each corner opens from that radius to a full corner as --tabs-open-s or
+    // --tabs-open-e grows, while the fade hides a selected outer folder.
+    "rounded-ss-[calc(var(--tabs-corner-s)+(var(--tabs-notch,0px)-var(--tabs-corner-s))*var(--tabs-open-s,0))]",
+    "rounded-se-[calc(var(--tabs-corner-e)+(var(--tabs-notch,0px)-var(--tabs-corner-e))*var(--tabs-open-e,0))]",
+    // Square the corners while tabs pass over them. A strip that fades keeps
+    // its ends clear of the corners instead, so they stay round. The start
+    // corner opens as the fade hides a selected first folder. The end corner
+    // squares while a selected last folder leaves the end, before the fade
+    // hides it, and opens again once the fade does.
     "ui-tabs-round",
+    "[.tab-list-carousel:has(>.carousel-fade)~&]:ui-tabs-open-start",
+    "[.tab-list-carousel:has(>.carousel-fade>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-last-child(1_of_.control))~&]:ui-tabs-open-end",
   ],
   defaultVariants: {
     // Lighten from the layer around the root, like selected tabs, not from the
