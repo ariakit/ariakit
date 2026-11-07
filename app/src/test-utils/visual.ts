@@ -208,21 +208,41 @@ async function readBoundingBoxes(locator: Locator, fullPage: boolean) {
 }
 
 /**
- * Reads every element box and the scroll position in one round trip. The boxes
+ * Reads every element box and the scroll position in one evaluation. The boxes
  * can differ from boundingBox below a pixel and are relative to the element's
  * own frame, so they only serve to detect a clip that is still changing.
  */
-function readClientBoxes(locator: Locator) {
-  return locator.evaluateAll((elements) => ({
-    rects: elements.map((element) => {
-      // An element without layout boxes, such as one with display: none, is
-      // where Playwright's boundingBox returns null.
-      if (!element.getClientRects().length) return null;
-      const { x, y, width, height } = element.getBoundingClientRect();
-      return { x, y, width, height };
+async function readClientBoxes(locator: Locator) {
+  // TODO: Use locator.evaluateAll again once Playwright's Firefox build stops
+  // crashing the page. With Playwright 1.65.0, evaluateAll crashes Firefox when
+  // another locator call already resolved the same getByRole locator with a
+  // name, and the element has aria-labelledby. Element handles avoid that.
+  // https://github.com/microsoft/playwright/issues/43967
+  // The clip polling reads the boxes many times per capture, and each read
+  // would otherwise keep its handles until the page navigates.
+  await using handles = new AsyncDisposableStack();
+  const elements = await locator.elementHandles();
+  for (const element of elements) {
+    handles.use(element);
+  }
+  return await locator.page().evaluate(
+    (nodes) => ({
+      rects: nodes.map((node) => {
+        // Locators only match elements, but the handles are typed as nodes. An
+        // element in a frame comes from another realm, so the check reads the
+        // node type rather than using instanceof.
+        if (node.nodeType !== Node.ELEMENT_NODE) return null;
+        const element = node as Element;
+        // An element without layout boxes, such as one with display: none, is
+        // where Playwright's boundingBox returns null.
+        if (!element.getClientRects().length) return null;
+        const { x, y, width, height } = element.getBoundingClientRect();
+        return { x, y, width, height };
+      }),
+      scroll: { x: scrollX, y: scrollY },
     }),
-    scroll: { x: scrollX, y: scrollY },
-  }));
+    elements,
+  );
 }
 
 async function getScreenshotClip(
@@ -266,7 +286,7 @@ async function waitForStableScreenshotClip(
   }
   // Some previews update their layout a few frames after they become visible.
   // Wait until the computed clip stays unchanged for a short window. The
-  // polling only compares clips, so it reads them in one round trip each.
+  // polling only compares clips, so it reads them in one evaluation each.
   let previousClip = await getScreenshotClip(page, options, readClientBoxes);
   let lastClip = previousClip;
   let stableSince = Date.now();
@@ -370,6 +390,180 @@ async function withViewport(
   if (original) {
     await page.setViewportSize(original);
   }
+}
+
+/**
+ * Runs `fn` with a viewport as tall and wide as the document, so a full-page
+ * capture fits in the viewport.
+ */
+async function withDocumentViewport(page: Page, fn: () => Promise<void>) {
+  const original = page.viewportSize();
+  invariant(original, "The page must have a viewport");
+  const size = await page.evaluate(() => ({
+    width: Math.max(
+      document.documentElement.scrollWidth,
+      document.body.scrollWidth,
+    ),
+    height: Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight,
+    ),
+  }));
+  // A document past the capture limits uses a capture beyond the viewport
+  // anyway, and a viewport of that size would only slow the capture down.
+  if (Math.max(size.width, size.height) > MAX_BATCH_CAPTURE_DIMENSION) {
+    await fn();
+    return;
+  }
+  const viewport = {
+    width: Math.max(original.width, size.width),
+    height: Math.max(original.height, size.height),
+  };
+  await withViewport(page, viewport, fn);
+}
+
+declare global {
+  interface Window {
+    __releaseScrollAnimations?: () => void;
+  }
+}
+
+/**
+ * Holds the scroll-driven animations of the document at their current values
+ * until `__releaseScrollAnimations` runs. Playwright's `animations: "disabled"`
+ * skips an animation with a zero playback rate, and important rules with the
+ * current values keep it in place while the rate is zero. Playwright evaluates
+ * this in each frame, so it must not use anything outside of its body.
+ */
+function holdScrollAnimations() {
+  const timingKeys = new Set([
+    "offset",
+    "computedOffset",
+    "easing",
+    "composite",
+  ]);
+  const toPropertyName = (key: string) => {
+    if (key.startsWith("--")) {
+      return key;
+    }
+    if (key === "cssFloat") return "float";
+    return key.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`);
+  };
+  // Chromium and WebKit leave custom properties out of the keyframes of a CSS
+  // animation, so they come from its @keyframes rule.
+  const customProperties = new Map<string, Set<string>>();
+  const readRules = (list: CSSRuleList) => {
+    for (const rule of list) {
+      if (rule instanceof CSSKeyframesRule) {
+        const names = customProperties.get(rule.name) ?? new Set<string>();
+        for (const keyframe of rule.cssRules) {
+          if (!(keyframe instanceof CSSKeyframeRule)) continue;
+          for (const name of keyframe.style) {
+            if (name.startsWith("--")) {
+              names.add(name);
+            }
+          }
+        }
+        customProperties.set(rule.name, names);
+      } else if (rule instanceof CSSGroupingRule) {
+        readRules(rule.cssRules);
+      }
+    }
+  };
+  for (const sheet of [
+    ...document.styleSheets,
+    ...document.adoptedStyleSheets,
+  ]) {
+    try {
+      readRules(sheet.cssRules);
+    } catch {
+      // A cross-origin sheet doesn't expose its rules.
+    }
+  }
+  const rules: string[] = [];
+  const held: Array<{ animation: Animation; rate: number }> = [];
+  for (const animation of document.getAnimations()) {
+    // Animations on the document timeline run in time, not with a scroll.
+    if (!animation.timeline) continue;
+    if (animation.timeline instanceof DocumentTimeline) continue;
+    const effect = animation.effect;
+    if (!(effect instanceof KeyframeEffect)) continue;
+    const { target, pseudoElement } = effect;
+    if (!target) continue;
+    // A rule in the document doesn't reach a shadow tree.
+    if (target.getRootNode() !== document) continue;
+    const properties = new Set(
+      effect
+        .getKeyframes()
+        .flatMap((keyframe) => Object.keys(keyframe))
+        .filter((key) => !timingKeys.has(key))
+        .map(toPropertyName),
+    );
+    if (animation instanceof CSSAnimation) {
+      for (const name of customProperties.get(animation.animationName) ?? []) {
+        properties.add(name);
+      }
+    }
+    const style = getComputedStyle(target, pseudoElement);
+    const declarations = [...properties]
+      .map((property) => {
+        const value = style.getPropertyValue(property);
+        return `${property}: ${value} !important;`;
+      })
+      .join(" ");
+    // An element can run more than one animation, so it can hold more marks.
+    const mark = `hold-${held.length}`;
+    const marks = target.getAttribute("data-visual-hold");
+    target.setAttribute("data-visual-hold", marks ? `${marks} ${mark}` : mark);
+    const selector = `[data-visual-hold~="${mark}"]${pseudoElement ?? ""}`;
+    rules.push(`${selector} { ${declarations} }`);
+    held.push({ animation, rate: animation.playbackRate });
+  }
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync(rules.join("\n"));
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+  // A canceled animation would also escape Playwright, but WebKit doesn't
+  // follow the scroll again when it plays after the capture.
+  for (const { animation } of held) {
+    animation.playbackRate = 0;
+  }
+  window.__releaseScrollAnimations = () => {
+    document.adoptedStyleSheets = document.adoptedStyleSheets.filter(
+      (adopted) => adopted !== sheet,
+    );
+    for (const element of document.querySelectorAll("[data-visual-hold]")) {
+      element.removeAttribute("data-visual-hold");
+    }
+    for (const { animation, rate } of held) {
+      animation.playbackRate = rate;
+    }
+    delete window.__releaseScrollAnimations;
+  };
+}
+
+/**
+ * Runs `fn` with the scroll-driven animations of every frame held at their
+ * scroll position.
+ */
+async function withScrollAnimationsHeld(page: Page, fn: () => Promise<void>) {
+  // TODO: Remove once Playwright's `animations: "disabled"` leaves
+  // scroll-driven animations alone. It finishes every animation with an end, so
+  // scroll buttons drew in the wrong state: Firefox 159 showed them on strips
+  // that don't scroll, and Chromium hid them on strips that do. Visonaut always
+  // captures with that option.
+  const frames = page.frames().filter((frame) => !frame.isDetached());
+  await Promise.all(
+    frames.map((frame) => frame.evaluate(holdScrollAnimations)),
+  );
+  await fn();
+  // Skip the release when fn fails, as in withStyles.
+  await Promise.all(
+    frames
+      .filter((frame) => !frame.isDetached())
+      .map((frame) =>
+        frame.evaluate(() => window.__releaseScrollAnimations?.()),
+      ),
+  );
 }
 
 /**
@@ -563,26 +757,49 @@ export async function visual(
             } satisfies Variant,
             timeout,
           };
-          if (regions) {
-            await captureRegions({
-              page,
-              item,
-              regions,
-              clipMargin,
-              ...captureOptions,
+          const capture = () =>
+            withScrollAnimationsHeld(page, async () => {
+              if (regions) {
+                await captureRegions({
+                  page,
+                  item,
+                  regions,
+                  clipMargin,
+                  ...captureOptions,
+                });
+                return;
+              }
+              const screenshotOptions = await getPlaywrightScreenshotOptions(
+                page,
+                { element, clipMargin, fullPage },
+              );
+              await captureVisual(page, {
+                item,
+                ...captureOptions,
+                screenshot: screenshotOptions,
+              });
+            });
+          // TODO: Capture in the current viewport again once Chromium keeps the
+          // emulated forced colors in a capture beyond the viewport, which
+          // Playwright takes for a full page that doesn't fit the viewport.
+          // Chromium 158 draws that capture without forced colors.
+          const capturesPage = !!regions || fullPage;
+          if (
+            browserName === "chromium" &&
+            media.forcedColors === "active" &&
+            capturesPage
+          ) {
+            await withDocumentViewport(page, async () => {
+              await waitForStableScreenshotClip(page, {
+                element,
+                clipMargin,
+                fullPage,
+              });
+              await capture();
             });
             return;
           }
-          const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
-            element,
-            clipMargin,
-            fullPage,
-          });
-          await captureVisual(page, {
-            item,
-            ...captureOptions,
-            screenshot: screenshotOptions,
-          });
+          await capture();
         });
       }
     });

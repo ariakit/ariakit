@@ -546,6 +546,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
       for (const contrast of [false, true]) {
         const label = contrast ? " (high contrast)" : "";
+        // TODO: Update the snapshots again once Chromium keeps the hue of
+        // low-chroma colors converted to oklch. Chromium 158 makes it
+        // powerless, so these snapshots record hue 0 for tinted neutral layers.
+        // Some other values change in their last digit from a separate Chromium
+        // rounding change, which stays after the fix.
+        // https://issues.chromium.org/issues/581485540
         test(`computed styles${label}`, async ({ page }) => {
           if (contrast) {
             await page.emulateMedia({ contrast: "more" });

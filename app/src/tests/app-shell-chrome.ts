@@ -295,7 +295,22 @@ test("collection page cards take focus in their visual order", async ({
   await cards.link(first, { exact: true }).focus();
   for (const name of rest) {
     await page.keyboard.press("Tab");
-    await expect(cards.link(name, { exact: true })).toBeFocused();
+    const card = cards.link(name, { exact: true });
+    await expect(card).toBeFocused();
+    // A card transitions when it takes focus. Wait for that, as a person
+    // pausing between Tab presses would. In Chromium 156 to 158, a transform
+    // transition that changes the overflow of the card, such as a zoom of a
+    // scene that runs past its stage, makes the next Tab follow the DOM order.
+    // Scenes can also run endless animations, which never finish.
+    // https://issues.chromium.org/issues/582923442
+    await card.evaluate((element) =>
+      Promise.allSettled(
+        element
+          .getAnimations({ subtree: true })
+          .filter((animation) => animation instanceof CSSTransition)
+          .map(({ finished }) => finished),
+      ),
+    );
   }
 });
 

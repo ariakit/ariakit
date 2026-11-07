@@ -34,9 +34,9 @@ export interface AppThumbnailProps extends Omit<FrameProps, "children"> {
   html: string;
   /**
    * `card` fills its grid area in a page card and fades its scene. The scene
-   * shows at full opacity and zooms in when an ancestor with the
-   * `group/thumbnail` class is hovered or focused. `slot` draws a small
-   * thumbnail, drawn for a box about 60px by 40px, in a 4:3 box such as a
+   * shows at full opacity when an ancestor with the `group/thumbnail` class is
+   * hovered or focused, and zooms in only while it is hovered. `slot` draws a
+   * small thumbnail, drawn for a box about 60px by 40px, in a 4:3 box such as a
    * navigation slot. Slots strengthen their border while the `group/thumbnail`
    * ancestor is hovered, focused, or the current page. Set the slot height with
    * `className`; the width follows the ratio.
@@ -129,9 +129,15 @@ export function AppThumbnail({
         className={clsx(
           "block size-full",
           // A faded scene keeps the card label in front. Hovering or focusing
-          // the card shows the scene at full opacity and zooms it in.
+          // the card shows the scene at full opacity, and hovering zooms it in.
           "opacity-80 origin-top transition-[scale,opacity] duration-600 ease-out motion-reduce:transition-none",
-          "group-hover/thumbnail:scale-103 group-focus-visible/thumbnail:scale-103",
+          // TODO: Zoom in on focus again once Chromium keeps the reading-flow
+          // order of the card grid. In Chromium 156 to 158, a transform change
+          // inside a grid item can make the next Tab follow the DOM order, so
+          // a zoom on focus would break each Tab. The hover zoom can still
+          // break it while the pointer rests on a card.
+          // https://issues.chromium.org/issues/582923442
+          "group-hover/thumbnail:scale-103",
           "group-hover/thumbnail:opacity-100 group-focus-visible/thumbnail:opacity-100",
         )}
       >

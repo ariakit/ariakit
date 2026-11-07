@@ -321,41 +321,6 @@ export function countAnimations(overlay: Locator, withBackdrop = false) {
 }
 
 /**
- * Keeps the current state of scroll-driven animations, such as the fades and
- * the scroll buttons of a carousel, through the captures that follow. A capture
- * disables animations, which would show these parts as if nothing scrolled, so
- * this copies their current values into important inline styles. Load the page
- * again to undo it.
- */
-export function freezeScrollAnimations(page: Page) {
-  return page.evaluate(() => {
-    const timingKeys = ["offset", "computedOffset", "easing", "composite"];
-    for (const animation of document.getAnimations()) {
-      // Animations on the document timeline run in time, not with a scroll.
-      if (!animation.timeline) continue;
-      if (animation.timeline === document.timeline) continue;
-      const effect = animation.effect;
-      if (!(effect instanceof KeyframeEffect)) continue;
-      if (effect.pseudoElement) continue;
-      const target = effect.target;
-      if (!(target instanceof HTMLElement)) continue;
-      const style = getComputedStyle(target);
-      for (const keyframe of effect.getKeyframes()) {
-        for (const key of Object.keys(keyframe)) {
-          if (timingKeys.includes(key)) continue;
-          // Keyframes name standard properties in camel case.
-          const property = key.startsWith("--")
-            ? key
-            : key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-          const value = style.getPropertyValue(property);
-          target.style.setProperty(property, value, "important");
-        }
-      }
-    }
-  });
-}
-
-/**
  * Skips the current test in a browser without scroll-driven animations, where
  * the row buttons of a carousel and a tab strip never show. The styles test the
  * same condition with `@supports`. Firefox enables these animations from

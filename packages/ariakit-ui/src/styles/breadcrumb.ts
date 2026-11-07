@@ -164,9 +164,11 @@ export const breadcrumbLabel = cv({
     // The step and the list item then find their minimum from the label, the
     // padding, and the slots. The minimum leaves room for a letter and the
     // ellipsis. Where calc-size() works, it adds no space beside narrower text.
+    // WebKit keeps the plain minimum, because it gives a flex item with this
+    // minimum its full max-content width, and the labels overlap.
     $truncate: [
       "breadcrumb-truncate min-w-[3ch]",
-      "supports-[width:calc-size(auto,size)]:min-w-[calc-size(max-content,min(size,3ch))]",
+      "supports-[width:calc-size(auto,size)]:not-supports-[font:-apple-system-body]:min-w-[calc-size(max-content,min(size,3ch))]",
       "whitespace-normal! break-all line-clamp-1",
     ],
   },
