@@ -57,6 +57,29 @@ function getMaxOffset(viewport: HTMLElement) {
   return Math.max(0, viewport.scrollWidth - viewport.clientWidth);
 }
 
+interface ClearRange {
+  left: number;
+  right: number;
+}
+
+/**
+ * Returns how far a row scrolls so that a box lies in the clear range between
+ * the fades and the buttons: to the nearest edge of the range, or to its middle
+ * when the box doesn't fit. Returns 0 when the box is already clear.
+ */
+function getClearOffset(rect: DOMRect, clear: ClearRange) {
+  if (rect.width > clear.right - clear.left) {
+    return rect.left + rect.width / 2 - (clear.left + clear.right) / 2;
+  }
+  if (rect.left < clear.left) {
+    return rect.left - clear.left;
+  }
+  if (rect.right > clear.right) {
+    return rect.right - clear.right;
+  }
+  return 0;
+}
+
 function getScrollPadding(viewport: HTMLElement) {
   const style = getWindow(viewport).getComputedStyle(viewport);
   return {
@@ -367,30 +390,32 @@ function useCarousel({
       // Firefox can focus the viewport itself, which holds every item.
       if (target === viewport) return;
       if (!target.matches(":focus-visible")) return;
-      const padding = getScrollPadding(viewport);
-      const clearWidth = viewport.clientWidth - padding.start - padding.end;
-      const fits = (element: Element) =>
-        element.getBoundingClientRect().width <= clearWidth;
-      const snaps = win.getComputedStyle(viewport).scrollSnapType !== "none";
-      const snapItem = snaps
-        ? Array.from(viewport.children).find((child) => child.contains(target))
-        : undefined;
-      const item = snapItem && fits(snapItem) ? snapItem : target;
-      if (fits(item)) {
-        item.scrollIntoView({ block: "nearest", inline: "nearest" });
-        return;
-      }
-      const itemRect = item.getBoundingClientRect();
-      // Chrome and Firefox miss the middle of a row whose scroll padding takes
-      // the whole row, so the carousel measures it. A scroll to a position
-      // snaps to the closest item, where a scroll by an offset would snap to
-      // the next one.
+      const style = win.getComputedStyle(viewport);
       const viewportRect = viewport.getBoundingClientRect();
-      const viewportStart = viewportRect.left + viewport.clientLeft;
-      const viewportCenter = viewportStart + viewport.clientWidth / 2;
-      const itemCenter = itemRect.left + itemRect.width / 2;
-      const left = viewport.scrollLeft + itemCenter - viewportCenter;
-      viewport.scrollTo({ left });
+      const viewportLeft = viewportRect.left + viewport.clientLeft;
+      const viewportRight = viewportLeft + viewport.clientWidth;
+      const clear = {
+        left: viewportLeft + (Number.parseFloat(style.scrollPaddingLeft) || 0),
+        right:
+          viewportRight - (Number.parseFloat(style.scrollPaddingRight) || 0),
+      };
+      const fits = (element: Element) =>
+        element.getBoundingClientRect().width <= clear.right - clear.left;
+      const snapItem =
+        style.scrollSnapType !== "none"
+          ? Array.from(viewport.children).find((child) =>
+              child.contains(target),
+            )
+          : undefined;
+      const item = snapItem && fits(snapItem) ? snapItem : target;
+      const offset = getClearOffset(item.getBoundingClientRect(), clear);
+      if (!offset) return;
+      // The carousel scrolls the viewport alone. scrollIntoView would also
+      // scroll the page to show the whole item, and Chrome and Firefox miss the
+      // middle of a row whose scroll padding takes the whole row. A scroll to a
+      // position snaps to the closest item, where a scroll by an offset would
+      // snap to the next one.
+      viewport.scrollTo({ left: viewport.scrollLeft + offset });
     };
 
     updateRef.current = update;
