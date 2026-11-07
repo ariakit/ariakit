@@ -100,7 +100,12 @@ export const tabs = cv({
      * `true`.
      */
     $outerEdge: {
-      false: "border-transparent ring-transparent",
+      false: [
+        "border-transparent ring-transparent",
+        // Forced colors draw a transparent border in the text color, but keep
+        // the system color of the page.
+        "forced-colors:border-[color:Canvas]",
+      ],
     },
     /**
      * Sets how the curve of a selected outer folder fits beside the panel
