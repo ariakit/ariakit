@@ -1,4 +1,6 @@
 import * as ak from "@ariakit/react";
+import { useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
+import { getWindow } from "@ariakit/utils";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
@@ -15,12 +17,23 @@ import {
  * The state of a skeleton area:
  * - `pending`: loading, but the placeholders are not shown yet. Parts keep
  *   their space without painting.
- * - `skeleton`: the placeholders are shown.
+ * - `skeleton`: the placeholders are shown. After loading ends, they stay in
+ *   this state while they fade out.
  * - `content`: parts render their children.
  */
 export type SkeletonState = "pending" | "skeleton" | "content";
 
-const SkeletonContext = React.createContext<SkeletonState | null>(null);
+// Parts also need to know when the placeholders fade out, which the public
+// state reports as `skeleton`.
+type SkeletonPhase = SkeletonState | "leave";
+
+interface SkeletonContextValue {
+  phase: SkeletonPhase;
+  // Whether the root has shown its content, so new placeholders replace it.
+  reload: boolean;
+}
+
+const SkeletonContext = React.createContext<SkeletonContextValue | null>(null);
 
 /**
  * Returns the state of the closest `Skeleton`, or `content` outside of one. Use
@@ -31,27 +44,63 @@ const SkeletonContext = React.createContext<SkeletonState | null>(null);
  *   return <Button disabled={state !== "content"}>Save</Button>;
  * }
  */
-export function useSkeletonState() {
-  return React.useContext(SkeletonContext) ?? "content";
+export function useSkeletonState(): SkeletonState {
+  const context = React.useContext(SkeletonContext);
+  if (!context) return "content";
+  if (context.phase === "leave") return "skeleton";
+  return context.phase;
 }
 
 // A part without a root is a static placeholder, such as in a thumbnail.
-function useSkeletonPartState() {
-  return React.useContext(SkeletonContext) ?? "skeleton";
+const staticPart: SkeletonContextValue = { phase: "skeleton", reload: false };
+
+function useSkeletonPart() {
+  return React.useContext(SkeletonContext) ?? staticPart;
+}
+
+// The markers that the part styles read. Pending and leaving parts keep their
+// space without painting, and parts that replace loaded content fade in.
+function getPartProps({ phase, reload }: SkeletonContextValue) {
+  return {
+    "data-pending": phase === "pending" || undefined,
+    "data-leave": phase === "leave" || undefined,
+    "data-reload": reload || undefined,
+  };
+}
+
+// Returns the opacity transitions that fade out the placeholders in `element`.
+function getLeaveTransitions(element: Element | null) {
+  if (!element) return [];
+  const { CSSTransition, KeyframeEffect } = getWindow(element);
+  // DOM shims without Web Animations have no transitions to wait for.
+  if (!CSSTransition || !KeyframeEffect) return [];
+  // Reading the animations updates the styles first, so the transitions that
+  // the leave marker starts are already in the list.
+  return element.getAnimations({ subtree: true }).filter((animation) => {
+    if (!(animation instanceof CSSTransition)) return false;
+    if (animation.transitionProperty !== "opacity") return false;
+    const effect = animation.effect;
+    if (!(effect instanceof KeyframeEffect)) return false;
+    // Other elements, such as a closing popover, can also have the marker.
+    const part = effect.target?.closest("[data-leave]");
+    return !!part && element.contains(part);
+  });
 }
 
 export interface SkeletonProps
   extends ak.RoleProps<"div">, VariantProps<typeof skeleton> {
   /**
    * Whether the content is loading. The placeholders stay for at least 200
-   * milliseconds, so fast loads do not flash.
+   * milliseconds, so fast loads do not flash. When loading ends, they fade out
+   * before the parts render their children.
    * @default true
    */
   loading?: boolean;
   /**
    * Milliseconds to wait after loading starts before the placeholders fade in.
    * Loading that ends within this time never shows them. With `0`, the
-   * placeholders render with the first render, including the server HTML.
+   * placeholders render with the first render, including the server HTML, and
+   * fade in when they replace loaded content.
    * @default 0
    */
   delay?: number;
@@ -73,9 +122,12 @@ export interface SkeletonProps
 export function Skeleton({
   loading = true,
   delay = 0,
+  ref,
   ...props
 }: SkeletonProps) {
   const [variantProps, rest] = splitProps(props, skeleton);
+  const elementRef = React.useRef<HTMLDivElement>(null);
+  const mergedRef = useMergeRefs(elementRef, ref);
   const shown = usePerceptibleValue(loading, {
     delay: loading ? delay : 0,
     // Only the placeholders stay for a minimum. Content that stays would show
@@ -85,15 +137,62 @@ export function Skeleton({
     // shows the placeholders.
     initialValue: delay > 0 ? false : loading,
   });
-  const state = shown ? "skeleton" : loading ? "pending" : "content";
+  const [leaving, setLeaving] = React.useState(false);
+  const [previousShown, setPreviousShown] = React.useState(shown);
+  if (shown !== previousShown) {
+    setPreviousShown(shown);
+    // When the placeholders hide, they fade out before the content replaces
+    // them.
+    setLeaving(!shown);
+  }
+  const phase: SkeletonPhase = shown
+    ? "skeleton"
+    : loading
+      ? "pending"
+      : leaving
+        ? "leave"
+        : "content";
+  // Placeholders fade in only when they replace loaded content. Before that,
+  // they paint with the first render, including the server HTML.
+  const [reload, setReload] = React.useState(false);
+  if (phase === "content" && !reload) {
+    setReload(true);
+  }
+  const context = React.useMemo(() => ({ phase, reload }), [phase, reload]);
+
+  // A layout effect, so the content replaces the placeholders before the next
+  // paint when no fade runs, such as with reduced motion.
+  useSafeLayoutEffect(() => {
+    if (phase !== "leave") return;
+    // The styles own the fade, so the content waits for the transitions that
+    // run instead of a fixed duration.
+    const transitions = getLeaveTransitions(elementRef.current);
+    if (!transitions.length) {
+      setLeaving(false);
+      return;
+    }
+    let active = true;
+    void Promise.allSettled(transitions.map(({ finished }) => finished)).then(
+      () => {
+        if (!active) return;
+        setLeaving(false);
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, [phase]);
+
+  const animated = phase === "skeleton" || phase === "leave";
   return (
-    <SkeletonContext.Provider value={state}>
+    <SkeletonContext.Provider value={context}>
       <ak.Role.div
         {...skeleton.jsx({
           ...variantProps,
-          ...(state !== "skeleton" && { $animate: false }),
+          ...(!animated && { $animate: false }),
         })}
         {...rest}
+        ref={mergedRef}
       />
     </SkeletonContext.Provider>
   );
@@ -112,15 +211,15 @@ export interface SkeletonBoxProps
  * </SkeletonBox>
  */
 export function SkeletonBox({ children, ...props }: SkeletonBoxProps) {
-  const state = useSkeletonPartState();
+  const part = useSkeletonPart();
   const [variantProps, rest] = splitProps(props, skeletonBox);
-  if (state === "content") {
+  if (part.phase === "content") {
     return <>{children}</>;
   }
   return (
     <ak.Role.div
       aria-hidden
-      data-pending={state === "pending" || undefined}
+      {...getPartProps(part)}
       {...skeletonBox.jsx(variantProps)}
       {...rest}
     />
@@ -139,15 +238,15 @@ export interface SkeletonCircleProps
  * </SkeletonCircle>
  */
 export function SkeletonCircle({ children, ...props }: SkeletonCircleProps) {
-  const state = useSkeletonPartState();
+  const part = useSkeletonPart();
   const [variantProps, rest] = splitProps(props, skeletonCircle);
-  if (state === "content") {
+  if (part.phase === "content") {
     return <>{children}</>;
   }
   return (
     <ak.Role.div
       aria-hidden
-      data-pending={state === "pending" || undefined}
+      {...getPartProps(part)}
       {...skeletonCircle.jsx(variantProps)}
       {...rest}
     />
@@ -167,15 +266,15 @@ export interface SkeletonLineProps
  * </Heading>
  */
 export function SkeletonLine({ children, ...props }: SkeletonLineProps) {
-  const state = useSkeletonPartState();
+  const part = useSkeletonPart();
   const [variantProps, rest] = splitProps(props, skeletonLine);
-  if (state === "content") {
+  if (part.phase === "content") {
     return <>{children}</>;
   }
   return (
     <ak.Role.span
       aria-hidden
-      data-pending={state === "pending" || undefined}
+      {...getPartProps(part)}
       {...skeletonLine.jsx(variantProps)}
       {...rest}
     />
@@ -204,16 +303,16 @@ export interface SkeletonFillProps
  * </SkeletonFill>
  */
 export function SkeletonFill({ children, ...props }: SkeletonFillProps) {
-  const state = useSkeletonPartState();
+  const part = useSkeletonPart();
   const [variantProps, rest] = splitProps(props, skeletonFill);
-  if (state === "content") {
+  if (part.phase === "content") {
     return <>{children}</>;
   }
   return (
     <ak.Role.span
       {...inertProps}
       aria-hidden
-      data-pending={state === "pending" || undefined}
+      {...getPartProps(part)}
       {...skeletonFill.jsx(variantProps)}
       {...rest}
     >

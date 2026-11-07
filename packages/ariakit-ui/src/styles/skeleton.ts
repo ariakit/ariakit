@@ -65,8 +65,15 @@ const skeletonBase = cv({
   class: [
     "select-none pointer-events-none",
     // A pending part keeps its space without painting, so the layout does not
-    // move when the placeholders fade in.
-    "transition-opacity data-pending:opacity-0",
+    // move when the placeholders fade in. After loading, parts fade out the
+    // same way, and the root waits for this transition before it renders the
+    // content.
+    "transition-opacity data-pending:opacity-0 data-leave:opacity-0",
+    // Parts that replace loaded content fade in when they appear. On the first
+    // load, they paint with the first render, including the server HTML.
+    "data-reload:starting:opacity-0",
+    // Reduced motion shows and removes the placeholders at once.
+    "motion-reduce:transition-none",
     shimmerImage,
   ],
   variants: {
@@ -210,7 +217,9 @@ export const skeletonFill = cv({
     // Opacity does not apply to the wrapper without a box, so the child fades
     // with the same timing as the other parts, not its own.
     "*:[transition:opacity_var(--default-transition-duration)_var(--default-transition-timing-function)]!",
-    "data-pending:*:opacity-0!",
+    "data-pending:*:opacity-0! data-leave:*:opacity-0!",
+    "data-reload:starting:*:opacity-0!",
+    "motion-reduce:*:transition-none!",
     // Forced colors replace the transparent text color, so match the text to
     // the background instead. The outline then needs its own color.
     "forced-colors:*:outline forced-colors:*:outline-[CanvasText]",
