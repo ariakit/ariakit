@@ -551,6 +551,7 @@ async function withScrollAnimationsHeld(page: Page, fn: () => Promise<void>) {
   // scroll buttons drew in the wrong state: Firefox 159 showed them on strips
   // that don't scroll, and Chromium hid them on strips that do. Visonaut always
   // captures with that option.
+  // https://github.com/microsoft/playwright/issues/43986
   const frames = page.frames().filter((frame) => !frame.isDetached());
   await Promise.all(
     frames.map((frame) => frame.evaluate(holdScrollAnimations)),
@@ -783,6 +784,7 @@ export async function visual(
           // emulated forced colors in a capture beyond the viewport, which
           // Playwright takes for a full page that doesn't fit the viewport.
           // Chromium 158 draws that capture without forced colors.
+          // https://issues.chromium.org/issues/583003027
           const capturesPage = !!regions || fullPage;
           if (
             browserName === "chromium" &&
