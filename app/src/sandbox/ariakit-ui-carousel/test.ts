@@ -32,3 +32,20 @@ test("adds no carousel semantics to a row", () => {
     q.within(box.toolbar("Filters")).button.maybe("Scroll forward"),
   ).not.toBeInTheDocument();
 });
+
+test("renders no buttons in a row without buttons", () => {
+  const rows = [
+    ["Row without buttons", "Filters without buttons"],
+    ["Row with buttons set to none", "Filters with buttons set to none"],
+    [
+      "Row from a style recipe without buttons",
+      "Filters from a style recipe without buttons",
+    ],
+  ] as const;
+  for (const [title, label] of rows) {
+    const box = q.within(q.article(title));
+    expect(box.toolbar(label)).toBeInTheDocument();
+    expect(box.button.maybe("Scroll backward")).not.toBeInTheDocument();
+    expect(box.button.maybe("Scroll forward")).not.toBeInTheDocument();
+  }
+});

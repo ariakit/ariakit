@@ -50,9 +50,6 @@ export const carousel = cv({
     // Zero specificity lets an extender, such as a tab strip, set its own.
     "ui-base:[--carousel-button-padding:--spacing(2)]",
     "[--carousel-fade-size:--spacing(8)]",
-    // The space that a visible button takes at each end. It stays zero until
-    // $buttons sets it.
-    "[--carousel-button-space:0px]",
   ],
   variants: {
     /**
@@ -67,9 +64,16 @@ export const carousel = cv({
     /**
      * Sets when the buttons show: `pointer` only with a fine pointer and while
      * the viewport can scroll toward their side, or `always` on every device.
-     * The buttons read it through custom properties.
+     * `none` is for a root without buttons, so the fades and slides keep no
+     * space for them. `Carousel` renders no buttons with `none`, and sets it
+     * when it renders no button. The buttons and the viewport read it through
+     * custom properties.
      */
     $buttons: {
+      // Each value sets the space that a visible button takes at each end. A
+      // :has() rule that found the buttons made Chromium restyle whole pages
+      // on unrelated changes, such as opening a side panel.
+      // https://github.com/ariakit/ariakit/pull/8323#issuecomment-6700345938
       pointer: [
         // Row buttons hide, and with a fine pointer, scroll-driven animations
         // show them while the viewport can scroll toward their side, and grow
@@ -79,14 +83,16 @@ export const carousel = cv({
         "any-pointer-fine:[--carousel-button-end-animation:ui-carousel-show-end,ui-carousel-grow-end]",
         // The buttons show only with scroll-driven animations, so the space
         // needs them too.
-        "has-[>.carousel-button-area]:supports-[animation-timeline:scroll()]:any-pointer-fine:[--carousel-button-space:calc(var(--carousel-button-size)+var(--carousel-button-padding))]",
+        "[--carousel-button-space:0px]",
+        "supports-[animation-timeline:scroll()]:any-pointer-fine:[--carousel-button-space:calc(var(--carousel-button-size)+var(--carousel-button-padding))]",
       ],
       always: [
         // Reset the values that a row around this carousel sets.
         "[--carousel-button-visibility:visible]",
         "[--carousel-button-start-animation:none] [--carousel-button-end-animation:none]",
-        "has-[>.carousel-button-area]:[--carousel-button-space:calc(var(--carousel-button-size)+var(--carousel-button-padding))]",
+        "[--carousel-button-space:calc(var(--carousel-button-size)+var(--carousel-button-padding))]",
       ],
+      none: "[--carousel-button-space:0px]",
     },
     /**
      * Sets how far the viewport reaches past the root on each side, with the

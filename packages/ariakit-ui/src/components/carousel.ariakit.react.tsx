@@ -597,8 +597,9 @@ export type CarouselProps<
      */
     recipe?: R;
     /**
-     * Renders the previous and next buttons beside the viewport. Defaults to
-     * `true`.
+     * Renders the previous and next buttons beside the viewport. Without either
+     * button, the root takes `$buttons="none"`, so the fades and slides keep no
+     * space for them. Defaults to `true`.
      */
     buttons?: boolean;
     /**
@@ -685,12 +686,18 @@ export function Carousel<
   defaultSelectedId,
   setSelectedId,
   children,
+  $buttons,
   ...props
 }: CarouselProps<R>) {
   const styles = recipe ?? carousel;
   const [variantProps, rest] = splitProps(props, styles);
-  // The style recipe resolves the kind, including the default of an extender.
-  const kind = styles.getVariants(variantProps).$kind ?? "slides";
+  // The style recipe resolves the kind and the buttons, including the defaults
+  // of an extender.
+  const variants = styles.getVariants({ ...variantProps, $buttons });
+  const kind = variants.$kind ?? "slides";
+  const showButtons = buttons && variants.$buttons !== "none";
+  const hasButtons =
+    showButtons && (previousButton !== false || nextButton !== false);
   const collection = ak.useCollectionStore();
   const state = useCarousel({
     kind,
@@ -702,7 +709,7 @@ export function Carousel<
   const slides = kind === "slides";
   const context: CarouselContextValue = {
     kind,
-    showButtons: buttons,
+    showButtons,
     previousButton,
     nextButton,
     collection,
@@ -713,7 +720,10 @@ export function Carousel<
       <ak.Role
         role={slides ? "region" : undefined}
         aria-roledescription={slides ? "carousel" : undefined}
-        {...styles.jsx(variantProps)}
+        {...styles.jsx({
+          ...variantProps,
+          $buttons: hasButtons ? $buttons : "none",
+        })}
         {...rest}
       >
         {children}

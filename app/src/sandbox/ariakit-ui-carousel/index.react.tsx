@@ -28,6 +28,8 @@ import {
   TabPanels,
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
+import { carousel } from "@ariakit/ui/styles/carousel";
+import { cv } from "clava";
 import { useCallback, useState } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -84,6 +86,26 @@ function FilterRow({ label, viewport, count, wide, ...props }: FilterRowProps) {
             $border
             className={wide ? "shrink-0 basis-1/2" : "shrink-0"}
           >
+            {filter}
+          </Button>
+        ))}
+      </CarouselViewport>
+    </Carousel>
+  );
+}
+
+// A carousel style recipe for rows that never have buttons.
+const rowWithoutButtons = cv({
+  extend: [carousel],
+  defaultVariants: { $kind: "row", $buttons: "none" },
+});
+
+function RecipeRowWithoutButtons({ label }: { label: string }) {
+  return (
+    <Carousel recipe={rowWithoutButtons}>
+      <CarouselViewport aria-label={label} render={<div role="toolbar" />}>
+        {filters.map((filter) => (
+          <Button key={filter} $layer $border className="shrink-0">
             {filter}
           </Button>
         ))}
@@ -354,6 +376,24 @@ export default function CarouselExamples() {
         stretch
       >
         <FilterRow label="Filters without buttons" buttons={false} />
+      </Example>
+
+      <Example
+        title="Row with buttons set to none"
+        description="The none value of the buttons variant also removes the buttons and their space."
+        code={`<Carousel $kind="row" $buttons="none" />`}
+        stretch
+      >
+        <FilterRow label="Filters with buttons set to none" $buttons="none" />
+      </Example>
+
+      <Example
+        title="Row from a style recipe without buttons"
+        description="A style recipe whose buttons variant defaults to none removes the buttons and their space too."
+        code={`<Carousel recipe={rowWithoutButtons} />`}
+        stretch
+      >
+        <RecipeRowWithoutButtons label="Filters from a style recipe without buttons" />
       </Example>
 
       <Example
