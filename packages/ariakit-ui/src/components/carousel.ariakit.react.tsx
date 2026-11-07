@@ -616,8 +616,9 @@ export type CarouselProps<
     selectedId?: string;
     /**
      * The `id` of the `CarouselSlide` to show first, when `selectedId` is not
-     * set. The carousel starts there without a visible scroll, or, when it
-     * mounts hidden, once it shows.
+     * set. The carousel scrolls there at once when script runs, or, when it
+     * mounts hidden, once it shows. Until script runs, server-rendered HTML
+     * shows the first slide.
      */
     defaultSelectedId?: string;
     /**
