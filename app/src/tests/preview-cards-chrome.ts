@@ -21,12 +21,16 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+// The frame shows the server HTML of the tabs before Next.js hydrates them, and
+// a click on a tab link then loads a new document, which starts a new frame
+// history. The card shows the frame after its load event, which in practice
+// comes after hydration.
+// https://github.com/ariakit/ariakit/issues/8330
 async function gotoNextjsCard(page: Page) {
+  const title = "Tabs with the Next.js App Router";
   await gotoAndSettle(page, "/react/recipes/tabs/");
-  const iframe = page.locator(
-    'iframe[title="Tabs with the Next.js App Router"]',
-  );
-  await iframe.scrollIntoViewIfNeeded();
+  await page.locator(`iframe[title="${title}"]`).scrollIntoViewIfNeeded();
+  const iframe = await waitForShownFrame(page, title);
   return iframe.contentFrame();
 }
 
