@@ -250,6 +250,9 @@ export const carouselButtonArea = cv({
     // container queries in nested grids can stop Chromium for seconds on each
     // layout.
     "overflow-y-clip",
+    // The area paints nothing, and its radius only keeps the button concentric.
+    // Firefox would clip the hit area to its rounded corners.
+    "rounded-none!",
     "flex justify-center [align-items:var(--carousel-button-align,center)]",
     "pointer-events-none",
   ],

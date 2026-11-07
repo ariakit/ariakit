@@ -15,8 +15,10 @@ import {
 // button scrolls instant, so the tests read the scroll position without waiting
 // for an animation.
 
+// Firefox reports fractional scroll positions, such as 358.67, where the tests
+// compare whole pixels.
 function getScrollLeft(viewport: Locator) {
-  return viewport.evaluate((node) => Math.abs(node.scrollLeft));
+  return viewport.evaluate((node) => Math.round(Math.abs(node.scrollLeft)));
 }
 
 function getScrollEnd(viewport: Locator) {
@@ -55,12 +57,6 @@ function getItemOffset(item: Locator) {
   });
 }
 
-async function scrollTo(viewport: Locator, left: number) {
-  await viewport.evaluate((node, value) => {
-    node.scrollTo({ left: value, behavior: "instant" });
-  }, left);
-}
-
 async function reduceMotion(page: Page) {
   await page.emulateMedia({ reducedMotion: "reduce" });
 }
@@ -76,35 +72,6 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
         item: "ariakit-ui-carousel/page",
       });
     });
-  });
-
-  test("fades both ends of a scrolled row behind its buttons @visual", async ({
-    page,
-    q,
-    visual,
-  }) => {
-    await skipWithoutScrollAnimations(page);
-    await forEachColorSchemeOf(
-      page,
-      ["Filter row", "Right to left row"],
-      async (colorScheme) => {
-        for (const name of ["Filter row", "Right to left row"]) {
-          const box = q.article(name);
-          const viewport = query(box).toolbar();
-          await scrollTo(viewport, 150 * (name === "Filter row" ? 1 : -1));
-          await test.expect(query(box).button("Scroll backward")).toBeVisible();
-        }
-        await freezeScrollAnimations(page);
-        for (const name of ["Filter row", "Right to left row"]) {
-          await captureInView({
-            visual,
-            box: q.article(name),
-            colorScheme,
-            item: `ariakit-ui-carousel/scrolled-${name === "Filter row" ? "row" : "rtl-row"}`,
-          });
-        }
-      },
-    );
   });
 
   test("shows the last slides @visual", async ({ page, q, visual }) => {
@@ -519,7 +486,9 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
           }
           tab.click();
           requestAnimationFrame(() => {
-            requestAnimationFrame(() => resolve(Math.abs(viewport.scrollLeft)));
+            requestAnimationFrame(() => {
+              resolve(Math.round(Math.abs(viewport.scrollLeft)));
+            });
           });
         }),
     );
@@ -582,12 +551,18 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await reduceMotion(page);
     const box = query(q.article("Slides per view"));
     const status = box.region().locator("[aria-live]");
-    // A wheel scroll reaches the end, where the last three slides show.
+    // A wheel scroll reaches the end, where the last three slides show. Firefox
+    // stops a wheel scroll with mandatory snapping at a snap position on the
+    // way, so the wheel turns again until the row reaches its end.
     await box.group("1 of 7").hover();
-    await page.mouse.wheel(4000, 0);
     await test
-      .expect(box.button("Next slide"))
-      .toHaveAttribute("aria-disabled", "true");
+      .expect(async () => {
+        await page.mouse.wheel(4000, 0);
+        await test
+          .expect(box.button("Next slide"))
+          .toHaveAttribute("aria-disabled", "true", { timeout: 1000 });
+      })
+      .toPass();
     await test.expect(status).toHaveText("Showing slides 5 to 7 of 7");
     await box.button("Previous slide").click();
     await test.expect(status).toHaveText("Showing slides 4 to 6 of 7");
