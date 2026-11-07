@@ -212,6 +212,28 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     test.expect(await getScrollLeft(viewport)).toBe(40);
   });
 
+  test("leaves a wheel that a button cancels to the button", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Filter row"));
+    const viewport = box.toolbar("Filters");
+    const next = box.button("Scroll forward");
+    // A custom button can handle a wheel itself, such as to step by item, with
+    // a listener of its own that cancels the event.
+    await next.evaluate((element) => {
+      const cancel = (event: Event) => event.preventDefault();
+      element.addEventListener("wheel", cancel, { once: true, passive: false });
+    });
+    await next.hover();
+    await page.mouse.wheel(40, 0);
+    // The second wheel scrolls the row, so a row that took the first one too
+    // would stop at 80.
+    await page.mouse.wheel(40, 0);
+    await test.expect.poll(() => getScrollLeft(viewport)).toBe(40);
+  });
+
   // A fractional row width makes a link that fills its slide read wider than
   // the space between the fades, so the carousel centers it, and a scroll by
   // that fraction of a pixel would snap to the next slide.

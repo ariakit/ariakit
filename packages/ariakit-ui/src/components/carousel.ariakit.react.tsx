@@ -612,6 +612,7 @@ function useWheelScroll(
     if (!element) return;
     if (!viewport) return;
     const onWheel = (event: WheelEvent) => {
+      if (event.defaultPrevented) return;
       // The browser still scrolls for an event that can't be canceled, such as
       // a late event of a swipe, so a scroll here would add to its own.
       if (!event.cancelable) return;
