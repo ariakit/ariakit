@@ -34,10 +34,11 @@ export default function RootLayout({
             padding and position of the body. The maximum width of the children
             has no specificity, so an example can set its own. A fullscreen
             preview would need to skip this, but the root layout can't tell
-            which preview it renders. */}
+            which preview it renders. In a preview card, the bottom padding
+            also leaves room for a horizontal scrollbar. */}
         <div
           data-preview-content=""
-          className="flex min-h-dvh flex-col items-center-safe justify-center-safe p-8 [:where(&>*)]:max-w-full"
+          className="flex min-h-dvh flex-col items-center-safe justify-center-safe p-8 pb-[calc(--spacing(8)+var(--preview-scrollbar-height,0px))] [:where(&>*)]:max-w-full"
         >
           {children}
         </div>

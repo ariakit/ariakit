@@ -1077,6 +1077,17 @@ export function setupPreviewEmbed() {
       "*",
     );
   };
+  // A classic horizontal scrollbar on a page wider than its frame covers the
+  // bottom of the frame. The page adds this height to the bottom padding of its
+  // content, so the measured box includes the scrollbar and the example stays
+  // centered above it. Viewport units ignore the scrollbar, and its height
+  // depends only on the width of the page, so the room doesn't change with the
+  // frame height.
+  const updateScrollbarRoom = () => {
+    const height = Math.max(0, window.innerHeight - root.clientHeight);
+    setProperty("--preview-scrollbar-height", height ? `${height}px` : null);
+    return height;
+  };
   const getFrameHeight = () => {
     const content = document.querySelector("[data-preview-content]");
     if (!(content instanceof HTMLElement)) return null;
@@ -1085,6 +1096,7 @@ export function setupPreviewEmbed() {
       popupRoom = 0;
       scrollingPopup = false;
     }
+    const scrollbarRoom = updateScrollbarRoom();
     const box = getContentBox(content);
     if (!box) return reportedHeight;
     for (const { popup, rect } of popups) {
@@ -1093,10 +1105,10 @@ export function setupPreviewEmbed() {
         scrollingPopup = true;
         pinContent(content, box.offset);
       }
-      if (rect.top >= 0 && rect.bottom <= window.innerHeight) continue;
+      if (rect.top >= 0 && rect.bottom <= root.clientHeight) continue;
       pinContent(content, box.offset);
       // The popup fits below the example wherever it opens from.
-      const room = box.bottom + rect.height + popupMargin;
+      const room = box.bottom + rect.height + popupMargin + scrollbarRoom;
       popupRoom = Math.max(popupRoom, Math.ceil(room));
     }
     return Math.max(box.height, popupRoom);
@@ -1158,6 +1170,10 @@ export function setupPreviewEmbed() {
     // A media query can change only a margin or padding that the page measures,
     // which resizes none of the observed boxes.
     window.addEventListener("resize", scheduleSize);
+    // A horizontal scrollbar can appear or go away without resizing any of the
+    // observed boxes, such as when an element out of the flow moves past the
+    // edge of the page. The visual viewport excludes the scrollbar.
+    window.visualViewport?.addEventListener("resize", scheduleSize);
   });
 
   const finishOpening = () => {

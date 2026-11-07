@@ -76,13 +76,14 @@ const contentSized = !fullscreen && !open;
     {/* The framework island wraps the example and sizes to its content, so it
         needs a width limit for the example's own max-w-full to resolve. The
         example stays centered in the first viewport, with the same padding as
-        an inline preview card. */}
+        an inline preview card. In a preview card, the bottom padding also
+        leaves room for a horizontal scrollbar. See preview-embed.ts. */}
     <div
       data-preview-content={contentSized ? "" : undefined}
       class:list={[
         "@container size-full",
         !fullscreen &&
-          "min-h-dvh p-8 flex items-center-safe justify-center-safe *:max-w-full",
+          "min-h-dvh p-8 pb-[calc(--spacing(8)+var(--preview-scrollbar-height,0px))] flex items-center-safe justify-center-safe *:max-w-full",
       ]}
     >
       <Content {framework} />

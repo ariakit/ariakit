@@ -1,5 +1,6 @@
 import { query } from "@ariakit/test/playwright";
 import type { Locator, Page, Route } from "@playwright/test";
+import { gotoAndSettle } from "#app/test-utils/preview.ts";
 
 // Helpers for the preview card tests in this folder.
 
@@ -26,6 +27,31 @@ export async function waitForShownFrame(page: Page, title: string) {
     .locator(`[aria-busy="false"]:has(> iframe[title="${title}"])`)
     .waitFor({ state: "attached" });
   return iframe;
+}
+
+// The Combobox Group card is outside a preview grid and has no minimum height,
+// so its frame has no floor and no grid row to fill. The frame loads another
+// preview, as it does after a link in the page.
+export async function gotoPreviewInCard(page: Page, src: string) {
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
+  const iframe = await waitForShownFrame(page, "Combobox Group");
+  await loadInFrame(iframe, src);
+  return iframe;
+}
+
+export async function loadInFrame(iframe: Locator, src: string) {
+  const frame = await (await iframe.elementHandle())?.contentFrame();
+  if (!frame) throw new Error("No frame");
+  const previousUrl = frame.url();
+  await iframe.evaluate((element, src) => {
+    if (element instanceof HTMLIFrameElement) {
+      element.src = src;
+    }
+  }, src);
+  // A Next.js preview redirects to the Next.js server, so the frame URL is not
+  // the one set here. The wait includes the load event.
+  await frame.waitForURL((url) => url.href !== previousUrl);
+  await iframe.scrollIntoViewIfNeeded();
 }
 
 // A narrow card or a wide example can leave the example wider than its
