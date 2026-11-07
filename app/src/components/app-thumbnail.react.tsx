@@ -136,6 +136,7 @@ export function AppThumbnail({
           // inside a grid item can make the next Tab follow the DOM order, so
           // a zoom on focus would break each Tab. The hover zoom can still
           // break it while the pointer rests on a card.
+          // https://issues.chromium.org/issues/582923442
           "group-hover/thumbnail:scale-103",
           "group-hover/thumbnail:opacity-100 group-focus-visible/thumbnail:opacity-100",
         )}

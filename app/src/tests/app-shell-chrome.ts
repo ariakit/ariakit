@@ -302,6 +302,7 @@ test("collection page cards take focus in their visual order", async ({
     // transition that changes the overflow of the card, such as a zoom of a
     // scene that runs past its stage, makes the next Tab follow the DOM order.
     // Scenes can also run endless animations, which never finish.
+    // https://issues.chromium.org/issues/582923442
     await card.evaluate((element) =>
       Promise.allSettled(
         element
