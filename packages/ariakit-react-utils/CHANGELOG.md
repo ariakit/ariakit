@@ -1,5 +1,9 @@
 # @ariakit/react-utils
 
+## 0.2.9
+
+- Updated dependencies: `@ariakit/utils@0.2.3`, `@ariakit/store@0.1.12`
+
 ## 0.2.8
 
 - Updated dependencies: `@ariakit/utils@0.2.2`, `@ariakit/store@0.1.11`
