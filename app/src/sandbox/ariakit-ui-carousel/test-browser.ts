@@ -262,6 +262,21 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     test.expect(itemStep).toBeGreaterThanOrEqual(padding);
   });
 
+  test("keeps the view step in a row inside an item-step row", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    await reduceMotion(page);
+    const box = query(q.article("Nested rows"));
+    const inner = box.toolbar("Card filters");
+    // A narrow row moves by at least half its width.
+    const width = await inner.evaluate((node) => node.clientWidth);
+    const step = Math.round(Math.max(await getViewStep(inner), width / 2));
+    await query(inner.locator("..")).button("Scroll forward").click();
+    await test.expect.poll(() => getScrollLeft(inner)).toBe(step);
+  });
+
   test("shows the end button once added items overflow", async ({
     page,
     q,

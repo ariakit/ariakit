@@ -217,6 +217,38 @@ function TabbedSlides() {
   );
 }
 
+/**
+ * A row of cards that steps by item, with a row of filters of the default step
+ * in its first card.
+ */
+function NestedRows() {
+  return (
+    <Carousel $kind="row">
+      <CarouselViewport
+        aria-label="Cards"
+        render={<div role="group" />}
+        $step="item"
+      >
+        <Frame $layer $border $rounded="lg" $p={2} className="w-72 shrink-0">
+          <FilterRow label="Card filters" />
+        </Frame>
+        {projects.map((project) => (
+          <Frame
+            key={project.title}
+            $layer
+            $border
+            $rounded="lg"
+            $p={3}
+            className="w-48 shrink-0"
+          >
+            {project.title}
+          </Frame>
+        ))}
+      </CarouselViewport>
+    </Carousel>
+  );
+}
+
 function GrowingRow() {
   const [count, setCount] = useState(3);
   const [wide, setWide] = useState(false);
@@ -286,6 +318,15 @@ export default function CarouselExamples() {
         stretch
       >
         <FilterRow label="Filters by item" viewport={{ $step: "item" }} />
+      </Example>
+
+      <Example
+        title="Nested rows"
+        description="A row of cards that steps by item holds a row of filters, which keeps the view step."
+        code={`<CarouselViewport $step="item"><Card><CarouselViewport /></Card></CarouselViewport>`}
+        stretch
+      >
+        <NestedRows />
       </Example>
 
       <Example

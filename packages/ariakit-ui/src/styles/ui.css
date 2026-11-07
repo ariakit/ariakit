@@ -218,6 +218,13 @@ body > * {
   initial-value: 0px;
 }
 
+/* Script reads the step of each viewport. A viewport inside another one takes
+   the default step, not the step of its ancestor. */
+@property --carousel-step {
+  syntax: "*";
+  inherits: false;
+}
+
 @keyframes ui-carousel-start {
   from {
     --carousel-start: 0;
