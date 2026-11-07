@@ -218,13 +218,6 @@ body > * {
   initial-value: 0px;
 }
 
-/* Script reads this length to scroll by a custom step. */
-@property --carousel-step-length {
-  syntax: "<length-percentage>";
-  inherits: false;
-  initial-value: 0px;
-}
-
 @keyframes ui-carousel-start {
   from {
     --carousel-start: 0;

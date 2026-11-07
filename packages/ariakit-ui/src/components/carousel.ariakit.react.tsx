@@ -93,20 +93,6 @@ function scrollToOffset(
 }
 
 /**
- * Resolves the computed value of a registered `<length-percentage>`, such as
- * `120px`, `50%`, or `calc(50% + 12px)`, against a width.
- */
-function resolveLength(value: string, width: number) {
-  let total = 0;
-  const terms = value.matchAll(/([-+]?)\s*(\d*\.?\d+)(px|%)/g);
-  for (const [, sign, number, unit] of terms) {
-    const amount = Number(number) * (sign === "-" ? -1 : 1);
-    total += unit === "%" ? (amount * width) / 100 : amount;
-  }
-  return total;
-}
-
-/**
  * Finds where one step of a row button scrolls to, for the `$step` that the
  * viewport publishes through custom properties.
  */
@@ -133,11 +119,6 @@ function getRowStepTarget(viewport: HTMLElement, side: CarouselSide) {
     return next;
   }
   const visibleWidth = viewport.clientWidth - padding.start - padding.end;
-  if (step === "length") {
-    const length = style.getPropertyValue("--carousel-step-length");
-    const distance = resolveLength(length, viewport.clientWidth);
-    return offset + direction * distance;
-  }
   // A narrow row still moves by half its width, so the fades and the buttons
   // never leave a step too short to be useful.
   const distance = Math.max(visibleWidth, viewport.clientWidth / 2);

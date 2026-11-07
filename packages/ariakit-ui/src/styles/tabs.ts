@@ -11,9 +11,8 @@ import {
 import {
   carousel,
   carouselNoFadeClass,
-  getCarouselStepStyle,
+  carouselStepClasses,
 } from "./carousel.ts";
-import type { CarouselStepValue } from "./carousel.ts";
 import { frame } from "./frame.ts";
 import {
   isSegmentedKind,
@@ -564,14 +563,12 @@ export const tabList = cv({
     },
     /**
      * Sets how far a scroll button moves the strip: `view`, the default, moves
-     * it by the visible width less the fades and buttons, `item` moves it to
-     * the next tab, and a length or percentage of the strip width moves it by
-     * that distance. No press moves the strip by less than the fade and button
-     * cover, and a step that would leave less than that goes on to the end.
+     * it by the visible width less the fades and buttons, and `item` moves it
+     * to the next tab. No press moves the strip by less than the fade and
+     * button cover, and a step that would leave less than that goes on to the
+     * end.
      */
-    $step(value?: CarouselStepValue) {
-      return getCarouselStepStyle(value);
-    },
+    $step: carouselStepClasses,
   },
   defaultVariants: {
     $kind: "strip",

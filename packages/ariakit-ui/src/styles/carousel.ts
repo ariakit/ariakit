@@ -4,23 +4,15 @@ import { button } from "./button.ts";
 import { frameBase } from "./frame.ts";
 import { isLayerColor } from "./layer.ts";
 
-export type CarouselStepValue = "view" | "item" | (string & {});
-
 /**
- * Publishes a scroll step for the script of the carousel buttons. `view`, the
- * default, emits nothing, and the script uses the visible width of the row.
- * Lengths and percentages resolve through a registered property, so the script
- * reads pixels or a percentage of the row width.
+ * The classes of the `$step` values, which the script of the carousel buttons
+ * reads. `view`, the default, adds nothing, and the script uses the visible
+ * width of the row.
  */
-export function getCarouselStepStyle(value?: CarouselStepValue) {
-  if (value == null) return;
-  if (value === "view") return;
-  const style: Record<string, string> =
-    value === "item"
-      ? { "--carousel-step": "item" }
-      : { "--carousel-step": "length", "--carousel-step-length": value };
-  return { style };
-}
+export const carouselStepClasses = {
+  view: "",
+  item: "[--carousel-step:item]",
+};
 
 /**
  * The classes of a viewport without a fade. The buttons cover the content, and
@@ -156,15 +148,12 @@ export const carouselViewportBase = cv({
     },
     /**
      * Sets how far a row button scrolls: `view`, the default, scrolls by the
-     * visible width less the fades and buttons, `item` scrolls to the next
-     * item, skipping items closer than the fade and button cover, and a length
-     * or percentage of the row width scrolls by that distance. A step that
+     * visible width less the fades and buttons, and `item` scrolls to the next
+     * item, skipping items closer than the fade and button cover. A step that
      * would leave less than they cover goes on to the end. Slide buttons move
      * one slide at a time.
      */
-    $step(value?: CarouselStepValue) {
-      return getCarouselStepStyle(value);
-    },
+    $step: carouselStepClasses,
   },
 });
 

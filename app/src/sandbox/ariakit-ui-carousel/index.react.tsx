@@ -281,12 +281,11 @@ export default function CarouselExamples() {
 
       <Example
         title="Row steps"
-        description="Buttons scroll to the next item, or by a fixed length."
+        description="Buttons scroll to the next item."
         code={`<CarouselViewport $step="item" />`}
         stretch
       >
         <FilterRow label="Filters by item" viewport={{ $step: "item" }} />
-        <FilterRow label="Filters by length" viewport={{ $step: "120px" }} />
       </Example>
 
       <Example

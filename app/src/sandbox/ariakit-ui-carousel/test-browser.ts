@@ -274,13 +274,11 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await test.expect(previous).toBeFocused();
   });
 
-  test("scrolls a row to the next item or by a length", async ({ page, q }) => {
+  test("scrolls a row to the next item", async ({ page, q }) => {
     await skipWithoutScrollAnimations(page);
     await reduceMotion(page);
     const box = query(q.article("Row steps"));
     const byItem = box.toolbar("Filters by item");
-    const byLength = box.toolbar("Filters by length");
-    const nextButtons = box.button("Scroll forward");
     // An item step aligns an item with the start of the row, clear of the fade
     // and button there. It skips the items that would move the row less than
     // they cover.
@@ -290,13 +288,11 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     const padding = await byItem.evaluate((node) =>
       Number.parseFloat(getComputedStyle(node).scrollPaddingInlineStart),
     );
-    await nextButtons.first().click();
+    await box.button("Scroll forward").click();
     await test.expect.poll(() => getScrollLeft(byItem)).not.toBe(0);
     const itemStep = Math.round(await getScrollLeft(byItem));
     test.expect(itemOffsets).toContain(itemStep);
     test.expect(itemStep).toBeGreaterThanOrEqual(padding);
-    await nextButtons.last().click();
-    await test.expect.poll(() => getScrollLeft(byLength)).toBe(120);
   });
 
   test("shows the end button once added items overflow", async ({
