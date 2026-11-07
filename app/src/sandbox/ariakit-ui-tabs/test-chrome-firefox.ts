@@ -9,7 +9,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000461790
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r4000913151
   // https://github.com/ariakit/ariakit/issues/7519
-  test("keeps unselected tabs borderless in forced colors @visual", async ({
+  // Forced colors also draw the transparent root edge of `$outerEdge={false}`
+  // in the text color.
+  test("keeps unselected tabs and hidden outer edges borderless in forced colors @visual", async ({
     page,
     q,
     visual,
@@ -22,6 +24,11 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         ["bevel-tabs", "Bevel tabs"],
         ["borderless-flat-tabs", "Borderless flat tabs"],
         ["borderless-bevel-tabs", "Borderless bevel tabs"],
+        ["without-outer-edge", "Without outer edge"],
+        [
+          "darkened-strip-without-outer-edge",
+          "Darkened strip without outer edge",
+        ],
       ] as const) {
         const box = q.article(title);
         const selected = query(box).tab("Usage");
