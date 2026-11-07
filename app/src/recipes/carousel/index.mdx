@@ -1,0 +1,59 @@
+---
+title: Carousel
+shape: cell
+---
+
+## Overview
+
+These examples build horizontal carousels with the Ariakit UI `Carousel` components. A carousel shows a row of content that is wider than its box, and lets people scroll it with any input: touch, a trackpad, the keyboard, or the buttons beside the row. The scrollbar stays hidden.
+
+The gallery starts with a classic carousel that shows one slide at a time, with dots below it. Then it shows a row of cards that scrolls one card at a time, several slides per view that change with the width, a row of filter chips, and a row of video thumbnails.
+
+## Components
+
+`Carousel` holds the parts and sets the kind. Without `$kind`, it's a classic carousel of slides. `$kind="row"` makes a row of content that scrolls freely, such as chips, thumbnails, or cards. `CarouselViewport` is the part that scrolls, and it renders a previous button before it and a next button after it. Put `CarouselSlide` elements in the viewport of a classic carousel, and any elements in a row.
+
+`$kind` sets the other variants, and each of them can change on its own:
+
+| Variant                       | `slides`    | `row`     |
+| ----------------------------- | ----------- | --------- |
+| `$snap` on `CarouselViewport` | `mandatory` | `none`    |
+| `$fade` on `CarouselViewport` | `false`     | `true`    |
+| `$buttons` on `Carousel`      | `always`    | `pointer` |
+| `$gap` on `CarouselViewport`  | `3`         | `2`       |
+
+With `$fade`, the ends of the row fade while more content lies that way. While a button shows, the content is fully faded behind it, and the fade runs between the button and the content. The fade grows from each end as the row scrolls away from it. The fades and the buttons come from scroll-driven animations, so they are right on the first paint, before script runs. Browsers without scroll-driven animations show no fades and no row buttons. The row still scrolls by touch, wheel, and keyboard focus.
+
+Row buttons show only with a fine pointer, such as a mouse or a trackpad, and only while the row can scroll toward their side. They fade and grow in over the first part of the scroll, as long as the button. A hovered button stays until the pointer leaves, disabled at the end of the row, so quick clicks past the end don't land on the content under it. Touch screens scroll the row directly. Carousel buttons show on every device and dim at the ends. `buttons={false}` on `Carousel` removes both buttons, and `previousButton` and `nextButton` take props, such as another label or a layer color.
+
+Each button is a round `Button` with the `carouselButton` style recipe, so a neutral button lightens from the color around the carousel, and every button takes hover, press, focus, and disabled styles like any other button. Its hit area reaches over the full height of the row at its end, with the same space on each side of the button, so a pointer near the button doesn't reach the content under it. The button keeps as much space from the end of the row as from the top or the bottom of the row, up to `--carousel-button-padding`, and its corners stay concentric with the frames around the carousel. The buttons center on the row. `$buttonCenter` on `Carousel` moves them, as in the Thumbnail Row example, where they center on the thumbnails and not on their titles.
+
+The viewport clips its content on both axes, so focus rings, borders drawn as rings, and items that grow on hover need room inside it. `$bleed` on `Carousel` makes the viewport reach past the carousel on each side, with the same padding inside, so the items stay in line with the content around the carousel. A row has a bleed of `1` for focus rings. The Thumbnail Row example raises it for the thumbnails that grow, and the Multiple Slides per View example sets it for the card borders.
+
+`$step` on `CarouselViewport` sets how far a row button scrolls: `view` moves by the visible width less the fades and buttons, and `item` moves to the next item. No press moves the row by less than the fade and button cover: `item` skips items closer than that, and a step that would leave less than that goes on to the end. Slide buttons move one slide at a time, even at the end of a row with several slides per view.
+
+`selectedId` and `setSelectedId` on `Carousel` follow the `CarouselSlide` at the start of the row, by its `id`. With several slides per view, the last slides all show at the end of the row, where the selection stays on the slide that a dot or a button picked, or goes to the last slide after a scroll. Setting `selectedId` scrolls to that slide. In the Carousel example, they give the buttons the color of the tip that shows, because the buttons sit beside the slides and take their colors from the carousel. `defaultSelectedId` starts the carousel at another slide. It scrolls there at once when script runs, so server-rendered HTML shows the first slide until then. A carousel that mounts hidden, such as in a tab panel that isn't selected, keeps its selection and shows that slide once it shows.
+
+`CarouselTabList` holds a `CarouselTab` dot for each slide, and each dot picks the slide at its position. Render the dots from the same items as the slides, so they show on the server, before script runs:
+
+```tsx
+<CarouselTabList>
+  {tips.map((tip) => (
+    <CarouselTab key={tip.id} />
+  ))}
+</CarouselTabList>
+```
+
+A slide fills the row by default. Give it a `basis-*` class to show more slides at once, such as `basis-[calc((100%-var(--carousel-gap))/2)]` for two slides, where `--carousel-gap` is the `$gap` of the viewport. Container query classes change the basis with the width, as in the Multiple Slides per View example. Every slide snaps and has its own dot, and the buttons move one slide at a time.
+
+`TabList` of the `Tabs` components uses the row kind for its strip, with "Previous tabs" and "Next tabs" buttons. See the Scrolling Tab Strip example of the Tabs recipe.
+
+## Accessibility
+
+A classic carousel is a region with the "carousel" role description, so it needs a name, such as `aria-label`. Its slides are groups with the "slide" role description, named by their position, such as "2 of 5". A hidden status announces a change in the slides that show, after the carousel stops scrolling. The dots are tabs, so the Tab key stops on the selected one, the arrow keys move between them, and moving selects the slide.
+
+A row adds no carousel semantics, because screen readers would call a chip row or a shelf of links a carousel. Give `CarouselViewport` a role and a name that fit its content, such as `toolbar`, a list, or the group of the Filter Chip Row example.
+
+The buttons are named and keyboard focusable. They come before and after the viewport, so the Tab order follows the reading order. A pointer press on a button keeps focus where it was. When a focused row button reaches its end, focus moves to the other button before the first one hides. Carousel buttons stay focusable at the ends and get `aria-disabled`.
+
+Slides out of view stay reachable. The Tab key moves into the next slide, and the browser scrolls it into view, clear of the fades and buttons. There is no autoplay and no loop.

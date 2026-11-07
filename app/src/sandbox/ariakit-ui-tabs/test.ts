@@ -1,6 +1,18 @@
 import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+test("keeps the names of custom strip scroll buttons", () => {
+  for (const name of [
+    "Overflowing strip with brand buttons",
+    "Overflowing strip with arrow icons",
+  ]) {
+    const box = q.within(q.article(name));
+    expect(box.button("Previous tabs")).toBeInTheDocument();
+    expect(box.button("Next tabs")).toBeInTheDocument();
+    expect(box.button.maybe("Scroll forward")).not.toBeInTheDocument();
+  }
+});
+
 // https://github.com/ariakit/ariakit/pull/7536#discussion_r4022810357
 test("changes bar placement keyboard navigation to right-to-left order", async () => {
   await click(q.checkbox("Tabs right to left"));

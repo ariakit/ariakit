@@ -9,6 +9,7 @@
  */
 import * as ak from "@ariakit/react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
+import { CarouselButton } from "@ariakit/ui/components/carousel.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Tab,
@@ -22,7 +23,13 @@ import {
   Tabs,
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import { tab, tabList } from "@ariakit/ui/styles/tabs";
-import { BookOpenIcon, BracesIcon, EyeIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  BookOpenIcon,
+  BracesIcon,
+  EyeIcon,
+} from "lucide-react";
 import { useState } from "react";
 import {
   Example,
@@ -204,6 +211,33 @@ function ConditionalTabs() {
         </TabPanels>
       </Tabs>
     </div>
+  );
+}
+
+interface BrandButtonsTabsProps {
+  /** The name of the next button, which a parent can leave out. */
+  nextLabel?: string;
+}
+
+/**
+ * Tabs whose scroll buttons take the brand layer: the previous button as an
+ * element, and the next button as props that pass an optional name through.
+ */
+function BrandButtonsTabs({ nextLabel }: BrandButtonsTabsProps) {
+  return (
+    <Tabs className="w-64 max-w-full">
+      <TabList
+        aria-label="Overflowing strip with brand buttons"
+        previousButton={<CarouselButton $layer="brand" />}
+        nextButton={{ $layer: "brand", "aria-label": nextLabel }}
+        tabs={["Overview", "Usage", "Styling", "Changelog"]}
+      />
+      <TabPanels>
+        <TabPanel single>
+          <p className="text-sm">The buttons take the brand color.</p>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   );
 }
 
@@ -2769,6 +2803,70 @@ export default function TabsExamples() {
           <TabPanels>
             <TabPanel single>
               <p className="text-sm">The last tab is at the end.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Overflowing strip with brand buttons"
+        description="The scroll buttons take the brand layer, one as an element and one as props with an optional name left out, and they keep the Previous tabs and Next tabs names."
+        stretch
+        code={`
+          <Tabs>
+            <TabList
+              tabs={[…]}
+              previousButton={<CarouselButton $layer="brand" />}
+              nextButton={{ $layer: "brand", "aria-label": nextLabel }}
+            />
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <BrandButtonsTabs />
+      </Example>
+
+      <Example
+        title="Overflowing strip with arrow icons"
+        description="Fragments replace the chevrons of the scroll buttons with arrows, and the buttons keep the Previous tabs and Next tabs names."
+        stretch
+        code={`
+          <Tabs>
+            <TabList
+              tabs={[…]}
+              previousButton={<><ArrowLeftIcon /></>}
+              nextButton={<><ArrowRightIcon /></>}
+            />
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs className="w-64 max-w-full">
+          <TabList
+            aria-label="Overflowing strip with arrow icons"
+            previousButton={
+              <>
+                <ArrowLeftIcon />
+              </>
+            }
+            nextButton={
+              <>
+                <ArrowRightIcon />
+              </>
+            }
+            tabs={["Overview", "Usage", "Styling", "Changelog"]}
+          />
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The buttons show arrows.</p>
             </TabPanel>
           </TabPanels>
         </Tabs>

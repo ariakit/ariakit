@@ -46,6 +46,19 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toHaveAttribute("aria-selected", "false");
   });
 
+  test("keeps the names of custom strip scroll buttons", async ({ q }) => {
+    for (const name of [
+      "Overflowing strip with brand buttons",
+      "Overflowing strip with arrow icons",
+    ]) {
+      const box = query(q.article(name));
+      await test.expect(box.button("Next tabs")).toBeVisible();
+      await test
+        .expect(box.button("Previous tabs", { includeHidden: true }))
+        .toHaveAttribute("aria-disabled", "true");
+    }
+  });
+
   test("lets an overflowing strip scroll to the tabs that do not fit", async ({
     page,
     q,
@@ -73,7 +86,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const recording = usage.evaluate((tab) => {
       const panel = tab
         .closest(".tabs")
-        ?.querySelector(":scope > [role=tablist] + *");
+        ?.querySelector(":scope > :has(> [role=tablist]) + *");
       if (!panel) throw new Error("Missing tab panels");
       const sizes = new Set<string>();
       return new Promise<string[]>((resolve) => {
@@ -123,7 +136,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           if (!root) {
             throw new Error("Missing tabs root");
           }
-          const panels = root.querySelector(":scope > [role=tablist] + *");
+          const panels = root.querySelector(
+            ":scope > :has(> [role=tablist]) + *",
+          );
           if (!panels) {
             throw new Error("Missing tab panels");
           }
@@ -234,7 +249,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           await test.expect(tab).toHaveAttribute("aria-selected", "true");
           const edges = await tab.evaluate((element) => {
             const root = element.closest(".tabs");
-            const panels = root?.querySelector(":scope > [role=tablist] + *");
+            const panels = root?.querySelector(
+              ":scope > :has(> [role=tablist]) + *",
+            );
             if (!root) {
               throw new Error("Missing tabs root");
             }
@@ -292,8 +309,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       await test.expect(tab).toHaveAttribute("aria-selected", "true");
       const surfaces = await tab.evaluate((element) => {
         const root = element.closest(".tabs");
-        const strip = root?.querySelector(":scope > [role=tablist]");
-        const panels = strip?.nextElementSibling;
+        // TabList wraps the strip with its scroll buttons.
+        const strip = root?.querySelector(":scope > * > [role=tablist]");
+        const panels = strip?.parentElement?.nextElementSibling;
         if (!(element instanceof HTMLElement)) {
           throw new Error("Missing tab");
         }

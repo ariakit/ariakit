@@ -1,0 +1,4 @@
+{
+  "title": "Thumbnail Row",
+  "description": "A row of video thumbnail links in Carousel with $kind=\"row\", rendered as a list through the render prop of CarouselViewport. Each thumbnail grows on hover and keyboard focus inside block padding that the viewport leaves for it, and the buttons scroll by the visible width less the fades. Use it for a shelf of media links, such as episodes or albums, and the root Carousel for content that should page one slide at a time."
+}

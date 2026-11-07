@@ -167,6 +167,213 @@ body > * {
   }
 }
 
+/* How far the carousel content is faded at each end, from 0 at rest to 1. */
+@property --carousel-start {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --carousel-end {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* Resolve carousel lengths where they are set, so the buttons, the fade mask,
+   and the slides agree whatever their fonts. */
+@property --carousel-button-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-button-space {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-fade-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-overhang {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-button-padding {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Script reads the step of each viewport. A viewport inside another one takes
+   the default step, not the step of its ancestor. */
+@property --carousel-step {
+  syntax: "*";
+  inherits: false;
+}
+
+@keyframes ui-carousel-start {
+  from {
+    --carousel-start: 0;
+  }
+  to {
+    --carousel-start: 1;
+  }
+}
+
+@keyframes ui-carousel-end {
+  from {
+    --carousel-end: 1;
+  }
+  to {
+    --carousel-end: 0;
+  }
+}
+
+/* Each button switches halfway through a range that is 4px long, so the last
+   2px at each end count as the end. */
+@keyframes ui-carousel-show-start {
+  from,
+  50% {
+    visibility: hidden;
+  }
+  50.01%,
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes ui-carousel-show-end {
+  from,
+  49.99% {
+    visibility: visible;
+  }
+  50%,
+  to {
+    visibility: hidden;
+  }
+}
+
+/* A row button grows in while the row scrolls away from its end. The scale
+   adds to the press scale, which uses the scale property. */
+@keyframes ui-carousel-grow-start {
+  from {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ui-carousel-grow-end {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+}
+
+/**
+ * Fades the ends of a carousel viewport while more content lies that way. The
+ * content is fully faded behind a visible button, and the fade runs between
+ * the button and the content. Both grow from the end of the viewport as it
+ * scrolls away from that end. Chromium can stop scrolling up to 1px before the
+ * end of the scroll timeline when the content width is fractional, so the last
+ * 2px at each end count as the end. Without scroll-driven animations, nothing
+ * fades. Use longhands because the animation shorthand resets the timeline and
+ * range.
+ */
+@utility ui-carousel-fade {
+  @supports (animation-timeline: scroll()) {
+    --carousel-mask-inset: calc(
+      var(--carousel-overhang, 0px) + var(--carousel-button-space)
+    );
+    --carousel-mask-fade: calc(
+      var(--carousel-mask-inset) + var(--carousel-fade-size)
+    );
+    mask-image: linear-gradient(
+      var(--carousel-mask-direction, to right),
+      transparent calc(var(--carousel-mask-inset) * var(--carousel-start)),
+      #000 calc(var(--carousel-mask-fade) * var(--carousel-start)),
+      #000 calc(100% - var(--carousel-mask-fade) * var(--carousel-end)),
+      transparent calc(100% - var(--carousel-mask-inset) * var(--carousel-end))
+    );
+    animation-name: ui-carousel-start, ui-carousel-end;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --carousel, --carousel;
+    animation-range:
+      2px calc(var(--carousel-fade-size) + 2px),
+      calc(100% - var(--carousel-fade-size) - 2px) calc(100% - 2px);
+    &:dir(rtl) {
+      --carousel-mask-direction: to left;
+    }
+  }
+}
+
+/**
+ * Shows a carousel button as the root sets. A row root hides it, and with a fine
+ * pointer, it sets the animations that show the button only while the row can
+ * scroll toward its side. The button grows in over the first stretch of the
+ * scroll, as long as the button. A hovered button stays, disabled at the end
+ * of the row, so quick clicks past the end don't reach the content under it. A
+ * focused button stays until script moves focus to the other button. Without
+ * scroll-driven animations, row buttons stay hidden.
+ */
+@utility ui-carousel-button-start {
+  visibility: var(--carousel-button-visibility, visible);
+  @supports (animation-timeline: scroll()) {
+    animation-name: var(--carousel-button-start-animation, none);
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --carousel, --carousel;
+    animation-range:
+      0 4px,
+      2px calc(2px + var(--carousel-button-size));
+  }
+  /* Without the animations, the disabled styles still apply. */
+  &:is(:hover, :focus) {
+    visibility: visible !important;
+    animation-name: none !important;
+  }
+}
+
+@utility ui-carousel-button-end {
+  visibility: var(--carousel-button-visibility, visible);
+  @supports (animation-timeline: scroll()) {
+    animation-name: var(--carousel-button-end-animation, none);
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --carousel, --carousel;
+    animation-range:
+      calc(100% - 4px) 100%,
+      calc(100% - 2px - var(--carousel-button-size)) calc(100% - 2px);
+  }
+  /* Without the animations, the disabled styles still apply. */
+  &:is(:hover, :focus) {
+    visibility: visible !important;
+    animation-name: none !important;
+  }
+}
+
 /* Before and after the range, the bar is outside the row. Between them, the
    thin keyframes keep it named. */
 @keyframes ui-nav-bar-clip {
@@ -2277,8 +2484,9 @@ body > * {
 }
 
 /**
- * Paints the strip inside the tabs root's edge. Its larger scroll box lets tab
- * edges avoid clipping, so gradients inset the surface within that box.
+ * Paints the strip color inside the tabs root's edge, behind the strip. The
+ * strip box reaches over the root edge so tab edges avoid clipping, so
+ * gradients inset the surface within that box.
  */
 @utility ui-tabs-well {
   --well-inset: var(--tabs-bordering, 0px);
