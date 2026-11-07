@@ -18,20 +18,22 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
   }) => {
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {
-      for (const [key, title] of [
+      for (const [key, title, tab = "Usage"] of [
         ["edgeless", "Edgeless"],
         ["flat-tabs", "Flat tabs"],
         ["bevel-tabs", "Bevel tabs"],
         ["borderless-flat-tabs", "Borderless flat tabs"],
         ["borderless-bevel-tabs", "Borderless bevel tabs"],
         ["without-outer-edge", "Without outer edge"],
+        // The selected first folder meets the panel on the hidden root edge.
+        ["without-outer-edge-first-tab", "Without outer edge", "Preview"],
         [
           "darkened-strip-without-outer-edge",
           "Darkened strip without outer edge",
         ],
       ] as const) {
         const box = q.article(title);
-        const selected = query(box).tab("Usage");
+        const selected = query(box).tab(tab);
         await selected.click();
         await query(box).heading(title).click();
         await test.expect(selected).toHaveAttribute("aria-selected", "true");
