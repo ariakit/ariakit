@@ -21,6 +21,11 @@ test("Next.js preview cards follow routes in their browser chrome", async ({
     'iframe[title="Tabs with the Next.js App Router"]',
   );
   await iframe.scrollIntoViewIfNeeded();
+  // A click on a tab link before Next.js hydrates the tabs loads a new
+  // document, which starts a new frame history in WebKit. The card shows the
+  // frame after its load event, which in practice comes after hydration.
+  // https://github.com/ariakit/ariakit/issues/8330
+  await waitForShownFrame(page, "Tabs with the Next.js App Router");
   const preview = query(iframe.contentFrame());
 
   await expect(address).toHaveValue("/tabs/nextjs");
@@ -67,10 +72,7 @@ test("Next.js preview cards apply the site theme to their frames", async ({
     'iframe[title="Tabs with the Next.js App Router"]',
   );
   await iframe.scrollIntoViewIfNeeded();
-  await expect(iframe.locator("xpath=..")).toHaveAttribute(
-    "aria-busy",
-    "false",
-  );
+  await waitForShownFrame(page, "Tabs with the Next.js App Router");
   const getPageColor = () =>
     page
       .locator("body")
@@ -94,7 +96,7 @@ test("Next.js preview cards show the loading state while their frame reloads", a
   );
   await iframe.scrollIntoViewIfNeeded();
   const viewport = iframe.locator("xpath=..");
-  await expect(viewport).toHaveAttribute("aria-busy", "false");
+  await waitForShownFrame(page, "Tabs with the Next.js App Router");
   const frame = await iframe
     .elementHandle()
     .then((element) => element?.contentFrame());
@@ -115,7 +117,7 @@ test("Next.js preview cards show the loading state while their frame reloads", a
   await expect(viewport).toHaveAttribute("aria-busy", "true");
 
   release(undefined);
-  await expect(viewport).toHaveAttribute("aria-busy", "false");
+  await waitForShownFrame(page, "Tabs with the Next.js App Router");
 });
 
 // Only browser chrome follows the width of its bar, so the address keeps the
