@@ -358,23 +358,29 @@ function useCarousel({
     // click, so a scroll then would move the element away from the pointer, and
     // only keyboard focus scrolls. A viewport that snaps would snap a scroll to
     // the element back to where it was, so it scrolls to the item that holds
-    // the element, where it can snap.
+    // the element, where it can snap. An item that doesn't fit would go to the
+    // middle of the row, with an element at its edge under a fade, so the
+    // element scrolls instead.
     const onFocusIn = (event: FocusEvent) => {
       const target = event.target;
       if (!(target instanceof win.Element)) return;
+      // Firefox can focus the viewport itself, which holds every item.
+      if (target === viewport) return;
       if (!target.matches(":focus-visible")) return;
-      const snaps = win.getComputedStyle(viewport).scrollSnapType !== "none";
-      const item = snaps
-        ? Array.from(viewport.children).find((child) => child.contains(target))
-        : target;
-      if (!item) return;
       const padding = getScrollPadding(viewport);
       const clearWidth = viewport.clientWidth - padding.start - padding.end;
-      const itemRect = item.getBoundingClientRect();
-      if (itemRect.width <= clearWidth) {
+      const fits = (element: Element) =>
+        element.getBoundingClientRect().width <= clearWidth;
+      const snaps = win.getComputedStyle(viewport).scrollSnapType !== "none";
+      const snapItem = snaps
+        ? Array.from(viewport.children).find((child) => child.contains(target))
+        : undefined;
+      const item = snapItem && fits(snapItem) ? snapItem : target;
+      if (fits(item)) {
         item.scrollIntoView({ block: "nearest", inline: "nearest" });
         return;
       }
+      const itemRect = item.getBoundingClientRect();
       // Chrome and Firefox miss the middle of a row whose scroll padding takes
       // the whole row, so the carousel measures it. A scroll to a position
       // snaps to the closest item, where a scroll by an offset would snap to
