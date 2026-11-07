@@ -1,13 +1,12 @@
 import {
   captureInView,
   forEachColorSchemeOf,
-  freezeScrollAnimations,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
 // The strip buttons show through scroll-driven animations, which the Firefox
-// build of Playwright doesn't support yet. The visual job fails a skipped test,
-// so the captures of the buttons run only in Chrome and Safari.
+// build of Playwright supports only from version 159, so the captures of the
+// buttons run only in Chrome and Safari, where they started.
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // A scrolled strip fades its tabs behind both scroll buttons, and the panel
@@ -28,7 +27,6 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         });
         await test.expect(query(box).button("Previous tabs")).toBeVisible();
         await test.expect(query(box).button("Next tabs")).toBeVisible();
-        await freezeScrollAnimations(page);
         await captureInView({
           visual,
           box,

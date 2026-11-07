@@ -4,7 +4,6 @@ import {
   captureInView,
   forEachColorScheme,
   forEachColorSchemeOf,
-  freezeScrollAnimations,
   skipWithoutScrollAnimations,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
@@ -64,7 +63,6 @@ async function reduceMotion(page: Page) {
 withCaptures(import.meta.dirname, async ({ test, query }) => {
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, async (colorScheme) => {
-      await freezeScrollAnimations(page);
       await capturePage({
         page,
         visual,
@@ -90,7 +88,6 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
             .expect(box.button("Next slide"))
             .toHaveAttribute("aria-disabled", "true");
         }
-        await freezeScrollAnimations(page);
         for (const name of ["Slides per view", "Slides with fades"]) {
           await captureInView({
             visual,
