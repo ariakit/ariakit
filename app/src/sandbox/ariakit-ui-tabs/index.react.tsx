@@ -2921,6 +2921,55 @@ export default function TabsExamples() {
         </Frame>
       </Example>
 
+      <Example
+        title="Transparent on a brand layer"
+        description="A transparent root keeps the brand layer, so the strip takes no darker color, and the flat tabs and the panel stand on the brand surface."
+        stretch
+        code={`
+          <Frame $layer="brand" $rounded="xl" $p={4}>
+            <Tabs $layer="transparent">
+              <TabList>
+                <Tab $kind="flat">
+                  <TabLabel>Preview</TabLabel>
+                </Tab>
+                <Tab $kind="flat">
+                  <TabLabel>Code</TabLabel>
+                </Tab>
+                <Tab $kind="flat">
+                  <TabLabel>Usage</TabLabel>
+                </Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel single>
+                  …
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Frame>
+        `}
+      >
+        <Frame $layer="brand" $rounded="xl" $p={4}>
+          <Tabs $layer="transparent" defaultSelectedId="transparent-code">
+            <TabList aria-label="Transparent on a brand layer">
+              <Tab id="transparent-preview" $kind="flat">
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab id="transparent-code" $kind="flat">
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab id="transparent-usage" $kind="flat">
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                <p className="text-sm">The strip shows the brand surface.</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Frame>
+      </Example>
+
       {/*
         Regression fixtures: Tabs scenarios migrated from the
         tab-panel-shared-store sandbox.

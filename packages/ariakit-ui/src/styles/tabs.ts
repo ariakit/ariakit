@@ -100,7 +100,12 @@ export const tabs = cv({
      * `true`.
      */
     $outerEdge: {
-      false: "border-transparent ring-transparent",
+      false: [
+        "border-transparent ring-transparent",
+        // Forced colors draw a transparent border in the text color, but keep
+        // the system color of the page.
+        "forced-colors:border-[color:Canvas]",
+      ],
     },
     /**
      * Sets how the curve of a selected outer folder fits beside the panel
@@ -161,8 +166,17 @@ export const tabs = cv({
     $rounded: "xl",
     $p: "none",
     $border: true,
-    // Darken the strip half a step so tabs and panels stand out together.
-    $darken: 0.5,
+    // Not transparent like other frames, so an explicit transparent layer can
+    // opt out of the strip color below.
+    $layer: true,
+    // Darken the strip half a step so tabs and panels stand out together. A
+    // transparent root keeps the layer around it, for tabs whose strip darkens
+    // itself, or that have none. An extender's default stays.
+    $darken(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$layer === "transparent") return;
+      return 0.5;
+    },
     // That darkening would swap the adaptive edge to a border on light surfaces
     // and a ring on dark ones.
     $borderType(defaultValue) {
