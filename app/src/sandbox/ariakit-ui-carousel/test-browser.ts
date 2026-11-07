@@ -257,9 +257,8 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     );
     await box.button("Scroll forward").click();
     await test.expect.poll(() => getScrollLeft(byItem)).not.toBe(0);
-    const itemStep = Math.round(await getScrollLeft(byItem));
-    test.expect(itemOffsets).toContain(itemStep);
-    test.expect(itemStep).toBeGreaterThanOrEqual(padding);
+    const nextItem = itemOffsets.find((offset) => offset >= padding);
+    test.expect(await getScrollLeft(byItem)).toBe(nextItem);
   });
 
   test("keeps the view step in a row inside an item-step row", async ({
