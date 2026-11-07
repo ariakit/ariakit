@@ -1,6 +1,6 @@
 import * as ak from "@ariakit/react";
 import type { RecipeLike, VariantProps, VariantPropsWithRecipe } from "clava";
-import { splitProps } from "clava";
+import { cx, splitProps } from "clava";
 import type * as React from "react";
 import {
   appendOptionalChild,
@@ -17,6 +17,10 @@ import {
   buttonSeparator,
   buttonSlot,
 } from "../styles/button.ts";
+import { carouselViewportBase } from "../styles/carousel.ts";
+import { frame } from "../styles/frame.ts";
+import { Carousel, CarouselViewport } from "./carousel.ariakit.react.tsx";
+import type { CarouselButtonRender } from "./carousel.ariakit.react.tsx";
 
 export type ButtonProps<
   R extends RecipeLike<typeof button, R> = typeof button,
@@ -79,19 +83,91 @@ export function Button<R extends RecipeLike<typeof button, R> = typeof button>({
 }
 
 export interface ButtonGroupProps
-  extends ak.GroupProps, VariantProps<typeof buttonGroup> {}
+  extends ak.GroupProps, VariantProps<typeof buttonGroup> {
+  /**
+   * Renders scroll buttons before and after a segmented group with padding,
+   * outside the element with the `group` role. They show with a fine pointer
+   * while the group can scroll toward their side. Defaults to `true`.
+   */
+  buttons?: boolean;
+  /**
+   * The button before a segmented group, as `true`, an element, or
+   * `CarouselButton` props. `false` omits it. Defaults to a button named
+   * "Scroll backward".
+   */
+  previousButton?: CarouselButtonRender;
+  /**
+   * The button after a segmented group, as `true`, an element, or
+   * `CarouselButton` props. `false` omits it. Defaults to a button named
+   * "Scroll forward".
+   */
+  nextButton?: CarouselButtonRender;
+}
 
 /**
- * Groups related buttons in one surface.
+ * Groups related buttons in one surface. With `$kind="segmented"` and padding,
+ * the group scrolls sideways when it doesn't fit, fades its segments at each
+ * end while more segments lie that way, and shows buttons that scroll it with a
+ * fine pointer. A carousel root holds the group and the buttons, which sit
+ * outside the element with the `group` role. The root paints the surface of the
+ * group and takes `className` and `style`.
  * @example
  * <ButtonGroup aria-label="Edit history">
  *   <Button>Undo</Button>
  *   <Button>Redo</Button>
  * </ButtonGroup>
  */
-export function ButtonGroup(props: ButtonGroupProps) {
+export function ButtonGroup({
+  ref,
+  dir,
+  buttons,
+  previousButton,
+  nextButton,
+  ...props
+}: ButtonGroupProps) {
   const [variantProps, rest] = splitProps(props, buttonGroup);
-  return <ak.Group {...buttonGroup.jsx(variantProps)} {...rest} />;
+  const variants = buttonGroup.getVariants(variantProps);
+  if (variants.$kind !== "segmented" || variants.$p === "none") {
+    return (
+      <ak.Group
+        ref={ref}
+        dir={dir}
+        {...buttonGroup.jsx(variantProps)}
+        {...rest}
+      />
+    );
+  }
+  // A segmented group with padding scrolls in a carousel row. Its fades would
+  // fade its surface too, so the carousel paints the surface with the frame of
+  // the group, and the group covers the carousel.
+  const [surfaceProps] = splitProps(variants, frame);
+  const { className, style, ...groupProps } = variantProps;
+  return (
+    <Carousel
+      $kind="row"
+      {...surfaceProps}
+      $size={variants.$size}
+      $bleed="var(--ak-frame-padding)"
+      buttons={buttons}
+      previousButton={previousButton}
+      nextButton={nextButton}
+      dir={dir}
+      // The carousel holds the buttons, so it hides with the group.
+      hidden={rest.hidden}
+      className={cx(
+        variants.$layout === "stretch" ? "w-full" : "ui-base:w-fit",
+        className,
+      )}
+      style={style}
+    >
+      <CarouselViewport
+        ref={ref}
+        recipe={carouselViewportBase}
+        $fade
+        render={<ak.Group {...buttonGroup.jsx(groupProps)} {...rest} />}
+      />
+    </Carousel>
+  );
 }
 
 export interface ButtonBarProps

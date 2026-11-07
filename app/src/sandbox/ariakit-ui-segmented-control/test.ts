@@ -1,4 +1,4 @@
-import { focus, hover, press, q } from "@ariakit/test";
+import { click, focus, hover, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("shows a tooltip when the pointer is on an icon-only segment", async () => {
@@ -30,4 +30,53 @@ test("renders the tabs of the tabs prop in a segmented list", () => {
 test("renders plain links in a segmented button group", () => {
   const group = q.within(q.group("Pages"));
   expect(group.link("First")).toHaveAttribute("aria-current", "page");
+});
+
+// https://github.com/ariakit/ariakit/issues/8325
+// https://github.com/ariakit/ariakit/issues/8326
+// https://github.com/ariakit/ariakit/issues/8327
+test("renders the scroll buttons outside the elements with the group roles", () => {
+  const groups = [
+    {
+      group: q.radiogroup("Narrow"),
+      labels: ["Scroll backward", "Scroll forward"],
+    },
+    {
+      group: q.tablist("Narrow period"),
+      labels: ["Previous tabs", "Next tabs"],
+    },
+    {
+      group: q.group("Narrow pages"),
+      labels: ["Scroll backward", "Scroll forward"],
+    },
+    {
+      group: q.navigation("Narrow range"),
+      labels: ["Scroll backward", "Scroll forward"],
+    },
+  ];
+  for (const { group, labels } of groups) {
+    const root = group.parentElement;
+    expect(root).not.toBeNull();
+    for (const label of labels) {
+      expect(q.within(root).button(label)).toBeInTheDocument();
+      expect(q.within(group).button.maybe(label)).not.toBeInTheDocument();
+    }
+  }
+});
+
+// The root of a row paints its surface and holds its buttons, so it hides with
+// the element that scrolls.
+test("hides the scroll buttons of a hidden row", async () => {
+  const example = q.within(q.article("Hidden"));
+  const labels = [
+    "Scroll backward",
+    "Scroll forward",
+    "Previous tabs",
+    "Next tabs",
+  ];
+  const countButtons = () =>
+    labels.flatMap((label) => example.button.all(label)).length;
+  expect(countButtons()).toBe(10);
+  await click(example.button("Hide the rows"));
+  expect(countButtons()).toBe(0);
 });

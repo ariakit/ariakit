@@ -349,9 +349,38 @@ function useCarousel({
       schedule();
     };
 
+    // The browser scrolls a focused element into view only when it lies outside
+    // the viewport, so an element under a fade or a button would stay there.
+    // The scroll padding covers them, and a scroll to the nearest edge keeps
+    // the element clear of it. In a row too narrow to fit the element between
+    // them, the nearest edge would cut its other end, so the element goes to
+    // the middle of the row instead. A press focuses the element before its
+    // click, so a scroll then would move the element away from the pointer, and
+    // only keyboard focus scrolls. A viewport that snaps would snap a scroll to
+    // the element back to where it was, so it scrolls to the item that holds
+    // the element, where it can snap.
+    const onFocusIn = (event: FocusEvent) => {
+      const target = event.target;
+      if (!(target instanceof win.Element)) return;
+      if (!target.matches(":focus-visible")) return;
+      const snaps = win.getComputedStyle(viewport).scrollSnapType !== "none";
+      const item = snaps
+        ? Array.from(viewport.children).find((child) => child.contains(target))
+        : target;
+      if (!item) return;
+      const padding = getScrollPadding(viewport);
+      const clearWidth = viewport.clientWidth - padding.start - padding.end;
+      const fits = item.getBoundingClientRect().width <= clearWidth;
+      item.scrollIntoView({
+        block: "nearest",
+        inline: fits ? "nearest" : "center",
+      });
+    };
+
     updateRef.current = update;
     update();
     viewport.addEventListener("scroll", onScroll, { passive: true });
+    viewport.addEventListener("focusin", onFocusIn);
     // Items can grow while the viewport keeps its size, such as when an image
     // or a font loads, so the observer watches each item too.
     const resizeObserver = new win.ResizeObserver(() => {
@@ -391,6 +420,7 @@ function useCarousel({
       win.cancelAnimationFrame(frame);
       clearTimeout(statusTimer);
       viewport.removeEventListener("scroll", onScroll);
+      viewport.removeEventListener("focusin", onFocusIn);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
       attributeObserver.disconnect();
@@ -501,6 +531,7 @@ function useCarousel({
   }, []);
 
   return {
+    viewport,
     setViewport,
     atStart,
     atEnd,
@@ -550,6 +581,40 @@ function getCarouselButtonProps({
     onMouseDown: (event: React.MouseEvent) => event.preventDefault(),
     onClick: () => state.scrollToward(side),
   };
+}
+
+/**
+ * Scrolls the viewport with a wheel or a trackpad over an element beside it,
+ * such as a button, which would scroll the page instead. A mostly vertical
+ * swipe still scrolls the page, as it does over the viewport.
+ */
+function useWheelScroll(
+  element: HTMLElement | null,
+  viewport?: HTMLElement | null,
+) {
+  useEffect(() => {
+    if (!element) return;
+    if (!viewport) return;
+    const onWheel = (event: WheelEvent) => {
+      // The browser still scrolls for an event that can't be canceled, such as
+      // a late event of a swipe, so a scroll here would add to its own.
+      if (!event.cancelable) return;
+      // Firefox reports lines when a script reads deltaMode before the deltas,
+      // so the deltas come first.
+      const { deltaX, deltaY } = event;
+      if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+      if (event.deltaMode !== event.DOM_DELTA_PIXEL) return;
+      // A script scroll snaps after each step, so a viewport that snaps, such
+      // as one of slides, would stay where it was.
+      const style = getWindow(viewport).getComputedStyle(viewport);
+      if (style.scrollSnapType !== "none") return;
+      event.preventDefault();
+      viewport.scrollBy({ left: deltaX, behavior: "instant" });
+    };
+    // A passive listener can't stop the page from scrolling.
+    element.addEventListener("wheel", onWheel, { passive: false });
+    return () => element.removeEventListener("wheel", onWheel);
+  }, [element, viewport]);
 }
 
 /** A previous or next button, as `true`, an element, or props. */
@@ -975,9 +1040,12 @@ export interface CarouselButtonProps extends Omit<
  * </Carousel>
  */
 export function CarouselButton({ children, ...props }: CarouselButtonProps) {
+  const viewport = useContext(CarouselContext)?.state.viewport;
+  const [area, setArea] = useState<HTMLDivElement | null>(null);
+  useWheelScroll(area, viewport);
   const Icon = props.$side === "start" ? ChevronLeftIcon : ChevronRightIcon;
   return (
-    <div {...carouselButtonArea.jsx({ $side: props.$side })}>
+    <div ref={setArea} {...carouselButtonArea.jsx({ $side: props.$side })}>
       <Button recipe={carouselButton} {...props}>
         {children ?? <Icon />}
       </Button>

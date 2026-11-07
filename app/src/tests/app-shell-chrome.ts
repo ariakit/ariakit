@@ -266,6 +266,22 @@ test("collection pages list entries without the site navigation", async ({
   );
 });
 
+// Astro renders the main and footer navigations without script, so they leave
+// out the scroll buttons, which would do nothing there.
+test("site navigations without script render no scroll buttons", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/components/");
+  const options = { includeHidden: true };
+  for (const name of ["Main", "Footer"]) {
+    const root = query(q.navigation(name, options).locator(".."));
+    await expect(q.navigation(name, options)).toHaveCount(1);
+    await expect(root.button("Scroll backward", options)).toHaveCount(0);
+    await expect(root.button("Scroll forward", options)).toHaveCount(0);
+  }
+});
+
 // At three columns, dense placement moves a card above cards that come before
 // it in the source. Safari doesn't support reading-flow yet, so this test runs
 // only in Chrome.

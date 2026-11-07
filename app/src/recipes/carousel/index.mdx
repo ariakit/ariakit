@@ -46,7 +46,7 @@ The viewport clips its content on both axes, so focus rings, borders drawn as ri
 
 A slide fills the row by default. Give it a `basis-*` class to show more slides at once, such as `basis-[calc((100%-var(--carousel-gap))/2)]` for two slides, where `--carousel-gap` is the `$gap` of the viewport. Container query classes change the basis with the width, as in the Multiple Slides per View example. Every slide snaps and has its own dot, and the buttons move one slide at a time.
 
-`TabList` of the `Tabs` components uses the row kind for its strip, with "Previous tabs" and "Next tabs" buttons. See the Scrolling Tab Strip example of the Tabs recipe.
+`TabList` of the `Tabs` components uses the row kind for its strip and for a segmented list, with "Previous tabs" and "Next tabs" buttons. See the Scrolling Tab Strip example of the Tabs recipe. A segmented `RadioGroup` or `ButtonGroup` and a horizontal `Nav` also scroll in a row, with their surface painted behind the faded items.
 
 ## Accessibility
 

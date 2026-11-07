@@ -1,6 +1,6 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
-import { splitProps } from "clava";
+import { cx, splitProps } from "clava";
 import { Fragment } from "react";
 import type { ComponentProps } from "react";
 import {
@@ -10,6 +10,7 @@ import {
   getChildrenText,
   prependOptionalSeparator,
 } from "../react-utils/create-render.react.ts";
+import { frame } from "../styles/frame.ts";
 import {
   tab,
   tabBar,
@@ -164,18 +165,19 @@ export interface TabListProps
     | Array<React.ReactNode | TabProps>
     | Record<string, React.ReactNode | TabProps>;
   /**
-   * Renders scroll buttons before and after a strip, outside the element with
-   * the `tablist` role. They show with a fine pointer while the strip can
-   * scroll toward their side. Segmented lists have none. Defaults to `true`.
+   * Renders scroll buttons before and after a strip or a segmented list with
+   * padding, outside the element with the `tablist` role. They show with a fine
+   * pointer while the list can scroll toward their side. A segmented list
+   * without padding doesn't scroll, so it has none. Defaults to `true`.
    */
   buttons?: boolean;
   /**
-   * The button before the strip, as `true`, an element, or `CarouselButton`
+   * The button before the list, as `true`, an element, or `CarouselButton`
    * props. `false` omits it. Defaults to a button named "Previous tabs".
    */
   previousButton?: CarouselButtonRender;
   /**
-   * The button after the strip, as `true`, an element, or `CarouselButton`
+   * The button after the list, as `true`, an element, or `CarouselButton`
    * props. `false` omits it. Defaults to a button named "Next tabs".
    */
   nextButton?: CarouselButtonRender;
@@ -212,8 +214,10 @@ function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
  * "Previous tabs" and "Next tabs" buttons with a fine pointer. A wrapper holds
  * the strip and the buttons, which sit outside the element with the `tablist`
  * role. With `$kind="segmented"`, it stands on its own as a segmented control,
- * outside `Tabs`, without the wrapper, and the tabs of the `tabs` prop take the
- * same kind. Tabs written as children need their own `$kind`.
+ * outside `Tabs`, and the tabs of the `tabs` prop take the same kind. Tabs
+ * written as children need their own `$kind`. A segmented list with padding
+ * scrolls in the same way, and its wrapper paints the surface of the list and
+ * takes `className` and `style`.
  * @example
  * <Tabs>
  *   <TabList
@@ -273,22 +277,59 @@ export function TabList({
       {children}
     </>
   );
-  if (segmented) {
+  const buttonProps = {
+    buttons,
+    previousButton: getTabListButton(previousButton, "Previous tabs"),
+    nextButton: getTabListButton(nextButton, "Next tabs"),
+  };
+  const variants = tabList.getVariants(variantProps);
+  if (segmented && variants.$p === "none") {
     return (
       <ak.TabList ref={ref} {...tabList.jsx(variantProps)} {...rest}>
         {items}
       </ak.TabList>
     );
   }
+  if (segmented) {
+    // A segmented list with padding scrolls in a carousel row too. Its fades
+    // would fade its surface, so the carousel paints the surface with the frame
+    // of the list, and the list covers the carousel. The fade of the list is
+    // not the layer fade of the surface.
+    const [{ $fade, ...surfaceProps }] = splitProps(variants, frame);
+    const { className, style, ...listProps } = variantProps;
+    return (
+      <Carousel
+        $kind="row"
+        {...surfaceProps}
+        $size={variants.$size}
+        $bleed="var(--ak-frame-padding)"
+        {...buttonProps}
+        // The buttons sit at the start and the end of the list, and hide with
+        // it.
+        dir={rest.dir}
+        hidden={rest.hidden}
+        className={cx(
+          variants.$layout === "stretch" ? "w-full" : "ui-base:w-fit",
+          className,
+        )}
+        style={style}
+      >
+        <CarouselViewport
+          ref={ref}
+          recipe={tabList}
+          {...listProps}
+          render={<ak.TabList {...rest} />}
+        >
+          {items}
+        </CarouselViewport>
+      </Carousel>
+    );
+  }
   // A strip is a carousel row: the carousel root holds the strip and the
-  // buttons beside it, outside the element with the tablist role.
+  // buttons beside it, outside the element with the tablist role, and hides
+  // with it.
   return (
-    <Carousel
-      recipe={tabListCarousel}
-      buttons={buttons}
-      previousButton={getTabListButton(previousButton, "Previous tabs")}
-      nextButton={getTabListButton(nextButton, "Next tabs")}
-    >
+    <Carousel recipe={tabListCarousel} {...buttonProps} hidden={rest.hidden}>
       <CarouselViewport
         ref={ref}
         recipe={tabList}
