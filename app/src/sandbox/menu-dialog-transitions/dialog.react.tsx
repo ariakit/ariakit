@@ -34,7 +34,7 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
         store={dialog}
         ref={ref}
         data-animated={animated ? "" : undefined}
-        className="dialog fixed top-0 left-1/2 [transform:translate3d(-50%,64px,0)] [&[data-animated]]:opacity-0 [&[data-animated]]:[transform:translate3d(-50%,32px,0)] [&[data-animated]]:transition-[opacity,transform] [&[data-enter]]:opacity-100 [&[data-enter]]:[transform:translate3d(-50%,64px,0)]"
+        className="dialog fixed top-0 left-1/2 [transform:translate3d(-50%,64px,0)] data-animated:opacity-0 [&[data-animated]]:[transform:translate3d(-50%,32px,0)] data-animated:transition-[opacity,transform] data-enter:opacity-100 [&[data-enter]]:[transform:translate3d(-50%,64px,0)]"
         {...props}
       >
         <header className="header">

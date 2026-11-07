@@ -104,7 +104,7 @@ export const tabs = cv({
         "border-transparent ring-transparent",
         // Forced colors draw a transparent border in the text color, but keep
         // the system color of the page.
-        "forced-colors:border-[color:Canvas]",
+        "forced-colors:border-[Canvas]",
       ],
     },
     /**

@@ -97,7 +97,7 @@ export default function Example() {
         <ShellMainBody>
           {/* The article text gets smaller in a narrow frame, so the sidebar
               keeps its room beside it. */}
-          <Prose className="text-[length:clamp(0.625rem,2.5cqi,1rem)]">
+          <Prose className="text-[clamp(0.625rem,2.5cqi,1rem)]">
             <Article items={sections} level={2} />
           </Prose>
         </ShellMainBody>

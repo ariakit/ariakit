@@ -37,7 +37,7 @@ export default function Example() {
         <ShellMainBody>
           {/* The article text gets smaller in a narrow frame, so the sidebar
               keeps its room beside it. */}
-          <Prose className="text-[length:clamp(0.625rem,2.5cqi,1rem)]">
+          <Prose className="text-[clamp(0.625rem,2.5cqi,1rem)]">
             <Heading id="before-you-start" render={<h2 />}>
               <a href="#before-you-start">Before you start</a>
             </Heading>

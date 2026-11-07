@@ -23,11 +23,11 @@ export const heading = cv({
     "[--heading-size-3:1.4em] [--heading-size-4:1.2em] [--heading-size-5:1em]",
     // Size h1–h5 by element; other elements inherit. Zero specificity lets
     // caller text-* classes override these steps.
-    "[&:is(h1)]:ui-base:text-(length:--heading-size-1)",
-    "[&:is(h2)]:ui-base:text-(length:--heading-size-2)",
-    "[&:is(h3)]:ui-base:text-(length:--heading-size-3)",
-    "[&:is(h4)]:ui-base:text-(length:--heading-size-4)",
-    "[&:is(h5)]:ui-base:text-(length:--heading-size-5)",
+    "[h1]:ui-base:text-(length:--heading-size-1)",
+    "[h2]:ui-base:text-(length:--heading-size-2)",
+    "[h3]:ui-base:text-(length:--heading-size-3)",
+    "[h4]:ui-base:text-(length:--heading-size-4)",
+    "[h5]:ui-base:text-(length:--heading-size-5)",
     // Permalink colors and decoration widths need ! to override Link's compound
     // state selectors.
     "[&_a]:font-[weight:inherit] [&_a]:text-current! [&_a]:no-underline",

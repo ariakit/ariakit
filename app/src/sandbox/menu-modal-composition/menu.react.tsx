@@ -19,7 +19,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         store={store || undefined}
         {...props}
         className={clsx(
-          "flex min-h-8 cursor-default items-center gap-2 rounded px-3 py-2 outline-none data-[active-item]:bg-gray-200",
+          "flex min-h-8 cursor-default items-center gap-2 rounded px-3 py-2 outline-none data-active-item:bg-gray-200",
           props.className,
         )}
       />

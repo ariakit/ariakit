@@ -366,7 +366,7 @@ export default function Example() {
                       key={accent.hue}
                       value={accent.hue}
                       aria-label={accent.name}
-                      className="size-8 justify-center rounded-full p-0 aria-[checked=true]:ring-2 aria-[checked=true]:ring-current"
+                      className="size-8 justify-center rounded-full p-0 aria-checked:ring-2 aria-checked:ring-current"
                       // Renders the radio role before hydration.
                       type="button"
                       render={<Button />}

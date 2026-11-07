@@ -224,7 +224,7 @@ export default function Example() {
                         setCurrentIndex(index);
                         setIsPlaying(true);
                       }}
-                      className="grid w-full grid-cols-[2rem_1fr_auto] items-center gap-x-3 rounded-lg px-3 py-2.5 text-left data-[current]:font-semibold @lg/tracks:grid-cols-[2rem_1fr_1fr_auto]"
+                      className="grid w-full grid-cols-[2rem_1fr_auto] items-center gap-x-3 rounded-lg px-3 py-2.5 text-left data-current:font-semibold @lg/tracks:grid-cols-[2rem_1fr_1fr_auto]"
                     >
                       <span className="ak-ink-70 tabular-nums">
                         {index + 1}

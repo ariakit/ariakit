@@ -22,7 +22,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
             }}
             {...props}
             className={clsx(
-              "z-[100] rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-black shadow-sm",
+              "z-100 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-black shadow-sm",
               props.className,
             )}
           >

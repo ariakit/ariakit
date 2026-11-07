@@ -265,6 +265,9 @@ importers:
       oxlint-plugin-comment-reflow:
         specifier: 0.2.1
         version: 0.2.1
+      oxlint-tailwindcss:
+        specifier: 1.17.1
+        version: 1.17.1
       oxlint-tsgolint:
         specifier: 7.0.2005
         version: 7.0.2005
@@ -8039,6 +8042,10 @@ packages:
   oxlint-plugin-comment-reflow@0.2.1:
     resolution: {integrity: sha512-1bqJ1v5bf9pk+4LD8SMmoHNQXobC904FI3PqEIOORttuzHRZ+5LcucynH0yhPsnT5L1SgBP3LsyWy9F74zm2gA==}
     engines: {node: ^24.18.0 || >=26.0.0}
+
+  oxlint-tailwindcss@1.17.1:
+    resolution: {integrity: sha512-fIsTVO97ruLU7GK8mNfQiE0TsjcnOccVz/w+C/lvbo54Hb/0ZZvT4cw3a0TCxM/buREd09enI+h7zfm6cG8OzA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
 
   oxlint-tsgolint@7.0.2005:
     resolution: {integrity: sha512-6ccPGu4u4J9bwYPHXBFPee3RZrX3BboRdU7k14zRDDB1lvN3O7J/vPRFdaEfa1+CWx4xnQQOp4ctoaF66oO0uw==}
@@ -17542,6 +17549,11 @@ snapshots:
   oxlint-plugin-comment-reflow@0.2.1:
     dependencies:
       '@oxlint/plugins': 1.82.0
+
+  oxlint-tailwindcss@1.17.1:
+    dependencies:
+      '@tailwindcss/node': 4.3.4
+      tailwindcss: 4.3.4
 
   oxlint-tsgolint@7.0.2005:
     optionalDependencies:

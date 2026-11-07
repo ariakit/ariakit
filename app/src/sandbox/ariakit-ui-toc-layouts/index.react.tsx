@@ -266,7 +266,7 @@ function ShownLater() {
 // that a border utility can't replace, so the article sets its border inline.
 function Zoomed() {
   return (
-    <div className="flex flex-wrap items-start gap-6 [zoom:1.5]">
+    <div className="flex flex-wrap items-start gap-6 zoom-[1.5]">
       <Frame
         render={<article aria-label="Zoomed article" />}
         $layer
@@ -276,7 +276,7 @@ function Zoomed() {
         className="h-48 w-80 overflow-auto scroll-pt-5"
         style={{ borderTop: "12px solid transparent" }}
       >
-        <Prose className="[zoom:1.2] [&>h2]:scroll-mt-4">
+        <Prose className="zoom-[1.2] [&>h2]:scroll-mt-4">
           <Sections entries={zoomed} />
         </Prose>
       </Frame>

@@ -56,7 +56,7 @@ export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
           store={menu}
           initialFocus={initialFocus}
           data-animated={animated ? "" : undefined}
-          className="menu min-h-min overflow-visible opacity-0 [transform:translate3d(0,-16px,0)] transition-[opacity,transform] [&[data-enter]]:opacity-100 [&[data-enter]]:[transform:translate3d(0,0,0)]"
+          className="menu min-h-min overflow-visible opacity-0 [transform:translate3d(0,-16px,0)] transition-[opacity,transform] data-enter:opacity-100 [&[data-enter]]:[transform:translate3d(0,0,0)]"
         >
           <Ariakit.MenuArrow />
           {title && (
