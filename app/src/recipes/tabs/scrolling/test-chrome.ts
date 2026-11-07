@@ -20,4 +20,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(tab).toHaveAttribute("aria-selected", "true");
     await test.expect.poll(getHiddenWidth).toBeLessThanOrEqual(0);
   });
+
+  test("scrolls the strip with a button and keeps focus on the tab", async ({
+    q,
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    const list = q.tablist("Documentation");
+    const selected = q.tab("Overview");
+    await selected.click();
+    // The buttons follow the tab list in the Tab order, outside of it.
+    await page.keyboard.press("Tab");
+    await test.expect(q.button("Next tabs")).toBeFocused();
+    await selected.focus();
+    await q.button("Next tabs").click();
+    await test.expect
+      .poll(() => list.evaluate((node) => node.scrollLeft))
+      .toBeGreaterThan(0);
+    await test.expect(selected).toBeFocused();
+    await test.expect(q.button("Previous tabs")).toBeVisible();
+  });
 });

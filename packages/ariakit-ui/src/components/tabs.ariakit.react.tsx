@@ -15,11 +15,18 @@ import {
   tabBar,
   tabLabel,
   tabList,
+  tabListCarousel,
   tabPanels,
   tabSeparator,
   tabSlot,
   tabs,
 } from "../styles/tabs.ts";
+import {
+  Carousel,
+  CarouselButton,
+  CarouselViewport,
+} from "./carousel.ariakit.react.tsx";
+import type { CarouselButtonRender } from "./carousel.ariakit.react.tsx";
 
 export interface TabsProps
   extends
@@ -156,6 +163,33 @@ export interface TabListProps
   tabs?:
     | Array<React.ReactNode | TabProps>
     | Record<string, React.ReactNode | TabProps>;
+  /**
+   * Renders scroll buttons before and after a strip, outside the element with
+   * the `tablist` role. They show with a fine pointer while the strip can
+   * scroll toward their side. Segmented lists have none. Defaults to `true`.
+   */
+  buttons?: boolean;
+  /**
+   * The button before the strip, as `true`, an element, or `CarouselButton`
+   * props. `false` omits it. Defaults to a button named "Previous tabs".
+   */
+  previousButton?: CarouselButtonRender;
+  /**
+   * The button after the strip, as `true`, an element, or `CarouselButton`
+   * props. `false` omits it. Defaults to a button named "Next tabs".
+   */
+  nextButton?: CarouselButtonRender;
+}
+
+/**
+ * Names a strip scroll button "Previous tabs" or "Next tabs", unless it has its
+ * own label. Without one, it would take the generic label of a carousel row.
+ */
+function getTabListButton(button: CarouselButtonRender, label: string) {
+  if (button === false) return false;
+  return createRender(CarouselButton, button === true ? {} : button, {
+    "aria-label": label,
+  });
 }
 
 /**
@@ -173,10 +207,13 @@ function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
 }
 
 /**
- * Renders a named tab list from children, an array, or a record of tabs. With
- * `$kind="segmented"`, it stands on its own as a segmented control, outside
- * `Tabs`, and the tabs of the `tabs` prop take the same kind. Tabs written as
- * children need their own `$kind`.
+ * Renders a named tab list from children, an array, or a record of tabs. A
+ * strip that overflows scrolls sideways, fades its tabs at the ends, and shows
+ * "Previous tabs" and "Next tabs" buttons with a fine pointer. A wrapper holds
+ * the strip and the buttons, which sit outside the element with the `tablist`
+ * role. With `$kind="segmented"`, it stands on its own as a segmented control,
+ * outside `Tabs`, without the wrapper, and the tabs of the `tabs` prop take the
+ * same kind. Tabs written as children need their own `$kind`.
  * @example
  * <Tabs>
  *   <TabList
@@ -203,13 +240,23 @@ function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
  *   </TabPanels>
  * </Tabs>
  */
-export function TabList({ tabs, children, ...props }: TabListProps) {
+export function TabList({
+  tabs,
+  children,
+  buttons = true,
+  previousButton = true,
+  nextButton = true,
+  ref,
+  ...props
+}: TabListProps) {
   const [variantProps, rest] = splitProps(props, tabList);
+  const segmented = variantProps.$kind === "segmented";
   // The tabs of the shorthand have no props of their own to set the kind.
-  const kindProps: TabProps | undefined =
-    variantProps.$kind === "segmented" ? { $kind: "segmented" } : undefined;
-  return (
-    <ak.TabList {...tabList.jsx(variantProps)} {...rest}>
+  const kindProps: TabProps | undefined = segmented
+    ? { $kind: "segmented" }
+    : undefined;
+  const items = (
+    <>
       {Array.isArray(tabs)
         ? tabs.map((tab, index) => {
             const element = renderTab(tab, kindProps);
@@ -224,7 +271,33 @@ export function TabList({ tabs, children, ...props }: TabListProps) {
             <Fragment key={id}>{renderTab(tab, { ...kindProps, id })}</Fragment>
           ))}
       {children}
-    </ak.TabList>
+    </>
+  );
+  if (segmented) {
+    return (
+      <ak.TabList ref={ref} {...tabList.jsx(variantProps)} {...rest}>
+        {items}
+      </ak.TabList>
+    );
+  }
+  // A strip is a carousel row: the carousel root holds the strip and the
+  // buttons beside it, outside the element with the tablist role.
+  return (
+    <Carousel
+      recipe={tabListCarousel}
+      buttons={buttons}
+      previousButton={getTabListButton(previousButton, "Previous tabs")}
+      nextButton={getTabListButton(nextButton, "Next tabs")}
+    >
+      <CarouselViewport
+        ref={ref}
+        recipe={tabList}
+        {...variantProps}
+        render={<ak.TabList {...rest} />}
+      >
+        {items}
+      </CarouselViewport>
+    </Carousel>
   );
 }
 

@@ -1,0 +1,4 @@
+{
+  "title": "Filter Chip Row",
+  "description": "A row of CheckboxCard filter chips in Carousel with $kind=\"row\", which keeps the chips on one line that scrolls sideways instead of wrapping. The ends fade while more chips lie that way, and Scroll backward and Scroll forward buttons show with a fine pointer, so the row adds no carousel semantics and the chips keep their checkbox group. Use it when a long set of filters must take one line, and the Filter Chips example of the Checkbox recipe when they can wrap."
+}
