@@ -445,6 +445,14 @@ test("inline previews stay inactive after a tap that stops the page", async ({
   page,
   q,
 }) => {
+  // Chromium suppresses the click of a tap that stops a fling on Android and
+  // Aura platforms, such as Linux, but not on macOS, where the tap clicks and
+  // activates the preview. Phones don't run Chromium's macOS build.
+  // https://github.com/ariakit/ariakit/issues/8329
+  test.skip(
+    process.platform === "darwin",
+    "Chromium on macOS clicks on a tap that stops a fling",
+  );
   const card = q.region("Slots", { exact: true });
   const viewport = await getSlotsViewport(page, card);
   const header = await q.banner().boundingBox();
