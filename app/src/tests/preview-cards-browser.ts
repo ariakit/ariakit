@@ -4,6 +4,8 @@ import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
 import {
+  getExampleBox,
+  getPreviewViewport,
   getViewportEdge,
   routeExampleModules,
   waitForArticle,
@@ -836,6 +838,34 @@ test("inline previews scroll after a click on their card", async ({
   await titleLink.click();
   await expect(card).toBeFocused();
   await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
+});
+
+test("inline previews keep their padding around an example taller than the card", async ({
+  page,
+  q,
+}) => {
+  // The window is too short for the Slots example, so it scrolls in its card.
+  await page.setViewportSize({ width: 1440, height: 600 });
+  await gotoAndSettle(page, "/react/recipes/text-field/");
+  const viewport = await getPreviewViewport(q.region("Slots", { exact: true }));
+  await viewport.scrollIntoViewIfNeeded();
+  const { clientHeight, padding } = await viewport.evaluate((element) => ({
+    clientHeight: element.clientHeight,
+    padding: Number.parseFloat(getComputedStyle(element).paddingBottom),
+  }));
+
+  await viewport.evaluate((element) => {
+    element.scrollTop = 0;
+  });
+  const start = await getExampleBox(viewport);
+  expect(start.height).toBeGreaterThan(clientHeight);
+  expect(start.top).toBeCloseTo(padding, 0);
+
+  await viewport.evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+  });
+  const end = await getExampleBox(viewport);
+  expect(end.bottom).toBeCloseTo(padding, 0);
 });
 
 test("inline previews stay active when focus falls back to the page", async ({

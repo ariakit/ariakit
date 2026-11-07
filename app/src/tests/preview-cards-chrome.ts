@@ -4,6 +4,8 @@ import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames, gotoAndSettle } from "#app/test-utils/preview.ts";
 import {
+  getExampleBox,
+  getPreviewViewport,
   getViewportEdge,
   waitForArticle,
   waitForFrameHydration,
@@ -239,4 +241,174 @@ test("preview card frames judge the direction of a whole wheel gesture", async (
   await wheel.send(20, 0, start + 0.4);
   await expect.poll(getScrollLeft).toBeGreaterThan(0);
   await expect(html).toHaveAttribute("data-preview-active", "");
+});
+
+// A card near the height of its row grows to the row, with calc-size(), which
+// only Chrome supports. The example stays in place when it grows in its card
+// and when the other card in its row grows.
+test("inline preview cards keep their examples in place when heights change", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await gotoAndSettle(page, "/react/recipes/text-field/");
+  const slots = q.region("Slots", { exact: true });
+  const composer = q.region("Auto-Growing Textarea", { exact: true });
+  await composer.scrollIntoViewIfNeeded();
+  // Astro removes the ssr attribute once the island hydrates, and the composer
+  // doesn't send messages before that.
+  await expect(slots.locator("astro-island[ssr]")).toHaveCount(0);
+  await expect(composer.locator("astro-island[ssr]")).toHaveCount(0);
+  const messages = query(composer).list("Messages");
+  const send = async (count: number) => {
+    const input = query(composer).textbox("Message");
+    for (let i = 0; i < count; i++) {
+      const sent = await query(messages).listitem().count();
+      await input.fill("A new message");
+      await input.press("Enter");
+      await expect(query(messages).listitem()).toHaveCount(sent + 1);
+    }
+  };
+  // The region stretches to its row, and the card in it can grow to the row.
+  // The element is in the example, so it moves with the example.
+  const measure = async (article: Locator, element: Locator) => {
+    const card = await article.locator(":scope > *").boundingBox();
+    const box = await element.boundingBox();
+    if (!card || !box) throw new Error("The card or the element has no box");
+    return { card: card.height, height: box.height, offset: box.y - card.y };
+  };
+  const getComposer = () => measure(composer, messages);
+  const getSlots = () => measure(slots, query(slots).textbox("Email"));
+
+  // The new messages bring the composer card to the height of the row, which
+  // the Slots card sets.
+  await send(5);
+  const slotsStart = await getSlots();
+  await expect
+    .poll(async () => (await getComposer()).card)
+    .toBe(slotsStart.card);
+
+  // The next message makes the example taller, and its card stays at the height
+  // of the row.
+  const composerStart = await getComposer();
+  await send(1);
+  await expect
+    .poll(async () => (await getComposer()).height)
+    .toBeGreaterThan(composerStart.height);
+  expect((await getComposer()).card).toBe(composerStart.card);
+  expect((await getComposer()).offset).toBe(composerStart.offset);
+
+  // More messages make the row taller than the Slots example, and its card
+  // grows too.
+  await send(3);
+  await expect
+    .poll(async () => (await getSlots()).card)
+    .toBeGreaterThan(slotsStart.card);
+  expect((await getSlots()).offset).toBe(slotsStart.offset);
+});
+
+// The Scrolling Tab Strip card grows toward the taller card next to it, with
+// calc-size(), which only Chrome supports. Its short example stays centered
+// within the minimum height of the card, where it would be in a shorter row.
+test("inline preview cards center short examples within the minimum height", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await gotoAndSettle(page, "/react/recipes/tabs/");
+  const article = q.region("Scrolling Tab Strip", { exact: true });
+  await article.scrollIntoViewIfNeeded();
+  // Astro removes the ssr attribute once the island hydrates, and the tab strip
+  // can change its layout then.
+  await expect(article.locator("astro-island[ssr]")).toHaveCount(0);
+  const viewport = await getPreviewViewport(article);
+  const minHeight = await viewport.evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).minHeight),
+  );
+  await expect
+    .poll(async () => (await viewport.boundingBox())?.height)
+    .toBeGreaterThan(minHeight);
+  // The viewport padding is the same above and below the example, so the
+  // example is centered within the minimum height when its gaps match there.
+  const example = await getExampleBox(viewport);
+  expect(example.top).toBeCloseTo((minHeight - example.height) / 2, 0);
+});
+
+// The height of a frame viewport and its minimum height, and the box of an
+// element in it, from the top of the viewport.
+async function measureInViewport(viewport: Locator, element: Locator) {
+  const area = await viewport.boundingBox();
+  const box = await element.boundingBox();
+  if (!area || !box) throw new Error("The viewport or the element has no box");
+  const minHeight = await viewport.evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).minHeight),
+  );
+  return {
+    viewport: area.height,
+    minHeight,
+    height: box.height,
+    top: box.y - area.y,
+    center: box.y - area.y + box.height / 2,
+  };
+}
+
+// The Collapsing Labels card grows to the taller Collapsed Sidebar card in its
+// row, with calc-size(), which only Chrome supports. Its frame keeps the
+// minimum height of the card, where its page centers the example, and the
+// height that the row adds goes below the frame.
+test("preview card frames center their examples within the minimum height", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await gotoAndSettle(page, "/react/recipes/tooltip/");
+  const title = "Collapsing Labels";
+  const article = q.region(title, { exact: true });
+  await article.scrollIntoViewIfNeeded();
+  const iframe = await waitForShownFrame(page, title);
+  const viewport = await getPreviewViewport(article);
+  const frame = await measureInViewport(viewport, iframe);
+  expect(frame.viewport).toBeGreaterThan(frame.minHeight);
+  expect(frame.height).toBeCloseTo(frame.minHeight, 0);
+  expect(frame.top).toBeCloseTo(0, 0);
+});
+
+// While the Collapsing Labels page loads, its card already grows to the taller
+// Collapsed Sidebar card in its row. The loader shows where the page will
+// center the example, in the middle of the frame, not of the taller card.
+test("preview card frames show their loader where their page centers the example", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  // Holding the document of the frame keeps the card loading.
+  const { promise: released, resolve: release } = Promise.withResolvers();
+  await page.route("**/react/previews/tooltip/responsive/", async (route) => {
+    await released;
+    await route.continue();
+  });
+  await page.goto("/react/recipes/tooltip/", { waitUntil: "commit" });
+  const title = "Collapsing Labels";
+  const article = q.region(title, { exact: true });
+  await article.scrollIntoViewIfNeeded();
+  const iframe = page.locator(`iframe[title="${title}"]`);
+  await expect(iframe.locator("xpath=..")).toHaveAttribute("aria-busy", "true");
+  const viewport = await getPreviewViewport(article);
+  await expect
+    .poll(async () => {
+      const { viewport: height, minHeight } = await measureInViewport(
+        viewport,
+        iframe,
+      );
+      return height - minHeight;
+    })
+    .toBeGreaterThan(0);
+  // The loader draws the only graphics in the viewport, as the page in the
+  // frame is another document. Its first graphic is the symbol, which doesn't
+  // turn like the dot over it.
+  const symbol = viewport.locator("svg").first();
+  const loader = await measureInViewport(viewport, symbol);
+  const frame = await measureInViewport(viewport, iframe);
+  expect(loader.center).toBeCloseTo(frame.center, 0);
+  release(undefined);
 });
