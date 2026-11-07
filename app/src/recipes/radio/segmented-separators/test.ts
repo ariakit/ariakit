@@ -1,8 +1,11 @@
-import { press, q } from "@ariakit/test";
+import { focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// The scroll button before the group hides in a browser until the group
+// scrolls, but happy-dom renders no styles, so the Playwright test covers the
+// Tab order.
 test("skips the disabled segment with the arrow keys", async () => {
-  await press.Tab();
+  await focus(q.radio("Day"));
   await press.ArrowRight();
   await press.ArrowRight();
   expect(q.radio("Month")).toBeChecked();

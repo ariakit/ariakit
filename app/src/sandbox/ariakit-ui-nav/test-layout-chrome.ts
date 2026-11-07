@@ -1,5 +1,6 @@
 import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { getCoveredWidth } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
@@ -482,5 +483,28 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toEqual({ start: Math.round(radius / 2), length: Math.round(radius) });
     await q.combobox("Bar length").selectOption("full");
     await expect.poll(getInsets).toEqual({ start: 0, length: 0 });
+  });
+  // https://github.com/ariakit/ariakit/issues/8327
+  test("scrolls a focused link clear of the fades and the scroll buttons", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Project pages");
+    const root = query(nav.locator(".."));
+    const previous = root.button("Scroll backward", { includeHidden: true });
+    const next = root.button("Scroll forward", { includeHidden: true });
+    const buttons = [previous, next];
+    const links = query(nav).link();
+    await links.first().focus();
+    for (const link of (await links.all()).slice(1)) {
+      await page.keyboard.press("Tab");
+      await expect(link).toBeFocused();
+      await expect
+        .poll(() => getCoveredWidth({ viewport: nav, item: link, buttons }))
+        .toBe(0);
+    }
+    // The last link reaches the end, where the forward button hides.
+    await expect(next).toBeHidden();
+    await expect(previous).toBeVisible();
   });
 });

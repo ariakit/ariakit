@@ -343,12 +343,14 @@ const hasSidebar = sidebar && navigation.length > 0;
           </ShellStart>
           <ShellCenter className="@max-2xl/shell:hidden">
             {/* Astro renders each link apart from the Nav, so the links take the
-                bar themselves. */}
+                bar themselves. The Nav doesn't hydrate, so it leaves out the
+                scroll buttons, which need script. */}
             <Nav
               $layout="horizontal"
               aria-label="Main"
               $p="none"
               $barTransitionName="main-nav-bar"
+              buttons={false}
             >
               {
                 sections.map((link) => (
@@ -522,7 +524,13 @@ const hasSidebar = sidebar && navigation.length > 0;
             <span class="ak-ink-70">© Ariakit FZ-LLC</span>
           </ShellStart>
           <ShellEnd>
-            <Nav $layout="horizontal" aria-label="Footer" $p="none">
+            {/* The Nav doesn't hydrate, so it leaves out the scroll buttons. */}
+            <Nav
+              $layout="horizontal"
+              aria-label="Footer"
+              $p="none"
+              buttons={false}
+            >
               {
                 sections.map((link) => (
                   <NavLink href={link.href}>{link.label}</NavLink>

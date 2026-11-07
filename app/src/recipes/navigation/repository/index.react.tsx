@@ -44,7 +44,7 @@ function Repository() {
     >
       {/* The header covers the top of the card, so the tabs stay concentric
           with its corners. */}
-      <Frame $cover $p={2} className="grid gap-2 border-b pb-0!">
+      <Frame $cover $p={2} className="grid border-b">
         <span className="flex items-center gap-2 px-2 pt-1">
           <BookMarked className="ak-ink-70 size-4" aria-hidden />
           <span>acme</span>
@@ -54,22 +54,21 @@ function Repository() {
             <BadgeLabel>Public</BadgeLabel>
           </Badge>
         </span>
-        {/* The bar marks the current tab on the line below the header, so the
-            current tab needs no surface of its own. Its gap and 2px width
-            fill the tab's bottom margin. */}
+        {/* The tabs cover the sides and the bottom of the header and take its
+            padding, so they scroll from edge to edge. The bar marks the
+            current tab on the edge of the header, on the line below it, so
+            the current tab needs no surface of its own. The scroll buttons
+            stay round instead of following the corners of the card. */}
         <Nav
           aria-label="Repository"
-          $p="none"
           $layout="horizontal"
-          bar={{ $offset: 0.5 }}
+          $cover
+          bar
+          previousButton={{ $forceRounded: true }}
+          nextButton={{ $forceRounded: true }}
         >
           {tabs.map((tab) => (
-            <RouterNavLink
-              key={tab.label}
-              to={tab.path}
-              $selectedPush={false}
-              className="mb-1"
-            >
+            <RouterNavLink key={tab.label} to={tab.path} $selectedPush={false}>
               <NavSlot>
                 <tab.icon />
               </NavSlot>

@@ -21,7 +21,11 @@ import {
   disclosureGroup,
 } from "./disclosure.ts";
 import { frame, frameBase } from "./frame.ts";
-import { isSegmentedKind, segmentGroup } from "./segment.ts";
+import {
+  carouselFrameClass,
+  isSegmentedKind,
+  segmentGroup,
+} from "./segment.ts";
 import type { SlotSize } from "./slot-frame.ts";
 import { getSlotSizeClass, isSlotSize } from "./slot-frame.ts";
 import { textFrame } from "./text-frame.ts";
@@ -51,7 +55,9 @@ export const nav = cv({
   variants: {
     /**
      * Arranges top-level links in a column or one scrolling row. Groups and
-     * disclosures keep their own vertical layout. Defaults to `vertical`.
+     * disclosures keep their own vertical layout. A row hides its scrollbar,
+     * and as the viewport of a `carousel`, it fades the links at each end while
+     * more links lie that way. Defaults to `vertical`.
      */
     $layout: {
       // A shrinkable track lets long rows truncate or wrap instead of widening
@@ -70,6 +76,10 @@ export const nav = cv({
         // The wider row gap lines up labels in a column, which a row lacks, so
         // rows use the button gap.
         "[&>.control,&>.nav-list>li>.control]:gap-[calc(var(--px)-var(--sidebearing))]",
+        carouselFrameClass,
+        // Bars in view transitions measure whether they show from the padding,
+        // not from the scroll padding, which also covers the fades and buttons.
+        "[--nav-bar-clip-inset:var(--ak-frame-padding)]",
       ],
     },
     /**

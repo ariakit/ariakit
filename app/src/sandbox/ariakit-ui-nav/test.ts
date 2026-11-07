@@ -158,3 +158,14 @@ test("skips the landmark of a Nav with landmark set to false", () => {
   expect(link.closest("nav, [role='navigation']")).toBeNull();
   expect(link.closest(".nav")).toBeInTheDocument();
 });
+
+// https://github.com/ariakit/ariakit/issues/8327
+test("renders the scroll buttons of a horizontal navigation outside the landmark", () => {
+  const nav = q.navigation("Project pages");
+  const root = nav.parentElement;
+  expect(root).not.toBeNull();
+  for (const label of ["Scroll backward", "Scroll forward"]) {
+    expect(q.within(root).button(label)).toBeInTheDocument();
+    expect(q.within(nav).button.maybe(label)).not.toBeInTheDocument();
+  }
+});

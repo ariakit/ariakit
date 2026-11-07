@@ -161,11 +161,62 @@ export const segmentGroupClass = cx(
 );
 
 /**
+ * The classes of a frame that scrolls sideways as the viewport of a `carousel`
+ * root, such as a segmented group or a horizontal navigation. The root paints
+ * the surface and the edge of the frame, so the fade of the viewport fades only
+ * the items. The frame covers the root, so it takes the padding and the corners
+ * of the root. Outside a carousel, the frame scrolls without fades.
+ */
+export const carouselFrameClass = cx(
+  "carousel-frame",
+  // A frame that fits its content still fits its container. In a carousel,
+  // it stretches over the padding of the root, which fits the content or
+  // fills the row instead.
+  "max-w-full [.carousel>&]:max-w-none [.carousel>&]:w-auto",
+  // The frame shares the first grid cell of the root with the buttons, which
+  // follow its scroll timeline.
+  "[.carousel>&]:row-start-1 [.carousel>&]:col-start-1",
+  "scrollbar-none [scroll-timeline:--carousel_inline]",
+  // Scroll a focused item clear of the padding, the fade, and the button.
+  // Outside a carousel, the fade and the button take no space.
+  "[--carousel-inset:calc(var(--ak-frame-padding)+var(--carousel-button-space)+var(--carousel-fade-size))]",
+  "scroll-px-(--carousel-inset)",
+  // The root takes the edge, the margins, and the font size of the frame, and
+  // the frame covers its padding box and matches its corners. A numeric size
+  // sets the line height from the line height around it, which the root has
+  // already scaled, so the frame takes the line height of the root too.
+  "[.carousel>&]:ak-frame-cover [.carousel>&]:ak-frame-start [.carousel>&]:ak-frame-end",
+  "[.carousel>&]:[--border-width:0px]! [.carousel>&]:[--frame-margin:0px]!",
+  "[.carousel>&]:text-[1em]/[inherit]!",
+  // The frame reads the layer around the root, so it takes the same color as
+  // the root, and items that read the surface around the frame, such as the
+  // thumb of a segmented group, take the color around both.
+  "[.carousel>&]:ak-outset [.carousel>&]:bg-transparent!",
+);
+
+/**
+ * The classes of a segmented group with padding, which scrolls sideways when it
+ * doesn't fit its container. Scrolling clips the shadow of the thumb at the
+ * padding box, and the focus ring fits in the padding.
+ */
+const segmentGroupScrollClass = cx(
+  // A group with no overflow stays still under a sideways swipe.
+  "overflow-x-auto overflow-y-clip overscroll-x-none",
+  // Segments keep their width, so the group scrolls instead of truncating them.
+  // Stretched segments start at zero width, so this doesn't stop them from
+  // sharing the row.
+  "[&>.control]:shrink-0",
+  carouselFrameClass,
+);
+
+/**
  * Adds the segmented kind to a group of segments. A group with padding that
- * doesn't fit its container scrolls, so every segment stays reachable. A
- * stretched group shares its width and truncates labels instead. Without
- * padding, scrolling would clip focus rings, so the group doesn't scroll,
- * except a horizontal `Nav`, which always scrolls.
+ * doesn't fit its container scrolls, so every segment stays reachable. In the
+ * style components, it scrolls in a `carousel` row, which fades the segments at
+ * each end and shows buttons that scroll it with a fine pointer. A stretched
+ * group shares its width and truncates labels instead. Without padding,
+ * scrolling would clip focus rings, so the group doesn't scroll, except a
+ * horizontal `Nav`, which always scrolls.
  */
 export const segmentGroup = cv({
   extend: [frame],
@@ -215,16 +266,6 @@ export const segmentGroup = cv({
       addClass("[&>.control]:ui-selected:shadow-none");
       return;
     }
-    // Scrolling also clips the shadow at the padding box. The focus ring fits
-    // in the padding.
-    addClass([
-      // A group with no overflow stays still under a sideways swipe.
-      "max-w-full overflow-x-auto overflow-y-clip overscroll-x-none",
-      "scrollbar-none scroll-px-(--ak-frame-padding)",
-      // Segments keep their width, so the group scrolls instead of truncating
-      // them. Stretched segments start at zero width, so this doesn't stop them
-      // from sharing the row.
-      "[&>.control]:shrink-0",
-    ]);
+    addClass(segmentGroupScrollClass);
   },
 });

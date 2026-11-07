@@ -192,6 +192,26 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await test.expect(design).toBeFocused();
   });
 
+  // The buttons lie outside the row, where a wheel would scroll the page.
+  test("scrolls a row with a sideways wheel over a button", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Filter row"));
+    const viewport = box.toolbar("Filters");
+    await box.button("Scroll forward").hover();
+    await page.mouse.wheel(40, 0);
+    await test.expect.poll(() => getScrollLeft(viewport)).toBe(40);
+    // A vertical wheel still scrolls the page, as it does over the row.
+    const pageOffset = await page.evaluate(() => window.scrollY);
+    await page.mouse.wheel(0, 40);
+    await test.expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(pageOffset);
+    test.expect(await getScrollLeft(viewport)).toBe(40);
+  });
+
   test("moves focus to the other button at the end of a row", async ({
     page,
     q,

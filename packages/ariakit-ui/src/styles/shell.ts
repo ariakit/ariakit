@@ -242,23 +242,27 @@ const barInsetDefault = "var(--shell-bar-inset)";
 const bar = cx(
   "shell-bar shell-slot-state shell-bar-spaces",
   "[&:has(>.shell-band)]:shell-bar-fold [&:has(>.shell-band)]:shell-bar-tracks",
-  "[&>.shell-band:has(>.nav.horizontal)]:self-stretch",
+  "[&>.shell-band:has(>.carousel>.nav.horizontal)]:self-stretch",
   // A horizontal navigation region fills the bar's height, so edge bars in
-  // its centered rows meet the bar's edge.
-  "[&>.shell-bar-start:has(>.nav.horizontal)]:self-stretch",
-  "[&>.shell-bar-center:has(>.nav.horizontal)]:self-stretch",
-  "[&>.shell-bar-end:has(>.nav.horizontal)]:self-stretch",
-  "[&>*>.nav.horizontal]:self-stretch [&>*>.nav.horizontal]:items-center",
-  "[&>*>.nav.horizontal]:my-0 [&>*>.nav.horizontal]:py-0",
+  // its centered rows meet the bar's edge. It scrolls in a carousel root,
+  // which takes its place in the bar.
+  "[&>.shell-bar-start:has(>.carousel>.nav.horizontal)]:self-stretch",
+  "[&>.shell-bar-center:has(>.carousel>.nav.horizontal)]:self-stretch",
+  "[&>.shell-bar-end:has(>.carousel>.nav.horizontal)]:self-stretch",
+  "[&>*>.carousel:has(>.nav.horizontal)]:self-stretch [&>*>.carousel:has(>.nav.horizontal)]:my-0 [&>*>.carousel:has(>.nav.horizontal)]:py-0",
+  // The navigation covers the root, so its block margins reach past the root
+  // unless they go too.
+  "[&>*>.carousel>.nav.horizontal]:items-center [&>*>.carousel>.nav.horizontal]:my-0! [&>*>.carousel>.nav.horizontal]:py-0",
   // Without block padding, edge bars measure from the region's height alone.
-  "[&>*>.nav.horizontal]:[--nav-bar-gap:0px]",
+  "[&>*>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
   // The region scrolls, so rounded corners would clip a bar at its edge.
-  "[&>*>.nav.horizontal]:rounded-none",
+  "[&>*>.carousel:has(>.nav.horizontal)]:rounded-none! [&>*>.carousel>.nav.horizontal]:rounded-none!",
   // The same goes for a part in a content area, which stretches with its area.
-  "[&>.shell-band:has(>.shell-bar-part>.nav.horizontal)]:self-stretch [&>.shell-band>.shell-bar-part:has(>.nav.horizontal)]:self-stretch",
-  "[&>.shell-band>.shell-bar-part>.nav.horizontal]:self-stretch [&>.shell-band>.shell-bar-part>.nav.horizontal]:items-center",
-  "[&>.shell-band>.shell-bar-part>.nav.horizontal]:my-0 [&>.shell-band>.shell-bar-part>.nav.horizontal]:py-0",
-  "[&>.shell-band>.shell-bar-part>.nav.horizontal]:[--nav-bar-gap:0px] [&>.shell-band>.shell-bar-part>.nav.horizontal]:rounded-none",
+  "[&>.shell-band:has(>.shell-bar-part>.carousel>.nav.horizontal)]:self-stretch [&>.shell-band>.shell-bar-part:has(>.carousel>.nav.horizontal)]:self-stretch",
+  "[&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:self-stretch [&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:my-0 [&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:py-0",
+  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:items-center [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:my-0! [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:py-0",
+  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
+  "[&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:rounded-none! [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:rounded-none!",
   "col-[page] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
   // Next to a shell inside a shell with `$maxWidth`, a content area starts the
   // bar's padding inside that shell's box, like parts at the bar's edges and in
@@ -332,8 +336,8 @@ export const shellHeader = cv({
     bar,
     "shell-header row-[header] box-border min-h-(--shell-header-height) @container/shell-header",
     // Let edge bars in a centered navigation row reach the inner edge.
-    "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
-    "[&>.shell-band>.shell-bar-part>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
+    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
+    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
     "z-6",
     "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-header-height)-var(--shell-header-step)*16)/2,1px)))]",
   ],
@@ -466,8 +470,8 @@ export const shellFooter = cv({
     "shell-footer row-[footer] box-border min-h-(--shell-footer-height) @container/shell-footer",
     // Let edge bars in a centered navigation row reach the inner edge.
     // The bottom safe area pads the footer, so it doesn't hold the row.
-    "[&>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
-    "[&>.shell-band>.shell-bar-part>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
+    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
+    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
     "z-5",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
     "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-footer-height)-var(--shell-header-step)*16)/2,1px)))]",
@@ -1005,12 +1009,12 @@ export const shellMainHeader = cv({
     "[&:has(>.shell-bar-part):has(>.shell-bar-center)]:grid-cols-[1fr_auto_1fr]",
     "[&:has(>.shell-bar-part):has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
     // A horizontal navigation region fills the header's height, like in a bar.
-    "[&:has(>.shell-bar-part)>:has(>.nav.horizontal)]:self-stretch",
-    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:self-stretch [&:has(>.shell-bar-part)>*>.nav.horizontal]:items-center",
-    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:my-0 [&:has(>.shell-bar-part)>*>.nav.horizontal]:py-0",
-    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:[--nav-bar-gap:0px]",
-    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:rounded-none",
-    "[&:has(>.shell-bar-part)>*>.nav.horizontal]:[--nav-block-size:calc(var(--shell-main-header-height)-var(--shell-facing-border,0px))]",
+    "[&:has(>.shell-bar-part)>:has(>.carousel>.nav.horizontal)]:self-stretch",
+    "[&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:self-stretch [&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:my-0 [&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:py-0",
+    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:items-center [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:my-0! [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:py-0",
+    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
+    "[&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:rounded-none! [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:rounded-none!",
+    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-main-header-height)-var(--shell-facing-border,0px))]",
   ],
   variants: {
     ...contentVariants,
