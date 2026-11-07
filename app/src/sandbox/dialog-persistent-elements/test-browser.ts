@@ -9,9 +9,11 @@ async function moveMouseTo(page: Page, locator: Locator) {
 }
 
 // TODO: Use toHaveJSProperty("tagName", ...) again once Playwright's Firefox
-// build stops crashing the page in this sandbox. With Playwright 1.65.0
-// (Firefox 159), the matcher crashed two of the replaced-dialog checks below,
-// and evaluate() does not crash.
+// build stops crashing the page. With Playwright 1.65.0, the matcher can crash
+// Firefox on a getByRole locator with a name when the element has
+// aria-labelledby, as it did for the replaced dialogs below, and evaluate()
+// does not crash.
+// https://github.com/microsoft/playwright/issues/43967
 async function expectTagName(locator: Locator, tagName: string) {
   await expect
     .poll(() => locator.evaluate((element) => element.tagName))

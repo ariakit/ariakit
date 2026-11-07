@@ -208,21 +208,41 @@ async function readBoundingBoxes(locator: Locator, fullPage: boolean) {
 }
 
 /**
- * Reads every element box and the scroll position in one round trip. The boxes
+ * Reads every element box and the scroll position in one evaluation. The boxes
  * can differ from boundingBox below a pixel and are relative to the element's
  * own frame, so they only serve to detect a clip that is still changing.
  */
-function readClientBoxes(locator: Locator) {
-  return locator.evaluateAll((elements) => ({
-    rects: elements.map((element) => {
-      // An element without layout boxes, such as one with display: none, is
-      // where Playwright's boundingBox returns null.
-      if (!element.getClientRects().length) return null;
-      const { x, y, width, height } = element.getBoundingClientRect();
-      return { x, y, width, height };
+async function readClientBoxes(locator: Locator) {
+  // TODO: Use locator.evaluateAll again once Playwright's Firefox build stops
+  // crashing the page. With Playwright 1.65.0, evaluateAll crashes Firefox when
+  // another locator call already resolved the same getByRole locator with a
+  // name, and the element has aria-labelledby. Element handles avoid that.
+  // https://github.com/microsoft/playwright/issues/43967
+  // The clip polling reads the boxes many times per capture, and each read
+  // would otherwise keep its handles until the page navigates.
+  await using handles = new AsyncDisposableStack();
+  const elements = await locator.elementHandles();
+  for (const element of elements) {
+    handles.use(element);
+  }
+  return await locator.page().evaluate(
+    (nodes) => ({
+      rects: nodes.map((node) => {
+        // Locators only match elements, but the handles are typed as nodes. An
+        // element in a frame comes from another realm, so the check reads the
+        // node type rather than using instanceof.
+        if (node.nodeType !== Node.ELEMENT_NODE) return null;
+        const element = node as Element;
+        // An element without layout boxes, such as one with display: none, is
+        // where Playwright's boundingBox returns null.
+        if (!element.getClientRects().length) return null;
+        const { x, y, width, height } = element.getBoundingClientRect();
+        return { x, y, width, height };
+      }),
+      scroll: { x: scrollX, y: scrollY },
     }),
-    scroll: { x: scrollX, y: scrollY },
-  }));
+    elements,
+  );
 }
 
 async function getScreenshotClip(
@@ -266,7 +286,7 @@ async function waitForStableScreenshotClip(
   }
   // Some previews update their layout a few frames after they become visible.
   // Wait until the computed clip stays unchanged for a short window. The
-  // polling only compares clips, so it reads them in one round trip each.
+  // polling only compares clips, so it reads them in one evaluation each.
   let previousClip = await getScreenshotClip(page, options, readClientBoxes);
   let lastClip = previousClip;
   let stableSince = Date.now();
