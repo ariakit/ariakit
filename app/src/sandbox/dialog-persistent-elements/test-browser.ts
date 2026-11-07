@@ -1,10 +1,21 @@
 import type { Locator, Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 async function moveMouseTo(page: Page, locator: Locator) {
   const box = await locator.boundingBox();
   if (!box) throw new Error("Element has no box");
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+}
+
+// TODO: Use toHaveJSProperty("tagName", ...) again once Playwright's Firefox
+// build stops crashing the page in this sandbox. With Playwright 1.65.0
+// (Firefox 159), the matcher crashed two of the replaced-dialog checks below,
+// and evaluate() does not crash.
+async function expectTagName(locator: Locator, tagName: string) {
+  await expect
+    .poll(() => locator.evaluate((element) => element.tagName))
+    .toBe(tagName);
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -72,9 +83,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     await q.button("Open dialog").click();
     await q.button("Replace dialog element").click();
-    await test
-      .expect(q.dialog("Dialog"))
-      .toHaveJSProperty("tagName", "SECTION");
+    await expectTagName(q.dialog("Dialog"), "SECTION");
 
     await q.textbox("Notification field").click();
     await test.expect(q.textbox("Notification field")).toBeFocused();
@@ -97,9 +106,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.textbox("Notification field").click();
     await test.expect(q.textbox("Notification field")).toBeFocused();
     await q.button("Replace dialog from notifications").click();
-    await test
-      .expect(q.dialog("Dialog"))
-      .toHaveJSProperty("tagName", "SECTION");
+    await expectTagName(q.dialog("Dialog"), "SECTION");
 
     await q.button("Add late outside field").click();
     await q.textbox("Late outside field").click();
@@ -119,9 +126,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     await q.button("Open dialog").click();
     await q.button("Replace dialog from notifications").click();
-    await test
-      .expect(q.dialog("Dialog"))
-      .toHaveJSProperty("tagName", "SECTION");
+    await expectTagName(q.dialog("Dialog"), "SECTION");
 
     await q.button("Add late outside field").click();
     await q.textbox("Late outside field").click();

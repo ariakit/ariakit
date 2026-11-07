@@ -276,6 +276,10 @@ test("collection page cards take focus in their visual order", async ({
 }) => {
   await page.setViewportSize({ width: 900, height: 900 });
   await gotoAndSettle(page, "/react/recipes/");
+  // TODO: Remove once Chromium keeps the reading-flow order under load. In
+  // Chromium 156 and 158, Tab can skip or repeat cards when the inert thumbnail
+  // scenes make style and layout slow. The scenes have no focusable elements.
+  await page.addStyleTag({ content: "[inert] { display: none !important }" });
   const cards = query(q.list().filter({ has: q.link("App Shell") }));
   const positions = await cards.link().evaluateAll((links) =>
     links.map((link) => {
