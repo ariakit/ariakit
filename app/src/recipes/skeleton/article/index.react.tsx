@@ -69,13 +69,13 @@ export default function Example() {
             </SkeletonLine>
           </div>
         </div>
-        <SkeletonBox $rounded="xl" className="aspect-[5/2] w-full">
+        <SkeletonBox $rounded="xl" className="aspect-5/2 w-full">
           <Frame
             $layer="brand"
             $rounded="xl"
             $p="none"
             aria-hidden
-            className="aspect-[5/2] w-full bg-radial-[at_25%_25%] from-white/25 to-transparent"
+            className="aspect-5/2 w-full bg-radial-[at_25%_25%] from-white/25 to-transparent"
           />
         </SkeletonBox>
         {paragraphLines.map((lines, index) => (

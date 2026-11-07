@@ -20,7 +20,7 @@ function AnimatedSelect({ label, store }: AnimatedSelectProps) {
         sameWidth
         unmountOnHide
         gutter={4}
-        className="origin-top opacity-0 transition-[opacity,scale,translate] [scale:0.95] [translate:0_-0.5rem] data-enter:opacity-100 data-enter:[scale:1] data-enter:[translate:0]"
+        className="origin-top opacity-0 transition-[opacity,scale,translate] scale-[0.95] [translate:0_-0.5rem] data-enter:opacity-100 data-enter:scale-[1] data-enter:[translate:0]"
       >
         {fruits.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} />
@@ -48,7 +48,7 @@ function StoreAnimatedSelect() {
           portal
           sameWidth
           gutter={4}
-          className="origin-top opacity-0 transition-[opacity,scale,translate] [scale:0.95] [translate:0_-0.5rem] data-enter:opacity-100 data-enter:[scale:1] data-enter:[translate:0]"
+          className="origin-top opacity-0 transition-[opacity,scale,translate] scale-[0.95] [translate:0_-0.5rem] data-enter:opacity-100 data-enter:scale-[1] data-enter:[translate:0]"
         >
           {fruits.map((value) => (
             <Ariakit.ComboboxItem key={value} value={value} />

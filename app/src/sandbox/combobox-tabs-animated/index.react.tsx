@@ -47,7 +47,7 @@ export default function Example() {
       <Combobox placeholder="Search pages" />
       <ComboboxPopover
         aria-label="Pages"
-        className="opacity-0 transition-opacity duration-1000 data-[enter]:opacity-100"
+        className="opacity-0 transition-opacity duration-1000 data-enter:opacity-100"
       >
         <ComboboxTabList aria-label="Categories">
           {categories.map((category) => {

@@ -44,7 +44,7 @@ export const TabPanel = forwardRef<
       {...props}
       data-was-open={wasOpen || undefined}
       className={clsx(
-        "w-96 max-w-full p-4 transition-[opacity,translate] duration-300 motion-reduce:[transition:none] [:has(>[data-was-open])>&]:opacity-0 [:has(>[data-was-open])>&]:[translate:-100%] [:is([data-was-open],[data-open])~&]:[translate:100%] [&:not([data-open])]:absolute [&:not([data-open])]:top-0 data-[enter]:![translate:0] data-[enter]:!opacity-100",
+        "w-96 max-w-full p-4 transition-[opacity,translate] duration-300 motion-reduce:[transition:none] [:has(>[data-was-open])>&]:opacity-0 [:has(>[data-was-open])>&]:[translate:-100%] [:is([data-was-open],[data-open])~&]:[translate:100%] [&:not([data-open])]:absolute [&:not([data-open])]:top-0 data-enter:![translate:0] data-enter:!opacity-100",
         props.className,
       )}
     />

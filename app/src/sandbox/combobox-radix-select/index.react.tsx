@@ -87,7 +87,7 @@ export default function Example() {
       >
         <RadixSelect.Trigger
           aria-label="Language"
-          className="inline-flex h-10 items-center justify-center gap-1 rounded bg-white px-4 text-black shadow [color-scheme:light] hover:bg-violet-100 sm:h-9 sm:text-[15px]"
+          className="inline-flex h-10 items-center justify-center gap-1 rounded bg-white px-4 text-black shadow scheme-light hover:bg-violet-100 sm:h-9 sm:text-[15px]"
         >
           <RadixSelect.Value placeholder="Select a language" />
           <RadixSelect.Icon className="[translate:4px_0]">
@@ -98,7 +98,7 @@ export default function Example() {
           role="dialog"
           aria-label="Languages"
           position="popper"
-          className="z-50 max-h-[min(var(--radix-select-content-available-height),336px)] overflow-hidden rounded-lg bg-white shadow-lg-dark [color-scheme:light]"
+          className="z-50 max-h-[min(var(--radix-select-content-available-height),336px)] overflow-hidden rounded-lg bg-white shadow-lg-dark scheme-light"
           sideOffset={4}
           alignOffset={-16}
         >
@@ -127,7 +127,7 @@ export default function Example() {
                 key={value}
                 value={value}
                 asChild
-                className="relative flex h-10 cursor-default scroll-my-1 items-center rounded px-7 text-black outline-none data-[active-item]:bg-violet-200 sm:h-9 sm:text-[15px]"
+                className="relative flex h-10 cursor-default scroll-my-1 items-center rounded px-7 text-black outline-none data-active-item:bg-violet-200 sm:h-9 sm:text-[15px]"
               >
                 <ComboboxItem>
                   <RadixSelect.ItemText>{label}</RadixSelect.ItemText>

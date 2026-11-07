@@ -185,13 +185,13 @@ function PostCard({ post, image }: PostCardProps) {
         <SkeletonLine className="w-2/3" />
       </p>
       {image && (
-        <SkeletonBox $rounded="lg" className="aspect-[2/1] w-full">
+        <SkeletonBox $rounded="lg" className="aspect-2/1 w-full">
           <Frame
             $layer="brand"
             $rounded="lg"
             $p="none"
             aria-hidden
-            className="aspect-[2/1] w-full bg-linear-to-br from-transparent to-black/30"
+            className="aspect-2/1 w-full bg-linear-to-br from-transparent to-black/30"
           />
         </SkeletonBox>
       )}

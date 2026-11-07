@@ -15,10 +15,10 @@ export const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(
         backdrop={
           <div
             data-animated={dataAnimated}
-            className="backdrop fixed inset-0 bg-black/20 data-[animated]:opacity-0 data-[animated]:transition-opacity data-[animated]:data-enter:opacity-100"
+            className="backdrop fixed inset-0 bg-black/20 data-animated:opacity-0 data-animated:transition-opacity data-animated:data-enter:opacity-100"
           />
         }
-        className="dialog fixed inset-x-4 top-[10vh] z-50 mx-auto flex h-fit max-h-[80vh] max-w-md flex-col gap-4 overflow-auto rounded bg-white p-6 data-[animated]:opacity-0 data-[animated]:transition-opacity data-[animated]:data-enter:opacity-100"
+        className="dialog fixed inset-x-4 top-[10vh] z-50 mx-auto flex h-fit max-h-[80vh] max-w-md flex-col gap-4 overflow-auto rounded bg-white p-6 data-animated:opacity-0 data-animated:transition-opacity data-animated:data-enter:opacity-100"
         data-animated={dataAnimated}
         {...props}
         store={dialog}

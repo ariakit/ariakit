@@ -433,7 +433,7 @@ export const tocLinkDot = cv({
     "[background:linear-gradient(var(--toc-guide-color),var(--toc-guide-color)),var(--toc-halo-color)]",
     "after:absolute after:inset-0 after:rounded-full after:bg-(--toc-thumb-color)",
     "after:[clip-path:var(--toc-fill-clip)]",
-    "after:transition-[clip-path] after:duration-[var(--toc-fill-duration,inherit)] after:ease-[inherit]",
+    "after:transition-[clip-path] after:duration-(--toc-fill-duration,inherit) after:ease-[inherit]",
     "motion-reduce:after:transition-none",
   ],
 });
@@ -489,7 +489,7 @@ export const tocLinkMarker = cv({
     "[.toc-fill:not(.toc-unguided)_&]:after:[font-size-adjust:0.45]",
     "[.toc-fill:not(.toc-unguided)_&]:after:[clip-path:var(--toc-fill-clip)]",
     "[.toc-fill:not(.toc-unguided)_&]:after:transition-[clip-path]",
-    "[.toc-fill:not(.toc-unguided)_&]:after:duration-[var(--toc-fill-duration,inherit)]",
+    "[.toc-fill:not(.toc-unguided)_&]:after:duration-(--toc-fill-duration,inherit)",
     "[.toc-fill:not(.toc-unguided)_&]:after:ease-[inherit]",
     "motion-reduce:[.toc-fill:not(.toc-unguided)_&]:after:transition-none",
   ],

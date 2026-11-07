@@ -95,7 +95,7 @@ export const shell = cv({
         "[.shell_&]:[--shell-leading:inherit]",
         // The outer shell's size, not the size of a main around this shell. The
         // extra class outranks the inherited size above.
-        "[.shell_.shell-main-sized_&]:[font-size:calc(var(--shell-header-step)*4)]",
+        "[.shell_.shell-main-sized_&]:text-[calc(var(--shell-header-step)*4)]",
         "[.shell_.shell-main-sized_&]:[line-height:var(--shell-leading)]",
       ],
       sm: [
@@ -796,7 +796,9 @@ const content = cx(
   // concentric.
   "[--shell-popout:1rem] [--shell-feature:3.5rem]",
   // A cover child must reach the edge, so this uses the track gutter when the
-  // part has one.
+  // part has one. The bracket form sorts after ak-frame-p-0, so an
+  // ak-frame-p-0 class doesn't remove this padding.
+  // oxlint-disable-next-line tailwindcss/enforce-canonical -- ak-frame-p-(...) sorts before ak-frame-p-0
   "ak-frame-p-[var(--shell-track-gutter,var(--shell-gutter))] px-0",
   "print:overflow-visible",
   // Bands and side parts set their own minimum, so a `min-w-*` class on them can
@@ -981,7 +983,7 @@ export const shellMainHeader = cv({
     "box-border min-h-(--shell-main-header-height) content-center py-0! z-3",
     // A bar keeps the shell's text inside a sized main. Zero specificity lets
     // caller text-* classes win.
-    "[.shell-main-sized>&]:ui-base:[font-size:calc(var(--shell-header-step)*4)]",
+    "[.shell-main-sized>&]:ui-base:text-[calc(var(--shell-header-step)*4)]",
     "[.shell-main-sized>&]:ui-base:[line-height:var(--shell-leading)]",
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
     // Like other bars, a shorter or taller header than `md` shrinks or grows
@@ -1101,6 +1103,7 @@ export const shellMainIntro = cv({
     // grid container restyles each element with a container query on every
     // relayout of that container, such as each frame of a sidebar fold.
     "[--shell-main-intro-space:round(clamp(calc(var(--shell-header-step)*5),5%,calc(var(--shell-header-step)*14)),1px)]",
+    // oxlint-disable-next-line tailwindcss/enforce-canonical -- py-[...] sorts after py-*
     "[padding-block:var(--shell-main-py,var(--shell-main-intro-space))_var(--shell-main-intro-space)]",
     // Fragment targets can't read a percentage, so they clear the largest space.
     // A table of contents still marks a target current at the top of the page.
@@ -1152,6 +1155,7 @@ export const shellMainBody = cv({
     // After an intro, it starts three bar steps below the intro.
     "[--shell-main-pbs:var(--shell-main-py,var(--shell-gutter))]",
     "[.shell-main-intro~&]:[--shell-main-pbs:round(calc(var(--shell-header-step)*3),1px)]",
+    // oxlint-disable-next-line tailwindcss/enforce-canonical -- py-[...] sorts after py-*
     "[padding-block:var(--shell-main-pbs)_var(--shell-main-py,var(--shell-gutter))]",
   ],
   variants: contentVariants,
