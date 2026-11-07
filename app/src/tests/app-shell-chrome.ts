@@ -336,6 +336,29 @@ test("theme panel applies a mode to the site and its previews", async ({
   await expect(preview).not.toHaveAttribute("data-theme");
 });
 
+// The theme panel narrows the gallery cards, and Chrome lays out the nested
+// grids of the shell around each card. Size containers in the carousel buttons,
+// and a container query flip in an inline gallery example, once made this
+// layout take from 25 seconds to minutes on these pages.
+// https://issues.chromium.org/issues/578117951
+for (const pagePath of ["/react/recipes/carousel/", "/react/recipes/tabs/"]) {
+  test(`theme panel opens on ${pagePath} without stalling the layout`, async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await gotoAndSettle(page, pagePath);
+    await q.button("Theme", { exact: true }).click();
+    // The panel column reaches its width, and the table of contents leaves the
+    // accessibility tree, when the folds end.
+    await expect(q.complementary("Theme").locator("..")).toHaveCSS(
+      "width",
+      "320px",
+    );
+    await expect(q.navigation("On this page")).toBeHidden();
+  });
+}
+
 test("theme panel tints the canvas of the site and its previews", async ({
   page,
   q,

@@ -1,0 +1,4 @@
+{
+  "title": "Scrolling Card Row",
+  "description": "A row of cards with their own buttons in Carousel with $kind=\"row\", where $step=\"item\" makes each Scroll forward or Scroll backward press move to the next card and $snap=\"proximity\" settles a swipe near a card start. Keyboard focus scrolls a card clear of the fades and buttons. Use it for cards that people act on in place, such as integrations or plans, and the Multiple Slides per View example when the cards should page with dots."
+}

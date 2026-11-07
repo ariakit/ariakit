@@ -1,4 +1,4 @@
 {
   "title": "Scrolling Tab Strip",
-  "description": "More tabs than the width can show, with a separator pipe before each Tab after the first: TabList scrolls its strip sideways and cuts the last visible tab at the edge, so people can see that more tabs follow. Keyboard focus and selection scroll the tab into view, including its outer curve. Use it for a long or dynamic list of tabs that must stay on one line."
+  "description": "More tabs than the width can show, with a separator pipe before each Tab after the first: TabList scrolls its strip sideways and fades the tabs at each end while more tabs lie that way. With a fine pointer, Previous tabs and Next tabs buttons show beside the strip, outside the tab list, and a press keeps focus on the selected tab. Keyboard focus and selection scroll the tab into view, clear of the fades and buttons. Use it for a long or dynamic list of tabs that must stay on one line."
 }

@@ -1,0 +1,28 @@
+import PreviewCard from "#app/components/preview-card.astro";
+import PreviewGrid from "#app/components/preview-grid.astro";
+import P0, { source as s0 } from "./preview.astro";
+import P1, { source as s1 } from "./card-row/preview.astro";
+import { source as s2 } from "./multiple-slides/preview.astro";
+import P3, { source as s3 } from "./filter-chips/preview.astro";
+import P4, { source as s4 } from "./thumbnail-row/preview.astro";
+
+<PreviewGrid>
+  <PreviewCard source={s0}>
+    <P0 />
+  </PreviewCard>
+  <PreviewCard source={s1}>
+    <P1 />
+  </PreviewCard>
+  {/* TODO: Render this example inline again once Chrome Stable fixes row
+      subgrid layout. Inline, its container query flip under the Shell
+      subgrids blocks the docs layout for seconds in Chrome.
+      https://issues.chromium.org/issues/578117951
+      https://github.com/ariakit/ariakit/issues/8122 */}
+  <PreviewCard source={s2} class="col-span-full" />
+  <PreviewCard source={s3}>
+    <P3 />
+  </PreviewCard>
+  <PreviewCard source={s4}>
+    <P4 />
+  </PreviewCard>
+</PreviewGrid>

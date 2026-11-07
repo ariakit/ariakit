@@ -8,6 +8,12 @@ import {
   buttonSeparator,
   buttonSlot,
 } from "./button.ts";
+import {
+  carousel,
+  carouselNoFadeClass,
+  getCarouselStepStyle,
+} from "./carousel.ts";
+import type { CarouselStepValue } from "./carousel.ts";
 import { frame } from "./frame.ts";
 import {
   isSegmentedKind,
@@ -76,14 +82,15 @@ export const tabs = cv({
     // A selected first folder shares the available indent and edge with the
     // panel corner, which takes up to half. The panel border covers a root
     // ring too.
-    "has-[>:first-child>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-child(1_of_.control)]:[--tabs-meet:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-bordering)))/2)]",
+    // The strip is a child of the root, or of tabListCarousel in the root.
+    "has-[>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-child(1_of_.control),>*>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-child(1_of_.control)]:[--tabs-meet:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-bordering)))/2)]",
     // A stretched strip has no room after its last tab, so a selected last
     // folder meets the panel in the same way at the end.
-    "has-[>:first-child.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-last-child(1_of_.control)]:[--tabs-meet-end:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-bordering)))/2)]",
+    "has-[>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-last-child(1_of_.control),>*>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-last-child(1_of_.control)]:[--tabs-meet-end:calc((var(--tabs-indent)+min(var(--tabs-indent),var(--tabs-bordering)))/2)]",
     // Scope the scroll timeline so the sibling panel can follow it.
     "[timeline-scope:--tabs-scroll]",
     // Only the tabs of this root's own strip count, not those of nested tabs.
-    "has-[>*>.ui-folder]:[--tabs-folder:1]",
+    "has-[>.tabs-strip>.ui-folder,>*>.tabs-strip>.ui-folder]:[--tabs-folder:1]",
   ],
   variants: {
     /**
@@ -202,10 +209,10 @@ const tabCurves = cx(
 // folder on that side, with no meet, has no room past its own border, so it has
 // no curve, like an adapted one.
 const tabCutCurves = cx(
-  "[.tabs-folder-cut>*>&]:ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius))*1000000)]",
-  "[.tabs-folder-cut>*>&]:ui-selected:after:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet-end,var(--tabs-radius))*1000000)]",
-  "[.tabs-folder-cut>*>&]:ui-selected:before:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-bordering))]",
-  "[.tabs-folder-cut>*>&]:ui-selected:after:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-bordering))]",
+  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&]:ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius))*1000000)]",
+  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&]:ui-selected:after:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet-end,var(--tabs-radius))*1000000)]",
+  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&]:ui-selected:before:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-bordering))]",
+  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&]:ui-selected:after:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-bordering))]",
 );
 
 // Forced colors remove the fill, the only mark of a selected folder under a
@@ -252,7 +259,7 @@ const tabsBorder = cx(
 // line on the hidden ring, and its curves still cover the straight borders.
 const tabsInheritedBorder = cx(
   "ak-frame-bordering-inherit ak-frame-backdrop",
-  "[.tabs-edge-hidden-at-rest>*>&]:ak-frame-backdrop-(--ak-layer)",
+  "[.tabs-edge-hidden-at-rest>.tabs-strip>&,.tabs-edge-hidden-at-rest>*>.tabs-strip>&]:ak-frame-backdrop-(--ak-layer)",
 );
 
 interface TabsBorderVariants {
@@ -451,22 +458,26 @@ export const tabBar = buttonBar;
 
 // The strip that joins the panel. A segmented list stands on its own.
 const tabStrip = cx(
-  "flex",
+  "tabs-strip flex",
+  // In tabListCarousel, share the first grid cell with the scroll buttons and
+  // the strip color that it paints behind the strip.
+  "row-start-1 col-start-1",
   "rounded-b-none!",
   // Add the root edge width below the tabs so the panel can overlap it.
   // Each folder accounts for its own border when crossing the seam.
   "[--tabs-float:var(--ak-frame-padding)]",
   "[--tabs-dock:calc(var(--tabs-float)+var(--tabs-bordering))]",
   // A root indent replaces the strip padding only beside the outer tabs.
-  "[--tabs-float-x:var(--tabs-float)] [.tabs-indent>&]:[--tabs-float-x:var(--tabs-indent)]",
+  "[--tabs-float-x:var(--tabs-float)] [.tabs-indent>&,.tabs-indent>*>&]:[--tabs-float-x:var(--tabs-indent)]",
   // An automatic indent only makes room for folder curves, so other tabs keep
   // the strip padding.
-  "[.tabs-indent-auto>&]:[--tabs-float-x:calc(var(--tabs-float)+(var(--tabs-indent)-var(--tabs-float))*var(--tabs-folder,0))]",
+  "[.tabs-indent-auto>&,.tabs-indent-auto>*>&]:[--tabs-float-x:calc(var(--tabs-float)+(var(--tabs-indent)-var(--tabs-float))*var(--tabs-folder,0))]",
   // Continue below the seam to fill rounded panel corners.
   "pb-[calc(var(--tabs-dock)+var(--tabs-notch,0px))]",
-  // Keep the strip out of a separate stacking context so tabs can paint
-  // above the panel.
-  "z-auto",
+  // In tabListCarousel, the fade mask paints the strip in a layer of its own,
+  // so the strip stacks above the panel for selected folders to cover the
+  // seam. The strip paints no color there, so it covers nothing else.
+  "[.tab-list-carousel>&]:relative [.tab-list-carousel>&]:z-2",
   // When the root edge is wider than strip padding, pull tabs onto it. Folder
   // borders lie on a root ring too, so its width also affects the frame margin
   // and concentric radius.
@@ -480,8 +491,15 @@ const tabStrip = cx(
   "px-[calc(var(--tabs-bordering)+var(--tabs-float-x)-var(--tabs-merge-x))]",
   "rounded-ss-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
   "rounded-se-[calc(var(--tabs-radius)+var(--tabs-ring))]!",
-  // Paint within the root edge, though the scroll box extends beyond it.
-  "ui-tabs-well",
+  // Paint within the root edge, though the scroll box extends beyond it. In
+  // tabListCarousel, which paints the strip color behind the strip, the fade
+  // mask fades only the tabs.
+  "ui-tabs-well [.tab-list-carousel>&]:bg-none!",
+  // Frame rules give the strip a bottom margin when nothing follows it. In
+  // tabListCarousel, the next button follows it, so the position of
+  // tabListCarousel in the root decides instead.
+  "[.tab-list-carousel>&]:mb-0",
+  "[.tab-list-carousel:not(:has(~_*:not([hidden],template)))>&]:mb-(--ak-frame-margin)",
   // Inset hover surfaces beyond the edge overlap by one fifth of the font.
   "[--tab-inset:calc(0.2em+var(--tabs-merge))]",
   // Reserve a non-shrinking spacer for the final folder curve. Beside a rounded
@@ -489,10 +507,16 @@ const tabStrip = cx(
   // padding that already separates them.
   "after:w-[max(var(--tabs-radius),calc(var(--tabs-radius)+var(--tabs-notch,0px)-var(--tabs-float-x)+var(--tabs-merge-x)))] after:shrink-0",
   "overflow-x-auto overflow-y-clip overscroll-x-contain scrollbar-none",
-  // Scroll the tab's outer curve into view too. This overrides the smaller
-  // frame scroll padding.
-  "scroll-px-(--tabs-radius)",
-  "[scroll-timeline:--tabs-scroll_inline]",
+  // The panel follows --tabs-scroll from the root. The scroll buttons follow
+  // --carousel from tabListCarousel, which hides that name from the panel.
+  "[scroll-timeline-name:--tabs-scroll,--carousel] [scroll-timeline-axis:inline]",
+  // The strip reaches over the root padding and edge, where the fade and the
+  // scroll buttons start.
+  "[--carousel-overhang:calc(var(--tabs-padding)+var(--tabs-bordering))]",
+  "[--carousel-inset:calc(var(--carousel-overhang)+var(--carousel-button-space)+var(--carousel-fade-size))]",
+  // Scroll the tab clear of the fade and the buttons, and its outer curve into
+  // view too. This overrides the smaller frame scroll padding.
+  "scroll-px-[max(var(--tabs-radius),var(--carousel-inset))]",
 );
 
 /**
@@ -526,9 +550,37 @@ export const tabList = cv({
       // same inset from the root edge, and a selected folder meets the panel.
       return "tabs-stretch after:hidden [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow [&>.control]:[--stretch-px-scale:0.75]";
     },
+    /**
+     * Fades the tabs at each end of a strip while more tabs lie that way, and
+     * fully behind a visible scroll button. The strip color stays, but a border
+     * on the strip, such as a divider below the tabs, fades with them. Defaults
+     * to `true` for a strip.
+     */
+    $fade: {
+      // A strip outside tabListCarousel has no buttons and paints its own
+      // color, which a fade would fade too.
+      true: "carousel-fade [.tab-list-carousel>&]:ui-carousel-fade",
+      false: carouselNoFadeClass,
+    },
+    /**
+     * Sets how far a scroll button moves the strip: `view`, the default, moves
+     * it by the visible width less the fades and buttons, `item` moves it to
+     * the next tab, and a length or percentage of the strip width moves it by
+     * that distance. No press moves the strip by less than the fade and button
+     * cover, and a step that would leave less than that goes on to the end.
+     */
+    $step(value?: CarouselStepValue) {
+      return getCarouselStepStyle(value);
+    },
   },
   defaultVariants: {
     $kind: "strip",
+    // The map's false key makes false the static default, so only a strip
+    // replaces it.
+    $fade(defaultValue, variants) {
+      if (defaultValue !== false) return defaultValue;
+      return variants.$kind !== "segmented";
+    },
     $joined(defaultValue, variants) {
       if (variants.$kind === "segmented") return defaultValue;
       return false;
@@ -563,6 +615,44 @@ export const tabList = cv({
     if (variants.$kind !== "segmented") return;
     if (variants.$layout !== "stretch") return;
     addClass("w-full");
+  },
+});
+
+/**
+ * A carousel root that holds a tab strip and its scroll buttons in one grid
+ * cell, so the buttons center on the tabs whatever the display of the `tabs`
+ * root. The strip fades its tabs at the ends, so this paints the strip color
+ * behind the strip, with the same margins over the root edge.
+ */
+export const tabListCarousel = cv({
+  extend: [carousel],
+  class: [
+    "tab-list-carousel",
+    // The strip, the buttons, and the strip color stack with the panel, so
+    // selected folders can cover the seam.
+    "isolation-auto",
+    // The strip stacks above the panel, so the buttons stack above the strip.
+    "[--carousel-button-z:3]",
+    // The button areas span the strip color, from over the root padding and
+    // edge down to the panel, not past the strip.
+    "[&>.carousel-button-area]:mb-0",
+    // Shift the buttons from the middle of their areas onto the tabs. The strip
+    // reaches below the tabs down to the panel by the notch and by the part of
+    // the root edge that folders cover.
+    "[--carousel-button-y:calc((var(--tabs-notch,0px)+max(0px,var(--tabs-bordering)-var(--tabs-padding))*var(--tabs-folder,0))/-2)]",
+    // With the root padding and edge beside them, the buttons keep about as
+    // much space from the side of the strip as from its top.
+    "[--carousel-button-padding:--spacing(1)]",
+    "before:row-start-1 before:col-start-1",
+    "before:-mt-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
+    "before:-mx-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
+    "before:ui-tabs-well",
+  ],
+  defaultVariants: {
+    $kind: "row",
+    // The strip reaches over the root padding and edge, where the fade and the
+    // scroll buttons start.
+    $bleed: "calc(var(--tabs-padding) + var(--tabs-bordering))",
   },
 });
 
