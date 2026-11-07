@@ -170,6 +170,24 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     test.expect(display).toBe("flex");
   });
 
+  // A transparent root takes no strip darkening, so the strip shows the layer
+  // around the root. The default darkening is half a step, a low-contrast
+  // change that the page visual capture can miss.
+  test("keeps the layer around a transparent root", async ({ q }) => {
+    const layers = await query(q.article("Transparent on a brand layer"))
+      .tab("Preview")
+      .evaluate((tab) => {
+        const root = tab.closest(".tabs");
+        if (!root?.parentElement) {
+          throw new Error("Missing tabs root");
+        }
+        const getLayer = (element: Element) =>
+          getComputedStyle(element).getPropertyValue("--ak-layer");
+        return { root: getLayer(root), parent: getLayer(root.parentElement) };
+      });
+    test.expect(layers.root).toBe(layers.parent);
+  });
+
   // Regression fixtures.
   for (const name of ["Project", "Team"]) {
     // https://github.com/ariakit/ariakit/pull/5240#discussion_r3973781700
