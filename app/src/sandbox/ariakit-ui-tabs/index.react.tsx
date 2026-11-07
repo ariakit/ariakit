@@ -2770,6 +2770,80 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Overflowing strip without buttons"
+        description="Without scroll buttons, as on a touch screen, the fades still keep each end of the strip clear of the panel's round corners. A selected tab that scrolls over a corner fades out before it reaches the corner. A selected last tab that leaves the end squares the end corner until the fade hides it."
+        code={`
+          <Tabs>
+            <TabList buttons={false} tabs={[…]} />
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="no-buttons-usage">
+          <TabList
+            aria-label="Overflowing strip without buttons"
+            buttons={false}
+            tabs={{
+              "no-buttons-overview": "Overview",
+              "no-buttons-getting-started": "Getting started",
+              "no-buttons-usage": "Usage",
+              "no-buttons-api-reference": "API reference",
+              "no-buttons-styling": "Styling",
+              "no-buttons-accessibility": "Accessibility",
+              "no-buttons-examples": "Examples",
+              "no-buttons-changelog": "Changelog",
+            }}
+          />
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The panel corners stay round.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Overflowing strip without fades"
+        description="Without fades, the tabs show up to the ends of the strip, so the panel squares a corner while tabs extend past it. At rest, the tabs past the end square the end corner."
+        code={`
+          <Tabs>
+            <TabList $fade={false} tabs={[…]} />
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="no-fades-usage">
+          <TabList
+            aria-label="Overflowing strip without fades"
+            $fade={false}
+            tabs={{
+              "no-fades-overview": "Overview",
+              "no-fades-getting-started": "Getting started",
+              "no-fades-usage": "Usage",
+              "no-fades-api-reference": "API reference",
+              "no-fades-styling": "Styling",
+              "no-fades-accessibility": "Accessibility",
+              "no-fades-examples": "Examples",
+              "no-fades-changelog": "Changelog",
+            }}
+          />
+          <TabPanels>
+            <TabPanel single>
+              <p className="text-sm">The end corner is square.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Overflowing strip scrolled to its end"
         description="At the end of the scroll, the curve of the selected last tab stays clear of the panel's rounded corner."
         stretch

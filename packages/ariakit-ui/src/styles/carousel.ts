@@ -49,6 +49,8 @@ export const carousel = cv({
     // space on the other side of the button, where it also takes the pointer.
     // Zero specificity lets an extender, such as a tab strip, set its own.
     "ui-base:[--carousel-button-padding:--spacing(2)]",
+    // The ui-tabs-open-* utilities repeat this size, because a tab panel can't
+    // read it from the strip.
     "[--carousel-fade-size:--spacing(8)]",
     // The space that a visible button takes at each end. It stays zero until
     // $buttons sets it.
@@ -175,8 +177,9 @@ export const carouselViewport = cv({
     // Reach past the root by the bleed of the root, with the same padding, so
     // the items stay in place and keep room for focus rings.
     "-m-(--carousel-overhang,0px) p-(--carousel-overhang,0px)",
-    // The part of each end that the fade and the button cover.
-    "[--carousel-inset:calc(var(--carousel-overhang,0px)+var(--carousel-button-space)+var(--carousel-fade-size))]",
+    // The part of each end that the fade and the button cover, or the space
+    // that the fade keeps clear without a button, if it's larger.
+    "[--carousel-inset:calc(var(--carousel-overhang,0px)+max(var(--carousel-button-space),var(--carousel-clear))+var(--carousel-fade-size))]",
     "scroll-px-(--carousel-inset)",
   ],
   variants: {
