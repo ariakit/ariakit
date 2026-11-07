@@ -276,10 +276,6 @@ test("collection page cards take focus in their visual order", async ({
 }) => {
   await page.setViewportSize({ width: 900, height: 900 });
   await gotoAndSettle(page, "/react/recipes/");
-  // TODO: Remove once Chromium keeps the reading-flow order under load. In
-  // Chromium 156 and 158, Tab can skip or repeat cards when the inert thumbnail
-  // scenes make style and layout slow. The scenes have no focusable elements.
-  await page.addStyleTag({ content: "[inert] { display: none !important }" });
   const cards = query(q.list().filter({ has: q.link("App Shell") }));
   const positions = await cards.link().evaluateAll((links) =>
     links.map((link) => {
@@ -299,7 +295,21 @@ test("collection page cards take focus in their visual order", async ({
   await cards.link(first, { exact: true }).focus();
   for (const name of rest) {
     await page.keyboard.press("Tab");
-    await expect(cards.link(name, { exact: true })).toBeFocused();
+    const card = cards.link(name, { exact: true });
+    await expect(card).toBeFocused();
+    // A card transitions when it takes focus. Wait for that, as a person
+    // pausing between Tab presses would. In Chromium 156 to 158, a transform
+    // transition that changes the overflow of the card, such as a zoom of a
+    // scene that runs past its stage, makes the next Tab follow the DOM order.
+    // Scenes can also run endless animations, which never finish.
+    await card.evaluate((element) =>
+      Promise.allSettled(
+        element
+          .getAnimations({ subtree: true })
+          .filter((animation) => animation instanceof CSSTransition)
+          .map(({ finished }) => finished),
+      ),
+    );
   }
 });
 
