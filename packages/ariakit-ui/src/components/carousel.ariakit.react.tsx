@@ -413,12 +413,24 @@ function useCarousel({
     // the element back to where it was, so it scrolls the item that holds the
     // element, which can snap. An item that doesn't fit would go to the middle
     // of the row, with an element at its edge under a fade, so the element
-    // scrolls instead.
+    // scrolls instead. A text field that a press focuses matches :focus-visible
+    // too, so the carousel also skips the focus that comes during a press. A
+    // tap sends its mousedown after the pointer lifts, before the focus.
+    let pressing = false;
+    const onMouseDown = () => {
+      pressing = true;
+    };
+    // A drag or a context menu can end the press without a mouseup, and a key
+    // press means the next focus comes from the keyboard.
+    const onPressEnd = () => {
+      pressing = false;
+    };
     const onFocusIn = (event: FocusEvent) => {
       const target = event.target;
       if (!(target instanceof win.Element)) return;
       // Firefox can focus the viewport itself, which holds every item.
       if (target === viewport) return;
+      if (pressing) return;
       if (!target.matches(":focus-visible")) return;
       const style = win.getComputedStyle(viewport);
       const viewportRect = viewport.getBoundingClientRect();
@@ -479,6 +491,9 @@ function useCarousel({
     update();
     viewport.addEventListener("scroll", onScroll, { passive: true });
     viewport.addEventListener("focusin", onFocusIn);
+    viewport.addEventListener("mousedown", onMouseDown, true);
+    win.addEventListener("mouseup", onPressEnd, true);
+    win.addEventListener("keydown", onPressEnd, true);
     // Items can grow while the viewport keeps its size, such as when an image
     // or a font loads, so the observer watches each item too.
     const resizeObserver = new win.ResizeObserver(() => {
@@ -519,6 +534,9 @@ function useCarousel({
       clearTimeout(statusTimer);
       viewport.removeEventListener("scroll", onScroll);
       viewport.removeEventListener("focusin", onFocusIn);
+      viewport.removeEventListener("mousedown", onMouseDown, true);
+      win.removeEventListener("mouseup", onPressEnd, true);
+      win.removeEventListener("keydown", onPressEnd, true);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
       attributeObserver.disconnect();

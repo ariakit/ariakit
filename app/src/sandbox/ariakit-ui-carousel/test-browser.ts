@@ -285,6 +285,59 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
+  // A press focuses a text field before its click, and a text field matches
+  // :focus-visible then, so a scroll would move it away from the pointer. The
+  // keyboard focus after the press still scrolls.
+  test("focuses a field with a press without scrolling the row", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Row with fields"));
+    const viewport = box.group("Fields");
+    const buttons = [
+      box.button("Scroll backward", { includeHidden: true }),
+      box.button("Scroll forward", { includeHidden: true }),
+    ];
+    const field = box.textbox("Company");
+    // The start of the field shows before the fade.
+    await field.click({ position: { x: 8, y: 8 } });
+    await test.expect(field).toBeFocused();
+    test.expect(await getScrollLeft(viewport)).toBe(0);
+    await page.keyboard.press("Tab");
+    const next = box.textbox("Role");
+    await test.expect(next).toBeFocused();
+    await test.expect
+      .poll(() => getCoveredWidth({ viewport, item: next, buttons }))
+      .toBe(0);
+  });
+
+  // A drag can end without a mouseup, such as in Safari, so a key press ends
+  // the press that the carousel tracks.
+  test("scrolls a link that takes keyboard focus after a drag", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Row that snaps"));
+    const viewport = box.navigation("Snapping links");
+    const links = query(viewport).link();
+    const buttons = [
+      box.button("Scroll backward", { includeHidden: true }),
+      box.button("Scroll forward", { includeHidden: true }),
+    ];
+    await links.first().dragTo(links.nth(1));
+    await links.first().focus();
+    for (let index = 1; index < 3; index++) {
+      await page.keyboard.press("Tab");
+      const item = links.nth(index);
+      await test.expect(item).toBeFocused();
+      await test.expect
+        .poll(() => getCoveredWidth({ viewport, item, buttons }))
+        .toBe(0);
+    }
+  });
+
   test("moves focus to the other button at the end of a row", async ({
     page,
     q,

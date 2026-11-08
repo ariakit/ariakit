@@ -20,6 +20,7 @@ import type {
   CarouselViewportProps,
 } from "@ariakit/ui/components/carousel.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Tab,
   TabLabel,
@@ -512,6 +513,26 @@ export default function CarouselExamples() {
               <CarouselTab key={project.title} />
             ))}
           </CarouselTabList>
+        </Carousel>
+      </Example>
+
+      <Example
+        title="Row with fields"
+        description="Text fields of a fixed width, and the third field ends under the fade beside the Scroll forward button. A press on a field focuses it without scrolling the row, so the caret stays where the press lands."
+        code={`<CarouselViewport><Input /></CarouselViewport>`}
+        wide
+      >
+        <Carousel $kind="row" className="w-[30rem] max-w-full">
+          <CarouselViewport aria-label="Fields" render={<div role="group" />}>
+            {["Name", "Email", "Company", "Role", "City"].map((label) => (
+              <Input
+                key={label}
+                aria-label={label}
+                placeholder={label}
+                className="w-40 shrink-0"
+              />
+            ))}
+          </CarouselViewport>
         </Carousel>
       </Example>
 
