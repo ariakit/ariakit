@@ -6,7 +6,7 @@ import { link } from "@ariakit/ui/styles/link";
 import { popover } from "@ariakit/ui/styles/popover";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
 import type { ReactNode } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const lines = Array.from({ length: 24 }, (_, index) => index + 1);
 
@@ -104,10 +104,36 @@ function NativeDialog() {
   );
 }
 
+/** A notification whose dismiss button removes itself on click. */
+function Notification() {
+  const [dismissed, setDismissed] = useState(false);
+  return (
+    <ak.TooltipProvider>
+      {dismissed ? (
+        <p>Notification dismissed</p>
+      ) : (
+        <ak.TooltipAnchor
+          render={
+            <button
+              type="button"
+              {...button.jsx()}
+              onClick={() => setDismissed(true)}
+            />
+          }
+        >
+          Dismiss
+        </ak.TooltipAnchor>
+      )}
+      <ak.Tooltip {...tooltip.jsx()}>Dismiss this notification</ak.Tooltip>
+    </ak.TooltipProvider>
+  );
+}
+
 export default function Example() {
   return (
     <div className="flex flex-col gap-8 p-4">
       <TooltipButton label="Share" description="Share this page" />
+      <Notification />
       {/* The space above the panel keeps a tooltip that follows its anchor out
           of the panel in view. */}
       <div className="mt-40">

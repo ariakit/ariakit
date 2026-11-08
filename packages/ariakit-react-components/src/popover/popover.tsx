@@ -535,6 +535,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           return;
         }
         if (!anchorWasVisible) return;
+        // An anchor that left the DOM has an empty rect, so it reads as
+        // hidden, but nothing clipped it. The popover stays open as before.
+        if (anchorElement && !anchorElement.isConnected) return;
         if (!store?.getState().open) return;
         if (hasFocusInside()) return;
         // A controlled open state may ignore the request. Ask again only after
