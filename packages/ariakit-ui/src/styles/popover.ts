@@ -59,12 +59,14 @@ export const popoverPositioner = cv({
   variants: {
     /**
      * Slides a popup that several anchors share when it moves to another
-     * anchor. Ariakit adds `data-enter` to the popup after it is in place at
-     * its first anchor, so the slide waits for it, and the popup does not
-     * travel when it opens. The popup needs its own enter animation for that
-     * order, which the `popover` style recipe has. Reduced motion turns the
-     * slide off. In a scroll container, an open popup trails its anchor while
-     * the container scrolls.
+     * anchor. Ariakit adds `data-enter` to the popup after its first paint,
+     * which comes after the default positioning puts it at its first anchor, so
+     * the slide waits for it, and the popup does not travel when it opens. A
+     * custom `updatePosition` that places the popup after that paint makes it
+     * travel from where the positioner starts. The popup needs its own enter
+     * animation for that order, which the `popover` style recipe has. Reduced
+     * motion turns the slide off. In a scroll container, an open popup trails
+     * its anchor while the container scrolls.
      */
     $slide: [
       // The :has() selector checks only the positioner, so browsers don't

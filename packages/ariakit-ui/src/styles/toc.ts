@@ -1,7 +1,7 @@
 import { cv } from "clava";
 import { getPaddingValue, getScaledStyleClass } from "../utils/styles.ts";
 import { edge } from "./edge.ts";
-import { fontSize } from "./font-size.ts";
+import { font } from "./font.ts";
 import { nav, navGroupLabel, navLink } from "./nav.ts";
 
 /**
@@ -13,7 +13,7 @@ import { nav, navGroupLabel, navLink } from "./nav.ts";
  * rows, which also scales their padding and the guide. It defaults to `sm`.
  */
 export const toc = cv({
-  extend: [nav, fontSize],
+  extend: [nav, font],
   class: [
     "toc",
     "[--toc-indent:--spacing(3)]",

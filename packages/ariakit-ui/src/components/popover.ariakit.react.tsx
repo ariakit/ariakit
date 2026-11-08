@@ -2,8 +2,8 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { XIcon } from "lucide-react";
-import type { ComponentProps } from "react";
-import { usePopoverPositionerProps } from "../react-utils/use-popover-positioner.react.ts";
+import { useMemo } from "react";
+import type { ComponentProps, HTMLAttributes } from "react";
 import {
   popover,
   popoverDescription,
@@ -83,6 +83,28 @@ export function Popover({ gutter = 8, wrapperProps, ...props }: PopoverProps) {
       {...rest}
     />
   );
+}
+
+/**
+ * Returns the `wrapperProps` of a popup with the `popoverPositioner` style
+ * recipe, so its variants style the element that Ariakit positions. The
+ * `className` and `style` of the caller's `wrapperProps` come after it.
+ * @example
+ * const wrapperProps = usePopoverPositionerProps({ $slide: true });
+ * <ak.Hovercard wrapperProps={wrapperProps} />;
+ */
+export function usePopoverPositionerProps(
+  { $slide }: VariantProps<typeof popoverPositioner>,
+  wrapperProps?: HTMLAttributes<HTMLDivElement>,
+) {
+  return useMemo(() => {
+    const styles = popoverPositioner.jsx({
+      $slide,
+      className: wrapperProps?.className,
+      style: wrapperProps?.style,
+    });
+    return { ...wrapperProps, ...styles };
+  }, [$slide, wrapperProps]);
 }
 
 export interface PopoverArrowProps extends ak.PopoverArrowProps {}

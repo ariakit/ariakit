@@ -9,7 +9,6 @@ import {
   hasContent,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
-import { usePopoverPositionerProps } from "../react-utils/use-popover-positioner.react.ts";
 import {
   comboboxDescription,
   comboboxEmpty,
@@ -36,6 +35,7 @@ import {
   comboboxPopover,
 } from "../styles/combobox.ts";
 import { popoverPositioner } from "../styles/popover.ts";
+import { usePopoverPositionerProps } from "./popover.ariakit.react.tsx";
 
 export interface ComboboxProps
   extends

@@ -1,7 +1,7 @@
 import { cv, cx } from "clava";
 import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
 import { button } from "./button.ts";
-import { fontSize } from "./font-size.ts";
+import { font } from "./font.ts";
 import { frame, frameBase } from "./frame.ts";
 import { isLayerColor } from "./layer.ts";
 
@@ -39,7 +39,7 @@ export const carouselNoFadeClass = cx(
  * its padding and corners.
  */
 export const carousel = cv({
-  extend: [frame, fontSize],
+  extend: [frame, font],
   class: [
     "carousel",
     // The first grid cell holds the viewport and both buttons. Let the root
