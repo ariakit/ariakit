@@ -37,24 +37,6 @@ export const popover = cv({
       md: "shadow-md",
       xl: "shadow-xl",
     },
-    /**
-     * Slides a popup that several anchors share when it moves to another
-     * anchor. Ariakit adds `data-enter` after the popup is in place at its
-     * first anchor, so the slide waits for it, and the popup does not travel
-     * when it opens. The popup needs its own enter animation for that order,
-     * which this style recipe has. Reduced motion turns the slide off. In a
-     * scroll container, an open popup trails its anchor while the container
-     * scrolls.
-     */
-    $slide: [
-      // Ariakit moves the positioned wrapper around the popup, so the popup
-      // class styles its parent. The motion-safe: condition turns the slide
-      // off with reduced motion, which the motion-reduce: classes of the popup
-      // don't reach.
-      "motion-safe:[*:has(>&[data-enter])]:transition-transform",
-      "motion-safe:[*:has(>&[data-enter])]:duration-150",
-      "motion-safe:[*:has(>&[data-enter])]:ease-out",
-    ],
   },
   defaultVariants: {
     $layer: "canvas",
@@ -64,6 +46,35 @@ export const popover = cv({
     $p: 4,
     $lighten: true,
     $border: true,
+  },
+});
+
+/**
+ * The element that Ariakit positions around a popup, through the `wrapperProps`
+ * of the popup. The Ariakit UI popup style components apply it and take its
+ * variants as props. With an Ariakit component, pass `popoverPositioner.jsx()`
+ * to `wrapperProps`.
+ */
+export const popoverPositioner = cv({
+  variants: {
+    /**
+     * Slides a popup that several anchors share when it moves to another
+     * anchor. Ariakit adds `data-enter` to the popup after it is in place at
+     * its first anchor, so the slide waits for it, and the popup does not
+     * travel when it opens. The popup needs its own enter animation for that
+     * order, which the `popover` style recipe has. Reduced motion turns the
+     * slide off. In a scroll container, an open popup trails its anchor while
+     * the container scrolls.
+     */
+    $slide: [
+      // The :has() selector checks only the positioner, so browsers don't
+      // check it on every element that they restyle. The motion-safe:
+      // condition turns the slide off with reduced motion, because :has()
+      // outranks a motion-reduce: class.
+      "motion-safe:[&:has(>[data-enter])]:transition-transform",
+      "motion-safe:[&:has(>[data-enter])]:duration-150",
+      "motion-safe:[&:has(>[data-enter])]:ease-out",
+    ],
   },
 });
 

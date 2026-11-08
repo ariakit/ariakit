@@ -3,12 +3,14 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { XIcon } from "lucide-react";
 import type { ComponentProps } from "react";
+import { usePopoverPositionerProps } from "../react-utils/use-popover-positioner.react.ts";
 import {
   popover,
   popoverDescription,
   popoverDisclosure,
   popoverDismiss,
   popoverHeading,
+  popoverPositioner,
   popoverScroll,
 } from "../styles/popover.ts";
 import { ButtonSlot } from "./button.ariakit.react.tsx";
@@ -50,7 +52,10 @@ export function PopoverDisclosure(props: PopoverDisclosureProps) {
 }
 
 export interface PopoverProps
-  extends ak.PopoverProps, VariantProps<typeof popover> {}
+  extends
+    ak.PopoverProps,
+    VariantProps<typeof popover>,
+    VariantProps<typeof popoverPositioner> {}
 
 /**
  * Renders a popup anchored to its disclosure, with an 8px gutter by default. An
@@ -63,10 +68,20 @@ export interface PopoverProps
  *   </Popover>
  * </PopoverProvider>
  */
-export function Popover({ gutter = 8, ...props }: PopoverProps) {
-  const [variantProps, rest] = splitProps(props, popover);
+export function Popover({ gutter = 8, wrapperProps, ...props }: PopoverProps) {
+  const [variantProps, positionerProps, rest] = splitProps(
+    props,
+    popover,
+    popoverPositioner,
+  );
+  const positioner = usePopoverPositionerProps(positionerProps, wrapperProps);
   return (
-    <ak.Popover gutter={gutter} {...popover.jsx(variantProps)} {...rest} />
+    <ak.Popover
+      gutter={gutter}
+      wrapperProps={positioner}
+      {...popover.jsx(variantProps)}
+      {...rest}
+    />
   );
 }
 
