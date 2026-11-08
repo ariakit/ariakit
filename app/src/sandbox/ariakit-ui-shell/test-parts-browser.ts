@@ -263,10 +263,30 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.combobox("Main block padding").selectOption("2em");
     await expect(intro).toHaveCSS("padding-block-start", "40px");
     await expect(title).toHaveCSS("scroll-margin-block-start", "104px");
+    // After an intro that sets `$py`, `$py` on main sets the body's end.
+    await q.combobox("Main block padding").selectOption("None");
+    await expect(body).toHaveCSS("padding-block-end", "0px");
+    await q.combobox("Main block padding").selectOption("2em");
     await q.combobox("Intro block padding").selectOption("Auto");
     await expect(intro).toHaveCSS("padding-block-start", "32px");
     await expect(intro).toHaveCSS("padding-block-end", "44px");
     await expect(title).toHaveCSS("scroll-margin-block-start", "96px");
+  });
+
+  test("keeps the intro space at the end of an intro without a body", async ({
+    q,
+    page,
+  }) => {
+    await q.checkbox("Intro without a body").check();
+    const intro = page.locator("#intro-only-shell .shell-main-intro");
+    await expect(intro).toBeVisible();
+    const start = await intro.evaluate(
+      (node) => getComputedStyle(node).paddingBlockStart,
+    );
+    // Any space detects an early end, which would be three bar steps less.
+    expect(Number.parseFloat(start)).toBeGreaterThan(0);
+    // Only an intro before a body ends three bar steps early.
+    await expect(intro).toHaveCSS("padding-block-end", start);
   });
 
   for (const [trigger, control, checkedWhenClosed] of [
