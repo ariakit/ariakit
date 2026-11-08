@@ -9,6 +9,7 @@
   "js/ts.preferences.preferTypeOnlyAutoImports": true,
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "tailwindCSS.classFunctions": ["cv", "clsx", "cx", "twMerge", "twJoin"],
+  "tailwindCSS.lint.suggestCanonicalClasses": "ignore",
   "tailwindCSS.experimental.configFile": {
     "app/src/styles/global.css": [
       "app/**",

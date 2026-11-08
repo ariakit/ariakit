@@ -198,7 +198,7 @@ export default function Example() {
         <ShellMainBody>
           <ShellFull
             $layer="canvas"
-            className="min-h-[60rem] bg-[radial-gradient(rgb(0_0_0/0.14)_1px,transparent_1px)] bg-[size:1.25rem_1.25rem] dark:bg-[radial-gradient(rgb(255_255_255/0.12)_1px,transparent_1px)]"
+            className="min-h-[60rem] bg-[radial-gradient(rgb(0_0_0/0.14)_1px,transparent_1px)] bg-size-[1.25rem_1.25rem] dark:bg-[radial-gradient(rgb(255_255_255/0.12)_1px,transparent_1px)]"
             onPointerMove={(event) => {
               // Cursor position relative to the canvas.
               const bounds = event.currentTarget.getBoundingClientRect();
@@ -249,7 +249,7 @@ export default function Example() {
                   </div>
                 </div>
                 <div
-                  className={`aspect-[16/7] rounded-lg bg-[linear-gradient(135deg,#fde68a,#fb923c)] ${outlineClass("image")}`}
+                  className={`aspect-16/7 rounded-lg bg-[linear-gradient(135deg,#fde68a,#fb923c)] ${outlineClass("image")}`}
                 />
                 <div className="@container/features">
                   <div

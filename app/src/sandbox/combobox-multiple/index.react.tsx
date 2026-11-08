@@ -38,7 +38,7 @@ export default function Example() {
             key={value}
             value={value}
             focusOnHover
-            className="flex cursor-default scroll-m-2 items-center gap-2 rounded p-2 opacity-[var(--item-opacity,1)] outline-none transition-opacity hover:bg-blue-200/40 data-[active-item]:bg-blue-600 data-[active-item]:text-white dark:hover:bg-blue-600/25 dark:data-[active-item]:bg-blue-600"
+            className="flex cursor-default scroll-m-2 items-center gap-2 rounded p-2 opacity-(--item-opacity,1) outline-none transition-opacity hover:bg-blue-200/40 data-active-item:bg-blue-600 data-active-item:text-white dark:hover:bg-blue-600/25 dark:data-active-item:bg-blue-600"
           >
             <Ariakit.ComboboxItemCheck />
             {value}

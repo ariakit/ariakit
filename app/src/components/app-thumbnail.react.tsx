@@ -148,7 +148,7 @@ export function AppThumbnail({
             // as in the real UI. A scale then draws the whole scene smaller.
             // CSS zoom would draw it smaller too, but Safari squares the frame
             // corners under it.
-            "relative grid origin-top-left text-base [scale:var(--scene-scale)]",
+            "relative grid origin-top-left text-base scale-(--scene-scale)",
             "h-[calc(100%/var(--scene-scale))] w-[calc(100%/var(--scene-scale))]",
             "[--radius:var(--scene-radius)]",
             // Scenes that fit the stage are centered. Wider ones start at the

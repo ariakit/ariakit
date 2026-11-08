@@ -96,13 +96,13 @@ function PersonCard({ person }: PersonCardProps) {
       render={<article />}
       className="grid gap-2 text-sm"
     >
-      <SkeletonBox $rounded="lg" className="aspect-[2/1] w-full">
+      <SkeletonBox $rounded="lg" className="aspect-2/1 w-full">
         <Frame
           $layer="brand"
           $rounded="lg"
           $p="none"
           aria-hidden
-          className="aspect-[2/1] w-full"
+          className="aspect-2/1 w-full"
         />
       </SkeletonBox>
       <div className="flex items-center gap-2">

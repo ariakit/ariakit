@@ -35,7 +35,22 @@ export default defineConfig({
       name: "comment-reflow",
       specifier: "oxlint-plugin-comment-reflow",
     },
+    "oxlint-tailwindcss",
   ],
+  settings: {
+    tailwindcss: {
+      // Mirrors tailwindCSS.experimental.configFile in .vscode/settings.json.
+      entryPoint: [
+        { files: "templates/react/**", use: "templates/react/src/style.css" },
+        { files: "**", use: "app/src/styles/global.css" },
+      ],
+      // The cva extractor reads `class` and object variants of Clava recipes,
+      // but not string, function, or `{ class }` variant values. Recipes also
+      // add classes in `refine` through `addClass`.
+      calleeExtractors: { cv: "cva" },
+      callees: ["addClass"],
+    },
+  },
   options: {
     // Type-aware rules resolve `astro:content` through the gitignored
     // `app/.astro`, so the `lint` and `lint-fix` scripts and the pre-commit
@@ -150,6 +165,27 @@ export default defineConfig({
       ],
       rules: {
         "no-restricted-imports": "off",
+      },
+    },
+    {
+      files: [
+        "app/**",
+        "nextjs/**",
+        "packages/ariakit-ui/src/**",
+        "templates/react/**",
+      ],
+      rules: {
+        "tailwindcss/enforce-canonical": "error",
+        "tailwindcss/no-deprecated-classes": "error",
+      },
+    },
+    {
+      // These sandboxes load @ariakit/tailwind without Ariakit UI and cover the
+      // arbitrary value syntax of its utilities, which the rules would rewrite.
+      files: ["app/src/sandbox/ariakit-tailwind*/**"],
+      rules: {
+        "tailwindcss/enforce-canonical": "off",
+        "tailwindcss/no-deprecated-classes": "off",
       },
     },
   ],

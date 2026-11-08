@@ -1,3 +1,4 @@
+import type { Locator } from "@playwright/test";
 import {
   captureInView,
   capturePage,
@@ -184,4 +185,107 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       },
     );
   });
+
+  // The panel corners follow scroll-driven animations, which differ between
+  // engines, so these tests run in every desktop browser. The visual captures
+  // can't show the corners: a corner that squares or rounds changes only a few
+  // low-contrast pixels, below the comparison threshold. Each step polls a
+  // corner that changes at that scroll, so the other corner reads the same
+  // scroll position.
+
+  test("keeps the panel corners round beside a fading strip", async ({ q }) => {
+    const title = "Overflowing strip";
+    const list = query(q.article(title)).tablist(title);
+    // The selected first tab joins the panel, so the start corner is square at
+    // rest. Near the end, the end corner stays round under other tabs.
+    await test.expect
+      .poll(() => getPanelCorners(list))
+      .toEqual({ start: 0, end: 12 });
+    await scrollStripFromEnd(list, 10);
+    await test.expect
+      .poll(() => getPanelCorners(list))
+      .toEqual({ start: 12, end: 12 });
+  });
+
+  // The fade at the end of a strip without buttons grows too slowly to hide a
+  // selected last tab that leaves the end, so the panel squares the end corner
+  // under the tab, as a strip without fades does, until the fade hides it.
+  test("squares the end corner under a selected last tab that leaves the end", async ({
+    q,
+  }) => {
+    const title = "Overflowing strip without buttons";
+    const list = query(q.article(title)).tablist(title);
+    const tab = query(list).tab("Changelog");
+    await scrollStripFromEnd(list, 0);
+    await tab.click();
+    await test.expect(tab).toHaveAttribute("aria-selected", "true");
+    // Each distance from the end changes the end corner from the one before.
+    const steps = [
+      { distance: 10, square: true },
+      { distance: 40, square: false },
+      { distance: 10, square: true },
+      { distance: 0, square: false },
+    ];
+    for (const { distance, square } of steps) {
+      await scrollStripFromEnd(list, distance);
+      const endCorner = test.expect.poll(
+        async () => (await getPanelCorners(list)).end,
+      );
+      // Almost square is less than half of the 12px corner.
+      if (square) {
+        await endCorner.toBeLessThan(6);
+      } else {
+        await endCorner.toBe(12);
+      }
+      test.expect((await getPanelCorners(list)).start).toBe(12);
+    }
+  });
+
+  test("squares the panel corners beside a strip without fades", async ({
+    q,
+  }) => {
+    const title = "Overflowing strip without fades";
+    const list = query(q.article(title)).tablist(title);
+    // At rest, the tabs past the end of the strip square the end corner.
+    await test.expect
+      .poll(() => getPanelCorners(list))
+      .toEqual({ start: 12, end: 0 });
+    await scrollStripFromStart(list, 120);
+    await test.expect
+      .poll(() => getPanelCorners(list))
+      .toEqual({ start: 0, end: 0 });
+  });
 });
+
+// Returns the start and end radii of the top corners of the panel below a tab
+// strip, in pixels.
+function getPanelCorners(list: Locator) {
+  return list.evaluate((node) => {
+    const panel = node
+      .closest(".tabs")
+      ?.querySelector(":scope > :has(> [role=tablist]) + *");
+    if (!panel) {
+      throw new Error("Missing tab panels");
+    }
+    const style = getComputedStyle(panel);
+    return {
+      start: Number.parseFloat(style.borderStartStartRadius),
+      end: Number.parseFloat(style.borderStartEndRadius),
+    };
+  });
+}
+
+// Scrolls a tab strip to a distance from its start.
+function scrollStripFromStart(list: Locator, distance: number) {
+  return list.evaluate((node, left) => {
+    node.scrollTo({ left, behavior: "instant" });
+  }, distance);
+}
+
+// Scrolls a tab strip to a distance from its end.
+function scrollStripFromEnd(list: Locator, distance: number) {
+  return list.evaluate((node, offset) => {
+    const end = node.scrollWidth - node.clientWidth;
+    node.scrollTo({ left: end - offset, behavior: "instant" });
+  }, distance);
+}

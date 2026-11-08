@@ -177,9 +177,11 @@ export const carouselFrameClass = cx(
   // follow its scroll timeline.
   "[.carousel>&]:row-start-1 [.carousel>&]:col-start-1",
   "scrollbar-none [scroll-timeline:--carousel_inline]",
-  // Scroll a focused item clear of the padding, the fade, and the button.
-  // Outside a carousel, the fade and the button take no space.
-  "[--carousel-inset:calc(var(--ak-frame-padding)+var(--carousel-button-space)+var(--carousel-fade-size))]",
+  // Scroll a focused item clear of the padding, the fade, and the button, or
+  // the space that the fade keeps clear without a button, if it's larger, like
+  // the mask of the fade. Outside a carousel, the fade and the button take no
+  // space.
+  "[--carousel-inset:calc(var(--ak-frame-padding)+max(var(--carousel-button-space),var(--carousel-clear))+var(--carousel-fade-size))]",
   "scroll-px-(--carousel-inset)",
   // The root takes the edge, the margins, and the font size of the frame, and
   // the frame covers its padding box and matches its corners. A numeric size

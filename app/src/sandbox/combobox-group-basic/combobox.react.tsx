@@ -64,7 +64,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         focusOnHover
         {...props}
         className={clsx(
-          "flex cursor-default scroll-m-2 items-center gap-2 rounded p-2 outline-none hover:bg-blue-200/40 data-[active-item]:bg-blue-600 data-[active-item]:text-white dark:hover:bg-blue-600/25 dark:data-[active-item]:bg-blue-600",
+          "flex cursor-default scroll-m-2 items-center gap-2 rounded p-2 outline-none hover:bg-blue-200/40 data-active-item:bg-blue-600 data-active-item:text-white dark:hover:bg-blue-600/25 dark:data-active-item:bg-blue-600",
           props.className,
         )}
       />
