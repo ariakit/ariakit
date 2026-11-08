@@ -147,6 +147,47 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.dialog("Button")).toHaveAttribute("data-open");
   });
 
+  // A scroll can't see inside shadow roots, so it doesn't count as hover for
+  // the anchors there.
+  test("keep the hovercard open when the page scrolls under an anchor in a shadow root", async ({
+    page,
+    q,
+  }) => {
+    const nav = query(q.navigation("Shadow root"));
+    await q.navigation("Shadow root").scrollIntoViewIfNeeded();
+    await nav.link("Button").hover();
+    await test.expect(q.dialog("Button")).toBeVisible();
+    // A small page scroll keeps the anchor under the mouse.
+    await page.evaluate(() => window.scrollBy(0, 4));
+    // The script scroll fires its scroll event in the next frame.
+    await flushFrames(page);
+    // A scroll that counted as hover would hide the hovercard after the hide
+    // timeout, which nothing shows while it's pending.
+    await page.waitForTimeout(hideTimeout);
+    await test.expect(q.dialog("Button")).toHaveAttribute("data-open");
+  });
+
+  test("keep a hovercard in a shadow root open when the page scrolls under it", async ({
+    page,
+    q,
+  }) => {
+    const nav = query(q.navigation("Overlay"));
+    const card = q.dialog("Button");
+    await q.navigation("Overlay").scrollIntoViewIfNeeded();
+    await nav.link("Button").hover();
+    await test.expect(card).toBeVisible();
+    await card.hover();
+    // A small page scroll moves the hovercard with its anchor, so the mouse
+    // stays on the hovercard.
+    await page.evaluate(() => window.scrollBy(0, 4));
+    // The script scroll fires its scroll event in the next frame.
+    await flushFrames(page);
+    // A scroll that counted as hover would hide the hovercard after the hide
+    // timeout, which nothing shows while it's pending.
+    await page.waitForTimeout(hideTimeout);
+    await test.expect(card).toHaveAttribute("data-open");
+  });
+
   test("ignore scrolls after a key press until the mouse moves", async ({
     page,
     q,

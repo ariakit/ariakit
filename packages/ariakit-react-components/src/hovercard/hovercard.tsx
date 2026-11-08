@@ -16,6 +16,7 @@ import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   addGlobalEventListener,
+  getDocument,
   getWindow,
   hasFocusWithin,
   chain,
@@ -75,6 +76,11 @@ function isMovingOnHovercard(
     return true;
   }
   return false;
+}
+
+// Whether the element is in the tree of its document, outside shadow roots.
+function isInDocumentTree(element: Element) {
+  return element.getRootNode() === getDocument(element);
 }
 
 interface DisableEventOnTransitParams {
@@ -307,16 +313,17 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         if (!anchorElement) return;
         const anchor = getScrollHoverAnchor(anchorElement, store);
         if (!anchor?.canHover(event)) return;
-        lastPath = path;
         const hoverElements = [anchorElement, disclosureElement];
-        if (
-          isMovingOnHovercard(
-            path,
-            element,
-            hoverElements,
-            nestedHovercardsRef.current,
-          )
-        ) {
+        const nested = nestedHovercardsRef.current;
+        // The path starts from the element at the mouse position, which is the
+        // shadow host for anything in a shadow root. So it can't tell if the
+        // mouse is still on an anchor or a hovercard there.
+        for (const hoverElement of [...hoverElements, element, ...nested]) {
+          if (!hoverElement) continue;
+          if (!isInDocumentTree(hoverElement)) return;
+        }
+        lastPath = path;
+        if (isMovingOnHovercard(path, element, hoverElements, nested)) {
           const onHoverElement = hoverElements.some(
             (element) => element && path.includes(element),
           );

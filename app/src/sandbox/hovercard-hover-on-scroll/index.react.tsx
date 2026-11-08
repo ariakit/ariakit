@@ -9,7 +9,8 @@ import { link } from "@ariakit/ui/styles/link";
 import { popover } from "@ariakit/ui/styles/popover";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
 import type { ReactNode, Ref } from "react";
-import { useRef } from "react";
+import { useCallback, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const sections = [
   {
@@ -39,25 +40,39 @@ const messages = [
   "Welcome",
 ];
 
+interface SharedHovercardProps {
+  portalElement?: HTMLElement | null;
+}
+
 /** Shows the name of the current anchor in the shared hovercard. */
-function SharedHovercard() {
+function SharedHovercard({ portalElement }: SharedHovercardProps) {
   const store = ak.useHovercardContext();
   const anchor = ak.useStoreState(store, "anchorElement");
+  // Page styles don't reach into a shadow root, so a hovercard there sets the
+  // styles it needs inline.
+  const styleProps = portalElement
+    ? { style: { background: "white", border: "1px solid", padding: 8 } }
+    : popover.jsx();
   return (
-    <ak.Hovercard portal {...popover.jsx()}>
+    <ak.Hovercard portal portalElement={portalElement} {...styleProps}>
       <ak.HovercardHeading>{anchor?.textContent}</ak.HovercardHeading>
       <p>Read the {anchor?.textContent} docs.</p>
     </ak.Hovercard>
   );
 }
 
-interface ComponentNavProps {
+interface ComponentNavProps extends SharedHovercardProps {
   label: string;
   hoverOnScroll?: ak.HovercardAnchorProps["hoverOnScroll"];
   navRef?: Ref<HTMLElement>;
 }
 
-function ComponentNav({ label, hoverOnScroll, navRef }: ComponentNavProps) {
+function ComponentNav({
+  label,
+  hoverOnScroll,
+  navRef,
+  portalElement,
+}: ComponentNavProps) {
   return (
     <ak.HovercardProvider placement="right">
       <Frame
@@ -90,7 +105,7 @@ function ComponentNav({ label, hoverOnScroll, navRef }: ComponentNavProps) {
           </section>
         ))}
       </Frame>
-      <SharedHovercard />
+      <SharedHovercard portalElement={portalElement} />
     </ak.HovercardProvider>
   );
 }
@@ -252,6 +267,59 @@ function ListOnlyNav() {
   );
 }
 
+interface ShadowRootProps {
+  children: ReactNode;
+}
+
+/**
+ * Returns a ref callback for a host element, and a container inside the open
+ * shadow root of that host.
+ */
+function useShadowContainer() {
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const setHost = useCallback((host: HTMLDivElement | null) => {
+    if (!host) {
+      setContainer(null);
+      return;
+    }
+    const shadow = host.shadowRoot || host.attachShadow({ mode: "open" });
+    const element =
+      shadow.querySelector<HTMLDivElement>("[data-shadow-container]") ||
+      host.ownerDocument.createElement("div");
+    element.dataset.shadowContainer = "";
+    if (!element.isConnected) {
+      shadow.append(element);
+    }
+    setContainer(element);
+  }, []);
+  return [setHost, container] as const;
+}
+
+/** Renders its children inside an open shadow root. */
+function ShadowRoot({ children }: ShadowRootProps) {
+  const [setHost, container] = useShadowContainer();
+  return (
+    <>
+      <div ref={setHost} />
+      {container && createPortal(children, container)}
+    </>
+  );
+}
+
+/**
+ * A list whose hovercard renders in an overlay layer inside a shadow root, like
+ * one that a design system uses to keep page styles away from its popups.
+ */
+function ShadowOverlayNav() {
+  const [setOverlayHost, overlay] = useShadowContainer();
+  return (
+    <>
+      <ComponentNav label="Overlay" hoverOnScroll portalElement={overlay} />
+      <div ref={setOverlayHost} />
+    </>
+  );
+}
+
 interface SectionProps {
   title: string;
   children: ReactNode;
@@ -278,6 +346,16 @@ export default function Example() {
         </Section>
         <Section title="Scrolls don't count">
           <ComponentNav label="Without hoverOnScroll" />
+        </Section>
+        <Section title="Anchors in a shadow root">
+          {/* Page styles don't reach into the shadow root, so the list there
+              is unstyled. The hovercard renders in a portal outside it. */}
+          <ShadowRoot>
+            <ComponentNav label="Shadow root" hoverOnScroll />
+          </ShadowRoot>
+        </Section>
+        <Section title="Hovercard in a shadow root">
+          <ShadowOverlayNav />
         </Section>
         <Section title="Anchors inside anchors">
           <Inbox />
