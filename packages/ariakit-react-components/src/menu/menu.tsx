@@ -80,6 +80,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   hideOnEscape = true,
   autoFocusOnShow = true,
   hideOnHoverOutside,
+  hideWhenAnchorHidden = false,
   alwaysVisible,
   getPersistentElements,
   unstable_treeSnapshotKey,
@@ -301,6 +302,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   props = useHovercard({
     store,
     alwaysVisible,
+    hideWhenAnchorHidden,
     initialFocus: initialFocusRef,
     autoFocusOnShow: autoFocusOnShowProp,
     finalFocus: finalFocusElement,
@@ -413,6 +415,10 @@ export interface MenuOptions<T extends ElementType = TagName>
    * @default false
    */
   modal?: boolean;
+  /**
+   * @default false
+   */
+  hideWhenAnchorHidden?: HovercardOptions<T>["hideWhenAnchorHidden"];
 }
 
 export type MenuProps<T extends ElementType = TagName> = Props<

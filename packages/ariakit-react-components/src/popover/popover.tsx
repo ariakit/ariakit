@@ -11,12 +11,13 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import { getWindow, invariant } from "@ariakit/utils";
+import { contains, getWindow, hasFocusWithin, invariant } from "@ariakit/utils";
 import {
   arrow,
   autoUpdate,
   computePosition,
   flip,
+  hide,
   limitShift,
   offset,
   shift,
@@ -26,7 +27,9 @@ import type { ElementType, HTMLAttributes } from "react";
 import { useRef } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
+import { isElementInside } from "../dialog/utils/tree-cleanup.ts";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
+import { getTreeActiveElement } from "../focusable/__utils.ts";
 import type { Placement } from "./__utils.ts";
 import { getBasePlacement } from "./__utils.ts";
 import {
@@ -354,6 +357,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     overflowPadding = 8,
     getAnchorRect,
     updatePosition,
+    hideWhenAnchorHidden = false,
     ...props
   }) {
     const context = usePopoverProviderContext();
@@ -499,11 +503,55 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       // Whether this effect run has written a position, which is what makes the
       // popover somewhere real rather than at its pre-placement origin.
       let placed = false;
+      // Whether a position update of this effect run found the anchor visible.
+      // Some anchors read as hidden from the start, such as one with `display:
+      // contents`, so only a change from visible to hidden closes the popover.
+      let anchorWasVisible = false;
 
       const shouldCancelUpdate = () => {
         if (canceled) return true;
         if (!popoverElement.isConnected) return true;
         return false;
+      };
+
+      // Focus can also be in a nested popup that renders in its own portal, or
+      // in a persistent element. The dialog marks both as inside.
+      const hasFocusInside = () => {
+        if (hasFocusWithin(popoverElement)) return true;
+        const contentElement = store?.getState().contentElement;
+        const isInside = (element: Element) => {
+          if (contains(popoverElement, element)) return true;
+          if (!contentElement) return false;
+          return isElementInside(element, contentElement);
+        };
+        // A tree sees focus inside a shadow root as focus on its host. So the
+        // check starts in the tree of the popover and goes down through each
+        // open shadow root that has focus, such as the one of a web component,
+        // or of an overlay that a nested popup renders in.
+        let activeElement: Element | null =
+          getTreeActiveElement(popoverElement);
+        while (activeElement) {
+          if (isInside(activeElement)) return true;
+          activeElement = activeElement.shadowRoot?.activeElement ?? null;
+        }
+        return false;
+      };
+
+      const hideIfAnchorHidden = (anchorHidden = false) => {
+        if (!anchorHidden) {
+          anchorWasVisible = true;
+          return;
+        }
+        if (!anchorWasVisible) return;
+        // An anchor that left the DOM has an empty rect, so it reads as hidden,
+        // but nothing clipped it. The popover stays open as before.
+        if (anchorElement && !anchorElement.isConnected) return;
+        if (!store?.getState().open) return;
+        if (hasFocusInside()) return;
+        // A controlled open state may ignore the request. Ask again only after
+        // the anchor shows and hides again.
+        anchorWasVisible = false;
+        store.hide();
       };
 
       const updatePosition = async () => {
@@ -544,6 +592,11 @@ export const usePopover = createHook<TagName, PopoverOptions>(
             },
             shouldCancelUpdate,
           ),
+          // https://floating-ui.com/docs/hide
+          // The document root boundary leaves out the browser window, so only
+          // scroll containers and other clipping elements hide the anchor.
+          hideWhenAnchorHidden &&
+            hide({ strategy: "referenceHidden", rootBoundary: "document" }),
         ];
 
         // https://floating-ui.com/docs/computePosition
@@ -602,6 +655,10 @@ export const usePopover = createHook<TagName, PopoverOptions>(
             bottom: "",
             [side]: "100%",
           });
+        }
+
+        if (hideWhenAnchorHidden) {
+          hideIfAnchorHidden(pos.middlewareData.hide?.referenceHidden);
         }
       };
 
@@ -666,6 +723,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       getAnchorRectProp,
       hasCustomUpdatePosition,
       updatePositionProp,
+      hideWhenAnchorHidden,
     ]);
 
     // Makes sure the wrapper element that's passed to floating UI has the same
@@ -962,6 +1020,22 @@ export interface PopoverOptions<
   updatePosition?: (props: {
     updatePosition: () => Promise<void>;
   }) => void | Promise<void>;
+  /**
+   * Whether the popover hides when its anchor goes from visible to fully hidden
+   * while the popover is open. The anchor is hidden when the scroll containers
+   * and other elements that clip it hide all of it, on either axis. A page
+   * scroll that moves the anchor out of the browser window doesn't count. When
+   * [`getAnchorRect`](https://ariakit.com/reference/popover#getanchorrect)
+   * returns a rect, that rect is the anchor.
+   *
+   * The popover stays open while focus is inside it or in a popup nested in it,
+   * and an anchor that's hidden when the popover opens doesn't close it. The
+   * default `updatePosition` function runs this check, so a custom
+   * [`updatePosition`](https://ariakit.com/reference/popover#updateposition)
+   * callback that doesn't call it skips the check.
+   * @default false
+   */
+  hideWhenAnchorHidden?: boolean;
 }
 
 export type PopoverProps<T extends ElementType = TagName> = Props<

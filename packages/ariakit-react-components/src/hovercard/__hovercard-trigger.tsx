@@ -16,6 +16,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { trulyDisabledFromElement } from "../focusable/__utils.ts";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
+import { addScrollHoverAnchor, isScrollHovered } from "./__scroll-hover.ts";
 import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "a" satisfies ElementType;
@@ -30,7 +31,9 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
   function useHovercardTrigger({
     store,
     showOnHover = true,
+    hoverOnScroll = false,
     unstable_showOnHoverWhenDisabled: showOnHoverWhenDisabled = true,
+    showOnScrollHover,
     setAnchorElement = false,
     ...props
   }) {
@@ -79,6 +82,48 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     );
     const isMouseMoving = useIsMouseMoving();
 
+    // Shows the hovercard for the hovered element after the show timeout.
+    // `isHovering` checks again that the element is still hovered when the
+    // timeout ends.
+    const scheduleShow = useEvent(
+      (element: HTMLElement, isHovering: () => boolean) => {
+        if (setAnchorElement) {
+          store.setAnchorElement(element);
+        }
+        store.setDisclosureElement(element);
+        const { showTimeout, timeout } = store.getState();
+        const showHovercard = () => {
+          showTimeoutRef.current = 0;
+          if (!isHovering()) return;
+          // The trigger can lose its keyboard route while this timeout is
+          // pending, and a stationary pointer doesn't reliably fire mouseleave
+          // to cancel it, so the rule has to hold again here. Only this check
+          // can be re-asked: the unstable_showOnHoverWhenDisabled callback
+          // takes the mouse event, whose currentTarget React has nulled by now.
+          if (isTrulyDisabled(element)) return;
+          if (setAnchorElement) {
+            store.setAnchorElement(element);
+          }
+          store.show();
+          queueMicrotask(() => {
+            // The dialog's open-time capture can still replace the trigger when
+            // it's an element a dialog previously captured as a fallback. That
+            // mark belongs to the element and is never dropped, so naming the
+            // trigger above can't rescue it and this has to land after the
+            // open.
+            // https://github.com/ariakit/ariakit/issues/7087
+            store.setDisclosureElement(element);
+          });
+        };
+        const timeoutMs = showTimeout ?? timeout;
+        if (timeoutMs === 0) {
+          showHovercard();
+        } else {
+          showTimeoutRef.current = window.setTimeout(showHovercard, timeoutMs);
+        }
+      },
+    );
+
     const onMouseMove = useEvent((event: ReactMouseEvent<HTMLType>) => {
       onMouseMoveProp?.(event);
       if (event.defaultPrevented) return;
@@ -91,42 +136,44 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
         if (!showOnHoverWhenDisabledProp(event)) return;
       }
       if (!showOnHoverProp(event)) return;
-      if (setAnchorElement) {
-        store.setAnchorElement(element);
-      }
-      store.setDisclosureElement(element);
-      const { showTimeout, timeout } = store.getState();
-      const showHovercard = () => {
-        showTimeoutRef.current = 0;
-        // Let's check again if the mouse is moving. This is to avoid showing
-        // the hovercard on mobile clicks or after clicking on the anchor.
-        if (!isMouseMoving()) return;
-        // The trigger can lose its keyboard route while this timeout is
-        // pending, and a stationary pointer doesn't reliably fire mouseleave to
-        // cancel it, so the rule has to hold again here. Only this check can be
-        // re-asked: the unstable_showOnHoverWhenDisabled callback takes the
-        // mouse event, whose currentTarget React has nulled by now.
-        if (isTrulyDisabled(element)) return;
-        if (setAnchorElement) {
-          store.setAnchorElement(element);
-        }
-        store.show();
-        queueMicrotask(() => {
-          // The dialog's open-time capture can still replace the trigger when
-          // it's an element a dialog previously captured as a fallback. That
-          // mark belongs to the element and is never dropped, so naming the
-          // trigger above can't rescue it and this has to land after the open.
-          // https://github.com/ariakit/ariakit/issues/7087
-          store.setDisclosureElement(element);
-        });
-      };
-      const timeoutMs = showTimeout ?? timeout;
-      if (timeoutMs === 0) {
-        showHovercard();
-      } else {
-        showTimeoutRef.current = window.setTimeout(showHovercard, timeoutMs);
-      }
+      // Let's check again if the mouse is moving when the timeout ends. This is
+      // to avoid showing the hovercard on mobile clicks or after clicking on
+      // the anchor.
+      scheduleShow(element, isMouseMoving);
     });
+
+    const mayHoverOnScroll = !!hoverOnScroll;
+    const hoverOnScrollProp = useBooleanEvent(hoverOnScroll);
+
+    // A scroll brought the trigger under the resting mouse.
+    const onScrollHover = useEvent(() => {
+      const element = triggerRef.current;
+      if (!element) return;
+      // Scrolls can move the pointer away and back before an earlier show
+      // timeout of this trigger ends. The timeout starts again, so the
+      // hovercard moves back to this trigger at once.
+      window.clearTimeout(showTimeoutRef.current);
+      showTimeoutRef.current = 0;
+      if (isTrulyDisabled(element)) return;
+      // These callbacks take a mouse event, which a scroll doesn't have, so
+      // only their `false` values apply here.
+      if (disabled || disabledFromElement(element)) {
+        if (showOnHoverWhenDisabled === false) return;
+      }
+      if (showOnHover === false) return;
+      if (showOnScrollHover && !showOnScrollHover(element)) return;
+      scheduleShow(element, () => isScrollHovered(element));
+    });
+
+    useEffect(() => {
+      if (!mayHoverOnScroll) return;
+      return addScrollHoverAnchor({
+        store,
+        getElement: () => triggerRef.current,
+        canHover: hoverOnScrollProp,
+        hover: onScrollHover,
+      });
+    }, [mayHoverOnScroll, store, hoverOnScrollProp, onScrollHover]);
 
     const onClickProp = props.onClick;
 
@@ -188,6 +235,34 @@ export interface HovercardTriggerOptions<
    */
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
   /**
+   * Whether a scroll that moves this anchor under a resting mouse pointer
+   * counts as hovering it. The content element then shows after the show
+   * timeout, or, when it's already open for another anchor of the same store,
+   * moves to this anchor at once. While this anchor is the current one, a
+   * scroll that leaves the pointer outside the anchor and the content element
+   * hides the content element after the hide timeout, like a mouse leave. The
+   * [`hideOnHoverOutside`](https://ariakit.com/reference/hovercard#hideonhoveroutside)
+   * callback then receives a `mousemove` event that isn't dispatched and has
+   * only the pointer coordinates.
+   *
+   * Only a mouse pointer counts, and only after it moves. A press, or a key
+   * press other than a modifier key such as Shift, stops scrolls from counting
+   * until the mouse moves again. Scrolls by script count too.
+   *
+   * This can be either a boolean or a callback receiving the scroll event. The
+   * callback should return a boolean. For example, check `event.target` to
+   * count only the scrolls of a sidebar.
+   *
+   * Setting
+   * [`showOnHover`](https://ariakit.com/reference/hovercard-anchor#showonhover)
+   * to `false` also stops scrolls from showing the content element, but a
+   * `showOnHover` callback doesn't run on a scroll. Hiding still follows
+   * [`hideOnHoverOutside`](https://ariakit.com/reference/hovercard#hideonhoveroutside),
+   * like a mouse leave.
+   * @default false
+   */
+  hoverOnScroll?: BooleanOrCallback<Event>;
+  /**
    * Whether hovering can show the content element while the trigger element is
    * disabled. Set this to `false` when revealing the content counts as
    * activating the trigger rather than explaining it. An element that declares
@@ -203,4 +278,9 @@ export interface HovercardTriggerOptions<
     ReactMouseEvent<HTMLElement>
   >;
   setAnchorElement?: boolean;
+  /**
+   * Called when a scroll moves the trigger under the resting mouse pointer and
+   * the scroll counts as hover. Returning `false` skips the show timeout.
+   */
+  showOnScrollHover?: (element: HTMLElement) => boolean;
 }
