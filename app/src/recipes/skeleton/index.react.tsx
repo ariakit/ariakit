@@ -57,9 +57,7 @@ export default function Example() {
               </Heading>
             </HeadingLevel>
             <Text className="ak-ink-70 text-sm">
-              <SkeletonLine $weight="light" className="w-16">
-                {user?.handle}
-              </SkeletonLine>
+              <SkeletonLine className="w-16">{user?.handle}</SkeletonLine>
             </Text>
           </div>
           <SkeletonFill>

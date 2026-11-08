@@ -5,7 +5,7 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 type Query = ReturnType<typeof query>;
 
-function getShimmerDirections(page: Page) {
+function getShimmerStyles(page: Page) {
   return page.evaluate(() =>
     document.getAnimations().flatMap((animation) => {
       if (!(animation instanceof CSSAnimation)) return [];
@@ -14,9 +14,20 @@ function getShimmerDirections(page: Page) {
       if (!(effect instanceof KeyframeEffect)) return [];
       if (!effect.target) return [];
       const style = getComputedStyle(effect.target, effect.pseudoElement);
-      return [style.animationDirection];
+      return [{ direction: style.animationDirection, scale: style.scale }];
     }),
   );
+}
+
+async function getShimmerDirections(page: Page) {
+  const styles = await getShimmerStyles(page);
+  return styles.map((style) => style.direction);
+}
+
+// Only the scale of the layers tells whether they mirror the highlight band.
+async function getShimmerScales(page: Page) {
+  const styles = await getShimmerStyles(page);
+  return [...new Set(styles.map((style) => style.scale))];
 }
 
 // The simulated request stays pending until the test ends, so the assertions
@@ -95,6 +106,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // the animation in reverse.
     const directions = await getShimmerDirections(page);
     test.expect(new Set(directions)).toEqual(new Set(["reverse"]));
+  });
+
+  test("mirrors the highlight band in right-to-left documents", async ({
+    page,
+    q,
+  }) => {
+    await test.expect(q.text("Person 1")).toBeVisible();
+    await reloadAndKeepLoading(q);
+    await expectShimmer(page);
+    test.expect(await getShimmerScales(page)).toEqual(["none"]);
+    // Sets the direction the way a right-to-left app would.
+    await page.evaluate(() => {
+      document.documentElement.dir = "rtl";
+    });
+    // The shimmer moves the other way, so every part mirrors the band, and its
+    // sharp edge leads on the left.
+    test.expect(await getShimmerScales(page)).toEqual(["-1 1"]);
   });
 
   // https://github.com/ariakit/ariakit/issues/8015

@@ -33,16 +33,28 @@
     }
   }
 
-  --animate-ui-skeleton-shimmer: ui-skeleton-shimmer 2s linear infinite;
+  /* The highlight moves about 570 pixels per second, whatever the part size. */
+  --animate-ui-skeleton-shimmer: ui-skeleton-shimmer 1.5s linear infinite;
 
   @keyframes ui-skeleton-shimmer {
-    /* With a layer twice the part's width, these offsets start and end with
-       the highlight past each edge. Translation runs on the compositor. */
+    /* Moving the layer by one tile of the highlight stream repeats the stream
+       exactly. This repeats --skeleton-tile from ui-skeleton-shimmer-layer
+       without the variable, which would make every main-thread style update
+       of the layers slower. */
     from {
-      translate: -75%;
+      translate: calc(-50rem / sin(110deg));
     }
     to {
-      translate: 25%;
+      translate: 0;
+    }
+  }
+
+  --animate-ui-skeleton-reveal: ui-skeleton-reveal 200ms ease;
+
+  @keyframes ui-skeleton-reveal {
+    /* Without a to keyframe, the element ends at its own opacity. */
+    from {
+      opacity: 0;
     }
   }
 
@@ -2340,6 +2352,48 @@ body > * {
   }
 }
 
+/**
+ * Paints the skeleton highlight on the layer that the shimmer moves. The layer
+ * is one tile of the highlight stream wider than the part, and the shimmer
+ * moves it by one tile, so the highlight keeps the same width and speed on
+ * parts of any size.
+ */
+@utility ui-skeleton-shimmer-layer {
+  /* The stream repeats every 50rem along the 110deg gradient line, which is
+     this distance across. The keyframes of the shimmer move the layer by it. */
+  --skeleton-tile: calc(50rem / sin(110deg));
+  width: calc(100% + var(--skeleton-tile));
+  background-color: var(--skeleton-highlight);
+  /* Fixed stops in a mask cost much less to restyle than stops that mix the
+     highlight color. The highlight eases in over most of its 20rem band and
+     eases out quickly, so a sharp edge leads and a soft tail follows. */
+  mask-image: repeating-linear-gradient(
+    110deg,
+    transparent 0rem,
+    rgb(0 0 0 / 1.7%) 1.4167rem,
+    rgb(0 0 0 / 6.7%) 2.8333rem,
+    rgb(0 0 0 / 14.6%) 4.25rem,
+    rgb(0 0 0 / 25%) 5.6667rem,
+    rgb(0 0 0 / 37.1%) 7.0833rem,
+    rgb(0 0 0 / 50%) 8.5rem,
+    rgb(0 0 0 / 62.9%) 9.9167rem,
+    rgb(0 0 0 / 75%) 11.3333rem,
+    rgb(0 0 0 / 85.4%) 12.75rem,
+    rgb(0 0 0 / 93.3%) 14.1667rem,
+    rgb(0 0 0 / 98.3%) 15.5833rem,
+    black 17rem,
+    rgb(0 0 0 / 93.3%) 17.5rem,
+    rgb(0 0 0 / 75%) 18rem,
+    rgb(0 0 0 / 50%) 18.5rem,
+    rgb(0 0 0 / 25%) 19rem,
+    rgb(0 0 0 / 6.7%) 19.5rem,
+    transparent 20rem,
+    transparent 50rem
+  );
+  mask-size: var(--skeleton-tile) 100%;
+  mask-repeat: repeat-x;
+}
+
 /** Moves the skeleton highlight across the child of a skeleton fill. */
 @utility ui-skeleton-fill-shimmer {
   /* The child's pseudo-elements carry the highlight and the edge, as on the
@@ -2376,19 +2430,20 @@ body > * {
         mix-blend-mode: normal !important;
       }
 
-      /* The highlight layer is twice the child's width. */
+      /* The highlight layer matches the one on the other skeleton parts. */
       &::before {
         inset: 0 auto 0 0 !important;
-        width: 200% !important;
         border-radius: 0 !important;
-        background: var(--skeleton-image, none) !important;
+        background: none !important;
+        @apply ui-skeleton-shimmer-layer!;
         animation: var(--animate-ui-skeleton-shimmer) !important;
       }
 
-      /* Matches the rtl variant on the other skeleton parts, so all of them
-         move in step. */
+      /* Matches the rtl variants on the other skeleton parts, so all of them
+         move in step and mirror the band. */
       &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *)::before {
         animation-direction: reverse !important;
+        scale: -1 1 !important;
       }
 
       /* The edge paints above the highlight, as it did over the background. */

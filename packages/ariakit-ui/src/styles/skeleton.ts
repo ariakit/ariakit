@@ -29,25 +29,23 @@ export const skeleton = cv({
 // Parts read the highlight from a variable so that each shape can paint it on
 // its own layer: over the element, its bar, or the child it fills. The tint
 // resolves here, before a filled child redefines the layer color.
-const shimmerImage = cx(
+const shimmerHighlight = cx(
   "[--skeleton-highlight:oklch(from_var(--ak-layer)_calc(l+0.07)_c_h)]",
-  "in-[.skeleton-shimmer]:[--skeleton-image:linear-gradient(100deg,transparent_30%,var(--skeleton-highlight)_50%,transparent_70%)]",
 );
 
-// The highlight moves on a layer twice the part's width. Moving a layer runs on
-// the compositor, while moving a background repaints the part on every frame.
-// The layers can move the part's edges by a fraction of a pixel, so they exist
-// only while the highlight moves.
+// The highlight moves on a layer one tile of the highlight stream wider than
+// the part. Moving a layer runs on the compositor, while moving a background
+// repaints the part on every frame. The layers can move the part's edges by a
+// fraction of a pixel, so they exist only while the highlight moves.
 const shimmerLayer = cx(
   "before:hidden ui-skeleton-shimmer:before:block",
   // Paint containment clips the layer to the part's corners and gives it a
   // containing block without changing how the part is positioned.
   "ui-skeleton-shimmer:contain-paint",
-  "before:absolute before:inset-y-0 before:left-0 before:w-[200%]",
-  "before:bg-(image:--skeleton-image,none)",
+  "before:absolute before:inset-y-0 before:left-0 before:ui-skeleton-shimmer-layer",
   // The direction shares the variant, so the animation shorthand cannot reset
-  // it.
-  "ui-skeleton-shimmer:before:animate-ui-skeleton-shimmer ui-skeleton-shimmer:rtl:before:[animation-direction:reverse]",
+  // it. The layer mirrors too, so the band leans and leads the same way.
+  "ui-skeleton-shimmer:before:animate-ui-skeleton-shimmer ui-skeleton-shimmer:rtl:before:[animation-direction:reverse] rtl:before:-scale-x-100",
 );
 
 // The inset edge moves from the part to a layer above the highlight, so the
@@ -67,7 +65,7 @@ const skeletonBase = cv({
     // A pending part keeps its space without painting, so the layout does not
     // move when the placeholders fade in.
     "transition-opacity data-pending:opacity-0",
-    shimmerImage,
+    shimmerHighlight,
   ],
   variants: {
     /** Sets the tint strength against the parent surface. */
@@ -133,31 +131,37 @@ export const skeletonCircle = cv({
 
 /**
  * A placeholder for one line of text. It takes the height of one line box and
- * paints a bar the height of capital letters, so text that replaces it does not
- * move the layout.
+ * paints a bar about as tall as the letters with ascenders and descenders, so
+ * text that replaces it does not move the layout.
  */
 export const skeletonLine = cv({
   extend: [skeletonBase],
   class: [
     "block h-lh relative bg-transparent!",
+    // The space above and below the bar. Capital letters plus a fifth of the
+    // font size is close to the height from ascenders to descenders.
+    "[--skeleton-bar-inset:calc((1lh-1cap-0.2em)/2)]",
     // A pseudo-element paints the bar. Vertical margins on the element itself
     // would collapse with siblings and move the layout.
-    "before:absolute before:inset-x-0 before:inset-y-[calc((1lh-1cap)/2)]",
+    "before:absolute before:inset-x-0 before:inset-y-(--skeleton-bar-inset)",
     "before:rounded-[inherit] before:bg-(--ak-layer)",
     "before:ring-(length:--border-width) before:ring-inset before:ring-(--ak-edge)",
     "forced-colors:before:outline",
-    // The highlight moves on a layer above the bar, twice its width. Paint
-    // containment clips it to the bar's ends, and a clip path to the bar's
-    // height and corners. As on the other parts, they exist only while the
-    // highlight moves.
+    // The highlight moves on a layer above the bar, one tile of the highlight
+    // stream wider than the bar. Paint containment clips it to the bar's ends,
+    // and a clip path to the bar's height and corners. As on the other parts,
+    // they exist only while the highlight moves.
     "after:hidden ui-skeleton-shimmer:after:block ui-skeleton-shimmer:contain-paint",
-    "ui-skeleton-shimmer:[clip-path:inset(calc((1lh-1cap)/2)_0_round_var(--ak-frame-radius))]",
-    "after:absolute after:inset-y-[calc((1lh-1cap)/2)] after:left-0 after:w-[200%]",
-    "after:bg-(image:--skeleton-image,none)",
-    "ui-skeleton-shimmer:after:animate-ui-skeleton-shimmer ui-skeleton-shimmer:rtl:after:[animation-direction:reverse]",
+    "ui-skeleton-shimmer:[clip-path:inset(var(--skeleton-bar-inset)_0_round_var(--ak-frame-radius))]",
+    "after:absolute after:inset-y-(--skeleton-bar-inset) after:left-0 after:ui-skeleton-shimmer-layer",
+    "ui-skeleton-shimmer:after:animate-ui-skeleton-shimmer ui-skeleton-shimmer:rtl:after:[animation-direction:reverse] rtl:after:-scale-x-100",
   ],
   defaultVariants: {
-    $rounded: "xs",
+    // About a quarter of the bar height.
+    $rounded: "sm",
+    // A bar never sits in the corner of its container, so it keeps its radius
+    // inside frames with tight corners, such as table rows.
+    $forceRounded: true,
     // The bar draws its own ring.
     $borderType: "unset",
     // Lines draw no edge. They push their tint away from the surface instead,
@@ -225,4 +229,9 @@ export const skeletonFill = cv({
     // child would change shape while it loads.
     $frame: false,
   },
+});
+
+/** Fades in content that replaces a skeleton placeholder. */
+export const skeletonReveal = cv({
+  class: "motion-safe:animate-ui-skeleton-reveal",
 });

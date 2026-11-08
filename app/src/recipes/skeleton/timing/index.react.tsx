@@ -81,7 +81,7 @@ export default function Example() {
               <SkeletonLine className="w-28">
                 <span className="font-medium">{data?.name}</span>
               </SkeletonLine>
-              <SkeletonLine $weight="light" className="w-36 text-sm">
+              <SkeletonLine className="w-36 text-sm">
                 <span className="block text-sm ak-ink-70">{data?.email}</span>
               </SkeletonLine>
             </div>

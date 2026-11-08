@@ -172,10 +172,10 @@ function PostCard({ post, image }: PostCardProps) {
           </Frame>
         </SkeletonCircle>
         <div className="flex min-w-0 flex-1 items-baseline gap-2 text-sm">
-          <SkeletonLine $weight="medium" className="w-28">
+          <SkeletonLine className="w-28">
             <span className="font-medium">{post?.author}</span>
           </SkeletonLine>
-          <SkeletonLine $weight="light" className="w-6">
+          <SkeletonLine className="w-6">
             <span className="ak-ink-70">{post?.time}</span>
           </SkeletonLine>
         </div>
