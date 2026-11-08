@@ -95,5 +95,5 @@
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@12.17.0"
+  "packageManager": "pnpm@12.18.0"
 }
