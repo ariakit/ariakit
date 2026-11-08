@@ -35,15 +35,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.dialog("Select")).toBeVisible();
     await wheelTo(page, nav.link("Select"), nav.link("Tab"));
     await test.expect(nav.link("Select")).not.toBeInViewport();
-    const card = q.dialog("Tab");
-    await test.expect(card).toBeVisible();
     // The position update of the old anchor runs on the scroll event, and a
-    // close would render in the next frame. The exit transition would keep the
-    // closed hovercard visible, so check that it's still open.
+    // close would render in the next frame.
     await flushFrames(page);
-    // A hovercard that closed would open again only after the show timeout.
+    // A hovercard that closed would be hidden until it opened again after the
+    // show timeout, so it must be open on the new anchor within half of it.
     await test
-      .expect(card)
+      .expect(q.dialog("Tab"))
       .toHaveAttribute("data-open", { timeout: midwayToShowTimeout });
   });
 });
