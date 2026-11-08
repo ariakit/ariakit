@@ -21,8 +21,8 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useEffect, useRef } from "react";
+import { useHovercardTrigger } from "../hovercard/__hovercard-trigger.tsx";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
-import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import { globalStore, hidingStores, setInstant } from "./__global-store.ts";
 import { useTooltipProviderContext } from "./tooltip-context.tsx";
 import type { TooltipStore } from "./tooltip-store.ts";
@@ -248,26 +248,39 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       onBlur,
     };
 
-    props = useHovercardAnchor<TagName>({
+    // Returns whether hovering the anchor should show the tooltip after the
+    // show timeout.
+    const showOnHoverIntent = (element: HTMLElement) => {
+      if (!store) return false;
+      const { activeStore } = globalStore.getState();
+      if (!activeStore) return true;
+      // Show the tooltip immediately if there's an active tooltip instead of
+      // waiting for the showTimeout delay. Returning false skips setting the
+      // anchor element, so set it here: the hovercard has already scheduled a
+      // hide, which it skips only if the last mousemove was on the anchor.
+      // https://github.com/ariakit/ariakit/issues/8089
+      store.setAnchorElement(element);
+      // The tooltip shows at once because of the skip window. Activating it
+      // clears its mark, so mark it after showing it.
+      if (showStore(store)) {
+        setInstant(store, true);
+      }
+      return false;
+    };
+
+    props = useHovercardTrigger<TagName>({
       store,
+      setAnchorElement: true,
       showOnHover(event) {
         if (!canShowOnHoverRef.current) return false;
         if (isFalsyBooleanCallback(showOnHover, event)) return false;
-        if (!store) return false;
-        const { activeStore } = globalStore.getState();
-        if (!activeStore) return true;
-        // Show the tooltip immediately if there's an active tooltip instead of
-        // waiting for the showTimeout delay. Returning false skips setting the
-        // anchor element, so set it here: the hovercard has already scheduled a
-        // hide, which it skips only if the last mousemove was on the anchor.
-        // https://github.com/ariakit/ariakit/issues/8089
-        store.setAnchorElement(event.currentTarget);
-        // The tooltip shows at once because of the skip window. Activating it
-        // clears its mark, so mark it after showing it.
-        if (showStore(store)) {
-          setInstant(store, true);
-        }
-        return false;
+        return showOnHoverIntent(event.currentTarget);
+      },
+      showOnScrollHover(element) {
+        if (showOnHover === false) return false;
+        // A scroll that moves the anchor under the mouse enters it.
+        canShowOnHoverRef.current = true;
+        return showOnHoverIntent(element);
       },
       ...props,
     });

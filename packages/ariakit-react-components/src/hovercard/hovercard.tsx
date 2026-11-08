@@ -16,6 +16,7 @@ import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   addGlobalEventListener,
+  getWindow,
   hasFocusWithin,
   chain,
   invariant,
@@ -34,6 +35,11 @@ import { createDialogComponent } from "../dialog/dialog.tsx";
 import { useEscapeClose } from "../dialog/utils/__use-escape-close.ts";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
+import type { ScrollHoverListener } from "./__scroll-hover.ts";
+import {
+  addScrollHoverListener,
+  getScrollHoverAnchor,
+} from "./__scroll-hover.ts";
 import {
   HovercardScopedContextProvider,
   useHovercardProviderContext,
@@ -229,13 +235,31 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       const element = ref.current;
       if (!element) return;
       let lastPath: EventTarget[] = [];
+      // Hides the hovercard after a short delay (hideTimeout).
+      const scheduleHide = () => {
+        if (!store) return;
+        const { hideTimeout, timeout } = store.getState();
+        hideTimeoutRef.current = window.setTimeout(() => {
+          hideTimeoutRef.current = 0;
+          if (!store) return;
+          // Another trigger can take over the store while the hide is pending,
+          // such as the next item in a menubar sharing one menu. The pointer
+          // may rest on that trigger without firing another mousemove that
+          // would clear the hide, so skip it if the last mousemove was on the
+          // store's current anchor or disclosure element.
+          // https://github.com/ariakit/ariakit/issues/8086
+          const { anchorElement, disclosureElement } = store.getState();
+          if (anchorElement && lastPath.includes(anchorElement)) return;
+          if (disclosureElement && lastPath.includes(disclosureElement)) return;
+          store.hide();
+        }, hideTimeout ?? timeout);
+      };
       const onMouseMove = (event: MouseEvent) => {
         if (!store) return;
         const path = event.composedPath();
         lastPath = path;
         if (!isMouseMoving()) return;
-        const { anchorElement, disclosureElement, hideTimeout, timeout } =
-          store.getState();
+        const { anchorElement, disclosureElement } = store.getState();
         const hoverElements = [anchorElement, disclosureElement];
         const hoveredElement = hoverElements.find(
           (element) => element && path.includes(element),
@@ -272,24 +296,48 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         });
         if (movingTowardElement) return;
         if (!hideOnHoverOutsideProp(event)) return;
-        // Otherwise, hide the hovercard after a short delay (hideTimeout).
-        hideTimeoutRef.current = window.setTimeout(() => {
-          hideTimeoutRef.current = 0;
-          if (!store) return;
-          // Another trigger can take over the store while the hide is pending,
-          // such as the next item in a menubar sharing one menu. The pointer
-          // may rest on that trigger without firing another mousemove that
-          // would clear the hide, so skip it if the last mousemove was on the
-          // store's current anchor or disclosure element.
-          // https://github.com/ariakit/ariakit/issues/8086
-          const { anchorElement, disclosureElement } = store.getState();
-          if (anchorElement && lastPath.includes(anchorElement)) return;
-          if (disclosureElement && lastPath.includes(disclosureElement)) return;
-          store.hide();
-        }, hideTimeout ?? timeout);
+        scheduleHide();
+      };
+      // A scroll that counts as hover for the current anchor runs the same
+      // check as a mouse move, at the resting mouse position. The pointer isn't
+      // moving toward the hovercard, so there's no transit check.
+      const onScrollHover: ScrollHoverListener = (event, path, point) => {
+        if (!store) return;
+        const { anchorElement, disclosureElement } = store.getState();
+        if (!anchorElement) return;
+        const anchor = getScrollHoverAnchor(anchorElement, store);
+        if (!anchor?.canHover(event)) return;
+        lastPath = path;
+        const hoverElements = [anchorElement, disclosureElement];
+        if (
+          isMovingOnHovercard(
+            path,
+            element,
+            hoverElements,
+            nestedHovercardsRef.current,
+          )
+        ) {
+          const onHoverElement = hoverElements.some(
+            (element) => element && path.includes(element),
+          );
+          enterPointRef.current = onHoverElement ? [point.x, point.y] : null;
+          clearHideTimeout();
+          return;
+        }
+        if (hideTimeoutRef.current) return;
+        // The callback takes a mouse event, so it gets one at the resting mouse
+        // position. It's never dispatched.
+        const { MouseEvent } = getWindow(point.document);
+        const mouseEvent = new MouseEvent("mousemove", {
+          clientX: point.x,
+          clientY: point.y,
+        });
+        if (!hideOnHoverOutsideProp(mouseEvent)) return;
+        scheduleHide();
       };
       return chain(
         addGlobalEventListener("mousemove", onMouseMove, true),
+        addScrollHoverListener(onScrollHover),
         clearHideTimeout,
       );
     }, [
@@ -488,7 +536,12 @@ export interface HovercardOptions<
    * mouse isn't moving toward the popover.
    *
    * This can be either a boolean or a callback receiving the mouse move event
-   * that initiated the behavior. The callback should return a boolean.
+   * that initiated the behavior. The callback should return a boolean. When a
+   * scroll counts as hover because of the
+   * [`hoverOnScroll`](https://ariakit.com/reference/hovercard-anchor#hoveronscroll)
+   * prop, the callback receives a `mousemove` event that isn't dispatched. It
+   * has only the `clientX` and `clientY` of the resting mouse pointer, so use
+   * `document.elementFromPoint` to find the element under it.
    *
    * **Note**: This behavior won't be triggered when the popover or any of its
    * descendants are in focus.
