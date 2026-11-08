@@ -30,6 +30,10 @@ type ExportMode = "source" | "build";
 const sourceDir = "src";
 const distDir = "dist";
 const solidDir = "solid";
+// When Rolldown inlines every imported constant from a module, it still keeps a
+// bare import of that module's file. Package bundlers then warn that they
+// ignore these imports because the package has no side effects.
+const jsOptimization = { inlineConst: false };
 const npmIgnoreEntries = [
   "coverage",
   "benchmark",
@@ -315,6 +319,7 @@ async function buildSolidSource(
     input,
     external: getExternal(readPackageJson(rootPath)),
     platform: buildPlatform,
+    optimization: jsOptimization,
     output: {
       dir: solidDir,
       cleanDir: true,
@@ -341,11 +346,12 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
       cleanDir: true,
       format: "es",
     },
+    // Declaration generation always takes most of this build's time.
+    checks: { bundlerTimings: false },
     plugins: [
       dts({
         emitDtsOnly: true,
-        build: true,
-        incremental: false,
+        tsc: { build: true, incremental: false },
         sourcemap: true,
       }),
     ],
@@ -371,6 +377,7 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
         return "";
       },
     },
+    optimization: jsOptimization,
     plugins: [
       ...(isSolid ? [solidPlugin({ solid: { generate: "dom" } })] : []),
     ],
