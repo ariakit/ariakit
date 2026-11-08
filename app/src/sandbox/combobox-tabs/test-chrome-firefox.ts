@@ -20,6 +20,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.tab("Guide 0")).toHaveAttribute("data-active-item");
     await expect(q.tab("Guide 0")).toHaveAttribute("data-focus-visible");
     await expect(q.tab("Guide 0")).toHaveAttribute("aria-selected", "true");
+    // "Guide 0" is also true for "ann", where the Components tab has no results
+    // and is disabled. Wait for the results of "an" before moving.
+    await expect(q.tab("Components 1")).toBeEnabled();
 
     await page.keyboard.press("ArrowRight");
     await expect(q.tab("Components 1")).toHaveAttribute("data-active-item");
