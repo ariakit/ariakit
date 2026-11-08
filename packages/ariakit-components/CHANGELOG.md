@@ -1,5 +1,18 @@
 # @ariakit/components
 
+## 0.1.16
+
+### Form store pending states with overlapping calls
+
+The `validating` and `submitting` states of form stores now stay `true` until every overlapping [`validate`](https://ariakit.com/reference/use-form-store#validate) or [`submit`](https://ariakit.com/reference/use-form-store#submit) call finishes. This also applies after [`reset`](https://ariakit.com/reference/use-form-store#reset) and across stores composed through the `store` option. Before, the first call to finish set the state to `false`.
+
+Callbacks passed to [`onValidate`](https://ariakit.com/reference/use-form-store#onvalidate) and [`onSubmit`](https://ariakit.com/reference/use-form-store#onsubmit) must settle. If a callback cancels a previous call, resolve the previous promise instead of leaving it pending. Otherwise, the form stays in a pending state.
+
+### Other updates
+
+- Fixed collection stores keeping the previous order of `renderedItems` when item elements move in the DOM without registering again. This applies to all stores built on the collection store, such as the composite, combobox, and select stores.
+- Updated dependencies: `@ariakit/utils@0.2.3`, `@ariakit/store@0.1.12`
+
 ## 0.1.15
 
 - Updated dependencies: `@ariakit/utils@0.2.2`, `@ariakit/store@0.1.11`
