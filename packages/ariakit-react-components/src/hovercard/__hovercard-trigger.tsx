@@ -149,7 +149,11 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     const onScrollHover = useEvent(() => {
       const element = triggerRef.current;
       if (!element) return;
-      if (showTimeoutRef.current) return;
+      // Scrolls can move the pointer away and back before an earlier show
+      // timeout of this trigger ends. The timeout starts again, so the
+      // hovercard moves back to this trigger at once.
+      window.clearTimeout(showTimeoutRef.current);
+      showTimeoutRef.current = 0;
       if (isTrulyDisabled(element)) return;
       // These callbacks take a mouse event, which a scroll doesn't have, so
       // only their `false` values apply here.
