@@ -503,17 +503,22 @@ export const navDisclosureGroup = cv({
     // A group that starts the navigation meets its edge, which needs no line.
     "first:border-t-0",
   ],
+  variants: {
+    /**
+     * Fills the parent frame's content box, collapses shared borders, and
+     * matches its corners. The parent's `$orientation` controls rounding. Use
+     * `$frameStart` and `$frameEnd` when DOM order does not identify the outer
+     * corners.
+     */
+    $cover: [
+      // Covering frames take the container radius, which a shell sidebar paints
+      // square at its edges. The group and its sections paint square corners
+      // too, and keep the frame radius for the corners of their rows.
+      "rounded-none! *:rounded-none! [&>*>.disclosure-content>*]:rounded-none!",
+    ],
+  },
   defaultVariants: {
     $cover: true,
-  },
-  refine({ variants, addClass }) {
-    if (!variants.$cover) return;
-    // Covering frames take the container radius, which a shell sidebar paints
-    // square at its edges. The group and its sections paint square corners too,
-    // and keep the frame radius for the corners of their rows.
-    addClass(
-      "rounded-none! *:rounded-none! [&>*>.disclosure-content>*]:rounded-none!",
-    );
   },
 });
 
@@ -527,6 +532,22 @@ export const navDisclosure = cv({
     "[@container_style(--nav-slot-size)]:[--disclosure-icon-size:var(--nav-slot-size)]",
   ],
   variants: {
+    /**
+     * Separates the button and content with a border and content padding.
+     * `false` clears inherited split state.
+     */
+    $split: {
+      true: [
+        // Inset rows on the body surface so their text lines up with the button
+        // text at both ends.
+        "[--nav-body-inset:max(0px,calc(var(--disclosure-padding)-var(--nav-py,--spacing(2))))]",
+        // The body spans the section, so its rows stay concentric with the
+        // section corners at the inset distance.
+        "[--nav-body-row-radius:calc(var(--disclosure-radius)-var(--nav-body-inset))]",
+      ],
+      // Reset the values for nested sections; a split one sets its own.
+      false: "[--nav-body-inset:0px] [--nav-body-row-radius:initial]",
+    },
     /**
      * Sets icon and nested slot sizes for this section, including its content
      * indent. Overrides `$iconSize`. Numbers scale the spacing token.
@@ -553,21 +574,6 @@ export const navDisclosure = cv({
       if (variants.$split) return 0;
       return "var(--nav-gap, calc(var(--spacing) * 1))";
     },
-  },
-  refine({ variants, addClass }) {
-    // Reset the values for nested sections; a split one sets its own.
-    if (!variants.$split) {
-      addClass("[--nav-body-inset:0px] [--nav-body-row-radius:initial]");
-      return;
-    }
-    addClass([
-      // Inset rows on the body surface so their text lines up with the button
-      // text at both ends.
-      "[--nav-body-inset:max(0px,calc(var(--disclosure-padding)-var(--nav-py,--spacing(2))))]",
-      // The body spans the section, so its rows stay concentric with the
-      // section corners at the inset distance.
-      "[--nav-body-row-radius:calc(var(--disclosure-radius)-var(--nav-body-inset))]",
-    ]);
   },
 });
 
