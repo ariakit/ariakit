@@ -3,7 +3,6 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { ChevronDownIcon, XIcon } from "lucide-react";
 import { hasContent } from "../react-utils/create-render.react.ts";
-import { usePopoverPositionerProps } from "../react-utils/use-popover-positioner.react.ts";
 import {
   hovercard,
   hovercardDescription,
@@ -13,6 +12,7 @@ import {
 } from "../styles/hovercard.ts";
 import { popoverPositioner } from "../styles/popover.ts";
 import { ButtonSlot } from "./button.ariakit.react.tsx";
+import { usePopoverPositionerProps } from "./popover.ariakit.react.tsx";
 
 export interface HovercardProviderProps extends ak.HovercardProviderProps {}
 
