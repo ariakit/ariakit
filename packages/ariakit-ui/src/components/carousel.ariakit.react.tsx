@@ -409,21 +409,25 @@ function useCarousel({
     // them, the nearest edge would cut its other end, so the element goes to
     // the middle of the row instead. A press focuses the element before its
     // click, so a scroll then would move the element away from the pointer, and
-    // only keyboard focus scrolls. A viewport that snaps would snap a scroll to
-    // the element back to where it was, so it scrolls the item that holds the
-    // element, which can snap. An item that doesn't fit would go to the middle
-    // of the row, with an element at its edge under a fade, so the element
-    // scrolls instead. A text field that a press focuses matches :focus-visible
-    // too, so the carousel also skips the focus that comes during a press. A
-    // tap sends its mousedown after the pointer lifts, before the focus.
+    // only focus that matches :focus-visible scrolls. A viewport that snaps
+    // would snap a scroll to the element back to where it was, so it scrolls
+    // the item that holds the element, which can snap. An item that doesn't fit
+    // would go to the middle of the row, with an element at its edge under a
+    // fade, so the element scrolls instead. A text field that a press focuses
+    // matches :focus-visible too, so the carousel also skips the focus that a
+    // press moves. A tap sends its mousedown after the pointer lifts, before
+    // the focus.
     let pressing = false;
+    let pressTimer = 0;
+    // The browser moves focus right after the mousedown, before a timer can
+    // run. A drag or a context menu can end the press without a mouseup, so a
+    // timer ends it instead.
     const onMouseDown = () => {
       pressing = true;
-    };
-    // A drag or a context menu can end the press without a mouseup, and a key
-    // press means the next focus comes from the keyboard.
-    const onPressEnd = () => {
-      pressing = false;
+      clearTimeout(pressTimer);
+      pressTimer = window.setTimeout(() => {
+        pressing = false;
+      });
     };
     const onFocusIn = (event: FocusEvent) => {
       const target = event.target;
@@ -492,8 +496,6 @@ function useCarousel({
     viewport.addEventListener("scroll", onScroll, { passive: true });
     viewport.addEventListener("focusin", onFocusIn);
     viewport.addEventListener("mousedown", onMouseDown, true);
-    win.addEventListener("mouseup", onPressEnd, true);
-    win.addEventListener("keydown", onPressEnd, true);
     // Items can grow while the viewport keeps its size, such as when an image
     // or a font loads, so the observer watches each item too.
     const resizeObserver = new win.ResizeObserver(() => {
@@ -532,11 +534,10 @@ function useCarousel({
     return () => {
       win.cancelAnimationFrame(frame);
       clearTimeout(statusTimer);
+      clearTimeout(pressTimer);
       viewport.removeEventListener("scroll", onScroll);
       viewport.removeEventListener("focusin", onFocusIn);
       viewport.removeEventListener("mousedown", onMouseDown, true);
-      win.removeEventListener("mouseup", onPressEnd, true);
-      win.removeEventListener("keydown", onPressEnd, true);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
       attributeObserver.disconnect();
