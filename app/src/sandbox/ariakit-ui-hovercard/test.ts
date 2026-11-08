@@ -51,3 +51,15 @@ test("names a disclosure without children", async () => {
   await press.Tab();
   expect(section.button("More details")).toHaveFocus();
 });
+
+// https://github.com/ariakit/ariakit/pull/8359#discussion_r4506959808
+test("names the buttons when their optional label is empty", async () => {
+  const section = q.within(q.region("Optional label"));
+  await focus(section.link("Lena Fischer"));
+  await press.Tab();
+  expect(section.button("More details")).toHaveFocus();
+  await press.Enter();
+  await expect.poll(q.dialog.maybe.lazy("Lena Fischer")).toBeVisible();
+  const dialog = q.within(q.dialog("Lena Fischer"));
+  expect(dialog.button("Dismiss popup")).toBeInTheDocument();
+});

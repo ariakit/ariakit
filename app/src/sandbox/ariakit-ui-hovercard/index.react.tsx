@@ -148,12 +148,54 @@ function DisclosureSection() {
   );
 }
 
+interface OptionalLabelHovercardProps {
+  person?: Person;
+  /** The text of the buttons, which can be empty, as from a missing message. */
+  label: string | null;
+}
+
+/** Buttons whose optional label is empty, which keep their icon and name. */
+function OptionalLabelHovercard({
+  person,
+  label,
+}: OptionalLabelHovercardProps) {
+  return (
+    <HovercardProvider>
+      <div className="flex items-center gap-1">
+        <HovercardAnchor href={`#${person?.handle}`} className="underline">
+          {person?.name}
+        </HovercardAnchor>
+        <HovercardDisclosure>{label}</HovercardDisclosure>
+      </div>
+      <Hovercard className="grid gap-1">
+        <HovercardDismiss className="justify-self-end">
+          {label}
+        </HovercardDismiss>
+        <PersonCard person={person} />
+      </Hovercard>
+    </HovercardProvider>
+  );
+}
+
+function OptionalLabelSection() {
+  return (
+    <section
+      aria-label="Optional label"
+      className="grid justify-items-start gap-2"
+    >
+      <h2 className="text-sm font-medium">Optional label</h2>
+      <OptionalLabelHovercard person={people[2]} label={null} />
+    </section>
+  );
+}
+
 export default function Example() {
   return (
     <div className="grid gap-12 p-12">
       <SingleSection />
       <SharedSection />
       <DisclosureSection />
+      <OptionalLabelSection />
     </div>
   );
 }

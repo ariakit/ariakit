@@ -10,8 +10,9 @@ import {
 /**
  * A popover that shows while the pointer rests on its anchor, such as a preview
  * of a link or a profile card. Several anchors can share one hovercard, which
- * moves to the anchor that the pointer rests on; set `$slide` to make it slide
- * there.
+ * moves to the anchor that the pointer rests on. The `$slide` variant of the
+ * `popoverPositioner` style recipe makes it slide there; the `Hovercard` style
+ * component takes it as a prop.
  */
 export const hovercard = cv({
   extend: [popover],

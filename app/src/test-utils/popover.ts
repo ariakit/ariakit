@@ -4,7 +4,9 @@ import { flushFrames } from "./preview.ts";
 // Helpers for tests of Ariakit UI popovers that several anchors share, such as
 // tooltips and hovercards, in recipes, sandboxes, and app pages.
 
-/** How long the `$slide` variant of the popover style recipe slides. */
+/**
+ * How long the `$slide` variant of the `popoverPositioner` style recipe slides.
+ */
 export const SLIDE_DURATION = 150;
 
 /**

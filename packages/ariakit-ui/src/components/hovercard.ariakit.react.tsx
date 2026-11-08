@@ -2,6 +2,8 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { ChevronDownIcon, XIcon } from "lucide-react";
+import { hasContent } from "../react-utils/create-render.react.ts";
+import { usePopoverPositionerProps } from "../react-utils/use-popover-positioner.react.ts";
 import {
   hovercard,
   hovercardDescription,
@@ -9,6 +11,7 @@ import {
   hovercardDismiss,
   hovercardHeading,
 } from "../styles/hovercard.ts";
+import { popoverPositioner } from "../styles/popover.ts";
 import { ButtonSlot } from "./button.ariakit.react.tsx";
 
 export interface HovercardProviderProps extends ak.HovercardProviderProps {}
@@ -48,7 +51,10 @@ export function HovercardAnchor(props: HovercardAnchorProps) {
 }
 
 export interface HovercardProps
-  extends ak.HovercardProps, VariantProps<typeof hovercard> {}
+  extends
+    ak.HovercardProps,
+    VariantProps<typeof hovercard>,
+    VariantProps<typeof popoverPositioner> {}
 
 /**
  * Renders the hovercard popup next to its anchor, with an 8px gutter by
@@ -74,10 +80,24 @@ export interface HovercardProps
  *   );
  * }
  */
-export function Hovercard({ gutter = 8, ...props }: HovercardProps) {
-  const [variantProps, rest] = splitProps(props, hovercard);
+export function Hovercard({
+  gutter = 8,
+  wrapperProps,
+  ...props
+}: HovercardProps) {
+  const [variantProps, positionerProps, rest] = splitProps(
+    props,
+    hovercard,
+    popoverPositioner,
+  );
+  const positioner = usePopoverPositionerProps(positionerProps, wrapperProps);
   return (
-    <ak.Hovercard gutter={gutter} {...hovercard.jsx(variantProps)} {...rest} />
+    <ak.Hovercard
+      gutter={gutter}
+      wrapperProps={positioner}
+      {...hovercard.jsx(variantProps)}
+      {...rest}
+    />
   );
 }
 
@@ -153,8 +173,9 @@ export function HovercardDismiss({
 }: HovercardDismissProps) {
   const [variantProps, rest] = splitProps(props, hovercardDismiss);
   // A slot keeps the icon-only button square. Its hidden icon needs a button
-  // label.
-  const iconOnly = children === undefined;
+  // label. Empty children, such as an optional label that is null, render the
+  // icon too, so the button keeps a name.
+  const iconOnly = !hasContent(children);
   const fallbackLabel = iconOnly ? "Dismiss popup" : undefined;
   return (
     <ak.HovercardDismiss
@@ -202,7 +223,7 @@ export function HovercardDisclosure({
   const [variantProps, rest] = splitProps(props, hovercardDisclosure);
   // The icon is hidden from assistive technology, so an icon-only button needs
   // a label.
-  const iconOnly = children === undefined;
+  const iconOnly = !hasContent(children);
   const fallbackLabel = iconOnly ? "More details" : undefined;
   return (
     <ak.HovercardDisclosure

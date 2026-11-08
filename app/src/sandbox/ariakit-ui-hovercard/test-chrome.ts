@@ -58,6 +58,21 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(query(section).button("More details")).toBeFocused();
   });
 
+  // https://github.com/ariakit/ariakit/pull/8359#discussion_r4506959808
+  test("names the buttons when their optional label is empty", async ({
+    page,
+    q,
+  }) => {
+    const section = q.region("Optional label");
+    await tabTo(page, query(section).link("Lena Fischer"));
+    await page.keyboard.press("Tab");
+    await test.expect(query(section).button("More details")).toBeFocused();
+    await page.keyboard.press("Enter");
+    const dialog = q.dialog("Lena Fischer");
+    await test.expect(dialog).toBeVisible();
+    await test.expect(query(dialog).button("Dismiss popup")).toBeVisible();
+  });
+
   test("doesn't slide with reduced motion", async ({ page, q }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     const section = q.region("Shared");
