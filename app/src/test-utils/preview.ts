@@ -37,6 +37,23 @@ export async function gotoAndSettle(page: Page, url: string) {
 }
 
 /**
+ * Navigates to a generated Astro preview at `url` and waits until its example
+ * hydrates and its fonts load. Use `gotoAndSettle` for Next.js previews and
+ * JavaScript-disabled pages, which never mark hydration.
+ */
+export async function gotoAndHydrate(page: Page, url: string) {
+  // Generated Astro previews contain one eager client:load island. Its wrapper
+  // marks the document from a mount effect after the example commits. That mark
+  // replaces the network-idle wait, which costs a fixed 500ms quiet window in
+  // each test.
+  await page.goto(url, { waitUntil: "load" });
+  await page.waitForFunction(isPreviewHydrated);
+  // Some previews, such as those that render into a shadow root, start loading
+  // the font only when they render text after hydration.
+  await waitForFonts(page);
+}
+
+/**
  * Waits for animation frames in the page so effects can settle.
  *
  * Use sparingly. Prefer a retrying assertion against existing observable state.
@@ -124,15 +141,7 @@ export function withFramework(
           await gotoAndSettle(page, url);
           return;
         }
-        // Generated Astro previews contain one eager client:load island. Its
-        // wrapper marks the document from a mount effect after the example
-        // commits. That mark replaces the network-idle wait, which costs a
-        // fixed 500ms quiet window in each test.
-        await page.goto(url, { waitUntil: "load" });
-        await page.waitForFunction(isPreviewHydrated);
-        // Some previews, such as those that render into a shadow root, start
-        // loading the font only when they render text after hydration.
-        await waitForFonts(page);
+        await gotoAndHydrate(page, url);
       });
       return callback({ id, framework, query, test });
     });
