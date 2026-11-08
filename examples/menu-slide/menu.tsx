@@ -123,7 +123,6 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
           render={renderMenuButton}
         />
       ) : (
-        // oxlint-disable-next-line react/refs -- forwarded ref passed to pure render helper
         renderMenuButton({ ref, ...props })
       )}
       <Ariakit.Menu
