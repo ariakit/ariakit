@@ -70,10 +70,9 @@ export function getFontSizeClass(
 
 /**
  * Resolves a line height: a named step to the Tailwind leading scale, a
- * non-negative number to a unitless ratio, and a string with a length,
- * percentage, number, or expression to a raw CSS value. Extenders that replace
- * `$leading` can delegate other values to it, so these values keep working.
- * `auto` and other values, such as unknown words, return nothing.
+ * non-negative number to a unitless ratio, and another non-empty string to a
+ * raw CSS value. Extenders that replace `$leading` can delegate other values to
+ * it, so these values keep working. `auto` and other values return nothing.
  */
 export function getFontLeadingClass(
   value: unknown,
@@ -91,10 +90,7 @@ export function getFontLeadingClass(
     };
   }
   if (typeof value !== "string") return;
-  // Accept values that start like a number, such as 1.5 or 1lh, and
-  // expressions, such as var() or calc(). A word, even with a digit like h1,
-  // would make line-height invalid, so it would inherit.
-  if (!/^[\d.]|\(/.test(value)) return;
+  if (!value) return;
   return { class: FONT_LEADING_CLASS, style: { "--font-leading": value } };
 }
 
@@ -136,12 +132,11 @@ export const font = cv({
      * `tight` has the line height of `leading-tight`, `none` is `1`, and
      * `normal` is the `1.5` of the scale, not the CSS keyword. A non-negative
      * number is a unitless ratio of the font size, such as `1.7`, which
-     * descendants inherit as a ratio. A string is a raw CSS length, percentage,
-     * number, or expression, such as `1lh` or `1.5rem`, and other words emit
-     * nothing. It replaces the line height of a named or numeric `$size`. It
-     * has zero specificity, so a line-height class on the element, from the
-     * caller or an extender, wins over it. `auto`, the default, keeps the line
-     * height of `$size` or the parent.
+     * descendants inherit as a ratio. Another string is a raw CSS value, such
+     * as `1lh` or `var(--my-leading)`. It replaces the line height of a named
+     * or numeric `$size`. It has zero specificity, so a line-height class on
+     * the element, from the caller or an extender, wins over it. `auto`, the
+     * default, keeps the line height of `$size` or the parent.
      */
     $leading(value?: FontLeadingName | number | (string & {})) {
       return getFontLeadingClass(value);
