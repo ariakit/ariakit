@@ -80,6 +80,36 @@ function getClearOffset(rect: DOMRect, clear: ClearRange) {
   return 0;
 }
 
+interface GetSnapOffsetParams {
+  rect: DOMRect;
+  clear: ClearRange;
+  /** The computed `scroll-snap-align` of the item. */
+  align: string;
+  rtl: boolean;
+}
+
+/**
+ * Returns how far a row scrolls so that an item that snaps lies at its own snap
+ * position, with the edge that it snaps to on the clear range. A scroll to the
+ * nearest edge could stop closer to the snap position where the row is, and the
+ * row would snap back. An item that doesn't snap takes the nearest edge.
+ */
+function getSnapOffset({ rect, clear, align, rtl }: GetSnapOffsetParams) {
+  // The inline value comes last, as in "none start".
+  const inline = align.split(" ").at(-1);
+  if (inline === "center") {
+    return rect.left + rect.width / 2 - (clear.left + clear.right) / 2;
+  }
+  if (inline !== "start" && inline !== "end") {
+    return getClearOffset(rect, clear);
+  }
+  const alignsLeft = (inline === "start") !== rtl;
+  if (alignsLeft) {
+    return rect.left - clear.left;
+  }
+  return rect.right - clear.right;
+}
+
 function getScrollPadding(viewport: HTMLElement) {
   const style = getWindow(viewport).getComputedStyle(viewport);
   return {
@@ -380,10 +410,10 @@ function useCarousel({
     // the middle of the row instead. A press focuses the element before its
     // click, so a scroll then would move the element away from the pointer, and
     // only keyboard focus scrolls. A viewport that snaps would snap a scroll to
-    // the element back to where it was, so it scrolls to the item that holds
-    // the element, where it can snap. An item that doesn't fit would go to the
-    // middle of the row, with an element at its edge under a fade, so the
-    // element scrolls instead.
+    // the element back to where it was, so it scrolls the item that holds the
+    // element, which can snap. An item that doesn't fit would go to the middle
+    // of the row, with an element at its edge under a fade, so the element
+    // scrolls instead.
     const onFocusIn = (event: FocusEvent) => {
       const target = event.target;
       if (!(target instanceof win.Element)) return;
@@ -407,15 +437,42 @@ function useCarousel({
               child.contains(target),
             )
           : undefined;
-      const item = snapItem && fits(snapItem) ? snapItem : target;
-      const offset = getClearOffset(item.getBoundingClientRect(), clear);
+      const snaps = snapItem != null && fits(snapItem);
+      const item = snaps ? snapItem : target;
+      // Fractional widths can leave an item a fraction of a pixel past the
+      // clear range, which still shows it whole.
+      const getItemOffset = () => {
+        const offset = getClearOffset(item.getBoundingClientRect(), clear);
+        return Math.abs(offset) < 1 ? 0 : offset;
+      };
+      const offset = getItemOffset();
       if (!offset) return;
       // The carousel scrolls the viewport alone. scrollIntoView would also
       // scroll the page to show the whole item, and Chrome and Firefox miss the
       // middle of a row whose scroll padding takes the whole row. A scroll to a
       // position snaps to the closest item, where a scroll by an offset would
-      // snap to the next one.
-      viewport.scrollTo({ left: viewport.scrollLeft + offset });
+      // snap to the next one. The scroll is instant, so a viewport that scrolls
+      // smoothly already shows the item where it stops when it's measured
+      // again.
+      viewport.scrollTo({
+        left: viewport.scrollLeft + offset,
+        behavior: "instant",
+      });
+      if (!snaps) return;
+      // The nearest edge can lie closer to the snap position where the row was
+      // than to the one of the item, so the row snaps back. The item then goes
+      // to its own snap position.
+      if (!getItemOffset()) return;
+      const snapOffset = getSnapOffset({
+        rect: item.getBoundingClientRect(),
+        clear,
+        align: win.getComputedStyle(item).scrollSnapAlign,
+        rtl: style.direction === "rtl",
+      });
+      viewport.scrollTo({
+        left: viewport.scrollLeft + snapOffset,
+        behavior: "instant",
+      });
     };
 
     updateRef.current = update;

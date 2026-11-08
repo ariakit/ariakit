@@ -516,6 +516,42 @@ export default function CarouselExamples() {
       </Example>
 
       <Example
+        title="Row that snaps"
+        description="Links of a fixed width snap to their starts, and the row scrolls smoothly. The third link ends a little past the space between the fades and the buttons, and when it takes keyboard focus, it scrolls to its own snap position, so the snap doesn't pull the row back."
+        code={`<CarouselViewport $snap="proximity" className="scroll-smooth"><a className="snap-start" /></CarouselViewport>`}
+        wide
+      >
+        <Carousel $kind="row" className="w-[34.25rem] max-w-full">
+          <CarouselViewport
+            aria-label="Snapping links"
+            $snap="proximity"
+            render={<nav />}
+            className="scroll-smooth"
+          >
+            {projects.map((project) => (
+              <Frame
+                key={project.title}
+                // Safari moves Tab to a link only with a tab index.
+                render={
+                  <a
+                    href={`#${getSlideId("link", project.title)}`}
+                    tabIndex={0}
+                  />
+                }
+                $layer
+                $border
+                $rounded="lg"
+                $p={2}
+                className="w-40 shrink-0 snap-start truncate"
+              >
+                {project.title}
+              </Frame>
+            ))}
+          </CarouselViewport>
+        </Carousel>
+      </Example>
+
+      <Example
         title="Slides with links"
         description="One slide per view with fades, and each slide is a link. The row is a fraction of a pixel wider than a whole width, like a third of a column, so a link that fills its slide reads wider than the space between the fades. A link that takes keyboard focus keeps its slide in view."
         code={`<CarouselSlide><Frame render={<a href="#project" />} /></CarouselSlide>`}

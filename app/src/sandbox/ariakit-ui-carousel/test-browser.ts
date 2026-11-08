@@ -4,6 +4,7 @@ import {
   captureInView,
   forEachColorScheme,
   forEachColorSchemeOf,
+  getCoveredWidth,
   skipWithoutScrollAnimations,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
@@ -235,8 +236,8 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
   });
 
   // A fractional row width makes a link that fills its slide read wider than
-  // the space between the fades, so the carousel centers it, and a scroll by
-  // that fraction of a pixel would snap to the next slide.
+  // the space between the fades by a fraction of a pixel, and a scroll by that
+  // fraction would snap to the next slide.
   test("keeps the slide of a focused link in view at a fractional width", async ({
     page,
     q,
@@ -254,6 +255,33 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
         })
         .toPass();
       await test.expect(link).toBeInViewport({ ratio: 1 });
+    }
+  });
+
+  // The third link ends a little past the space between the fades and the
+  // buttons, so a scroll to its nearest edge would stop closer to the snap
+  // position where the row is, and the row would snap back. The row also
+  // scrolls smoothly, which the focus scroll must not wait for.
+  test("scrolls a link that takes keyboard focus to its snap position", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Row that snaps"));
+    const viewport = box.navigation("Snapping links");
+    const links = query(viewport).link();
+    const buttons = [
+      box.button("Scroll backward", { includeHidden: true }),
+      box.button("Scroll forward", { includeHidden: true }),
+    ];
+    await links.first().focus();
+    for (let index = 1; index < 5; index++) {
+      await page.keyboard.press("Tab");
+      const item = links.nth(index);
+      await test.expect(item).toBeFocused();
+      await test.expect
+        .poll(() => getCoveredWidth({ viewport, item, buttons }))
+        .toBe(0);
     }
   });
 
