@@ -5,8 +5,46 @@ import { button } from "@ariakit/ui/styles/button";
 import { link } from "@ariakit/ui/styles/link";
 import { popover } from "@ariakit/ui/styles/popover";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
-import type { ReactNode } from "react";
-import { useRef, useState } from "react";
+import type { DetailedHTMLProps, HTMLAttributes, ReactNode } from "react";
+import { useCallback, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+
+type CopyLinkButtonProps = DetailedHTMLProps<
+  HTMLAttributes<HTMLElement>,
+  HTMLElement
+>;
+
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements {
+      "copy-link-button": CopyLinkButtonProps;
+    }
+  }
+}
+
+// A design system button that renders its own button in a shadow root.
+if (
+  typeof customElements !== "undefined" &&
+  !customElements.get("copy-link-button")
+) {
+  class CopyLinkButton extends HTMLElement {
+    constructor() {
+      super();
+      const shadow = this.attachShadow({ mode: "open" });
+      // Safari doesn't focus a clicked button without a tabindex.
+      shadow.innerHTML = `
+        <style>
+          button {
+            font: inherit;
+            padding: 4px 12px;
+          }
+        </style>
+        <button type="button" tabindex="0">Copy link</button>
+      `;
+    }
+  }
+  customElements.define("copy-link-button", CopyLinkButton);
+}
 
 const lines = Array.from({ length: 24 }, (_, index) => index + 1);
 
@@ -104,6 +142,74 @@ function NativeDialog() {
   );
 }
 
+interface ShadowRootProps {
+  children: ReactNode;
+}
+
+/**
+ * Returns a ref callback for a host element, and a container inside the open
+ * shadow root of that host.
+ */
+function useShadowContainer() {
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const setHost = useCallback((host: HTMLDivElement | null) => {
+    if (!host) {
+      setContainer(null);
+      return;
+    }
+    const shadow = host.shadowRoot || host.attachShadow({ mode: "open" });
+    const element =
+      shadow.querySelector<HTMLDivElement>("[data-shadow-container]") ||
+      host.ownerDocument.createElement("div");
+    element.dataset.shadowContainer = "";
+    if (!element.isConnected) {
+      shadow.append(element);
+    }
+    setContainer(element);
+  }, []);
+  return [setHost, container] as const;
+}
+
+/** Renders its children inside an open shadow root. */
+function ShadowRoot({ children }: ShadowRootProps) {
+  const [setHost, container] = useShadowContainer();
+  return (
+    <>
+      <div ref={setHost} />
+      {container && createPortal(children, container)}
+    </>
+  );
+}
+
+/** A hovercard and its scroll container inside an open shadow root. */
+function ShadowProfile() {
+  return (
+    <ShadowRoot>
+      {/* Page styles don't reach into the shadow root, so the panel and the
+          card set the styles their behavior needs inline. */}
+      <div
+        role="region"
+        aria-label="Shadow contributors"
+        tabIndex={0}
+        style={{ height: 160, overflowY: "auto", border: "1px solid" }}
+      >
+        <ak.HovercardProvider>
+          <ak.HovercardAnchor href="#shadow">@shadow</ak.HovercardAnchor>
+          <ak.Hovercard
+            style={{ background: "white", border: "1px solid", padding: 8 }}
+          >
+            <ak.HovercardHeading>Shadow profile</ak.HovercardHeading>
+            <copy-link-button />
+          </ak.Hovercard>
+        </ak.HovercardProvider>
+        {lines.map((line) => (
+          <p key={line}>Shadow line {line}</p>
+        ))}
+      </div>
+    </ShadowRoot>
+  );
+}
+
 /** A notification whose dismiss button removes itself on click. */
 function Notification() {
   const [dismissed, setDismissed] = useState(false);
@@ -130,6 +236,9 @@ function Notification() {
 }
 
 export default function Example() {
+  // An overlay layer inside a shadow root, like one that a design system uses
+  // to keep page styles away from its popups.
+  const [setOverlayHost, overlay] = useShadowContainer();
   return (
     <div className="flex flex-col gap-8 p-4">
       <TooltipButton label="Share" description="Share this page" />
@@ -176,6 +285,24 @@ export default function Example() {
             <ak.HovercardHeading>Ariakit</ak.HovercardHeading>
             <div className="flex gap-2">
               <Button $border>Follow</Button>
+              <ak.PopoverProvider>
+                <ak.PopoverDisclosure {...button.jsx({ $border: true })}>
+                  Share profile
+                </ak.PopoverDisclosure>
+                {/* Page styles don't reach into the overlay layer. */}
+                <ak.Popover
+                  portal
+                  portalElement={overlay}
+                  style={{
+                    background: "white",
+                    border: "1px solid",
+                    padding: 8,
+                  }}
+                >
+                  <ak.PopoverHeading>Share profile</ak.PopoverHeading>
+                  <copy-link-button />
+                </ak.Popover>
+              </ak.PopoverProvider>
               <ak.MenuProvider>
                 <ak.MenuButton {...button.jsx({ $border: true })}>
                   Profile actions
@@ -223,7 +350,9 @@ export default function Example() {
           </ak.Menu>
         </ak.MenuProvider>
       </Panel>
+      <ShadowProfile />
       <NativeDialog />
+      <div ref={setOverlayHost} />
     </div>
   );
 }

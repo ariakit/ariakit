@@ -138,6 +138,35 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(card).toHaveAttribute("data-open");
   });
 
+  test("keep a hovercard open while focus is in a web component in a nested popover in a shadow root", async ({
+    page,
+    q,
+  }) => {
+    const anchor = q.link("@ariakit");
+    const card = q.dialog("Ariakit");
+    // Ariakit resets hover intent on scroll, so the anchor must be in view
+    // before the pointer moves to it.
+    await anchor.scrollIntoViewIfNeeded();
+    await anchor.hover();
+    await test.expect(card).toBeVisible();
+    // The popover renders in an overlay layer inside a shadow root, outside the
+    // hovercard element. The pointer stays on the hovercard, so the keyboard
+    // moves focus in the popover.
+    await q.button("Share profile").click();
+    await test.expect(q.dialog("Share profile")).toBeFocused();
+    // The button is in the shadow root of a web component.
+    await page.keyboard.press("Tab");
+    await test.expect(q.button("Copy link")).toBeFocused();
+    const cardTop = await getTop(card);
+    await scrollBy(q.region("Contributors"), 0, 200);
+    await test.expect(anchor).not.toBeInViewport();
+    await expectToFollowAnchor(card, cardTop);
+    // A close would render in the frame after that position update, and nothing
+    // else shows that it didn't happen.
+    await flushFrames(page);
+    await test.expect(card).toHaveAttribute("data-open");
+  });
+
   test("keep a hovercard open while focus is in a menu inside it", async ({
     page,
     q,
@@ -154,6 +183,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.menu()).toBeFocused();
     const cardTop = await getTop(card);
     await scrollBy(q.region("Contributors"), 0, 200);
+    await test.expect(anchor).not.toBeInViewport();
+    await expectToFollowAnchor(card, cardTop);
+    // A close would render in the frame after that position update, and nothing
+    // else shows that it didn't happen.
+    await flushFrames(page);
+    await test.expect(card).toHaveAttribute("data-open");
+  });
+
+  test("keep a hovercard in a shadow root open while focus is inside it", async ({
+    page,
+    q,
+  }) => {
+    const anchor = q.link("@shadow");
+    const card = q.dialog("Shadow profile");
+    // Ariakit resets hover intent on scroll, so the anchor must be in view
+    // before the pointer moves to it.
+    await anchor.scrollIntoViewIfNeeded();
+    await anchor.hover();
+    await test.expect(card).toBeVisible();
+    // The button is in the shadow root of a web component inside the card, so
+    // focus is in a shadow root inside another one.
+    await q.button("Copy link").click();
+    await test.expect(q.button("Copy link")).toBeFocused();
+    const cardTop = await getTop(card);
+    await scrollBy(q.region("Shadow contributors"), 0, 200);
     await test.expect(anchor).not.toBeInViewport();
     await expectToFollowAnchor(card, cardTop);
     // A close would render in the frame after that position update, and nothing

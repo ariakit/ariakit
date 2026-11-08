@@ -11,12 +11,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import {
-  getActiveElement,
-  getWindow,
-  hasFocusWithin,
-  invariant,
-} from "@ariakit/utils";
+import { contains, getWindow, hasFocusWithin, invariant } from "@ariakit/utils";
 import {
   arrow,
   autoUpdate,
@@ -34,6 +29,7 @@ import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
 import { isElementInside } from "../dialog/utils/tree-cleanup.ts";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
+import { getTreeActiveElement } from "../focusable/__utils.ts";
 import type { Placement } from "./__utils.ts";
 import { getBasePlacement } from "./__utils.ts";
 import {
@@ -523,10 +519,22 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       const hasFocusInside = () => {
         if (hasFocusWithin(popoverElement)) return true;
         const contentElement = store?.getState().contentElement;
-        if (!contentElement) return false;
-        const activeElement = getActiveElement(popoverElement);
-        if (!activeElement) return false;
-        return isElementInside(activeElement, contentElement);
+        const isInside = (element: Element) => {
+          if (contains(popoverElement, element)) return true;
+          if (!contentElement) return false;
+          return isElementInside(element, contentElement);
+        };
+        // A tree sees focus inside a shadow root as focus on its host. So the
+        // check starts in the tree of the popover and goes down through each
+        // open shadow root that has focus, such as the one of a web component,
+        // or of an overlay that a nested popup renders in.
+        let activeElement: Element | null =
+          getTreeActiveElement(popoverElement);
+        while (activeElement) {
+          if (isInside(activeElement)) return true;
+          activeElement = activeElement.shadowRoot?.activeElement ?? null;
+        }
+        return false;
       };
 
       const hideIfAnchorHidden = (anchorHidden = false) => {
@@ -535,8 +543,8 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           return;
         }
         if (!anchorWasVisible) return;
-        // An anchor that left the DOM has an empty rect, so it reads as
-        // hidden, but nothing clipped it. The popover stays open as before.
+        // An anchor that left the DOM has an empty rect, so it reads as hidden,
+        // but nothing clipped it. The popover stays open as before.
         if (anchorElement && !anchorElement.isConnected) return;
         if (!store?.getState().open) return;
         if (hasFocusInside()) return;
