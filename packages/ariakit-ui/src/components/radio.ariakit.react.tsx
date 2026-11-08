@@ -1,6 +1,6 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
-import { splitProps } from "clava";
+import { cx, splitProps } from "clava";
 import * as React from "react";
 import {
   createOptionalRender,
@@ -14,6 +14,8 @@ import {
   useLabelDescription,
 } from "../react-utils/use-description.react.ts";
 import { buttonGroup } from "../styles/button.ts";
+import { carouselViewportBase } from "../styles/carousel.ts";
+import { frame } from "../styles/frame.ts";
 import {
   radio,
   radioCard,
@@ -36,6 +38,8 @@ import {
 import { isSegmentedKind } from "../styles/segment.ts";
 import type { ButtonSeparatorProps } from "./button.ariakit.react.tsx";
 import { ButtonSeparator } from "./button.ariakit.react.tsx";
+import { Carousel, CarouselViewport } from "./carousel.ariakit.react.tsx";
+import type { CarouselButtonRender } from "./carousel.ariakit.react.tsx";
 
 export interface RadioProviderProps extends ak.RadioProviderProps {}
 
@@ -87,6 +91,27 @@ export interface RadioGroupProps
    * `RadioGroupDescription`. Omitted by default.
    */
   description?: React.ReactNode | RadioGroupDescriptionProps;
+  /**
+   * Renders scroll buttons before and after segments with padding, outside the
+   * element that holds them. They show with a fine pointer while the segments
+   * can scroll toward their side. Defaults to `true`.
+   */
+  buttons?: boolean;
+  /**
+   * The button before the segments, as `true`, an element, or `CarouselButton`
+   * props. `false` omits it. Defaults to a button named "Scroll backward".
+   */
+  previousButton?: CarouselButtonRender;
+  /**
+   * The button after the segments, as `true`, an element, or `CarouselButton`
+   * props. `false` omits it. Defaults to a button named "Scroll forward".
+   */
+  nextButton?: CarouselButtonRender;
+}
+
+interface SegmentsProps extends VariantProps<typeof buttonGroup> {
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -100,7 +125,12 @@ export interface RadioGroupProps
  * kind as a segmented control, and the other variant props style the segments.
  * They have no effect on other groups, but `$gap` then spaces the segments. A
  * `label` then goes above the segments, and `className` and `style` go on the
- * element that holds both.
+ * element that holds both. Segments with padding scroll sideways when they
+ * don't fit, fade at each end while more segments lie that way, and buttons
+ * scroll them with a fine pointer. A wrapper holds the segments and the
+ * buttons, which sit outside the element that holds the segments, and paints
+ * the surface of the segments. Without a label or a description, it takes
+ * `className` and `style`.
  * @example
  * <RadioGroup label="Contact method" defaultValue="email">
  *   <RadioList>
@@ -126,6 +156,10 @@ export function RadioGroup({
   label,
   description,
   children,
+  ref,
+  buttons,
+  previousButton,
+  nextButton,
   ...props
 }: RadioGroupProps) {
   const [variantProps, rest] = splitProps(props, buttonGroup);
@@ -137,17 +171,60 @@ export function RadioGroup({
     description,
   );
   const segmented = variants.$kind === "segmented";
+  const renderSegments = (
+    element: React.ReactElement,
+    { className, style, ...segmentsProps }: SegmentsProps,
+  ) => {
+    const resolved = buttonGroup.getVariants(segmentsProps);
+    if (resolved.$p === "none") {
+      return (
+        <ak.Role
+          {...buttonGroup.jsx({ ...segmentsProps, className, style })}
+          render={element}
+        >
+          {children}
+        </ak.Role>
+      );
+    }
+    // Segments with padding scroll in a carousel row. Their fades would fade
+    // their surface too, so the carousel paints the surface with the frame of
+    // the segments, and the segments cover the carousel.
+    const [surfaceProps] = splitProps(resolved, frame);
+    return (
+      <Carousel
+        $kind="row"
+        {...surfaceProps}
+        $size={resolved.$size}
+        $bleed="var(--ak-frame-padding)"
+        buttons={buttons}
+        previousButton={previousButton}
+        nextButton={nextButton}
+        dir={rest.dir}
+        // The carousel holds the buttons, so it hides with the group.
+        hidden={rest.hidden}
+        className={cx(
+          resolved.$layout === "stretch" ? "w-full" : "ui-base:w-fit",
+          className,
+        )}
+        style={style}
+      >
+        <CarouselViewport
+          recipe={carouselViewportBase}
+          $fade
+          {...buttonGroup.jsx(segmentsProps)}
+          render={element}
+        >
+          {children}
+        </CarouselViewport>
+      </Carousel>
+    );
+  };
   const content = () => {
     // Without texts, the group itself holds the segments.
     if (segmented && !labelElement && !descriptionElement) {
-      return (
-        <ak.RadioGroup
-          {...buttonGroup.jsx(variantProps)}
-          {...rest}
-          aria-describedby={describedBy}
-        >
-          {children}
-        </ak.RadioGroup>
+      return renderSegments(
+        <ak.RadioGroup ref={ref} {...rest} aria-describedby={describedBy} />,
+        variantProps,
       );
     }
     // A segmented group's gap spaces the segments, so the texts above them keep
@@ -155,17 +232,14 @@ export function RadioGroup({
     const groupGap = segmented || $gap === "auto" ? undefined : $gap;
     return (
       <ak.RadioGroup
+        ref={ref}
         {...radioGroup.jsx({ className, style, $gap: groupGap })}
         {...rest}
         aria-describedby={describedBy}
       >
         {labelElement}
         {descriptionElement}
-        {segmented ? (
-          <div {...buttonGroup.jsx({ ...variants, $gap })}>{children}</div>
-        ) : (
-          children
-        )}
+        {segmented ? renderSegments(<div />, { ...variants, $gap }) : children}
       </ak.RadioGroup>
     );
   };

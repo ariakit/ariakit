@@ -20,6 +20,7 @@ import type {
   CarouselViewportProps,
 } from "@ariakit/ui/components/carousel.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Tab,
   TabLabel,
@@ -495,6 +496,103 @@ export default function CarouselExamples() {
             {projects.map((project) => (
               <CarouselSlide key={project.title} className={halfSlide}>
                 <Frame
+                  $layer="brand"
+                  $mix={20}
+                  $rounded="xl"
+                  $p={4}
+                  className="grid h-36 content-end gap-1"
+                >
+                  <h3 className="font-medium">{project.title}</h3>
+                  <p className="text-sm">{project.text}</p>
+                </Frame>
+              </CarouselSlide>
+            ))}
+          </CarouselViewport>
+          <CarouselTabList>
+            {projects.map((project) => (
+              <CarouselTab key={project.title} />
+            ))}
+          </CarouselTabList>
+        </Carousel>
+      </Example>
+
+      <Example
+        title="Row with fields"
+        description="Text fields of a fixed width, and the third field ends under the fade beside the Scroll forward button. A press on a field focuses it without scrolling the row, so the caret stays where the press lands."
+        code={`<CarouselViewport><Input /></CarouselViewport>`}
+        wide
+      >
+        <Carousel $kind="row" className="w-[30rem] max-w-full">
+          <CarouselViewport aria-label="Fields" render={<div role="group" />}>
+            {["Name", "Email", "Company", "Role", "City"].map((label) => (
+              <Input
+                key={label}
+                aria-label={label}
+                placeholder={label}
+                className="w-40 shrink-0"
+              />
+            ))}
+          </CarouselViewport>
+        </Carousel>
+      </Example>
+
+      <Example
+        title="Row that snaps"
+        description="Links of a fixed width snap to their starts, and the row scrolls smoothly. The third link ends a little past the space between the fades and the buttons, and when it takes keyboard focus, it scrolls to its own snap position, so the snap doesn't pull the row back."
+        code={`<CarouselViewport $snap="proximity" className="scroll-smooth"><a className="snap-start" /></CarouselViewport>`}
+        wide
+      >
+        <Carousel $kind="row" className="w-[34.25rem] max-w-full">
+          <CarouselViewport
+            aria-label="Snapping links"
+            $snap="proximity"
+            render={<nav />}
+            className="scroll-smooth"
+          >
+            {projects.map((project) => (
+              <Frame
+                key={project.title}
+                // Safari moves Tab to a link only with a tab index.
+                render={
+                  <a
+                    href={`#${getSlideId("link", project.title)}`}
+                    tabIndex={0}
+                  />
+                }
+                $layer
+                $border
+                $rounded="lg"
+                $p={2}
+                className="w-40 shrink-0 snap-start truncate"
+              >
+                {project.title}
+              </Frame>
+            ))}
+          </CarouselViewport>
+        </Carousel>
+      </Example>
+
+      <Example
+        title="Slides with links"
+        description="One slide per view with fades, and each slide is a link. The row is a fraction of a pixel wider than a whole width, like a third of a column, so a link that fills its slide reads wider than the space between the fades. A link that takes keyboard focus keeps its slide in view."
+        code={`<CarouselSlide><Frame render={<a href="#project" />} /></CarouselSlide>`}
+        wide
+      >
+        <Carousel
+          aria-label="Projects with links"
+          className="w-[25.02rem] max-w-full"
+        >
+          <CarouselViewport $fade>
+            {projects.map((project) => (
+              <CarouselSlide key={project.title}>
+                <Frame
+                  // Safari moves Tab to a link only with a tab index.
+                  render={
+                    <a
+                      href={`#${getSlideId("project", project.title)}`}
+                      tabIndex={0}
+                    />
+                  }
                   $layer="brand"
                   $mix={20}
                   $rounded="xl"

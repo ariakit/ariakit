@@ -36,7 +36,7 @@ import {
 } from "@ariakit/ui/components/tabs.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { Columns3Icon, LayoutGridIcon, ListIcon } from "lucide-react";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import {
   Example,
   ExampleGrid,
@@ -103,6 +103,8 @@ function Segments({
   );
 }
 
+const periods = ["Day", "Week", "Month", "Quarter", "Year"];
+
 const outlined = {
   $layer: "transparent",
   $edgeWeight: "normal",
@@ -122,6 +124,60 @@ const joinedCell = {
   $edgeWeight: "normal",
   $borderType: "border",
 } satisfies Omit<RadioCardProps, "value">;
+
+// The root of a row paints its surface and holds its buttons, so it hides with
+// the element that scrolls.
+function HiddenRows() {
+  const [hidden, setHidden] = useState(false);
+  return (
+    <div className="grid justify-items-start gap-3">
+      <Button aria-pressed={hidden} onClick={() => setHidden(!hidden)}>
+        Hide the rows
+      </Button>
+      <Segments name="Hidden view" hidden={hidden} />
+      <TabProvider defaultSelectedId="hidden-day">
+        <TabList
+          aria-label="Hidden period"
+          $kind="segmented"
+          tabs={{ "hidden-day": "Day", "hidden-week": "Week" }}
+          hidden={hidden}
+        />
+      </TabProvider>
+      <TabProvider defaultSelectedId="hidden-code">
+        <TabList
+          aria-label="Hidden sections"
+          tabs={{ "hidden-code": "Code", "hidden-preview": "Preview" }}
+          hidden={hidden}
+        />
+      </TabProvider>
+      <ButtonGroup aria-label="Hidden pages" $kind="segmented" hidden={hidden}>
+        <Button
+          $kind="segmented"
+          render={<a href="#hidden-first" aria-current="page" />}
+        >
+          <ButtonLabel text="First" />
+        </Button>
+        <Button $kind="segmented" render={<a href="#hidden-second" />}>
+          <ButtonLabel text="Second" />
+        </Button>
+      </ButtonGroup>
+      <Nav
+        aria-label="Hidden range"
+        $kind="segmented"
+        $layout="horizontal"
+        hidden={hidden}
+      >
+        <NavLink
+          $kind="segmented"
+          href="#hidden-day"
+          aria-current="page"
+          text="Day"
+        />
+        <NavLink $kind="segmented" href="#hidden-week" text="Week" />
+      </Nav>
+    </div>
+  );
+}
 
 export default function SegmentedControlExamples() {
   return (
@@ -337,11 +393,57 @@ export default function SegmentedControlExamples() {
 
       <Example
         title="Narrow"
-        description="A group wider than its container scrolls to the focused segment."
+        description="A group wider than its container scrolls to the segment that takes keyboard focus. With a fine pointer, buttons beside the segments scroll it."
         code={`<div className="w-32"><RadioGroup $kind="segmented" /></div>`}
       >
         <div className="w-32">
           <Segments name="Narrow" />
+        </div>
+      </Example>
+
+      <Example
+        title="Narrow tabs"
+        description="A segmented tab list scrolls like a tab strip, with Previous tabs and Next tabs buttons outside the tab list."
+        code={`<div className="w-64"><TabList $kind="segmented" tabs={tabs} /></div>`}
+      >
+        <div className="w-64">
+          <TabProvider defaultSelectedId="narrow-day">
+            <TabList
+              aria-label="Narrow period"
+              $kind="segmented"
+              tabs={Object.fromEntries(
+                periods.map((period) => [
+                  `narrow-${period.toLowerCase()}`,
+                  period,
+                ]),
+              )}
+            />
+          </TabProvider>
+        </div>
+      </Example>
+
+      <Example
+        title="Narrow buttons"
+        description="A segmented button group scrolls the same way, with its buttons outside the element with the group role."
+        code={`<div className="w-36"><ButtonGroup $kind="segmented" /></div>`}
+      >
+        <div className="w-36">
+          <ButtonGroup aria-label="Narrow pages" $kind="segmented" $size="sm">
+            {periods.map((period, index) => (
+              <Button
+                key={period}
+                $kind="segmented"
+                render={
+                  <a
+                    href={`#narrow-${period.toLowerCase()}`}
+                    aria-current={index ? undefined : "page"}
+                  />
+                }
+              >
+                <ButtonLabel text={period} />
+              </Button>
+            ))}
+          </ButtonGroup>
         </div>
       </Example>
 
@@ -450,6 +552,42 @@ export default function SegmentedControlExamples() {
           />
           <NavLink $kind="segmented" href="#week" text="Week" />
         </Nav>
+      </Example>
+
+      <Example
+        title="Narrow navigation"
+        description="A segmented navigation scrolls with its buttons outside the landmark, and the root keeps its surface whole under the fades."
+        code={`<div className="w-40"><Nav $kind="segmented" $layout="horizontal" /></div>`}
+      >
+        <div className="w-40">
+          <Nav aria-label="Narrow range" $kind="segmented" $layout="horizontal">
+            {periods.map((period, index) => (
+              <NavLink
+                key={period}
+                $kind="segmented"
+                href={`#range-${period.toLowerCase()}`}
+                aria-current={index ? undefined : "page"}
+                text={period}
+              />
+            ))}
+          </Nav>
+        </div>
+      </Example>
+
+      <Example
+        title="Numeric size"
+        description="A numeric $size scales the text of the group, and the segments keep the line height of that text."
+        code={`<RadioGroup $kind="segmented" $size={0.875} />`}
+      >
+        <Segments name="Numeric size" $size={0.875} />
+      </Example>
+
+      <Example
+        title="Hidden"
+        description="The hidden prop hides the whole row, with its surface and its buttons. A tab strip hides the same way."
+        code={`<RadioGroup $kind="segmented" hidden />`}
+      >
+        <HiddenRows />
       </Example>
 
       <Example

@@ -57,6 +57,59 @@ function getMaxOffset(viewport: HTMLElement) {
   return Math.max(0, viewport.scrollWidth - viewport.clientWidth);
 }
 
+interface ClearRange {
+  left: number;
+  right: number;
+}
+
+/**
+ * Returns how far a row scrolls so that a box lies in the clear range between
+ * the fades and the buttons: to the nearest edge of the range, or to its middle
+ * when the box doesn't fit. Returns 0 when the box is already clear.
+ */
+function getClearOffset(rect: DOMRect, clear: ClearRange) {
+  if (rect.width > clear.right - clear.left) {
+    return rect.left + rect.width / 2 - (clear.left + clear.right) / 2;
+  }
+  if (rect.left < clear.left) {
+    return rect.left - clear.left;
+  }
+  if (rect.right > clear.right) {
+    return rect.right - clear.right;
+  }
+  return 0;
+}
+
+interface GetSnapOffsetParams {
+  rect: DOMRect;
+  clear: ClearRange;
+  /** The computed `scroll-snap-align` of the item. */
+  align: string;
+  rtl: boolean;
+}
+
+/**
+ * Returns how far a row scrolls so that an item that snaps lies at its own snap
+ * position, with the edge that it snaps to on the clear range. A scroll to the
+ * nearest edge could stop closer to the snap position where the row is, and the
+ * row would snap back. An item that doesn't snap takes the nearest edge.
+ */
+function getSnapOffset({ rect, clear, align, rtl }: GetSnapOffsetParams) {
+  // The inline value comes last, as in "none start".
+  const inline = align.split(" ").at(-1);
+  if (inline === "center") {
+    return rect.left + rect.width / 2 - (clear.left + clear.right) / 2;
+  }
+  if (inline !== "start" && inline !== "end") {
+    return getClearOffset(rect, clear);
+  }
+  const alignsLeft = (inline === "start") !== rtl;
+  if (alignsLeft) {
+    return rect.left - clear.left;
+  }
+  return rect.right - clear.right;
+}
+
 function getScrollPadding(viewport: HTMLElement) {
   const style = getWindow(viewport).getComputedStyle(viewport);
   return {
@@ -349,9 +402,100 @@ function useCarousel({
       schedule();
     };
 
+    // The browser scrolls a focused element into view only when it lies outside
+    // the viewport, so an element under a fade or a button would stay there.
+    // The scroll padding covers them, and a scroll to the nearest edge keeps
+    // the element clear of it. In a row too narrow to fit the element between
+    // them, the nearest edge would cut its other end, so the element goes to
+    // the middle of the row instead. A press focuses the element before its
+    // click, so a scroll then would move the element away from the pointer, and
+    // only focus that matches :focus-visible scrolls. A viewport that snaps
+    // would snap a scroll to the element back to where it was, so it scrolls
+    // the item that holds the element, which can snap. An item that doesn't fit
+    // would go to the middle of the row, with an element at its edge under a
+    // fade, so the element scrolls instead. A text field that a press focuses
+    // matches :focus-visible too, so the carousel also skips the focus that a
+    // press moves. A tap sends its mousedown after the pointer lifts, before
+    // the focus.
+    let pressing = false;
+    let pressTimer = 0;
+    // The browser moves focus right after the mousedown, before a timer can
+    // run. A drag or a context menu can end the press without a mouseup, so a
+    // timer ends it instead.
+    const onMouseDown = () => {
+      pressing = true;
+      clearTimeout(pressTimer);
+      pressTimer = window.setTimeout(() => {
+        pressing = false;
+      });
+    };
+    const onFocusIn = (event: FocusEvent) => {
+      const target = event.target;
+      if (!(target instanceof win.Element)) return;
+      // Firefox can focus the viewport itself, which holds every item.
+      if (target === viewport) return;
+      if (pressing) return;
+      if (!target.matches(":focus-visible")) return;
+      const style = win.getComputedStyle(viewport);
+      const viewportRect = viewport.getBoundingClientRect();
+      const viewportLeft = viewportRect.left + viewport.clientLeft;
+      const viewportRight = viewportLeft + viewport.clientWidth;
+      const clear = {
+        left: viewportLeft + (Number.parseFloat(style.scrollPaddingLeft) || 0),
+        right:
+          viewportRight - (Number.parseFloat(style.scrollPaddingRight) || 0),
+      };
+      const fits = (element: Element) =>
+        element.getBoundingClientRect().width <= clear.right - clear.left;
+      const snapItem =
+        style.scrollSnapType !== "none"
+          ? Array.from(viewport.children).find((child) =>
+              child.contains(target),
+            )
+          : undefined;
+      const snaps = snapItem != null && fits(snapItem);
+      const item = snaps ? snapItem : target;
+      // Fractional widths can leave an item a fraction of a pixel past the
+      // clear range, which still shows it whole.
+      const getItemOffset = () => {
+        const offset = getClearOffset(item.getBoundingClientRect(), clear);
+        return Math.abs(offset) < 1 ? 0 : offset;
+      };
+      const offset = getItemOffset();
+      if (!offset) return;
+      // The carousel scrolls the viewport alone. scrollIntoView would also
+      // scroll the page to show the whole item, and Chrome and Firefox miss the
+      // middle of a row whose scroll padding takes the whole row. A scroll to a
+      // position snaps to the closest item, where a scroll by an offset would
+      // snap to the next one. The scroll is instant, so a viewport that scrolls
+      // smoothly already shows the item where it stops when it's measured
+      // again.
+      viewport.scrollTo({
+        left: viewport.scrollLeft + offset,
+        behavior: "instant",
+      });
+      if (!snaps) return;
+      // The nearest edge can lie closer to the snap position where the row was
+      // than to the one of the item, so the row snaps back. The item then goes
+      // to its own snap position.
+      if (!getItemOffset()) return;
+      const snapOffset = getSnapOffset({
+        rect: item.getBoundingClientRect(),
+        clear,
+        align: win.getComputedStyle(item).scrollSnapAlign,
+        rtl: style.direction === "rtl",
+      });
+      viewport.scrollTo({
+        left: viewport.scrollLeft + snapOffset,
+        behavior: "instant",
+      });
+    };
+
     updateRef.current = update;
     update();
     viewport.addEventListener("scroll", onScroll, { passive: true });
+    viewport.addEventListener("focusin", onFocusIn);
+    viewport.addEventListener("mousedown", onMouseDown, true);
     // Items can grow while the viewport keeps its size, such as when an image
     // or a font loads, so the observer watches each item too.
     const resizeObserver = new win.ResizeObserver(() => {
@@ -390,7 +534,10 @@ function useCarousel({
     return () => {
       win.cancelAnimationFrame(frame);
       clearTimeout(statusTimer);
+      clearTimeout(pressTimer);
       viewport.removeEventListener("scroll", onScroll);
+      viewport.removeEventListener("focusin", onFocusIn);
+      viewport.removeEventListener("mousedown", onMouseDown, true);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
       attributeObserver.disconnect();
@@ -501,6 +648,7 @@ function useCarousel({
   }, []);
 
   return {
+    viewport,
     setViewport,
     atStart,
     atEnd,
@@ -550,6 +698,41 @@ function getCarouselButtonProps({
     onMouseDown: (event: React.MouseEvent) => event.preventDefault(),
     onClick: () => state.scrollToward(side),
   };
+}
+
+/**
+ * Scrolls the viewport with a wheel or a trackpad over an element beside it,
+ * such as a button, which would scroll the page instead. A mostly vertical
+ * swipe still scrolls the page, as it does over the viewport.
+ */
+function useWheelScroll(
+  element: HTMLElement | null,
+  viewport?: HTMLElement | null,
+) {
+  useEffect(() => {
+    if (!element) return;
+    if (!viewport) return;
+    const onWheel = (event: WheelEvent) => {
+      if (event.defaultPrevented) return;
+      // The browser still scrolls for an event that can't be canceled, such as
+      // a late event of a swipe, so a scroll here would add to its own.
+      if (!event.cancelable) return;
+      // Firefox reports lines when a script reads deltaMode before the deltas,
+      // so the deltas come first.
+      const { deltaX, deltaY } = event;
+      if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+      if (event.deltaMode !== event.DOM_DELTA_PIXEL) return;
+      // A script scroll snaps after each step, so a viewport that snaps, such
+      // as one of slides, would stay where it was.
+      const style = getWindow(viewport).getComputedStyle(viewport);
+      if (style.scrollSnapType !== "none") return;
+      event.preventDefault();
+      viewport.scrollBy({ left: deltaX, behavior: "instant" });
+    };
+    // A passive listener can't stop the page from scrolling.
+    element.addEventListener("wheel", onWheel, { passive: false });
+    return () => element.removeEventListener("wheel", onWheel);
+  }, [element, viewport]);
 }
 
 /** A previous or next button, as `true`, an element, or props. */
@@ -975,9 +1158,12 @@ export interface CarouselButtonProps extends Omit<
  * </Carousel>
  */
 export function CarouselButton({ children, ...props }: CarouselButtonProps) {
+  const viewport = useContext(CarouselContext)?.state.viewport;
+  const [area, setArea] = useState<HTMLDivElement | null>(null);
+  useWheelScroll(area, viewport);
   const Icon = props.$side === "start" ? ChevronLeftIcon : ChevronRightIcon;
   return (
-    <div {...carouselButtonArea.jsx({ $side: props.$side })}>
+    <div ref={setArea} {...carouselButtonArea.jsx({ $side: props.$side })}>
       <Button recipe={carouselButton} {...props}>
         {children ?? <Icon />}
       </Button>

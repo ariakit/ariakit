@@ -4,6 +4,7 @@ import {
   captureInView,
   forEachColorScheme,
   forEachColorSchemeOf,
+  getCoveredWidth,
   skipWithoutScrollAnimations,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
@@ -190,6 +191,184 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await box.button("Scroll forward").click();
     await test.expect.poll(() => getScrollLeft(viewport)).toBeGreaterThan(0);
     await test.expect(design).toBeFocused();
+  });
+
+  // The buttons lie outside the row, where a wheel would scroll the page.
+  test("scrolls a row with a sideways wheel over a button", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Filter row"));
+    const viewport = box.toolbar("Filters");
+    await box.button("Scroll forward").hover();
+    await page.mouse.wheel(40, 0);
+    await test.expect.poll(() => getScrollLeft(viewport)).toBe(40);
+    // A vertical wheel still scrolls the page, as it does over the row.
+    const pageOffset = await page.evaluate(() => window.scrollY);
+    await page.mouse.wheel(0, 40);
+    await test.expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(pageOffset);
+    test.expect(await getScrollLeft(viewport)).toBe(40);
+  });
+
+  test("leaves a wheel that a button cancels to the button", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Filter row"));
+    const viewport = box.toolbar("Filters");
+    const next = box.button("Scroll forward");
+    // A custom button can handle a wheel itself, such as to step by item, with
+    // a listener of its own that cancels the event.
+    await next.evaluate((element) => {
+      const cancel = (event: Event) => event.preventDefault();
+      element.addEventListener("wheel", cancel, { once: true, passive: false });
+    });
+    await next.hover();
+    await page.mouse.wheel(40, 0);
+    // The second wheel scrolls the row, so a row that took the first one too
+    // would stop at 80.
+    await page.mouse.wheel(40, 0);
+    await test.expect.poll(() => getScrollLeft(viewport)).toBe(40);
+  });
+
+  // A fractional row width makes a link that fills its slide read wider than
+  // the space between the fades by a fraction of a pixel, and a scroll by that
+  // fraction would snap to the next slide.
+  test("keeps the slide of a focused link in view at a fractional width", async ({
+    page,
+    q,
+  }) => {
+    await reduceMotion(page);
+    const box = query(q.article("Slides with links"));
+    await box.button("Previous slide").focus();
+    for (const name of [/^Dashboard/, /^Mobile app/]) {
+      const link = box.link(name);
+      // Firefox focuses the viewport that scrolls before the first slide.
+      await test
+        .expect(async () => {
+          await page.keyboard.press("Tab");
+          await test.expect(link).toBeFocused({ timeout: 1000 });
+        })
+        .toPass();
+      await test.expect(link).toBeInViewport({ ratio: 1 });
+    }
+  });
+
+  // The third link ends a little past the space between the fades and the
+  // buttons, so a scroll to its nearest edge would stop closer to the snap
+  // position where the row is, and the row would snap back. The row also
+  // scrolls smoothly, which the focus scroll must not wait for.
+  test("scrolls a link that takes keyboard focus to its snap position", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Row that snaps"));
+    const viewport = box.navigation("Snapping links");
+    const links = query(viewport).link();
+    const buttons = [
+      box.button("Scroll backward", { includeHidden: true }),
+      box.button("Scroll forward", { includeHidden: true }),
+    ];
+    await links.first().focus();
+    for (let index = 1; index < 5; index++) {
+      await page.keyboard.press("Tab");
+      const item = links.nth(index);
+      await test.expect(item).toBeFocused();
+      await test.expect
+        .poll(() => getCoveredWidth({ viewport, item, buttons }))
+        .toBe(0);
+    }
+  });
+
+  // Right to left, the scroll position runs from 0 at the start of the row to
+  // negative values, and a scroll by a physical offset still moves the row the
+  // right way.
+  test("scrolls a button that takes keyboard focus in a right to left row", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Right to left row"));
+    const viewport = box.toolbar("Filters right to left");
+    const items = query(viewport).button();
+    const buttons = [
+      box.button("Scroll backward", { includeHidden: true }),
+      box.button("Scroll forward", { includeHidden: true }),
+    ];
+    await items.first().focus();
+    for (let index = 1; index < 6; index++) {
+      await page.keyboard.press("Tab");
+      const item = items.nth(index);
+      await test.expect(item).toBeFocused();
+      await test.expect
+        .poll(() => getCoveredWidth({ viewport, item, buttons }))
+        .toBe(0);
+    }
+    test
+      .expect(await viewport.evaluate((node) => node.scrollLeft))
+      .toBeLessThan(0);
+  });
+
+  // A press focuses a text field before its click, and a text field matches
+  // :focus-visible then, so a scroll would move it away from the pointer. The
+  // keyboard focus after the press still scrolls.
+  test("focuses a field with a press without scrolling the row", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Row with fields"));
+    const viewport = box.group("Fields");
+    const buttons = [
+      box.button("Scroll backward", { includeHidden: true }),
+      box.button("Scroll forward", { includeHidden: true }),
+    ];
+    const field = box.textbox("Company");
+    // The start of the field shows before the fade.
+    await field.click({ position: { x: 8, y: 8 } });
+    await test.expect(field).toBeFocused();
+    test.expect(await getScrollLeft(viewport)).toBe(0);
+    await page.keyboard.press("Tab");
+    const next = box.textbox("Role");
+    await test.expect(next).toBeFocused();
+    await test.expect
+      .poll(() => getCoveredWidth({ viewport, item: next, buttons }))
+      .toBe(0);
+  });
+
+  // A drag ends the press without a mouseup in every engine. A focus manager
+  // can then focus a link with a focus ring and preventScroll before any key
+  // press, so the press that the carousel tracks must end without either.
+  test("scrolls a link that takes focus after a drag", async ({ page, q }) => {
+    await skipWithoutScrollAnimations(page);
+    const box = query(q.article("Row that snaps"));
+    const viewport = box.navigation("Snapping links");
+    const links = query(viewport).link();
+    const buttons = [
+      box.button("Scroll backward", { includeHidden: true }),
+      box.button("Scroll forward", { includeHidden: true }),
+    ];
+    await links.first().dragTo(links.nth(1));
+    const item = links.nth(2);
+    await item.evaluate((node) => {
+      if (!(node instanceof HTMLElement)) return;
+      node.focus({ preventScroll: true, focusVisible: true });
+    });
+    await test.expect(item).toBeFocused();
+    await test.expect
+      .poll(() => getCoveredWidth({ viewport, item, buttons }))
+      .toBe(0);
+    await page.keyboard.press("Tab");
+    const next = links.nth(3);
+    await test.expect(next).toBeFocused();
+    await test.expect
+      .poll(() => getCoveredWidth({ viewport, item: next, buttons }))
+      .toBe(0);
   });
 
   test("moves focus to the other button at the end of a row", async ({

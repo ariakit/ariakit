@@ -1,7 +1,8 @@
 import { cv, cx } from "clava";
 import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
 import { button } from "./button.ts";
-import { frameBase } from "./frame.ts";
+import { fontSize } from "./font-size.ts";
+import { frame, frameBase } from "./frame.ts";
 import { isLayerColor } from "./layer.ts";
 
 /**
@@ -31,8 +32,14 @@ export const carouselNoFadeClass = cx(
  * pointer. `$kind="slides"`, the default, suits a classic carousel, with
  * buttons on every device. Only style components add carousel semantics; these
  * classes add none.
+ *
+ * The root paints nothing by default. A viewport that fades its content would
+ * fade its own surface too, so the root can paint that surface instead, with
+ * frame variants such as `$layer`, `$rounded`, and `$border`. Set `$frame` for
+ * its padding and corners.
  */
 export const carousel = cv({
+  extend: [frame, fontSize],
   class: [
     "carousel",
     // The first grid cell holds the viewport and both buttons. Let the root
@@ -55,6 +62,15 @@ export const carousel = cv({
     // The space that a visible button takes at each end. It stays zero until
     // $buttons sets it.
     "[--carousel-button-space:0px]",
+    // A row of controls, such as a segmented group, fits its buttons to the
+    // line and the block padding of its controls, so the buttons keep the same
+    // space from the edge of the row on every side. A border on the controls,
+    // which segments draw on a dark surface, adds 1px above and below. The size
+    // follows the text of the row, so controls with a text size of their own
+    // need the row to take it too. Whole and even pixels keep the icons on the
+    // pixel grid.
+    "has-[>.carousel-frame]:[--carousel-button-padding:round(--spacing(1),1px)]",
+    "has-[>.carousel-frame]:[--carousel-button-size:round(calc(1lh+1em-2*var(--carousel-button-padding)),2px)]",
   ],
   variants: {
     /**
@@ -121,6 +137,10 @@ export const carousel = cv({
     },
   },
   defaultVariants: {
+    // The root takes no frame geometry and no layer until a surface needs them,
+    // so the frames inside it keep the corners of the frames around it.
+    $frame: false,
+    $layer: false,
     $kind: "slides",
     $buttons(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;

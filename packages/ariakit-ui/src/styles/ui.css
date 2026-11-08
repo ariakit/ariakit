@@ -489,15 +489,18 @@ body > * {
  * bar paints above the page, where the row can't clip it, so it would fly in from
  * outside the row. A new bar has no timeline progress when the browser captures
  * it, so it keeps its name. The range reaches 1px past a fully visible bar, so a
- * bar flush with the edge of the row stays named. Without scroll-driven
- * animations, the bar keeps its name.
+ * bar flush with the edge of the row stays named. The row sets
+ * `--nav-bar-clip-inset` to its padding, because the scroll padding that the
+ * view timeline would use also covers the fades and the scroll buttons, which
+ * the first and last bars sit under at rest. Without scroll-driven animations,
+ * the bar keeps its name.
  */
 @utility ui-nav-bar-clip {
   @supports (animation-timeline: view()) {
     animation-name: ui-nav-bar-clip;
     animation-timing-function: linear;
     animation-fill-mode: both;
-    animation-timeline: view(inline);
+    animation-timeline: view(inline var(--nav-bar-clip-inset, auto));
     animation-range: contain -1px contain calc(100% + 1px);
   }
 }

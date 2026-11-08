@@ -567,16 +567,17 @@ export const tabList = cv({
       return "tabs-stretch after:hidden [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow [&>.control]:[--stretch-px-scale:0.75]";
     },
     /**
-     * Fades the tabs at each end of a strip while more tabs lie that way, and
-     * fully behind a visible scroll button. The strip color stays, but a border
-     * on the strip, such as a divider below the tabs, fades with them. Defaults
-     * to `true` for a strip.
+     * Fades the tabs at each end of a list that scrolls while more tabs lie
+     * that way, and fully behind a visible scroll button. The color of a strip
+     * or a segmented list stays, but a border on a strip, such as a divider
+     * below the tabs, fades with them. A segmented list without padding doesn't
+     * scroll, so it has no fades. Defaults to `true`.
      */
     $fade: {
       true: [
-        // A strip outside tabListCarousel has no buttons and paints its own
-        // color, which a fade would fade too.
-        "carousel-fade [.tab-list-carousel>&]:ui-carousel-fade",
+        // A list outside a carousel, such as a strip outside tabListCarousel,
+        // has no buttons and paints its own color, which a fade would fade too.
+        "carousel-fade [.carousel>&]:ui-carousel-fade",
         // The fade keeps each end clear of the round panel corner below it, so
         // a tab that passes over the corner doesn't show.
         "[.tab-list-carousel>&]:[--carousel-clear:var(--tabs-notch,0px)]",
@@ -584,22 +585,17 @@ export const tabList = cv({
       false: carouselNoFadeClass,
     },
     /**
-     * Sets how far a scroll button moves the strip: `view`, the default, moves
+     * Sets how far a scroll button moves the list: `view`, the default, moves
      * it by the visible width less the fades and buttons, and `item` moves it
-     * to the next tab. No press moves the strip by less than the fade and
-     * button cover, and a step that would leave less than that goes on to the
-     * end.
+     * to the next tab. No press moves the list by less than the fade and button
+     * cover, and a step that would leave less than that goes on to the end.
      */
     $step: carouselStepClasses,
   },
   defaultVariants: {
     $kind: "strip",
-    // The map's false key makes false the static default, so only a strip
-    // replaces it.
-    $fade(defaultValue, variants) {
-      if (defaultValue !== false) return defaultValue;
-      return variants.$kind !== "segmented";
-    },
+    // Replaces the static false default that the map's false key sets.
+    $fade: true,
     $joined(defaultValue, variants) {
       if (variants.$kind === "segmented") return defaultValue;
       return false;

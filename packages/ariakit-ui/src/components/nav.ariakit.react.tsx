@@ -1,6 +1,6 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
-import { splitProps } from "clava";
+import { cx, splitProps } from "clava";
 import * as React from "react";
 import {
   appendOptionalChild,
@@ -17,6 +17,8 @@ import {
   useDescription,
   useDescriptionRegistry,
 } from "../react-utils/use-description.react.ts";
+import { carouselViewportBase } from "../styles/carousel.ts";
+import { frame } from "../styles/frame.ts";
 import {
   nav,
   navButton,
@@ -38,6 +40,8 @@ import {
 import { isCurrentPage } from "../utils/is-current-page.ts";
 import type { ButtonProps } from "./button.ariakit.react.tsx";
 import { Button } from "./button.ariakit.react.tsx";
+import { Carousel, CarouselViewport } from "./carousel.ariakit.react.tsx";
+import type { CarouselButtonRender } from "./carousel.ariakit.react.tsx";
 import type {
   DisclosureButtonProps,
   DisclosureContentBodyProps,
@@ -90,12 +94,36 @@ export interface NavProps
    * landmark, so a nested `Nav` without a name needs `false` too.
    */
   landmark?: boolean;
+  /**
+   * Renders scroll buttons before and after a horizontal navigation, outside
+   * the landmark. They show with a fine pointer while the navigation can scroll
+   * toward their side. Defaults to `true`.
+   */
+  buttons?: boolean;
+  /**
+   * The button before a horizontal navigation, as `true`, an element, or
+   * `CarouselButton` props. `false` omits it. Defaults to a button named
+   * "Scroll backward".
+   */
+  previousButton?: CarouselButtonRender;
+  /**
+   * The button after a horizontal navigation, as `true`, an element, or
+   * `CarouselButton` props. `false` omits it. Defaults to a button named
+   * "Scroll forward".
+   */
+  nextButton?: CarouselButtonRender;
 }
 
 /**
  * A navigation landmark that wraps its rows in a `NavList` by default. Inside a
  * `Nav` landmark or a `ShellSidebar` with `landmark="nav"`, it renders the rows
- * without a second landmark unless it has a name.
+ * without a second landmark unless it has a name. With `$layout="horizontal"`,
+ * the rows scroll sideways without a scrollbar when they don't fit, fade at
+ * each end while more rows lie that way, and "Scroll backward" and "Scroll
+ * forward" buttons scroll them with a fine pointer. A wrapper holds the
+ * navigation and the buttons, which sit outside the landmark, so the reading
+ * and Tab order of the rows stay the same. The wrapper paints the surface of
+ * the navigation and takes `className` and `style`.
  * @example
  * <Nav aria-label="Main" bar>
  *   <NavLink href="/" currentUrl="/">Home</NavLink>
@@ -109,7 +137,17 @@ export interface NavProps
  *   </NavGroup>
  * </Nav>
  */
-export function Nav({ list, bar, landmark, children, ...props }: NavProps) {
+export function Nav({
+  list,
+  bar,
+  landmark,
+  ref,
+  buttons,
+  previousButton,
+  nextButton,
+  children,
+  ...props
+}: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
   // Each navigation names its bar by default, so view transitions can move it
   // between links. React 18 ids contain colons, which CSS names can't hold.
@@ -121,19 +159,63 @@ export function Nav({ list, bar, landmark, children, ...props }: NavProps) {
   const nestedLandmarks = useNestedLandmarks(landmarks, {
     navigation: isLandmark,
   });
-  return (
-    <LandmarkContext.Provider value={nestedLandmarks}>
-      <NavBarContext.Provider value={bar}>
+  const rows =
+    list === false ? children : createRender(NavList, list, { children });
+  const variants = nav.getVariants(variantProps);
+  const navigation = () => {
+    // A render prop from the caller still decides the element.
+    const element = isLandmark ? undefined : <div />;
+    if (variants.$layout !== "horizontal") {
+      return (
         <ak.Role.nav
-          // A render prop from the caller still decides the element.
-          render={isLandmark ? undefined : <div />}
+          ref={ref}
+          render={element}
           {...nav.jsx({ ...variantProps, $barTransitionName })}
           {...rest}
         >
-          {list === false
-            ? children
-            : createRender(NavList, list, { children })}
+          {rows}
         </ak.Role.nav>
+      );
+    }
+    // A horizontal navigation scrolls in a carousel row. Its fades would fade
+    // its surface too, so the carousel paints the surface with the frame of the
+    // navigation, and the navigation covers the carousel. The buttons sit
+    // outside the landmark.
+    const [surfaceProps] = splitProps(variants, frame);
+    const { className, style, ...navProps } = variantProps;
+    return (
+      <Carousel
+        $kind="row"
+        {...surfaceProps}
+        $bleed="var(--ak-frame-padding)"
+        buttons={buttons}
+        previousButton={previousButton}
+        nextButton={nextButton}
+        // The buttons sit at the start and the end of the navigation, and hide
+        // with it.
+        dir={rest.dir}
+        hidden={rest.hidden}
+        className={cx(
+          variants.$kind === "segmented" && "ui-base:w-fit",
+          className,
+        )}
+        style={style}
+      >
+        <CarouselViewport
+          recipe={carouselViewportBase}
+          $fade
+          {...nav.jsx({ ...navProps, $barTransitionName })}
+          render={<ak.Role.nav ref={ref} render={element} {...rest} />}
+        >
+          {rows}
+        </CarouselViewport>
+      </Carousel>
+    );
+  };
+  return (
+    <LandmarkContext.Provider value={nestedLandmarks}>
+      <NavBarContext.Provider value={bar}>
+        {navigation()}
       </NavBarContext.Provider>
     </LandmarkContext.Provider>
   );

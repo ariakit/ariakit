@@ -332,3 +332,45 @@ export async function skipWithoutScrollAnimations(page: Page) {
   );
   test.skip(!supported, "The row buttons need scroll-driven animations");
 }
+
+interface GetCoveredWidthParams {
+  /** The element that scrolls. */
+  viewport: Locator;
+  item: Locator;
+  /** The scroll buttons of the row, which can be hidden. */
+  buttons: Locator[];
+}
+
+/**
+ * Measures how much of an item in a carousel row lies under a visible scroll
+ * button or the fade beside it. A hidden button has no fade beside it, such as
+ * at the end of the row that it scrolls toward. Firefox reports fractional
+ * positions, so the measure ignores one pixel.
+ */
+export async function getCoveredWidth({
+  viewport,
+  item,
+  buttons,
+}: GetCoveredWidthParams) {
+  const fade = await viewport.evaluate((node) =>
+    Number.parseFloat(
+      getComputedStyle(node).getPropertyValue("--carousel-fade-size"),
+    ),
+  );
+  const viewportBox = await viewport.boundingBox();
+  const itemBox = await item.boundingBox();
+  if (!viewportBox || !itemBox) return Number.NaN;
+  const center = viewportBox.x + viewportBox.width / 2;
+  let covered = 0;
+  for (const button of buttons) {
+    if (!(await button.isVisible())) continue;
+    const box = await button.boundingBox();
+    if (!box) continue;
+    if (box.x + box.width / 2 < center) {
+      covered += Math.max(0, box.x + box.width + fade - itemBox.x);
+    } else {
+      covered += Math.max(0, itemBox.x + itemBox.width - (box.x - fade));
+    }
+  }
+  return Math.max(0, covered - 1);
+}

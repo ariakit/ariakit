@@ -26,19 +26,21 @@ function Feed() {
       className="grid w-md max-w-full overflow-clip"
     >
       <Frame $cover $p={3} className="grid justify-items-center border-b">
+        {/* The links take the text size of the row, and its scroll buttons
+            fit it. */}
         <Nav
           aria-label="Feed"
           $kind="segmented"
           $layout="horizontal"
           $rounded="full"
           $forceRounded
+          className="text-sm"
         >
           {feeds.map(({ label, path }) => (
             <RouterNavLink
               key={path}
               to={path}
               $kind="segmented"
-              $size="sm"
               $invert
               text={label}
             />
