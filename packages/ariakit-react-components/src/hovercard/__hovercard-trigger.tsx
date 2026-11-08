@@ -255,8 +255,10 @@ export interface HovercardTriggerOptions<
    *
    * Setting
    * [`showOnHover`](https://ariakit.com/reference/hovercard-anchor#showonhover)
-   * to `false` turns this off too, but a `showOnHover` callback doesn't run on
-   * a scroll.
+   * to `false` also stops scrolls from showing the content element, but a
+   * `showOnHover` callback doesn't run on a scroll. Hiding still follows
+   * [`hideOnHoverOutside`](https://ariakit.com/reference/hovercard#hideonhoveroutside),
+   * like a mouse leave.
    * @default false
    */
   hoverOnScroll?: BooleanOrCallback<Event>;
