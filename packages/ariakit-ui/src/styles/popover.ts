@@ -46,18 +46,15 @@ export const popover = cv({
      * scroll container, an open popup trails its anchor while the container
      * scrolls.
      */
-    $slide: {
+    $slide: [
       // Ariakit moves the positioned wrapper around the popup, so the popup
       // class styles its parent. The motion-safe: condition turns the slide
       // off with reduced motion, which the motion-reduce: classes of the popup
       // don't reach.
-      true: [
-        "motion-safe:[*:has(>&[data-enter])]:transition-transform",
-        "motion-safe:[*:has(>&[data-enter])]:duration-150",
-        "motion-safe:[*:has(>&[data-enter])]:ease-out",
-      ],
-      false: "",
-    },
+      "motion-safe:[*:has(>&[data-enter])]:transition-transform",
+      "motion-safe:[*:has(>&[data-enter])]:duration-150",
+      "motion-safe:[*:has(>&[data-enter])]:ease-out",
+    ],
   },
   defaultVariants: {
     $layer: "canvas",
