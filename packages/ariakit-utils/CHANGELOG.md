@@ -1,5 +1,10 @@
 # @ariakit/utils
 
+## 0.2.3
+
+- Fixed `restoreFocusIn` not restoring elements inside same-origin iframes that `disableFocusIn` made not tabbable.
+- Fixed `shallowEqual` returning `true` for objects with different keys when the values are `undefined`, such as `{ email: undefined }` and `{ phone: undefined }`.
+
 ## 0.2.2
 
 - Fixed scroll-container detection skipping horizontal scrolling when the same element has hidden vertical overflow.

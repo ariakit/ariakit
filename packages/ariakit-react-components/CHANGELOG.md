@@ -1,5 +1,69 @@
 # @ariakit/react-components
 
+## 0.7.2
+
+### Default `arrowPadding` based on the corner radius
+
+When the [`arrowPadding`](https://ariakit.com/reference/popover#arrowpadding) prop isn't set, a [`PopoverArrow`](https://ariakit.com/reference/popover-arrow) now stays clear of the rounded corners on the side of the popover where it renders. Near the side of the viewport, the arrow of a rounded or pill-shaped popover no longer slides under the curve. In exchange, it may point a little farther from the anchor center than before.
+
+The default padding follows the corner radius every time the popover position updates, and it's never less than 4 pixels, the previous default. With a `*-start` or `*-end` placement and a small anchor, such as an icon button, the popover may move farther past the edge of the anchor than before, so the arrow can keep pointing at the anchor.
+
+```tsx
+<Tooltip style={{ borderRadius: 9999 }}>
+  <TooltipArrow />
+  Add to favorites
+</Tooltip>
+```
+
+An explicit [`arrowPadding`](https://ariakit.com/reference/popover#arrowpadding) value still takes precedence. This applies to all components built on [`Popover`](https://ariakit.com/reference/popover), including [`Hovercard`](https://ariakit.com/reference/hovercard), [`Tooltip`](https://ariakit.com/reference/tooltip), [`Menu`](https://ariakit.com/reference/menu), [`SelectPopover`](https://ariakit.com/reference/select-popover), and [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover).
+
+### New `RadioGroupLabel` component
+
+The new [`RadioGroupLabel`](https://ariakit.com/reference/radio-group-label) component labels a [`RadioGroup`](https://ariakit.com/reference/radio-group). Render it inside the group, and the group gets an `aria-labelledby` attribute that points to the label.
+
+```tsx
+<RadioProvider>
+  <RadioGroup>
+    <RadioGroupLabel>Favorite fruit</RadioGroupLabel>
+    <Radio value="apple" />
+    <Radio value="orange" />
+  </RadioGroup>
+</RadioProvider>
+```
+
+The group gets the label id after hydration, so server-rendered HTML doesn't name the group. An `aria-label` prop on the [`RadioGroup`](https://ariakit.com/reference/radio-group) still takes precedence over the label.
+
+### `data-instant` attribute on tooltips
+
+The [`Tooltip`](https://ariakit.com/reference/tooltip) component now renders the [`data-instant`](https://ariakit.com/guide/styling#data-instant) attribute while it shows at once because of the [`skipTimeout`](https://ariakit.com/reference/use-tooltip-store#skiptimeout) window, and while it hides because another tooltip replaces it. A tooltip that shows after the normal delay doesn't have this attribute. This works across tooltips with separate stores.
+
+Use it to skip the exit transition of the replaced tooltip, so the contents of the two tooltips don't overlap:
+
+```css
+.tooltip[data-instant]:not([data-open]) {
+  transition: none;
+}
+```
+
+### Form pending states with overlapping callbacks
+
+The `validating` and `submitting` states of [`useFormStore`](https://ariakit.com/reference/use-form-store) now stay `true` until every overlapping validation or submission finishes. Before, the first one to finish set the state to `false`. For example, a blur autosave that runs after a manual submission no longer enables [`FormSubmit`](https://ariakit.com/reference/form-submit) and [`FormReset`](https://ariakit.com/reference/form-reset) while the autosave is still pending.
+
+Callbacks passed to [`useFormValidate`](https://ariakit.com/reference/use-form-validate) and [`useFormSubmit`](https://ariakit.com/reference/use-form-submit) must settle. If a debounced callback cancels a previous call, resolve the previous promise instead of leaving it pending. Otherwise, the form stays in a pending state.
+
+### Other updates
+
+- Fixed arrow keys moving focus out of a text field rendered as [`CompositeItem`](https://ariakit.com/reference/composite-item) before the caret reached the start or end of the text when a two-dimensional composite sets [`orientation`](https://ariakit.com/reference/composite-provider#orientation) to `vertical` or `horizontal`. This also applies to all components built on [`CompositeItem`](https://ariakit.com/reference/composite-item).
+- Fixed composite-based stores generating random IDs during render, which made Next.js reject prerendering with Cache Components. This affected providers and store hooks such as [`TabProvider`](https://ariakit.com/reference/tab-provider) and [`MenuProvider`](https://ariakit.com/reference/menu-provider) without a store ID, and all composite-based providers that receive an `undefined` `id`.
+- Fixed [`Disclosure`](https://ariakit.com/reference/disclosure) elements that share a store and receive inline ref callbacks moving `aria-expanded`, and the position of a popup anchored to them, to the first element when they re-render. This applies to all components built on [`Disclosure`](https://ariakit.com/reference/disclosure), including [`MenuButton`](https://ariakit.com/reference/menu-button) and [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure).
+- Fixed [`Hovercard`](https://ariakit.com/reference/hovercard) hiding while the pointer rests on another trigger element that shares its store, such as when moving the pointer from one [`Menubar`](https://ariakit.com/reference/menubar) item to the next with a shared [`Menu`](https://ariakit.com/reference/menu), or from one [`TooltipAnchor`](https://ariakit.com/reference/tooltip-anchor) to the next with a shared [`Tooltip`](https://ariakit.com/reference/tooltip). This applies to all components built on [`Hovercard`](https://ariakit.com/reference/hovercard), including [`Menu`](https://ariakit.com/reference/menu) and [`Tooltip`](https://ariakit.com/reference/tooltip).
+- Fixed [`Portal`](https://ariakit.com/reference/portal) with [`preserveTabOrder`](https://ariakit.com/reference/portal#preservetaborder) removing its elements from the tab order when focus moved into a same-origin iframe inside the portal, so <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> from the iframe skipped the elements around it. This also applies to components that render in a portal with this behavior, such as non-modal [`Popover`](https://ariakit.com/reference/popover).
+- Fixed [`Portal`](https://ariakit.com/reference/portal) with [`preserveTabOrder`](https://ariakit.com/reference/portal#preservetaborder) leaving elements inside same-origin iframes out of the tab order after focus left the portal and returned. This also applies to components that render in a portal with this behavior, such as non-modal [`Popover`](https://ariakit.com/reference/popover).
+- Fixed [`Radio`](https://ariakit.com/reference/radio) ignoring a selection when its [`checked`](https://ariakit.com/reference/radio#checked) prop is `false` but the radio store still holds its value, such as after the app resets its controlled state.
+- Fixed keyboard navigation following the previous order after mounted [`CollectionItem`](https://ariakit.com/reference/collection-item) elements move in the DOM, such as when React reorders items with stable keys. This also applies to all components built on [`CollectionItem`](https://ariakit.com/reference/collection-item), such as [`CompositeItem`](https://ariakit.com/reference/composite-item) and [`ComboboxItem`](https://ariakit.com/reference/combobox-item).
+- Fixed [`Hovercard`](https://ariakit.com/reference/hovercard) closing again right after it reopens during its exit transition when the pointer moved outside it just before, such as when a [`TooltipAnchor`](https://ariakit.com/reference/tooltip-anchor) receives keyboard focus at that moment. This applies to all components built on [`Hovercard`](https://ariakit.com/reference/hovercard), including [`Menu`](https://ariakit.com/reference/menu) and [`Tooltip`](https://ariakit.com/reference/tooltip).
+- Updated dependencies: `@ariakit/components@0.1.16`, `@ariakit/utils@0.2.3`, `@ariakit/store@0.1.12`, `@ariakit/react-store@0.1.14`, `@ariakit/react-utils@0.2.9`
+
 ## 0.7.1
 
 ### Supplemental focus styling
