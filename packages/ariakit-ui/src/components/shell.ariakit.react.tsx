@@ -179,10 +179,11 @@ export interface ShellMainIntroProps
  * aligns with the body, and its surface spans the adjacent end columns whose
  * sidebars start at the body. Direct element children use the centered content
  * column; named main bands can select a wider span. `$py` sets the space above
- * and below it. By default, this space grows with the width of the intro, so
- * open sidebars beside it reduce the space. It sets no text styles, so banners,
- * images, and controls keep their size unless `ShellMain` sets `$size`. Put a
- * title in `Prose`.
+ * it and the space between it and the body. By default, this space grows with
+ * the width of the intro, so open sidebars beside it reduce the space, and the
+ * body ends with the same space. It sets no text styles, so banners, images,
+ * and controls keep their size unless `ShellMain` sets `$size`. Put a title in
+ * `Prose`.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -224,11 +225,12 @@ export interface ShellMainProps
  * `className="[--page-gutter:1rem] @3xl/shell:[--page-gutter:2rem]"`. The query
  * uses the nearest shell width. A part's own `$p` overrides this value. `$py`
  * sets the space above the intro, or above the body without an intro, and below
- * the body. By default, the body uses its gutter and the intro uses its own
- * `$py`; `$py="none"` removes the space. `$maxWidth` sets the shared content
- * width limit. Use a number or CSS length to align columns across text sizes.
- * Percentages depend on each part's width and can misalign wider headers or
- * intros. Parts can override `$maxWidth`.
+ * the body. By default, a body without an intro uses its gutter on both edges.
+ * With an intro, the intro uses its own `$py`, and by default the body ends
+ * with the space above the intro. `$py="none"` removes the space. `$maxWidth`
+ * sets the shared content width limit. Use a number or CSS length to align
+ * columns across text sizes. Percentages depend on each part's width and can
+ * misalign wider headers or intros. Parts can override `$maxWidth`.
  *
  * `$size` sets the text size of main and a 42em column, so line length stays
  * the same at every size. `Prose` follows it, and bars and sidebars keep the

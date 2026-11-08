@@ -736,6 +736,14 @@ body > * {
   initial-value: 0px;
 }
 
+/* The body's end reads the animated sidebar lengths, so it doesn't inherit:
+   each step of a fold restyles the body, not the content inside it. */
+@property --shell-main-pbe {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @property --shell-main-max-width {
   syntax: "<length-percentage>";
   inherits: true;

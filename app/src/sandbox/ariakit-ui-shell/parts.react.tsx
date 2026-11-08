@@ -107,6 +107,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
   const [blockPadding, setBlockPadding] = useState("gutter");
   const [introBlockPadding, setIntroBlockPadding] = useState("auto");
   const [introTargets, setIntroTargets] = useState(false);
+  const [introOnly, setIntroOnly] = useState(false);
   const [from, setFrom] = useState<Start>("intro");
   const [endOpen, setEndOpen] = useState(true);
   const [startVisibility, setStartVisibility] = useState<Visibility>("always");
@@ -497,6 +498,14 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
               />{" "}
               More targets in the intro
             </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={introOnly}
+                onChange={(event) => setIntroOnly(event.currentTarget.checked)}
+              />{" "}
+              Intro without a body
+            </label>
           </section>
           <Shell id="nested-parts-shell" $size="md" className="mt-4 max-w-3xl">
             <ShellHeader>
@@ -534,6 +543,15 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
               </ShellMainBody>
             </ShellMain>
           </Shell>
+          {introOnly && (
+            <Shell id="intro-only-shell" $size="md" className="mt-4 max-w-3xl">
+              <ShellMain>
+                <ShellMainIntro>
+                  <p>Only an intro</p>
+                </ShellMainIntro>
+              </ShellMain>
+            </Shell>
+          )}
           <div className="h-[1200px]">After the nested shell</div>
         </ShellMainBody>
       </ShellMain>
