@@ -6,7 +6,6 @@ import {
   createOptionalRender,
   hasContent,
 } from "../react-utils/create-render.react.ts";
-import { usePopoverPositionerProps } from "../react-utils/use-popover-positioner.react.ts";
 import {
   TruncationContext,
   useTruncationRegistry,
@@ -18,6 +17,7 @@ import {
   tooltipSlot,
   tooltipText,
 } from "../styles/tooltip.ts";
+import { usePopoverPositionerProps } from "./popover.ariakit.react.tsx";
 
 type TooltipProviderPropKey =
   | "store"
