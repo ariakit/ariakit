@@ -2,7 +2,7 @@ import { withFramework } from "#app/test-utils/preview.ts";
 import { hoverAnchor, waitPastSlide } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
-  test("doesn't slide with $slide set to false", async ({ page, q }) => {
+  test("doesn't slide without $slide", async ({ page, q }) => {
     const section = q.region("No slide");
     await hoverAnchor(query(section).button("One"));
     await test.expect(q.tooltip("One tooltip")).toBeVisible();

@@ -76,34 +76,3 @@ export const tooltipArrow = cv({
  * tooltip. Without slots, bare text works too.
  */
 export const tooltipText = slotFrameText;
-
-/**
- * The positioned wrapper of a tooltip popup, through the `wrapperProps` of
- * `TooltipPopover`. Use it for a popup that several anchors share.
- */
-export const tooltipWrapper = cv({
-  variants: {
-    /**
-     * Slides the popup when it moves to another anchor. Ariakit adds
-     * `data-enter` after the popup is in place at its first anchor, so the
-     * slide waits for it, and the popup does not travel when it opens. The
-     * popup needs its own enter animation for that order, which the tooltip
-     * style recipe has. Reduced motion turns the slide off. In a scroll
-     * container, an open popup trails its anchor while the container scrolls;
-     * use `false` there.
-     */
-    $slide: {
-      // The motion-safe: condition is needed because the :has() selector
-      // outranks a motion-reduce: override.
-      true: [
-        "motion-safe:[&:has(>[data-enter])]:transition-transform",
-        "motion-safe:[&:has(>[data-enter])]:duration-150",
-        "motion-safe:[&:has(>[data-enter])]:ease-out",
-      ],
-      false: "",
-    },
-  },
-  defaultVariants: {
-    $slide: true,
-  },
-});
