@@ -833,11 +833,11 @@ const contentVariants = {
   },
   /**
    * Sets the minimum content gutter. Unless main sets `$py`, it also sets the
-   * space above the body without an intro and below the body. The body keeps
-   * three steps after an intro, and the intro sets its own space with `$py`.
-   * Numbers scale the spacing token and round to a whole pixel. Inherits from
-   * main by default. `none` removes the space; `unset` leaves the CSS gutter
-   * unchanged.
+   * space above and below the body without an intro, and below the body after
+   * an intro that sets `$py`. After an intro, the body starts three bar steps
+   * below it, and the intro sets its own space with `$py`. Numbers scale the
+   * spacing token and round to a whole pixel. Inherits from main by default.
+   * `none` removes the space; `unset` leaves the CSS gutter unchanged.
    */
   $p(value?: "unset" | "none" | (string & {}) | number) {
     if (value == null) return;
@@ -866,8 +866,10 @@ export const shellMain = cv({
     "[.shell-paged>&]:[--shell-main-max-width:var(--shell-max-width)]",
     "shell-slot-state",
     // Without `$py`, the body spends its own gutter on its edges next to the
-    // bars, and the intro its own `$py`. A nested main doesn't take the space
-    // set on an outer one or on an intro around it.
+    // bars, and the intro its own `$py`. After an intro with the default `$py`,
+    // the body ends with the space above the intro, so the page ends with the
+    // space it starts with. A nested main doesn't take the space set on an
+    // outer one or on an intro around it.
     "[--shell-main-py:initial] [--shell-main-intro-pbs:initial]",
     // Nested shells inside main also clear its sticky local header. Only the
     // first two levels publish offsets: the supported third level consumes them.
@@ -927,8 +929,11 @@ export const shellMain = cv({
     /**
      * Sets the space above the intro, or above the body without an intro, and
      * below the body. Numbers scale the spacing token; other values must be CSS
-     * lengths, not percentages. Defaults to `gutter`: the body uses its gutter,
-     * and the intro uses its own `$py`. `none` removes the space.
+     * lengths, not percentages. Defaults to `gutter`: without an intro, the
+     * body uses its gutter on both edges. With an intro, the intro uses its own
+     * `$py`. When that is `auto`, the body ends with the space above the intro,
+     * so the page ends with the space it starts with. Otherwise, the body ends
+     * with its gutter. `none` removes the space.
      */
     $py(value?: "gutter" | "none" | (string & {}) | number) {
       if (value == null) return;
@@ -1096,19 +1101,23 @@ export const shellMainIntro = cv({
     "shell-main-intro content-start col-start-1 col-end-[calc(2+var(--shell-intro-free-1)+var(--shell-intro-free-1)*var(--shell-intro-free-2))] row-[intro] overflow-x-clip",
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))]",
     // By default, the intro starts `$py` from main, or a space that follows the
-    // width of the intro, below the header. It ends with that same space,
-    // whatever main sets. A percentage resolves against the grid area, which
-    // sidebars beside the intro reduce and adjacent end sidebars that start at
-    // the body don't. Whole pixels keep a fluid value from leaving the page at a
-    // fractional height. The sidebar alignment with the body depends only on the
-    // three bar steps above the body. The padding-block utility sorts before
-    // py-*.
+    // width of the intro, below the header. Below the intro, that same space
+    // stays, whatever main sets. A percentage resolves against the grid area,
+    // which sidebars beside the intro reduce and adjacent end sidebars that
+    // start at the body don't. Whole pixels keep a fluid value from leaving the
+    // page at a fractional height. The padding-block utility sorts before py-*.
     // Don't use a container unit here: in Chrome, one such unit under a stretched
     // grid container restyles each element with a container query on every
     // relayout of that container, such as each frame of a sidebar fold.
     "[--shell-main-intro-space:round(clamp(calc(var(--shell-header-step)*5),5%,calc(var(--shell-header-step)*14)),1px)]",
+    // The body below starts three bar steps lower, which keeps it level with
+    // sidebars that start at the body. So the intro ends that much earlier, and
+    // the space between them is the space above the intro. A smaller space
+    // keeps the three steps.
+    "[--shell-main-intro-end:var(--shell-main-intro-space)]",
+    "[&:has(~.shell-main-body)]:[--shell-main-intro-end:max(0px,calc(var(--shell-main-intro-space)-round(calc(var(--shell-header-step)*3),1px)))]",
     // oxlint-disable-next-line tailwindcss/enforce-canonical -- py-[...] sorts after py-*
-    "[padding-block:var(--shell-main-py,var(--shell-main-intro-space))_var(--shell-main-intro-space)]",
+    "[padding-block:var(--shell-main-py,var(--shell-main-intro-space))_var(--shell-main-intro-end)]",
     // Fragment targets can't read a percentage, so they clear the largest space.
     // A table of contents still marks a target current at the top of the page.
     "[--shell-main-intro-pbs:var(--shell-main-py,round(calc(var(--shell-header-step)*14),1px))]",
@@ -1116,16 +1125,22 @@ export const shellMainIntro = cv({
   variants: {
     ...contentVariants,
     /**
-     * Sets the space above and below the intro. Numbers scale the spacing
-     * token; other values must be CSS lengths, not percentages. Defaults to
-     * `auto`, the same space on both edges, which grows with the width of the
-     * intro: open sidebars beside it reduce the space, and adjacent end
-     * sidebars that start at the body don't. With `auto`, `$py` on main
-     * replaces the space above when set, and fragment targets in the intro
-     * otherwise clear the largest space. `gutter` uses the gutter on both
-     * edges. `none` removes the space, so `py-*`, `pt-*`, and `pb-*` can set
-     * it. These classes don't move fragment targets, so use a value when the
-     * intro has targets.
+     * Sets the space above and below the intro. Before a body, which always
+     * starts three bar steps lower, the intro ends that much earlier, so the
+     * space below the intro is the same up to the body's content. A space
+     * smaller than three bar steps leaves those three steps. Numbers scale the
+     * spacing token; other values must be CSS lengths, not percentages.
+     * Defaults to `auto`, the same space on both edges, which grows with the
+     * width of the intro: open sidebars beside it reduce the space, and
+     * adjacent end sidebars that start at the body don't. With `auto`, the body
+     * ends with the same space, `$py` on main replaces the space above the
+     * intro and below the body when set, and fragment targets in the intro
+     * otherwise clear the largest space. Other values don't reach the body,
+     * which then ends with its gutter, so set the same value on `ShellMain`.
+     * `gutter` uses the gutter on both edges. `none` removes the space, so
+     * `py-*`, `pt-*`, and `pb-*` can set it. The body still adds its three bar
+     * steps below `pb-*`. These classes don't move fragment targets, so use a
+     * value when the intro has targets.
      */
     $py(value?: "auto" | "gutter" | "none" | (string & {}) | number) {
       if (value == null) return;
@@ -1135,6 +1150,9 @@ export const shellMainIntro = cv({
           ? "var(--shell-gutter)"
           : getSpacingValue(value === "none" ? 0 : value);
       return {
+        // The body after this intro can't read the value, so it keeps its own
+        // end instead of the fluid space.
+        class: "shell-main-intro-py",
         style: {
           // The registered length resolves relative units at the intro, and it
           // replaces the space above that main sets.
@@ -1158,9 +1176,14 @@ export const shellMainBody = cv({
     // The body keeps `$py` from main, or its own gutter, above and below it.
     // After an intro, it starts three bar steps below the intro.
     "[--shell-main-pbs:var(--shell-main-py,var(--shell-gutter))]",
+    "[--shell-main-pbe:var(--shell-main-py,var(--shell-gutter))]",
     "[.shell-main-intro~&]:[--shell-main-pbs:round(calc(var(--shell-header-step)*3),1px)]",
+    // After an intro with the default `$py`, the body ends with the space above
+    // the intro. The intro also spans the adjacent end sidebars that start at
+    // the body, so their width counts toward its 5%.
+    "[.shell-main-intro:not(.shell-main-intro-py)~&]:[--shell-main-pbe:var(--shell-main-py,round(clamp(calc(var(--shell-header-step)*5),calc(5%+0.05*(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))),calc(var(--shell-header-step)*14)),1px))]",
     // oxlint-disable-next-line tailwindcss/enforce-canonical -- py-[...] sorts after py-*
-    "[padding-block:var(--shell-main-pbs)_var(--shell-main-py,var(--shell-gutter))]",
+    "[padding-block:var(--shell-main-pbs)_var(--shell-main-pbe)]",
   ],
   variants: contentVariants,
   defaultVariants: { $p: "unset" },

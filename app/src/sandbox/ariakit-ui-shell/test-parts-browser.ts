@@ -118,19 +118,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     );
     // At main's 16px: the 2rem page gutter, none, 10 steps, and 2em. The
     // default intro doesn't take the gutter from main, so its fluid 14 bar
-    // steps apply at this shell width.
-    for (const [option, space, introSpace] of [
+    // steps apply at this shell width. The body ends with the space above the
+    // intro.
+    for (const [option, space, edgeSpace] of [
       ["Gutter", 32, 56],
       ["None", 0, 0],
       ["10 steps", 40, 40],
       ["2em", 32, 32],
     ] as const) {
       await q.combobox("Main block padding").selectOption(option);
-      await expect(intro).toHaveCSS("padding-block-start", `${introSpace}px`);
-      await expect(body).toHaveCSS("padding-block-end", `${space}px`);
-      // The space below the intro stays fluid, whatever main sets, and the body
-      // keeps three bar steps above it.
-      await expect(intro).toHaveCSS("padding-block-end", "56px");
+      await expect(intro).toHaveCSS("padding-block-start", `${edgeSpace}px`);
+      await expect(body).toHaveCSS("padding-block-end", `${edgeSpace}px`);
+      // The space below the intro stays fluid, whatever main sets. The body
+      // keeps three bar steps above it, so the intro ends that much earlier.
+      await expect(intro).toHaveCSS("padding-block-end", "44px");
       await expect(body).toHaveCSS("padding-block-start", "12px");
       await expect(q.region("Main content")).toHaveCSS(
         "scroll-margin-block-start",
@@ -153,21 +154,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
       intro.evaluate((node) =>
         Number.parseFloat(getComputedStyle(node).paddingBlockStart),
       );
+    // 5% of the width in whole pixels, between 5 and 14 bar steps.
+    const getAutoSpace = (width: number) =>
+      Math.round(Math.min(56, Math.max(20, width * 0.05)));
     const getSpaceError = async () => {
-      const box = await getBox(intro);
-      // 5% of the intro width in whole pixels, between 5 and 14 bar steps.
-      const expected = Math.round(Math.min(56, Math.max(20, box.width * 0.05)));
+      const expected = getAutoSpace((await getBox(intro)).width);
       const end = await intro.evaluate((node) =>
         Number.parseFloat(getComputedStyle(node).paddingBlockEnd),
       );
+      // The body starts three bar steps lower, so the intro ends that much
+      // earlier and the space up to the body is the space above the intro.
       return Math.max(
         Math.abs((await getIntroSpace()) - expected),
-        Math.abs(end - expected),
+        Math.abs(end + 12 - expected),
       );
+    };
+    // After an intro, the body ends with the space above the intro.
+    const getBodyEndError = async () => {
+      const end = await body.evaluate((node) =>
+        Number.parseFloat(getComputedStyle(node).paddingBlockEnd),
+      );
+      return Math.abs(end - (await getIntroSpace()));
     };
     for (const width of [375, 900, 1440, 2000]) {
       await page.setViewportSize({ width, height: 800 });
       await expect.poll(getSpaceError).toBeLessThan(0.1);
+      await expect.poll(getBodyEndError).toBeLessThan(0.1);
       // A target can't read the percentage, so it clears the largest space at
       // every width, and a table of contents marks it current at the top.
       await expect(title).toHaveCSS("scroll-margin-block-start", "120px");
@@ -181,6 +193,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.combobox("End sidebar starts at").selectOption("body");
     await expect.poll(getIntroSpace).toBeGreaterThan(besideSpace);
     await expect.poll(getSpaceError).toBeLessThan(0.1);
+    // The intro spans this sidebar and the body doesn't, but the body still
+    // ends with the space above the intro.
+    await expect.poll(getBodyEndError).toBeLessThan(0.1);
     await q.combobox("End sidebar starts at").selectOption("intro");
     await expect.poll(getIntroSpace).toBe(besideSpace);
     await q.checkbox("Second start sidebar").check();
@@ -206,8 +221,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
     ] as const) {
       await q.combobox("Intro block padding").selectOption(option);
       await expect(intro).toHaveCSS("padding-block-start", `${space}px`);
-      await expect(intro).toHaveCSS("padding-block-end", `${space}px`);
+      // The intro ends three bar steps early for the body below it. A space
+      // smaller than those steps keeps them.
+      await expect(intro).toHaveCSS(
+        "padding-block-end",
+        `${Math.max(0, space - 12)}px`,
+      );
       await expect(body).toHaveCSS("padding-block-start", "12px");
+      // The body can't read a value set on the intro, so it keeps the 2rem page
+      // gutter at its end. With `auto`, it ends with the intro's space.
+      await expect(body).toHaveCSS(
+        "padding-block-end",
+        `${option === "Auto" ? space : 32}px`,
+      );
       // A target in the intro stops where it starts, so a table of contents
       // marks it current at the top of the page.
       const margin = `${64 + Math.max(16, space)}px`;
@@ -239,7 +265,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(title).toHaveCSS("scroll-margin-block-start", "104px");
     await q.combobox("Intro block padding").selectOption("Auto");
     await expect(intro).toHaveCSS("padding-block-start", "32px");
-    await expect(intro).toHaveCSS("padding-block-end", "56px");
+    await expect(intro).toHaveCSS("padding-block-end", "44px");
     await expect(title).toHaveCSS("scroll-margin-block-start", "96px");
   });
 
