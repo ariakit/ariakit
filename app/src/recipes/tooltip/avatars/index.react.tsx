@@ -6,7 +6,6 @@ import {
   TooltipProvider,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { focus } from "@ariakit/ui/styles/focus";
-import { tooltipWrapper } from "@ariakit/ui/styles/tooltip";
 
 interface Person {
   name: string;
@@ -71,14 +70,12 @@ function AvatarLink({ href, label, children, hue }: AvatarLinkProps) {
 }
 
 // The avatars share this tooltip, which names the avatar that it shows for. The
-// wrapper style slides it from name to name.
+// $slide variant slides it from name to name.
 function SharedTooltip() {
   const store = ak.useTooltipContext();
   const anchor = ak.useStoreState(store, "anchorElement");
   return (
-    <TooltipPopover wrapperProps={tooltipWrapper.jsx()}>
-      {anchor?.getAttribute("aria-label")}
-    </TooltipPopover>
+    <TooltipPopover $slide>{anchor?.getAttribute("aria-label")}</TooltipPopover>
   );
 }
 

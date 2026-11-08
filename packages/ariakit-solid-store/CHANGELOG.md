@@ -1,5 +1,11 @@
 # @ariakit/solid-store
 
+## 0.1.12
+
+- Fixed `setup`, `init`, `subscribe`, `sync`, and `batch` returning `undefined` instead of a cleanup function when the store is `null` or `undefined`. They now return a function that does nothing, so calling the result no longer throws `TypeError`.
+- Fixed the return types of `pick` and `omit` to include `undefined` when the store argument can be `null` or `undefined`.
+- Updated dependencies: `@ariakit/store@0.1.12`
+
 ## 0.1.11
 
 - Updated dependencies: `@ariakit/store@0.1.11`

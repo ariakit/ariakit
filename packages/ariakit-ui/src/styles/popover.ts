@@ -50,6 +50,37 @@ export const popover = cv({
 });
 
 /**
+ * The element that Ariakit positions around a popup, through the `wrapperProps`
+ * of the popup. The Ariakit UI popup style components apply it and take its
+ * variants as props. With an Ariakit component, pass `popoverPositioner.jsx()`
+ * to `wrapperProps`.
+ */
+export const popoverPositioner = cv({
+  variants: {
+    /**
+     * Slides a popup that several anchors share when it moves to another
+     * anchor. Ariakit adds `data-enter` to the popup after its first paint,
+     * which comes after the default positioning puts it at its first anchor, so
+     * the slide waits for it, and the popup does not travel when it opens. A
+     * custom `updatePosition` that places the popup after that paint makes it
+     * travel from where the positioner starts. The popup needs its own enter
+     * animation for that order, which the `popover` style recipe has. Reduced
+     * motion turns the slide off. In a scroll container, an open popup trails
+     * its anchor while the container scrolls.
+     */
+    $slide: [
+      // The :has() selector checks only the positioner, so browsers don't
+      // check it on every element that they restyle. The motion-safe:
+      // condition turns the slide off with reduced motion, because :has()
+      // outranks a motion-reduce: class.
+      "motion-safe:[&:has(>[data-enter])]:transition-transform",
+      "motion-safe:[&:has(>[data-enter])]:duration-150",
+      "motion-safe:[&:has(>[data-enter])]:ease-out",
+    ],
+  },
+});
+
+/**
  * A button that opens a popover. `$selectedOffset` and `$selectedPush` also
  * paint while the popover is open.
  */

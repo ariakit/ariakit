@@ -10,12 +10,14 @@ import {
   TruncationContext,
   useTruncationRegistry,
 } from "../react-utils/use-truncation.react.ts";
+import { popoverPositioner } from "../styles/popover.ts";
 import {
   tooltip,
   tooltipArrow,
   tooltipSlot,
   tooltipText,
 } from "../styles/tooltip.ts";
+import { usePopoverPositionerProps } from "./popover.ariakit.react.tsx";
 
 type TooltipProviderPropKey =
   | "store"
@@ -195,7 +197,10 @@ export function TooltipAnchor(props: TooltipAnchorProps) {
 }
 
 export interface TooltipPopoverProps
-  extends ak.TooltipProps, VariantProps<typeof tooltip> {}
+  extends
+    ak.TooltipProps,
+    VariantProps<typeof tooltip>,
+    VariantProps<typeof popoverPositioner> {}
 
 /**
  * Renders the tooltip popup: a short label or description for its anchor. It is
@@ -209,12 +214,19 @@ export interface TooltipPopoverProps
  */
 export function TooltipPopover({
   unmountOnHide = true,
+  wrapperProps,
   ...props
 }: TooltipPopoverProps) {
-  const [variantProps, rest] = splitProps(props, tooltip);
+  const [variantProps, positionerProps, rest] = splitProps(
+    props,
+    tooltip,
+    popoverPositioner,
+  );
+  const positioner = usePopoverPositionerProps(positionerProps, wrapperProps);
   return (
     <ak.Tooltip
       unmountOnHide={unmountOnHide}
+      wrapperProps={positioner}
       {...tooltip.jsx(variantProps)}
       {...rest}
     />

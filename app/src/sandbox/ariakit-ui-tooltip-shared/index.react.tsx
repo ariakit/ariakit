@@ -15,8 +15,6 @@ import {
   TooltipPopover,
   TooltipProvider,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
-import { tooltipWrapper } from "@ariakit/ui/styles/tooltip";
-import type { VariantProps } from "clava";
 import { useEffect, useState } from "react";
 
 const items = ["One", "Two", "Three"];
@@ -48,21 +46,18 @@ function useSlideCount(section: string) {
   return count;
 }
 
-interface SharedTooltipProps
-  extends TooltipPopoverProps, VariantProps<typeof tooltipWrapper> {}
-
 /** Shows the `data-tooltip` text of the active anchor in the shared popup. */
-function SharedTooltip({ $slide, ...props }: SharedTooltipProps) {
+function SharedTooltip(props: TooltipPopoverProps) {
   const store = ak.useTooltipContext();
   const anchor = ak.useStoreState(store, "anchorElement");
   return (
-    <TooltipPopover wrapperProps={tooltipWrapper.jsx({ $slide })} {...props}>
+    <TooltipPopover {...props}>
       {anchor?.getAttribute("data-tooltip")}
     </TooltipPopover>
   );
 }
 
-interface SectionProps extends SharedTooltipProps {
+interface SectionProps extends TooltipPopoverProps {
   name: string;
 }
 
@@ -123,19 +118,21 @@ export default function Example() {
     <div className="grid gap-12 p-12">
       {/* The popup stays mounted while hidden, so it reopens at another anchor
           from its previous place. */}
-      <SlideSection name="Slide" unmountOnHide={false} />
-      <SlideSection name="No slide" $slide={false} />
+      <SlideSection name="Slide" $slide unmountOnHide={false} />
+      {/* The popup doesn't slide without $slide. */}
+      <SlideSection name="No slide" />
       {/* The popup stays mounted while hidden. Without its own enter animation,
           Ariakit adds data-enter in the same update as data-open when it
           reopens, before the popup is in place. */}
       <SlideSection
         name="No popup motion"
+        $slide
         className="transition-none"
         unmountOnHide={false}
       />
       <div className="flex gap-24">
-        <ScrollSection name="Scroll" />
-        <ScrollSection name="Scroll without slide" $slide={false} />
+        <ScrollSection name="Scroll" $slide />
+        <ScrollSection name="Scroll without slide" />
       </div>
     </div>
   );

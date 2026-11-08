@@ -10,7 +10,6 @@ import {
   TooltipPopover,
   TooltipProvider,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
-import { tooltipWrapper } from "@ariakit/ui/styles/tooltip";
 import type { LucideIcon } from "lucide-react";
 import {
   CalendarIcon,
@@ -36,14 +35,12 @@ const sections: Section[] = [
 ];
 
 // The links share this tooltip, which names the link that it shows for. The
-// wrapper style slides it from link to link.
+// $slide variant slides it from link to link.
 function SharedTooltip() {
   const store = ak.useTooltipContext();
   const anchor = ak.useStoreState(store, "anchorElement");
   return (
-    <TooltipPopover wrapperProps={tooltipWrapper.jsx()}>
-      {anchor?.getAttribute("aria-label")}
-    </TooltipPopover>
+    <TooltipPopover $slide>{anchor?.getAttribute("aria-label")}</TooltipPopover>
   );
 }
 

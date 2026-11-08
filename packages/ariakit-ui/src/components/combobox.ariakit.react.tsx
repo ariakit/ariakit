@@ -34,6 +34,8 @@ import {
   comboboxLabel,
   comboboxPopover,
 } from "../styles/combobox.ts";
+import { popoverPositioner } from "../styles/popover.ts";
+import { usePopoverPositionerProps } from "./popover.ariakit.react.tsx";
 
 export interface ComboboxProps
   extends
@@ -249,7 +251,10 @@ export function ComboboxError({
 }
 
 export interface ComboboxPopoverProps
-  extends ak.ComboboxPopoverProps, VariantProps<typeof comboboxPopover> {}
+  extends
+    ak.ComboboxPopoverProps,
+    VariantProps<typeof comboboxPopover>,
+    VariantProps<typeof popoverPositioner> {}
 
 /**
  * The popup that contains combobox suggestions. Uses a portal and an 8px gap
@@ -262,13 +267,20 @@ export interface ComboboxPopoverProps
 export function ComboboxPopover({
   portal = true,
   gutter = 8,
+  wrapperProps,
   ...props
 }: ComboboxPopoverProps) {
-  const [variantProps, rest] = splitProps(props, comboboxPopover);
+  const [variantProps, positionerProps, rest] = splitProps(
+    props,
+    comboboxPopover,
+    popoverPositioner,
+  );
+  const positioner = usePopoverPositionerProps(positionerProps, wrapperProps);
   return (
     <ak.ComboboxPopover
       portal={portal}
       gutter={gutter}
+      wrapperProps={positioner}
       {...comboboxPopover.jsx(variantProps)}
       {...rest}
     />
