@@ -37,6 +37,27 @@ export const popover = cv({
       md: "shadow-md",
       xl: "shadow-xl",
     },
+    /**
+     * Slides a popup that several anchors share when it moves to another
+     * anchor. Ariakit adds `data-enter` after the popup is in place at its
+     * first anchor, so the slide waits for it, and the popup does not travel
+     * when it opens. The popup needs its own enter animation for that order,
+     * which this style recipe has. Reduced motion turns the slide off. In a
+     * scroll container, an open popup trails its anchor while the container
+     * scrolls.
+     */
+    $slide: {
+      // Ariakit moves the positioned wrapper around the popup, so the popup
+      // class styles its parent. The motion-safe: condition turns the slide
+      // off with reduced motion, which the motion-reduce: classes of the popup
+      // don't reach.
+      true: [
+        "motion-safe:[*:has(>&[data-enter])]:transition-transform",
+        "motion-safe:[*:has(>&[data-enter])]:duration-150",
+        "motion-safe:[*:has(>&[data-enter])]:ease-out",
+      ],
+      false: "",
+    },
   },
   defaultVariants: {
     $layer: "canvas",
