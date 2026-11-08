@@ -61,12 +61,12 @@ export default function Example() {
                   </Frame>
                 </SkeletonCircle>
                 <div className="grid min-w-0 flex-1 text-sm">
-                  <SkeletonLine $weight="medium" className="w-4/5">
+                  <SkeletonLine className="w-4/5">
                     <span className="truncate font-medium">
                       Late Night Drive
                     </span>
                   </SkeletonLine>
-                  <SkeletonLine $weight="light" className="w-1/2">
+                  <SkeletonLine className="w-1/2">
                     <span className="truncate ak-ink-70">Luna Novak</span>
                   </SkeletonLine>
                 </div>

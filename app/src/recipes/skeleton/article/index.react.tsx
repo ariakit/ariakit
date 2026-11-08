@@ -40,9 +40,7 @@ export default function Example() {
       <Skeleton loading={loading} className="grid gap-5">
         <HeadingLevel level={3}>
           <Heading $level={1}>
-            <SkeletonLine $weight="medium" className="w-4/5">
-              {data?.title}
-            </SkeletonLine>
+            <SkeletonLine className="w-4/5">{data?.title}</SkeletonLine>
           </Heading>
         </HeadingLevel>
         <div className="flex items-center gap-3 text-sm">
@@ -62,7 +60,7 @@ export default function Example() {
             <SkeletonLine className="w-24">
               <span className="font-medium">{data?.author}</span>
             </SkeletonLine>
-            <SkeletonLine $weight="light" className="w-40">
+            <SkeletonLine className="w-40">
               <span className="ak-ink-70">
                 {data?.date} · {data?.readingTime}
               </span>

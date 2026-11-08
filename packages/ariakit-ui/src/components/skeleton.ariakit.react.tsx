@@ -2,7 +2,7 @@ import * as ak from "@ariakit/react";
 import { useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
 import { getWindow } from "@ariakit/utils";
 import type { VariantProps } from "clava";
-import { splitProps } from "clava";
+import { cx, splitProps } from "clava";
 import * as React from "react";
 import { usePerceptibleValue } from "../react-utils/use-perceptible-value.react.ts";
 import {
@@ -11,29 +11,51 @@ import {
   skeletonCircle,
   skeletonFill,
   skeletonLine,
+  skeletonReveal,
 } from "../styles/skeleton.ts";
 
 /**
  * The state of a skeleton area:
  * - `pending`: loading, but the placeholders are not shown yet. Parts keep
  *   their space without painting.
- * - `skeleton`: the placeholders are shown. After loading ends, they stay in
- *   this state while they fade out.
- * - `content`: parts render their children.
+ * - `skeleton`: the placeholders are shown.
+ * - `content`: the content loaded. Parts render their children, or replace
+ *   their placeholders with them row by row.
  */
 export type SkeletonState = "pending" | "skeleton" | "content";
 
-// Parts also need to know when the placeholders fade out, which the public
-// state reports as `skeleton`.
-type SkeletonPhase = SkeletonState | "leave";
+// A reveal follows the skeleton state. The content has loaded, and the parts
+// replace their placeholders one row at a time, from the top.
+type SkeletonPhase = SkeletonState | "reveal";
 
-interface SkeletonContextValue {
+interface SkeletonStatus {
   phase: SkeletonPhase;
-  // Whether the root has shown its content, so new placeholders replace it.
-  reload: boolean;
+  // The last row that shows content during a reveal. Before the root measures
+  // the rows, it is -1, and all parts still show placeholders.
+  step: number;
+  // The reveal row of each part, by part id.
+  rows: Map<string, number> | null;
 }
 
-const SkeletonContext = React.createContext<SkeletonContextValue | null>(null);
+interface SkeletonPartContextValue {
+  status: SkeletonStatus;
+  // The placeholder elements of the parts, by part id. Parts in a portal
+  // register here too, so the root does not query its own DOM.
+  parts: Map<string, HTMLElement>;
+}
+
+const SkeletonContext = React.createContext<SkeletonState | null>(null);
+const SkeletonPartContext =
+  React.createContext<SkeletonPartContextValue | null>(null);
+
+// Time between two rows of a reveal, and the longest time from the first row to
+// the last. Rows a screen height apart take the longest time.
+const REVEAL_STEP = 80;
+const REVEAL_SPREAD = 320;
+// Matches --animate-ui-skeleton-reveal.
+const REVEAL_DURATION = 200;
+// The reveal row of parts off the screen.
+const OFFSCREEN_ROW = -1;
 
 /**
  * Returns the state of the closest `Skeleton`, or `content` outside of one. Use
@@ -44,63 +66,88 @@ const SkeletonContext = React.createContext<SkeletonContextValue | null>(null);
  *   return <Button disabled={state !== "content"}>Save</Button>;
  * }
  */
-export function useSkeletonState(): SkeletonState {
-  const context = React.useContext(SkeletonContext);
-  if (!context) return "content";
-  if (context.phase === "leave") return "skeleton";
-  return context.phase;
+export function useSkeletonState() {
+  return React.useContext(SkeletonContext) ?? "content";
 }
 
-// A part without a root is a static placeholder, such as in a thumbnail.
-const staticPart: SkeletonContextValue = { phase: "skeleton", reload: false };
-
-function useSkeletonPart() {
-  return React.useContext(SkeletonContext) ?? staticPart;
+function getNextStatus(
+  status: SkeletonStatus,
+  state: SkeletonState,
+): SkeletonStatus {
+  const { phase } = status;
+  if (state === "content") {
+    if (phase === "skeleton") {
+      return { phase: "reveal", step: -1, rows: null };
+    }
+    if (phase === "reveal") {
+      return status;
+    }
+  }
+  if (phase === state) {
+    return status;
+  }
+  // Other changes apply at once, including content that loads before the
+  // placeholders show.
+  return { phase: state, step: -1, rows: null };
 }
 
-// The markers that the part styles read. Pending and leaving parts keep their
-// space without painting, and parts that replace loaded content fade in.
-function getPartProps({ phase, reload }: SkeletonContextValue) {
-  return {
-    "data-pending": phase === "pending" || undefined,
-    "data-leave": phase === "leave" || undefined,
-    "data-reload": reload || undefined,
-  };
+// A skeleton fill generates no box, so its child stands for it.
+function getPartRect(element: HTMLElement) {
+  const rect = element.getBoundingClientRect();
+  if (rect.width || rect.height) {
+    return rect;
+  }
+  return element.firstElementChild?.getBoundingClientRect() ?? rect;
 }
 
-// Returns the opacity transitions that fade out the placeholders in `element`.
-function getLeaveTransitions(element: Element | null) {
-  if (!element) return [];
-  const { CSSTransition, KeyframeEffect } = getWindow(element);
-  // DOM shims without Web Animations have no transitions to wait for.
-  if (!CSSTransition || !KeyframeEffect) return [];
-  // Reading the animations updates the styles first, so the transitions that
-  // the leave marker starts are already in the list.
-  return element.getAnimations({ subtree: true }).filter((animation) => {
-    if (!(animation instanceof CSSTransition)) return false;
-    if (animation.transitionProperty !== "opacity") return false;
-    const effect = animation.effect;
-    if (!(effect instanceof KeyframeEffect)) return false;
-    // Other elements, such as a closing popover, can also have the marker.
-    const part = effect.target?.closest("[data-leave]");
-    return !!part && element.contains(part);
-  });
+function prefersReducedMotion(element: HTMLElement) {
+  const win = getWindow(element);
+  return win.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+// Groups the parts into reveal rows by their distance from the topmost visible
+// part. Parts off the screen show their children with the first row, without a
+// fade, since nobody sees them fade.
+function getRevealRows(
+  parts: Map<string, HTMLElement>,
+  viewportHeight: number,
+) {
+  const rows = new Map<string, number>();
+  const tops = new Map<string, number>();
+  let first = Number.POSITIVE_INFINITY;
+  if (viewportHeight <= 0) {
+    return rows;
+  }
+  for (const [id, element] of parts) {
+    const rect = getPartRect(element);
+    const hidden = rect.bottom <= 0 || rect.top >= viewportHeight;
+    if (hidden) {
+      rows.set(id, OFFSCREEN_ROW);
+      continue;
+    }
+    tops.set(id, rect.top);
+    first = Math.min(first, rect.top);
+  }
+  for (const [id, top] of tops) {
+    // A part joins the last row that starts before its delay.
+    const distance = Math.min((top - first) / viewportHeight, 1);
+    rows.set(id, Math.floor((distance * REVEAL_SPREAD) / REVEAL_STEP));
+  }
+  return rows;
 }
 
 export interface SkeletonProps
   extends ak.RoleProps<"div">, VariantProps<typeof skeleton> {
   /**
    * Whether the content is loading. The placeholders stay for at least 200
-   * milliseconds, so fast loads do not flash. When loading ends, they fade out
-   * before the parts render their children.
+   * milliseconds, so fast loads do not flash.
    * @default true
    */
   loading?: boolean;
   /**
    * Milliseconds to wait after loading starts before the placeholders fade in.
    * Loading that ends within this time never shows them. With `0`, the
-   * placeholders render with the first render, including the server HTML, and
-   * fade in when they replace loaded content.
+   * placeholders render with the first render, including the server HTML.
    * @default 0
    */
   delay?: number;
@@ -108,9 +155,11 @@ export interface SkeletonProps
 
 /**
  * Renders a loading area for skeleton parts. The parts show placeholders while
- * `loading` is `true`, and their children when it is `false`. Add `aria-busy`
- * and a status message to the region that loads. The animation also reaches the
- * parts of nested roots, so nested roots should use the same `$animate`.
+ * `loading` is `true`, and their children when it is `false`. When loading
+ * ends, the children fade in where the placeholders were, one row at a time
+ * from the top. Add `aria-busy` and a status message to the region that loads.
+ * The animation also reaches the parts of nested roots, so nested roots should
+ * use the same `$animate`.
  * @example
  * <Skeleton loading={!user}>
  *   <SkeletonCircle className="size-10">
@@ -126,8 +175,6 @@ export function Skeleton({
   ...props
 }: SkeletonProps) {
   const [variantProps, rest] = splitProps(props, skeleton);
-  const elementRef = React.useRef<HTMLDivElement>(null);
-  const mergedRef = useMergeRefs(elementRef, ref);
   const shown = usePerceptibleValue(loading, {
     delay: loading ? delay : 0,
     // Only the placeholders stay for a minimum. Content that stays would show
@@ -137,65 +184,173 @@ export function Skeleton({
     // shows the placeholders.
     initialValue: delay > 0 ? false : loading,
   });
-  const [leaving, setLeaving] = React.useState(false);
-  const [previousShown, setPreviousShown] = React.useState(shown);
-  if (shown !== previousShown) {
-    setPreviousShown(shown);
-    // When the placeholders hide, they fade out before the content replaces
-    // them.
-    setLeaving(!shown);
+  const state = shown ? "skeleton" : loading ? "pending" : "content";
+  const [status, setStatus] = React.useState<SkeletonStatus>(() => ({
+    phase: state,
+    step: -1,
+    rows: null,
+  }));
+  const nextStatus = getNextStatus(status, state);
+  if (nextStatus !== status) {
+    setStatus(nextStatus);
   }
-  const phase: SkeletonPhase = shown
-    ? "skeleton"
-    : loading
-      ? "pending"
-      : leaving
-        ? "leave"
-        : "content";
-  // Placeholders fade in only when they replace loaded content. Before that,
-  // they paint with the first render, including the server HTML.
-  const [reload, setReload] = React.useState(false);
-  if (phase === "content" && !reload) {
-    setReload(true);
-  }
-  const context = React.useMemo(() => ({ phase, reload }), [phase, reload]);
 
-  // A layout effect, so the content replaces the placeholders before the next
-  // paint when no fade runs, such as with reduced motion.
+  const [parts] = React.useState(() => new Map<string, HTMLElement>());
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const mergedRef = useMergeRefs(ref, rootRef);
+  const { phase } = status;
+  const shimmer = (variantProps.$animate ?? "shimmer") === "shimmer";
+  // The placeholders that remain during a reveal keep their shimmer. A pulse
+  // fades the whole area, content included, so it stops when the reveal starts.
+  const animated = phase === "skeleton" || (phase === "reveal" && shimmer);
+
+  // Measures the reveal rows while all parts still show placeholders, before
+  // the browser paints.
   useSafeLayoutEffect(() => {
-    if (phase !== "leave") return;
-    // The styles own the fade, so the content waits for the transitions that
-    // run instead of a fixed duration.
-    const transitions = getLeaveTransitions(elementRef.current);
-    if (!transitions.length) {
-      setLeaving(false);
+    if (status.phase !== "reveal") return;
+    if (status.step !== -1) return;
+    const root = rootRef.current;
+    if (!root || prefersReducedMotion(root)) {
+      setStatus({ phase: "content", step: -1, rows: null });
       return;
     }
-    let active = true;
-    void Promise.allSettled(transitions.map(({ finished }) => finished)).then(
-      () => {
-        if (!active) return;
-        setLeaving(false);
-      },
-    );
-    return () => {
-      active = false;
-    };
-  }, [phase]);
+    const rows = getRevealRows(parts, getWindow(root).innerHeight);
+    setStatus((status) => ({ ...status, step: 0, rows }));
+  }, [status, parts]);
 
-  const animated = phase === "skeleton" || phase === "leave";
+  // Shows the next row, or ends the reveal after the last row fades in.
+  React.useEffect(() => {
+    if (status.phase !== "reveal") return;
+    if (status.step === -1) return;
+    const lastRow = Math.max(0, ...(status.rows?.values() ?? []));
+    const done = status.step >= lastRow;
+    const timeout = setTimeout(
+      () => {
+        setStatus((status) => {
+          if (done) {
+            return { phase: "content", step: -1, rows: null };
+          }
+          return { ...status, step: status.step + 1 };
+        });
+      },
+      done ? REVEAL_DURATION : REVEAL_STEP,
+    );
+    return () => clearTimeout(timeout);
+  }, [status]);
+
+  const partContext = React.useMemo(() => ({ status, parts }), [status, parts]);
+
   return (
-    <SkeletonContext.Provider value={context}>
-      <ak.Role.div
-        {...skeleton.jsx({
-          ...variantProps,
-          ...(!animated && { $animate: false }),
-        })}
-        {...rest}
-        ref={mergedRef}
-      />
+    <SkeletonContext.Provider value={phase === "reveal" ? "content" : phase}>
+      <SkeletonPartContext.Provider value={partContext}>
+        <ak.Role.div
+          {...skeleton.jsx({
+            ...variantProps,
+            ...(!animated && { $animate: false }),
+          })}
+          {...rest}
+          ref={mergedRef}
+        />
+      </SkeletonPartContext.Provider>
     </SkeletonContext.Provider>
   );
+}
+
+interface SkeletonPart {
+  // Whether the part renders its children instead of the placeholder.
+  content: boolean;
+  // Whether the children replace the placeholder and fade in.
+  reveal: boolean;
+  pending: boolean;
+  ref: (element: HTMLElement | null) => void;
+}
+
+function useSkeletonPart(): SkeletonPart {
+  const context = React.useContext(SkeletonPartContext);
+  const id = React.useId();
+  const parts = context?.parts;
+  const ref = React.useCallback(
+    (element: HTMLElement | null) => {
+      if (!parts) return;
+      if (element) {
+        parts.set(id, element);
+      } else {
+        parts.delete(id);
+      }
+    },
+    [parts, id],
+  );
+  // A part without a root is a static placeholder, such as in a thumbnail.
+  if (!context) {
+    return { content: false, reveal: false, pending: false, ref };
+  }
+  const { phase, step, rows } = context.status;
+  if (phase === "reveal") {
+    const row = rows?.get(id) ?? 0;
+    const content = step !== -1 && row <= step;
+    const reveal = content && row !== OFFSCREEN_ROW;
+    return { content, reveal, pending: false, ref };
+  }
+  return {
+    content: phase === "content",
+    reveal: false,
+    pending: phase === "pending",
+    ref,
+  };
+}
+
+// Whether every child is text, which can move into a wrapper and out of it
+// without losing anything.
+function isText(children: React.ReactNode) {
+  return React.Children.toArray(children).every(
+    (child) => typeof child === "string" || typeof child === "number",
+  );
+}
+
+// Fades in children that replace a placeholder. An element child takes the
+// animation through its class name, so it keeps its place in the tree after the
+// reveal. With `wrap`, text children fade in a wrapper. Other children show
+// without a fade, because a wrapper would mount them again when the reveal
+// ends. The result is memoized, because every row of a reveal renders all parts
+// again, and a new element would render the whole child tree again.
+function useRevealContent(
+  reveal: boolean,
+  children: React.ReactNode,
+  wrap = false,
+) {
+  return React.useMemo(() => {
+    if (!reveal) {
+      return children;
+    }
+    if (children == null) {
+      return children;
+    }
+    if (typeof children === "boolean") {
+      return children;
+    }
+    const { className } = skeletonReveal.jsx();
+    if (
+      React.isValidElement<{ className?: unknown }>(children) &&
+      children.type !== React.Fragment
+    ) {
+      const childClassName = children.props.className;
+      // A class name that is not a string, such as a function, can't take the
+      // animation class.
+      if (childClassName != null && typeof childClassName !== "string") {
+        return children;
+      }
+      return React.cloneElement(children, {
+        className: cx(childClassName, className),
+      });
+    }
+    if (!wrap) {
+      return children;
+    }
+    if (!isText(children)) {
+      return children;
+    }
+    return <span className={className}>{children}</span>;
+  }, [reveal, children, wrap]);
 }
 
 export interface SkeletonBoxProps
@@ -210,18 +365,21 @@ export interface SkeletonBoxProps
  *   <img src={post?.image} alt="" className="aspect-video w-full" />
  * </SkeletonBox>
  */
-export function SkeletonBox({ children, ...props }: SkeletonBoxProps) {
+export function SkeletonBox({ children, ref, ...props }: SkeletonBoxProps) {
   const part = useSkeletonPart();
   const [variantProps, rest] = splitProps(props, skeletonBox);
-  if (part.phase === "content") {
-    return <>{children}</>;
+  const mergedRef = useMergeRefs(ref, part.ref);
+  const content = useRevealContent(part.reveal, children);
+  if (part.content) {
+    return <>{content}</>;
   }
   return (
     <ak.Role.div
       aria-hidden
-      {...getPartProps(part)}
+      data-pending={part.pending || undefined}
       {...skeletonBox.jsx(variantProps)}
       {...rest}
+      ref={mergedRef}
     />
   );
 }
@@ -237,18 +395,25 @@ export interface SkeletonCircleProps
  *   <img src={user?.avatar} alt="" className="size-10 rounded-full" />
  * </SkeletonCircle>
  */
-export function SkeletonCircle({ children, ...props }: SkeletonCircleProps) {
+export function SkeletonCircle({
+  children,
+  ref,
+  ...props
+}: SkeletonCircleProps) {
   const part = useSkeletonPart();
   const [variantProps, rest] = splitProps(props, skeletonCircle);
-  if (part.phase === "content") {
-    return <>{children}</>;
+  const mergedRef = useMergeRefs(ref, part.ref);
+  const content = useRevealContent(part.reveal, children);
+  if (part.content) {
+    return <>{content}</>;
   }
   return (
     <ak.Role.div
       aria-hidden
-      {...getPartProps(part)}
+      data-pending={part.pending || undefined}
       {...skeletonCircle.jsx(variantProps)}
       {...rest}
+      ref={mergedRef}
     />
   );
 }
@@ -265,18 +430,21 @@ export interface SkeletonLineProps
  *   <SkeletonLine className="w-48">{post?.title}</SkeletonLine>
  * </Heading>
  */
-export function SkeletonLine({ children, ...props }: SkeletonLineProps) {
+export function SkeletonLine({ children, ref, ...props }: SkeletonLineProps) {
   const part = useSkeletonPart();
   const [variantProps, rest] = splitProps(props, skeletonLine);
-  if (part.phase === "content") {
-    return <>{children}</>;
+  const mergedRef = useMergeRefs(ref, part.ref);
+  const content = useRevealContent(part.reveal, children, true);
+  if (part.content) {
+    return <>{content}</>;
   }
   return (
     <ak.Role.span
       aria-hidden
-      {...getPartProps(part)}
+      data-pending={part.pending || undefined}
       {...skeletonLine.jsx(variantProps)}
       {...rest}
+      ref={mergedRef}
     />
   );
 }
@@ -302,19 +470,22 @@ export interface SkeletonFillProps
  *   <Button>Follow</Button>
  * </SkeletonFill>
  */
-export function SkeletonFill({ children, ...props }: SkeletonFillProps) {
+export function SkeletonFill({ children, ref, ...props }: SkeletonFillProps) {
   const part = useSkeletonPart();
   const [variantProps, rest] = splitProps(props, skeletonFill);
-  if (part.phase === "content") {
-    return <>{children}</>;
+  const mergedRef = useMergeRefs(ref, part.ref);
+  const content = useRevealContent(part.reveal, children);
+  if (part.content) {
+    return <>{content}</>;
   }
   return (
     <ak.Role.span
       {...inertProps}
       aria-hidden
-      {...getPartProps(part)}
+      data-pending={part.pending || undefined}
       {...skeletonFill.jsx(variantProps)}
       {...rest}
+      ref={mergedRef}
     >
       {children}
     </ak.Role.span>

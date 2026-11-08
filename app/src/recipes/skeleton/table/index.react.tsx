@@ -167,7 +167,7 @@ function OrderRow({ order }: OrderRowProps) {
         </div>
       </TableCell>
       <TableCell>
-        <SkeletonLine $weight="light" className="w-12">
+        <SkeletonLine className="w-12">
           <span className="ak-ink-70">{order?.date}</span>
         </SkeletonLine>
       </TableCell>
