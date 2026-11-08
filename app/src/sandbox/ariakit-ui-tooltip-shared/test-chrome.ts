@@ -1,5 +1,6 @@
+import { waitPastSlide } from "#app/test-utils/popover.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { hoverAnchor, waitPastSlide } from "./test-helpers.ts";
+import { hoverAnchor } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   test("doesn't slide without $slide", async ({ page, q }) => {
