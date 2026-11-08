@@ -933,7 +933,8 @@ export const shellMain = cv({
      * body uses its gutter on both edges. With an intro, the intro uses its own
      * `$py`. When that is `auto`, the body ends with the space above the intro,
      * so the page ends with the space it starts with. Otherwise, the body ends
-     * with its gutter. `none` removes the space.
+     * with its gutter. Any value other than `gutter` sets the space below the
+     * body, with or without an intro. `none` removes the space.
      */
     $py(value?: "gutter" | "none" | (string & {}) | number) {
       if (value == null) return;
@@ -1136,11 +1137,12 @@ export const shellMainIntro = cv({
      * ends with the same space, `$py` on main replaces the space above the
      * intro and below the body when set, and fragment targets in the intro
      * otherwise clear the largest space. Other values don't reach the body,
-     * which then ends with its gutter, so set the same value on `ShellMain`.
-     * `gutter` uses the gutter on both edges. `none` removes the space, so
-     * `py-*`, `pt-*`, and `pb-*` can set it. The body still adds its three bar
-     * steps below `pb-*`. These classes don't move fragment targets, so use a
-     * value when the intro has targets.
+     * which then ends with `$py` on main, or with its gutter, so set the same
+     * value on `ShellMain`. `gutter` uses the gutter on both edges. `none`
+     * removes the space, so `py-*`, `pt-*`, and `pb-*` can set it. The body
+     * still adds its three bar steps below `pb-*`. These classes don't reach
+     * the body or move fragment targets, so set `pb-*` on the body to match the
+     * space above, and use a value when the intro has targets.
      */
     $py(value?: "auto" | "gutter" | "none" | (string & {}) | number) {
       if (value == null) return;
