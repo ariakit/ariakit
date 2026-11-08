@@ -41,8 +41,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.mouse.down();
     await page.mouse.move(scrollbarX, 200);
     await page.mouse.up();
-    const scrollTop = await getBackdropScrollTop(page);
-    expect(scrollTop).toBeGreaterThan(200);
+    // Chrome scrolls a scrollbar drag on the compositor thread, so the main
+    // thread can read the old scroll position right after the drag.
+    await expect.poll(() => getBackdropScrollTop(page)).toBeGreaterThan(200);
     await expect(getDialog(page)).toBeVisible();
     await getBackdrop(page).click({ position: { x: 10, y: 10 } });
     await expect(getDialog(page)).not.toBeVisible();

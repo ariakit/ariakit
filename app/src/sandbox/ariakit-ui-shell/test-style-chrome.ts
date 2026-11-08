@@ -15,41 +15,72 @@ interface PreviewHelpers {
   q: ReturnType<typeof query>;
 }
 
-// A Chromium bug makes some renderer processes restyle the whole content on
-// every sidebar toggle, and a reload keeps the process. An Ariakit regression
-// shows in every process, so a test measures again in a new context first.
-// TODO: Measure only once when the Chromium bug is fixed.
-// https://github.com/ariakit/ariakit/issues/8350
-// https://github.com/ariakit/ariakit/issues/8084
-// https://issues.chromium.org/issues/577199085
-const PAGE_LOADS = 3;
-
 function isCached({ closing, opening, limit }: SidebarToggleRestyles) {
   return closing < limit && opening < limit;
 }
 
 /**
- * Runs `measure` on the test page, then on up to `PAGE_LOADS - 1` previews in
- * new browser contexts while the result exceeds its limit. Returns the first
- * result below its limit, or the last result.
+ * Returns the custom property names in the stylesheets and inline styles of the
+ * page. Runs in the browser.
  */
+function readCustomPropertyNames() {
+  const texts: string[] = [];
+  for (const sheet of Array.from(document.styleSheets)) {
+    for (const rule of Array.from(sheet.cssRules)) {
+      texts.push(rule.cssText);
+    }
+  }
+  for (const element of Array.from(document.querySelectorAll("[style]"))) {
+    if (!(element instanceof HTMLElement)) continue;
+    texts.push(element.style.cssText);
+  }
+  const names = new Set<string>();
+  for (const text of texts) {
+    for (const [name] of text.matchAll(/--[\w-]+/g)) {
+      names.add(name);
+    }
+  }
+  return Array.from(names);
+}
+
+/**
+ * Creates the custom property names before the page loads its stylesheets. Runs
+ * in the browser as an init script.
+ */
+function createCustomPropertyNames(names: string[]) {
+  const style = document.createElement("div").style;
+  for (const name of names) {
+    style.setProperty(name, "0");
+  }
+  // Keeps the names in memory for the life of the page.
+  Object.assign(window, { customPropertyNames: style });
+}
+
+// TODO: Measure only once when the Chromium bug is fixed. The bug restyles the
+// whole content on some page loads, depending on where custom property names
+// land in memory. An Ariakit regression shows on every load, so a test measures
+// again in a new renderer process (a reload keeps the process) that creates
+// every name before the stylesheets load.
+// https://github.com/ariakit/ariakit/issues/8350
+// https://github.com/ariakit/ariakit/issues/8084
+// https://issues.chromium.org/issues/577199085
 async function measureOnPageLoads(
   page: Page,
   measure: (helpers: PreviewHelpers) => Promise<SidebarToggleRestyles>,
 ) {
+  const restyles = await measure({ page, q: query(page) });
+  if (isCached(restyles)) return restyles;
   const browser = page.context().browser();
   invariant(browser, "The test page must belong to a browser");
-  let restyles = await measure({ page, q: query(page) });
-  for (let load = 1; load < PAGE_LOADS; load++) {
-    if (isCached(restyles)) break;
-    // Inside a test, Playwright applies the project and test.use() context
-    // options to every new context, so it matches the test page.
-    await using context = await browser.newContext();
-    const freshPage = await context.newPage();
-    await gotoAndHydrate(freshPage, page.url());
-    restyles = await measure({ page: freshPage, q: query(freshPage) });
-  }
-  return restyles;
+  const names = await page.evaluate(readCustomPropertyNames);
+  // Inside a test, Playwright applies the project and test.use() context
+  // options to every new context, so it matches the test page.
+  await using context = await browser.newContext();
+  await context.addInitScript(createCustomPropertyNames, names);
+  const freshPage = await context.newPage();
+  await gotoAndHydrate(freshPage, page.url());
+  // Awaits before `context` is disposed at the end of the scope.
+  return await measure({ page: freshPage, q: query(freshPage) });
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
