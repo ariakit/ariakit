@@ -175,6 +175,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     hideOnEscape = true,
     hideOnHoverOutside = true,
     disablePointerEventsOnApproach = !!hideOnHoverOutside,
+    hideWhenAnchorHidden = true,
     ...props
   }) {
     const context = useHovercardProviderContext();
@@ -438,6 +439,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       modal,
       portal,
       autoFocusOnShow,
+      hideWhenAnchorHidden,
       ...props,
       portalRef,
       hideOnEscape: escapeClose.hideOnEscape,
@@ -511,6 +513,10 @@ export interface HovercardOptions<
    * @default false
    */
   modal?: PopoverOptions<T>["modal"];
+  /**
+   * @default true
+   */
+  hideWhenAnchorHidden?: PopoverOptions<T>["hideWhenAnchorHidden"];
 }
 
 export type HovercardProps<T extends ElementType = TagName> = Props<

@@ -20,4 +20,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(anchor).not.toBeInViewport();
     await test.expect(q.tooltip("Add to bookmarks")).toBeHidden();
   });
+
+  // https://github.com/ariakit/ariakit/issues/4058
+  test("hides a hovercard when its anchor scrolls out of the panel", async ({
+    page,
+    q,
+  }) => {
+    const anchor = q.link("@ariakit");
+    // Ariakit resets hover intent on scroll, so the anchor must be in view
+    // before the pointer moves to it.
+    await anchor.scrollIntoViewIfNeeded();
+    await anchor.hover();
+    await test.expect(q.dialog("Ariakit")).toBeVisible();
+
+    await page.mouse.wheel(0, 400);
+    await test.expect(anchor).not.toBeInViewport();
+    await test.expect(q.dialog("Ariakit")).toBeHidden();
+  });
 });
