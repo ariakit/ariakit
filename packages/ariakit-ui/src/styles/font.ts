@@ -91,9 +91,10 @@ export function getFontLeadingClass(
     };
   }
   if (typeof value !== "string") return;
-  // Ignore unknown words; accept lengths, percentages, numbers, and
-  // expressions. A word would make line-height invalid, so it would inherit.
-  if (!/[(.\d%]/.test(value)) return;
+  // Accept values that start like a number, such as 1.5 or 1lh, and
+  // expressions, such as var() or calc(). A word, even with a digit like h1,
+  // would make line-height invalid, so it would inherit.
+  if (!/^[\d.]|\(/.test(value)) return;
   return { class: FONT_LEADING_CLASS, style: { "--font-leading": value } };
 }
 
