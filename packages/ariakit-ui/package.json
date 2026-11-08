@@ -63,6 +63,7 @@
     "./react-utils/landmark.react": "./src/react-utils/landmark.react.ts",
     "./react-utils/use-description.react": "./src/react-utils/use-description.react.ts",
     "./react-utils/use-perceptible-value.react": "./src/react-utils/use-perceptible-value.react.ts",
+    "./react-utils/use-popover-positioner.react": "./src/react-utils/use-popover-positioner.react.ts",
     "./react-utils/use-truncation.react": "./src/react-utils/use-truncation.react.ts",
     "./styles/active": "./src/styles/active.ts",
     "./styles/badge": "./src/styles/badge.ts",
