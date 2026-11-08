@@ -168,16 +168,21 @@ export const buttonLabel = cv({
     "data-text:before:invisible data-text:before:content-[attr(data-text)]",
     "data-text:before:font-[calc(500+var(--contrast))]",
   ],
+  variants: {
+    /**
+     * Fills the free space in its row, so the slots after it sit together at
+     * the row end.
+     */
+    $grow: {
+      // A grown label starts its text in the free space of the control. In the
+      // control row, other labels keep the text in the middle of the reserved
+      // width at both weights. A label in a content column keeps the start of
+      // the column. Zero specificity lets an alignment class on the label win.
+      false: "[.control>&]:data-text:ui-base:text-center",
+    },
+  },
   defaultVariants: {
     $truncate: true,
-  },
-  refine({ variants, addClass }) {
-    // A grown label starts its text in the free space of the control.
-    if (variants.$grow) return;
-    // In the control row, the text stays in the middle of the reserved width at
-    // both weights. A label in a content column keeps the start of the column.
-    // Zero specificity lets an alignment class on the label win.
-    addClass("[.control>&]:data-text:ui-base:text-center");
   },
 });
 
