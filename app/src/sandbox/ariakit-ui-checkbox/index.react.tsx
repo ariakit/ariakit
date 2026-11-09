@@ -603,20 +603,29 @@ export default function CheckboxExamples() {
 
       <Example
         title="Long card labels"
-        description="A long label truncates and keeps the check on its row. A basis class on the label puts it on its own row, and the check wraps below it."
+        description="A long label truncates and keeps the check on its row. With $truncate set to false, it wraps beside the check. A basis class on the label puts it on its own row, and the check wraps below it."
         code={`
-          <CheckboxCard value="retention" defaultChecked>
-            <CheckboxCardSlot><ChartBar /></CheckboxCardSlot>
-            <CheckboxCardLabel>Retention and funnel reports</CheckboxCardLabel>
-            <CheckboxCardCheck />
-          </CheckboxCard>
-          <CheckboxCard value="exports" defaultChecked>
-            <CheckboxCardSlot><ChartBar /></CheckboxCardSlot>
-            <CheckboxCardLabel className="basis-full">
-              Scheduled exports
-            </CheckboxCardLabel>
-            <CheckboxCardCheck />
-          </CheckboxCard>
+          <div className="grid max-w-56 gap-3">
+            <CheckboxCard value="retention" defaultChecked>
+              <CheckboxCardSlot><ChartBar /></CheckboxCardSlot>
+              <CheckboxCardLabel>Retention and funnel reports</CheckboxCardLabel>
+              <CheckboxCardCheck />
+            </CheckboxCard>
+            <CheckboxCard value="usage" defaultChecked>
+              <CheckboxCardSlot><ChartBar /></CheckboxCardSlot>
+              <CheckboxCardLabel $truncate={false}>
+                Usage and adoption reports
+              </CheckboxCardLabel>
+              <CheckboxCardCheck />
+            </CheckboxCard>
+            <CheckboxCard value="exports" defaultChecked>
+              <CheckboxCardSlot><ChartBar /></CheckboxCardSlot>
+              <CheckboxCardLabel className="basis-full">
+                Scheduled exports
+              </CheckboxCardLabel>
+              <CheckboxCardCheck />
+            </CheckboxCard>
+          </div>
         `}
       >
         <div className="grid max-w-56 gap-3">
@@ -625,6 +634,15 @@ export default function CheckboxExamples() {
               <ChartBar />
             </CheckboxCardSlot>
             <CheckboxCardLabel>Retention and funnel reports</CheckboxCardLabel>
+            <CheckboxCardCheck />
+          </CheckboxCard>
+          <CheckboxCard value="usage" defaultChecked>
+            <CheckboxCardSlot>
+              <ChartBar />
+            </CheckboxCardSlot>
+            <CheckboxCardLabel $truncate={false}>
+              Usage and adoption reports
+            </CheckboxCardLabel>
             <CheckboxCardCheck />
           </CheckboxCard>
           <CheckboxCard value="exports" defaultChecked>
