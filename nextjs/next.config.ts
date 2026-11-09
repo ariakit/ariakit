@@ -9,6 +9,10 @@ const config: NextConfig = {
   // Keep this enabled. The production build is the regression test for
   // https://github.com/ariakit/ariakit/issues/5147.
   cacheComponents: true,
+  // Next.js 16.4 warns when Cache Components is on without an explicit
+  // `partialPrefetching` value. Keep the prefetch behavior that this app had
+  // before 16.4.
+  partialPrefetching: false,
 
   // Pin the Turbopack root to the monorepo root (the parent of this workspace).
   // Otherwise Next.js walks up the tree collecting every workspace/lockfile and
