@@ -335,6 +335,43 @@ test("site navigation card shows a loader until the preview loads", async ({
   await expect(loader).toHaveCount(0);
 });
 
+test("site navigation card shows a loader while a preview loads a new page", async ({
+  page,
+}) => {
+  const navigation = await gotoPage(page);
+  await navigation.link("Breadcrumb").hover();
+  const frame = query(page).dialog("Breadcrumb").locator("iframe");
+  await expect(frame).toHaveCSS("opacity", "1");
+  // Holding the scripts and fonts of the next page delays its load event, so
+  // the page stays in the state that its embed script reports while it parses.
+  const { promise: released, resolve: release } = Promise.withResolvers<void>();
+  const frameElement = await frame.elementHandle();
+  const contentFrame = await frameElement?.contentFrame();
+  await page.route("**/*", async (route) => {
+    const request = route.request();
+    const type = request.resourceType();
+    if (request.frame() === contentFrame) {
+      if (type === "script" || type === "font") {
+        await released;
+      }
+    }
+    await route.continue();
+  });
+  // An example can load another page in its frame, as a reload does here.
+  await frame
+    .contentFrame()
+    .locator("html")
+    .evaluate(() => {
+      location.reload();
+    });
+  const loader = frame.locator("xpath=following-sibling::*[1]");
+  await expect(loader).toBeVisible();
+  await expect(frame).toHaveCSS("opacity", "0");
+  release();
+  await expect(frame).toHaveCSS("opacity", "1");
+  await expect(loader).toHaveCount(0);
+});
+
 test("site navigation card keeps the room below a preview that opens a popup", async ({
   page,
 }) => {

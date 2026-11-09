@@ -428,10 +428,9 @@ function AppNavigationPreview({ example }: AppNavigationPreviewProps) {
       post({ type: PREVIEW_MESSAGE_TYPE, action: "compact", fontSize });
       post({ type: PREVIEW_MESSAGE_TYPE, action: "activate" });
       // A page can open its popup after the frame loads, so the frame waits for
-      // both, as a preview card does.
-      if (!event.data.loaded) return;
-      if (event.data.opening) return;
-      setReady(true);
+      // both, as a preview card does. A new document in the frame is not ready
+      // until it loads too.
+      setReady(event.data.loaded && !event.data.opening);
     };
     window.addEventListener("message", onMessage);
     const unsubscribeTheme = subscribeAppTheme(postTheme);
