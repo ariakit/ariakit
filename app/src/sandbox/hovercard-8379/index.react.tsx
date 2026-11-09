@@ -2,7 +2,7 @@ import * as ak from "@ariakit/react";
 import { link } from "@ariakit/ui/styles/link";
 import { popover } from "@ariakit/ui/styles/popover";
 import type { ComponentPropsWithoutRef } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const sections = Array.from(
@@ -38,6 +38,7 @@ function PreviewFrame({
 }
 
 export default function Example() {
+  const cardRef = useRef<HTMLDivElement>(null);
   return (
     <div className="flex flex-col items-start gap-4">
       <PreviewFrame title="Outside preview" className="h-16 w-80 border">
@@ -47,7 +48,16 @@ export default function Example() {
         <ak.HovercardAnchor href="#button" hoverOnScroll {...link.jsx()}>
           Button
         </ak.HovercardAnchor>
-        <ak.Hovercard {...popover.jsx({ className: "gap-2" })}>
+        <ak.Hovercard
+          ref={cardRef}
+          // TODO: Remove when https://github.com/ariakit/ariakit/issues/8379 is
+          // fixed. A frame element matches :hover while the mouse is in the
+          // frame, or in a frame nested in it.
+          hideOnHoverOutside={() =>
+            !cardRef.current?.querySelector("iframe:hover")
+          }
+          {...popover.jsx({ className: "gap-2" })}
+        >
           <ak.HovercardHeading>Button</ak.HovercardHeading>
           <PreviewFrame title="Button preview" className="h-48 w-80 border">
             <button type="button">Preview button</button>
