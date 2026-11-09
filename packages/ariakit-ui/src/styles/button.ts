@@ -5,6 +5,7 @@ import {
   controlBar,
   controlContent,
   controlDescription,
+  controlDisabledClass,
   controlGroup,
   controlLabel,
   controlSeparator,
@@ -64,17 +65,6 @@ export const button = cv({
     // Map the 0–100 contrast scale to font weights 500–600. Zero specificity
     // lets a weight class on the button win, whatever its order.
     "ui-base:font-[calc(500+var(--contrast))]",
-    // DOM disabled state can change after render. Keep these rules aligned with
-    // control.$disabled; the prop also removes hover and press variants.
-    "ui-disabled:cursor-not-allowed!",
-    "ui-disabled:border-(--disabled-border,transparent)!",
-    "ui-disabled:ring-(--disabled-border,transparent)!",
-    "ui-disabled:inset-shadow-none! ui-disabled:shadow-none!",
-    "ui-disabled:bg-none! ui-disabled:ak-ink-0! ui-disabled:*:ak-ink-0!",
-    "ui-disabled:not-forced-colors:ui-text:ak-ink-0!",
-    "ui-disabled:forced-colors:text-[GrayText]!",
-    "ui-disabled:forced-colors:**:text-[GrayText]!",
-    "ui-disabled:forced-colors:border-[GrayText]!",
   ],
   variants: {
     /**
@@ -129,9 +119,15 @@ export const button = cv({
     if (fadesDisabledSurface(variants)) {
       addClass("ui-disabled:ak-layer-fade-80");
     }
-    if (!variants.$disabled) return;
-    // Label-based controls never match :disabled, so remove their hover and
-    // press variants explicitly.
+    if (!variants.$disabled) {
+      // DOM disabled state can change after render. control.$disabled adds the
+      // same classes.
+      addClass(controlDisabledClass);
+      return;
+    }
+    // The ui-disabled class already stops hover and press styles. Clearing the
+    // variants also drops their inline values and makes a disabled breadcrumb
+    // step quiet, so the separators beside it stay while it's hovered.
     setVariants({
       $hoverOffset: false,
       $hoverPush: false,

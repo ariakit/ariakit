@@ -137,13 +137,11 @@ export const comboboxItem = cv({
     "ui-focus:ui-disabled:forced-colors:**:text-[HighlightText]!",
   ],
   variants: {
-    /** Paints the highlighted appearance for static content. */
-    $highlighted: [
-      "ak-state-5",
-      "forced-colors:forced-color-adjust-none",
-      "forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
-      "forced-colors:**:text-[HighlightText]",
-    ],
+    /**
+     * Paints the highlighted appearance for static content, as when the item
+     * has focus. It doesn't move focus to the item.
+     */
+    $highlighted: "ui-focused",
   },
   defaultVariants: {
     $hoverOffset: false,
