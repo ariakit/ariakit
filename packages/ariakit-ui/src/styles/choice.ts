@@ -501,8 +501,9 @@ export const choiceCardLabel = cv({
     // The card wraps so a direct description can take its own row, and a
     // wrapping row moves an item to the next line before it shrinks it. A zero
     // basis keeps a direct label on the row of its slots, so it truncates or
-    // wraps its text instead of moving the check below it.
-    $grow: "[.choice-card>&]:basis-0",
+    // wraps its text instead of moving the check below it. Zero specificity
+    // lets a caller basis class win.
+    $grow: "[.choice-card>&]:ui-base:basis-0",
   },
   defaultVariants: {
     $grow: true,
