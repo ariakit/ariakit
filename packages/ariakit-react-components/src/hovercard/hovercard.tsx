@@ -16,6 +16,8 @@ import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   addGlobalEventListener,
+  contains,
+  getActiveElement,
   getDocument,
   getWindow,
   hasFocusWithin,
@@ -79,6 +81,16 @@ function isFrameWindowInside(element: Element, view: Window) {
   return false;
 }
 
+// The focused element of a frame is in the frame's document, so a focused frame
+// inside a hovercard, which is the active element of the hovercard's document,
+// counts as focus within the hovercard.
+function hasFocusInHovercard(card: HTMLElement) {
+  if (hasFocusWithin(card)) return true;
+  const activeElement = getActiveElement(card, { frame: false });
+  if (!activeElement) return false;
+  return contains(card, activeElement);
+}
+
 /** Where the mouse is. */
 interface MouseTarget {
   /** The element under the mouse and its ancestors. */
@@ -109,7 +121,7 @@ function isMovingOnHovercard({
   nested,
 }: IsMovingOnHovercardParams) {
   // The hovercard element has focus so we should keep it visible.
-  if (hasFocusWithin(card)) return true;
+  if (hasFocusInHovercard(card)) return true;
   // The mouse is moving on an element inside the hovercard.
   if (isOnHovercard(card, target)) return true;
   // The mouse is moving on an element inside an anchor or disclosure element.
@@ -120,7 +132,9 @@ function isMovingOnHovercard({
   }
   // The mouse is moving on an element inside a nested hovercard.
   if (
-    nested?.some((card) => hasFocusWithin(card) || isOnHovercard(card, target))
+    nested?.some(
+      (card) => hasFocusInHovercard(card) || isOnHovercard(card, target),
+    )
   ) {
     return true;
   }

@@ -47,7 +47,9 @@ function ButtonPreview() {
       <ak.Hovercard {...popover.jsx({ className: "gap-2" })}>
         <ak.HovercardHeading>Button</ak.HovercardHeading>
         <PreviewFrame title="Button preview" className="h-48 w-80 border">
-          <button type="button">Preview button</button>
+          <button type="button" tabIndex={0}>
+            Preview button
+          </button>
           <PreviewFrame title="Nested preview" style={nestedFrameStyle}>
             <button type="button">Nested button</button>
           </PreviewFrame>
@@ -77,7 +79,49 @@ function OverlaysPreview() {
           <ak.Hovercard portal {...popover.jsx({ className: "gap-2" })}>
             <ak.HovercardHeading>Dialog</ak.HovercardHeading>
             <PreviewFrame title="Dialog preview" className="h-32 w-64 border">
-              <button type="button">Dialog button</button>
+              <button type="button" tabIndex={0}>
+                Dialog button
+              </button>
+            </PreviewFrame>
+          </ak.Hovercard>
+        </ak.HovercardProvider>
+      </ak.Hovercard>
+    </ak.HovercardProvider>
+  );
+}
+
+// A hovercard with a frame, anchored in a scroll container, and with a nested
+// hovercard that renders in a portal and holds a frame.
+function DocsPreview() {
+  return (
+    <ak.HovercardProvider placement="right-start">
+      <div
+        role="region"
+        aria-label="Sidebar"
+        className="h-24 w-40 overflow-y-auto border p-2"
+      >
+        <ak.HovercardAnchor href="#docs" {...link.jsx()}>
+          Docs
+        </ak.HovercardAnchor>
+        <div className="h-64" />
+      </div>
+      <ak.Hovercard {...popover.jsx({ className: "gap-2" })}>
+        <ak.HovercardHeading>Docs</ak.HovercardHeading>
+        <PreviewFrame title="Docs preview" className="h-32 w-64 border">
+          <button type="button" tabIndex={0}>
+            Docs button
+          </button>
+        </PreviewFrame>
+        <ak.HovercardProvider placement="right-start">
+          <ak.HovercardAnchor href="#guides" {...link.jsx()}>
+            Guides
+          </ak.HovercardAnchor>
+          <ak.Hovercard portal {...popover.jsx({ className: "gap-2" })}>
+            <ak.HovercardHeading>Guides</ak.HovercardHeading>
+            <PreviewFrame title="Guides preview" className="h-32 w-64 border">
+              <button type="button" tabIndex={0}>
+                Guides button
+              </button>
             </PreviewFrame>
           </ak.Hovercard>
         </ak.HovercardProvider>
@@ -95,7 +139,10 @@ export default function Example() {
         </PreviewFrame>
         <ButtonPreview />
       </div>
-      <OverlaysPreview />
+      <div className="flex flex-col items-start gap-4">
+        <OverlaysPreview />
+        <DocsPreview />
+      </div>
     </div>
   );
 }
