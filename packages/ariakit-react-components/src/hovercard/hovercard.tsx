@@ -57,22 +57,71 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-function isMovingOnHovercard(
-  path: EventTarget[],
-  card: HTMLElement,
-  hoverElements: Array<HTMLElement | null>,
-  nested?: HTMLElement[],
-) {
+// Whether the window is the one of a frame inside the element, or of a frame
+// nested in one. A page can hide its own frameElement, so this finds the frame
+// by its window.
+function isFrameWindowInside(element: Element, view: Window) {
+  const elementWindow = getWindow(element);
+  if (view === elementWindow) return false;
+  // The window of the frame in the element's document that holds the view.
+  let frameWindow = view;
+  let parent = frameWindow.parent;
+  while (parent !== elementWindow) {
+    // A removed frame's window has no parent, and the top window is its own.
+    if (!parent) return false;
+    if (parent === frameWindow) return false;
+    frameWindow = parent;
+    parent = frameWindow.parent;
+  }
+  for (const frame of element.querySelectorAll("iframe")) {
+    if (frame.contentWindow === frameWindow) return true;
+  }
+  return false;
+}
+
+/** Where the mouse is. */
+interface MouseTarget {
+  /** The element under the mouse and its ancestors. */
+  path: EventTarget[];
+  /** The window of the document under the mouse. */
+  view: Window | null;
+}
+
+// The path of a mouse event in a frame stays in the frame's document, so a
+// frame inside a hovercard counts as the hovercard.
+function isOnHovercard(card: HTMLElement, { path, view }: MouseTarget) {
+  if (path.includes(card)) return true;
+  if (!view) return false;
+  return isFrameWindowInside(card, view);
+}
+
+interface IsMovingOnHovercardParams {
+  target: MouseTarget;
+  card: HTMLElement;
+  hoverElements: Array<HTMLElement | null>;
+  nested?: HTMLElement[];
+}
+
+function isMovingOnHovercard({
+  target,
+  card,
+  hoverElements,
+  nested,
+}: IsMovingOnHovercardParams) {
   // The hovercard element has focus so we should keep it visible.
   if (hasFocusWithin(card)) return true;
   // The mouse is moving on an element inside the hovercard.
-  if (path.includes(card)) return true;
+  if (isOnHovercard(card, target)) return true;
   // The mouse is moving on an element inside an anchor or disclosure element.
-  if (hoverElements.some((element) => element && path.includes(element))) {
+  if (
+    hoverElements.some((element) => element && target.path.includes(element))
+  ) {
     return true;
   }
   // The mouse is moving on an element inside a nested hovercard.
-  if (nested?.some((card) => hasFocusWithin(card) || path.includes(card))) {
+  if (
+    nested?.some((card) => hasFocusWithin(card) || isOnHovercard(card, target))
+  ) {
     return true;
   }
   return false;
@@ -273,12 +322,12 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         // Checks whether the hovercard element has focus or the mouse is moving
         // through valid hovercard elements.
         if (
-          isMovingOnHovercard(
-            path,
-            element,
+          isMovingOnHovercard({
+            target: { path, view: event.view },
+            card: element,
             hoverElements,
-            nestedHovercardsRef.current,
-          )
+            nested: nestedHovercardsRef.current,
+          })
         ) {
           // While the mouse is moving over an anchor or disclosure while the
           // hovercard is open, keep track of the mouse position so we can use
@@ -323,7 +372,11 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           if (!isInDocumentTree(hoverElement)) return;
         }
         lastPath = path;
-        if (isMovingOnHovercard(path, element, hoverElements, nested)) {
+        const view = getWindow(point.document);
+        const target = { path, view };
+        if (
+          isMovingOnHovercard({ target, card: element, hoverElements, nested })
+        ) {
           const onHoverElement = hoverElements.some(
             (element) => element && path.includes(element),
           );
@@ -334,8 +387,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         if (hideTimeoutRef.current) return;
         // The callback takes a mouse event, so it gets one at the resting mouse
         // position. It's never dispatched.
-        const { MouseEvent } = getWindow(point.document);
-        const mouseEvent = new MouseEvent("mousemove", {
+        const mouseEvent = new view.MouseEvent("mousemove", {
           clientX: point.x,
           clientY: point.y,
         });

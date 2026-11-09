@@ -1,3 +1,4 @@
+import { countAnimations } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 // After a scroll, Playwright WebKit sends a mousemove whose screen position
@@ -18,6 +19,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const preview = query(page.frameLocator("iframe[title='Button preview']"));
     await q.link("Button").hover();
     await test.expect(card).toBeVisible();
+    // The hovercard scales in when it opens, and Playwright scrolls the page
+    // before it retries a hover on an element that moves. The mouse moves
+    // inside the hovercard after it settles, so no page scroll interferes.
+    await test.expect.poll(() => countAnimations(card)).toBe(0);
     await query(card).heading("Button").hover();
     await preview.button("Preview button").hover();
     await page.mouse.wheel(0, 200);
