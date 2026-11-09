@@ -50,6 +50,12 @@ packageExtensions:
 
 patchedDependencies:
   "@changesets/apply-release-plan@8.1.1": patches/@changesets__apply-release-plan@8.1.1.patch
+  # Cache Components renders hang or lose content on workerd without
+  # https://github.com/opennextjs/opennextjs-cloudflare/pull/1318. The patch
+  # applies that PR's compiled output to the published dist. Remove it once a
+  # released @opennextjs/cloudflare version includes the PR. Until then, port
+  # the patch to each new adapter version.
+  "@opennextjs/cloudflare@1.20.16": patches/@opennextjs__cloudflare@1.20.16.patch
 
 peerDependencyRules:
   allowedVersions:

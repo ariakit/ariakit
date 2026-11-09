@@ -1,0 +1,390 @@
+diff --git a/dist/cli/build/bundle-server.js b/dist/cli/build/bundle-server.js
+index 7420316008e9651c5a1e41d2edcc3d00b8d023f8..45fd0cc4a4592a4577248cbffc6f59cc32119661 100644
+--- a/dist/cli/build/bundle-server.js
++++ b/dist/cli/build/bundle-server.js
+@@ -11,6 +11,7 @@ import { getOpenNextConfig } from "../../api/config.js";
+ import { normalizePath } from "../utils/normalize-path.js";
+ import { patchVercelOgLibrary } from "./patches/ast/patch-vercel-og-library.js";
+ import { patchWebpackRuntime } from "./patches/ast/webpack-runtime.js";
++import { cacheComponentsSchedulerModule, needsCacheComponentsScheduler, patchCacheComponents, } from "./patches/plugins/cache-components.js";
+ import { inlineDynamicRequires } from "./patches/plugins/dynamic-requires.js";
+ import { inlineFindDir } from "./patches/plugins/find-dir.js";
+ import { patchInstrumentation } from "./patches/plugins/instrumentation.js";
+@@ -75,7 +76,16 @@ export async function bundleServer(buildOpts, projectOpts) {
+     const openNextServerBundle = path.join(outputPath, packagePath, `handler.mjs`);
+     const updater = new ContentUpdater(buildOpts);
+     const result = await build({
+-        entryPoints: [openNextServer],
++        // The scheduler wraps `setImmediate`, so it must load before the Next.js server captures it.
++        ...(needsCacheComponentsScheduler(buildOpts, nextConfig)
++            ? {
++                stdin: {
++                    contents: `import "${cacheComponentsSchedulerModule}"; export { handler } from ${JSON.stringify(openNextServer)};`,
++                    resolveDir: appPath,
++                    sourcefile: "cache-components-server-entry.mjs",
++                },
++            }
++            : { entryPoints: [openNextServer] }),
+         bundle: true,
+         outfile: openNextServerBundle,
+         format: "esm",
+@@ -104,6 +114,7 @@ export async function bundleServer(buildOpts, projectOpts) {
+             fixRequire(updater),
+             handleOptionalDependencies(optionalDependencies),
+             patchInstrumentation(updater, buildOpts),
++            patchCacheComponents(updater, buildOpts, nextConfig),
+             patchPagesRouterContext(buildOpts),
+             inlineFindDir(updater, buildOpts),
+             inlineLoadManifest(updater, buildOpts),
+diff --git a/dist/cli/build/open-next/createServerBundle.js b/dist/cli/build/open-next/createServerBundle.js
+index 5119462944183d6addcb9306ccb49972e1b21e4d..dbbabc0719e99670c1c3934d12036b200ab22fcc 100644
+--- a/dist/cli/build/open-next/createServerBundle.js
++++ b/dist/cli/build/open-next/createServerBundle.js
+@@ -2,7 +2,7 @@
+ // Adapted for cloudflare workers
+ import fs from "node:fs";
+ import path from "node:path";
+-import { loadMiddlewareManifest } from "@opennextjs/aws/adapters/config/util.js";
++import { loadConfig, loadMiddlewareManifest } from "@opennextjs/aws/adapters/config/util.js";
+ import { bundleNextServer } from "@opennextjs/aws/build/bundleNextServer.js";
+ import { compileCache } from "@opennextjs/aws/build/compileCache.js";
+ import { copyTracedFiles } from "@opennextjs/aws/build/copyTracedFiles.js";
+@@ -142,7 +142,7 @@ async function generateBundle(name, options, fnOptions, codeCustomization) {
+         awsPatches.patchBackgroundRevalidation,
+         awsPatches.patchNodeEnvironment,
+         // Cloudflare specific patches
+-        patchModuleLoadingSignal,
++        patchModuleLoadingSignal(loadConfig(path.join(appBuildOutputPath, ".next"))),
+         patchResRevalidate,
+         patchUseCacheIO,
+         patchTurbopackRuntime,
+diff --git a/dist/cli/build/patches/plugins/cache-components.d.ts b/dist/cli/build/patches/plugins/cache-components.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..811f5c6b741ec6d33f6e41446b7b0dc8d3980a91
+--- /dev/null
++++ b/dist/cli/build/patches/plugins/cache-components.d.ts
+@@ -0,0 +1,23 @@
++import { type BuildOptions } from "@opennextjs/aws/build/helper.js";
++import type { ContentUpdater, Plugin } from "@opennextjs/aws/plugins/content-updater.js";
++import type { NextConfig } from "@opennextjs/aws/types/next-types.js";
++export declare const cacheComponentsSchedulerModule = "__opennext_cache_components_scheduler";
++/**
++ * The flag is `experimental.dynamicIO` in Next.js 15.4, `experimental.cacheComponents` in 15.5 and
++ * `cacheComponents` from 16.0.
++ */
++export declare function isCacheComponentsEnabled(nextConfig: NextConfig): boolean;
++/** Next.js before 16.2 stages its renders with functions that are not covered. */
++export declare function needsCacheComponentsScheduler(buildOpts: BuildOptions, nextConfig: NextConfig): boolean;
++/**
++ * The runner is compiled into the app page runtimes, into the server chunks when the bundler inlines
++ * the runtime, and stays a standalone module for the callers that are not part of a runtime.
++ */
++export declare const runnerFileFilter: RegExp;
++export declare function patchCacheComponents(updater: ContentUpdater, buildOpts: BuildOptions, nextConfig: NextConfig): Plugin;
++export declare function patchRunInSequentialTasks(code: string, filePath: string): string;
++/**
++ * The minifier renames the function and inlines its timer group, but both callees are properties of
++ * an external module and keep their names.
++ */
++export declare const runInSequentialTasksRule = "\nrule:\n  pattern:\n    selector: function_declaration\n    context: \"function $FUNCTION($$$ARGS) { $$$BODY }\"\n  all:\n    - has:\n        regex: DANGEROUSLY_runPendingImmediatesAfterCurrentTask\n        stopBy: end\n    - has:\n        regex: expectNoPendingImmediates\n        stopBy: end\n    - not:\n        has:\n          kind: function_declaration\n          stopBy: end\n          has:\n            regex: DANGEROUSLY_runPendingImmediatesAfterCurrentTask\n            stopBy: end\nfix: |-\n  function $FUNCTION(first, ...rest) {\n    return require(\"__opennext_cache_components_scheduler\").runInSequentialTasks(first, ...rest);\n  }\n";
+diff --git a/dist/cli/build/patches/plugins/cache-components.js b/dist/cli/build/patches/plugins/cache-components.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..967fba1712ffdc3d93dbac9069bed56950211c4b
+--- /dev/null
++++ b/dist/cli/build/patches/plugins/cache-components.js
+@@ -0,0 +1,88 @@
++import path from "node:path";
++import { compareSemver } from "@opennextjs/aws/build/helper.js";
++import { applyRule, parseCode } from "@opennextjs/aws/build/patch/astCodePatcher.js";
++import { getCrossPlatformPathRegex } from "@opennextjs/aws/utils/regex.js";
++export const cacheComponentsSchedulerModule = "__opennext_cache_components_scheduler";
++/**
++ * The flag is `experimental.dynamicIO` in Next.js 15.4, `experimental.cacheComponents` in 15.5 and
++ * `cacheComponents` from 16.0.
++ */
++export function isCacheComponentsEnabled(nextConfig) {
++    const config = nextConfig;
++    return Boolean(config.cacheComponents ?? config.experimental?.cacheComponents ?? config.experimental?.dynamicIO);
++}
++/** Next.js before 16.2 stages its renders with functions that are not covered. */
++export function needsCacheComponentsScheduler(buildOpts, nextConfig) {
++    return isCacheComponentsEnabled(nextConfig) && !compareSemver(buildOpts.nextVersion, "<", "16.2.0");
++}
++const runnerContentFilter = /DANGEROUSLY_runPendingImmediatesAfterCurrentTask/;
++/**
++ * The runner is compiled into the app page runtimes, into the server chunks when the bundler inlines
++ * the runtime, and stays a standalone module for the callers that are not part of a runtime.
++ */
++export const runnerFileFilter = getCrossPlatformPathRegex(String.raw `/(?:next/dist/compiled/next-server/app-page(?:-turbo)?(?:-experimental)?\.runtime\.prod|\.next/server/chunks/.+|next/dist/(?:esm/)?server/app-render/app-render-render-utils)\.js$`, { escape: false });
++export function patchCacheComponents(updater, buildOpts, nextConfig) {
++    if (!needsCacheComponentsScheduler(buildOpts, nextConfig)) {
++        return { name: "patch-cache-components", setup() { } };
++    }
++    let patchedFiles = 0;
++    updater.updateContent("cache-components-scheduler", [
++        {
++            filter: runnerFileFilter,
++            contentFilter: runnerContentFilter,
++            callback: async ({ contents, path: filePath }) => {
++                patchedFiles++;
++                return patchRunInSequentialTasks(contents, filePath);
++            },
++        },
++    ]);
++    return {
++        name: "patch-cache-components",
++        setup(build) {
++            build.onResolve({ filter: new RegExp(`^${cacheComponentsSchedulerModule}$`) }, () => ({
++                path: path.join(buildOpts.outputDir, "cloudflare-templates/cache-components-scheduler.js"),
++            }));
++            build.onEnd((result) => {
++                if (result.errors.length === 0 && patchedFiles === 0) {
++                    throw new Error(`Cache Components is enabled but \`runInSequentialTasks\` was not found in Next.js ${buildOpts.nextVersion}. The app would render incomplete responses on Workers. Please report this to @opennextjs/cloudflare.`);
++                }
++            });
++        },
++    };
++}
++export function patchRunInSequentialTasks(code, filePath) {
++    const root = parseCode(code);
++    const { edits } = applyRule(runInSequentialTasksRule, root);
++    if (edits.length !== 1) {
++        throw new Error(`Expected one \`runInSequentialTasks\` in ${filePath} but found ${edits.length}. Please report this to @opennextjs/cloudflare with your Next.js version.`);
++    }
++    return root.commitEdits(edits);
++}
++/**
++ * The minifier renames the function and inlines its timer group, but both callees are properties of
++ * an external module and keep their names.
++ */
++export const runInSequentialTasksRule = `
++rule:
++  pattern:
++    selector: function_declaration
++    context: "function $FUNCTION($$$ARGS) { $$$BODY }"
++  all:
++    - has:
++        regex: DANGEROUSLY_runPendingImmediatesAfterCurrentTask
++        stopBy: end
++    - has:
++        regex: expectNoPendingImmediates
++        stopBy: end
++    - not:
++        has:
++          kind: function_declaration
++          stopBy: end
++          has:
++            regex: DANGEROUSLY_runPendingImmediatesAfterCurrentTask
++            stopBy: end
++fix: |-
++  function $FUNCTION(first, ...rest) {
++    return require("${cacheComponentsSchedulerModule}").runInSequentialTasks(first, ...rest);
++  }
++`;
+diff --git a/dist/cli/build/patches/plugins/module-loading.d.ts b/dist/cli/build/patches/plugins/module-loading.d.ts
+index 9c9bf12a9c5d9f0a000f7c504f3acbffb021af4f..d2302020e07ec1c3cfe02201376097c40115789c 100644
+--- a/dist/cli/build/patches/plugins/module-loading.d.ts
++++ b/dist/cli/build/patches/plugins/module-loading.d.ts
+@@ -1,4 +1,5 @@
+ import type { CodePatcher } from "@opennextjs/aws/build/patch/codePatcher.js";
++import type { NextConfig } from "@opennextjs/aws/types/next-types.js";
+ /**
+  * ast-grep rule replacing the body of `getModuleLoadingSignal()` to scope the signal to the request.
+  *
+@@ -9,4 +10,4 @@ import type { CodePatcher } from "@opennextjs/aws/build/patch/codePatcher.js";
+  * `new CacheSignal(null)`.
+  */
+ export declare const moduleLoadingSignalRule = "\nrule:\n  kind: statement_block\n  inside:\n    kind: function_declaration\n    field: body\n    has:\n      field: name\n      regex: ^getModuleLoadingSignal$\n  has:\n    pattern: $SIGNAL = new $CACHE_SIGNAL.CacheSignal($$$ARGS)\n    stopBy: end\nfix: |-\n  {\n    const requestStore = globalThis.__openNextAls?.getStore();\n    if (requestStore) {\n      return requestStore.moduleLoadingSignal ??= new $CACHE_SIGNAL.CacheSignal($$$ARGS);\n    }\n    return $SIGNAL ??= new $CACHE_SIGNAL.CacheSignal($$$ARGS);\n  }\n";
+-export declare const patchModuleLoadingSignal: CodePatcher;
++export declare function patchModuleLoadingSignal(nextConfig: NextConfig): CodePatcher;
+diff --git a/dist/cli/build/patches/plugins/module-loading.js b/dist/cli/build/patches/plugins/module-loading.js
+index 8146287814f2f7558b96baf04de2ec3241b33698..62fcd5cd9068c6d6d38ae3f23f436bc2d34f37e3 100644
+--- a/dist/cli/build/patches/plugins/module-loading.js
++++ b/dist/cli/build/patches/plugins/module-loading.js
+@@ -5,8 +5,9 @@
+  * cancel or notify those timers from a different request's I/O context, so store
+  * the signal on the OpenNext request store and use a fallback outside a request.
+  */
+-import { patchCode } from "@opennextjs/aws/build/patch/astCodePatcher.js";
++import { applyRule, parseCode } from "@opennextjs/aws/build/patch/astCodePatcher.js";
+ import { getCrossPlatformPathRegex } from "@opennextjs/aws/utils/regex.js";
++import { isCacheComponentsEnabled } from "./cache-components.js";
+ /**
+  * ast-grep rule replacing the body of `getModuleLoadingSignal()` to scope the signal to the request.
+  *
+@@ -37,14 +38,28 @@ fix: |-
+     return $SIGNAL ??= new $CACHE_SIGNAL.CacheSignal($$$ARGS);
+   }
+ `;
+-export const patchModuleLoadingSignal = {
+-    name: "patch-module-loading-signal",
+-    patches: [
+-        {
+-            versions: ">=15.4.0",
+-            pathFilter: getCrossPlatformPathRegex(String.raw `/server/app-render/module-loading/track-module-loading\.instance\.js$`, { escape: false }),
+-            contentFilter: /getModuleLoadingSignal/,
+-            patchCode: async ({ code }) => patchCode(code, moduleLoadingSignalRule),
+-        },
+-    ],
+-};
++export function patchModuleLoadingSignal(nextConfig) {
++    const cacheComponents = isCacheComponentsEnabled(nextConfig);
++    return {
++        name: "patch-module-loading-signal",
++        patches: [
++            {
++                versions: ">=15.4.0",
++                pathFilter: getCrossPlatformPathRegex(String.raw `/server/app-render/module-loading/track-module-loading\.instance\.js$`, { escape: false }),
++                contentFilter: /getModuleLoadingSignal/,
++                patchCode: async ({ code, filePath, buildOptions }) => {
++                    const root = parseCode(code);
++                    const { edits } = applyRule(moduleLoadingSignalRule, root);
++                    if (edits.length !== 1) {
++                        // Next.js tracks module loading only with Cache Components, so a miss is harmless without it.
++                        if (!cacheComponents) {
++                            return code;
++                        }
++                        throw new Error(`Expected one \`getModuleLoadingSignal\` in ${filePath} of Next.js ${buildOptions.nextVersion} but found ${edits.length}. With Cache Components, requests that overlap would hang on Workers. Please report this to @opennextjs/cloudflare.`);
++                    }
++                    return root.commitEdits(edits);
++                },
++            },
++        ],
++    };
++}
+diff --git a/dist/cli/templates/cache-components-scheduler.d.ts b/dist/cli/templates/cache-components-scheduler.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..ea5f877317bc8bac8c73a10de5e4437f0fe5a0b4
+--- /dev/null
++++ b/dist/cli/templates/cache-components-scheduler.d.ts
+@@ -0,0 +1,12 @@
++/**
++ * Next.js runs each render stage in its own task and finds the end of a task with `process.nextTick`.
++ * workerd implements `process.nextTick` as `queueMicrotask`, so the stage boundary lands before
++ * React has scheduled its work.
++ *
++ * Immediates run in scheduling order, with the microtasks drained between them. A stage has settled
++ * when an immediate runs and the request scheduled no other immediate in the meantime.
++ *
++ * See https://github.com/cloudflare/workerd/issues/7687
++ */
++/** Drop-in for `runInSequentialTasks` from Next.js: each callback runs in its own settled task. */
++export declare function runInSequentialTasks<T>(first: () => T, ...rest: Array<() => void>): Promise<T>;
+diff --git a/dist/cli/templates/cache-components-scheduler.js b/dist/cli/templates/cache-components-scheduler.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..762c1bd7b24f589b9843f906ffe56cb41947bdc7
+--- /dev/null
++++ b/dist/cli/templates/cache-components-scheduler.js
+@@ -0,0 +1,112 @@
++/**
++ * Next.js runs each render stage in its own task and finds the end of a task with `process.nextTick`.
++ * workerd implements `process.nextTick` as `queueMicrotask`, so the stage boundary lands before
++ * React has scheduled its work.
++ *
++ * Immediates run in scheduling order, with the microtasks drained between them. A stage has settled
++ * when an immediate runs and the request scheduled no other immediate in the meantime.
++ *
++ * See https://github.com/cloudflare/workerd/issues/7687
++ */
++import { setImmediate as setImmediatePromise } from "node:timers/promises";
++import { promisify } from "node:util";
++// Captured before Next.js replaces them: the stage hops must not be counted, and Next.js makes its
++// own `node:timers/promises` `setImmediate` call back into this module.
++const nativeSetImmediate = globalThis.setImmediate;
++const nativeSetImmediatePromise = setImmediatePromise;
++const REQUEST_CONTEXT = Symbol.for("__cloudflare-context__");
++// Scoped to the request: React resumes work from promises created before the staged run, and one
++// request must not wait on another.
++const scopes = new WeakMap();
++const scopeOutsideRequest = { scheduledImmediates: 0, lastRender: Promise.resolve() };
++function currentScope() {
++    const context = globalThis[REQUEST_CONTEXT];
++    if (typeof context !== "object" || context === null) {
++        return scopeOutsideRequest;
++    }
++    let scope = scopes.get(context);
++    if (!scope) {
++        scope = { scheduledImmediates: 0, lastRender: Promise.resolve() };
++        scopes.set(context, scope);
++    }
++    return scope;
++}
++// Counts scheduling, not pending immediates: `Symbol.dispose` and the `clearImmediate` of
++// `node:timers` cancel an immediate without the global `clearImmediate`.
++function countedSetImmediate(callback, ...args) {
++    currentScope().scheduledImmediates++;
++    return nativeSetImmediate(callback, ...args);
++}
++const countedSetImmediatePromise = ((value, options) => {
++    currentScope().scheduledImmediates++;
++    return nativeSetImmediatePromise(value, options);
++});
++// Next.js reads this hook when it installs its own `node:timers/promises` `setImmediate`. Node.js
++// defines the hook on the global function, workerd does not.
++Object.defineProperty(countedSetImmediate, promisify.custom, { value: countedSetImmediatePromise });
++globalThis.setImmediate = countedSetImmediate;
++// Next.js also keeps the original in a registry that the first copy of `fast-set-immediate` to load
++// fills. The Node.js middleware bundle has a copy and loads before the server, so the registry can
++// already hold the native function, and the server would then send every immediate to it.
++const NEXT_ORIGINALS = Symbol.for("next.fast-set-immediate.originals");
++const nextOriginals = globalThis[NEXT_ORIGINALS];
++if (nextOriginals) {
++    nextOriginals.setImmediate = countedSetImmediate;
++}
++/** Drop-in for `runInSequentialTasks` from Next.js: each callback runs in its own settled task. */
++export function runInSequentialTasks(first, ...rest) {
++    const scope = currentScope();
++    const previousRender = scope.lastRender;
++    let endRender;
++    scope.lastRender = new Promise((resolve) => (endRender = resolve));
++    return new Promise((resolve, reject) => {
++        const stages = [first, ...rest];
++        let result;
++        const fail = (error) => {
++            endRender();
++            reject(error);
++        };
++        const afterImmediates = (next) => {
++            const scheduled = scope.scheduledImmediates;
++            nativeSetImmediate(() => {
++                if (scope.scheduledImmediates === scheduled) {
++                    next();
++                }
++                else {
++                    afterImmediates(next);
++                }
++            });
++        };
++        const runStage = (index) => {
++            try {
++                const value = stages[index]();
++                if (index === 0) {
++                    result = value;
++                    // A later stage can reject this promise. The caller observes it through the returned promise.
++                    if (isThenable(result)) {
++                        result.then(noop, noop);
++                    }
++                }
++            }
++            catch (error) {
++                fail(error);
++                return;
++            }
++            afterImmediates(() => {
++                if (index + 1 < stages.length) {
++                    runStage(index + 1);
++                }
++                else {
++                    endRender();
++                    resolve(result);
++                }
++            });
++        };
++        // Next.js runs one group of stage timers at a time, so the renders of a request must not interleave.
++        void previousRender.then(() => nativeSetImmediate(() => runStage(0)));
++    });
++}
++function isThenable(value) {
++    return (value !== null && typeof value === "object" && typeof value.then === "function");
++}
++function noop() { }
