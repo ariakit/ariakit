@@ -50,17 +50,13 @@ import type {
   AppNavigationGroup,
 } from "#app/lib/app.ts";
 import { getCachedCollection } from "#app/lib/collection-cache.ts";
-import {
-  countEntryExamples,
-  formatExampleCount,
-  getGuideDetail,
-} from "#app/lib/content.ts";
-import { renderThumbnail } from "#app/lib/thumbnail.ts";
+import { getGuideDetail } from "#app/lib/content.ts";
+import { getEntryExamples } from "#app/lib/gallery.ts";
 import {
   APP_DRAWER_ID,
   APP_NAVIGATION_ID,
   APP_TOP_ID,
-  getUniqueSlug,
+  getGalleryIds,
   THEME_PANEL_ID,
 } from "#app/lib/app.ts";
 import { getCollection } from "astro:content";
@@ -113,22 +109,18 @@ const {
 // with one.
 const pathname = Astro.url.pathname.replace(/\/?$/, "/");
 
-// The preview cards in the gallery are headings under the examples heading.
-// Each card id comes from the last segment of its preview id, such as
-// `shortcuts` for `tooltip/shortcuts`, and the cards find their ids here.
-const slugs = new Set([APP_TOP_ID, ...headings.map((heading) => heading.slug)]);
-const examplesSlug = getUniqueSlug(slugs, "examples");
-const galleryIds = new Map<string, string>();
-const exampleHeadings = examples.map((example) => {
-  const segment = example.previewId.split("/").at(-1) ?? example.previewId;
-  const slug = getUniqueSlug(slugs, segment);
-  galleryIds.set(example.previewId, slug);
+// The preview cards in the gallery are headings under the examples heading,
+// and the cards find their ids here.
+const { examplesId, exampleIds } = getGalleryIds(headings, examples);
+Astro.locals.galleryIds = exampleIds;
+const exampleHeadings = examples.flatMap((example) => {
+  const slug = exampleIds.get(example.previewId);
+  if (!slug) return [];
   return { slug, text: example.title, depth: 3 };
 });
-Astro.locals.galleryIds = galleryIds;
 const tocHeadings = [
   ...(examples.length > 0
-    ? [{ slug: examplesSlug, text: "Examples", depth: 2 }, ...exampleHeadings]
+    ? [{ slug: examplesId, text: "Examples", depth: 2 }, ...exampleHeadings]
     : []),
   ...headings.filter((heading) => heading.depth <= 3),
 ];
@@ -163,23 +155,26 @@ const drawerSections = sections.map((link) => ({
 
 const getEntryLinks = async (type: Section) => {
   const recipes = await getCachedCollection("recipes");
-  const previews = await getCachedCollection("previews");
   const entries = await getCollection(type, (entry) =>
     entry.data.frameworks.includes(navigationFramework),
   );
   const links = await Promise.all(
-    entries.map(async (entry) => {
-      const count = countEntryExamples({
+    entries.map(async (entry): Promise<AppLink> => {
+      const examples = await getEntryExamples({
         entry,
         framework: navigationFramework,
         recipes,
-        previews,
       });
       const href = `/${navigationFramework}/${type}/${entry.id}/`;
       return {
         ...getLink(href, entry.data.title),
-        description: formatExampleCount(count),
-        thumbnail: await renderThumbnail(entry, "small"),
+        count: examples.length,
+        examples: examples.map((example) => ({
+          title: example.title,
+          href: example.href,
+          previewHref: `/${navigationFramework}/previews/${example.previewId}/`,
+          fullscreen: example.fullscreen,
+        })),
       };
     }),
   );
@@ -212,6 +207,12 @@ const getNavigation = async () => {
 
 const navigation = await getNavigation();
 const hasSidebar = sidebar && navigation.length > 0;
+// Only the sidebar shows the example card, so the drawer links leave out the
+// examples, which would only add to the page size.
+const drawerNavigation = navigation.map((group) => ({
+  ...group,
+  links: group.links.map(({ examples: _examples, ...link }) => link),
+}));
 ---
 
 <!doctype html>
@@ -447,7 +448,7 @@ const hasSidebar = sidebar && navigation.length > 0;
             <AppNavigation
               client:load
               links={drawerSections}
-              groups={navigation}
+              groups={drawerNavigation}
               barTransitionName="drawer-nav-bar"
             />
             <div class="grid gap-6 px-3 pt-6 pb-3">
@@ -507,7 +508,7 @@ const hasSidebar = sidebar && navigation.length > 0;
             {
               examples.length > 0 ? (
                 <ShellWide className="relative gap-y-[1.75rem]">
-                  <h2 id={examplesSlug} class="sr-only -top-4">
+                  <h2 id={examplesId} class="sr-only -top-4">
                     Examples
                   </h2>
                   <slot name="gallery" />

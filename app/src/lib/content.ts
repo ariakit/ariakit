@@ -155,39 +155,6 @@ export interface ComponentRecipeEntry extends PreviewOwnerEntry {
   data: { components: { id: string }[] };
 }
 
-export interface CountEntryExamplesParams {
-  entry: PreviewOwnerEntry;
-  framework: Framework;
-  recipes: ComponentRecipeEntry[];
-  previews: FilterablePreview[];
-}
-
-/**
- * Counts the examples that demonstrate an entry. A component also counts the
- * examples of the recipes that list it in their `components` frontmatter.
- */
-export function countEntryExamples({
-  entry,
-  framework,
-  recipes,
-  previews,
-}: CountEntryExamplesParams) {
-  if (entry.collection === "recipes") {
-    return filterPreviews(previews, {
-      framework,
-      type: "recipes",
-      entries: [entry],
-    }).length;
-  }
-  const componentRecipes = recipes.filter((recipe) =>
-    recipe.data.components.some((component) => component.id === entry.id),
-  );
-  return filterPreviews(previews, {
-    framework,
-    entries: [...componentRecipes, entry],
-  }).length;
-}
-
 /** Formats an example count, such as `1 example` or `12 examples`. */
 export function formatExampleCount(count: number) {
   return `${count} ${count === 1 ? "example" : "examples"}`;

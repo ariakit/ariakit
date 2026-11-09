@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import Meta from "#app/components/meta.astro";
-import { AppThumbnail } from "#app/components/app-thumbnail.react.tsx";
+import { AppCover } from "#app/components/app-cover.react.tsx";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
@@ -19,7 +19,6 @@ import { uniq } from "#app/lib/array.ts";
 import { arrangeCards } from "#app/lib/card-layout.ts";
 import type { CardShape } from "#app/lib/card-layout.ts";
 import {
-  countEntryExamples,
   filterGuidesByGroup,
   filterPreviews,
   formatExampleCount,
@@ -27,7 +26,8 @@ import {
 } from "#app/lib/content.ts";
 import { getFramework } from "#app/lib/framework.ts";
 import { capitalize } from "#app/lib/string.ts";
-import { renderThumbnail } from "#app/lib/thumbnail.ts";
+import { renderCover } from "#app/lib/cover.ts";
+import { getEntryExamples } from "#app/lib/gallery.ts";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
@@ -70,7 +70,6 @@ const guides = (
   await getCollection("guides", filterGuidesByGroup(groupPath))
 ).map(getGuideDetail);
 const recipes = await getCollection("recipes");
-const previews = await getCollection("previews");
 
 // Narrow lists show one card per row, so full and wide cards span two columns
 // only once the grid has them.
@@ -81,15 +80,16 @@ const shapeClass = {
   cell: "",
 } satisfies Record<CardShape, string>;
 
-// The thumbnail stage keeps corners concentric with the card while this
+// The cover stage keeps corners concentric with the card while this
 // padding stays below 1rem.
 const CARD_PADDING = 1;
 
 const cards = await Promise.all(
   entries.map(async (entry) => ({
     entry,
-    count: countEntryExamples({ entry, framework, recipes, previews }),
-    thumbnail: await renderThumbnail(entry),
+    // The sidebar counts the same examples, which its card shows.
+    count: (await getEntryExamples({ entry, framework, recipes })).length,
+    cover: await renderCover(entry),
   })),
 );
 
@@ -162,7 +162,7 @@ const cardHover = hover.jsx({ $hoverOffset: 0.5 });
     >
       {
         cards.map((card) => {
-          const { entry, count, thumbnail } = card;
+          const { entry, count, cover } = card;
           return (
             <li
               style={getCardOrderStyle(card)}
@@ -184,13 +184,13 @@ const cardHover = hover.jsx({ $hoverOffset: 0.5 });
                 $p={CARD_PADDING}
                 $border
                 className={
-                  "group/thumbnail grid h-full grid-rows-[minmax(0,1fr)_auto] " +
+                  "group/cover grid h-full grid-rows-[minmax(0,1fr)_auto] " +
                   cardFocus
                 }
               >
-                {thumbnail && <AppThumbnail html={thumbnail} />}
+                {cover && <AppCover html={cover} />}
                 {/* The label stays in the footer row, also for an entry without
-                    a thumbnail. */}
+                    a cover. */}
                 <TextFrame
                   render={createElement("span")}
                   $cover
@@ -209,7 +209,7 @@ const cardHover = hover.jsx({ $hoverOffset: 0.5 });
                     </span>
                   </span>
                   <ArrowRight
-                    className="ak-ink-70 size-4 shrink-0 -translate-x-1 opacity-0 transition motion-reduce:transition-none group-hover/thumbnail:translate-x-0 group-hover/thumbnail:opacity-100 group-focus-visible/thumbnail:translate-x-0 group-focus-visible/thumbnail:opacity-100"
+                    className="ak-ink-70 size-4 shrink-0 -translate-x-1 opacity-0 transition motion-reduce:transition-none group-hover/cover:translate-x-0 group-hover/cover:opacity-100 group-focus-visible/cover:translate-x-0 group-focus-visible/cover:opacity-100"
                   />
                 </TextFrame>
               </Frame>

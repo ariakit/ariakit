@@ -6,7 +6,7 @@ import {
 } from "@ariakit/ui/components/skeleton.ariakit.react";
 
 // A post card that is still loading.
-export default function Thumbnail() {
+export default function Cover() {
   return (
     <Frame
       $lighten
@@ -29,27 +29,6 @@ export default function Thumbnail() {
         <SkeletonLine className="w-1/3" />
       </div>
       <SkeletonBox $rounded="lg" className="h-12 w-full" />
-    </Frame>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame $lighten $p={5.5} className="flex flex-col gap-4.5">
-      <div className="flex items-center gap-4.5">
-        <SkeletonCircle $weight="medium" className="size-11.5 shrink-0" />
-        <div className="grid flex-1 gap-1">
-          <SkeletonLine
-            $weight="bold"
-            className="w-3/5 text-[1.25em] leading-none"
-          />
-          <SkeletonLine
-            $weight="light"
-            className="w-1/3 text-[1.25em] leading-none"
-          />
-        </div>
-      </div>
-      <SkeletonBox $rounded="sm" $forceRounded className="w-full flex-1" />
     </Frame>
   );
 }

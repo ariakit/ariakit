@@ -8,7 +8,7 @@ import {
   tabs,
 } from "@ariakit/ui/styles/tabs";
 
-export default function Thumbnail() {
+export default function Cover() {
   return (
     <div {...tabs.jsx({ className: "w-[19em] max-w-full" })}>
       <div {...tabList.jsx()}>
@@ -16,7 +16,7 @@ export default function Thumbnail() {
           <span {...tabLabel.jsx()} data-text="Overview">
             Overview
           </span>
-          {/* Card thumbnails scale the scene with a transform, which can leave
+          {/* Covers scale the scene with a transform, which can leave
               the folder's bottom edge on a fractional pixel exactly over the
               panel border, so that border shows through as a faint line. A
               strip of the tab surface spans the border with a pixel to spare
@@ -43,36 +43,6 @@ export default function Thumbnail() {
         <SkeletonLine $weight="light" className="w-full" />
         <SkeletonLine $weight="light" className="w-3/5" />
         <SkeletonLine $weight="light" className="w-4/5" />
-      </div>
-    </div>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    // The root covers the slot and shares its border, so the tabs and panel
-    // borders meet the slot edge without doubling it.
-    <div
-      {...tabs.jsx({
-        $cover: true,
-        $p: 2,
-        // The panel clips content that does not fit, so the root keeps the slot
-        // height.
-        className: "flex min-h-0 flex-col",
-      })}
-    >
-      <div {...tabList.jsx()}>
-        <div {...tab.jsx()} aria-selected="true">
-          <SkeletonLine $weight="bold" className="w-12.5" />
-        </div>
-        <div {...tab.jsx()} aria-selected="false">
-          <SkeletonLine $weight="medium" className="w-12.5" />
-        </div>
-      </div>
-      <div {...tabPanels.jsx({ className: "grid flex-1 content-start gap-2" })}>
-        <SkeletonLine className="w-4/5" />
-        <SkeletonLine $weight="light" className="w-full" />
-        <SkeletonLine $weight="light" className="w-1/2" />
       </div>
     </div>
   );

@@ -1,8 +1,4 @@
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import {
-  SkeletonBox,
-  SkeletonLine,
-} from "@ariakit/ui/components/skeleton.ariakit.react";
+import { SkeletonBox } from "@ariakit/ui/components/skeleton.ariakit.react";
 import {
   carousel,
   carouselButton,
@@ -20,7 +16,7 @@ const dots = ["one", "two", "three", "four", "five"];
 const halfSlide = "basis-[calc(50%-var(--carousel-gap)/2)]";
 
 // A carousel of slides on its second page, between its two buttons.
-export default function Thumbnail() {
+export default function Cover() {
   return (
     <div {...carousel.jsx({ className: "w-[22em] max-w-full" })}>
       <div {...carouselViewport.jsx()}>
@@ -51,22 +47,5 @@ export default function Thumbnail() {
         ))}
       </div>
     </div>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame $lighten $p={5.5} className="flex flex-col gap-4">
-      <div className="flex flex-1 items-center gap-3">
-        <ChevronLeft className="size-8 shrink-0 stroke-3 opacity-60" />
-        <SkeletonBox $rounded="sm" $forceRounded className="h-full flex-1" />
-        <ChevronRight className="size-8 shrink-0 stroke-3 opacity-60" />
-      </div>
-      <div className="flex justify-center gap-2">
-        <SkeletonLine $weight="bold" className="w-8 leading-none" />
-        <SkeletonLine $weight="light" className="w-4 leading-none" />
-        <SkeletonLine $weight="light" className="w-4 leading-none" />
-      </div>
-    </Frame>
   );
 }

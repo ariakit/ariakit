@@ -2,10 +2,6 @@ import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import {
-  SkeletonBox,
-  SkeletonLine,
-} from "@ariakit/ui/components/skeleton.ariakit.react";
-import {
   TooltipSlot,
   TooltipText,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
@@ -44,7 +40,7 @@ const people: Person[] = [
   { id: "ana", name: "Ana Ruiz", initials: "AR", hue: "magenta" },
 ];
 
-// Static markup needs data-open to show the tooltip, and the thumbnail must not
+// Static markup needs data-open to show the tooltip, and the cover must not
 // play the open animation on page load. Tooltips open above their anchors, so
 // the scene keeps room for them at its top.
 function Tip({ children }: { children: ReactNode }) {
@@ -61,7 +57,7 @@ function Tip({ children }: { children: ReactNode }) {
   );
 }
 
-export default function Thumbnail() {
+export default function Cover() {
   return (
     // The card is too short for two rows, so narrow cards show only the toolbar.
     <div className="@container/tooltip w-[19em] max-w-full">
@@ -121,55 +117,5 @@ export default function Thumbnail() {
         </div>
       </div>
     </div>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame
-      $lighten
-      $p="none"
-      className="flex flex-col items-center justify-center gap-4"
-    >
-      {/* A coarse inverted pill stands for the tooltip, since the slot is too
-          small for its text. The arrow takes the pill color and points to the
-          hovered button. */}
-      <Frame
-        $invert
-        $rounded="sm"
-        $forceRounded
-        $p={2.5}
-        className={clsx(
-          "relative flex w-3/5 justify-center",
-          "after:absolute after:top-full after:left-1/2 after:-translate-x-1/2",
-          "after:border-x-[1em] after:border-t-[1em] after:border-x-transparent after:border-t-(--ak-layer)",
-        )}
-      >
-        <SkeletonLine
-          $weight="bold"
-          className="w-3/5 text-[1.25em] leading-none"
-        />
-      </Frame>
-      <div className="flex gap-2.5">
-        <SkeletonBox
-          $weight="light"
-          $rounded="sm"
-          $forceRounded
-          className="size-10"
-        />
-        <SkeletonBox
-          $weight="bold"
-          $rounded="sm"
-          $forceRounded
-          className="size-10"
-        />
-        <SkeletonBox
-          $weight="light"
-          $rounded="sm"
-          $forceRounded
-          className="size-10"
-        />
-      </div>
-    </Frame>
   );
 }

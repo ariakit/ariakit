@@ -195,8 +195,9 @@ export const breadcrumbSeparator = cv({
     // them, and an item can hold more than one control. Only the control that
     // faces the mark counts, and only if it paints a surface: a quiet step
     // paints nothing on hover, and an expanded control needs a selected surface.
-    "[li:has(>:nth-last-child(1_of_.control):hover:not(.breadcrumb-step-quiet,:disabled,[aria-disabled='true']))+&]:opacity-(--separator-shy-opacity)",
-    "has-[+li>:nth-child(1_of_.control):hover:not(.breadcrumb-step-quiet,:disabled,[aria-disabled='true'])]:opacity-(--separator-shy-opacity)",
+    // A step with $hovered counts as hovered.
+    "[li:has(>:nth-last-child(1_of_.control):is(:hover,.ui-hovered):not(.breadcrumb-step-quiet,:disabled,[aria-disabled='true']))+&]:opacity-(--separator-shy-opacity)",
+    "has-[+li>:nth-child(1_of_.control):is(:hover,.ui-hovered):not(.breadcrumb-step-quiet,:disabled,[aria-disabled='true'])]:opacity-(--separator-shy-opacity)",
     "[li:has(>:nth-last-child(1_of_.control):focus-visible)+&]:opacity-(--separator-shy-opacity)",
     "has-[+li>:nth-child(1_of_.control):focus-visible]:opacity-(--separator-shy-opacity)",
     "[li:has(>:nth-last-child(1_of_.control).popover-disclosure-surface[aria-expanded='true'])+&]:opacity-(--separator-shy-opacity)",

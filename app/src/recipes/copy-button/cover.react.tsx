@@ -1,14 +1,11 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import {
-  SkeletonBox,
-  SkeletonLine,
-} from "@ariakit/ui/components/skeleton.ariakit.react";
+import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
 import { TooltipText } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { button, buttonSlot } from "@ariakit/ui/styles/button";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
 import { CheckIcon } from "lucide-react";
 
-export default function Thumbnail() {
+export default function Cover() {
   return (
     <Frame
       $lighten
@@ -23,8 +20,8 @@ export default function Thumbnail() {
         <span {...buttonSlot.jsx()}>
           <CheckIcon />
         </span>
-        {/* Static markup needs data-open to show the tooltip, and the thumbnail
-            must not play the open animation on page load. */}
+        {/* Static markup needs data-open to show the tooltip, and the cover must
+            not play the open animation on page load. */}
         <span
           data-open
           {...tooltip.jsx({
@@ -35,20 +32,6 @@ export default function Thumbnail() {
           <TooltipText>Copied</TooltipText>
         </span>
       </span>
-    </Frame>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame $lighten $p={3} className="flex items-center gap-3">
-      <SkeletonLine $weight="medium" className="flex-1 text-[1.25em]" />
-      <SkeletonBox
-        $weight="bold"
-        $rounded="sm"
-        $forceRounded
-        className="size-10 shrink-0"
-      />
     </Frame>
   );
 }

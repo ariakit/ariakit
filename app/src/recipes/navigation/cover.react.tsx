@@ -51,20 +51,6 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 
-interface RowData {
-  id: string;
-  width: string;
-  current?: boolean;
-  badge?: boolean;
-}
-
-const smallRows: RowData[] = [
-  { id: "home", width: "w-3/5" },
-  { id: "inbox", width: "w-1/2", current: true },
-  { id: "reports", width: "w-2/5", badge: true },
-  { id: "team", width: "w-1/2" },
-];
-
 interface RowLabelProps {
   // Rows without a label show a placeholder line of this width.
   label?: string;
@@ -151,19 +137,6 @@ function RowLabel({ label, width }: RowLabelProps) {
     <span {...navLinkLabel.jsx()}>
       {label ?? <SkeletonLine $weight="light" className={width} />}
     </span>
-  );
-}
-
-// A brand pill that stands for a count badge at the end of a row.
-function Badge({ className }: { className?: string }) {
-  return (
-    <Frame
-      $layer="brand"
-      $rounded="full"
-      $forceRounded
-      $p="none"
-      className={clsx("ms-auto shrink-0", className)}
-    />
   );
 }
 
@@ -422,7 +395,7 @@ function ApiReference() {
   );
 }
 
-export default function Thumbnail() {
+export default function Cover() {
   return (
     <div className="flex items-start gap-6">
       <Sidebar />
@@ -431,34 +404,5 @@ export default function Thumbnail() {
         <ApiReference />
       </div>
     </div>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame $lighten $p="none" className="grid grid-cols-2">
-      <Frame
-        $rounded="none"
-        $forceRounded
-        $p={3}
-        $edgeWeight={15}
-        className="flex flex-col gap-2 border-e"
-      >
-        {smallRows.map((row) => (
-          <div key={row.id} className="flex items-center gap-2 p-1.5">
-            <SkeletonCircle
-              $weight={row.current ? "bold" : "light"}
-              className="size-[0.9em] shrink-0"
-            />
-            <SkeletonLine
-              $weight={row.current ? "bold" : "light"}
-              className={clsx(row.width, "text-[0.9em] leading-none")}
-            />
-            {row.badge && <Badge className="h-[0.8em] w-[1.4em]" />}
-          </div>
-        ))}
-      </Frame>
-      <Frame $darken={0.5} $rounded="none" $forceRounded $p="none" />
-    </Frame>
   );
 }

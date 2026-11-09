@@ -48,6 +48,20 @@ export interface PreviewViewportMessage {
   radius: string;
 }
 
+/**
+ * Shows a preview page in a small frame, such as the navigation card. The page
+ * takes the root font size, so an example that sizes its text and spacing in
+ * `rem` or `em` draws smaller. It leaves no room to scroll below a short
+ * example, unless it opens a popup, which needs that room below its trigger.
+ * Frames deployed before this message, such as a Next.js preview from an older
+ * deploy, ignore it.
+ */
+export interface PreviewCompactMessage {
+  type: typeof PREVIEW_MESSAGE_TYPE;
+  action: "compact";
+  fontSize: string;
+}
+
 /** Reports the current location of a preview frame to its card. */
 export interface PreviewLocationMessage {
   type: typeof PREVIEW_MESSAGE_TYPE;
@@ -941,6 +955,12 @@ export function setupPreviewEmbed() {
           applyTheme(data.theme);
         }
         break;
+      case "compact":
+        root.toggleAttribute("data-preview-compact", true);
+        if ("fontSize" in data && typeof data.fontSize === "string") {
+          setProperty("font-size", data.fontSize);
+        }
+        break;
       case "viewport":
         // The site stylesheet passes this value to app shells. Until it
         // arrives, each shell keeps the radius of its own size.
@@ -1207,17 +1227,6 @@ export function setupPreviewEmbed() {
   // frame renders and before its load event reveals the frame.
   postLocation();
 }
-
-/**
- * The inline script that runs `setupPreviewEmbed` in a preview page. Bundlers
- * that keep function names, such as esbuild in the Next.js Worker build, wrap
- * nested functions in a `__name` helper from the module scope, which the
- * serialized function cannot reach. So the script defines its own.
- */
-export const previewEmbedScript = `(() => {
-  const __name = (target) => target;
-  (${setupPreviewEmbed.toString()})();
-})();`;
 
 function hasTypes(
   data: object,

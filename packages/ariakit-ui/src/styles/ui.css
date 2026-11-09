@@ -2118,12 +2118,18 @@ body > * {
   }
 }
 
+/* The hover variant of Tailwind, which also matches the class that the
+   $hovered variant of the hover style recipe adds, so an element can show its
+   hover state while the pointer is elsewhere. One selector keeps the
+   specificity of :hover and emits each utility once. */
 @custom-variant ui-hover {
-  @variant hover {
-    @variant not-ui-disabled {
-      /* Do not highlight the host when a nested control receives the click. */
-      &:not(:has(button:hover), :has(*:hover > button)) {
-        @slot;
+  &:is(:hover, .ui-hovered) {
+    @media (hover: hover) {
+      @variant not-ui-disabled {
+        /* Do not highlight the host when a nested control receives the click. */
+        &:not(:has(button:hover), :has(*:hover > button)) {
+          @slot;
+        }
       }
     }
   }
@@ -2301,8 +2307,8 @@ body > * {
 }
 
 @custom-variant ui-adjacent-hover {
-  :hover:not(:disabled, [aria-disabled="true"]) + &,
-  &:has(+ :hover:not(:disabled, [aria-disabled="true"])) {
+  :is(:hover, .ui-hovered):not(:disabled, [aria-disabled="true"]) + &,
+  &:has(+ :is(:hover, .ui-hovered):not(:disabled, [aria-disabled="true"])) {
     @slot;
   }
 }

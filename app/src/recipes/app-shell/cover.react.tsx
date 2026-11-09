@@ -1,7 +1,6 @@
 import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
-  SkeletonBox,
   SkeletonCircle,
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
@@ -87,12 +86,6 @@ function Region({ className, ...props }: FrameProps) {
   return (
     <Frame $p="none" className={clsx("rounded-none", className)} {...props} />
   );
-}
-
-// A region of a small thumbnail. The frames inside it take square corners too,
-// so its placeholder lines keep flat ends at this size.
-function SquareRegion(props: FrameProps) {
-  return <Frame $rounded="none" $forceRounded $p="none" {...props} />;
 }
 
 function Stat({ label, value, change }: StatData) {
@@ -292,7 +285,7 @@ function Overview() {
   );
 }
 
-export default function Thumbnail() {
+export default function Cover() {
   return (
     <Frame
       $lighten
@@ -304,55 +297,6 @@ export default function Thumbnail() {
       <Header />
       <Sidebar />
       <Overview />
-    </Frame>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame
-      $lighten
-      $p="none"
-      className="grid grid-cols-[--spacing(20.5)_1fr] grid-rows-[auto_1fr]"
-    >
-      <SquareRegion
-        $p={3.5}
-        $edgeWeight={15}
-        className="col-span-full flex items-center gap-3.5 border-b"
-      >
-        <Frame
-          $layer="brand"
-          $rounded="full"
-          $forceRounded
-          className="size-4.5"
-        />
-        <SkeletonLine
-          $weight="medium"
-          className="w-1/4 text-[0.9em] leading-none"
-        />
-      </SquareRegion>
-      <SquareRegion
-        $p={3.5}
-        $edgeWeight={15}
-        className="flex flex-col gap-3.5 border-e"
-      >
-        <SkeletonLine
-          $weight="bold"
-          className="w-full text-[0.9em] leading-none"
-        />
-        <SkeletonLine className="w-4/5 text-[0.9em] leading-none" />
-        <SkeletonLine className="w-3/5 text-[0.9em] leading-none" />
-      </SquareRegion>
-      <SquareRegion $p={4.5} className="flex flex-col gap-4.5" $darken={0.5}>
-        <SkeletonLine
-          $weight="bold"
-          className="w-3/4 text-[1.25em] leading-none"
-        />
-        <div className="grid flex-1 grid-cols-2 gap-3.5">
-          <SkeletonBox $weight="light" $rounded="sm" $forceRounded />
-          <SkeletonBox $weight="light" $rounded="sm" $forceRounded />
-        </div>
-      </SquareRegion>
     </Frame>
   );
 }

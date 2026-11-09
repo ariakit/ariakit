@@ -29,7 +29,7 @@ import {
 import { layer } from "@ariakit/ui/styles/layer";
 import { ChevronsUpDownIcon, CircleCheckIcon } from "lucide-react";
 import * as React from "react";
-import Thumbnail from "#app/recipes/combobox-group/thumbnail.react.tsx";
+import Cover from "#app/recipes/combobox-group/cover.react.tsx";
 
 // These scenarios keep the state and content cases from the former standalone
 // fixtures while using the shared combobox parts.
@@ -247,8 +247,8 @@ export function OptionalProps() {
 export function ItemHighlight() {
   return (
     <div className="grid gap-6">
-      <section aria-label="Static thumbnail">
-        <Thumbnail />
+      <section aria-label="Static cover">
+        <Cover />
       </section>
       <Ariakit.ComboboxProvider
         defaultOpen
@@ -264,7 +264,7 @@ export function ItemHighlight() {
         />
         <Ariakit.ComboboxList
           aria-label="Reference members"
-          // Match the lifted canvas used by the thumbnail's popover.
+          // Match the lifted canvas used by the cover's popover.
           {...layer.jsx({
             $layer: "canvas",
             $lighten: true,

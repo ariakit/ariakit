@@ -8,11 +8,70 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
+import { getAppThemeRootValues } from "#app/lib/app-theme.ts";
+import type {
+  PreviewCommandMessage,
+  PreviewCompactMessage,
+  PreviewThemeMessage,
+  PreviewViewportMessage,
+} from "#app/lib/preview-embed.ts";
+import { PREVIEW_MESSAGE_TYPE } from "#app/lib/preview-embed.ts";
+
+/** A message that a page sends to the preview page in one of its frames. */
+export type PreviewHostMessage =
+  | PreviewCommandMessage
+  | PreviewCompactMessage
+  | PreviewThemeMessage
+  | PreviewViewportMessage;
+
 /**
  * A frame follows the card width again a little before it scrolls into view, so
  * its one catch-up layout happens offscreen.
  */
 export const PREVIEW_FRAME_MARGIN = "200px";
+
+/**
+ * Returns the inner corner radius of the element around a preview frame, which
+ * the frame takes through a `viewport` message, so app shells in it keep their
+ * corners concentric with that element.
+ */
+export function getInnerRadius(element: Element) {
+  const style = getComputedStyle(element);
+  const radius = Number.parseFloat(style.borderStartStartRadius);
+  const border = Number.parseFloat(style.borderBlockStartWidth);
+  return `${Math.max(0, radius - border)}px`;
+}
+
+/** Sends a message to the preview page in a frame. */
+export function postToFrame(
+  iframe: HTMLIFrameElement,
+  message: PreviewHostMessage,
+) {
+  // Next.js previews load from another origin.
+  iframe.contentWindow?.postMessage(message, "*");
+}
+
+/**
+ * Sends the theme of the app to the preview page in a frame, with the inner
+ * radius of the element that clips the frame, which app shells in the page
+ * round their corners to. The theme radius scales those corners.
+ */
+export function postFrameTheme(
+  iframe: HTMLIFrameElement,
+  viewport: Element | null,
+) {
+  postToFrame(iframe, {
+    type: PREVIEW_MESSAGE_TYPE,
+    action: "theme",
+    theme: getAppThemeRootValues(),
+  });
+  if (!viewport) return;
+  postToFrame(iframe, {
+    type: PREVIEW_MESSAGE_TYPE,
+    action: "viewport",
+    radius: getInnerRadius(viewport),
+  });
+}
 
 interface PreviewFrameState {
   iframe: HTMLIFrameElement;

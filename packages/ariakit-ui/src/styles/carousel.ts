@@ -76,11 +76,13 @@ export const carousel = cv({
     /**
      * Sets `row` for content that scrolls freely, or `slides` for a classic
      * carousel. It's a preset for `$buttons`, and the viewport takes the same
-     * kind for its own presets.
+     * kind for its own presets. Slides keep space between the viewport and the
+     * slide tabs, which a `gap-y-*` class on the root replaces.
      */
     $kind: {
       row: "",
-      slides: "gap-y-3",
+      // Zero specificity lets a gap class on the root win.
+      slides: "ui-base:gap-y-3",
     },
     /**
      * Sets when the buttons show: `pointer` only with a fine pointer and while
@@ -134,6 +136,16 @@ export const carousel = cv({
           "--carousel-button-y": top,
         },
       };
+    },
+    /**
+     * Sets the size of the buttons, and so the space that each button takes at
+     * its end. Numbers multiply the spacing token and round to a whole pixel;
+     * strings pass through as raw lengths or expressions. Defaults to `8`, or
+     * to the line of a row of controls, which this replaces.
+     */
+    $buttonSize(value?: string | number) {
+      if (value == null) return;
+      return { style: { "--carousel-button-size": getPaddingValue(value) } };
     },
   },
   defaultVariants: {
@@ -357,6 +369,23 @@ export const carouselSlide = cv({
     "carousel-slide",
     "min-w-0 shrink-0 grow-0 ui-base:basis-full snap-start",
   ],
+  variants: {
+    /**
+     * Sets whether a fast swipe, such as a flick on a touch screen or a
+     * trackpad, stops at the slide (`always`, the default), as the slide
+     * buttons move one slide at a time, or can pass it (`normal`, the default
+     * of browsers). Some browsers, such as Firefox, also stop a long wheel
+     * scroll at the slide. The buttons and the slide tabs still go to any
+     * slide.
+     */
+    $snapStop: {
+      normal: "snap-normal",
+      always: "snap-always",
+    },
+  },
+  defaultVariants: {
+    $snapStop: "always",
+  },
 });
 
 /** A row of slide tabs below the viewport. */
