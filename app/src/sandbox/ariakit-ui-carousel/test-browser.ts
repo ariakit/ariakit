@@ -555,6 +555,7 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
         button.getAttribute("aria-controls") ?? "",
       );
       if (!viewport) return;
+      if (!(button instanceof HTMLElement)) return;
       const press = () => {
         viewport.dataset.testScrollAtPress = `${Math.abs(viewport.scrollLeft)}`;
         button.click();
