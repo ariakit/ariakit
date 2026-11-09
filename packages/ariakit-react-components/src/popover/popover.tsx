@@ -11,7 +11,13 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import { contains, getWindow, hasFocusWithin, invariant } from "@ariakit/utils";
+import {
+  contains,
+  getActiveElement,
+  getWindow,
+  hasFocusWithin,
+  invariant,
+} from "@ariakit/utils";
 import {
   arrow,
   autoUpdate,
@@ -524,6 +530,15 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           if (!contentElement) return false;
           return isElementInside(element, contentElement);
         };
+        // With focus inside a same-origin frame, the frame element is the
+        // active element of the popover's document, while the element with
+        // focus is in the frame's document.
+        const documentActiveElement = getActiveElement(popoverElement, {
+          frame: false,
+        });
+        if (documentActiveElement && isInside(documentActiveElement)) {
+          return true;
+        }
         // A tree sees focus inside a shadow root as focus on its host. So the
         // check starts in the tree of the popover and goes down through each
         // open shadow root that has focus, such as the one of a web component,
