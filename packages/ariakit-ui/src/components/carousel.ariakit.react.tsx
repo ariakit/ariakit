@@ -1564,8 +1564,9 @@ export interface CarouselSlideProps
    * Renders the children only once the slide shows, or once autoplay asks for
    * it at the end of its delay, and keeps them from then on. A slide that a
    * scroll to another slide passes on the way doesn't render them. The server
-   * and the first render show the slide without its children. Defaults to
-   * `false`.
+   * and the first render show the slide without its children. Only a classic
+   * carousel renders lazily: in a `$kind="row"` carousel, the children render
+   * at once. Defaults to `false`.
    */
   lazy?: boolean;
 }
@@ -1610,13 +1611,15 @@ export function CarouselSlide({
     if (ready) return;
     return readiness.markNotReady(id);
   }, [ready, id, readiness]);
-  const rendered = !lazy || context.state.shownIds.has(id);
+  const slides = context.kind === "slides";
+  // A row doesn't track the slides that show, so its slides render their
+  // children at once.
+  const rendered = !lazy || !slides || context.state.shownIds.has(id);
   const position = ak.useStoreState(context.collection, (state) => {
     const index = state.renderedItems.findIndex((item) => item.id === id);
     if (index < 0) return;
     return `${index + 1} of ${state.renderedItems.length}`;
   });
-  const slides = context.kind === "slides";
   return (
     <ak.CollectionItem
       store={context.collection}

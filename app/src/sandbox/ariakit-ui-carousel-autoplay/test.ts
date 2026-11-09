@@ -36,6 +36,12 @@ test("stops after a press on the tab of the slide that shows", async () => {
   expect(carousel.button("Start automatic slide show")).toBeInTheDocument();
 });
 
+test("renders the lazy slides of a row at once", () => {
+  const row = q.within(q.group("Tags"));
+  expect(row.heading("Design")).toBeInTheDocument();
+  expect(row.heading("Docs")).toBeInTheDocument();
+});
+
 test("speaks the slide position while focus pauses autoplay", async () => {
   const region = q.region("Previews");
   const status = region.querySelector("[aria-live]");

@@ -310,6 +310,13 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await expectMove(region);
   });
 
+  test("renders the lazy slides of a row at once", async ({ q }) => {
+    const row = query(q.group("Tags"));
+    // The last slide lies mostly past the end of the row, out of view.
+    await test.expect(row.heading("Design")).toBeVisible();
+    await test.expect(row.heading("Docs")).toHaveCount(1);
+  });
+
   test("takes a press just beside the play button", async ({ q }) => {
     const carousel = query(q.region("Previews"));
     const play = carousel.button("Stop automatic slide show");

@@ -251,6 +251,31 @@ function FreeSection() {
   );
 }
 
+const tags = ["Design", "Code", "Docs"];
+
+/**
+ * Lazy slides in a row, which doesn't track the slides that show, so they
+ * render their content at once.
+ */
+function RowSection() {
+  return (
+    <section aria-label="Row" className="grid justify-items-start gap-3">
+      <h2 className="text-sm font-medium">Row</h2>
+      <Carousel $kind="row" className="w-[28rem] max-w-full">
+        <CarouselViewport aria-label="Tags" render={<div role="group" />}>
+          {tags.map((tag) => (
+            <CarouselSlide key={tag} lazy className="basis-48">
+              <Frame $layer $border $rounded="lg" $p={3}>
+                <h3 className="font-medium">{tag}</h3>
+              </Frame>
+            </CarouselSlide>
+          ))}
+        </CarouselViewport>
+      </Carousel>
+    </section>
+  );
+}
+
 export default function Example() {
   return (
     <div className="grid gap-12 p-12">
@@ -258,6 +283,7 @@ export default function Example() {
       <FrameSection />
       <SeveralSection />
       <FreeSection />
+      <RowSection />
       {/* Focus can leave the carousels for a button outside them. */}
       <Button className="justify-self-start">Outside</Button>
     </div>
