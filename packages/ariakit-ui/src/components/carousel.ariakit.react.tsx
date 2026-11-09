@@ -1,9 +1,14 @@
 import * as ak from "@ariakit/react";
 import { useEvent, useMergeRefs } from "@ariakit/react-utils";
-import { getActiveElement, getWindow } from "@ariakit/utils";
+import { contains, getActiveElement, getWindow, isNode } from "@ariakit/utils";
 import type { RecipeLike, VariantProps, VariantPropsWithRecipe } from "clava";
 import { splitProps } from "clava";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PauseIcon,
+  PlayIcon,
+} from "lucide-react";
 import {
   Children,
   createContext,
@@ -14,6 +19,7 @@ import {
   useId,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import type * as React from "react";
 import { createOptionalRender } from "../react-utils/create-render.react.ts";
@@ -21,6 +27,8 @@ import {
   carousel,
   carouselButton,
   carouselButtonArea,
+  carouselPlayButton,
+  carouselPlayButtonArea,
   carouselSlide,
   carouselTab,
   carouselTabList,
@@ -44,6 +52,9 @@ const TARGET_TIMEOUT = 1200;
 // The slide position text waits for scrolling to settle, so screen readers
 // announce the slides that people stop on, not every slide on the way.
 const STATUS_DELAY = 300;
+
+// How long autoplay shows each slide by default, in milliseconds.
+const AUTO_PLAY_DELAY = 5000;
 
 function isRtl(element: HTMLElement) {
   return getWindow(element).getComputedStyle(element).direction === "rtl";
@@ -232,24 +243,87 @@ function getCurrentSlide(
   return current;
 }
 
-/** The text that tells screen readers which slides show. */
-function getSlideStatus(viewport: HTMLElement, slides: SlideItem[]) {
+/**
+ * The slides that show more than half of their width in the viewport, at the
+ * scroll position, or at `offset` once the viewport scrolls there.
+ */
+function getShownSlides(
+  viewport: HTMLElement,
+  slides: SlideItem[],
+  offset = getOffset(viewport),
+) {
   const viewportRect = viewport.getBoundingClientRect();
-  const shown: number[] = [];
-  slides.forEach((slide, index) => {
+  // A larger offset moves the slides toward the start of the row, which is the
+  // left in a left-to-right row.
+  const shift = (offset - getOffset(viewport)) * (isRtl(viewport) ? -1 : 1);
+  return slides.filter((slide) => {
     const rect = slide.element.getBoundingClientRect();
     const visible =
-      Math.min(rect.right, viewportRect.right) -
-      Math.max(rect.left, viewportRect.left);
-    if (visible > rect.width / 2) {
-      shown.push(index + 1);
-    }
+      Math.min(rect.right - shift, viewportRect.right) -
+      Math.max(rect.left - shift, viewportRect.left);
+    return visible > rect.width / 2;
   });
+}
+
+/** The text that tells screen readers which slides show. */
+function getSlideStatus(viewport: HTMLElement, slides: SlideItem[]) {
+  const shown = getShownSlides(viewport, slides);
   const first = shown[0];
   const last = shown.at(-1);
-  if (first == null || last == null) return "";
-  if (first === last) return `Showing slide ${first} of ${slides.length}`;
-  return `Showing slides ${first} to ${last} of ${slides.length}`;
+  if (!first || !last) return "";
+  const firstPosition = slides.indexOf(first) + 1;
+  const lastPosition = slides.indexOf(last) + 1;
+  if (first === last) {
+    return `Showing slide ${firstPosition} of ${slides.length}`;
+  }
+  return `Showing slides ${firstPosition} to ${lastPosition} of ${slides.length}`;
+}
+
+/** Where the viewport scrolls to show a slide at the start of the row. */
+function getSlideScrollOffset(viewport: HTMLElement, slide: SlideItem) {
+  const padding = getScrollPadding(viewport);
+  const offset = getStartOffset(viewport, slide.element) - padding.start;
+  return Math.min(Math.max(0, offset), getMaxOffset(viewport));
+}
+
+interface GetAdjacentSlideParams {
+  viewport: HTMLElement;
+  slides: SlideItem[];
+  side: CarouselSide;
+  /**
+   * The slide to step from, such as the one that a running scroll goes to.
+   * Without it, the step starts at the scroll position.
+   */
+  fromId?: string;
+}
+
+/**
+ * The slide that one step toward `side` scrolls to. Slides scroll to the
+ * position of a slide, because WebKit ignores mandatory snapping for a smooth
+ * scroll by a distance. The step starts at the position of `fromId`, or at the
+ * scroll position, and skips the slides that scroll to the same place, such as
+ * the last slides when several show at the end of the row.
+ */
+function getAdjacentSlide({
+  viewport,
+  slides,
+  side,
+  fromId,
+}: GetAdjacentSlideParams) {
+  const padding = getScrollPadding(viewport);
+  const max = getMaxOffset(viewport);
+  const getSlideOffset = (slide: SlideItem) => {
+    const offset = getStartOffset(viewport, slide.element) - padding.start;
+    return Math.min(Math.max(0, offset), max);
+  };
+  const fromSlide = slides.find((slide) => slide.id === fromId);
+  const from = fromSlide ? getSlideOffset(fromSlide) : getOffset(viewport);
+  if (side === "end") {
+    return slides.find((slide) => getSlideOffset(slide) > from + END_TOLERANCE);
+  }
+  return slides.findLast(
+    (slide) => getSlideOffset(slide) < from - END_TOLERANCE,
+  );
 }
 
 function getSlideItems(
@@ -272,6 +346,21 @@ function getSideButton(viewport: HTMLElement, side: CarouselSide) {
   );
 }
 
+/**
+ * The slide that autoplay moves to, and the slides that show once it's there.
+ */
+interface AutoPlayTarget {
+  id: string;
+  shownIds: string[];
+}
+
+const NO_IDS: string[] = [];
+
+function isSameList(a: readonly string[], b: readonly string[]) {
+  if (a.length !== b.length) return false;
+  return a.every((item, index) => item === b[index]);
+}
+
 interface UseCarouselParams {
   kind: CarouselKind;
   /** The slides of a carousel with `kind: "slides"`, in DOM order. */
@@ -282,6 +371,11 @@ interface UseCarouselParams {
   defaultSelectedId?: string;
   /** Called with the id of the slide at the start of the row. */
   setSelectedId?: (selectedId: string) => void;
+  /**
+   * Keeps the ids of the slides that show now in `visibleIds`, which autoplay
+   * reads.
+   */
+  trackVisible?: boolean;
 }
 
 /**
@@ -295,6 +389,7 @@ function useCarousel({
   selectedId: selectedIdProp,
   defaultSelectedId,
   setSelectedId: setSelectedIdProp,
+  trackVisible = false,
 }: UseCarouselParams) {
   const [viewport, setViewport] = useState<HTMLElement | null>(null);
   const [atStart, setAtStart] = useState(true);
@@ -304,6 +399,13 @@ function useCarousel({
     useState(defaultSelectedId);
   const selectedId = selectedIdProp ?? internalSelectedId;
   const [status, setStatus] = useState("");
+  // The slides that show more than half of their width now.
+  const [visibleIds, setVisibleIds] = useState<string[]>([]);
+  // The slides that showed at some point, or that a move or autoplay goes to,
+  // which render the content of a lazy slide from then on.
+  const [shownIds, setShownIds] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
   const onSelectedIdChange = useEvent(setSelectedIdProp);
   // The last selection that the carousel showed or reported, so a controlled
   // value that matches it doesn't scroll again.
@@ -324,6 +426,13 @@ function useCarousel({
   // Added or removed slides change the selection without a scroll or a resize,
   // so the effect below runs again with them.
   const renderedItems = ak.useStoreState(collection, "renderedItems");
+
+  const showSlides = useCallback((ids: string[]) => {
+    setShownIds((shownIds) => {
+      if (ids.every((id) => shownIds.has(id))) return shownIds;
+      return new Set([...shownIds, ...ids]);
+    });
+  }, []);
 
   useEffect(() => {
     if (!viewport) return;
@@ -346,8 +455,12 @@ function useCarousel({
 
     const update = () => {
       // A hidden viewport, such as one in a tab panel that isn't selected, has
-      // no box to measure, so the carousel keeps its state until it shows.
-      if (!viewport.clientWidth) return;
+      // no box to measure, so the carousel keeps its state until it shows. It
+      // shows no slides meanwhile, so autoplay doesn't count its delay.
+      if (!viewport.clientWidth) {
+        if (trackVisible) setVisibleIds(NO_IDS);
+        return;
+      }
       const offset = getOffset(viewport);
       const max = getMaxOffset(viewport);
       const nextAtStart = offset <= END_TOLERANCE;
@@ -363,13 +476,31 @@ function useCarousel({
         return;
       }
       const slides = getSlideItems(renderedItems);
+      const shown = getShownSlides(viewport, slides).map((slide) => slide.id);
+      if (trackVisible) {
+        setVisibleIds((visibleIds) =>
+          isSameList(visibleIds, shown) ? visibleIds : shown,
+        );
+      }
+      // A scroll to a target, such as a slide tab or autoplay, passes slides on
+      // the way, which don't render their lazy content.
+      if (!targetRef.current) {
+        showSlides(shown);
+      }
       if (!nextAtEnd && !targetRef.current) {
         pickedIdRef.current = undefined;
       }
       const current = getCurrentSlide(viewport, slides, pickedIdRef.current);
       const target = targetRef.current;
-      const hasTarget = slides.some((slide) => slide.id === target);
-      if (target && (target === current?.id || !hasTarget)) {
+      const targetSlide = slides.find((slide) => slide.id === target);
+      // A smooth scroll passes the slides before its target, and the target is
+      // not the closest slide until the scroll gets near it, so the target
+      // holds until the scroll reaches its position.
+      const reached =
+        !!targetSlide &&
+        Math.abs(getSlideScrollOffset(viewport, targetSlide) - offset) <=
+          END_TOLERANCE;
+      if (target && (reached || !targetSlide)) {
         targetRef.current = undefined;
       }
       const nextId = pendingIdRef.current ?? targetRef.current ?? current?.id;
@@ -543,7 +674,14 @@ function useCarousel({
       attributeObserver.disconnect();
       updateRef.current = undefined;
     };
-  }, [viewport, kind, renderedItems, onSelectedIdChange]);
+  }, [
+    viewport,
+    kind,
+    renderedItems,
+    trackVisible,
+    onSelectedIdChange,
+    showSlides,
+  ]);
 
   // Returns whether the slide was there to scroll to.
   const goToSlide = useCallback(
@@ -566,16 +704,16 @@ function useCarousel({
         targetRef.current = undefined;
         updateRef.current?.();
       }, TARGET_TIMEOUT);
-      const padding = getScrollPadding(viewport);
-      scrollToOffset(
-        viewport,
-        getStartOffset(viewport, slide.element) - padding.start,
-        instant,
-      );
+      const offset = getSlideScrollOffset(viewport, slide);
+      // The slides at the target render their lazy content as the scroll
+      // starts, so they don't show empty when it ends.
+      const slides = getSlideItems(renderedItems);
+      showSlides(getShownSlides(viewport, slides, offset).map(({ id }) => id));
+      scrollToOffset(viewport, offset, instant);
       updateRef.current?.();
       return true;
     },
-    [viewport, renderedItems],
+    [viewport, renderedItems, showSlides],
   );
 
   const scrollToSlide = useCallback(
@@ -617,31 +755,42 @@ function useCarousel({
         scrollToOffset(viewport, getRowTarget(viewport, side));
         return;
       }
-      // Slides scroll to the position of a slide, because WebKit ignores
-      // mandatory snapping for a smooth scroll by a distance. The step starts
-      // where a running scroll goes, or at the scroll position, and skips the
-      // slides that scroll to the same place, such as the last slides when
-      // several show at the end of the row.
-      const slides = getSlideItems(renderedItems);
-      const padding = getScrollPadding(viewport);
-      const max = getMaxOffset(viewport);
-      const getSlideOffset = (slide: SlideItem) => {
-        const offset = getStartOffset(viewport, slide.element) - padding.start;
-        return Math.min(Math.max(0, offset), max);
-      };
-      const target = slides.find((slide) => slide.id === targetRef.current);
-      const from = target ? getSlideOffset(target) : getOffset(viewport);
-      const next =
-        side === "end"
-          ? slides.find((slide) => getSlideOffset(slide) > from + END_TOLERANCE)
-          : slides.findLast(
-              (slide) => getSlideOffset(slide) < from - END_TOLERANCE,
-            );
+      const next = getAdjacentSlide({
+        viewport,
+        slides: getSlideItems(renderedItems),
+        side,
+        fromId: targetRef.current,
+      });
       if (!next) return;
       scrollToSlide(next.id);
     },
     [viewport, kind, renderedItems, scrollToSlide],
   );
+
+  // The next slide, or the first one after the last, with the slides that show
+  // once the viewport is there. A row that doesn't overflow, or a single slide
+  // at the start of the row, has nowhere to go.
+  const getAutoPlayTarget = useCallback((): AutoPlayTarget | undefined => {
+    if (!viewport?.clientWidth) return;
+    const slides = getSlideItems(renderedItems);
+    const target =
+      getAdjacentSlide({
+        viewport,
+        slides,
+        side: "end",
+        // Autoplay steps from the selected slide, not from the scroll position,
+        // so each move selects another slide, which starts the delay again. A
+        // scroll without snapping can stop just before the slide that it
+        // selects, where a step from the scroll position only aligns that
+        // slide.
+        fromId: targetRef.current ?? reportedIdRef.current,
+      }) ?? slides[0];
+    if (!target) return;
+    const offset = getSlideScrollOffset(viewport, target);
+    if (Math.abs(offset - getOffset(viewport)) <= END_TOLERANCE) return;
+    const shown = getShownSlides(viewport, slides, offset);
+    return { id: target.id, shownIds: shown.map((slide) => slide.id) };
+  }, [viewport, renderedItems]);
 
   useEffect(() => {
     return () => clearTimeout(targetTimerRef.current);
@@ -655,12 +804,314 @@ function useCarousel({
     rtl,
     selectedId,
     status,
+    visibleIds,
+    shownIds,
+    showSlides,
+    goToSlide,
+    getAutoPlayTarget,
     scrollToward,
     scrollToSlide,
   };
 }
 
 type CarouselState = ReturnType<typeof useCarousel>;
+
+/**
+ * Holds the slides whose `ready` prop is `false`. Autoplay subscribes to it
+ * while it waits for the next slides, so a change doesn't restart its delay.
+ */
+function createSlideReadiness() {
+  const notReadyIds = new Set<string>();
+  const listeners = new Set<() => void>();
+  const emit = () => {
+    for (const listener of listeners) {
+      listener();
+    }
+  };
+  return {
+    /** Marks a slide as not ready, until the returned function runs. */
+    markNotReady: (id: string) => {
+      notReadyIds.add(id);
+      emit();
+      return () => {
+        notReadyIds.delete(id);
+        emit();
+      };
+    },
+    areReady: (ids: string[]) => ids.every((id) => !notReadyIds.has(id)),
+    subscribe: (listener: () => void) => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+  };
+}
+
+type SlideReadiness = ReturnType<typeof createSlideReadiness>;
+
+function noop() {}
+
+/** Whether the window of `element` matches a media query. */
+function useMediaQuery(element: HTMLElement | null, query: string) {
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      if (!element) return noop;
+      const media = getWindow(element).matchMedia(query);
+      media.addEventListener("change", onChange);
+      return () => media.removeEventListener("change", onChange);
+    },
+    [element, query],
+  );
+  return useSyncExternalStore(
+    subscribe,
+    () => !!element && getWindow(element).matchMedia(query).matches,
+    () => false,
+  );
+}
+
+/** Whether the document of `element` is hidden, such as in a background tab. */
+function usePageHidden(element: HTMLElement | null) {
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      if (!element) return noop;
+      const doc = element.ownerDocument;
+      doc.addEventListener("visibilitychange", onChange);
+      return () => doc.removeEventListener("visibilitychange", onChange);
+    },
+    [element],
+  );
+  return useSyncExternalStore(
+    subscribe,
+    () => element?.ownerDocument.visibilityState === "hidden",
+    () => false,
+  );
+}
+
+/**
+ * Tracks whether the person interacts with a carousel, with the pointer over
+ * it, focus inside it, or a finger on it, which pauses autoplay. A start from
+ * the play button ignores the pause until that interaction ends.
+ */
+function useCarouselPause(element: HTMLElement | null) {
+  const [interacting, setInteracting] = useState(false);
+  const [ignored, setIgnored] = useState(false);
+  // A click on the play button can come before the render of the hover that the
+  // same pointer move started, so ignore() reads the events, not the state.
+  const interactingRef = useRef(false);
+
+  useEffect(() => {
+    if (!element) return;
+    // The element can be in another document, such as an iframe.
+    const doc = element.ownerDocument;
+    const win = getWindow(element);
+    let focusTimer = 0;
+    let isHovered = false;
+    let isFocused = false;
+    let isTouched = false;
+    const update = () => {
+      const next = isHovered || isFocused || isTouched;
+      interactingRef.current = next;
+      setInteracting(next);
+      if (next) return;
+      // Once the interaction ends, the next one pauses autoplay again.
+      setIgnored(false);
+    };
+    // The pointer or focus can already be on the carousel, or can have left it
+    // while autoplay was off, so the state starts from the page.
+    const startTimer = window.setTimeout(() => {
+      isHovered = element.matches(":hover");
+      isFocused = element.contains(getActiveElement(element, { frame: false }));
+      setIgnored(false);
+      update();
+    });
+    // Focus that moves into an iframe in the carousel leaves the document
+    // first, and the iframe becomes the active element only when the window
+    // blurs. Focus that leaves such an iframe fires nothing on the carousel. So
+    // the check runs once the events of a move end. Focus that moves between
+    // two iframes fires nothing on the page at all.
+    const checkFocus = () => {
+      clearTimeout(focusTimer);
+      focusTimer = window.setTimeout(() => {
+        const activeElement = getActiveElement(element, { frame: false });
+        isFocused = element.contains(activeElement);
+        update();
+      });
+    };
+    const onPointerEnter = () => {
+      isHovered = true;
+      update();
+    };
+    const onPointerLeave = () => {
+      isHovered = false;
+      update();
+    };
+    // A touch that pans the row ends its pointer at once, with pointercancel
+    // and pointerleave, while the finger stays on the row. Touch events go on
+    // until the finger lifts.
+    const onTouchStart = () => {
+      isTouched = true;
+      update();
+    };
+    // The touches of an event include fingers anywhere on the screen, so only
+    // the ones that started in the carousel keep the pause.
+    const onTouchEnd = (event: TouchEvent) => {
+      isTouched = Array.from(event.touches).some(
+        ({ target }) => isNode(target) && contains(element, target),
+      );
+      update();
+    };
+    element.addEventListener("pointerenter", onPointerEnter);
+    element.addEventListener("pointerleave", onPointerLeave);
+    element.addEventListener("touchstart", onTouchStart, { passive: true });
+    element.addEventListener("touchend", onTouchEnd);
+    element.addEventListener("touchcancel", onTouchEnd);
+    element.addEventListener("focusout", checkFocus);
+    doc.addEventListener("focusin", checkFocus);
+    win.addEventListener("focus", checkFocus);
+    win.addEventListener("blur", checkFocus);
+    return () => {
+      clearTimeout(startTimer);
+      clearTimeout(focusTimer);
+      element.removeEventListener("pointerenter", onPointerEnter);
+      element.removeEventListener("pointerleave", onPointerLeave);
+      element.removeEventListener("touchstart", onTouchStart);
+      element.removeEventListener("touchend", onTouchEnd);
+      element.removeEventListener("touchcancel", onTouchEnd);
+      element.removeEventListener("focusout", checkFocus);
+      doc.removeEventListener("focusin", checkFocus);
+      win.removeEventListener("focus", checkFocus);
+      win.removeEventListener("blur", checkFocus);
+    };
+  }, [element]);
+
+  const ignore = useCallback(() => {
+    if (!interactingRef.current) return;
+    setIgnored(true);
+  }, []);
+
+  return { paused: interacting && !ignored, ignore };
+}
+
+type CarouselPause = ReturnType<typeof useCarouselPause>;
+
+interface UseCarouselAutoPlayParams {
+  /** Whether autoplay is on, which only a classic carousel supports. */
+  enabled: boolean;
+  /** How long each slide shows, in milliseconds. */
+  delay: number;
+  root: HTMLElement | null;
+  state: CarouselState;
+  readiness: SlideReadiness;
+  pause: CarouselPause;
+  /**
+   * What the person chose with the play button, or with a press of the previous
+   * or next button or a slide tab. Until they choose, autoplay plays unless
+   * reduced motion is on.
+   */
+  choice?: boolean;
+  setChoice: (choice: boolean) => void;
+}
+
+/**
+ * Moves a classic carousel to the next slide after a delay, and from the last
+ * slide back to the first. It plays until the person stops it, with the play
+ * button, or with a press of the previous or next button or a slide tab. It
+ * pauses by itself while the pointer is over the carousel, while focus is
+ * inside it, while a finger touches it outside a slide iframe, while the page
+ * or the carousel is hidden, and while the slides that show or the next ones
+ * aren't ready.
+ */
+function useCarouselAutoPlay({
+  enabled,
+  delay,
+  root,
+  state,
+  readiness,
+  pause,
+  choice,
+  setChoice,
+}: UseCarouselAutoPlayParams) {
+  // Carousels without autoplay, such as the rows in tabs, don't subscribe.
+  const element = enabled ? root : null;
+  const reducedMotion = useMediaQuery(
+    element,
+    "(prefers-reduced-motion: reduce)",
+  );
+  const hidden = usePageHidden(element);
+  const playing = enabled && (choice ?? !reducedMotion);
+  const { selectedId, visibleIds, showSlides, goToSlide, getAutoPlayTarget } =
+    state;
+
+  // The delay counts only while every slide that shows is ready, so each slide
+  // shows ready for the whole delay. A hidden viewport shows no slides.
+  const visibleReady = useSyncExternalStore(
+    readiness.subscribe,
+    () => visibleIds.length > 0 && readiness.areReady(visibleIds),
+    () => false,
+  );
+  // A row whose slides all fit has no slide to move to, so, as in a hidden
+  // viewport, the delay doesn't count until the row overflows.
+  const fits = state.atStart && state.atEnd;
+  const running = playing && !pause.paused && !hidden && visibleReady && !fits;
+
+  // When the delay ends, the slides at the next position render their lazy
+  // content, and autoplay moves once they are ready. A pause, a row that starts
+  // to overflow, or other slides that show, such as after a move, start the
+  // delay again from the beginning and drop a move that waits.
+  useEffect(() => {
+    if (!running) return;
+    let unsubscribe = noop;
+    const timer = window.setTimeout(() => {
+      const target = getAutoPlayTarget();
+      if (!target) return;
+      showSlides(target.shownIds);
+      const move = () => {
+        if (!readiness.areReady(target.shownIds)) return;
+        unsubscribe();
+        goToSlide(target.id);
+      };
+      unsubscribe = readiness.subscribe(move);
+      move();
+    }, delay);
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [
+    running,
+    delay,
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- other slides that show restart the delay
+    visibleIds,
+    // Another selection, such as from `selectedId`, restarts the delay.
+    selectedId,
+    readiness,
+    getAutoPlayTarget,
+    showSlides,
+    goToSlide,
+  ]);
+
+  const { ignore: ignorePause } = pause;
+  const stop = useCallback(() => {
+    // A move while autoplay is off isn't a choice about autoplay.
+    if (!enabled) return;
+    setChoice(false);
+  }, [enabled, setChoice]);
+  const toggle = useCallback(() => {
+    if (playing) {
+      setChoice(false);
+      return;
+    }
+    setChoice(true);
+    // The person asked autoplay to play, so it plays at once, even with the
+    // pointer or focus still on the carousel.
+    ignorePause();
+  }, [playing, setChoice, ignorePause]);
+
+  return { enabled, playing, stop, toggle };
+}
+
+type CarouselAutoPlay = ReturnType<typeof useCarouselAutoPlay>;
 
 interface CarouselButtonLabels {
   start: string;
@@ -669,6 +1120,7 @@ interface CarouselButtonLabels {
 
 interface GetCarouselButtonPropsParams {
   state: Pick<CarouselState, "atStart" | "atEnd" | "scrollToward">;
+  autoPlay: Pick<CarouselAutoPlay, "stop">;
   side: CarouselSide;
   labels: CarouselButtonLabels;
   controls?: string;
@@ -680,6 +1132,7 @@ interface GetCarouselButtonPropsParams {
  */
 function getCarouselButtonProps({
   state,
+  autoPlay,
   side,
   labels,
   controls,
@@ -696,7 +1149,26 @@ function getCarouselButtonProps({
     accessibleWhenDisabled: true,
     // A pointer press keeps focus where it was, such as on the selected tab.
     onMouseDown: (event: React.MouseEvent) => event.preventDefault(),
-    onClick: () => state.scrollToward(side),
+    onClick: () => {
+      // A press stops autoplay until the person starts it again.
+      autoPlay.stop();
+      state.scrollToward(side);
+    },
+  };
+}
+
+/**
+ * Returns the default props of the play button, which stops and starts
+ * autoplay. A pointer press keeps focus where it was, as on the previous and
+ * next buttons, so a press that starts autoplay doesn't pause it with focus.
+ */
+function getCarouselPlayButtonProps(autoPlay: CarouselAutoPlay) {
+  return {
+    "aria-label": autoPlay.playing
+      ? "Stop automatic slide show"
+      : "Start automatic slide show",
+    onMouseDown: (event: React.MouseEvent) => event.preventDefault(),
+    onClick: autoPlay.toggle,
   };
 }
 
@@ -741,13 +1213,22 @@ export type CarouselButtonRender =
   | React.ReactElement
   | CarouselButtonProps;
 
+/** The play button, as `true`, an element, or props. */
+export type CarouselPlayButtonRender =
+  | boolean
+  | React.ReactElement
+  | CarouselPlayButtonProps;
+
 interface CarouselContextValue {
   kind: CarouselKind;
   showButtons: boolean;
   previousButton: CarouselButtonRender;
   nextButton: CarouselButtonRender;
+  playButton: CarouselPlayButtonRender;
   collection: ak.CollectionStore;
   state: CarouselState;
+  autoPlay: CarouselAutoPlay;
+  readiness: SlideReadiness;
 }
 
 const CarouselContext = createContext<CarouselContextValue | null>(null);
@@ -817,6 +1298,44 @@ export type CarouselProps<
      * after a scroll, a button, or a slide tab changes it.
      */
     setSelectedId?: (selectedId: string) => void;
+    /**
+     * Moves to the next slide by itself after `autoPlayDelay`, and from the
+     * last slide back to the first. When the delay ends, the slides at the next
+     * position render their `lazy` content, and autoplay waits until they are
+     * `ready` before it moves.
+     *
+     * It pauses while the pointer is over the carousel, while focus is inside
+     * it, while a finger touches it, and while the page is hidden, and the
+     * delay starts again when the pause ends. A finger on a slide iframe
+     * doesn't pause it, because the iframe keeps its touch events, and focus
+     * that moves straight between a slide iframe and another iframe changes the
+     * pause only once focus comes back to the page. A scroll by the person,
+     * such as a swipe, only moves the slides, and autoplay goes on from there.
+     * A press of the previous or next button or a slide tab stops it until the
+     * person starts it again with the `playButton`, which plays at once, even
+     * with the pointer or focus still on the carousel. With reduced motion, it
+     * doesn't start until they do. While it plays without a pause, screen
+     * readers don't announce the slide position. Only a classic carousel plays,
+     * not `$kind="row"`.
+     */
+    autoPlay?: boolean;
+    /**
+     * The time, in milliseconds, that autoplay shows each slide. It counts only
+     * while autoplay plays without a pause and the slides that show are
+     * `ready`. Defaults to `5000`.
+     */
+    autoPlayDelay?: number;
+    /**
+     * The button that stops and starts autoplay, as `true`, an element, or
+     * `CarouselPlayButton` props. `false` omits it, so give the person another
+     * way to stop autoplay. It renders with `autoPlay` only, first in the Tab
+     * order, and its name changes between "Stop automatic slide show" and
+     * "Start automatic slide show". It sits at the top start corner of the
+     * slides, above the previous button, so the row needs room for both: about
+     * four button sizes. In a shorter row, it covers part of the previous
+     * button. Defaults to `true`.
+     */
+    playButton?: CarouselPlayButtonRender;
   };
 
 /**
@@ -861,12 +1380,16 @@ export function Carousel<
   R extends RecipeLike<typeof carousel, R> = typeof carousel,
 >({
   recipe,
+  ref,
   buttons = true,
   previousButton = true,
   nextButton = true,
+  playButton = true,
   selectedId,
   defaultSelectedId,
   setSelectedId,
+  autoPlay = false,
+  autoPlayDelay = AUTO_PLAY_DELAY,
   children,
   ...props
 }: CarouselProps<R>) {
@@ -874,6 +1397,13 @@ export function Carousel<
   const [variantProps, rest] = splitProps(props, styles);
   // The style recipe resolves the kind, including the default of an extender.
   const kind = styles.getVariants(variantProps).$kind ?? "slides";
+  const slides = kind === "slides";
+  const [root, setRoot] = useState<HTMLElement | null>(null);
+  const mergedRef = useMergeRefs(ref, setRoot);
+  const [readiness] = useState(createSlideReadiness);
+  const autoPlayEnabled = slides && autoPlay;
+  const [autoPlayChoice, setAutoPlayChoice] = useState<boolean>();
+  const pause = useCarouselPause(autoPlayEnabled ? root : null);
   const collection = ak.useCollectionStore();
   const state = useCarousel({
     kind,
@@ -881,19 +1411,33 @@ export function Carousel<
     selectedId,
     defaultSelectedId,
     setSelectedId,
+    trackVisible: autoPlayEnabled,
   });
-  const slides = kind === "slides";
+  const autoPlayState = useCarouselAutoPlay({
+    enabled: autoPlayEnabled,
+    delay: autoPlayDelay,
+    root,
+    state,
+    readiness,
+    pause,
+    choice: autoPlayChoice,
+    setChoice: setAutoPlayChoice,
+  });
   const context: CarouselContextValue = {
     kind,
     showButtons: buttons,
     previousButton,
     nextButton,
+    playButton,
     collection,
     state,
+    autoPlay: autoPlayState,
+    readiness,
   };
   return (
     <CarouselContext.Provider value={context}>
       <ak.Role
+        ref={mergedRef}
         role={slides ? "region" : undefined}
         aria-roledescription={slides ? "carousel" : undefined}
         {...styles.jsx(variantProps)}
@@ -901,7 +1445,17 @@ export function Carousel<
       >
         {children}
         {slides && (
-          <div className="sr-only" aria-live="polite" aria-atomic>
+          <div
+            className="sr-only"
+            // Slides that move by themselves would interrupt screen readers
+            // every few seconds, so the position text speaks only while
+            // autoplay doesn't play, or while a pause holds it, when only the
+            // person moves the slides, as in the APG example.
+            aria-live={
+              autoPlayState.playing && !pause.paused ? "off" : "polite"
+            }
+            aria-atomic
+          >
             {state.status}
           </div>
         )}
@@ -925,8 +1479,9 @@ export type CarouselViewportProps<
 
 /**
  * Renders the part of a `Carousel` that scrolls, with the previous and next
- * buttons before and after it. It takes the kind of its `Carousel`. Give a row
- * of plain content a name and a role, such as `toolbar` for a row of buttons.
+ * buttons before and after it, and the play button of autoplay before them. It
+ * takes the kind of its `Carousel`. Give a row of plain content a name and a
+ * role, such as `toolbar` for a row of buttons.
  * @example
  * <Carousel $kind="row">
  *   <CarouselViewport aria-label="Filters" render={<div role="toolbar" />}>
@@ -949,10 +1504,20 @@ export function CarouselViewport<
   const getButtonProps = (side: "start" | "end") =>
     getCarouselButtonProps({
       state: context.state,
+      autoPlay: context.autoPlay,
       side,
       labels: slides ? SLIDE_LABELS : ROW_LABELS,
       controls: slides ? id : undefined,
     });
+  // The play button comes first in the Tab order, so people reach it before the
+  // slides that move.
+  const play =
+    context.autoPlay.enabled &&
+    createOptionalRender(
+      CarouselPlayButton,
+      context.playButton === true ? {} : context.playButton,
+      getCarouselPlayButtonProps(context.autoPlay),
+    );
   const previous =
     context.showButtons &&
     createOptionalRender(
@@ -969,6 +1534,7 @@ export function CarouselViewport<
     );
   return (
     <>
+      {play}
       {previous}
       <ak.Role
         ref={mergedRef}
@@ -984,7 +1550,26 @@ export function CarouselViewport<
 }
 
 export interface CarouselSlideProps
-  extends ak.CollectionItemProps, VariantProps<typeof carouselSlide> {}
+  extends ak.CollectionItemProps, VariantProps<typeof carouselSlide> {
+  /**
+   * Whether the content of the slide is ready to show, such as an image or a
+   * preview that has loaded. Autoplay moves only to ready slides, and waits for
+   * the next ones to get ready, however long that takes. Its delay counts only
+   * while the slides that show are ready. Set it to `false` before the content
+   * starts to load, including while a `lazy` slide doesn't render it yet.
+   * Defaults to `true`.
+   */
+  ready?: boolean;
+  /**
+   * Renders the children only once the slide shows, or once autoplay asks for
+   * it at the end of its delay, and keeps them from then on. A slide that a
+   * scroll to another slide passes on the way doesn't render them. The server
+   * and the first render show the slide without its children. Only a classic
+   * carousel renders lazily: in a `$kind="row"` carousel, the children render
+   * at once. Defaults to `false`.
+   */
+  lazy?: boolean;
+}
 
 /**
  * Renders a slide in a `CarouselViewport`. In a classic carousel, screen
@@ -996,18 +1581,45 @@ export interface CarouselSlideProps
  *     <CarouselSlide>Mobile app</CarouselSlide>
  *   </CarouselViewport>
  * </Carousel>
+ * @example
+ * <Carousel autoPlay aria-label="Examples">
+ *   <CarouselViewport>
+ *     {examples.map((example) => (
+ *       <CarouselSlide
+ *         key={example.id}
+ *         lazy
+ *         ready={loadedIds.has(example.id)}
+ *       >
+ *         <Preview example={example} onLoad={() => markLoaded(example.id)} />
+ *       </CarouselSlide>
+ *     ))}
+ *   </CarouselViewport>
+ * </Carousel>
  */
-export function CarouselSlide(props: CarouselSlideProps) {
+export function CarouselSlide({
+  ready = true,
+  lazy = false,
+  children,
+  ...props
+}: CarouselSlideProps) {
   const context = useCarouselContext("CarouselSlide");
   const [variantProps, rest] = splitProps(props, carouselSlide);
   const defaultId = useId();
   const id = rest.id ?? defaultId;
+  const { readiness } = context;
+  useEffect(() => {
+    if (ready) return;
+    return readiness.markNotReady(id);
+  }, [ready, id, readiness]);
+  const slides = context.kind === "slides";
+  // A row doesn't track the slides that show, so its slides render their
+  // children at once.
+  const rendered = !lazy || !slides || context.state.shownIds.has(id);
   const position = ak.useStoreState(context.collection, (state) => {
     const index = state.renderedItems.findIndex((item) => item.id === id);
     if (index < 0) return;
     return `${index + 1} of ${state.renderedItems.length}`;
   });
-  const slides = context.kind === "slides";
   return (
     <ak.CollectionItem
       store={context.collection}
@@ -1017,7 +1629,9 @@ export function CarouselSlide(props: CarouselSlideProps) {
       {...carouselSlide.jsx(variantProps)}
       {...rest}
       id={id}
-    />
+    >
+      {rendered && children}
+    </ak.CollectionItem>
   );
 }
 
@@ -1076,6 +1690,8 @@ export function CarouselTabList({ children, ...props }: CarouselTabListProps) {
     const slide = slides[index];
     if (!slide) return;
     if (slide.id === selectedSlideId) return;
+    // A pick stops autoplay until the person starts it again.
+    context.autoPlay.stop();
     state.scrollToSlide(slide.id);
   };
 
@@ -1121,7 +1737,7 @@ export function CarouselTab(props: CarouselTabProps) {
   if (!tab) {
     throw new Error("CarouselTab must be rendered inside a CarouselTabList.");
   }
-  const [variantProps, rest] = splitProps(props, carouselTab);
+  const [variantProps, { onClick, ...rest }] = splitProps(props, carouselTab);
   const slideId = ak.useStoreState(
     context.collection,
     (state) => state.renderedItems[tab.index]?.id,
@@ -1132,6 +1748,13 @@ export function CarouselTab(props: CarouselTabProps) {
       aria-controls={slideId}
       {...carouselTab.jsx(variantProps)}
       {...rest}
+      onClick={(event) => {
+        onClick?.(event);
+        if (event.defaultPrevented) return;
+        // A press stops autoplay until the person starts it again, also on the
+        // tab of the slide that shows, which doesn't change the selection.
+        context.autoPlay.stop();
+      }}
       id={tab.id}
     />
   );
@@ -1166,6 +1789,44 @@ export function CarouselButton({ children, ...props }: CarouselButtonProps) {
     <div ref={setArea} {...carouselButtonArea.jsx({ $side: props.$side })}>
       <Button recipe={carouselButton} {...props}>
         {children ?? <Icon />}
+      </Button>
+    </div>
+  );
+}
+
+export interface CarouselPlayButtonProps extends Omit<
+  ButtonProps<typeof carouselPlayButton>,
+  "recipe" | "bar" | "separator"
+> {}
+
+/**
+ * Renders a round button that stops and starts the autoplay of a carousel, in
+ * an area at the top start corner of the row. `CarouselViewport` renders one
+ * with `autoPlay` and gives it its name and its action. It shows a pause icon
+ * while autoplay plays and a play icon while it doesn't. Children replace the
+ * icon.
+ * @example
+ * <Carousel autoPlay playButton={{ $layer: "brand" }} aria-label="Examples">
+ *   <CarouselViewport>
+ *     <CarouselSlide>Dashboard</CarouselSlide>
+ *   </CarouselViewport>
+ * </Carousel>
+ */
+export function CarouselPlayButton({
+  children,
+  ...props
+}: CarouselPlayButtonProps) {
+  const context = useContext(CarouselContext);
+  const playing = context?.autoPlay.playing;
+  // The button lies over the slides, outside the viewport, where a wheel would
+  // scroll the page.
+  const [area, setArea] = useState<HTMLDivElement | null>(null);
+  useWheelScroll(area, context?.state.viewport);
+  const Icon = playing ? PauseIcon : PlayIcon;
+  return (
+    <div ref={setArea} {...carouselPlayButtonArea.jsx()}>
+      <Button recipe={carouselPlayButton} {...props}>
+        {children ?? <Icon fill="currentColor" />}
       </Button>
     </div>
   );
