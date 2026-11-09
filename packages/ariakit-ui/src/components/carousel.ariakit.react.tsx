@@ -57,6 +57,16 @@ function getMaxOffset(viewport: HTMLElement) {
   return Math.max(0, viewport.scrollWidth - viewport.clientWidth);
 }
 
+/**
+ * The scroll position that aligns a slide with the start of the viewport,
+ * within the scroll range.
+ */
+function getSlideScrollOffset(viewport: HTMLElement, slide: SlideItem) {
+  const padding = getScrollPadding(viewport);
+  const offset = getStartOffset(viewport, slide.element) - padding.start;
+  return Math.min(Math.max(0, offset), getMaxOffset(viewport));
+}
+
 interface ClearRange {
   left: number;
   right: number;
@@ -368,8 +378,16 @@ function useCarousel({
       }
       const current = getCurrentSlide(viewport, slides, pickedIdRef.current);
       const target = targetRef.current;
-      const hasTarget = slides.some((slide) => slide.id === target);
-      if (target && (target === current?.id || !hasTarget)) {
+      const targetSlide = slides.find((slide) => slide.id === target);
+      // A smooth scroll passes the slides before its target, and the target is
+      // the closest slide before the scroll gets there, so the target holds
+      // until the scroll reaches its position. Otherwise, another press during
+      // the scroll would step from the scroll position to the same target.
+      const reached =
+        !!targetSlide &&
+        Math.abs(getSlideScrollOffset(viewport, targetSlide) - offset) <=
+          END_TOLERANCE;
+      if (target && (reached || !targetSlide)) {
         targetRef.current = undefined;
       }
       const nextId = pendingIdRef.current ?? targetRef.current ?? current?.id;
@@ -566,12 +584,7 @@ function useCarousel({
         targetRef.current = undefined;
         updateRef.current?.();
       }, TARGET_TIMEOUT);
-      const padding = getScrollPadding(viewport);
-      scrollToOffset(
-        viewport,
-        getStartOffset(viewport, slide.element) - padding.start,
-        instant,
-      );
+      scrollToOffset(viewport, getSlideScrollOffset(viewport, slide), instant);
       updateRef.current?.();
       return true;
     },
@@ -623,12 +636,8 @@ function useCarousel({
       // slides that scroll to the same place, such as the last slides when
       // several show at the end of the row.
       const slides = getSlideItems(renderedItems);
-      const padding = getScrollPadding(viewport);
-      const max = getMaxOffset(viewport);
-      const getSlideOffset = (slide: SlideItem) => {
-        const offset = getStartOffset(viewport, slide.element) - padding.start;
-        return Math.min(Math.max(0, offset), max);
-      };
+      const getSlideOffset = (slide: SlideItem) =>
+        getSlideScrollOffset(viewport, slide);
       const target = slides.find((slide) => slide.id === targetRef.current);
       const from = target ? getSlideOffset(target) : getOffset(viewport);
       const next =
