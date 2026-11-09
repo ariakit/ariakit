@@ -304,6 +304,12 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       const element = ref.current;
       if (!element) return;
       let lastPath: EventTarget[] = [];
+      let pressedOnHovercard = false;
+      const onPointerDown = (event: PointerEvent) => {
+        const target = { path: event.composedPath(), view: event.view };
+        const cards = [element, ...nestedHovercardsRef.current];
+        pressedOnHovercard = cards.some((card) => isOnHovercard(card, target));
+      };
       // Hides the hovercard after a short delay (hideTimeout).
       const scheduleHide = () => {
         if (!store) return;
@@ -328,6 +334,13 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         const path = event.composedPath();
         lastPath = path;
         if (!isMouseMoving()) return;
+        // A press on the hovercard keeps it open until the release, even if the
+        // press doesn't move focus, such as a drag on a resize grip that goes
+        // past the hovercard's edge.
+        if (pressedOnHovercard && event.buttons) {
+          clearHideTimeout();
+          return;
+        }
         const { anchorElement, disclosureElement } = store.getState();
         const hoverElements = [anchorElement, disclosureElement];
         const hoveredElement = hoverElements.find(
@@ -369,7 +382,9 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       };
       // A scroll that counts as hover for the current anchor runs the same
       // check as a mouse move, at the resting mouse position. The pointer isn't
-      // moving toward the hovercard, so there's no transit check.
+      // moving toward the hovercard, so there's no transit check. A press stops
+      // scrolls from counting as hover until the next mouse move without one,
+      // so there's no press check either.
       const onScrollHover: ScrollHoverListener = (event, path, point) => {
         if (!store) return;
         const { anchorElement, disclosureElement } = store.getState();
@@ -409,6 +424,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         scheduleHide();
       };
       return chain(
+        addGlobalEventListener("pointerdown", onPointerDown, true),
         addGlobalEventListener("mousemove", onMouseMove, true),
         addScrollHoverListener(onScrollHover),
         clearHideTimeout,
@@ -617,7 +633,8 @@ export interface HovercardOptions<
    * `document.elementFromPoint` to find the element under it.
    *
    * **Note**: This behavior won't be triggered when the popover or any of its
-   * descendants are in focus.
+   * descendants are in focus, or while a press that started on the popover
+   * lasts.
    * @default true
    */
   hideOnHoverOutside?: BooleanOrCallback<MouseEvent>;
