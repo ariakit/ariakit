@@ -1813,10 +1813,15 @@ export function CarouselPlayButton({
   children,
   ...props
 }: CarouselPlayButtonProps) {
-  const playing = useContext(CarouselContext)?.autoPlay.playing;
+  const context = useContext(CarouselContext);
+  const playing = context?.autoPlay.playing;
+  // The button lies over the slides, outside the viewport, where a wheel would
+  // scroll the page.
+  const [area, setArea] = useState<HTMLDivElement | null>(null);
+  useWheelScroll(area, context?.state.viewport);
   const Icon = playing ? PauseIcon : PlayIcon;
   return (
-    <div {...carouselPlayButtonArea.jsx()}>
+    <div ref={setArea} {...carouselPlayButtonArea.jsx()}>
       <Button recipe={carouselPlayButton} {...props}>
         {children ?? <Icon fill="currentColor" />}
       </Button>

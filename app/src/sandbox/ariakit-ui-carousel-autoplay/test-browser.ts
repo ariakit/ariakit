@@ -1,5 +1,10 @@
 import { withFramework } from "#app/test-utils/preview.ts";
-import { expectMove, expectNoMove } from "./test-helpers.ts";
+import {
+  expectMove,
+  expectNoMove,
+  getSelectedSlide,
+  waitPastDelay,
+} from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
   // Safari and Firefox on macOS don't focus a button on a click, so only the
@@ -13,6 +18,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toBeVisible();
     await page.mouse.move(0, 0);
     await expectNoMove(page, region);
+  });
+
+  // The play button lies over the slides, outside the viewport, where a wheel
+  // would scroll the page.
+  test("scrolls a row without snapping with a sideways wheel over the play button", async ({
+    page,
+    q,
+  }) => {
+    const region = q.region("Places");
+    // The pointer over the play button pauses autoplay. A move that started
+    // before the pointer came ends during the wait.
+    await query(region).button("Stop automatic slide show").hover();
+    await waitPastDelay(page);
+    const slide = await getSelectedSlide(region);
+    await page.mouse.wheel(240, 0);
+    await test.expect.poll(() => getSelectedSlide(region)).not.toBe(slide);
   });
 
   test("pauses while the pointer is over a slide iframe", async ({
