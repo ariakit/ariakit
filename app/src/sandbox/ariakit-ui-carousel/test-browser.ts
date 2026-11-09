@@ -547,38 +547,32 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
       `[id="${await next.getAttribute("aria-controls")}"]`,
     );
     const second = await getItemOffset(box.group("2 of 7"));
+    // Past the middle of the way, slide 2 is the closest slide. The page
+    // presses again on the frame after the carousel updates there, so no round
+    // trip after the first press can let the scroll reach slide 2 first.
+    await next.evaluate((button, offset) => {
+      const viewport = button.ownerDocument.getElementById(
+        button.getAttribute("aria-controls") ?? "",
+      );
+      if (!viewport) return;
+      const press = () => {
+        viewport.dataset.testScrollAtPress = `${Math.abs(viewport.scrollLeft)}`;
+        button.click();
+      };
+      const check = () => {
+        if (Math.abs(viewport.scrollLeft) > offset / 2 + 2) {
+          requestAnimationFrame(press);
+          return;
+        }
+        requestAnimationFrame(check);
+      };
+      check();
+    }, second);
     await next.focus();
     await page.keyboard.press("Enter");
-    await test
-      .expect(box.tab("Slide 2"))
-      .toHaveAttribute("aria-selected", "true");
-    // Past the middle of the way, slide 2 is the closest slide. One page step
-    // keeps the press near that point, and the listener records the scroll at
-    // the press, because a press after the scroll reached slide 2 would pass.
-    await viewport.evaluate(
-      (node, offset) =>
-        new Promise<void>((resolve) => {
-          const check = () => {
-            if (Math.abs(node.scrollLeft) <= offset / 2 + 2) {
-              requestAnimationFrame(check);
-              return;
-            }
-            const listener = () => {
-              node.dataset.testScrollAtPress = `${Math.abs(node.scrollLeft)}`;
-            };
-            node.ownerDocument.addEventListener("keydown", listener, {
-              once: true,
-              capture: true,
-            });
-            resolve();
-          };
-          check();
-        }),
-      second,
-    );
-    await page.keyboard.press("Enter");
-    const atPress = await viewport.evaluate((node) =>
-      Number(node.dataset.testScrollAtPress),
+    await test.expect(viewport).toHaveAttribute("data-test-scroll-at-press");
+    const atPress = Number(
+      await viewport.getAttribute("data-test-scroll-at-press"),
     );
     test.expect(atPress).toBeLessThan(second - 2);
     const third = await getItemOffset(box.group("3 of 7"));
