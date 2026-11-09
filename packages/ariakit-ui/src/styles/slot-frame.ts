@@ -344,10 +344,8 @@ export const slotFrameText = cv({
      * Fills the free space in its row, so the slots after it sit together at
      * the row end.
      */
-    $grow: [
-      // A grown label starts its text, also in a button, which centers it. Zero
-      // specificity lets a caller class center the text again.
-      "grow ui-base:text-start",
-    ],
+    // A grown label starts its text, also in a button, which centers it. Zero
+    // specificity lets a caller class center the text again.
+    $grow: "grow ui-base:text-start",
   },
 });
