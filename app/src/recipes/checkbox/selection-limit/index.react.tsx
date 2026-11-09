@@ -33,7 +33,7 @@ export default function Example() {
   const full = selected.length >= maxTopics;
   return (
     // The width fits three columns of cards wide enough for the longest topic,
-    // so its check stays on the same line.
+    // so no label truncates at the default text size.
     <CheckboxGroup
       label={`Pick up to ${maxTopics} topics`}
       className="w-[38rem] max-w-full"
