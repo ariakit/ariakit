@@ -296,6 +296,30 @@ export const carouselButtonArea = cv({
 });
 
 /**
+ * The round button that the carousel buttons share, the size of
+ * `--carousel-button-size`, on its own lightened surface.
+ */
+const carouselRoundButton = cv({
+  extend: [button],
+  class: [
+    "pointer-events-auto size-(--carousel-button-size) shrink-0 items-center",
+    "shadow-md [&>svg]:size-[1em]",
+  ],
+  defaultVariants: {
+    // A neutral button lightens from the color around the carousel. A layer
+    // color keeps the button offset, because lightening a saturated color can
+    // flip its text.
+    $lighten(defaultValue, variants) {
+      if (isLayerColor(variants.$layer)) return defaultValue;
+      return defaultValue ?? true;
+    },
+    $border: true,
+    $rounded: "full",
+    $p: "none",
+  },
+});
+
+/**
  * A round button that scrolls a carousel toward its side, in a
  * `carouselButtonArea`. Its hit area spans the height of the area, with the
  * padding of the area on each side, so the pointer finds the button there and
@@ -304,11 +328,9 @@ export const carouselButtonArea = cv({
  * root sets.
  */
 export const carouselButton = cv({
-  extend: [button],
+  extend: [carouselRoundButton],
   class: [
     "carousel-button",
-    "pointer-events-auto size-(--carousel-button-size) shrink-0 items-center",
-    "shadow-md [&>svg]:size-[1em]",
     // A row button grows in from its middle, and the press scales it there too.
     "origin-center",
     // The area centers the button, or aligns it as the root sets, and this
@@ -334,17 +356,45 @@ export const carouselButton = cv({
   },
   defaultVariants: {
     $side: "end",
-    // A neutral button lightens from the color around the carousel. A layer
-    // color keeps the button offset, because lightening a saturated color can
-    // flip its text.
-    $lighten(defaultValue, variants) {
-      if (isLayerColor(variants.$layer)) return defaultValue;
-      return defaultValue ?? true;
-    },
-    $border: true,
-    $rounded: "full",
-    $p: "none",
   },
+});
+
+/**
+ * A frame at the top start corner of a carousel row that holds a
+ * `carouselPlayButton`, with `--carousel-button-padding` from the root around
+ * it. It stacks above the area of the previous button, whose hit area spans the
+ * height of the row, so the row needs room for both: about four button sizes.
+ * Like the other areas, it paints nothing and takes no pointer itself.
+ */
+export const carouselPlayButtonArea = cv({
+  extend: [frameBase],
+  class: [
+    "carousel-play-button-area",
+    "row-start-1 col-start-1 self-start justify-self-start",
+    "z-[calc(var(--carousel-button-z,1)+1)]",
+    // The area paints nothing, and its radius only keeps the button concentric.
+    "rounded-none! pointer-events-none",
+  ],
+  defaultVariants: {
+    $p: "var(--carousel-button-padding)",
+    // Without a frame around the carousel, the button stays round.
+    $rounded: "full",
+  },
+});
+
+/**
+ * A round button that stops and starts the autoplay of a carousel, in a
+ * `carouselPlayButtonArea`. It looks like the previous and next buttons, and it
+ * shows on every device.
+ */
+export const carouselPlayButton = cv({
+  extend: [carouselRoundButton],
+  class: [
+    "carousel-play-button",
+    // The hit area takes the padding of the area too, so a press just beside
+    // the button doesn't reach the previous button under it.
+    "before:absolute before:-inset-(--carousel-button-padding)",
+  ],
 });
 
 /**
