@@ -1180,7 +1180,7 @@ export default function ComboboxExamples() {
 
       <Example
         title="combobox-item-highlight"
-        description="The highlighted row of the static combobox-group thumbnail paints like the hovered item of a real list on the same lifted canvas."
+        description="The highlighted row of the static combobox-group cover paints like the hovered item of a real list on the same lifted canvas."
         code={`
           <ak.ComboboxProvider>
             <ak.Combobox />

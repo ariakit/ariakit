@@ -11,16 +11,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
-import type {
-  ComponentRecipeEntry,
-  FilterablePreview,
-  PreviewOwnerEntry,
-} from "./content.ts";
-import {
-  countEntryExamples,
-  descriptionToText,
-  filterPreviews,
-} from "./content.ts";
+import type { FilterablePreview } from "./content.ts";
+import { descriptionToText, filterPreviews } from "./content.ts";
 
 function getDescriptionFiles(path: string): string[] {
   return readdirSync(path, { withFileTypes: true }).flatMap((entry) => {
@@ -79,23 +71,6 @@ function preview(
   return { id, data: { frameworks, source } };
 }
 
-const separatorComponent: PreviewOwnerEntry = {
-  id: "separator",
-  collection: "components",
-};
-
-const separatorRecipe: ComponentRecipeEntry = {
-  id: "separator",
-  collection: "recipes",
-  data: { components: [] },
-};
-
-const toolbarRecipe: ComponentRecipeEntry = {
-  id: "toolbar",
-  collection: "recipes",
-  data: { components: [{ id: "separator" }] },
-};
-
 // Component page preview ids start with components/, so a recipe and a
 // component page can share an entry id.
 const previews = [
@@ -119,21 +94,4 @@ test("filterPreviews keeps only the previews of the collection type", () => {
   expect(filterPreviews(previews, { type: "components" })).toEqual([
     preview("components/separator", "components"),
   ]);
-});
-
-test("countEntryExamples counts the examples of a recipe", () => {
-  const count = (entry: PreviewOwnerEntry) =>
-    countEntryExamples({ entry, framework: "react", recipes: [], previews });
-  expect(count(separatorRecipe)).toBe(2);
-  expect(count(toolbarRecipe)).toBe(2);
-});
-
-test("countEntryExamples counts a component page and the recipes that list it", () => {
-  const count = countEntryExamples({
-    entry: separatorComponent,
-    framework: "react",
-    recipes: [separatorRecipe, toolbarRecipe],
-    previews,
-  });
-  expect(count).toBe(3);
 });

@@ -42,11 +42,11 @@ const guides = defineCollection({
 });
 
 // The card size on the recipe and component list pages. Pick the size that fits
-// the thumbnail scene, not the kind of component. Use cell for a scene that
-// reads well in one grid cell, wide for a horizontal scene, such as a toolbar
-// or a page section, tall for a vertical scene, such as a menu that opens down
-// from a trigger, and full for a whole screen or app layout.
-const ThumbnailShapeSchema = z
+// the cover scene, not the kind of component. Use cell for a scene that reads
+// well in one grid cell, wide for a horizontal scene, such as a toolbar or a
+// page section, tall for a vertical scene, such as a menu that opens down from
+// a trigger, and full for a whole screen or app layout.
+const CoverShapeSchema = z
   .enum(["full", "tall", "wide", "cell"])
   .default("cell");
 
@@ -57,7 +57,7 @@ const components = defineCollection({
   schema: componentLoader.schema(
     z.object({
       title: z.string(),
-      shape: ThumbnailShapeSchema,
+      shape: CoverShapeSchema,
     }),
   ),
 });
@@ -69,7 +69,7 @@ const recipes = defineCollection({
   schema: recipeLoader.schema(
     z.object({
       title: z.string(),
-      shape: ThumbnailShapeSchema,
+      shape: CoverShapeSchema,
       components: z.array(reference("components")).default([]),
     }),
   ),

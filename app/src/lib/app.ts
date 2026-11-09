@@ -13,13 +13,25 @@ export interface AppLink {
   label: string;
   current: boolean;
   /**
-   * Secondary text under the label, such as the number of examples.
+   * The number of examples on the page, which shows at the end of the link.
    */
-  description?: string;
+  count?: number;
   /**
-   * The static markup of the page thumbnail.
+   * The examples of the page, in page order. A card shows them while the mouse
+   * pointer rests on the link.
    */
-  thumbnail?: string;
+  examples?: AppLinkExample[];
+}
+
+/** An example that a navigation card shows from its preview page. */
+export interface AppLinkExample {
+  title: string;
+  /** The URL of the example in the gallery of its page. */
+  href: string;
+  /** The URL of the preview page of the example. */
+  previewHref: string;
+  /** Whether the preview fills a whole page, such as an app shell. */
+  fullscreen?: boolean;
 }
 
 export interface AppNavigationGroup {
@@ -40,6 +52,8 @@ export interface AppHeading {
 export interface AppExample {
   previewId: string;
   title: string;
+  /** Whether the preview fills a whole page, such as an app shell. */
+  fullscreen?: boolean;
 }
 
 /**
@@ -58,6 +72,26 @@ export function getUniqueSlug(slugs: Set<string>, slug: string) {
 // The title link of the table of contents targets the page root, so it scrolls
 // to the top of the page, above the title.
 export const APP_TOP_ID = "top";
+
+/**
+ * Returns the ids of the examples heading and of the gallery cards of a page,
+ * which the cards are headings under. Each card id comes from the last segment
+ * of its preview id, such as `shortcuts` for `tooltip/shortcuts`, and stays
+ * clear of the ids of the page headings.
+ */
+export function getGalleryIds(headings: AppHeading[], examples: AppExample[]) {
+  const slugs = new Set([
+    APP_TOP_ID,
+    ...headings.map((heading) => heading.slug),
+  ]);
+  const examplesId = getUniqueSlug(slugs, "examples");
+  const exampleIds = new Map<string, string>();
+  for (const example of examples) {
+    const segment = example.previewId.split("/").at(-1) ?? example.previewId;
+    exampleIds.set(example.previewId, getUniqueSlug(slugs, segment));
+  }
+  return { examplesId, exampleIds };
+}
 
 // The inline script in the layout toggles panels by these ids, because the
 // shell renders without hydration.

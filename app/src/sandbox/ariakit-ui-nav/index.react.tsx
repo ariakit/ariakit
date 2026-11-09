@@ -565,6 +565,33 @@ export default function NavExamples() {
       </Example>
 
       <Example
+        title="Hovered link"
+        description="$hovered shows the hover state of a link while the pointer is elsewhere, such as on the anchor of an open hovercard. A current link with a quieter $selectedInk takes the hover ink, as it does under the pointer."
+        code={`
+          <Nav>
+            <NavLink>Overview</NavLink>
+            <NavLink aria-current="page" $selectedInk={60} $hovered>
+              Installation
+            </NavLink>
+            <NavLink>Usage</NavLink>
+          </Nav>
+        `}
+      >
+        <Nav aria-label="Hovered link" className="w-full">
+          <NavLink href="#overview">Overview</NavLink>
+          <NavLink
+            href="#installation"
+            aria-current="page"
+            $selectedInk={60}
+            $hovered
+          >
+            Installation
+          </NavLink>
+          <NavLink href="#usage">Usage</NavLink>
+        </Nav>
+      </Example>
+
+      <Example
         title="Icons"
         description="The icon stays on the first line when a long label wraps."
         code={`

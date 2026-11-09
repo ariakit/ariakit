@@ -22,6 +22,7 @@ import {
 } from "@ariakit/ui/components/input.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
+import { clsx } from "clsx";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -39,20 +40,23 @@ import type {
 } from "react";
 import { useEffect, useId, useRef, useState } from "react";
 import {
-  getAppThemeRootValues,
-  subscribeAppTheme,
-} from "#app/lib/app-theme.ts";
+  PreviewLoader,
+  usePreviewLoading,
+} from "#app/components/preview-loader.react.tsx";
+import { subscribeAppTheme } from "#app/lib/app-theme.ts";
 import type {
   PreviewCommandMessage,
   PreviewScrollMessage,
-  PreviewThemeMessage,
-  PreviewViewportMessage,
 } from "#app/lib/preview-embed.ts";
 import {
   isPreviewFrameMessage,
   PREVIEW_MESSAGE_TYPE,
 } from "#app/lib/preview-embed.ts";
-import { PREVIEW_FRAME_MARGIN } from "#app/lib/preview-frames.ts";
+import {
+  PREVIEW_FRAME_MARGIN,
+  postFrameTheme,
+  postToFrame,
+} from "#app/lib/preview-frames.ts";
 import { reloadPreview } from "#app/lib/preview-hydration.ts";
 
 // Chrome scrolls about 40 pixels for each line of a line-based wheel event.
@@ -362,22 +366,9 @@ function usePreviewFrame(
   useEffect(() => {
     const iframe = ref.current;
     if (!iframe) return;
-    const postTheme = () => {
-      postToFrame(iframe, {
-        type: PREVIEW_MESSAGE_TYPE,
-        action: "theme",
-        theme: getAppThemeRootValues(),
-      });
-      // The theme radius scales the viewport corners. The site theme script
-      // subscribed first, so the computed radius is already current.
-      const viewport = viewportRef.current;
-      if (!viewport) return;
-      postToFrame(iframe, {
-        type: PREVIEW_MESSAGE_TYPE,
-        action: "viewport",
-        radius: getInnerRadius(viewport),
-      });
-    };
+    // The site theme script subscribed first, so the computed radius of the
+    // viewport is already current.
+    const postTheme = () => postFrameTheme(iframe, viewportRef.current);
     const isFocusInCard = () => {
       const card = iframe.closest("[data-preview-card]") ?? iframe;
       return card.contains(iframe.ownerDocument.activeElement);
@@ -683,6 +674,15 @@ function PreviewCardViewport({
 }: PreviewCardViewportProps) {
   const { ref, viewportRef, ready, setLoaded, activate } = frame;
   const near = useNearViewport(ref);
+  // The first page shows the loader until it's ready, as the server renders the
+  // card. A reload or a navigation in the frame shows the loader only when the
+  // next page takes a while, and the frame waits for the loader to go away.
+  const [shown, setShown] = useState(false);
+  if (ready && !shown) {
+    setShown(true);
+  }
+  const reloading = usePreviewLoading(shown && !ready);
+  const loading = shown ? reloading : !ready;
   return (
     <PreviewCardStage measuring={near} onResize={activate}>
       {({ viewportId, resizing }) => (
@@ -706,7 +706,7 @@ function PreviewCardViewport({
           ].join(" ")}
         >
           <div
-            data-loading={ready ? undefined : ""}
+            data-loading={loading ? "" : undefined}
             aria-busy={!ready}
             className={[
               "group/preview grid grid-cols-1 grid-rows-[minmax(0,1fr)] *:[grid-area:1/1]",
@@ -736,18 +736,18 @@ function PreviewCardViewport({
               title={title}
               loading="lazy"
               onLoad={() => setLoaded(true)}
-              className={[
+              className={clsx(
                 "block w-full border-0 bg-transparent transition-opacity",
                 getFallbackHeight({ fullscreen, minHeight }),
                 "h-(--preview-frame-height)",
                 // The frame fills its box between the minimum height and the
                 // limited window height.
                 "max-h-full min-h-full",
-                "group-data-loading/preview:opacity-0",
+                (!ready || loading) && "opacity-0",
                 // Without scripts, nothing reports the load, so the frame shows
                 // right away.
                 "noscript:opacity-100!",
-              ].join(" ")}
+              )}
             />
             {/* Keeps a drag from the handle out of the frame. Pointer-events on
                 the frame could leave Chrome sending the wheel to the docs page.
@@ -764,39 +764,12 @@ function PreviewCardViewport({
                 "noscript:hidden!",
               ].join(" ")}
             >
-              <PreviewCardLoader />
+              <PreviewLoader />
             </div>
           </div>
         </Frame>
       )}
     </PreviewCardStage>
-  );
-}
-
-/**
- * The Ariakit symbol, with its dot rolling around the ring while the preview
- * loads.
- */
-function PreviewCardLoader() {
-  return (
-    <span className="ak-text ak-text-primary relative size-10 motion-reduce:animate-pulse">
-      <svg viewBox="0 0 40 40" className="size-full fill-current">
-        <path
-          fillRule="evenodd"
-          d="M8 0C3.58172 0 0 3.58172 0 8V32C0 36.4183 3.58172 40 8 40H32C36.4183 40 40 36.4183 40 32V8C40 3.58172 36.4183 0 32 0H8ZM19.9998 31.9997C26.6272 31.9997 31.9998 26.6271 31.9998 19.9997C31.9998 13.3723 26.6272 7.99967 19.9998 7.99967C13.3723 7.99967 7.99976 13.3723 7.99976 19.9997C7.99976 26.6271 13.3723 31.9997 19.9998 31.9997Z"
-        />
-      </svg>
-      {/* The dot rests 4 units off the center of the ring, so turning its own
-          svg around the center moves it in a circle inside the ring. Safari
-          runs the animation of a group inside an svg on the main thread, even
-          offscreen, and Chrome lays out the svg again on each frame. */}
-      <svg
-        viewBox="0 0 40 40"
-        className="absolute inset-0 size-full fill-current motion-safe:animate-[spin_1.4s_cubic-bezier(0.65,0,0.35,1)_infinite]"
-      >
-        <circle cx="24" cy="20" r="6" />
-      </svg>
-    </span>
   );
 }
 
@@ -1117,30 +1090,11 @@ function PreviewCardResizeHandle({
 }
 
 /**
- * Returns the radius of the corners inside the element's border, which clip its
- * content.
- */
-function getInnerRadius(element: Element) {
-  const style = getComputedStyle(element);
-  const radius = Number.parseFloat(style.borderStartStartRadius);
-  const border = Number.parseFloat(style.borderBlockStartWidth);
-  return `${Math.max(0, radius - border)}px`;
-}
-
-/**
  * Returns 1 when the inline end of the element is on the right, and -1 when it
  * is on the left.
  */
 function getInlineSign(element: Element) {
   return getComputedStyle(element).direction === "rtl" ? -1 : 1;
-}
-
-function postToFrame(
-  iframe: HTMLIFrameElement,
-  message: PreviewCommandMessage | PreviewThemeMessage | PreviewViewportMessage,
-) {
-  // Next.js previews load from another origin.
-  iframe.contentWindow?.postMessage(message, "*");
 }
 
 function sendToFrame(

@@ -9,6 +9,13 @@ import {
 export const hover = cv({
   variants: {
     /**
+     * Shows the hover state while the pointer is elsewhere, such as on the
+     * anchor of an open hovercard. Its styles apply as under the pointer: the
+     * `ui-hover` styles only on devices that can hover and not while a nested
+     * button is hovered, and the shy separators beside the element hide.
+     */
+    $hovered: "ui-hovered",
+    /**
      * Sets hovered text strength (0–100), replacing `$ink`. The amount inherits
      * through slots and nested layers. `false` clears a component default.
      */

@@ -77,6 +77,24 @@ export default function BreadcrumbSandbox() {
       </Example>
 
       <Example
+        title="Hovered step"
+        description="$hovered shows the hover state of a step while the pointer is elsewhere, such as on the anchor of an open hovercard. The separator beside it hides, as beside a step under the pointer."
+        code={`
+          <BreadcrumbLink href="#garden" $hoverOffset $hovered>
+            Garden
+          </BreadcrumbLink>
+        `}
+      >
+        <Breadcrumb aria-label="Hovered step">
+          <BreadcrumbLink href="#garden" $hoverOffset $hovered>
+            Garden
+          </BreadcrumbLink>
+          <BreadcrumbSeparator $shy />
+          <BreadcrumbCurrent>Tools</BreadcrumbCurrent>
+        </Breadcrumb>
+      </Example>
+
+      <Example
         title="Clipped label narrower than the minimum"
         description="The label adds no space beside its text."
         code={`

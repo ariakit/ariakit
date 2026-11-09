@@ -1,4 +1,3 @@
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
 import {
   toc,
@@ -10,53 +9,6 @@ import {
   tocList,
 } from "@ariakit/ui/styles/toc";
 import type { CSSProperties } from "react";
-
-interface RowData {
-  id: string;
-  width: string;
-  current?: boolean;
-  // Whether the section of the row is on the screen, under the thumb.
-  visible?: boolean;
-}
-
-const smallRows: RowData[] = [
-  { id: "overview", width: "w-3/5" },
-  { id: "install", width: "w-2/3" },
-  { id: "usage", width: "w-1/2", current: true, visible: true },
-  { id: "styling", width: "w-1/2" },
-];
-
-// A row of the small table of contents. The guide runs along its start, and an
-// inverted bar on the guide stands for the thumb.
-function Row({ width, current, visible }: RowData) {
-  return (
-    <div className="relative py-0.5 ps-3">
-      <span className="absolute inset-y-0 inset-s-0.5 w-px bg-(--ak-edge)" />
-      {visible && (
-        <Frame
-          render={<span />}
-          $invert
-          $rounded="full"
-          $p="none"
-          className="absolute inset-y-0 inset-s-0 w-0.5"
-        />
-      )}
-      <Frame
-        $layer={current ? true : "transparent"}
-        $lighten={current ? 1 : undefined}
-        $rounded="md"
-        $p={1.5}
-      >
-        <SkeletonLine
-          $weight={current ? "bold" : "light"}
-          $rounded="xs"
-          $forceRounded
-          className={width}
-        />
-      </Frame>
-    </div>
-  );
-}
 
 interface SectionData {
   id: string;
@@ -94,7 +46,7 @@ const fullThumbRange = {
 function Section({ section }: { section: SectionData }) {
   return (
     <li {...tocItem.jsx()}>
-      {/* The thumbnail sits inside the card link, and a nested link would
+      {/* The cover sits inside the card link, and a nested link would
           end that link early. */}
       <span
         {...tocLink.jsx()}
@@ -119,7 +71,7 @@ function Section({ section }: { section: SectionData }) {
   );
 }
 
-export default function Thumbnail() {
+export default function Cover() {
   return (
     // The article shrinks, so the table of contents stays in narrow cards.
     <div className="flex max-w-full items-start gap-8">
@@ -142,15 +94,5 @@ export default function Thumbnail() {
         </ul>
       </div>
     </div>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame $lighten $p={3} className="grid content-start text-[0.9em]">
-      {smallRows.map((row) => (
-        <Row key={row.id} {...row} />
-      ))}
-    </Frame>
   );
 }

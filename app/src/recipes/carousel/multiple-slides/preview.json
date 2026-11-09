@@ -1,4 +1,4 @@
 {
   "title": "Multiple Slides per View",
-  "description": "A carousel that shows one, two, or three slides at a time, from container queries on a parent that give each CarouselSlide a basis class for its share of the row less the gaps. Every slide snaps and has its own dot, the buttons move one slide at a time, and fades keep the slides beside the row visible but faded. Use it for a row of cards, products, or templates, and the root Carousel for one slide at a time."
+  "description": "A carousel that shows one, two, or three slides at a time, from container queries on a parent that give each CarouselSlide a basis class for its share of the row less the gaps. Every slide snaps and has its own dot, a fast swipe and the buttons move one slide at a time, and fades keep the slides beside the row visible but faded. Use it for a row of cards, products, or templates, and the root Carousel for one slide at a time."
 }

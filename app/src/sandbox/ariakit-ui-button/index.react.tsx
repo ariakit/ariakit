@@ -1500,6 +1500,28 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Hovered button"
+        description="$hovered shows the hover state of a button while the pointer is elsewhere, such as on the anchor of an open hovercard. The rules beside it hide, as beside a button under the pointer."
+        code={`
+          <ButtonGroup $border>
+            <Button $hovered>Undo</Button>
+            <ButtonSeparator />
+            <Button>Redo</Button>
+            <ButtonSeparator />
+            <Button>Revert</Button>
+          </ButtonGroup>
+        `}
+      >
+        <ButtonGroup aria-label="Hovered history" $border>
+          <Button $hovered>Undo</Button>
+          <ButtonSeparator />
+          <Button>Redo</Button>
+          <ButtonSeparator />
+          <Button>Revert</Button>
+        </ButtonGroup>
+      </Example>
+
+      <Example
         title="Separators from the separator prop"
         description="Each button after the first renders a rule before it, hidden from assistive technologies. A rule hides next to a hovered, selected or focused button."
         code={`

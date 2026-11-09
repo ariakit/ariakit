@@ -412,3 +412,90 @@ test("preview card frames show their loader where their page centers the example
   expect(loader.center).toBeCloseTo(frame.center, 0);
   release(undefined);
 });
+
+// Returns whether the loader of a preview card frame shows, which lies next to
+// the frame in the same grid cell.
+function isLoaderShown(viewport: Element) {
+  const loader = viewport.lastElementChild;
+  if (!loader) return false;
+  return getComputedStyle(loader).display !== "none";
+}
+
+test("preview card frames show their loader at once while their first page loads", async ({
+  page,
+}) => {
+  // Holding the document of the frame keeps the card loading.
+  const { promise: released, resolve: release } = Promise.withResolvers();
+  await page.route("**/react/previews/app-shell/", async (route) => {
+    await released;
+    await route.continue();
+  });
+  await page.goto("/react/recipes/app-shell/", { waitUntil: "commit" });
+  const iframe = page.locator('iframe[title="App Shell"]');
+  const viewport = iframe.locator("xpath=..");
+  // The server renders the card with its loader, which shows from the first
+  // paint, before the card hydrates. A loader that waited would hide until some
+  // time after the card hydrates.
+  await viewport.waitFor({ state: "attached" });
+  expect(await viewport.evaluate(isLoaderShown)).toBe(true);
+  await expect(viewport).toHaveAttribute("aria-busy", "true");
+  release(undefined);
+  await waitForShownFrame(page, "App Shell");
+});
+
+test("preview card frames show their loader on a reload once the page takes a while", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/app-shell/");
+  const iframe = await waitForShownFrame(page, "App Shell");
+  const viewport = iframe.locator("xpath=..");
+  const frame = await iframe
+    .elementHandle()
+    .then((element) => element?.contentFrame());
+  // Holding the scripts and fonts of the reloaded page delays its load event,
+  // so the page stays in the state that its embed script reports while it
+  // parses.
+  const { promise: released, resolve: release } = Promise.withResolvers();
+  await page.route("**/*", async (route) => {
+    const request = route.request();
+    const type = request.resourceType();
+    if (request.frame() === frame && (type === "script" || type === "font")) {
+      await released;
+    }
+    await route.continue();
+  });
+  // The page measures the time from the busy state to the loader, since a test
+  // that checks in between can be late on a busy machine.
+  const loaderDelay = viewport.evaluate(
+    (element) =>
+      new Promise<number>((resolve) => {
+        let busyTime = 0;
+        const observer = new MutationObserver(() => {
+          if (element.getAttribute("aria-busy") === "true") {
+            busyTime ||= performance.now();
+          }
+          if (!busyTime) return;
+          // The loader lies next to the frame, in the same grid cell.
+          const loader = element.lastElementChild;
+          if (!loader) return;
+          if (getComputedStyle(loader).display === "none") return;
+          observer.disconnect();
+          resolve(performance.now() - busyTime);
+        });
+        observer.observe(element, { attributes: true });
+      }),
+  );
+  await query(q.region("App Shell", { exact: true }))
+    .button("Reload preview")
+    .click();
+  // The card is busy and hides the frame at once, but shows the loader only
+  // once the page takes 300ms. A timer never fires early.
+  await expect(viewport).toHaveAttribute("aria-busy", "true");
+  await expect(iframe).toHaveCSS("opacity", "0");
+  expect(await loaderDelay).toBeGreaterThanOrEqual(250);
+  release(undefined);
+  await waitForShownFrame(page, "App Shell");
+  // A loader that shows stays for 200ms, so it can outlast the busy state.
+  await expect.poll(() => viewport.evaluate(isLoaderShown)).toBe(false);
+});

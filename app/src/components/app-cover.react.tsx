@@ -16,94 +16,26 @@ import { clsx } from "clsx";
 // is in rem to stay above that threshold.
 const STAGE_PADDING = "2rem";
 
-// The wrapper border strengthens while an ancestor with the `group/thumbnail`
-// class is hovered, focused, or the current page. The `$edgeWeight` variant
-// writes an inline value, which a state cannot change, so states use the
-// matching utilities.
-const slotStateEdge = clsx(
-  "group-hover/thumbnail:ak-edge-alpha-25",
-  "group-focus-visible/thumbnail:ak-edge-alpha-25",
-  "group-aria-[current=page]/thumbnail:ak-edge-alpha-25",
-);
-
-export interface AppThumbnailProps extends Omit<FrameProps, "children"> {
+export interface AppCoverProps extends Omit<FrameProps, "children"> {
   /**
-   * The static markup from `renderThumbnail`. Use a large thumbnail for `card`
-   * and a small one for `slot`.
+   * The static markup from `renderCover`.
    */
   html: string;
-  /**
-   * `card` fills its grid area in a page card and fades its scene. The scene
-   * shows at full opacity when an ancestor with the `group/thumbnail` class is
-   * hovered or focused, and zooms in only while it is hovered. `slot` draws a
-   * small thumbnail, drawn for a box about 60px by 40px, in a 4:3 box such as a
-   * navigation slot. Slots strengthen their border while the `group/thumbnail`
-   * ancestor is hovered, focused, or the current page. Set the slot height with
-   * `className`; the width follows the ratio.
-   * @default "card"
-   */
-  size?: "card" | "slot";
-  /**
-   * The color that the thumbnail surface darkens from. Pass a color that does
-   * not change with the state of the parent, such as the color of the
-   * surrounding navigation, so the colors inside do not recompute.
-   */
-  surface?: string;
 }
 
 /**
- * Renders an example thumbnail in a bordered surface. Card scenes sit at the
- * top of the stage, centered when they fit and otherwise running off its right
- * and bottom edges. A scene root with `max-w-full` shrinks to fit the stage
- * width instead.
+ * Renders the cover of a page card in a bordered surface that fills its grid
+ * area and fades its scene. The scene shows at full opacity when an ancestor
+ * with the `group/cover` class is hovered or focused, and zooms in only while
+ * it is hovered. Scenes sit at the top of the stage, centered when they fit and
+ * otherwise running off its right and bottom edges. A scene root with
+ * `max-w-full` shrinks to fit the stage width instead.
  */
-export function AppThumbnail({
-  html,
-  size = "card",
-  surface,
-  className,
-  ...props
-}: AppThumbnailProps) {
-  if (size === "slot") {
-    return (
-      <Frame
-        render={<span />}
-        $layer={surface ?? true}
-        $darken={0.5}
-        $rounded="md"
-        $border
-        // A real border in both modes lets covering scene frames share it.
-        $borderType="border"
-        // Matches the borders inside small scenes.
-        $edgeWeight={15}
-        $p="none"
-        className={clsx(
-          "block aspect-4/3 overflow-clip @container-size",
-          slotStateEdge,
-          className,
-        )}
-        {...props}
-      >
-        {/* Small scenes fill the slot without padding, so the slot border is
-            the scene edge. The canvas is not a frame, so scene frames nest in
-            the slot frame and can cover it or share its border. Scene sizes
-            and radii are em-based, and the font size follows the slot height,
-            so the whole scene scales to fill any slot size. Scenes are drawn
-            for a 3.5px font in a 38px-tall slot. The lightness multiplier
-            strengthens every lightness shift inside the scene, so its shapes
-            stay visible at this size. */}
-        <span
-          inert
-          className="flex size-full flex-col text-[9.25cqh] [--layer-lightness-multiplier:1.5] *:flex-1"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-      </Frame>
-    );
-  }
+export function AppCover({ html, className, ...props }: AppCoverProps) {
   return (
     <Frame
       render={<span />}
-      $layer={surface ?? true}
+      $layer
       $darken={0.5}
       $rounded="lg"
       $border
@@ -137,8 +69,8 @@ export function AppThumbnail({
           // a zoom on focus would break each Tab. The hover zoom can still
           // break it while the pointer rests on a card.
           // https://issues.chromium.org/issues/582923442
-          "group-hover/thumbnail:scale-103",
-          "group-hover/thumbnail:opacity-100 group-focus-visible/thumbnail:opacity-100",
+          "group-hover/cover:scale-103",
+          "group-hover/cover:opacity-100 group-focus-visible/cover:opacity-100",
         )}
       >
         <span

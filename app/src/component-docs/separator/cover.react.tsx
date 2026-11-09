@@ -10,16 +10,8 @@ import {
 import { kbd } from "@ariakit/ui/styles/kbd";
 import { separator } from "@ariakit/ui/styles/separator";
 import { slotFrame } from "@ariakit/ui/styles/slot-frame";
-import { Fragment } from "react";
 
-// Placeholder widths for the rows between separators.
-const rows = [
-  { id: "profile", width: "w-2/5" },
-  { id: "billing", width: "w-1/3" },
-  { id: "members", width: "w-1/2" },
-];
-
-export default function Thumbnail() {
+export default function Cover() {
   return (
     <Frame
       $lighten
@@ -74,33 +66,6 @@ export default function Thumbnail() {
           <SkeletonLine className="w-1/4" />
         </span>
       </div>
-    </Frame>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame $lighten $p={5.5} className="flex flex-col justify-between">
-      {rows.map((row, index) => (
-        <Fragment key={row.id}>
-          {index > 0 && (
-            <div
-              {...separator.jsx({
-                $line: "solid",
-                $gap: 0,
-                $edgeWeight: 15,
-              })}
-            />
-          )}
-          <div className="flex items-center justify-between">
-            <SkeletonLine className="w-1/2 text-[1.25em] leading-none" />
-            <SkeletonLine
-              $weight="light"
-              className="w-1/6 text-[1.25em] leading-none"
-            />
-          </div>
-        </Fragment>
-      ))}
     </Frame>
   );
 }

@@ -1,4 +1,3 @@
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
 import {
   radio,
@@ -14,7 +13,6 @@ import {
   radioLabel,
   radioList,
 } from "@ariakit/ui/styles/radio";
-import { clsx } from "clsx";
 
 // Static markup has no inputs, so aria-checked gives the marks and the cards
 // their checked state.
@@ -36,13 +34,7 @@ const deliveryOptions = [
   { id: "locker", width: "w-32" },
 ];
 
-const fields = [
-  { id: "newest", width: "w-2/5", checked: true },
-  { id: "oldest", width: "w-1/2" },
-  { id: "top", width: "w-1/3" },
-];
-
-export default function Thumbnail() {
+export default function Cover() {
   return (
     <div className="grid gap-4">
       <div {...radioGroup.jsx()}>
@@ -85,24 +77,5 @@ export default function Thumbnail() {
         ))}
       </div>
     </div>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame $lighten $p={5.5} className="flex flex-col justify-center gap-4">
-      {fields.map((field) => (
-        <div key={field.id} className="flex items-center gap-3">
-          <span
-            {...radio.jsx({ className: "text-[1.4em]" })}
-            aria-checked={field.checked ? "true" : "false"}
-          />
-          <SkeletonLine
-            $weight="medium"
-            className={clsx(field.width, "text-[1.25em] leading-none")}
-          />
-        </div>
-      ))}
-    </Frame>
   );
 }

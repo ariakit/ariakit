@@ -12,7 +12,7 @@ import "#app/styles/global.css";
 import "@fontsource-variable/inter";
 import ThemeScript from "#app/components/theme-script.astro";
 import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
-import { previewEmbedScript } from "#app/lib/preview-embed.ts";
+import { previewEmbedScript } from "#app/lib/preview-embed-script.ts";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
@@ -71,8 +71,19 @@ const contentSized = !fullscreen && !open;
   </head>
   {/* The page leaves room below a short example, so a popup can open below
       its trigger. The body covers that room, so a click there is outside the
-      popup, not on the root element that contains it. */}
-  <body class:list={["flex", !fullscreen && "min-h-[200vh]! flex-col"]}>
+      popup, not on the root element that contains it. A compact page, such as
+      in the navigation card, leaves no room, unless it opens a popup. See
+      preview-embed.ts. */}
+  <body
+    class:list={[
+      "flex",
+      !fullscreen && [
+        "flex-col",
+        "[:root:not([data-preview-compact])_&]:min-h-[200vh]!",
+        "[:root[data-preview-open]_&]:min-h-[200vh]!",
+      ],
+    ]}
+  >
     {/* The framework island wraps the example and sizes to its content, so it
         needs a width limit for the example's own max-w-full to resolve. The
         example stays centered in the first viewport, with the same padding as

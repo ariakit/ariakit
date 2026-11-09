@@ -883,13 +883,12 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await slide.scrollIntoViewIfNeeded();
     await slide.hover();
     // Mandatory snapping stops on the nearest slide start, so the wheel moves
-    // by the width of the row, which holds three slides.
-    const width = await slide.evaluate(
-      (node) => node.parentElement?.clientWidth,
-    );
-    await page.mouse.wheel(width ?? 0, 0);
+    // by the width of a slide. Firefox stops a longer wheel scroll at the next
+    // slide too, since slides stop every scroll that would pass them.
+    const width = await slide.evaluate((node) => node.clientWidth);
+    await page.mouse.wheel(width, 0);
     await test
-      .expect(box.tab("Slide 4"))
+      .expect(box.tab("Slide 2"))
       .toHaveAttribute("aria-selected", "true");
   });
 });

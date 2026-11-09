@@ -1,14 +1,11 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import {
-  SkeletonCircle,
-  SkeletonLine,
-} from "@ariakit/ui/components/skeleton.ariakit.react";
+import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
 import { TooltipText } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
 
 const TITLE = "Pricing experiments for the team plan";
 
-export default function Thumbnail() {
+export default function Cover() {
   return (
     <Frame
       $lighten
@@ -24,7 +21,7 @@ export default function Thumbnail() {
           {TITLE}
         </span>
         {/* Static markup needs data-open to show the tooltip, and the
-            thumbnail must not play the open animation on page load. */}
+            cover must not play the open animation on page load. */}
         <span
           data-open
           {...tooltip.jsx({
@@ -40,20 +37,6 @@ export default function Thumbnail() {
       <SkeletonLine $weight="medium" className="w-2/3" />
       <SkeletonLine $weight="medium" className="w-5/6" />
       <SkeletonLine $weight="medium" className="w-1/2" />
-    </Frame>
-  );
-}
-
-// A line that ends in three dots stands for text that is cut off.
-export function SmallThumbnail() {
-  return (
-    <Frame $lighten $p={3} className="flex items-center gap-2.5">
-      <SkeletonLine $weight="medium" className="flex-1 text-[1.25em]" />
-      <span className="flex shrink-0 gap-1.5">
-        <SkeletonCircle $weight="bold" className="size-3.5" />
-        <SkeletonCircle $weight="bold" className="size-3.5" />
-        <SkeletonCircle $weight="bold" className="size-3.5" />
-      </span>
     </Frame>
   );
 }

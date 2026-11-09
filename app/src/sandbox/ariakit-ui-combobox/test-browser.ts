@@ -22,7 +22,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       node.scrollIntoView({ block: "start" });
     });
 
-  // The page capture covers the select sizes and static thumbnail highlight.
+  // The page capture covers the select sizes and static cover highlight.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223972
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550839
   test("page @visual", async ({ page, visual }) => {

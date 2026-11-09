@@ -1,4 +1,3 @@
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { SkeletonLine } from "@ariakit/ui/components/skeleton.ariakit.react";
 import { button, buttonSlot } from "@ariakit/ui/styles/button";
 import {
@@ -13,7 +12,7 @@ import {
 } from "@ariakit/ui/styles/input";
 import { CircleAlert, Eye, Globe } from "lucide-react";
 
-export default function Thumbnail() {
+export default function Cover() {
   return (
     // The fields stack when the card is too narrow for two columns.
     <div className="@container/fields w-[40em] max-w-full">
@@ -64,27 +63,5 @@ export default function Thumbnail() {
         </div>
       </div>
     </div>
-  );
-}
-
-export function SmallThumbnail() {
-  return (
-    <Frame $lighten $p={5.5} className="flex flex-col justify-center gap-3">
-      <SkeletonLine
-        $weight="bold"
-        className="w-2/5 text-[1.1em] leading-none"
-      />
-      <div {...input.jsx({ $forceRounded: true, className: "py-3.5" })}>
-        <SkeletonLine
-          $weight="medium"
-          className="w-1/2 text-[1.25em] leading-none"
-        />
-      </div>
-      <SkeletonLine
-        $layer="danger"
-        $lightnessPush={false}
-        className="w-3/5 text-[0.9em] leading-none"
-      />
-    </Frame>
   );
 }

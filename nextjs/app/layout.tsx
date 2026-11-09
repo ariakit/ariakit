@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { previewEmbedScript } from "../../app/src/lib/preview-embed.ts";
+import { previewEmbedScript } from "../../app/src/lib/preview-embed-script.ts";
 import "./globals.css";
 
 const inter = Inter({
