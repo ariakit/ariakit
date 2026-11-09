@@ -536,6 +536,53 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
       .toHaveText("Showing slide 2 of 7");
   });
 
+  // https://github.com/ariakit/ariakit/pull/8375#discussion_r4513341953
+  test("moves two slides with a second press during the scroll", async ({
+    page,
+    q,
+  }) => {
+    const box = query(q.article("Slides"));
+    const next = box.button("Next slide");
+    const viewport = page.locator(
+      `[id="${await next.getAttribute("aria-controls")}"]`,
+    );
+    const second = await getItemOffset(box.group("2 of 7"));
+    // Past the middle of the way, slide 2 is the closest slide. The page
+    // presses again on the frame after the carousel updates there, so no round
+    // trip after the first press can let the scroll reach slide 2 first.
+    await next.evaluate((button, offset) => {
+      const viewport = button.ownerDocument.getElementById(
+        button.getAttribute("aria-controls") ?? "",
+      );
+      if (!viewport) return;
+      if (!(button instanceof HTMLElement)) return;
+      const press = () => {
+        viewport.dataset.testScrollAtPress = `${Math.abs(viewport.scrollLeft)}`;
+        button.click();
+      };
+      const check = () => {
+        if (Math.abs(viewport.scrollLeft) > offset / 2 + 2) {
+          requestAnimationFrame(press);
+          return;
+        }
+        requestAnimationFrame(check);
+      };
+      check();
+    }, second);
+    await next.focus();
+    await page.keyboard.press("Enter");
+    await test.expect(viewport).toHaveAttribute("data-test-scroll-at-press");
+    const atPress = Number(
+      await viewport.getAttribute("data-test-scroll-at-press"),
+    );
+    test.expect(atPress).toBeLessThan(second - 2);
+    const third = await getItemOffset(box.group("3 of 7"));
+    await test
+      .expect(box.tab("Slide 3"))
+      .toHaveAttribute("aria-selected", "true");
+    await test.expect.poll(() => getScrollLeft(viewport)).toBe(third);
+  });
+
   test("takes the pointer beside a button over the row", async ({
     page,
     q,
