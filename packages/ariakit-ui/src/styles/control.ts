@@ -24,6 +24,29 @@ export function fadesDisabledSurface(variants: VariantProps<typeof layer>) {
   return variants.$layer !== "canvas";
 }
 
+/**
+ * Disabled control styles. They follow the DOM disabled state and the
+ * `ui-disabled` class that `$disabled` adds, which also stops hover and press
+ * styles.
+ */
+export const controlDisabledClass = cx(
+  "ui-disabled:ak-disabled ui-disabled:cursor-not-allowed!",
+  // Cards can retain a faint disabled edge through --disabled-border.
+  "ui-disabled:border-(--disabled-border,transparent)!",
+  "ui-disabled:ring-(--disabled-border,transparent)!",
+  "ui-disabled:inset-shadow-none! ui-disabled:shadow-none!",
+  "ui-disabled:bg-none! ui-disabled:ak-ink-0! ui-disabled:*:ak-ink-0!",
+  // An adaptive text color targets nested text and icons directly, so set the
+  // ink on the same targets. Skip forced colors: this rule would override the
+  // system disabled color on nested text.
+  "ui-disabled:not-forced-colors:ui-text:ak-ink-0!",
+  // Forced colors replace the ink with the normal text color. Use the system
+  // disabled color, also on descendants that set their own color.
+  "ui-disabled:forced-colors:text-[GrayText]!",
+  "ui-disabled:forced-colors:**:text-[GrayText]!",
+  "ui-disabled:forced-colors:border-[GrayText]!",
+);
+
 /** Shared layout, text spacing, and disabled styles for controls. */
 export const control = cv({
   extend: [slotFrame],
@@ -37,22 +60,11 @@ export const control = cv({
     "*:[--stretch-px-scale:initial]",
   ],
   variants: {
-    /** Sets the element’s disabled state. */
-    $disabled: [
-      "disabled ak-disabled cursor-not-allowed!",
-      // Cards can retain a faint disabled edge through --disabled-border.
-      "border-(--disabled-border,transparent)! ring-(--disabled-border,transparent)!",
-      "inset-shadow-none! shadow-none!",
-      "bg-none! ak-ink-0! *:ak-ink-0!",
-      // An adaptive text color targets nested text and icons directly, so set
-      // the ink on the same targets. Skip forced colors: this rule would
-      // override the system disabled color on nested text.
-      "not-forced-colors:ui-text:ak-ink-0!",
-      // Forced colors replace the ink with the normal text color. Use the
-      // system disabled color, also on descendants that set their own color.
-      "forced-colors:text-[GrayText]! forced-colors:**:text-[GrayText]!",
-      "forced-colors:border-[GrayText]!",
-    ],
+    /**
+     * Shows the element as disabled, as the DOM disabled state does. It doesn't
+     * disable the element or set `aria-disabled`.
+     */
+    $disabled: ["ui-disabled", controlDisabledClass],
   },
   defaultVariants: {
     $rounded: "md",
@@ -79,7 +91,6 @@ export function getDisabledContentClass(variants: VariantProps<typeof layer>) {
   const classes = [
     // Fade image pixels only; fading the whole element would reduce text
     // contrast. DOM disabled state can change without rerendering the recipe.
-    "group-[.disabled]/control:[&_img]:opacity-50",
     "group-ui-disabled/control:[&_img]:opacity-50",
     "group-ui-disabled-within/choice:[&_img]:opacity-50",
     "group-ui-field-disabled/control:[&_img:not(:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:opacity-50",
@@ -90,19 +101,16 @@ export function getDisabledContentClass(variants: VariantProps<typeof layer>) {
     // A fill sets its own text color, which the control's direct-child text
     // rules may not reach. A disabled input group sets the ink on its
     // descendants itself, except in forced colors.
-    "group-[.disabled]/control:ak-ink-0",
     "group-ui-disabled/control:ak-ink-0",
     "group-ui-disabled-within/choice:ak-ink-0",
   );
   if (!fadesDisabledSurface(variants)) return classes;
   classes.push(
     // Fade the disabled surface before calculating readable text contrast.
-    "group-[.disabled]/control:ak-layer-fade-80",
     "group-ui-disabled/control:ak-layer-fade-80",
     "group-ui-disabled-within/choice:ak-layer-fade-80",
     "not-[:is(button,input,a):not(:disabled,[aria-disabled='true'])_*]:group-ui-field-disabled/control:ak-layer-fade-80",
     // An edge can follow the surface color, so it would still look enabled.
-    "group-[.disabled]/control:ak-edge-5",
     "group-ui-disabled/control:ak-edge-5",
     "group-ui-disabled-within/choice:ak-edge-5",
     "not-[:is(button,input,a):not(:disabled,[aria-disabled='true'])_*]:group-ui-field-disabled/control:ak-edge-5",
@@ -120,10 +128,8 @@ export const controlSlot = cv({
     // Fade the surfaces of flat keys and keycaps, and mute key text like the
     // label. Plain keys set their own ink, which the control's ink would not
     // replace.
-    "group-[.disabled]/control:[&_kbd]:ak-layer-fade-80",
     "group-ui-disabled/control:[&_kbd]:ak-layer-fade-80",
     "group-ui-disabled-within/choice:[&_kbd]:ak-layer-fade-80",
-    "group-[.disabled]/control:[&_kbd]:ak-ink-0",
     "group-ui-disabled/control:[&_kbd]:ak-ink-0",
     "group-ui-disabled-within/choice:[&_kbd]:ak-ink-0",
     // A disabled input group mutes the text of its descendants itself. It is
@@ -185,7 +191,7 @@ export const controlLabel = cv({
     // the label text. Only direct children, so a label in a label row can
     // still grow.
     "[.control-content.flex-col>&]:flex-none [.control-content.flex-wrap>&]:grow-0",
-    "group-[.disabled]/control:ak-ink-0",
+    "group-ui-disabled/control:ak-ink-0",
   ],
 });
 
@@ -200,7 +206,7 @@ export const controlDescription = cv({
     // Use a full row unless horizontal content has room beside the label.
     "ak-ink-70 basis-full group-[.flex-wrap]/control-content:basis-auto",
     "font-normal text-[0.875em]",
-    "group-[.disabled]/control:ak-ink-0",
+    "group-ui-disabled/control:ak-ink-0",
   ],
   variants: {
     /** Truncates the description to one line with an ellipsis. */

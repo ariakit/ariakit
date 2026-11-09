@@ -2045,8 +2045,10 @@ body > * {
   }
 }
 
+/* Also match the class that the $disabled variant of the control style recipe
+   adds, so a forced disabled state keeps the specificity of the DOM state. */
 @custom-variant ui-disabled {
-  &:is(:disabled, [aria-disabled="true"]) {
+  &:is(:disabled, [aria-disabled="true"], .ui-disabled) {
     @slot;
   }
 }
@@ -2133,8 +2135,10 @@ body > * {
   }
 }
 
+/* Also match the class that the $highlighted variant of the combobox item style
+   recipe adds, so a forced focus state keeps the specificity of real focus. */
 @custom-variant ui-focus {
-  &:is(:focus, [data-focus]) {
+  &:is(:focus, [data-focus], .ui-focused) {
     @slot;
   }
 }
