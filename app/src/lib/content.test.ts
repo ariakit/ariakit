@@ -11,8 +11,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
-import type { FilterablePreview } from "./content.ts";
-import { descriptionToText, filterPreviews } from "./content.ts";
+import { descriptionToText } from "./content.ts";
 
 function getDescriptionFiles(path: string): string[] {
   return readdirSync(path, { withFileTypes: true }).flatMap((entry) => {
@@ -61,37 +60,4 @@ test("descriptionToText handles real descriptions", async () => {
     const text = await descriptionToText(body, "react");
     expect(text, file).toBeTruthy();
   }
-});
-
-function preview(
-  id: string,
-  source: FilterablePreview["data"]["source"],
-  frameworks: FilterablePreview["data"]["frameworks"] = ["react"],
-): FilterablePreview {
-  return { id, data: { frameworks, source } };
-}
-
-// Component page preview ids start with components/, so a recipe and a
-// component page can share an entry id.
-const previews = [
-  preview("components/separator", "components"),
-  preview("separator", "recipes"),
-  preview("separator/vertical", "recipes"),
-  preview("separator/solid-only", "recipes", ["solid"]),
-  preview("toolbar", "recipes"),
-  preview("toolbar/menu", "recipes"),
-  preview("separator-1234", "sandbox"),
-];
-
-test("filterPreviews keeps only the previews of the collection type", () => {
-  expect(filterPreviews(previews, { type: "recipes" })).toEqual([
-    preview("separator", "recipes"),
-    preview("separator/vertical", "recipes"),
-    preview("separator/solid-only", "recipes", ["solid"]),
-    preview("toolbar", "recipes"),
-    preview("toolbar/menu", "recipes"),
-  ]);
-  expect(filterPreviews(previews, { type: "components" })).toEqual([
-    preview("components/separator", "components"),
-  ]);
 });

@@ -29,7 +29,6 @@ import {
 import { layer } from "@ariakit/ui/styles/layer";
 import { ChevronsUpDownIcon, CircleCheckIcon } from "lucide-react";
 import * as React from "react";
-import Cover from "#app/recipes/combobox-group/cover.react.tsx";
 
 // These scenarios keep the state and content cases from the former standalone
 // fixtures while using the shared combobox parts.
@@ -247,8 +246,22 @@ export function OptionalProps() {
 export function ItemHighlight() {
   return (
     <div className="grid gap-6">
-      <section aria-label="Static cover">
-        <Cover />
+      {/*
+        A static row has no focus, so the $highlighted variant paints its
+        focused appearance. It must match the hovered option of the real list.
+      */}
+      <section
+        aria-label="Static highlight"
+        // The lifted canvas of a combobox popover.
+        {...layer.jsx({
+          $layer: "canvas",
+          $lighten: true,
+          className: "w-66",
+        })}
+      >
+        <div {...comboboxItem.jsx({ $highlighted: true })}>
+          Static highlight
+        </div>
       </section>
       <Ariakit.ComboboxProvider
         defaultOpen
@@ -264,7 +277,7 @@ export function ItemHighlight() {
         />
         <Ariakit.ComboboxList
           aria-label="Reference members"
-          // Match the lifted canvas used by the cover's popover.
+          // The lifted canvas of a combobox popover.
           {...layer.jsx({
             $layer: "canvas",
             $lighten: true,

@@ -22,7 +22,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       node.scrollIntoView({ block: "start" });
     });
 
-  // The page capture covers the select sizes and static cover highlight.
+  // The page capture covers the select sizes and the static highlighted row.
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3972223972
   // https://github.com/ariakit/ariakit/pull/5240#discussion_r3974550839
   test("page @visual", async ({ page, visual }) => {
@@ -35,7 +35,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       });
     await forEachColorScheme(page, capture);
     // The forced-colors variant of the same capture. The lists held open have
-    // no focus, so no option shows the selection colors.
+    // no focus, so no option shows the selection colors. Only the static
+    // highlighted row does.
     // https://github.com/ariakit/ariakit/issues/7871
     await page.emulateMedia({ forcedColors: "active" });
     await forEachColorScheme(page, async (colorScheme) => {

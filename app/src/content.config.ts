@@ -44,15 +44,6 @@ const guides = defineCollection({
   }),
 });
 
-// The card size on the recipe and component list pages. Pick the size that fits
-// the cover scene, not the kind of component. Use cell for a scene that reads
-// well in one grid cell, wide for a horizontal scene, such as a toolbar or a
-// page section, tall for a vertical scene, such as a menu that opens down from
-// a trigger, and full for a whole screen or app layout.
-const CoverShapeSchema = z
-  .enum(["full", "tall", "wide", "cell"])
-  .default("cell");
-
 const components = defineCollection({
   loader: componentLoader({
     base: join(import.meta.dirname, "component-docs"),
@@ -60,7 +51,6 @@ const components = defineCollection({
   schema: componentLoader.schema(
     z.object({
       title: z.string(),
-      shape: CoverShapeSchema,
     }),
   ),
 });
@@ -76,7 +66,6 @@ const recipes = defineCollection({
       category: z.enum(RECIPE_CATEGORIES),
       // The Lucide icon before the recipe label in the site navigation.
       icon: z.enum(keys(recipeIcons)),
-      shape: CoverShapeSchema,
       components: z.array(reference("components")).default([]),
     }),
   ),

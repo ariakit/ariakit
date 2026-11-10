@@ -58,9 +58,3 @@ export const previewConfig = {
     },
   ],
 } satisfies PreviewConfig;
-
-/** Returns the segment that starts the preview ids of a kind, if any. */
-export function getPreviewIdPrefix(kind: PreviewKind) {
-  const roots: PreviewConfigRoot[] = previewConfig.roots;
-  return roots.find((root) => root.kind === kind)?.idPrefix;
-}
