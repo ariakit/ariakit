@@ -93,6 +93,20 @@ test("show/hide submenu on mouse hover", async () => {
   await expect.poll(q.menu.lazy("Speech")).toBeVisible();
 });
 
+test("reopen a submenu on hover after ArrowLeft closes it", async () => {
+  await click(q.button("Edit"));
+  const find = q.menuitem("Find");
+  await hover(find);
+  await expect.poll(q.menu.lazy("Find")).toBeVisible();
+  await press.ArrowRight();
+  await press.ArrowLeft();
+  expect(q.menu.maybe("Find")).not.toBeInTheDocument();
+  // The mouse still rests on the submenu button, so a move on it opens the
+  // submenu again after its 150ms timeout.
+  await hover(find);
+  await expect.poll(q.menu.lazy("Find")).toBeVisible();
+});
+
 test("hide submenu on escape", async () => {
   await click(q.button("Edit"));
   await click(q.menuitem("Find"));

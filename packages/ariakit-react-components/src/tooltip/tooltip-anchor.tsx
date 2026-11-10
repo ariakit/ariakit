@@ -14,12 +14,7 @@ import {
   invariant,
   isFalsyBooleanCallback,
 } from "@ariakit/utils";
-import type {
-  ElementType,
-  FocusEvent,
-  MouseEvent,
-  SyntheticEvent,
-} from "react";
+import type { ElementType, FocusEvent, SyntheticEvent } from "react";
 import { useEffect, useRef } from "react";
 import { useHovercardTrigger } from "../hovercard/__hovercard-trigger.tsx";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
@@ -117,19 +112,6 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         "TooltipAnchor must receive a `store` prop or be wrapped in a TooltipProvider component.",
     );
 
-    // Imagine the scenario: the user hovers over an anchor, which shows a
-    // tooltip, then presses escape to close the tooltip. We don't want to show
-    // the tooltip again while the anchor is still hovered. So we keep this flag
-    // that's set to true on mouse enter.
-    const canShowOnHoverRef = useRef(false);
-
-    useEffect(() => {
-      return sync(store, ["mounted"], (state) => {
-        if (state.mounted) return;
-        canShowOnHoverRef.current = false;
-      });
-    }, [store]);
-
     // When the tooltip closes with focus inside it, such as after Escape in the
     // tooltip, Dialog returns focus to the anchor in the same task. The anchor
     // becomes focus-visible on that focus, which must not open the tooltip
@@ -188,13 +170,6 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       );
     }, [store]);
 
-    const onMouseEnterProp = props.onMouseEnter;
-
-    const onMouseEnter = useEvent((event: MouseEvent<HTMLType>) => {
-      onMouseEnterProp?.(event);
-      canShowOnHoverRef.current = true;
-    });
-
     const onFocusVisibleProp = props.onFocusVisible;
 
     const onFocusVisible = useEvent((event: SyntheticEvent<HTMLType>) => {
@@ -217,10 +192,6 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       const { activeStore } = globalStore.getState();
-      // Sets canShowOnHover to false so moving the mouse over the anchor after
-      // it loses focus (for example, clicking on a menu button) doesn't show
-      // the tooltip until the mouse leaves and re-enters the anchor.
-      canShowOnHoverRef.current = false;
       // If the current tooltip is the active tooltip and the anchor loses focus
       // (for example, if the anchor is a menu button, clicking on the menu
       // button will automatically focus on the menu), we don't want to show
@@ -242,7 +213,6 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
     props = {
       "aria-labelledby": props["aria-label"] == null ? labelledBy : undefined,
       ...props,
-      onMouseEnter,
       onFocus,
       onFocusVisible,
       onBlur,
@@ -272,14 +242,11 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       store,
       setAnchorElement: true,
       showOnHover(event) {
-        if (!canShowOnHoverRef.current) return false;
         if (isFalsyBooleanCallback(showOnHover, event)) return false;
         return showOnHoverIntent(event.currentTarget);
       },
       showOnScrollHover(element) {
         if (showOnHover === false) return false;
-        // A scroll that moves the anchor under the mouse enters it.
-        canShowOnHoverRef.current = true;
         return showOnHoverIntent(element);
       },
       ...props,

@@ -5,13 +5,20 @@ import {
   useMergeRefs,
   createHook,
 } from "@ariakit/react-utils";
+import { subscribe } from "@ariakit/store";
 import {
   addGlobalEventListener,
   disabledFromElement,
   disabledFromProps,
+  isDownloading,
+  isOpeningInNewTab,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
-import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
+import type {
+  ElementType,
+  FocusEvent as ReactFocusEvent,
+  MouseEvent as ReactMouseEvent,
+} from "react";
 import { useCallback, useEffect, useRef } from "react";
 import { trulyDisabledFromElement } from "../focusable/__utils.ts";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
@@ -34,6 +41,8 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     hoverOnScroll = false,
     unstable_showOnHoverWhenDisabled: showOnHoverWhenDisabled = true,
     showOnScrollHover,
+    hideOnClick = false,
+    blockHoverAfterHide = true,
     setAnchorElement = false,
     ...props
   }) {
@@ -41,6 +50,58 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     const focusable = props.focusable !== false;
     const triggerRef = useRef<HTMLElement | null>(null);
     const showTimeoutRef = useRef(0);
+    // Removes the listeners that watch the mouse while it's on the trigger,
+    // which are set only then.
+    const unhoverRef = useRef<(() => void) | null>(null);
+    // The content can hide while the mouse still rests on the trigger, such as
+    // after Escape or a click. Hovering the trigger then doesn't show it again
+    // until the mouse moves outside the trigger.
+    const hoverBlockedRef = useRef(false);
+
+    const blockHover = useCallback(() => {
+      if (!blockHoverAfterHide) return;
+      if (!unhoverRef.current) return;
+      hoverBlockedRef.current = true;
+    }, [blockHoverAfterHide]);
+
+    const hover = useCallback(() => {
+      if (unhoverRef.current) return;
+      const trigger = triggerRef.current;
+      if (!trigger) return;
+      const unhover = () => unhoverRef.current?.();
+      // A mouse move outside the trigger means the mouse left it. Unlike
+      // mouseleave, mousemove reaches the document from a shadow root, and the
+      // Hovercard component doesn't stop it while the mouse moves toward it.
+      const onMouseMove = (event: MouseEvent) => {
+        if (event.composedPath().includes(trigger)) return;
+        unhover();
+      };
+      const removeMoveListener = addGlobalEventListener(
+        "mousemove",
+        onMouseMove,
+        true,
+      );
+      // The mouse can leave the trigger without a move in this document, such
+      // as straight to a parent frame or out of the window. The trigger itself
+      // still gets mouseleave then, even in a shadow root.
+      trigger.addEventListener("mouseleave", unhover);
+      unhoverRef.current = () => {
+        removeMoveListener();
+        trigger.removeEventListener("mouseleave", unhover);
+        unhoverRef.current = null;
+        hoverBlockedRef.current = false;
+      };
+    }, []);
+
+    useEffect(() => () => unhoverRef.current?.(), []);
+
+    useEffect(() => {
+      return subscribe(store, ["open"], (state, prevState) => {
+        if (state.open) return;
+        if (!prevState.open) return;
+        blockHover();
+      });
+    }, [store, blockHover]);
 
     // A truly disabled trigger must not reveal its content on hover, since that
     // content would be reachable by pointer users alone. Read it from the
@@ -125,9 +186,11 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     );
 
     const onMouseMove = useEvent((event: ReactMouseEvent<HTMLType>) => {
+      hover();
       onMouseMoveProp?.(event);
       if (event.defaultPrevented) return;
       if (showTimeoutRef.current) return;
+      if (hoverBlockedRef.current) return;
       if (!isMouseMoving()) return;
       const element = event.currentTarget;
       if (isTrulyDisabled(element)) return;
@@ -149,6 +212,9 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     const onScrollHover = useEvent(() => {
       const element = triggerRef.current;
       if (!element) return;
+      // The scroll moved the trigger under the mouse, which enters it.
+      hover();
+      hoverBlockedRef.current = false;
       // Scrolls can move the pointer away and back before an earlier show
       // timeout of this trigger ends. The timeout starts again, so the
       // hovercard moves back to this trigger at once.
@@ -176,14 +242,43 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
     }, [mayHoverOnScroll, store, hoverOnScrollProp, onScrollHover]);
 
     const onClickProp = props.onClick;
+    const hideOnClickProp = useBooleanEvent(hideOnClick);
 
     const onClick = useEvent((event: ReactMouseEvent<HTMLType>) => {
+      // A pointer click puts the mouse on the trigger even when no mouse move
+      // reached it, such as on a page that hydrated under a resting mouse. It
+      // runs first, so a hide in onClick blocks hover too. A keyboard click has
+      // no detail.
+      if (event.detail) {
+        hover();
+      }
       onClickProp?.(event);
       // Resets showOnHover when the anchor is clicked so the consumer (for
       // example, TooltipAnchor) has the chance to prevent the hovercard from
       // showing on mousemove after a click.
       window.clearTimeout(showTimeoutRef.current);
       showTimeoutRef.current = 0;
+      if (event.defaultPrevented) return;
+      // A link that opens in a new tab or downloads a file keeps this page, so
+      // the content stays.
+      if (isDownloading(event)) return;
+      if (isOpeningInNewTab(event)) return;
+      if (!hideOnClickProp(event)) return;
+      // The content may be closed or still waiting for the show timeout, so the
+      // block can't wait for the store to close.
+      blockHover();
+      store.hide();
+    });
+
+    const onBlurProp = props.onBlur;
+
+    const onBlur = useEvent((event: ReactFocusEvent<HTMLType>) => {
+      onBlurProp?.(event);
+      if (event.defaultPrevented) return;
+      // Focus can leave the trigger while the mouse rests on it, such as when a
+      // click on a menu button moves focus to the menu. Hovering the trigger
+      // then doesn't show the content until the mouse moves outside it.
+      blockHover();
     });
 
     const ref = useCallback(
@@ -206,6 +301,7 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
       ref: useMergeRefs(ref, props.ref),
       onMouseMove,
       onClick,
+      onBlur,
     };
 
     props = useFocusable<TagName>(props);
@@ -277,6 +373,28 @@ export interface HovercardTriggerOptions<
   unstable_showOnHoverWhenDisabled?: BooleanOrCallback<
     ReactMouseEvent<HTMLElement>
   >;
+  /**
+   * Whether a click on the trigger element hides the content element. Hovering
+   * the trigger then doesn't show the content element again until the mouse
+   * leaves the trigger.
+   *
+   * This can be either a boolean or a callback receiving the click event. The
+   * callback should return a boolean.
+   *
+   * **Note**: This behavior isn't triggered if the event is prevented, or if
+   * the trigger is rendered as a link and modifier keys are used to either open
+   * the link in a new tab or download it.
+   * @default false
+   */
+  hideOnClick?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
+  /**
+   * Whether hovering the trigger keeps the content closed after the content
+   * hides, after a `hideOnClick` click, or after a blur while the mouse rests
+   * on the trigger. Hovering shows the content again once the mouse leaves the
+   * trigger.
+   * @default true
+   */
+  blockHoverAfterHide?: boolean;
   setAnchorElement?: boolean;
   /**
    * Called when a scroll moves the trigger under the resting mouse pointer and

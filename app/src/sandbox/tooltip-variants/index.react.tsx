@@ -34,6 +34,15 @@ export default function Example() {
           </Ariakit.Tooltip>
         </Ariakit.TooltipProvider>
       </section>
+
+      <section aria-label="Tooltip hidden on click">
+        <Ariakit.TooltipProvider timeout={20}>
+          <Ariakit.TooltipAnchor render={<Ariakit.Button />} hideOnClick>
+            Italic
+          </Ariakit.TooltipAnchor>
+          <Ariakit.Tooltip>Italic label</Ariakit.Tooltip>
+        </Ariakit.TooltipProvider>
+      </section>
     </>
   );
 }

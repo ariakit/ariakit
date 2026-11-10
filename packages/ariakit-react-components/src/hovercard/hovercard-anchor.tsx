@@ -63,7 +63,7 @@ export interface HovercardAnchorOptions<
   T extends ElementType = TagName,
 > extends Omit<
   HovercardTriggerOptions<T>,
-  "store" | "setAnchorElement" | "showOnScrollHover"
+  "store" | "setAnchorElement" | "showOnScrollHover" | "blockHoverAfterHide"
 > {
   /**
    * Object returned by the

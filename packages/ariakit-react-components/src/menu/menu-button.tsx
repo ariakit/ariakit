@@ -248,6 +248,11 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       focusable,
       accessibleWhenDisabled,
       ...props,
+      // A click on the menu button toggles the menu itself.
+      hideOnClick: false,
+      // A submenu item that the mouse rests on opens its submenu again on a
+      // mouse move, even after keyboard focus left it.
+      blockHoverAfterHide: false,
       unstable_showOnHoverWhenDisabled: showOnHoverWhenDisabled,
       showOnHover: (event) => {
         const getShowOnHover = () => {
@@ -317,7 +322,7 @@ export const MenuButton = forwardRef(function MenuButton(
 
 export interface MenuButtonOptions<T extends ElementType = TagName>
   extends
-    Omit<HovercardAnchorOptions<T>, "hoverOnScroll">,
+    Omit<HovercardAnchorOptions<T>, "hoverOnScroll" | "hideOnClick">,
     PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T> {
   /**

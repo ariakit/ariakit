@@ -183,9 +183,10 @@ function AppNavigationLink({ link }: AppNavigationLinkProps) {
   const current = link.current ? "page" : undefined;
   // A link with examples opens the card. A scroll of the sidebar that brings
   // the link under a resting mouse pointer counts as hovering it, so the card
-  // follows the pointer while the links scroll.
+  // follows the pointer while the links scroll. A click on the link hides the
+  // card, since the page of the link loads next.
   const anchor = link.examples?.length ? (
-    <HovercardAnchor hoverOnScroll />
+    <HovercardAnchor hoverOnScroll hideOnClick />
   ) : undefined;
   // The link of the card looks hovered while the pointer moves onto the card.
   // Links outside a card provider, such as in the drawer, have no store.

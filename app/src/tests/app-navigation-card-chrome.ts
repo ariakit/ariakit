@@ -644,3 +644,31 @@ test("site navigation card follows the link that a scroll brings under the point
     })
     .toBe(true);
 });
+
+test("site navigation card hides when its link is clicked", async ({
+  page,
+}) => {
+  const navigation = await gotoPage(page);
+  // The page of the link doesn't load, so the card stays in this page after the
+  // click. Preventing the default action still runs the click handlers.
+  await page.evaluate(() => {
+    window.addEventListener("click", (event) => event.preventDefault());
+  });
+  const link = navigation.link("Breadcrumb");
+  await link.hover();
+  const card = getCard(page, "Breadcrumb");
+  await expect(card).toHaveAttribute("data-open");
+  await link.click();
+  await expect(card).toBeHidden();
+  // The pointer moves on the link that it clicked, which doesn't open the card
+  // again. The card would open after the show timeout, and no state shows that
+  // the timeout passed without it.
+  await link.hover({ position: { x: 4, y: 4 } });
+  await link.hover({ position: { x: 8, y: 8 } });
+  await page.waitForTimeout(SHOW_TIMEOUT + 100);
+  await expect(query(page).dialog()).toHaveCount(0);
+  // Once the pointer leaves the link, the link opens the card again.
+  await page.locator("main h1").hover();
+  await link.hover();
+  await expect(card).toHaveAttribute("data-open");
+});

@@ -96,3 +96,10 @@ test("Escape keeps the tooltip closed when the anchor has pointer focus", async 
   expect(anchor).toHaveAttribute("data-focus-visible");
   expect(q.tooltip.maybe("Tooltip content")).not.toBeInTheDocument();
 });
+
+test("shows when the mouse moves over the anchor without entering it", async () => {
+  // A page that hydrates under a resting mouse misses the enter, so a move over
+  // the anchor is the first mouse event that the anchor gets.
+  await dispatch.mouseMove(q.link("Tooltip anchor"));
+  expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
+});

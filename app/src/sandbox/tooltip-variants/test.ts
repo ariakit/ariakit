@@ -1,4 +1,4 @@
-import { click, hover, press, q } from "@ariakit/test";
+import { click, hover, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 async function hoverOutside() {
@@ -25,6 +25,22 @@ test("keeps the label tooltip open when its anchor is clicked", async () => {
   expect(q.tooltip("Bold label")).toBeVisible();
   await hoverOutside();
   expect(q.tooltip.maybe("Bold label")).not.toBeInTheDocument();
+});
+
+test("hideOnClick hides the tooltip until the pointer leaves the anchor", async () => {
+  const anchor = q.button("Italic");
+  await hover(anchor);
+  expect(await q.tooltip.wait("Italic label")).toBeVisible();
+  await click(anchor);
+  expect(q.tooltip.maybe("Italic label")).not.toBeInTheDocument();
+  await hover(anchor);
+  // The tooltip would show after its 20ms timeout, and no state shows that the
+  // timeout passed without it.
+  await sleep(50);
+  expect(q.tooltip.maybe("Italic label")).not.toBeInTheDocument();
+  await hoverOutside();
+  await hover(anchor);
+  expect(await q.tooltip.wait("Italic label")).toBeVisible();
 });
 
 test("keeps the hover-triggered tooltip mounted during leave", async () => {
