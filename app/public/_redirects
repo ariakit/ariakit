@@ -1,11 +1,22 @@
 /updates /changelog 301
 
-/guides /react/components/getting-started 301
-/examples /react/recipes 301
-/reference /react/components 301
-/components /react/components 301
+/guides /react/components/getting-started/ 301
+/guides/ /react/components/getting-started/ 301
+/examples /react/recipes/app-shell/ 301
+/examples/ /react/recipes/app-shell/ 301
+/reference /react/components/separator/ 301
+/reference/ /react/components/separator/ 301
+/components /react/components/separator/ 301
+/components/ /react/components/separator/ 301
 /react/recipes/tab-nextjs /react/recipes/tabs/ 301
 /react/recipes/tab-nextjs/ /react/recipes/tabs/ 301
+
+/react/recipes /react/recipes/app-shell/ 301
+/react/recipes/ /react/recipes/app-shell/ 301
+/react/components /react/components/separator/ 301
+/react/components/ /react/components/separator/ 301
+/solid/components /solid/components/separator/ 301
+/solid/components/ /solid/components/separator/ 301
 
 /guides/* /react/components/:splat 301
 /examples/* /react/recipes/:splat 301

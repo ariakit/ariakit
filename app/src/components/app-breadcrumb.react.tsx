@@ -11,11 +11,10 @@ import {
   Breadcrumb,
   BreadcrumbCurrent,
   BreadcrumbLink,
-  BreadcrumbSeparator,
   BreadcrumbSlot,
+  BreadcrumbText,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import { House } from "lucide-react";
-import { Fragment } from "react";
 import type { AppTrail } from "#app/lib/trail.ts";
 import { homeStep } from "#app/lib/trail.ts";
 
@@ -40,14 +39,18 @@ export function AppBreadcrumb({ trail }: AppBreadcrumbProps) {
           <House />
         </BreadcrumbSlot>
       </BreadcrumbLink>
-      <BreadcrumbSeparator />
-      {trail.steps.map((step) => (
-        <Fragment key={step.href}>
-          <BreadcrumbLink href={step.href}>{step.label}</BreadcrumbLink>
-          <BreadcrumbSeparator />
-        </Fragment>
-      ))}
-      <BreadcrumbCurrent>{trail.current}</BreadcrumbCurrent>
+      {trail.steps.map((step) =>
+        step.href ? (
+          <BreadcrumbLink key={step.label} href={step.href} separator>
+            {step.label}
+          </BreadcrumbLink>
+        ) : (
+          <BreadcrumbText key={step.label} separator>
+            {step.label}
+          </BreadcrumbText>
+        ),
+      )}
+      <BreadcrumbCurrent separator>{trail.current}</BreadcrumbCurrent>
     </Breadcrumb>
   );
 }

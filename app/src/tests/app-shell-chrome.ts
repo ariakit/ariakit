@@ -287,23 +287,33 @@ test("home page renders without the site navigation", async ({ page, q }) => {
   await expect(q.button("Toggle navigation")).toHaveCount(0);
 });
 
-for (const { name, path } of [
-  { name: "Recipes", path: "/react/recipes/" },
-  { name: "Components", path: "/react/components/" },
+// The sections have no pages, so the top bar links each one to the first entry
+// of the site navigation.
+for (const { name, from } of [
+  { name: "Recipes", from: "/react/components/separator/" },
+  { name: "Components", from: recipePath },
 ]) {
-  test(`${name} collection page redirects to its first entry`, async ({
-    page,
-    q,
-  }) => {
-    await gotoAndSettle(page, path);
-    await expect(page).toHaveURL(new RegExp(`${path}[^/]+/$`));
-    const navigation = query(q.navigation("Site"));
-    await expect(navigation.link().first()).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
+  test(`top bar links ${name} to its first entry`, async ({ page, q }) => {
+    await gotoAndSettle(page, from);
+    const main = query(q.navigation("Main"));
+    await expect(main.link(name)).not.toHaveAttribute("aria-current");
+    await main.link(name).click();
+    await expect(main.link(name)).toHaveAttribute("aria-current", "page");
+    const site = query(q.navigation("Site"));
+    await expect(site.link().first()).toHaveAttribute("aria-current", "page");
   });
 }
+
+test("guide pages name their group without a link", async ({ page, q }) => {
+  await gotoAndSettle(page, "/react/components/getting-started/");
+  const guides = query(q.navigation("Guides"));
+  await expect(guides.text("Components")).toBeVisible();
+  await expect(guides.link("Components")).toHaveCount(0);
+  await expect(guides.link("Getting Started")).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+});
 
 // Astro renders the main and footer navigations without script, so they leave
 // out the scroll buttons, which would do nothing there.

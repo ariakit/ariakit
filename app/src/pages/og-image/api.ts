@@ -9,7 +9,6 @@
  */
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-import { uniq } from "#app/lib/array.ts";
 import { getGuideDetail } from "#app/lib/content.ts";
 import { getOGImageItemKey, getOGImagePath } from "#app/lib/og-image.ts";
 
@@ -88,34 +87,6 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
     } as const;
   });
 
-  const recipeIndexes = uniq(
-    items
-      .filter((item) => item.type === "recipes")
-      .flatMap((item) => item.framework),
-  ).map((framework) => {
-    const path = "/recipes";
-    return {
-      path: `/${framework}${path}`,
-      imagePath: getOGImagePath(`/${framework}${path}`),
-      type: "recipes",
-      framework,
-    } as const;
-  });
-
-  const componentIndexes = uniq(
-    items
-      .filter((item) => item.type === "components")
-      .flatMap((item) => item.framework),
-  ).map((framework) => {
-    const path = "/components";
-    return {
-      path: `/${framework}${path}`,
-      imagePath: getOGImagePath(`/${framework}${path}`),
-      type: "components",
-      framework,
-    } as const;
-  });
-
   const genericPages = [
     {
       path: "/",
@@ -130,13 +101,7 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
     },
   ] satisfies OGImageItem[];
 
-  return [
-    ...items,
-    ...guidePages,
-    ...recipeIndexes,
-    ...componentIndexes,
-    ...genericPages,
-  ];
+  return [...items, ...guidePages, ...genericPages];
 }
 
 export function getOGImageItems(): Promise<OGImageItem[]> {

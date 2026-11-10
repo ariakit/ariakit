@@ -15,6 +15,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbSlot,
+  BreadcrumbText,
 } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import type { BreadcrumbSeparatorProps } from "@ariakit/ui/components/breadcrumb.ariakit.react";
 import { Folder, House } from "lucide-react";
@@ -156,6 +157,20 @@ export default function BreadcrumbSandbox() {
           <BreadcrumbLink href="#full" $ink={100}>
             Full ink
           </BreadcrumbLink>
+        </Breadcrumb>
+      </Example>
+
+      <Example
+        title="Level without a page"
+        description="A level without a page of its own is text with the ink of the links. It is neither a link nor the current page."
+        code={`
+          <BreadcrumbText separator>Tools</BreadcrumbText>
+        `}
+      >
+        <Breadcrumb aria-label="Level without a page">
+          <BreadcrumbLink href="#garden">Garden</BreadcrumbLink>
+          <BreadcrumbText separator>Tools</BreadcrumbText>
+          <BreadcrumbCurrent separator>Shears</BreadcrumbCurrent>
         </Breadcrumb>
       </Example>
 

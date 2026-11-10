@@ -140,6 +140,22 @@ export const breadcrumbLink = cv({
   },
 });
 
+/**
+ * A step for a level without a page of its own, such as a category, as text
+ * with no interactive state. It has the ink of the links, so it reads as a
+ * level above the current page.
+ */
+export const breadcrumbText = cv({
+  extend: [breadcrumbStep],
+  class: "cursor-default",
+  defaultVariants: {
+    $ink: 70,
+    $hoverInk: false,
+    $active: false,
+    $focus: false,
+  },
+});
+
 /** The step of the current page, as text with no interactive state. */
 export const breadcrumbCurrent = cv({
   extend: [breadcrumbStep],

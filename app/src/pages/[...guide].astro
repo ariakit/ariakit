@@ -40,10 +40,11 @@ Astro.locals.framework = framework;
 const title = entry.data.title;
 // Style guides belong to no site section yet.
 const section = type === "styles" ? undefined : type;
-// Only the guides of a framework have a collection URL to link to.
+// Only the guides of a framework sit under a collection, such as
+// `/react/components/`.
 const trail =
   framework && type !== "styles"
-    ? getCollectionTrail(framework, type, title)
+    ? getCollectionTrail(type, title)
     : undefined;
 ---
 
@@ -59,7 +60,8 @@ const trail =
     {trail}
   />
   <nav aria-label="Guides">
-    <a href={groupPath + "/"}>{groupLabel}</a>
+    {/* The group, such as Components, has no page, so its name is text. */}
+    <span>{groupLabel}</span>
     <ul>
       {
         guides.map((guide) => (

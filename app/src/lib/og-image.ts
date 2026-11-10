@@ -40,13 +40,11 @@ export function getPageOGImagePath({
   if (!framework) {
     return getOGImagePath("/default");
   }
-  if (id === "") {
+  // The collections, such as /react/recipes/, have no pages or images.
+  if (!id) {
     return getOGImagePath("/default");
   }
-  const resolvedPagePath = id
-    ? `/${framework}/${type}/${id}`
-    : `/${framework}/${type}`;
-  return getOGImagePath(resolvedPagePath);
+  return getOGImagePath(`/${framework}/${type}/${id}`);
 }
 
 export interface GetOGImageItemKeyParams {
