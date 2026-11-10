@@ -11,7 +11,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
-import { descriptionToText } from "./content.ts";
+import { compareNavigationOrder, descriptionToText } from "./content.ts";
+import type { NavigationOrderData } from "./content.ts";
 
 function getDescriptionFiles(path: string): string[] {
   return readdirSync(path, { withFileTypes: true }).flatMap((entry) => {
@@ -60,4 +61,24 @@ test("descriptionToText handles real descriptions", async () => {
     const text = await descriptionToText(body, "react");
     expect(text, file).toBeTruthy();
   }
+});
+
+test("compareNavigationOrder groups entries by category, then orders titles", () => {
+  const entries: NavigationOrderData[] = [
+    { title: "Tooltip", category: "overlays" },
+    { title: "Tabs", category: "navigation" },
+    { title: "Breadcrumb", category: "navigation" },
+    { title: "App Shell", category: "layout" },
+    { title: "Separator" },
+    { title: "Checkbox", category: "forms" },
+  ];
+  // Entries without a category, such as component pages, come first.
+  expect(entries.toSorted(compareNavigationOrder)).toEqual([
+    { title: "Separator" },
+    { title: "App Shell", category: "layout" },
+    { title: "Breadcrumb", category: "navigation" },
+    { title: "Tabs", category: "navigation" },
+    { title: "Checkbox", category: "forms" },
+    { title: "Tooltip", category: "overlays" },
+  ]);
 });
