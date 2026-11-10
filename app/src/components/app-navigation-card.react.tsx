@@ -8,12 +8,11 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
+import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import type { CarouselButtonProps } from "@ariakit/ui/components/carousel.ariakit.react";
 import {
   Carousel,
   CarouselSlide,
-  CarouselTab,
-  CarouselTabList,
   CarouselViewport,
 } from "@ariakit/ui/components/carousel.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
@@ -85,9 +84,9 @@ export interface AppNavigationCardProps {
 
 /**
  * Renders the card that shows the examples of the link that the mouse pointer
- * rests on, in a carousel, with the title of the example that shows. Render it
- * in the `HovercardProvider` of the links. The card follows the anchor of the
- * store, and the person can resize it, which it remembers.
+ * rests on, in a carousel, with the title and position of the example that
+ * shows. Render it in the `HovercardProvider` of the links. The card follows
+ * the anchor of the store, and the person can resize it, which it remembers.
  */
 export function AppNavigationCard({ links }: AppNavigationCardProps) {
   const store = ak.useHovercardContext();
@@ -177,8 +176,8 @@ export function AppNavigationCard({ links }: AppNavigationCardProps) {
         }
         className={cx(
           "grid grid-rows-[minmax(0,1fr)]",
-          // WebKit ignores the grip while the content covers it, as the slide
-          // tabs or a preview do, unless the box is a stacking context.
+          // WebKit ignores the grip while the content covers it, as a preview
+          // does, unless the box is a stacking context.
           "resize overflow-hidden isolate",
           "h-[20rem] w-[26rem] min-h-64 min-w-80",
           "max-h-[calc(100dvh-2rem)] max-w-[min(60rem,calc(100vw-2rem))]",
@@ -272,17 +271,24 @@ function AppNavigationExamples({
       return new Set(ids).add(id);
     });
   };
-  const selected = examples.find(
+  const selectedIndex = examples.findIndex(
     (_example, index) => getSlideId(index) === selectedId,
   );
+  const selected = examples[selectedIndex];
   const [onlyExample] = examples;
   return (
     <div
       hidden={!current}
-      className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)]"
+      className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)]"
     >
       {/* Only the examples that show name the card. */}
-      {current && selected && <AppNavigationTitle example={selected} />}
+      {current && selected && (
+        <AppNavigationTitle
+          example={selected}
+          index={selectedIndex}
+          count={examples.length}
+        />
+      )}
       {onlyExample && examples.length === 1 ? (
         // A single example has nowhere to move, so it shows without the
         // carousel and its controls.
@@ -297,13 +303,8 @@ function AppNavigationExamples({
           $buttonSize={6}
           previousButton={CAROUSEL_BUTTON}
           nextButton={CAROUSEL_BUTTON}
-          className={cx(
-            // The previews fill the height of the card above the slide tabs.
-            "min-h-0 grid-rows-[minmax(0,1fr)_auto]",
-            // The slide tabs keep the padding of the card from the previews, as
-            // from the edge of the card below them.
-            "gap-y-1",
-          )}
+          // The previews fill the height of the card below the title.
+          className="min-h-0 grid-rows-[minmax(0,1fr)]"
         >
           {/* The viewport clips the slides to its corners, so the corners stay
               in place while the slides scroll past them. */}
@@ -319,11 +320,6 @@ function AppNavigationExamples({
               );
             })}
           </CarouselViewport>
-          <CarouselTabList>
-            {examples.map((example) => (
-              <CarouselTab key={example.href} />
-            ))}
-          </CarouselTabList>
         </Carousel>
       )}
     </div>
@@ -335,38 +331,55 @@ interface AppNavigationPlaceholderProps {
 }
 
 // The title of the first example of a link over an empty frame, laid out as the
-// examples of the link before their pages load, with the room of the slide tabs
-// below a carousel.
+// examples of the link before their pages load.
 function AppNavigationPlaceholder({ examples }: AppNavigationPlaceholderProps) {
   const [first] = examples;
   return (
-    <div className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)]">
-      {first && <AppNavigationTitle example={first} />}
-      {examples.length === 1 ? (
-        <AppNavigationFrame className="min-h-0 overflow-clip" />
-      ) : (
-        <div className="grid min-h-0 grid-rows-[minmax(0,1fr)_auto] gap-y-1">
-          <AppNavigationFrame />
-          <div className="h-6" />
-        </div>
+    <div className="grid min-h-0 min-w-0 grid-rows-[auto_minmax(0,1fr)]">
+      {first && (
+        <AppNavigationTitle example={first} index={0} count={examples.length} />
       )}
+      <AppNavigationFrame className="min-h-0 overflow-clip" />
     </div>
   );
 }
 
 interface AppNavigationTitleProps {
   example: AppLinkExample;
+  /** The position of the example among the examples of the link. */
+  index: number;
+  /** The number of examples of the link. */
+  count: number;
 }
 
 // The title of the example that shows, which names the card. It links to the
-// example in the gallery of its page, as a prose heading links to itself.
-function AppNavigationTitle({ example }: AppNavigationTitleProps) {
+// example in the gallery of its page, as a prose heading links to itself. A
+// badge after the heading shows the position of the example, so the name of the
+// card stays the title.
+function AppNavigationTitle({
+  example,
+  index,
+  count,
+}: AppNavigationTitleProps) {
   return (
-    <TextFrame
-      $p={2}
-      render={<Heading render={<ak.HovercardHeading />} className="text-sm" />}
-    >
-      <Link href={example.href}>{example.title}</Link>
+    // A grid item keeps the width of its content by default, so the frame lets
+    // the card narrow it, and a long title truncates beside the badge.
+    <TextFrame $p={2} className="flex min-w-0 items-center gap-2 text-sm">
+      <Heading
+        render={<ak.HovercardHeading />}
+        className="min-w-0 truncate text-sm"
+      >
+        <Link href={example.href}>{example.title}</Link>
+      </Heading>
+      {count > 1 && (
+        <Badge className="shrink-0">
+          <BadgeLabel>
+            {index + 1}
+            <span className="ak-ink-50 mx-0.5">/</span>
+            {count}
+          </BadgeLabel>
+        </Badge>
+      )}
     </TextFrame>
   );
 }

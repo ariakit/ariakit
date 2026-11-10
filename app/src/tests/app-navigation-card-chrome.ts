@@ -122,10 +122,11 @@ test("site navigation card shows the examples of the hovered link", async ({
   const card = query(page).dialog();
   await expect(card).toHaveAccessibleName("Breadcrumb");
   const carousel = query(card).region("Breadcrumb examples");
-  // The card has a slide tab for each example that the link counts.
-  await expect(query(carousel).tab(/^Slide \d+$/)).toHaveCount(
-    await getCount(link),
-  );
+  // A badge beside the title shows the position of the example among the
+  // examples that the link counts, and the card has no slide tabs.
+  const count = await getCount(link);
+  await expect(card.getByText(`1/${count}`, { exact: true })).toBeVisible();
+  await expect(query(carousel).tab()).toHaveCount(0);
   // Only the slide that shows loads its preview page, which fades in once the
   // page reports that it loaded.
   const frames = card.locator("iframe");
@@ -136,10 +137,7 @@ test("site navigation card shows the examples of the hovered link", async ({
   );
   await expect(frames.first()).toHaveCSS("opacity", "1");
   await query(carousel).button("Next slide").click();
-  await expect(query(carousel).tab("Slide 2")).toHaveAttribute(
-    "aria-selected",
-    "true",
-  );
+  await expect(card.getByText(`2/${count}`, { exact: true })).toBeVisible();
   // The next slide loads its page once it shows, and the first slide keeps its
   // page.
   await expect(frames).toHaveCount(2);
@@ -173,12 +171,10 @@ test("site navigation card lays out its previews beside the link", async ({
       const viewport = element.querySelector(".carousel-viewport");
       const slide = element.querySelector(".carousel-slide");
       const iframe = element.querySelector("iframe");
-      const tabList = element.querySelector("[role=tablist]");
       const button = element.querySelector(".carousel-button");
       if (!viewport) return null;
       if (!slide) return null;
       if (!iframe) return null;
-      if (!tabList) return null;
       if (!button) return null;
       const box = (node: Element) => node.getBoundingClientRect();
       return {
@@ -196,7 +192,6 @@ test("site navigation card lays out its previews beside the link", async ({
         snapStop: getComputedStyle(slide).scrollSnapStop,
         iframe: box(iframe),
         iframeRadius: getComputedStyle(iframe).borderTopLeftRadius,
-        tabList: box(tabList),
         button: box(button),
       };
     },
@@ -224,11 +219,10 @@ test("site navigation card lays out its previews beside the link", async ({
   expect(layout.iframe.left).toBeGreaterThan(layout.viewport.left);
   expect(layout.iframe.top).toBeGreaterThan(layout.viewport.top);
   expect(layout.iframe.bottom).toBeLessThan(layout.viewport.bottom);
-  // The slide tabs keep the same space from the previews as from the edge of
-  // the card, which adds its 1px border.
-  const above = layout.tabList.top - layout.viewport.bottom;
-  const below = layout.card.bottom - layout.tabList.bottom;
-  expect(Math.abs(above - below)).toBeLessThanOrEqual(1);
+  // The previews reach the padding at the bottom of the card, as at its side.
+  const side = layout.viewport.left - layout.card.left;
+  const below = layout.card.bottom - layout.viewport.bottom;
+  expect(Math.abs(side - below)).toBeLessThanOrEqual(1);
   // The previous and next buttons stay small over the previews.
   expect(layout.button.width).toBeLessThanOrEqual(24);
   // A fullscreen preview, such as an app shell, draws smaller still.
