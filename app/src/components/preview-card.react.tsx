@@ -22,7 +22,7 @@ import {
 } from "@ariakit/ui/components/input.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -736,7 +736,7 @@ function PreviewCardViewport({
               title={title}
               loading="lazy"
               onLoad={() => setLoaded(true)}
-              className={clsx(
+              className={cx(
                 "block w-full border-0 bg-transparent transition-opacity",
                 getFallbackHeight({ fullscreen, minHeight }),
                 "h-(--preview-frame-height)",

@@ -9,7 +9,7 @@
  */
 import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 
 // Frames inside the scene keep their own radius only when the stage padding
 // reaches 1rem. The app spacing token is smaller than 0.25rem, so the padding
@@ -40,7 +40,7 @@ export function AppCover({ html, className, ...props }: AppCoverProps) {
       $rounded="lg"
       $border
       $p={STAGE_PADDING}
-      className={clsx(
+      className={cx(
         "block overflow-clip",
         // Wide scenes must not widen grid and flex parents.
         "contain-inline-size [content-visibility:auto]",
@@ -58,7 +58,7 @@ export function AppCover({ html, className, ...props }: AppCoverProps) {
         // The scene is a picture of the example, so it is out of the tab order
         // and the accessibility tree.
         inert
-        className={clsx(
+        className={cx(
           "block size-full",
           // A faded scene keeps the card label in front. Hovering or focusing
           // the card shows the scene at full opacity, and hovering zooms it in.
@@ -74,7 +74,7 @@ export function AppCover({ html, className, ...props }: AppCoverProps) {
         )}
       >
         <span
-          className={clsx(
+          className={cx(
             // Scenes render at 16px, so em-based frame padding of 1em or more
             // reaches the 1rem that lets nested frames keep their own corners,
             // as in the real UI. A scale then draws the whole scene smaller.

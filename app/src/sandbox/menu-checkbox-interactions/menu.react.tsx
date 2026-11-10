@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { ReactNode } from "react";
 import { forwardRef } from "react";
 
@@ -23,7 +23,7 @@ export const Menu = forwardRef<HTMLButtonElement, MenuProps>(function Menu(
       <Ariakit.MenuButton
         ref={ref}
         {...props}
-        className={clsx("button", props.className)}
+        className={cx("button", props.className)}
       >
         {label}
         <Ariakit.MenuButtonArrow />
@@ -46,7 +46,7 @@ export const MenuItemCheckbox = forwardRef<
     <Ariakit.MenuItemCheckbox
       ref={ref}
       {...props}
-      className={clsx("menu-item", props.className)}
+      className={cx("menu-item", props.className)}
     >
       <Ariakit.MenuItemCheck /> {props.children}
     </Ariakit.MenuItemCheckbox>

@@ -4,7 +4,7 @@
  * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 
 const SearchableContext = React.createContext(false);
@@ -46,7 +46,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
       <Ariakit.MenuButton
         ref={ref}
         {...props}
-        className={clsx(!parent && "button", props.className)}
+        className={cx(!parent && "button", props.className)}
         render={parent ? <MenuItem render={trigger} /> : trigger}
       >
         <span className="label">{label}</span>
@@ -57,7 +57,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         overlap
         unmountOnHide
         gutter={parent ? -4 : 4}
-        className={clsx("menu", searchable && "search-menu")}
+        className={cx("menu", searchable && "search-menu")}
       >
         <SearchableContext.Provider value={searchable}>
           {searchable ? (
@@ -107,7 +107,7 @@ export const MenuSeparator = React.forwardRef<
     <Ariakit.MenuSeparator
       ref={ref}
       {...props}
-      className={clsx("separator", props.className)}
+      className={cx("separator", props.className)}
     />
   );
 });
@@ -122,7 +122,7 @@ export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
       <Ariakit.MenuGroup
         ref={ref}
         {...props}
-        className={clsx("group", props.className)}
+        className={cx("group", props.className)}
       >
         {label && (
           <Ariakit.MenuGroupLabel className="group-label">
@@ -150,7 +150,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
       focusOnHover: true,
       blurOnHoverEnd: false,
       ...props,
-      className: clsx("menu-item", props.className),
+      className: cx("menu-item", props.className),
     };
 
     const checkable = Ariakit.useStoreState(menu, (state) => {

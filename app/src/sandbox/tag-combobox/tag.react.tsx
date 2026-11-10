@@ -1,4 +1,4 @@
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 import * as Ariakit from "./ariakit-experimental.react.ts";
 
@@ -30,7 +30,7 @@ export const TagField = React.forwardRef<HTMLDivElement, TagFieldProps>(
         <Ariakit.TagControl
           ref={ref}
           {...props}
-          className={clsx("ak-tag-list ak-input ak-focusable", props.className)}
+          className={cx("ak-tag-list ak-input ak-focusable", props.className)}
         />
       </Ariakit.TagProvider>
     );
@@ -61,7 +61,7 @@ export const Tag = React.forwardRef<HTMLDivElement, TagProps>(
       <Ariakit.Tag
         ref={ref}
         {...props}
-        className={clsx("ak-tag", props.className)}
+        className={cx("ak-tag", props.className)}
       >
         {props.children}
         <Ariakit.TagRemove className="ak-tag-remove" />
@@ -80,7 +80,7 @@ export const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
       <Ariakit.TagInput
         ref={ref}
         {...props}
-        className={clsx("ak-tag-input", props.className)}
+        className={cx("ak-tag-input", props.className)}
       />
     );
 
@@ -133,7 +133,7 @@ export const TagOption = React.forwardRef<HTMLDivElement, TagOptionProps>(
           return true;
         }}
         {...props}
-        className={clsx("ak-combobox-item", props.className)}
+        className={cx("ak-combobox-item", props.className)}
       >
         {props.children}
         <Ariakit.ComboboxItemCheck />

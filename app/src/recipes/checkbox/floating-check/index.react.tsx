@@ -6,7 +6,7 @@ import {
   CheckboxCardLabel,
   CheckboxGroup,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import { Building2, Mountain, Trees, Waves } from "lucide-react";
 
 const photos = [
@@ -59,7 +59,7 @@ export default function Example() {
               {/* A drawing of the photo. The label names it. */}
               <span
                 aria-hidden
-                className={clsx(
+                className={cx(
                   "grid aspect-video place-items-center rounded-md bg-linear-to-br text-white",
                   photo.className,
                 )}

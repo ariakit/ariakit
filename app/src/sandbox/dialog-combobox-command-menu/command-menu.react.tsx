@@ -4,7 +4,7 @@
  * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { ReactNode } from "react";
 import { forwardRef, startTransition } from "react";
 
@@ -27,7 +27,7 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
         {...props}
         store={dialog}
         style={{ opacity: 1, transition: "opacity 150ms", ...props.style }}
-        className={clsx(
+        className={cx(
           "relative z-50 opacity-0 transition-opacity data-enter:opacity-100",
           props.className,
         )}
@@ -62,7 +62,7 @@ export const CommandMenuInput = forwardRef<
         ref={ref}
         autoSelect="always"
         {...props}
-        className={clsx("combobox", props.className)}
+        className={cx("combobox", props.className)}
       />
       <Ariakit.DialogDismiss className="button secondary escape">
         Esc
@@ -79,7 +79,7 @@ export const CommandMenuList = forwardRef<HTMLDivElement, CommandMenuListProps>(
       <Ariakit.ComboboxList
         ref={ref}
         {...props}
-        className={clsx("list", props.className)}
+        className={cx("list", props.className)}
       />
     );
   },
@@ -97,7 +97,7 @@ export const CommandMenuGroup = forwardRef<
     <Ariakit.ComboboxGroup
       ref={ref}
       {...props}
-      className={clsx("group", props.className)}
+      className={cx("group", props.className)}
     >
       {label && (
         <Ariakit.ComboboxGroupLabel className="group-label">
@@ -120,7 +120,7 @@ export const CommandMenuItem = forwardRef<HTMLDivElement, CommandMenuItemProps>(
         focusOnHover
         blurOnHoverEnd={false}
         {...props}
-        className={clsx("list-item", props.className)}
+        className={cx("list-item", props.className)}
       />
     );
   },

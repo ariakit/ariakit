@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { createSlotFill } from "@wordpress/components";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 import { ModalContext } from "./modal.react.tsx";
 
@@ -18,7 +18,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         ref={ref}
         store={store || undefined}
         {...props}
-        className={clsx(
+        className={cx(
           "flex min-h-8 cursor-default items-center gap-2 rounded px-3 py-2 outline-none data-active-item:bg-gray-200",
           props.className,
         )}
@@ -58,7 +58,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         ref={ref}
         {...props}
         store={menu}
-        className={clsx(
+        className={cx(
           !menu.parent &&
             "inline-flex min-h-10 items-center gap-2 rounded border border-gray-300 bg-white px-4 font-medium text-black",
           props.className,

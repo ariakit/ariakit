@@ -35,7 +35,7 @@ import {
   navSlot,
 } from "@ariakit/ui/styles/nav";
 import { slotFrame } from "@ariakit/ui/styles/slot-frame";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { LucideIcon } from "lucide-react";
 import {
   ChevronDown,
@@ -149,7 +149,7 @@ function Panel({ className, ...props }: FrameProps) {
       $rounded="xl"
       $border
       $p="none"
-      className={clsx("shrink-0 overflow-clip shadow-lg", className)}
+      className={cx("shrink-0 overflow-clip shadow-lg", className)}
       {...props}
     />
   );

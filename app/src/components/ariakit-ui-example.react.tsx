@@ -18,7 +18,7 @@ import {
   PopoverHeading,
   PopoverProvider,
 } from "@ariakit/ui/components/popover.ariakit.react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import { Info } from "lucide-react";
 import { useId } from "react";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
@@ -43,7 +43,7 @@ export function ExampleGrid({
 }: ExampleGridProps) {
   return (
     <main
-      className={clsx(
+      className={cx(
         "grid w-full content-start items-start gap-4 p-4 sm:p-6",
         "grid-cols-[repeat(auto-fit,minmax(min(100%,22rem),1fr))]",
         className,
@@ -95,7 +95,7 @@ export function Example({
   // An empty grid item holds the place of the example, so the grid keeps its
   // columns and the examples on the page keep their widths.
   if (isolatedExamples.length && !isolatedExamples.includes(title)) {
-    return <div className={clsx(wide && "col-span-full")} />;
+    return <div className={cx(wide && "col-span-full")} />;
   }
   return (
     <Frame
@@ -103,7 +103,7 @@ export function Example({
       $rounded="2xl"
       $p={4}
       $border
-      className={clsx(
+      className={cx(
         "grid min-w-0 content-start gap-4",
         wide && "col-span-full",
       )}
@@ -127,7 +127,7 @@ export function Example({
       {/* Examples that render their own Heading nest under the box title. */}
       <HeadingLevel>
         <div
-          className={clsx(
+          className={cx(
             "flex min-w-0 gap-3",
             stretch ? "flex-col items-stretch" : "flex-wrap items-start",
           )}
@@ -220,7 +220,7 @@ export function ExampleStage({
   } as CSSProperties;
   return (
     <div
-      className={clsx(
+      className={cx(
         "relative flex min-h-(--example-stage-height) w-full min-w-0 justify-center",
         anchor === "start" && "items-start",
         anchor === "center" && "items-center",

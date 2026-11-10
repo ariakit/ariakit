@@ -7,7 +7,7 @@ import {
 } from "@ariakit/ui/components/tooltip.ariakit.react";
 import { button, buttonGroup, buttonSlot } from "@ariakit/ui/styles/button";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { LucideIcon } from "lucide-react";
 import { BoldIcon, ItalicIcon, UnderlineIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -96,7 +96,7 @@ export default function Cover() {
               $hue={person.hue}
               $rounded="full"
               $p="none"
-              className={clsx(
+              className={cx(
                 "relative grid size-9 place-items-center font-semibold",
                 "-ms-1.5 ring-2 ring-(--ak-layer-parent) first:ms-0",
                 person.hovered && "z-1 -translate-y-0.5",

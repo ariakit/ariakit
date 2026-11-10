@@ -19,7 +19,7 @@ import {
   navSlot,
 } from "@ariakit/ui/styles/nav";
 import { slotFrame } from "@ariakit/ui/styles/slot-frame";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { LucideIcon } from "lucide-react";
 import {
   Bell,
@@ -84,7 +84,7 @@ const weeks = [38, 52, 45, 61, 48, 70, 58, 66, 74, 63, 82, 92];
 // keeps the window radius for the frames inside it, so they stay rounded.
 function Region({ className, ...props }: FrameProps) {
   return (
-    <Frame $p="none" className={clsx("rounded-none", className)} {...props} />
+    <Frame $p="none" className={cx("rounded-none", className)} {...props} />
   );
 }
 

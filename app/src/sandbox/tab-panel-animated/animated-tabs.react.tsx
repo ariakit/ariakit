@@ -4,7 +4,7 @@
  * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { ElementRef } from "react";
 import { forwardRef, useEffect, useId, useRef } from "react";
 
@@ -43,7 +43,7 @@ export const TabPanel = forwardRef<
       tabId={tabId}
       {...props}
       data-was-open={wasOpen || undefined}
-      className={clsx(
+      className={cx(
         "w-96 max-w-full p-4 transition-[opacity,translate] duration-300 motion-reduce:[transition:none] [:has(>[data-was-open])>&]:opacity-0 [:has(>[data-was-open])>&]:[translate:-100%] [:is([data-was-open],[data-open])~&]:[translate:100%] [&:not([data-open])]:absolute [&:not([data-open])]:top-0 data-enter:![translate:0] data-enter:!opacity-100",
         props.className,
       )}

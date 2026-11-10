@@ -11,7 +11,7 @@ import type { ButtonProps } from "@ariakit/ui/components/button.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Tooltip } from "@ariakit/ui/components/tooltip.ariakit.react";
 import type { button } from "@ariakit/ui/styles/button";
-import { clsx } from "clsx";
+import { cx } from "clava";
 
 export interface TooltipButtonProps extends ButtonProps {
   /** The tooltip text. Astro passes only serializable props to an island. */
@@ -41,7 +41,7 @@ export function TooltipButton({
         // Astro wraps the children of an island in an astro-slot element, which
         // the global styles give the display of the button. The slots and the
         // label would then lose the gap of the button between them.
-        className={clsx("[&>astro-slot]:contents!", className)}
+        className={cx("[&>astro-slot]:contents!", className)}
       />
     </Tooltip>
   );

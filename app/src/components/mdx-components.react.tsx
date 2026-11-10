@@ -17,7 +17,7 @@ import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react";
 import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { ComponentProps } from "react";
 
 // MDX renders plain elements. These map them to Ariakit UI components so page
@@ -69,7 +69,7 @@ function Pre({ className, ...props }: ComponentProps<"pre">) {
   return (
     <pre
       {...props}
-      className={clsx("whitespace-pre-wrap wrap-anywhere", className)}
+      className={cx("whitespace-pre-wrap wrap-anywhere", className)}
     />
   );
 }
