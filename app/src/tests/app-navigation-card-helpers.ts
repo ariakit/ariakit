@@ -12,6 +12,9 @@ import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { gotoAndSettle } from "#app/test-utils/preview.ts";
 
+// The hide timeout of the card, which the site navigation sets.
+export const HIDE_TIMEOUT = 300;
+
 /** Opens a page with the site navigation, and returns its queries. */
 export async function gotoPage(page: Page, path = "/react/recipes/tabs/") {
   await gotoAndSettle(page, path);

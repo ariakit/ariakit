@@ -11,10 +11,13 @@ import { z } from "zod";
 import { frameworks } from "./framework.ts";
 import { keys } from "./object.ts";
 import { parsePlusPriceKey } from "./price-key.ts";
+import { recipeCategories } from "./recipe-categories.ts";
 
 export const FRAMEWORKS = keys(frameworks);
 export const FrameworkSchema = z.enum(FRAMEWORKS);
 export type Framework = z.infer<typeof FrameworkSchema>;
+
+export const RECIPE_CATEGORIES = keys(recipeCategories);
 
 export const ADMONITION_TYPES = ["note", "tip", "warning", "caution"] as const;
 export const AdmonitionTypeSchema = z.enum(ADMONITION_TYPES).catch("note");

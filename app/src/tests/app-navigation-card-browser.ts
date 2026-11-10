@@ -10,7 +10,7 @@
 import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
-import { gotoPage } from "./app-navigation-card-helpers.ts";
+import { HIDE_TIMEOUT, gotoPage } from "./app-navigation-card-helpers.ts";
 
 // Browsers implement the resize grip of the card themselves, so this test runs
 // in every desktop browser.
@@ -52,9 +52,9 @@ test("site navigation card keeps the size that the person gives it", async ({
   await page.mouse.move(grip.x, grip.y);
   await page.mouse.down();
   await page.mouse.move(grip.x + 80, grip.y + 40, { steps: 5 });
-  // The card would hide after the default 500ms hide timeout of a hovercard,
-  // and no state shows that the timeout passed without it.
-  await page.waitForTimeout(600);
+  // The card would hide after its hide timeout, and no state shows that the
+  // timeout passed without it.
+  await page.waitForTimeout(HIDE_TIMEOUT + 100);
   // A closing card stays visible while it fades out, so the open state shows
   // that it didn't start to close.
   await expect(card).toHaveAttribute("data-open");

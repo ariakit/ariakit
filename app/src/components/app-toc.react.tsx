@@ -80,11 +80,7 @@ export interface AppTocProps {
  */
 export function AppToc({ title, headings }: AppTocProps) {
   return (
-    <Toc
-      landmark={false}
-      label={<TocLabel $uppercase>On this page</TocLabel>}
-      $cover
-    >
+    <Toc landmark={false} label={<TocLabel>On this page</TocLabel>} $cover>
       {title && <TocLink href={`#${APP_TOP_ID}`}>{title}</TocLink>}
       <Entries entries={getEntries(headings)} />
     </Toc>

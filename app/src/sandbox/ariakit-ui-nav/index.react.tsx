@@ -694,6 +694,67 @@ export default function NavExamples() {
       </Example>
 
       <Example
+        title="Groups in a section"
+        description="Labeled groups in the body of a section, with a line before each group after the first. An inset line starts and ends with the row backgrounds. Otherwise, the line reaches the edges of the body. The line can be solid, dashed, or dotted."
+        code={`
+          <Nav>
+            <NavDisclosure $split button="Recipes">
+              <NavGroup>
+                <NavGroupLabel>Layout</NavGroupLabel>
+                <NavList>
+                  <NavLink>App Shell</NavLink>
+                </NavList>
+              </NavGroup>
+              <NavGroup $divider $dividerInset>
+                <NavGroupLabel>Forms</NavGroupLabel>
+                <NavList>
+                  <NavLink>Checkbox</NavLink>
+                  <NavLink>Radio</NavLink>
+                </NavList>
+              </NavGroup>
+              <NavGroup $divider $dividerLine="dashed">
+                <NavGroupLabel>Overlays</NavGroupLabel>
+                <NavList>
+                  <NavLink>Tooltip</NavLink>
+                </NavList>
+              </NavGroup>
+            </NavDisclosure>
+          </Nav>
+        `}
+      >
+        <Nav aria-label="Section groups" className="w-full">
+          <NavDisclosure
+            defaultOpen
+            $split
+            button={{ children: "Recipes" }}
+            content={{ body: { $darken: 0.25 } }}
+          >
+            <NavGroup>
+              <NavGroupLabel>Layout</NavGroupLabel>
+              <NavList>
+                <NavLink href="#app-shell">App Shell</NavLink>
+              </NavList>
+            </NavGroup>
+            <NavGroup $divider $dividerInset>
+              <NavGroupLabel>Forms</NavGroupLabel>
+              <NavList>
+                <NavLink href="#checkbox" aria-current="page">
+                  Checkbox
+                </NavLink>
+                <NavLink href="#radio">Radio</NavLink>
+              </NavList>
+            </NavGroup>
+            <NavGroup $divider $dividerLine="dashed">
+              <NavGroupLabel>Overlays</NavGroupLabel>
+              <NavList>
+                <NavLink href="#tooltip">Tooltip</NavLink>
+              </NavList>
+            </NavGroup>
+          </NavDisclosure>
+        </Nav>
+      </Example>
+
+      <Example
         title="Command row"
         description="A button row next to link rows, with the same height and icon column. Its keyboard shortcut goes to the end of the row."
         code={`

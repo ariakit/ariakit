@@ -12,7 +12,7 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames } from "#app/test-utils/preview.ts";
-import { gotoPage } from "./app-navigation-card-helpers.ts";
+import { HIDE_TIMEOUT, gotoPage } from "./app-navigation-card-helpers.ts";
 
 // The show timeout of the card, half the default of a hovercard.
 const SHOW_TIMEOUT = 250;
@@ -479,11 +479,10 @@ test("site navigation card stays open over a preview that it kept", async ({
   };
   await page.mouse.move(center.x, center.y, { steps: 8 });
   await page.mouse.move(center.x + 30, center.y + 10, { steps: 8 });
-  // The card would hide after the default 500ms hide timeout of a hovercard,
-  // and no state shows that the timeout passed without it. A closing card stays
-  // visible while it fades out, so the open state shows that it didn't start to
-  // close.
-  await page.waitForTimeout(600);
+  // The card would hide after its hide timeout, and no state shows that the
+  // timeout passed without it. A closing card stays visible while it fades out,
+  // so the open state shows that it didn't start to close.
+  await page.waitForTimeout(HIDE_TIMEOUT + 100);
   await expect(card).toHaveAttribute("data-open");
 });
 

@@ -168,6 +168,38 @@ test("site navigation describes each page with its example count", async ({
   );
 });
 
+test("site navigation groups the recipes by category", async ({ page, q }) => {
+  await gotoAndSettle(page, recipePath);
+  const navigation = query(q.navigation("Site"));
+  const forms = query(navigation.group("Forms"));
+  await expect(forms.link("Checkbox")).toBeVisible();
+  await expect(forms.link("Text Field")).toBeVisible();
+  await expect(forms.link("App Shell")).toHaveCount(0);
+  await expect(
+    query(navigation.group("Layout")).link("App Shell"),
+  ).toBeVisible();
+});
+
+test("site navigation draws a line before a category within its rows", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, recipePath);
+  const navigation = query(q.navigation("Site"));
+  const forms = navigation.group("Forms");
+  await expect(forms).toHaveCSS("border-top-width", "1px");
+  // The group draws the line with its top border, so its box is the line. The
+  // first group has no line, so its rows keep their place even if the line
+  // moves the rows of its own group. The section body has padding on both
+  // sides, so a line past the rows would also reach past the row backgrounds.
+  const [line, row] = await Promise.all([
+    forms.boundingBox(),
+    navigation.link("App Shell").boundingBox(),
+  ]);
+  expect(line?.x).toBeCloseTo(row?.x ?? Number.NaN, 0);
+  expect(line?.width).toBeCloseTo(row?.width ?? Number.NaN, 0);
+});
+
 test("site navigation lists only the pages of the current section", async ({
   page,
   q,
