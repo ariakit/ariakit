@@ -4,10 +4,12 @@ import { isLayerColor } from "./layer.ts";
 import { slotFrame, slotFrameText } from "./slot-frame.ts";
 
 /**
- * A compact badge with a rounded edge. In a slot, it fills the slot height, so
- * it grows with the control and keeps its pill shape. The slot then sets its
- * text size, so `$size` applies only outside a slot. Use a `box` slot, which is
- * one line tall and takes the width of the badge.
+ * A compact badge with a rounded edge. It keeps its pill shape in any parent
+ * frame. With `$forceRounded={false}`, it follows the parent corners, and its
+ * radius defaults to `lg`. In a slot, it fills the slot height, so it grows
+ * with the control. The slot then sets its text size, so `$size` applies only
+ * outside a slot. Use a `box` slot, which is one line tall and takes the width
+ * of the badge.
  */
 export const badge = cv({
   extend: [slotFrame],
@@ -32,8 +34,6 @@ export const badge = cv({
     "[.slot-frame-slot>&]:self-stretch [.slot-frame-slot>&]:items-center",
     "[.slot-frame-slot>&]:text-[0.8125em]",
     "[.slot-frame-slot>&]:min-w-(--slot-height)",
-    // Concentric rounding can collapse the pill at default control padding.
-    "[.slot-frame-slot>&]:ak-frame-force",
   ],
   variants: {
     /**
@@ -61,7 +61,15 @@ export const badge = cv({
       if (defaultValue !== "transparent") return defaultValue;
       return variants.$kind === "solid" ? "brand" : true;
     },
-    $rounded: "full",
+    // Concentric rounding would collapse the pill in a parent frame with
+    // padding below 1rem, such as a control with default padding.
+    $forceRounded: true,
+    $rounded(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      // Without the force, the radius shows only where the badge isn't
+      // concentric. A tag shape there reads as intended, unlike a near pill.
+      return variants.$forceRounded ? "full" : "lg";
+    },
     $size: "xs",
     $p: 1,
     $px(defaultValue, variants) {

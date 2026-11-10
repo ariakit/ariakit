@@ -219,7 +219,7 @@ const elementValueRows: TableRows<"name" | "status" | "action"> = [
     key: "bruno",
     name: <TableCell header="row">Bruno</TableCell>,
     status: (
-      <Badge $forceRounded $layer="success">
+      <Badge $layer="success">
         <BadgeLabel>Active</BadgeLabel>
       </Badge>
     ),
@@ -552,7 +552,7 @@ const statusRows: TableRows<"component" | "status"> = [
     key: "button",
     component: "Button",
     status: (
-      <Badge $forceRounded $layer="success">
+      <Badge $layer="success">
         <BadgeLabel>Covered</BadgeLabel>
       </Badge>
     ),
@@ -561,7 +561,7 @@ const statusRows: TableRows<"component" | "status"> = [
     key: "tabs",
     component: "Tabs",
     status: (
-      <Badge $forceRounded $layer="warning">
+      <Badge $layer="warning">
         <BadgeLabel>Partial</BadgeLabel>
       </Badge>
     ),
@@ -913,7 +913,7 @@ export default function TableExamples() {
               <TableRow>
                 <TableCell header="row">Button</TableCell>
                 <TableCell $fit>
-                  <Badge $forceRounded $layer="success">
+                  <Badge $layer="success">
                     <BadgeLabel>Covered</BadgeLabel>
                   </Badge>
                 </TableCell>
@@ -922,7 +922,7 @@ export default function TableExamples() {
               <TableRow>
                 <TableCell header="row">Glider</TableCell>
                 <TableCell $fit>
-                  <Badge $forceRounded $layer="warning">
+                  <Badge $layer="warning">
                     <BadgeLabel>Expanded</BadgeLabel>
                   </Badge>
                 </TableCell>
@@ -931,7 +931,7 @@ export default function TableExamples() {
               <TableRow>
                 <TableCell header="row">Tabs</TableCell>
                 <TableCell $fit>
-                  <Badge $forceRounded $layer="brand">
+                  <Badge $layer="brand">
                     <BadgeLabel>In review</BadgeLabel>
                   </Badge>
                 </TableCell>
@@ -959,7 +959,7 @@ export default function TableExamples() {
             <TableRow>
               <TableCell header="row">Button</TableCell>
               <TableCell $fit>
-                <Badge $forceRounded $layer="success">
+                <Badge $layer="success">
                   <BadgeLabel>Covered</BadgeLabel>
                 </Badge>
               </TableCell>
@@ -968,7 +968,7 @@ export default function TableExamples() {
             <TableRow>
               <TableCell header="row">Glider</TableCell>
               <TableCell $fit>
-                <Badge $forceRounded $layer="warning">
+                <Badge $layer="warning">
                   <BadgeLabel>Expanded</BadgeLabel>
                 </Badge>
               </TableCell>
@@ -977,7 +977,7 @@ export default function TableExamples() {
             <TableRow>
               <TableCell header="row">Tabs</TableCell>
               <TableCell $fit>
-                <Badge $forceRounded $layer="brand">
+                <Badge $layer="brand">
                   <BadgeLabel>In review</BadgeLabel>
                 </Badge>
               </TableCell>
@@ -1012,7 +1012,7 @@ export default function TableExamples() {
               <TableRow>
                 <TableCell>Button</TableCell>
                 <TableCell $fit>
-                  <Badge $forceRounded $layer="success">
+                  <Badge $layer="success">
                     <BadgeLabel>Covered</BadgeLabel>
                   </Badge>
                 </TableCell>
