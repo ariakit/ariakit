@@ -256,6 +256,26 @@ const drawerNavigation = navigation.map((group) => ({
         );
       })();
     </script>
+    <script is:inline>
+      // Preview frames load and render their pages on the main thread, so a
+      // view transition into the page would drop frames. They stay hidden, so
+      // lazy frames don't load, until the transition ends. Lazy frames start
+      // to load in the first render, which pagereveal comes before.
+      addEventListener(
+        "pagereveal",
+        /** @param {PageRevealEvent} event */
+        (event) => {
+          const transition = event.viewTransition;
+          if (!transition) return;
+          const root = document.documentElement;
+          root.setAttribute("data-preview-frames-held", "");
+          transition.finished.finally(() => {
+            root.removeAttribute("data-preview-frames-held");
+          });
+        },
+        { once: true },
+      );
+    </script>
     {/* Navigating between site pages moves the navigation bars in a view
         transition. Examples in the page content name their own bars, which
         the next page doesn't have, so page loads leave them out. */}
