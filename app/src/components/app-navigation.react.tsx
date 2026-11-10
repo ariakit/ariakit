@@ -181,7 +181,6 @@ interface AppNavigationLinkProps {
 
 function AppNavigationLink({ link }: AppNavigationLinkProps) {
   const countId = useId();
-  const current = link.current ? "page" : undefined;
   // A link with examples opens the card. A scroll of the sidebar that brings
   // the link under a resting mouse pointer counts as hovering it, so the card
   // follows the pointer while the links scroll. A click on the link hides the
@@ -197,43 +196,31 @@ function AppNavigationLink({ link }: AppNavigationLinkProps) {
     return state.anchorElement?.getAttribute("href") === link.href;
   });
   const Icon = link.icon ? recipeIcons[link.icon] : undefined;
-  const icon = Icon && (
-    <NavSlot>
-      <Icon />
-    </NavSlot>
-  );
-  if (link.count == null) {
-    return (
-      <NavLink
-        href={link.href}
-        aria-current={current}
-        render={anchor}
-        $hovered={showsCard}
-      >
-        {icon}
-        {link.label}
-      </NavLink>
-    );
-  }
   return (
     <NavLink
       href={link.href}
-      aria-current={current}
-      aria-describedby={countId}
+      aria-current={link.current ? "page" : undefined}
+      aria-describedby={link.count != null ? countId : undefined}
       render={anchor}
       $hovered={showsCard}
     >
-      {icon}
+      {Icon && (
+        <NavSlot>
+          <Icon />
+        </NavSlot>
+      )}
       <NavLinkLabel>{link.label}</NavLinkLabel>
-      {/* A text slot keeps the count at the end of the first line. The count
-          describes the link, so it stays out of the name, which is the page
-          title. A hidden element still describes the link. */}
-      <NavSlot $kind="text" $ink={50} id={countId} aria-hidden>
-        {link.count}
-        <span className="sr-only">
-          {link.count === 1 ? " example" : " examples"}
-        </span>
-      </NavSlot>
+      {link.count != null && (
+        // A text slot keeps the count at the end of the first line. The count
+        // describes the link, so it stays out of the name, which is the page
+        // title. A hidden element still describes the link.
+        <NavSlot $kind="text" $ink={50} id={countId} aria-hidden>
+          {link.count}
+          <span className="sr-only">
+            {link.count === 1 ? " example" : " examples"}
+          </span>
+        </NavSlot>
+      )}
     </NavLink>
   );
 }
