@@ -180,24 +180,26 @@ test("site navigation groups the recipes by category", async ({ page, q }) => {
   ).toBeVisible();
 });
 
-test("site navigation draws a line before a category within its rows", async ({
+test("site navigation shows an icon before each recipe label", async ({
   page,
   q,
 }) => {
   await gotoAndSettle(page, recipePath);
   const navigation = query(q.navigation("Site"));
-  const forms = navigation.group("Forms");
-  await expect(forms).toHaveCSS("border-top-width", "1px");
-  // The group draws the line with its top border, so its box is the line. The
-  // first group has no line, so its rows keep their place even if the line
-  // moves the rows of its own group. The section body has padding on both
-  // sides, so a line past the rows would also reach past the row backgrounds.
-  const [line, row] = await Promise.all([
-    forms.boundingBox(),
-    navigation.link("App Shell").boundingBox(),
+  // Only recipe links sit in a category group.
+  const links = await query(navigation.group()).link().all();
+  expect(links.length).toBeGreaterThan(0);
+  for (const link of links) {
+    await expect(link.locator("svg")).toHaveCount(1);
+  }
+  // The exact name shows that the icon stays out of the link name, which is the
+  // page title, and the icon comes before the label.
+  const checkbox = navigation.link("Checkbox");
+  const [icon, label] = await Promise.all([
+    checkbox.locator("svg").boundingBox(),
+    query(checkbox).text("Checkbox").boundingBox(),
   ]);
-  expect(line?.x).toBeCloseTo(row?.x ?? Number.NaN, 0);
-  expect(line?.width).toBeCloseTo(row?.width ?? Number.NaN, 0);
+  expect(icon?.x).toBeLessThan(label?.x ?? Number.NaN);
 });
 
 test("site navigation lists only the pages of the current section", async ({

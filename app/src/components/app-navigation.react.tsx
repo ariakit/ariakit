@@ -28,6 +28,7 @@ import { AppNavigationCard } from "#app/components/app-navigation-card.react.tsx
 import type { AppLink, AppNavigationGroup } from "#app/lib/app.ts";
 import { recipeCategories } from "#app/lib/recipe-categories.ts";
 import type { RecipeCategory } from "#app/lib/recipe-categories.ts";
+import { recipeIcons } from "#app/lib/recipe-icons.ts";
 
 export interface AppNavigationProps {
   groups: AppNavigationGroup[];
@@ -147,7 +148,7 @@ function AppNavigationLinks({ links }: AppNavigationLinksProps) {
       return list;
     }
     return (
-      <NavGroup key={category} $divider $dividerInset>
+      <NavGroup key={category}>
         <NavGroupLabel>{recipeCategories[category]}</NavGroupLabel>
         {list}
       </NavGroup>
@@ -195,6 +196,12 @@ function AppNavigationLink({ link }: AppNavigationLinkProps) {
     if (!state?.open) return false;
     return state.anchorElement?.getAttribute("href") === link.href;
   });
+  const Icon = link.icon ? recipeIcons[link.icon] : undefined;
+  const icon = Icon && (
+    <NavSlot>
+      <Icon />
+    </NavSlot>
+  );
   if (link.count == null) {
     return (
       <NavLink
@@ -203,6 +210,7 @@ function AppNavigationLink({ link }: AppNavigationLinkProps) {
         render={anchor}
         $hovered={showsCard}
       >
+        {icon}
         {link.label}
       </NavLink>
     );
@@ -215,6 +223,7 @@ function AppNavigationLink({ link }: AppNavigationLinkProps) {
       render={anchor}
       $hovered={showsCard}
     >
+      {icon}
       <NavLinkLabel>{link.label}</NavLinkLabel>
       {/* A text slot keeps the count at the end of the first line. The count
           describes the link, so it stays out of the name, which is the page

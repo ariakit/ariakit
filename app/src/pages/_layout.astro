@@ -167,11 +167,11 @@ const getEntryLinks = async (type: Section) => {
         recipes,
       });
       const href = `/${navigationFramework}/${type}/${entry.id}/`;
-      const category =
-        entry.collection === "recipes" ? entry.data.category : undefined;
+      const recipe = entry.collection === "recipes" ? entry.data : undefined;
       return {
         ...getLink(href, entry.data.title),
-        category,
+        category: recipe?.category,
+        icon: recipe?.icon,
         count: examples.length,
         examples: examples.map((example) => ({
           title: example.title,

@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { RecipeCategory } from "./recipe-categories.ts";
+import type { RecipeIcon } from "./recipe-icons.ts";
 
 export interface AppLink {
   href: string;
@@ -22,6 +23,8 @@ export interface AppLink {
    * group with the same category show under one heading.
    */
   category?: RecipeCategory;
+  /** The icon before the link label, such as `square-check`. */
+  icon?: RecipeIcon;
   /**
    * The examples of the page, in page order. A card shows them while the mouse
    * pointer rests on the link.

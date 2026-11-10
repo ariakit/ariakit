@@ -14,8 +14,10 @@ import { z } from "astro/zod";
 import { defineCollection, reference } from "astro:content";
 import { jsdoc } from "./lib/jsdoc-loader.ts";
 import { componentLoader, recipeLoader } from "./lib/mdx-loader.ts";
+import { keys } from "./lib/object.ts";
 import { PreviewKindSchema, previewConfig } from "./lib/preview-config.ts";
 import { previewLoader } from "./lib/preview-discovery.ts";
+import { recipeIcons } from "./lib/recipe-icons.ts";
 import { RECIPE_CATEGORIES } from "./lib/schemas.ts";
 
 // Recipes and component docs share these collections, so the id keeps the
@@ -72,6 +74,8 @@ const recipes = defineCollection({
       title: z.string(),
       // The group of the recipe in the site navigation.
       category: z.enum(RECIPE_CATEGORIES),
+      // The Lucide icon before the recipe label in the site navigation.
+      icon: z.enum(keys(recipeIcons)),
       shape: CoverShapeSchema,
       components: z.array(reference("components")).default([]),
     }),
