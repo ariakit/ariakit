@@ -50,9 +50,8 @@ import type {
   AppNavigationGroup,
 } from "#app/lib/app.ts";
 import { getCachedCollection } from "#app/lib/collection-cache.ts";
-import { getGuideDetail } from "#app/lib/content.ts";
+import { compareNavigationOrder, getGuideDetail } from "#app/lib/content.ts";
 import { getEntryExamples } from "#app/lib/gallery.ts";
-import { RECIPE_CATEGORIES } from "#app/lib/schemas.ts";
 import {
   APP_DRAWER_ID,
   APP_NAVIGATION_ID,
@@ -159,8 +158,13 @@ const getEntryLinks = async (type: Section) => {
   const entries = await getCollection(type, (entry) =>
     entry.data.frameworks.includes(navigationFramework),
   );
-  const links = await Promise.all(
-    entries.map(async (entry): Promise<AppLink> => {
+  // Links of the same category stay together, so the navigation shows them
+  // under one heading, in the order of the categories.
+  const sortedEntries = entries.toSorted((a, b) =>
+    compareNavigationOrder(a.data, b.data),
+  );
+  return Promise.all(
+    sortedEntries.map(async (entry): Promise<AppLink> => {
       const examples = await getEntryExamples({
         entry,
         framework: navigationFramework,
@@ -182,17 +186,6 @@ const getEntryLinks = async (type: Section) => {
       };
     }),
   );
-  // Links of the same category stay together, so the navigation shows them
-  // under one heading, in the order of the categories.
-  return links.sort((a, b) => {
-    const categoryOrder = getCategoryIndex(a) - getCategoryIndex(b);
-    return categoryOrder || a.label.localeCompare(b.label);
-  });
-};
-
-const getCategoryIndex = (link: AppLink) => {
-  if (!link.category) return -1;
-  return RECIPE_CATEGORIES.indexOf(link.category);
 };
 
 const getGuideLinks = async (type: Section) => {

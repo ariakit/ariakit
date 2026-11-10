@@ -43,15 +43,6 @@ test("reading pages use base text and the gutter of the shell's text on a phone"
   expect(box?.width).toBeCloseTo(362, 0);
 });
 
-test("collection pages keep the shell's text and their wide column", async ({
-  page,
-  q,
-}) => {
-  await gotoAndSettle(page, "/react/recipes/");
-  await expect(q.main()).toHaveCSS("font-size", "14px");
-  await expect(q.main()).toHaveCSS("--shell-main-max-width", "1280px");
-});
-
 for (const { name, path } of [
   { name: "guide code", path: "/react/components/styling/" },
   { name: "API reference types", path: "/react/components/separator/" },

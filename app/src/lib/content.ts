@@ -17,6 +17,8 @@ import { unified } from "unified";
 import { getFramework, isFramework } from "./framework.ts";
 import { getPreviewIdPrefix } from "./preview-config.ts";
 import type { PreviewKind } from "./preview-config.ts";
+import type { RecipeCategory } from "./recipe-categories.ts";
+import { RECIPE_CATEGORIES } from "./schemas.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -153,6 +155,30 @@ export function filterPreviews(
 export interface ComponentRecipeEntry extends PreviewOwnerEntry {
   collection: "recipes";
   data: { components: { id: string }[] };
+}
+
+/** The fields of a recipe or component that order the site navigation. */
+export interface NavigationOrderData {
+  title: string;
+  category?: RecipeCategory;
+}
+
+function getCategoryIndex(data: NavigationOrderData) {
+  if (!data.category) return -1;
+  return RECIPE_CATEGORIES.indexOf(data.category);
+}
+
+/**
+ * Compares entries in the order of the site navigation. Entries of the same
+ * category stay together, in the order of the categories, and the titles order
+ * the entries in a category.
+ */
+export function compareNavigationOrder(
+  a: NavigationOrderData,
+  b: NavigationOrderData,
+) {
+  const categoryOrder = getCategoryIndex(a) - getCategoryIndex(b);
+  return categoryOrder || a.title.localeCompare(b.title);
 }
 
 /** Formats an example count, such as `1 example` or `12 examples`. */

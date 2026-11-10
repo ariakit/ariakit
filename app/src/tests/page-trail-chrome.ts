@@ -105,15 +105,6 @@ for (const { name, path, links, current } of pages) {
   });
 }
 
-test("shows no trail on a collection page", async ({ page }) => {
-  await gotoAndSettle(page, "/react/recipes/");
-  await expect(page.locator("h1")).toHaveText("Recipes");
-  await expect(getTrail(page)).toHaveCount(0);
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(
-    0,
-  );
-});
-
 test("lines up the home icon with the title", async ({ page }) => {
   await gotoAndSettle(page, "/react/recipes/navigation/");
   const offset = await query(getTrail(page))

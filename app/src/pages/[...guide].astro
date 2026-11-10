@@ -40,7 +40,7 @@ Astro.locals.framework = framework;
 const title = entry.data.title;
 // Style guides belong to no site section yet.
 const section = type === "styles" ? undefined : type;
-// Only the guides of a framework have a collection page to link to.
+// Only the guides of a framework have a collection URL to link to.
 const trail =
   framework && type !== "styles"
     ? getCollectionTrail(framework, type, title)

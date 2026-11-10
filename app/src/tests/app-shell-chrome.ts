@@ -287,18 +287,23 @@ test("home page renders without the site navigation", async ({ page, q }) => {
   await expect(q.button("Toggle navigation")).toHaveCount(0);
 });
 
-test("collection pages list entries without the site navigation", async ({
-  page,
-  q,
-}) => {
-  await gotoAndSettle(page, "/react/recipes/");
-  await expect(q.heading("Recipes")).toBeVisible();
-  await expect(q.navigation("Site")).toHaveCount(0);
-  await expect(q.button("Toggle navigation")).toHaveCount(0);
-  await expect(q.link("App Shell")).toHaveAccessibleDescription(
-    /^\d+ examples$/,
-  );
-});
+for (const { name, path } of [
+  { name: "Recipes", path: "/react/recipes/" },
+  { name: "Components", path: "/react/components/" },
+]) {
+  test(`${name} collection page redirects to its first entry`, async ({
+    page,
+    q,
+  }) => {
+    await gotoAndSettle(page, path);
+    await expect(page).toHaveURL(new RegExp(`${path}[^/]+/$`));
+    const navigation = query(q.navigation("Site"));
+    await expect(navigation.link().first()).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  });
+}
 
 // Astro renders the main and footer navigations without script, so they leave
 // out the scroll buttons, which would do nothing there.
@@ -306,61 +311,13 @@ test("site navigations without script render no scroll buttons", async ({
   page,
   q,
 }) => {
-  await gotoAndSettle(page, "/react/components/");
+  await gotoAndSettle(page, "/react/components/separator/");
   const options = { includeHidden: true };
   for (const name of ["Main", "Footer"]) {
     const root = query(q.navigation(name, options).locator(".."));
     await expect(q.navigation(name, options)).toHaveCount(1);
     await expect(root.button("Scroll backward", options)).toHaveCount(0);
     await expect(root.button("Scroll forward", options)).toHaveCount(0);
-  }
-});
-
-// At three columns, dense placement moves a card above cards that come before
-// it in the source. Safari doesn't support reading-flow yet, so this test runs
-// only in Chrome.
-// https://github.com/ariakit/ariakit/pull/8180#discussion_r4420926013
-test("collection page cards take focus in their visual order", async ({
-  page,
-  q,
-}) => {
-  await page.setViewportSize({ width: 900, height: 900 });
-  await gotoAndSettle(page, "/react/recipes/");
-  const cards = query(q.list().filter({ has: q.link("App Shell") }));
-  const positions = await cards.link().evaluateAll((links) =>
-    links.map((link) => {
-      const { top, left } = link.getBoundingClientRect();
-      const name = link.querySelector("[id$='-label']")?.textContent ?? "";
-      return { name, top: Math.round(top), left };
-    }),
-  );
-  const sourceOrder = positions.map((position) => position.name);
-  const visualOrder = positions
-    .toSorted((a, b) => a.top - b.top || a.left - b.left)
-    .map((position) => position.name);
-  // The layout must move a card, or the focus order would match either way.
-  expect(visualOrder).not.toEqual(sourceOrder);
-  const [first, ...rest] = visualOrder;
-  if (!first) throw new Error("No cards");
-  await cards.link(first, { exact: true }).focus();
-  for (const name of rest) {
-    await page.keyboard.press("Tab");
-    const card = cards.link(name, { exact: true });
-    await expect(card).toBeFocused();
-    // A card transitions when it takes focus. Wait for that, as a person
-    // pausing between Tab presses would. In Chromium 156 to 158, a transform
-    // transition that changes the overflow of the card, such as a zoom of a
-    // scene that runs past its stage, makes the next Tab follow the DOM order.
-    // Scenes can also run endless animations, which never finish.
-    // https://issues.chromium.org/issues/582923442
-    await card.evaluate((element) =>
-      Promise.allSettled(
-        element
-          .getAnimations({ subtree: true })
-          .filter((animation) => animation instanceof CSSTransition)
-          .map(({ finished }) => finished),
-      ),
-    );
   }
 });
 

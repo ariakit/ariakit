@@ -112,8 +112,8 @@ export interface GetEntryExamplesParams {
 
 /**
  * Returns the examples that demonstrate an entry, in page order, which the
- * sidebar and the collection pages count. A component also lists the examples
- * of the recipes that list it in their `components` frontmatter, after its own.
+ * sidebar counts. A component also lists the examples of the recipes that list
+ * it in their `components` frontmatter, after its own.
  */
 export async function getEntryExamples({
   entry,
