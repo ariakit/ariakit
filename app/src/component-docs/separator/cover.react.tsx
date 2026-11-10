@@ -47,10 +47,8 @@ export default function Cover() {
       </div>
       <div {...slotFrame.jsx({ $p: 2 })}>
         <span {...controlLabel.jsx({ $grow: true })}>Billing</span>
-        {/* The badge colors the text of its label. The row padding is below
-            1rem, so the badge forces its pill shape instead of following the
-            row corners. */}
-        <span {...badge.jsx({ $layer: "brand", $forceRounded: true })}>
+        {/* The badge colors the text of its label. */}
+        <span {...badge.jsx({ $layer: "brand" })}>
           <span {...badgeLabel.jsx()}>Pro</span>
         </span>
       </div>
