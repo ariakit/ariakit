@@ -82,7 +82,7 @@
     "tsup": "9.0.0",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
-    "visonaut": "0.6.10",
+    "visonaut": "0.6.11",
     "vite": "8.3.6",
     "vite-plugin-solid": "2.11.15",
     "vitest": "5.1.0",
