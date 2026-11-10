@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import type { RecipeCategory } from "./recipe-categories.ts";
 
 export interface AppLink {
   href: string;
@@ -16,6 +17,11 @@ export interface AppLink {
    * The number of examples on the page, which shows at the end of the link.
    */
   count?: number;
+  /**
+   * The category of the page, such as `forms`. Adjacent links of a navigation
+   * group with the same category show under one heading.
+   */
+  category?: RecipeCategory;
   /**
    * The examples of the page, in page order. A card shows them while the mouse
    * pointer rests on the link.

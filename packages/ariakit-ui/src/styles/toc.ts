@@ -133,15 +133,10 @@ export const toc = cv({
 /** The title above the rows, which names the table of contents. */
 export const tocLabel = cv({
   extend: [navGroupLabel],
-  class: [
-    // Line up with the text of the top-level rows after the guide gutter. The
-    // gutter is a registered length, so it resolves in the font of the root,
-    // not the smaller font of the label.
-    "toc-label ms-(--toc-gutter,0px)",
-    // The guide starts at the first row, so the label needs more room than a
-    // group label to stay apart from it.
-    "mb-(--nav-py)",
-  ],
+  // Line up with the text of the top-level rows after the guide gutter. The
+  // gutter is a registered length, so it resolves in the font of the root, not
+  // the smaller font of the label.
+  class: "toc-label ms-(--toc-gutter,0px)",
 });
 
 /**

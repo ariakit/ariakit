@@ -163,19 +163,23 @@ export const navList = cv({
 });
 
 /**
- * A navigation group with extra space before it, after other groups or rows.
+ * A navigation group with extra space before it, after other groups or rows, at
+ * the top level of the navigation or in the body of a disclosure.
  */
 export const navGroup = cv({
   class: [
     "nav-group grid grid-cols-[minmax(0,1fr)] content-start gap-(--nav-gap) shrink-0",
     "[.nav.vertical>*+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))]",
     "[.nav.horizontal>*+&]:ms-[calc(var(--nav-group-gap)-var(--nav-gap))]",
+    "[.nav-disclosure-content-body>*+&]:mt-[calc(var(--nav-group-gap)-var(--nav-gap))]",
   ],
   variants: {
     /**
      * Draws a line in the middle of the space before the group. A group that
      * starts the navigation has no line. The line spans the navigation's
-     * padding, so a `Nav` with `$cover` draws it to its container's edges.
+     * padding, so a `Nav` with `$cover` draws it to its container's edges. In
+     * the body of a disclosure, the line spans the body padding and reaches the
+     * body edges.
      */
     $divider: [
       // The marker class outranks the spacing rules above. The line takes the
@@ -193,6 +197,40 @@ export const navGroup = cv({
       "[.nav.horizontal>*+&.nav-group-divider]:ps-[calc(var(--nav-group-gap)/2)]",
       "[.nav.horizontal>*+&.nav-group-divider]:-my-(--ak-frame-padding)",
       "[.nav.horizontal>*+&.nav-group-divider]:py-(--ak-frame-padding)",
+      "[.nav-disclosure-content-body>*+&.nav-group-divider]:border-t",
+      "[.nav-disclosure-content-body>*+&.nav-group-divider]:mt-[calc(var(--nav-group-gap)/2-var(--nav-gap))]",
+      "[.nav-disclosure-content-body>*+&.nav-group-divider]:pt-[calc(var(--nav-group-gap)/2)]",
+      // The body indents its start more than its end, so each side reaches past
+      // its own padding.
+      "[.nav-disclosure-content-body>*+&.nav-group-divider]:-ms-(--disclosure-body-ps)",
+      "[.nav-disclosure-content-body>*+&.nav-group-divider]:ps-(--disclosure-body-ps)",
+      "[.nav-disclosure-content-body>*+&.nav-group-divider]:-me-(--ak-frame-padding)",
+      "[.nav-disclosure-content-body>*+&.nav-group-divider]:pe-(--ak-frame-padding)",
+    ],
+    /** Sets the line style of the `$divider` line. */
+    $dividerLine: {
+      solid: "border-solid",
+      dashed: "border-dashed",
+      dotted: "border-dotted",
+    },
+    /**
+     * Keeps the `$divider` line within the rows, so it starts and ends with the
+     * row backgrounds instead of reaching the container edges.
+     */
+    $dividerInset: [
+      // The second marker class outranks the reach of the `$divider` rules.
+      "nav-group-divider-inset",
+      // Rows at the top level fill the navigation's content box.
+      "[.nav.vertical>*+&.nav-group-divider.nav-group-divider-inset]:mx-0",
+      "[.nav.vertical>*+&.nav-group-divider.nav-group-divider-inset]:px-0",
+      "[.nav.horizontal>*+&.nav-group-divider.nav-group-divider-inset]:my-0",
+      "[.nav.horizontal>*+&.nav-group-divider.nav-group-divider-inset]:py-0",
+      // Rows in a disclosure body reach back over their own padding to align
+      // their text with the body, and end with the body's content box.
+      "[.nav-disclosure-content-body>*+&.nav-group-divider.nav-group-divider-inset]:-ms-(--nav-px)",
+      "[.nav-disclosure-content-body>*+&.nav-group-divider.nav-group-divider-inset]:ps-(--nav-px)",
+      "[.nav-disclosure-content-body>*+&.nav-group-divider.nav-group-divider-inset]:me-0",
+      "[.nav-disclosure-content-body>*+&.nav-group-divider.nav-group-divider-inset]:pe-0",
     ],
   },
 });
@@ -202,12 +240,10 @@ export const navGroup = cv({
  */
 export const navGroupLabel = cv({
   extend: [textFrame, text],
-  class: [
-    "font-medium text-start",
-    // A label shorter than a row, close to the rows below it, reads as their
-    // heading instead of another row.
-    "pb-[calc(var(--nav-py)/4)]",
-  ],
+  // The label takes the vertical padding of a row, so the space between the
+  // label and the first row matches the space between rows. Its smaller text
+  // and the group gap above it set it apart as a heading.
+  class: "nav-group-label font-medium text-start",
   variants: {
     /**
      * Shows the label in small uppercase letters with wider spacing, which sets
@@ -591,7 +627,7 @@ export const navDisclosureContentBody = cv({
   // colors.
   extend: [disclosureContentBody, frameBase],
   class: [
-    "grid grid-cols-[minmax(0,1fr)] content-start gap-(--nav-gap)",
+    "nav-disclosure-content-body grid grid-cols-[minmax(0,1fr)] content-start gap-(--nav-gap)",
     // Compensate for body padding so nested row corners match the disclosure
     // radius below the frame 1rem cutoff. A split body sets a smaller row
     // radius for its inset rows.
@@ -602,6 +638,8 @@ export const navDisclosureContentBody = cv({
     // their guides aligned.
     "[&_li>.control:not(.disclosure-button)]:-ms-(--px)",
     "[&_li:has(>.disclosure-button)]:-ms-(--disclosure-px)",
+    // Group labels align with the row text too.
+    "[&_.nav-group-label]:-ms-(--px)",
     // Inset focus rings to prevent disclosure clipping, even when a row sets
     // its own `$focusOffset`.
     "[&_li>.control]:-outline-offset-2",

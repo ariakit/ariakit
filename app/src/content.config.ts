@@ -16,6 +16,7 @@ import { jsdoc } from "./lib/jsdoc-loader.ts";
 import { componentLoader, recipeLoader } from "./lib/mdx-loader.ts";
 import { PreviewKindSchema, previewConfig } from "./lib/preview-config.ts";
 import { previewLoader } from "./lib/preview-discovery.ts";
+import { RECIPE_CATEGORIES } from "./lib/schemas.ts";
 
 // Recipes and component docs share these collections, so the id keeps the
 // content directory, as in recipes/navigation or component-docs/separator.
@@ -69,6 +70,8 @@ const recipes = defineCollection({
   schema: recipeLoader.schema(
     z.object({
       title: z.string(),
+      // The group of the recipe in the site navigation.
+      category: z.enum(RECIPE_CATEGORIES),
       shape: CoverShapeSchema,
       components: z.array(reference("components")).default([]),
     }),

@@ -16,6 +16,8 @@ import {
   Nav,
   NavDisclosure,
   NavDisclosureGroup,
+  NavGroup,
+  NavGroupLabel,
   NavLink,
   NavLinkLabel,
   NavList,
@@ -24,6 +26,8 @@ import {
 import { useId, useState } from "react";
 import { AppNavigationCard } from "#app/components/app-navigation-card.react.tsx";
 import type { AppLink, AppNavigationGroup } from "#app/lib/app.ts";
+import { recipeCategories } from "#app/lib/recipe-categories.ts";
+import type { RecipeCategory } from "#app/lib/recipe-categories.ts";
 
 export interface AppNavigationProps {
   groups: AppNavigationGroup[];
@@ -100,11 +104,7 @@ export function AppNavigation({
                 body: { $darken: 0.25 },
               }}
             >
-              <NavList>
-                {group.links.map((link) => (
-                  <AppNavigationLink key={link.href} link={link} />
-                ))}
-              </NavList>
+              <AppNavigationLinks links={group.links} />
             </NavDisclosure>
           ))}
         </NavDisclosureGroup>
@@ -116,12 +116,62 @@ export function AppNavigation({
   }
   return (
     // The card opens beside the sidebar, centered on the link. It shows after
-    // half the default timeout of a hovercard.
-    <HovercardProvider placement="right" showTimeout={250}>
+    // half the default timeout of a hovercard, and hides a little sooner than a
+    // hovercard does by default.
+    <HovercardProvider placement="right" showTimeout={250} hideTimeout={300}>
       {nav}
       <AppNavigationCard links={cardLinks} />
     </HovercardProvider>
   );
+}
+
+interface AppNavigationLinksProps {
+  links: AppLink[];
+}
+
+/**
+ * Renders the links of a navigation group. Adjacent links with the same
+ * category show in a nav group under the category label.
+ */
+function AppNavigationLinks({ links }: AppNavigationLinksProps) {
+  const categories = getLinkCategories(links);
+  return categories.map(({ category, links }) => {
+    const list = (
+      <NavList key={links[0]?.href}>
+        {links.map((link) => (
+          <AppNavigationLink key={link.href} link={link} />
+        ))}
+      </NavList>
+    );
+    if (!category) {
+      return list;
+    }
+    return (
+      <NavGroup key={category} $divider $dividerInset>
+        <NavGroupLabel>{recipeCategories[category]}</NavGroupLabel>
+        {list}
+      </NavGroup>
+    );
+  });
+}
+
+interface AppLinkCategory {
+  category?: RecipeCategory;
+  links: AppLink[];
+}
+
+/** Splits the links into runs of adjacent links with the same category. */
+function getLinkCategories(links: AppLink[]) {
+  const categories: AppLinkCategory[] = [];
+  for (const link of links) {
+    const last = categories.at(-1);
+    if (last && last.category === link.category) {
+      last.links.push(link);
+      continue;
+    }
+    categories.push({ category: link.category, links: [link] });
+  }
+  return categories;
 }
 
 interface AppNavigationLinkProps {

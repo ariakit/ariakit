@@ -52,6 +52,7 @@ import type {
 import { getCachedCollection } from "#app/lib/collection-cache.ts";
 import { getGuideDetail } from "#app/lib/content.ts";
 import { getEntryExamples } from "#app/lib/gallery.ts";
+import { RECIPE_CATEGORIES } from "#app/lib/schemas.ts";
 import {
   APP_DRAWER_ID,
   APP_NAVIGATION_ID,
@@ -166,8 +167,11 @@ const getEntryLinks = async (type: Section) => {
         recipes,
       });
       const href = `/${navigationFramework}/${type}/${entry.id}/`;
+      const category =
+        entry.collection === "recipes" ? entry.data.category : undefined;
       return {
         ...getLink(href, entry.data.title),
+        category,
         count: examples.length,
         examples: examples.map((example) => ({
           title: example.title,
@@ -178,7 +182,17 @@ const getEntryLinks = async (type: Section) => {
       };
     }),
   );
-  return links.sort((a, b) => a.label.localeCompare(b.label));
+  // Links of the same category stay together, so the navigation shows them
+  // under one heading, in the order of the categories.
+  return links.sort((a, b) => {
+    const categoryOrder = getCategoryIndex(a) - getCategoryIndex(b);
+    return categoryOrder || a.label.localeCompare(b.label);
+  });
+};
+
+const getCategoryIndex = (link: AppLink) => {
+  if (!link.category) return -1;
+  return RECIPE_CATEGORIES.indexOf(link.category);
 };
 
 const getGuideLinks = async (type: Section) => {

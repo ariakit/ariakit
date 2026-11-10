@@ -180,7 +180,7 @@ export function AppNavigationCard({ links }: AppNavigationCardProps) {
           // WebKit ignores the grip while the content covers it, as the slide
           // tabs or a preview do, unless the box is a stacking context.
           "resize overflow-hidden isolate",
-          "h-[23rem] w-[30rem] min-h-64 min-w-80",
+          "h-[20rem] w-[26rem] min-h-64 min-w-80",
           "max-h-[calc(100dvh-2rem)] max-w-[min(60rem,calc(100vw-2rem))]",
         )}
       >
