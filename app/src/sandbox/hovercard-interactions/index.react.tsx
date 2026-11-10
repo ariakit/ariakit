@@ -13,6 +13,14 @@ export default function Example() {
         </Ariakit.Hovercard>
       </Ariakit.HovercardProvider>
       <button>After hovercard</button>
+      <Ariakit.HovercardProvider hideTimeout={200} showTimeout={20}>
+        <Ariakit.HovercardAnchor href="#docs" hideOnClick>
+          Ariakit docs
+        </Ariakit.HovercardAnchor>
+        <Ariakit.Hovercard>
+          <Ariakit.HovercardHeading>Docs preview</Ariakit.HovercardHeading>
+        </Ariakit.Hovercard>
+      </Ariakit.HovercardProvider>
     </>
   );
 }
