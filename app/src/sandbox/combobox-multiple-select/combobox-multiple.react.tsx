@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import { forwardRef } from "react";
 
 export interface ComboboxProps extends Omit<Ariakit.ComboboxProps, "onChange"> {
@@ -43,7 +43,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
         <Ariakit.Combobox
           ref={ref}
           {...comboboxProps}
-          className={clsx("combobox", comboboxProps.className)}
+          className={cx("combobox", comboboxProps.className)}
         />
         <Ariakit.ComboboxPopover
           sameWidth
@@ -66,7 +66,7 @@ export const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
       <Ariakit.ComboboxItem
         ref={ref}
         {...props}
-        className={clsx("combobox-item", props.className)}
+        className={cx("combobox-item", props.className)}
       >
         <Ariakit.ComboboxItemCheck />
         {props.children || props.value}

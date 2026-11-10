@@ -4,7 +4,7 @@
  * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 import { ArrowIcon, ReturnIcon } from "./icons.react.tsx";
 
@@ -72,7 +72,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           ref={ref}
           autoSelect
           {...props}
-          className={clsx("combobox", props.className)}
+          className={cx("combobox", props.className)}
         />
         <div className="combobox-buttons">
           <Ariakit.ComboboxCancel
@@ -114,7 +114,7 @@ export const ComboboxPopover = React.forwardRef<
       unmountOnHide
       hidden={!mounted}
       {...props}
-      className={clsx("popover", props.className)}
+      className={cx("popover", props.className)}
     >
       {mounted && props.children}
       <div className="popover-footer">
@@ -166,7 +166,7 @@ export const ComboboxTabList = React.forwardRef<
     <Ariakit.TabList
       ref={ref}
       {...props}
-      className={clsx("tab-list", props.className)}
+      className={cx("tab-list", props.className)}
     />
   );
 });
@@ -182,7 +182,7 @@ export const ComboboxTab = React.forwardRef<
       ref={ref}
       accessibleWhenDisabled={false}
       {...props}
-      className={clsx("tab", props.className)}
+      className={cx("tab", props.className)}
     />
   );
 });
@@ -206,7 +206,7 @@ export const ComboboxPanel = React.forwardRef<
       ref={ref}
       tabId={tabId}
       {...props}
-      className={clsx("tab-panel", props.className)}
+      className={cx("tab-panel", props.className)}
     >
       <Ariakit.ComboboxList className="listbox">
         {props.children}
@@ -225,7 +225,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         focusOnHover
         blurOnHoverEnd={false}
         {...props}
-        className={clsx("combobox-item", props.className)}
+        className={cx("combobox-item", props.className)}
       />
     );
   },

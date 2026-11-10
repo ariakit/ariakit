@@ -4,7 +4,7 @@
  * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { Dispatch, SetStateAction } from "react";
 import * as React from "react";
 
@@ -28,10 +28,7 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
       <Ariakit.Menubar
         ref={ref}
         {...props}
-        className={clsx(
-          "menubar flex w-max items-center gap-1",
-          props.className,
-        )}
+        className={cx("menubar flex w-max items-center gap-1", props.className)}
       >
         <SetShiftContext.Provider value={setShift}>
           <SetPlacementContext.Provider value={setPlacement}>
@@ -49,7 +46,7 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
                 shift={shift}
                 tabIndex={-1}
                 unmountOnHide
-                className={clsx(
+                className={cx(
                   "menu relative z-50 flex min-w-48 flex-col overflow-visible p-2",
                   props.className,
                 )}
@@ -113,7 +110,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
       tabbable
       blurOnHoverEnd={false}
       {...props}
-      className={clsx(
+      className={cx(
         "menubar-item flex items-center gap-2 whitespace-nowrap",
         props.className,
       )}
@@ -189,7 +186,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         aria-labelledby={labelId}
         aria-describedby={props.description ? descriptionId : undefined}
         {...props}
-        className={clsx("menu-item flex flex-col items-start", props.className)}
+        className={cx("menu-item flex flex-col items-start", props.className)}
         render={props.href ? <a href={props.href} /> : undefined}
       >
         <div id={labelId} className="menu-item-label">
@@ -215,7 +212,7 @@ export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
       <Ariakit.MenuGroup
         ref={ref}
         {...props}
-        className={clsx("group flex flex-col", props.className)}
+        className={cx("group flex flex-col", props.className)}
       >
         <Ariakit.MenuGroupLabel className="group-label">
           {label}

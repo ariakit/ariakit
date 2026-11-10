@@ -23,7 +23,7 @@ import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { usePerceptibleValue } from "@ariakit/ui/react-utils/use-perceptible-value.react";
 import { addGlobalEventListener } from "@ariakit/utils";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type {
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
@@ -175,7 +175,7 @@ export function AppNavigationCard({ links }: AppNavigationCardProps) {
             ? { width: size.width, height: size.height }
             : undefined
         }
-        className={clsx(
+        className={cx(
           "grid grid-rows-[minmax(0,1fr)]",
           // WebKit ignores the grip while the content covers it, as the slide
           // tabs or a preview do, unless the box is a stacking context.
@@ -297,7 +297,7 @@ function AppNavigationExamples({
           $buttonSize={6}
           previousButton={CAROUSEL_BUTTON}
           nextButton={CAROUSEL_BUTTON}
-          className={clsx(
+          className={cx(
             // The previews fill the height of the card above the slide tabs.
             "min-h-0 grid-rows-[minmax(0,1fr)_auto]",
             // The slide tabs keep the padding of the card from the previews, as
@@ -452,7 +452,7 @@ function AppNavigationPreview({ example }: AppNavigationPreviewProps) {
         src={example.previewHref}
         title={example.title}
         // The page shows once it's ready, so it doesn't flash its first paint.
-        className={clsx(
+        className={cx(
           "block size-full transition-opacity duration-200 motion-reduce:transition-none",
           (!ready || loading) && "opacity-0",
         )}

@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import { forwardRef } from "react";
 
 export interface TooltipProps extends Ariakit.TooltipProps {
@@ -21,7 +21,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
               return true;
             }}
             {...props}
-            className={clsx(
+            className={cx(
               "z-100 rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-black shadow-sm",
               props.className,
             )}

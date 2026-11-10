@@ -1,5 +1,5 @@
 import { Modal as WPModal } from "@wordpress/components";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { ComponentPropsWithoutRef } from "react";
 import { createContext, forwardRef } from "react";
 import { MenuContext } from "./menu.react.tsx";
@@ -14,11 +14,11 @@ export const Modal = forwardRef<HTMLDivElement, ModalProps>(
       <WPModal
         {...props}
         ref={ref}
-        className={clsx(
+        className={cx(
           "fixed inset-8 z-50 m-auto flex h-fit max-h-[calc(100vh-4rem)] max-w-xl flex-col overflow-auto rounded-xl bg-white p-4 text-black shadow-2xl outline-none [&_.components-button]:inline-flex [&_.components-button]:size-10 [&_.components-button]:items-center [&_.components-button]:justify-center [&_.components-modal__header]:flex [&_.components-modal__header]:items-center [&_.components-modal__header]:justify-between [&_.components-modal__header]:gap-4",
           props.className,
         )}
-        overlayClassName={clsx(
+        overlayClassName={cx(
           "fixed inset-0 z-50 bg-black/20",
           props.overlayClassName,
         )}

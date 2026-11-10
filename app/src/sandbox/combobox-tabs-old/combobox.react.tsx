@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 import { ArrowIcon, ReturnIcon } from "../combobox-tabs/icons.react.tsx";
 
@@ -74,7 +74,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           ref={ref}
           autoSelect
           {...props}
-          className={clsx("combobox", props.className)}
+          className={cx("combobox", props.className)}
           getAutoSelectId={(items) => {
             // By default, `autoSelect` will focus on the first enabled item
             // when the user types in the combobox input, which is always the
@@ -134,7 +134,7 @@ export const ComboboxPopover = React.forwardRef<
       unmountOnHide
       hidden={!mounted}
       {...props}
-      className={clsx("popover", props.className)}
+      className={cx("popover", props.className)}
     >
       {mounted && props.children}
       <div className="popover-footer">
@@ -187,7 +187,7 @@ export const ComboboxTabList = React.forwardRef<
       ref={ref}
       focusable={false}
       {...props}
-      className={clsx("tab-list", props.className)}
+      className={cx("tab-list", props.className)}
     />
   );
 });
@@ -214,7 +214,7 @@ export const ComboboxTab = React.forwardRef<HTMLDivElement, ComboboxTabProps>(
         // down arrow keys.
         shouldRegisterItem={selected}
         {...props}
-        className={clsx("tab", props.className)}
+        className={cx("tab", props.className)}
         render={
           <Ariakit.Tab
             render={props.render}
@@ -251,7 +251,7 @@ export const ComboboxPanel = React.forwardRef<
       tabId={tabId}
       focusable={false}
       {...props}
-      className={clsx("tab-panel", props.className)}
+      className={cx("tab-panel", props.className)}
     >
       <div role="listbox" className="listbox">
         {props.children}
@@ -272,7 +272,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         focusOnHover
         blurOnHoverEnd={false}
         {...props}
-        className={clsx("combobox-item", props.className)}
+        className={cx("combobox-item", props.className)}
         // Custom onKeyDown handler enables users to switch between tabs using
         // arrow keys when a combobox item is active.
         onKeyDown={(event) => {

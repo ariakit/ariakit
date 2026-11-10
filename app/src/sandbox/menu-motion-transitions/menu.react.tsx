@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { MotionProps } from "motion/react";
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import * as React from "react";
@@ -39,7 +39,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         store={menu}
         ref={ref}
         {...props}
-        className={clsx("button", props.className)}
+        className={cx("button", props.className)}
       >
         {label}
         <Ariakit.MenuButtonArrow />
@@ -84,7 +84,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
       <MotionMenuItem
         ref={ref}
         {...props}
-        className={clsx("menu-item", props.className)}
+        className={cx("menu-item", props.className)}
       />
     );
   },

@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 import type { SelectProps } from "./select.react.tsx";
 import { Select } from "./select.react.tsx";
@@ -14,7 +14,7 @@ export const Form = React.forwardRef<HTMLFormElement, FormProps>(
       <Ariakit.Form
         ref={ref}
         {...props}
-        className={clsx("wrapper", props.className)}
+        className={cx("wrapper", props.className)}
       />
     );
   },
@@ -28,7 +28,7 @@ export interface FormFieldProps extends React.ComponentPropsWithoutRef<"div"> {
 export const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
   function FormField({ name, label, children, ...props }, ref) {
     return (
-      <div ref={ref} {...props} className={clsx("field", props.className)}>
+      <div ref={ref} {...props} className={cx("field", props.className)}>
         <Ariakit.FormLabel name={name}>{label}</Ariakit.FormLabel>
         {children}
         <Ariakit.FormError name={name} className="error" />
@@ -45,7 +45,7 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
       <Ariakit.FormInput
         ref={ref}
         {...props}
-        className={clsx("input", props.className)}
+        className={cx("input", props.className)}
       />
     );
   },
@@ -59,7 +59,7 @@ export const FormSubmit = React.forwardRef<HTMLButtonElement, FormSubmitProps>(
       <Ariakit.FormSubmit
         ref={ref}
         {...props}
-        className={clsx("button primary", props.className)}
+        className={cx("button primary", props.className)}
       />
     );
   },

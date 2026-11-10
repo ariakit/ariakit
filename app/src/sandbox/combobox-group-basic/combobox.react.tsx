@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 
 export interface ComboboxProps extends Omit<Ariakit.ComboboxProps, "onChange"> {
@@ -14,7 +14,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
         <Ariakit.Combobox
           ref={ref}
           {...props}
-          className={clsx("combobox", props.className)}
+          className={cx("combobox", props.className)}
         />
         <Ariakit.ComboboxPopover
           portal
@@ -42,7 +42,7 @@ export const ComboboxGroup = React.forwardRef<
     <Ariakit.ComboboxGroup
       ref={ref}
       {...props}
-      className={clsx("group", props.className)}
+      className={cx("group", props.className)}
     >
       {label && (
         <Ariakit.ComboboxGroupLabel className="group-label">
@@ -63,7 +63,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         ref={ref}
         focusOnHover
         {...props}
-        className={clsx(
+        className={cx(
           "flex cursor-default scroll-m-2 items-center gap-2 rounded p-2 outline-none hover:bg-blue-200/40 data-active-item:bg-blue-600 data-active-item:text-white dark:hover:bg-blue-600/25 dark:data-active-item:bg-blue-600",
           props.className,
         )}
@@ -83,7 +83,7 @@ export const ComboboxSeparator = React.forwardRef<
     <Ariakit.ComboboxSeparator
       ref={ref}
       {...props}
-      className={clsx("separator", props.className)}
+      className={cx("separator", props.className)}
     />
   );
 });

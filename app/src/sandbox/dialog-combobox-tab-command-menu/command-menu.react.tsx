@@ -4,7 +4,7 @@
  * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { ComponentProps, ReactNode } from "react";
 import {
   createContext,
@@ -41,7 +41,7 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
         backdrop={<div className="ak-backdrop ak-backdrop-enter" />}
         {...props}
         store={dialog}
-        className={clsx(
+        className={cx(
           "ak-modal ak-popup ak-popup-enter ak-elevation-2 flex flex-col overflow-clip max-sm:h-auto sm:max-h-[480px] sm:w-[640px] sm:[--inset-block:72px]",
           props.className,
         )}
@@ -96,7 +96,7 @@ export const CommandMenuInput = forwardRef<
         ref={ref}
         autoSelect="always"
         {...props}
-        className={clsx(
+        className={cx(
           "ak-input ak-rounded-item bg-transparent p-3 py-[14px] text-[17px] outline-none [box-shadow:none]",
           props.className,
         )}
@@ -138,7 +138,7 @@ export const CommandMenuTabList = forwardRef<
     <Ariakit.TabList
       ref={ref}
       {...props}
-      className={clsx(
+      className={cx(
         "ak-tab-list ak-popup-cover flex gap-2 p-2 pt-3",
         props.className,
       )}
@@ -168,7 +168,7 @@ export const CommandMenuTab = forwardRef<
       accessibleWhenDisabled={false}
       {...props}
       render={<Ariakit.Role.div render={props.render} />}
-      className={clsx("ak-tab-chip", props.className)}
+      className={cx("ak-tab-chip", props.className)}
     />
   );
 });
@@ -193,7 +193,7 @@ export const CommandMenuTabPanel = forwardRef<
       key={tabId}
       tabId={tabId}
       {...props}
-      className={clsx(
+      className={cx(
         "ak-tab-panel ak-popup-cover flex flex-col",
         props.className,
       )}
@@ -216,7 +216,7 @@ export const CommandMenuList = forwardRef<HTMLDivElement, CommandMenuListProps>(
       <Ariakit.ComboboxList
         ref={ref}
         {...props}
-        className={clsx("ak-popup-cover ak-popup-scroll", props.className)}
+        className={cx("ak-popup-cover ak-popup-scroll", props.className)}
       >
         {hasChildren ? (
           children
@@ -252,7 +252,7 @@ export const CommandMenuGroup = forwardRef<
       ref={ref}
       id={id}
       {...props}
-      className={clsx("group", props.className)}
+      className={cx("group", props.className)}
     >
       {label && (
         <Ariakit.ComboboxGroupLabel className="ak-popup-sticky-header ak-popup-cover border-none">
@@ -278,7 +278,7 @@ export const CommandMenuGrid = forwardRef<HTMLDivElement, CommandMenuGridProps>(
           ref={ref}
           {...props}
           style={{ "--grid-cols": cols } as React.CSSProperties}
-          className={clsx(
+          className={cx(
             "grid grid-cols-[repeat(var(--grid-cols),minmax(0,1fr))] ak-popup-cover",
             props.className,
           )}
@@ -312,7 +312,7 @@ export const CommandMenuItem = forwardRef<HTMLDivElement, CommandMenuItemProps>(
         blurOnHoverEnd={false}
         rowId={rowId}
         {...props}
-        className={clsx("ak-option [--padding-block:0.5rem]", props.className)}
+        className={cx("ak-option [--padding-block:0.5rem]", props.className)}
       />
     );
   },
@@ -334,7 +334,7 @@ export const CommandMenuFooter = forwardRef<
     <footer
       ref={ref}
       {...props}
-      className={clsx(
+      className={cx(
         props.className,
         "ak-popup-cover ak-popup-layer mt-auto flex flex-none gap-3 border-[--border] border-t p-2 text-sm whitespace-nowrap overflow-x-auto max-sm:hidden",
       )}

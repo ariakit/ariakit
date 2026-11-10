@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 
 export interface MenuItemProps extends Ariakit.MenuItemProps {}
@@ -10,7 +10,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
       <Ariakit.MenuItem
         ref={ref}
         {...props}
-        className={clsx("menu-item", props.className)}
+        className={cx("menu-item", props.className)}
       />
     );
   },
@@ -30,7 +30,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
       <Ariakit.MenuButton
         ref={ref}
         {...props}
-        className={clsx(!menu.parent && "button", props.className)}
+        className={cx(!menu.parent && "button", props.className)}
         render={menu.parent ? <MenuItem render={props.render} /> : undefined}
       >
         <span className="label">{label}</span>

@@ -1,5 +1,5 @@
 import "./style.css";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { ComponentProps, ReactNode } from "react";
 import { useId } from "react";
 
@@ -20,10 +20,7 @@ function Layer({ label, children, ...props }: LayerProps) {
     <section
       aria-labelledby={label ? id : undefined}
       {...props}
-      className={clsx(
-        "flex font-mono gap-(--ak-frame-padding)",
-        props.className,
-      )}
+      className={cx("flex font-mono gap-(--ak-frame-padding)", props.className)}
     >
       {label != null && <div id={id}>{label}</div>}
       {children}
@@ -37,7 +34,7 @@ function Cell(props: CellProps) {
   return (
     <Layer
       {...props}
-      className={clsx(
+      className={cx(
         "ak-layer ak-frame ak-frame-p-1 ak-frame-border",
         props.className,
       )}

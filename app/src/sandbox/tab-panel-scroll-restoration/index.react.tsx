@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import { forwardRef, useState } from "react";
 
 function Content() {
@@ -16,7 +16,7 @@ const Scroller = forwardRef<HTMLDivElement, Ariakit.RoleProps>(
       <Ariakit.Role
         ref={ref}
         {...props}
-        className={clsx(
+        className={cx(
           props.className,
           "ak-popup-scroll ak-popup-cover !overflow-auto h-48 min-h-0 overscroll-contain",
         )}
@@ -31,7 +31,7 @@ const Container = forwardRef<HTMLDivElement, Ariakit.RoleProps>(
       <Ariakit.Role
         ref={ref}
         {...props}
-        className={clsx(
+        className={cx(
           props.className,
           "ak-popup ak-tab-border flex flex-col overflow-clip z-10",
         )}
@@ -46,7 +46,7 @@ const TabList = forwardRef<HTMLDivElement, Ariakit.TabListProps>(
       <Ariakit.TabList
         ref={ref}
         {...props}
-        className={clsx(
+        className={cx(
           props.className,
           "ak-tab-list ak-popup-cover flex flex-none overflow-x-auto",
         )}
@@ -61,7 +61,7 @@ const Tab = forwardRef<HTMLButtonElement, Ariakit.TabProps>(
       <Ariakit.Tab
         ref={ref}
         {...props}
-        className={clsx(props.className, "ak-tab ak-tab-folder")}
+        className={cx(props.className, "ak-tab ak-tab-folder")}
       />
     );
   },
@@ -73,7 +73,7 @@ const TabPanel = forwardRef<HTMLDivElement, Ariakit.TabPanelProps>(
       <Ariakit.TabPanel
         ref={ref}
         {...props}
-        className={clsx(
+        className={cx(
           props.className,
           "ak-tab-panel ak-popup-cover ak-popup-layer overflow-clip flex-none min-h-0",
         )}

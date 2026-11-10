@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 
 export { MenuProvider } from "@ariakit/react";
@@ -18,7 +18,7 @@ export const Menu = React.forwardRef<HTMLDivElement, Ariakit.MenuProps>(
         shift={menu?.parent ? -9 : -2}
         flip={menu?.parent ? true : "bottom-end"}
         {...props}
-        className={clsx("menu", props.className)}
+        className={cx("menu", props.className)}
       />
     );
   },
@@ -44,7 +44,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, Ariakit.MenuItemProps>(
       <Ariakit.MenuItem
         ref={ref}
         {...props}
-        className={clsx("menu-item", props.className)}
+        className={cx("menu-item", props.className)}
       />
     );
   },
@@ -58,7 +58,7 @@ export const MenuSeparator = React.forwardRef<
     <Ariakit.MenuSeparator
       ref={ref}
       {...props}
-      className={clsx("separator", props.className)}
+      className={cx("separator", props.className)}
     />
   );
 });

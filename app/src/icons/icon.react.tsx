@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { clsx } from "clsx";
+import { cx } from "clava";
 import type { ComponentProps, CSSProperties } from "react";
 import { useId } from "react";
 import * as icons from "./icons.ts";
@@ -54,7 +54,7 @@ export function Icon({ name, animateStroke, ...props }: IconProps) {
           ...props.style,
         } as CSSProperties
       }
-      className={clsx(
+      className={cx(
         "inline-block base:stroke-(length:--stroke-width) base:ak-dark:stroke-[calc(var(--stroke-width)/1.25)]",
         animateStroke &&
           "[stroke-dasharray:1em] starting:[stroke-dashoffset:1em] [stroke-dashoffset:0] transition-[stroke-dashoffset]",

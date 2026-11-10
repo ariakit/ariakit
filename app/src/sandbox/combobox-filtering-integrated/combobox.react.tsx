@@ -4,7 +4,7 @@
  * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import { matchSorter } from "match-sorter";
 import * as React from "react";
 
@@ -42,7 +42,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           ref={ref}
           store={combobox}
           {...props}
-          className={clsx("combobox", props.className)}
+          className={cx("combobox", props.className)}
         />
         <Ariakit.ComboboxPopover
           store={combobox}
@@ -89,7 +89,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         blurOnHoverEnd={false}
         {...props}
         value={value}
-        className={clsx("combobox-item", props.className)}
+        className={cx("combobox-item", props.className)}
       />
     );
   },
@@ -109,7 +109,7 @@ export const ComboboxEmpty = React.forwardRef<
     <Ariakit.Role
       ref={ref}
       {...props}
-      className={clsx("no-results", props.className)}
+      className={cx("no-results", props.className)}
     />
   );
 });

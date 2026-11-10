@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { clsx } from "clsx";
+import { cx } from "clava";
 import * as React from "react";
 
 export interface SelectProps extends Ariakit.ComboboxSelectProps {
@@ -35,7 +35,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
           {...props}
           store={select}
           onBlur={onBlur}
-          className={clsx("button", props.className)}
+          className={cx("button", props.className)}
         >
           <Ariakit.ComboboxSelectedValue fallback="Select an item" />
           <Ariakit.ComboboxSelectArrow />
@@ -64,7 +64,7 @@ export const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
       <Ariakit.ComboboxItem
         ref={ref}
         {...props}
-        className={clsx("select-item", props.className)}
+        className={cx("select-item", props.className)}
       />
     );
   },
