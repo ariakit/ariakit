@@ -66,6 +66,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const anchor = q.link("Ariakit docs");
     const hovercard = q.dialog("Docs preview");
     const box = await anchor.boundingBox();
+    test.expect(box).not.toBeNull();
     if (!box) return;
     const x = box.x + box.width / 2;
     const y = box.y + box.height / 2;
