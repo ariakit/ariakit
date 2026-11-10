@@ -50,9 +50,8 @@ import type {
   AppNavigationGroup,
 } from "#app/lib/app.ts";
 import { getCachedCollection } from "#app/lib/collection-cache.ts";
-import { getGuideDetail } from "#app/lib/content.ts";
+import { compareNavigationOrder, getGuideDetail } from "#app/lib/content.ts";
 import { getEntryExamples } from "#app/lib/gallery.ts";
-import { RECIPE_CATEGORIES } from "#app/lib/schemas.ts";
 import {
   APP_DRAWER_ID,
   APP_NAVIGATION_ID,
@@ -143,30 +142,46 @@ const getLink = (href: string, label: string): AppLink => ({
   current: pathname.startsWith(href),
 });
 
-const sections = sectionTypes.map(({ type, label }) =>
-  getLink(`/${navigationFramework}/${type}/`, label),
-);
+const getEntryHref = (type: Section, id: string) =>
+  `/${navigationFramework}/${type}/${id}/`;
 
-// The drawer lists the sections with the entries, so a section is current
-// only on its own page there, and only one link in the menu is the page.
-const drawerSections = sections.map((link) => ({
-  ...link,
-  current: link.href === pathname,
-}));
-
-const getEntryLinks = async (type: Section) => {
-  const recipes = await getCachedCollection("recipes");
+// Links of the same category stay together, so the navigation shows them under
+// one heading, in the order of the categories.
+const getSortedEntries = async (type: Section) => {
   const entries = await getCollection(type, (entry) =>
     entry.data.frameworks.includes(navigationFramework),
   );
-  const links = await Promise.all(
-    entries.map(async (entry): Promise<AppLink> => {
+  return entries.toSorted((a, b) => compareNavigationOrder(a.data, b.data));
+};
+
+// A section has no page of its own, so it links to its first entry. It is
+// current on every page under its path.
+const sections = (
+  await Promise.all(
+    sectionTypes.map(async ({ type, label }): Promise<AppLink[]> => {
+      const [first] = await getSortedEntries(type);
+      if (!first) return [];
+      const current = pathname.startsWith(`/${navigationFramework}/${type}/`);
+      return [{ href: getEntryHref(type, first.id), label, current }];
+    }),
+  )
+).flat();
+
+// The drawer lists the sections with the entries, where the entry link marks
+// the page, so only one link in the menu is the page.
+const drawerSections = sections.map((link) => ({ ...link, current: false }));
+
+const getEntryLinks = async (type: Section) => {
+  const recipes = await getCachedCollection("recipes");
+  const sortedEntries = await getSortedEntries(type);
+  return Promise.all(
+    sortedEntries.map(async (entry): Promise<AppLink> => {
       const examples = await getEntryExamples({
         entry,
         framework: navigationFramework,
         recipes,
       });
-      const href = `/${navigationFramework}/${type}/${entry.id}/`;
+      const href = getEntryHref(type, entry.id);
       const recipe = entry.collection === "recipes" ? entry.data : undefined;
       return {
         ...getLink(href, entry.data.title),
@@ -182,17 +197,6 @@ const getEntryLinks = async (type: Section) => {
       };
     }),
   );
-  // Links of the same category stay together, so the navigation shows them
-  // under one heading, in the order of the categories.
-  return links.sort((a, b) => {
-    const categoryOrder = getCategoryIndex(a) - getCategoryIndex(b);
-    return categoryOrder || a.label.localeCompare(b.label);
-  });
-};
-
-const getCategoryIndex = (link: AppLink) => {
-  if (!link.category) return -1;
-  return RECIPE_CATEGORIES.indexOf(link.category);
 };
 
 const getGuideLinks = async (type: Section) => {

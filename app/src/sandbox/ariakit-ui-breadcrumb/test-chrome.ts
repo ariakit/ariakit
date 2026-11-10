@@ -43,6 +43,18 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(q.link("Full ink")).not.toHaveCSS("color", color);
   });
 
+  test("shows a level without a page as a step that isn't a link or the page", async ({
+    q,
+  }) => {
+    const trail = query(q.navigation("Level without a page"));
+    await test.expect(trail.listitem()).toHaveCount(3);
+    await test.expect(trail.link("Tools")).toHaveCount(0);
+    await test.expect(trail.text("Tools")).not.toHaveAttribute("aria-current");
+    await test
+      .expect(trail.text("Shears"))
+      .toHaveAttribute("aria-current", "page");
+  });
+
   test("marks only the link of the current URL", async ({ q }) => {
     const trail = query(q.navigation("Current page as a link"));
     await test

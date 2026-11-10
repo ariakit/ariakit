@@ -15,6 +15,7 @@ import {
   breadcrumbList,
   breadcrumbSeparator,
   breadcrumbSlot,
+  breadcrumbText,
 } from "../styles/breadcrumb.ts";
 import { isCurrentPage } from "../utils/is-current-page.ts";
 
@@ -78,9 +79,9 @@ export interface BreadcrumbItemProps
 
 /**
  * A list item for a step that composes more than one element, such as a link
- * beside a button. `BreadcrumbLink` and `BreadcrumbCurrent` render one by
- * default, so set `item={false}` on them inside it, and set `separator` on the
- * item instead.
+ * beside a button. `BreadcrumbLink`, `BreadcrumbText`, and `BreadcrumbCurrent`
+ * render one by default, so set `item={false}` on them inside it, and set
+ * `separator` on the item instead.
  * @example
  * <BreadcrumbItem separator>
  *   <BreadcrumbLink href="/projects" item={false}>Projects</BreadcrumbLink>
@@ -161,6 +162,36 @@ export function BreadcrumbLink({
       {...breadcrumbLink.jsx(variantProps)}
       {...rest}
     />,
+    { item, separator },
+  );
+}
+
+export interface BreadcrumbTextProps
+  extends
+    ak.RoleProps<"span">,
+    VariantProps<typeof breadcrumbText>,
+    BreadcrumbStepProps {}
+
+/**
+ * A step for a level without a page of its own, such as a category, as text
+ * with a list item wrapper. It is neither a link nor the current page. For the
+ * text inside a step, such as beside a slot or with `$truncate`, use
+ * `BreadcrumbLabel`.
+ * @example
+ * <Breadcrumb aria-label="Breadcrumb">
+ *   <BreadcrumbLink href="/">Home</BreadcrumbLink>
+ *   <BreadcrumbText separator>Recipes</BreadcrumbText>
+ *   <BreadcrumbCurrent separator>Navigation</BreadcrumbCurrent>
+ * </Breadcrumb>
+ */
+export function BreadcrumbText({
+  item,
+  separator,
+  ...props
+}: BreadcrumbTextProps) {
+  const [variantProps, rest] = splitProps(props, breadcrumbText);
+  return renderStep(
+    <ak.Role.span {...breadcrumbText.jsx(variantProps)} {...rest} />,
     { item, separator },
   );
 }

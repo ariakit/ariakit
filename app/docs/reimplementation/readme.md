@@ -23,7 +23,7 @@ The local archive reference keeps the fetched history available after Git garbag
 
 Keep all sandboxes, icons, guides, the Ariakit UI sandbox, preview generation and hydration, API routes, reference partials, and OG image routes. The remaining app content is the Separator component page for React and Solid, and the Combobox Group recipe for React with its Custom Items example. The legacy `website`, root `examples`, and `nextjs` fixtures remain separate from this app cleanup.
 
-Collection, component, recipe, and guide pages retain content loading and basic navigation. The layout has no site design. Reference output uses plain text, code, and links. Each example shows the preview and expandable source files. Code highlighting, reference hovercards, online editing, tag navigation, and the account UI can be implemented later from these handoffs.
+Component, recipe, and guide pages retain content loading and basic navigation. The collections, such as `/react/recipes/`, have no pages. `public/_redirects` sends their paths to the first entry of the site navigation, the top bar links to that entry, and the page trail shows the collection without a link. The layout has no site design. Reference output uses plain text, code, and links. Each example shows the preview and expandable source files. Code highlighting, reference hovercards, online editing, tag navigation, and the account UI can be implemented later from these handoffs.
 
 Guides keep their existing links, including links to removed app pages, for the later site rewrite. Do not treat those links as proof that a route remains available.
 
@@ -33,7 +33,7 @@ The Stripe webhook continues to validate signatures and update price and public 
 
 All `preview-*` modules stay. They define preview roots, discover framework entry files, generate preview modules, integrate them with Astro, list previews for tests, and report hydration readiness. `preview-framework.astro` and both framework hydration components are required by generated previews.
 
-Keep `collection-cache`, `cover`, and `use-controllable-state` as building blocks for the rewrite, even while they have no callers in the reduced site.
+Keep `use-controllable-state` as a building block for the rewrite, even while it has no callers in the reduced site.
 
 The framework and path modules use singular names. OG image keys and paths share `og-image.ts`. Source collection and its Vite plugin share `source.ts`. Shared UI CSS lives in `packages/ariakit-ui/src/styles/ui.css`; app global CSS retains only the required preview foundation.
 

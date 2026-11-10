@@ -15,8 +15,8 @@ import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { getFramework, isFramework } from "./framework.ts";
-import { getPreviewIdPrefix } from "./preview-config.ts";
-import type { PreviewKind } from "./preview-config.ts";
+import type { RecipeCategory } from "./recipe-categories.ts";
+import { RECIPE_CATEGORIES } from "./schemas.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -92,72 +92,34 @@ export interface PreviewOwnerEntry {
   collection: "recipes" | "components";
 }
 
-/** The preview fields that filters and counts read. */
-export interface FilterablePreview {
-  id: string;
-  data: {
-    frameworks: Framework[];
-    source: PreviewKind;
-  };
-}
-
-export interface FilterPreviewsParams {
-  type?: PreviewOwnerEntry["collection"];
-  entries?: PreviewOwnerEntry[];
-  framework?: Framework;
-}
-
-/** Returns the id of the root preview of an entry, such as `components/tab`. */
-function getEntryPreviewId(entry: PreviewOwnerEntry) {
-  const idPrefix = getPreviewIdPrefix(entry.collection);
-  return idPrefix ? `${idPrefix}/${entry.id}` : entry.id;
-}
-
-export function filterPreviews(
-  params: FilterPreviewsParams,
-): (preview: FilterablePreview) => boolean;
-
-export function filterPreviews<T extends FilterablePreview>(
-  previews: T[],
-  params: FilterPreviewsParams,
-): T[];
-
-export function filterPreviews(
-  previewsOrParams: FilterablePreview[] | FilterPreviewsParams,
-  params: FilterPreviewsParams = {},
-) {
-  const hasPreviews = Array.isArray(previewsOrParams);
-  params = !Array.isArray(previewsOrParams) ? previewsOrParams : params;
-  const filter = (preview: FilterablePreview) => {
-    // Collection names match preview kinds. A recipe and a component page with
-    // the same entry id therefore never count the nested examples of the other.
-    if (params.type && preview.data.source !== params.type) return false;
-    if (params.framework) {
-      if (!preview.data.frameworks.includes(params.framework)) return false;
-    }
-    if (params.entries) {
-      const isEntryPreview = params.entries.some((entry) => {
-        if (preview.data.source !== entry.collection) return false;
-        const previewId = getEntryPreviewId(entry);
-        if (preview.id === previewId) return true;
-        return preview.id.startsWith(`${previewId}/`);
-      });
-      if (!isEntryPreview) return false;
-    }
-    return true;
-  };
-  return hasPreviews ? previewsOrParams.filter(filter) : filter;
-}
-
 /** A recipe with the components that its frontmatter lists. */
 export interface ComponentRecipeEntry extends PreviewOwnerEntry {
   collection: "recipes";
   data: { components: { id: string }[] };
 }
 
-/** Formats an example count, such as `1 example` or `12 examples`. */
-export function formatExampleCount(count: number) {
-  return `${count} ${count === 1 ? "example" : "examples"}`;
+/** The fields of a recipe or component that order the site navigation. */
+export interface NavigationOrderData {
+  title: string;
+  category?: RecipeCategory;
+}
+
+function getCategoryIndex(data: NavigationOrderData) {
+  if (!data.category) return -1;
+  return RECIPE_CATEGORIES.indexOf(data.category);
+}
+
+/**
+ * Compares entries in the order of the site navigation. Entries of the same
+ * category stay together, in the order of the categories, and the titles order
+ * the entries in a category.
+ */
+export function compareNavigationOrder(
+  a: NavigationOrderData,
+  b: NavigationOrderData,
+) {
+  const categoryOrder = getCategoryIndex(a) - getCategoryIndex(b);
+  return categoryOrder || a.title.localeCompare(b.title);
 }
 
 let markdownRenderer: MarkdownRenderer | null = null;

@@ -47,7 +47,7 @@ const { Content: Description } = description ? await render(description) : {};
 Astro.locals.framework = framework;
 const title = entry.data.title;
 const descriptionText = await descriptionToText(description?.body, framework);
-const trail = getCollectionTrail(framework, "recipes", title);
+const trail = getCollectionTrail("recipes", title);
 ---
 
 <Layout {title} {headings} {examples} section="recipes">

@@ -26,7 +26,7 @@ test.each([
   [{ type: "pages" as const }, "/og-image/default.png"],
   [
     { type: "components" as const, framework: "react" as const },
-    "/og-image/react_components.png",
+    "/og-image/default.png",
   ],
   [
     {

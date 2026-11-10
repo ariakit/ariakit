@@ -25,40 +25,40 @@ async function getStructuredData(page: Page) {
   return JSON.parse(text ?? "null");
 }
 
-const pages = [
+// A step without a URL is a level without a page, such as Recipes. It shows as
+// text, and the structured data leaves it out.
+type Step = readonly [label: string, href?: string];
+
+const pages: Array<{
+  name: string;
+  path: string;
+  steps: Step[];
+  current: string;
+}> = [
   {
     name: "recipe",
     path: "/react/recipes/navigation/",
-    links: [
-      ["Home", "/"],
-      ["Recipes", "/react/recipes/"],
-    ],
+    steps: [["Home", "/"], ["Recipes"]],
     current: "Navigation",
   },
   {
     name: "component",
     path: "/react/components/separator/",
-    links: [
-      ["Home", "/"],
-      ["Components", "/react/components/"],
-    ],
+    steps: [["Home", "/"], ["Components"]],
     current: "Separator",
   },
   {
     name: "guide",
     path: "/react/components/getting-started/",
-    links: [
-      ["Home", "/"],
-      ["Components", "/react/components/"],
-    ],
+    steps: [["Home", "/"], ["Components"]],
     current: "Getting Started",
   },
   {
     name: "API reference",
     path: "/react/components/separator/separator/",
-    links: [
+    steps: [
       ["Home", "/"],
-      ["Components", "/react/components/"],
+      ["Components"],
       ["Separator", "/react/components/separator/"],
     ],
     current: "API reference",
@@ -69,50 +69,42 @@ const pages = [
 // come from the server.
 test.use({ javaScriptEnabled: false });
 
-for (const { name, path, links, current } of pages) {
+for (const { name, path, steps, current } of pages) {
   test(`shows the trail above the title of a ${name} page`, async ({
     page,
   }) => {
     await gotoAndSettle(page, path);
-    const trail = getTrail(page);
-    for (const [label, href] of links) {
-      await expect(query(trail).link(label)).toHaveAttribute(
-        "href",
-        href ?? "",
-      );
+    const trail = query(getTrail(page));
+    for (const [label, href] of steps) {
+      if (href) {
+        await expect(trail.link(label)).toHaveAttribute("href", href);
+        continue;
+      }
+      await expect(trail.text(label)).toBeVisible();
+      await expect(trail.text(label)).not.toHaveAttribute("aria-current");
+      await expect(trail.link(label)).toHaveCount(0);
     }
-    await expect(query(trail).text(current)).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
-    await expect(query(trail).listitem()).toHaveCount(links.length + 1);
+    await expect(trail.text(current)).toHaveAttribute("aria-current", "page");
+    await expect(trail.listitem()).toHaveCount(steps.length + 1);
+    const linkSteps = steps.filter(([, href]) => href);
     const data = await getStructuredData(page);
     expect(data["@type"]).toBe("BreadcrumbList");
-    expect(data.itemListElement).toHaveLength(links.length + 1);
+    expect(data.itemListElement).toHaveLength(linkSteps.length + 1);
     expect(data.itemListElement.at(-1)).toEqual({
       "@type": "ListItem",
-      position: links.length + 1,
+      position: linkSteps.length + 1,
       name: current,
     });
     const ancestors: Array<{ name: string; item: string }> =
       data.itemListElement.slice(0, -1);
     expect(ancestors.map((item) => item.name)).toEqual(
-      links.map(([label]) => label),
+      linkSteps.map(([label]) => label),
     );
     expect(ancestors.map((item) => new URL(item.item).pathname)).toEqual(
-      links.map(([, href]) => href),
+      linkSteps.map(([, href]) => href),
     );
   });
 }
-
-test("shows no trail on a collection page", async ({ page }) => {
-  await gotoAndSettle(page, "/react/recipes/");
-  await expect(page.locator("h1")).toHaveText("Recipes");
-  await expect(getTrail(page)).toHaveCount(0);
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(
-    0,
-  );
-});
 
 test("lines up the home icon with the title", async ({ page }) => {
   await gotoAndSettle(page, "/react/recipes/navigation/");

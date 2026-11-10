@@ -2,7 +2,6 @@
 title: Breadcrumb
 category: navigation
 icon: chevrons-right
-shape: cell
 ---
 
 ## Overview
@@ -13,7 +12,7 @@ The gallery starts with a trail that has a home icon as its first step. Then it 
 
 ## Components
 
-`Breadcrumb` renders a navigation landmark with an ordered list. `BreadcrumbLink` renders a step that links to a level above, and `BreadcrumbCurrent` renders the current page as text. Each one renders its own list item. Set `separator` on each step after the first to put a `BreadcrumbSeparator` before it. Inside a `BreadcrumbItem`, set `separator` on the item instead, because the step there has `item={false}`. The steps are written out, with no shared state, so the trail also renders on the server with no hydration, such as in an Astro page.
+`Breadcrumb` renders a navigation landmark with an ordered list. `BreadcrumbLink` renders a step that links to a level above, `BreadcrumbText` renders a level without a page of its own, such as a category, as text, and `BreadcrumbCurrent` renders the current page as text. Each one renders its own list item. Set `separator` on each step after the first to put a `BreadcrumbSeparator` before it. Inside a `BreadcrumbItem`, set `separator` on the item instead, because the step there has `item={false}`. The steps are written out, with no shared state, so the trail also renders on the server with no hydration, such as in an Astro page.
 
 The steps extend `button` with quieter defaults. They show no surface, the links get full ink and an underline on hover, and their text can be selected. All the `button` variants still work. Set `$hoverOffset` or another layer hover variant to show a hover surface instead of the underline, or `$p` and `$px` to change the padding. The first step hangs by its side padding, so its content lines up with the text around the trail at any slot size. A step that starts a later row keeps its padding, because CSS can't select it. Set `$gap` on `Breadcrumb` to change the space between the steps.
 
@@ -25,13 +24,13 @@ Also put the text beside a `BreadcrumbSlot` in a `BreadcrumbLabel`, because the 
 
 Set `$scroll` on `Breadcrumb` to keep one row that scrolls sideways. The row starts at the end of the trail, so the current step shows without script, and it stays there when the trail grows. Its scroll position is 0 at the end of the trail and goes negative toward the start. The first step doesn't hang here, because the scroll container would clip it.
 
-Use `BreadcrumbItem` for a step with more than one element, such as a link beside a button, and set `item={false}` on the `BreadcrumbLink` or `BreadcrumbCurrent` inside it.
+Use `BreadcrumbItem` for a step with more than one element, such as a link beside a button, and set `item={false}` on the `BreadcrumbLink`, `BreadcrumbText`, or `BreadcrumbCurrent` inside it.
 
 ## Accessibility
 
 Give each `Breadcrumb` a name with `aria-label` or `aria-labelledby`, such as "Breadcrumb", because a page can have more than one navigation landmark.
 
-`BreadcrumbCurrent` has `aria-current="page"`. To keep the current step as a link, render a `BreadcrumbLink` with `currentUrl` or `aria-current="page"`. This adds a tab stop that goes nowhere new.
+`BreadcrumbCurrent` has `aria-current="page"`. `BreadcrumbText` has no `aria-current`, so a level without a page doesn't read as the current page. To keep the current step as a link, render a `BreadcrumbLink` with `currentUrl` or `aria-current="page"`. This adds a tab stop that goes nowhere new.
 
 `BreadcrumbSeparator` is a list item with `aria-hidden`, so its mark stays out of the accessibility tree. A step with only a slot needs a name from `aria-label`, as in the first example. A clipped label stays in the DOM, so screen readers read all of it, but other users need a tooltip to see it, as in the Truncated Labels example. There, the label renders through `TruncatedText`, so the tooltip shows only while the label clips.
 

@@ -14,19 +14,23 @@ import {
   serializeStructuredData,
 } from "./trail.ts";
 
-test("getCollectionTrail links to the collection of the page", () => {
-  expect(getCollectionTrail("react", "recipes", "Navigation")).toEqual({
-    steps: [{ label: "Recipes", href: "/react/recipes/" }],
+test("getCollectionTrail names the collection of the page without a link", () => {
+  expect(getCollectionTrail("recipes", "Navigation")).toEqual({
+    steps: [{ label: "Recipes" }],
     current: "Navigation",
   });
-  expect(getCollectionTrail("react", "components", "Separator")).toEqual({
-    steps: [{ label: "Components", href: "/react/components/" }],
+  expect(getCollectionTrail("components", "Separator")).toEqual({
+    steps: [{ label: "Components" }],
     current: "Separator",
   });
 });
 
-test("getTrailStructuredData lists home, the steps, and the page without a URL", () => {
-  const trail = getCollectionTrail("react", "recipes", "Navigation");
+test("getTrailStructuredData lists home, the linked steps, and the page without a URL", () => {
+  const trail = getCollectionTrail("components", "API reference");
+  trail.steps.push({
+    label: "Separator",
+    href: "/react/components/separator/",
+  });
   expect(getTrailStructuredData(trail, "https://ariakit.com")).toEqual({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -40,10 +44,10 @@ test("getTrailStructuredData lists home, the steps, and the page without a URL",
       {
         "@type": "ListItem",
         position: 2,
-        name: "Recipes",
-        item: "https://ariakit.com/react/recipes/",
+        name: "Separator",
+        item: "https://ariakit.com/react/components/separator/",
       },
-      { "@type": "ListItem", position: 3, name: "Navigation" },
+      { "@type": "ListItem", position: 3, name: "API reference" },
     ],
   });
 });
