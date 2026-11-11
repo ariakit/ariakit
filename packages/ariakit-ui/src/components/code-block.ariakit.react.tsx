@@ -220,13 +220,30 @@ function trackToggleFocus(block: HTMLElement, onCancel: () => void) {
   return toggleFocus;
 }
 
-// The text of the title that the shorthand prop renders, so the label of the
-// copy button names it in the server HTML too. Other elements that render a
-// CodeBlockTitle register its text after it mounts.
-function getTitleText(title: React.ReactNode) {
+// Returns the labels with the text of an id, or without the id when it has no
+// text. The same labels come back when nothing changes.
+function withLabel(
+  labels: ReadonlyMap<string, string>,
+  id: string,
+  text?: string,
+) {
+  if (labels.get(id) === text) return labels;
+  const nextLabels = new Map(labels);
+  if (text == null) {
+    nextLabels.delete(id);
+  } else {
+    nextLabels.set(id, text);
+  }
+  return nextLabels;
+}
+
+// The title part that the shorthand prop renders. An element that renders a
+// CodeBlockTitle inside it registers its id and its text after it mounts.
+// Another element names nothing.
+function getTitlePart(title: React.ReactNode) {
   if (!React.isValidElement<CodeBlockTitleProps>(title)) return;
   if (title.type !== CodeBlockTitle) return;
-  return getChildrenText(title.props.children);
+  return title;
 }
 
 /**
@@ -314,16 +331,7 @@ export function CodeBlock(props: CodeBlockProps) {
   );
 
   const setLabel = React.useCallback((id: string, text?: string) => {
-    setLabels((labels) => {
-      if (labels.get(id) === text) return labels;
-      const nextLabels = new Map(labels);
-      if (text == null) {
-        nextLabels.delete(id);
-      } else {
-        nextLabels.set(id, text);
-      }
-      return nextLabels;
-    });
+    setLabels((labels) => withLabel(labels, id, text));
   }, []);
 
   const toggleExpanded = useEvent((nextExpanded: boolean) => {
@@ -386,16 +394,24 @@ export function CodeBlock(props: CodeBlockProps) {
   React.useEffect(() => () => toggleFocus.current?.cleanup(), []);
 
   // A title from the shorthand prop names the scroll area and the copy button
-  // in the server HTML too. A title written as a part registers its id and its
-  // text after it mounts, like a file tab registers its text.
-  const titleId =
-    registeredTitleId ?? (titleElement ? defaultTitleId : undefined);
-  const shorthandTitleText = getTitleText(titleElement);
+  // in the server HTML too, with the id that it renders. A title written as a
+  // part registers its id and its text after it mounts, like a file tab
+  // registers its text.
+  const titlePart = getTitlePart(titleElement);
+  const shorthandTitleId = titlePart
+    ? (titlePart.props.id ?? defaultTitleId)
+    : undefined;
+  const shorthandTitleText = titlePart
+    ? getChildrenText(titlePart.props.children)
+    : undefined;
+  // The shorthand knows the id that it renders, even right after it changes.
+  const titleId = shorthandTitleId ?? registeredTitleId;
   const labels = React.useMemo(() => {
-    if (shorthandTitleText == null) return registeredLabels;
-    if (registeredLabels.has(defaultTitleId)) return registeredLabels;
-    return new Map(registeredLabels).set(defaultTitleId, shorthandTitleText);
-  }, [registeredLabels, shorthandTitleText, defaultTitleId]);
+    if (shorthandTitleId == null) return registeredLabels;
+    // Like the id, the text of the shorthand wins right after it changes, and a
+    // shorthand without text gives the copy button no name.
+    return withLabel(registeredLabels, shorthandTitleId, shorthandTitleText);
+  }, [registeredLabels, shorthandTitleId, shorthandTitleText]);
   const context = React.useMemo(
     () => ({
       defaultTitleId,
