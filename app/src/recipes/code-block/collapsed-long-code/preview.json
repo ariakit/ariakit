@@ -1,0 +1,4 @@
+{
+  "title": "Collapsed Long Code",
+  "description": "A long file that the maxLines prop of CodeBlock collapses to its first 12 lines, with the rest faded out and an expand button over them. Expanded, the block fits on the screen with a collapse button under the code, and the copy button copies the whole file in both states. Use it for long files on pages where the first lines are enough for most readers."
+}

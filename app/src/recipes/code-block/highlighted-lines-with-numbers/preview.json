@@ -1,0 +1,4 @@
+{
+  "title": "Highlighted Lines with Line Numbers",
+  "description": "Longer code with $lineNumbers on CodeBlockCode, where highlight() marks two lines next to each other, a line that is longer than the block, and a later line, and marks text in a comment, a parameter, a string, and template parts past the end of the block. The numbers stay in view while the code scrolls sideways and keep the bar of each marked line, and they are not selected or copied. Use it for a file that the text refers to by line, and Highlighted Lines and Words for a short snippet."
+}

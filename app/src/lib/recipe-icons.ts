@@ -11,6 +11,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   ChevronsRight,
   CircleDot,
+  CodeXml,
   Compass,
   Copy,
   Ellipsis,
@@ -32,6 +33,7 @@ import {
 export const recipeIcons = {
   "chevrons-right": ChevronsRight,
   "circle-dot": CircleDot,
+  "code-xml": CodeXml,
   compass: Compass,
   copy: Copy,
   ellipsis: Ellipsis,

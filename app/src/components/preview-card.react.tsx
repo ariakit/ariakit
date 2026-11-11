@@ -799,6 +799,7 @@ function PreviewCardInline({
 }: PreviewCardInlineProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const activate = useInactiveScroll(viewportRef, onActiveChange);
+  useScrollportHeight(viewportRef);
   return (
     <PreviewCardStage onResize={activate}>
       {({ viewportId }) => (
@@ -1242,6 +1243,58 @@ function hasScrollOverflow(element: Element) {
   return (
     /auto|scroll/.test(style.overflowX) || /auto|scroll/.test(style.overflowY)
   );
+}
+
+/**
+ * Publishes the height that an example can use in a card whose window has a
+ * maximum height, as `--scrollport-height` on the viewport. Content that fits
+ * in its scroll area, such as an expanded code block, then fits in the card
+ * instead of on the screen. CSS can't subtract the bar of the card, whose
+ * height follows its content, so the card measures it.
+ */
+function useScrollportHeight(viewportRef: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const card = viewport.closest<HTMLElement>("[data-preview-card]");
+    if (!card) return;
+    const properties = [
+      "--scrollport-height",
+      "--scrollport-start",
+      "--scrollport-end",
+    ];
+    const update = () => {
+      const maxHeight = Number.parseFloat(getComputedStyle(card).maxHeight);
+      // Without a maximum height, the card grows with the example, and the page
+      // is its scroll area.
+      if (Number.isNaN(maxHeight)) {
+        for (const property of properties) {
+          viewport.style.removeProperty(property);
+        }
+        return;
+      }
+      const { paddingTop, paddingBottom } = getComputedStyle(viewport);
+      const padding =
+        Number.parseFloat(paddingTop) + Number.parseFloat(paddingBottom);
+      // The bar, and the padding and edge of the window.
+      const chrome = card.offsetHeight - viewport.offsetHeight;
+      const height = Math.max(0, maxHeight - chrome - padding);
+      viewport.style.setProperty("--scrollport-height", `${height}px`);
+      // The sticky bars of the docs page don't cover the card.
+      viewport.style.setProperty("--scrollport-start", "0px");
+      viewport.style.setProperty("--scrollport-end", "0px");
+    };
+    update();
+    // The maximum height follows the screen, even when the card keeps its
+    // height, and the bar can wrap.
+    const observer = new ResizeObserver(update);
+    observer.observe(card);
+    addEventListener("resize", update);
+    return () => {
+      observer.disconnect();
+      removeEventListener("resize", update);
+    };
+  }, [viewportRef]);
 }
 
 /**

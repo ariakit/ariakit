@@ -1,0 +1,4 @@
+{
+  "title": "Browser Highlighting",
+  "description": "A textarea whose code shows highlighted in a CodeBlock below it. The server highlights the first code, and the first edit loads a small Shiki setup in the browser with a dynamic import, with the JavaScript regex engine, one grammar, and two themes. The preview reads the HTML with use() from a small cache, and useDeferredValue keeps the last highlighted code, faded and with aria-busy, until the new HTML is ready, so it needs React 19. Use it only for code that people type, such as a playground, because it is the one case where Shiki goes to the browser."
+}

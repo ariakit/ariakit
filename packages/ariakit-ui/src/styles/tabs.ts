@@ -678,8 +678,9 @@ export const tabPanels = cv({
     "relative z-1 overflow-clip",
     tabsBorder,
     // Overlap the strip notch and root edge so the selected folder covers the
-    // seam.
-    "-mt-[calc(var(--tabs-notch,0px)+var(--tabs-bordering))]",
+    // seam. The top margin and corners here apply only below a strip. A panel
+    // with no strip before it keeps those of $cover, like the first frame.
+    "not-first:-mt-[calc(var(--tabs-notch,0px)+var(--tabs-bordering))]",
     // Use root corner geometry, reducing the start radius beside the first
     // selected folder, and the end radius beside a last one in a stretched
     // strip. --tabs-round-s and --tabs-round-e square each corner while tabs
@@ -692,8 +693,8 @@ export const tabPanels = cv({
     "[.tabs-folder-cut>&]:[--tabs-corner-e:calc(min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-radius)))*var(--tabs-round-e,1))]",
     // Each corner opens from that radius to a full corner as --tabs-open-s or
     // --tabs-open-e grows, while the fade hides a selected outer folder.
-    "rounded-ss-[calc(var(--tabs-corner-s)+(var(--tabs-notch,0px)-var(--tabs-corner-s))*var(--tabs-open-s,0))]",
-    "rounded-se-[calc(var(--tabs-corner-e)+(var(--tabs-notch,0px)-var(--tabs-corner-e))*var(--tabs-open-e,0))]",
+    "not-first:rounded-ss-[calc(var(--tabs-corner-s)+(var(--tabs-notch,0px)-var(--tabs-corner-s))*var(--tabs-open-s,0))]",
+    "not-first:rounded-se-[calc(var(--tabs-corner-e)+(var(--tabs-notch,0px)-var(--tabs-corner-e))*var(--tabs-open-e,0))]",
     // Square the corners while tabs pass over them. A strip that fades keeps
     // its ends clear of the corners instead, so they stay round. The start
     // corner opens as the fade hides a selected first folder. The end corner

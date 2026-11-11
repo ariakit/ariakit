@@ -22,6 +22,9 @@ export const dialog = cv({
     // dialogs fall back to dynamic viewport height.
     "[--dialog-max-height:calc(var(--dialog-viewport-height,100dvh)-var(--dialog-inset)*2)]",
     "max-h-(--dialog-max-height)",
+    // Content that fits in its scroll area, such as a code block, fits in the
+    // dialog, inside its padding and edge.
+    "[--scrollport-height:calc(var(--dialog-max-height)-2*(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px)))]",
     "ui-backdrop:bg-(--ak-layer)/10 ak-dark:ui-backdrop:bg-(--ak-layer)/30",
     "ui-backdrop:backdrop-blur-xs",
   ],

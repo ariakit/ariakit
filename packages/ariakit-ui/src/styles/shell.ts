@@ -64,6 +64,11 @@ export const shell = cv({
     "[.shell_&:not(.shell_.shell_*)]:[--shell-below-b:calc(var(--shell-top)+var(--shell-head))]",
     "[.shell_.shell_&]:[--shell-top:var(--shell-below-b)]",
     "[.shell_.shell_&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head))]",
+    // The page scrolls under the sticky bars, so content that fits in the
+    // scroll area, such as a code block, stays below and above them. Main adds
+    // its own sticky header.
+    "[--scrollport-start:calc(var(--shell-top)+var(--shell-head))]",
+    "[--scrollport-end:var(--shell-foot)]",
     "[.shell>&]:col-[main] [.shell>&]:row-[body] [.shell>&]:min-h-0",
     "[.shell>&]:[--shell-duration:inherit] [.shell>&]:[--shell-motion:inherit]",
     "[.shell>&]:[--shell-ease:inherit] [.shell>&]:[--shell-main-max-width:inherit]",
@@ -875,6 +880,7 @@ export const shellMain = cv({
     // first two levels publish offsets: the supported third level consumes them.
     "[.shell:not(.shell_*)>&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
     "[.shell_.shell:not(.shell_.shell_.shell)>&]:[--shell-below-b:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
+    "[--scrollport-start:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
   ],
   variants: {
     /**
