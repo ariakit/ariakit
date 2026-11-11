@@ -240,11 +240,14 @@ export const listItem = cv({
     },
     /**
      * Shows the row as disabled, like a disabled control: lower contrast and
-     * the faintest ink on the row, its marker, and its content. It doesn't set
+     * the faintest ink on the row, its marker, and the blocks of its content.
+     * Deeper elements that set their own ink keep it. It doesn't set
      * `aria-disabled`.
      */
     $disabled: [
-      "ak-disabled ak-ink-0 **:ak-ink-0",
+      // Fixed-depth child selectors reach the marker and the content blocks
+      // without an ancestor walk on every style recalculation.
+      "ak-disabled ak-ink-0 *:ak-ink-0 *:*:ak-ink-0",
       // An adaptive text color targets nested text and icons directly, so set
       // the ink on the same targets. Skip forced colors, where this rule would
       // override the system disabled color.
@@ -340,9 +343,14 @@ export const listItemMarker = cv({
     "ui-list-counter:before:[font-size-adjust:0.45]",
     // Counters override the thick progress arc with a thin ring around the
     // number.
-    "[--progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
-    "ui-list-counter:[--progress-thickness:0.15em]",
-    "ui-list-icon:[--progress-thickness:0.15em]",
+    "[--list-progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
+    "ui-list-counter:[--list-progress-thickness:0.15em]",
+    "ui-list-icon:[--list-progress-thickness:0.15em]",
+    "[--progress-thickness:var(--list-progress-thickness)]",
+    // A spinning arc shows no value, so a thinner stroke reads as loading. The
+    // base value has its own name, because a property that refers to itself is
+    // invalid.
+    "[&>[data-indeterminate]]:[--progress-thickness:calc(var(--list-progress-thickness)*2/3)]",
   ],
   variants: {
     /**

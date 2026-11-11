@@ -45,9 +45,9 @@ function isFontLeadingName(value: unknown): value is FontLeadingName {
 
 /**
  * Resolves a font size: a named size to its Tailwind class, and a positive
- * number to a class that multiplies the font size and the line height of the
- * parent. Extenders that replace `$size` can delegate other values to it, so
- * the named sizes and numbers keep working. Other values return nothing.
+ * number to a class that multiplies the font size of the parent. Extenders that
+ * replace `$size` can delegate other values to it, so the named sizes and
+ * numbers keep working. Other values return nothing.
  */
 export function getFontSizeClass(
   value: unknown,
@@ -58,12 +58,17 @@ export function getFontSizeClass(
   if (value <= 0) return;
   return {
     // In line-height, lh is the parent's line height and em is this font size,
-    // so this is the parent's line-height ratio, which descendants inherit as a
-    // number. tan(atan2(a,b)) divides lengths where Firefox calc() cannot. The
-    // line height keeps this class with the text-* classes in Tailwind's order,
-    // so caller classes from text-xs to text-xl and leading-* classes win.
+    // so 1em/scale is the parent font size. Smaller text takes off two pixels
+    // of line height for each pixel of font size, like the Tailwind scale, so
+    // 0.75 and 0.875 of 16px text with a 24px line get 16px and 20px lines. The
+    // result stays between 1 and the parent's ratio. Larger text keeps that
+    // ratio when the parent line is at most twice its font size, which covers
+    // the Tailwind leading scale. tan(atan2(a,b)) divides lengths where Firefox
+    // calc() cannot, and descendants inherit the ratio as a number. The line
+    // height keeps this class with the text-* classes in Tailwind's order, so
+    // caller classes from text-xs to text-xl and leading-* classes win.
     class:
-      "text-[calc(var(--font-scale)*1em)]/(--tw-leading,tan(atan2(1lh,calc(1em/var(--font-scale)))))",
+      "text-[calc(var(--font-scale)*1em)]/(--tw-leading,clamp(1,tan(atan2(calc(1lh-2*(1em/var(--font-scale)-1em)),1em)),tan(atan2(1lh,calc(1em/var(--font-scale))))))",
     style: { "--font-scale": `${value}` },
   };
 }
@@ -117,10 +122,14 @@ export const font = cv({
     /**
      * Sets the font size that padding, gaps, and icons scale with. Named sizes
      * use the Tailwind text scale, so `sm` always has the size of `text-sm`. A
-     * positive number multiplies the font size and the line height of the
-     * parent, so `0.875` is `0.875em`. With the default Tailwind theme, `0.75`,
-     * `0.875`, `1.125`, and `1.25` have the font sizes of `xs`, `sm`, `lg`, and
-     * `xl` in 16px text. `$leading` replaces the line height of named sizes and
+     * positive number multiplies the font size of the parent, so `0.875` is
+     * `0.875em`. A smaller number also takes off two pixels of line height for
+     * each pixel of font size. The line-height ratio stays between 1 and the
+     * ratio of the parent, and a larger number keeps the parent ratio when the
+     * parent line is at most twice its font size. With the default Tailwind
+     * theme, `0.75`, `0.875`, `1.125`, and `1.25` have the font sizes of `xs`,
+     * `sm`, `lg`, and `xl` in 16px text, and `0.75` and `0.875` also have their
+     * line heights. `$leading` replaces the line height of named sizes and
      * numbers. `auto`, the default of slot frames and control groups, inherits
      * both.
      */

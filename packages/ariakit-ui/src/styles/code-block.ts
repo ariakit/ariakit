@@ -100,7 +100,11 @@ const codeBlockFolder = cv({
   class: ["font-sans"],
   defaultVariants: {
     $lighten: 0.5,
-    $size: "sm",
+    // A number scales with the code in larger or smaller text. Like the code,
+    // it keeps its own line ratio, the one of text-sm, so a parent with a
+    // taller line, such as prose, doesn't make the header taller.
+    $size: 0.875,
+    $leading: 20 / 14,
   },
 });
 

@@ -600,14 +600,6 @@ body > * {
   initial-value: 0px;
 }
 
-/* The capital height of the text around a badge. The badge style recipe sets
-   it on the parent, where the length resolves in the parent font. */
-@property --badge-text-cap {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 0px;
-}
-
 /* Resolve the guide center on the content so row fonts cannot move it. */
 @property --disclosure-guide-center {
   syntax: "<length>";

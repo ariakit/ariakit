@@ -7,7 +7,7 @@ import {
   ListDisclosureButton,
 } from "@ariakit/ui/components/list.ariakit.react";
 import { Progress } from "@ariakit/ui/components/progress.ariakit.react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const steps = [
   {
@@ -35,12 +35,16 @@ const steps = [
 export default function Example() {
   const [doneIds, setDoneIds] = useState(["profile"]);
   const [openId, setOpenId] = useState<string | null>("workspace");
+  const buttons = useRef(new Map<string, HTMLButtonElement>());
 
   const markAsDone = (id: string) => {
     const nextDoneIds = [...doneIds, id];
     const nextStep = steps.find((step) => !nextDoneIds.includes(step.id));
     setDoneIds(nextDoneIds);
     setOpenId(nextStep?.id ?? null);
+    // The pressed button hides with the content of its step. Move focus to the
+    // step that opens next, or back to this step when none is left.
+    buttons.current.get(nextStep?.id ?? id)?.focus();
   };
 
   return (
@@ -76,7 +80,13 @@ export default function Example() {
                 setOpen={(open) => setOpenId(open ? step.id : null)}
                 content={{ body: { $size: 0.875 } }}
                 button={
-                  <ListDisclosureButton checked={done}>
+                  <ListDisclosureButton
+                    ref={(element) => {
+                      if (element) buttons.current.set(step.id, element);
+                      else buttons.current.delete(step.id);
+                    }}
+                    checked={done}
+                  >
                     {step.title}
                   </ListDisclosureButton>
                 }

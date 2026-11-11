@@ -350,7 +350,7 @@ export default function ListExamples() {
 
       <Example
         title="Nested list"
-        description="A nested list halves its gap and resets the marker kind. The outer counter continues after it."
+        description="A nested list keeps the gap of its parent and resets the marker kind. The outer counter continues after it."
         stretch
         code={`
           <List ordered>

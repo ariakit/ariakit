@@ -317,26 +317,6 @@ export default function BadgeExamples() {
       </Example>
 
       <Example
-        title="Default size in a heading"
-        description="The badge keeps its own small text and normal letter spacing, so the tighter letters of the heading don't crowd it."
-        code={`
-          <Heading $level={1}>
-            Changelog
-            <Badge $layer="brand">
-              <BadgeLabel>Latest</BadgeLabel>
-            </Badge>
-          </Heading>
-        `}
-      >
-        <Heading $level={1}>
-          Changelog{" "}
-          <Badge $layer="brand">
-            <BadgeLabel>Latest</BadgeLabel>
-          </Badge>
-        </Heading>
-      </Example>
-
-      <Example
         title="Leading icon"
         description="An icon before the label, sized from the badge font and painted with the text color."
         code={`
@@ -661,12 +641,12 @@ export default function BadgeExamples() {
         later rows off whole pixels and change their page captures.
        */}
       <Example
-        title="Relative size in a heading"
-        description="A number multiplies the font size and the line height of the heading around it, so the badge grows with the heading."
+        title="Default size in a heading"
+        description="The badge text is a bit smaller than the heading, and its capitals line up with the heading capitals. It keeps normal letter spacing, so the tighter letters of the heading don't crowd it."
         code={`
           <Heading $level={1}>
             Changelog
-            <Badge $layer="brand" $size={0.75}>
+            <Badge $layer="brand">
               <BadgeLabel>Latest</BadgeLabel>
             </Badge>
           </Heading>
@@ -674,7 +654,7 @@ export default function BadgeExamples() {
       >
         <Heading $level={1}>
           Changelog{" "}
-          <Badge $layer="brand" $size={0.75}>
+          <Badge $layer="brand">
             <BadgeLabel>Latest</BadgeLabel>
           </Badge>
         </Heading>
