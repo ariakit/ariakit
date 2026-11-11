@@ -81,6 +81,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const loadingHeight = await panel.evaluate(
       (element) => element.getBoundingClientRect().height,
     );
+    await test.expect.poll(requests.getCount).toBe(1);
     await requests.release();
     await test.expect(panel).not.toHaveAttribute("aria-busy");
     await test.expect(panel).toContainText(".toggle-content {");
