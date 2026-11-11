@@ -180,9 +180,11 @@ export default function Example({ hook, style }: ReturnType<typeof load>) {
             setExpanded={(nextExpanded) => {
               startTransition(() => setLateExpanded(nextExpanded));
             }}
+            title="use-users.ts"
             expand="Show all lines after a transition"
             collapse="Show fewer lines after a transition"
           >
+            {/* A label of its own names the code instead of the title. */}
             <CodeBlockCode
               html={hook.html}
               aria-label="Hook that expands in a transition"

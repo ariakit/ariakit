@@ -1034,9 +1034,11 @@ export function CodeBlockCode({
   const titleId = context?.titleId;
   // A region needs a name: the title of the block, or a label of its own.
   const named = !!(titleId || rest["aria-label"] || rest["aria-labelledby"]);
-  // The copy button names the text that names the code: the tab of a panel or
-  // the title of the block. Text is the value to copy, not the content of the
-  // button.
+  // The copy button names the tab of a panel or the title of the block, even
+  // when a label of its own names the code. Text is the value to copy, not the
+  // content of the button. The title names the code only without such a label.
+  const labelledByTitle =
+    !!titleId && !rest["aria-label"] && !rest["aria-labelledby"];
   const nameId = rest["aria-labelledby"] ?? titleId;
   const name = nameId ? context?.labels.get(nameId) : undefined;
   const copyElement =
@@ -1055,7 +1057,7 @@ export function CodeBlockCode({
       dir="ltr"
       tabIndex={getCodeTabIndex(scrollable, collapsible, collapsed)}
       {...(scrollable && named && { role: "region" })}
-      {...(scrollable && titleId && { "aria-labelledby": titleId })}
+      {...(scrollable && labelledByTitle && { "aria-labelledby": titleId })}
       {...codeBlockCode.jsx({
         ...variantProps,
         $lineNumbers: lineNumbers,
