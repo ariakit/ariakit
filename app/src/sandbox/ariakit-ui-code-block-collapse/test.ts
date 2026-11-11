@@ -84,3 +84,8 @@ test("doesn't move the focus from the body after a toggle that the page ignores"
   await expect.poll(q.button.lazy("Show fewer lines")).toBeInTheDocument();
   expect(document.body).toHaveFocus();
 });
+
+test("labels the scroll buttons of the file tabs in another language", () => {
+  expect(q.button("Arquivos anteriores")).toBeInTheDocument();
+  expect(q.button("Próximos arquivos")).toBeInTheDocument();
+});

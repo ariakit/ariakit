@@ -98,7 +98,11 @@ export default function Example({ hook, style }: ReturnType<typeof load>) {
             expand={{ label: (lineCount) => `Mostrar as ${lineCount} linhas` }}
             collapse="Mostrar menos linhas"
           >
-            <CodeBlockTabList aria-label="Arquivos">
+            <CodeBlockTabList
+              aria-label="Arquivos"
+              previousButton={{ "aria-label": "Arquivos anteriores" }}
+              nextButton={{ "aria-label": "Próximos arquivos" }}
+            >
               <CodeBlockTab id="use-users.ts">use-users.ts</CodeBlockTab>
               <CodeBlockTab id="users.css">users.css</CodeBlockTab>
             </CodeBlockTabList>
