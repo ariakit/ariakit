@@ -1,0 +1,4 @@
+{
+  "title": "Code Block",
+  "description": "A CodeBlockCode in a CodeBlock, with TSX highlighted by highlight() in the server file and a copy prop on CodeBlockCode that takes the text to copy. The browser gets the HTML and the text as props, never Shiki. Without a title there is no header, the copy button with the default label shows in the top end corner of the code, and aria-label on CodeBlockCode names the scroll area. Use it as the baseline for any static code, before adding a title, line numbers, marks, or file tabs."
+}

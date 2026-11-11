@@ -1,0 +1,5 @@
+{
+  "title": "Code Blocks in Prose",
+  "description": "A documentation page in a Shell with a ShellMain and a Prose column, where two install commands with npm, pnpm, Yarn, and Bun tabs, a titled file with line numbers and a marked line, and a short CSS file sit between headings and paragraphs with inline Code. The install blocks share one package manager choice through useLocalStorageState from use-local-storage-state, so a tab in one block selects it in the other, and the choice applies again after a reload, right after hydration. The titles show the icon of each file. Use it to see how code blocks fit in an article, and as the layout for a docs page with install commands.",
+  "fullscreen": true
+}

@@ -1,0 +1,4 @@
+{
+  "title": "Highlighted Lines and Words",
+  "description": "Code where the lines and words options of highlight() mark line 4, every section tag with a string, chosen occurrences of open with a tuple such as [\"open\", 1, 3], and an arrow function that spans several tokens, so the source stays plain code. A mark in one token takes the color of that token, a mark across several tokens gets the color of its line, and a marked line gets a brand layer with a bar at the start, plus dotted edges at the top and bottom of each run when contrast increases. Use it to point readers at the part of the code that the text explains, and Highlighted Lines with Line Numbers for longer code."
+}

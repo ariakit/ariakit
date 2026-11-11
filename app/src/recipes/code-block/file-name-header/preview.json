@@ -1,0 +1,4 @@
+{
+  "title": "File Name Header",
+  "description": "A CodeBlock whose title prop renders a header with the file name and its icon, as a CodeBlockTitle that looks like a selected folder tab but isn't a tab. The title names the scroll area, and the copy button from the copy prop takes its label from the title, Copy format-price.ts, so each block on a page has its own button name. Use it for a file that readers copy into a project, where the file name tells them where it goes."
+}

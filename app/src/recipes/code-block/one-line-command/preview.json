@@ -1,0 +1,4 @@
+{
+  "title": "One-Line Command",
+  "description": "An install command in a CodeBlock without a title, where the copy button from the copy prop shows at the end of the line, and the line leaves room for it. $prompt shows a dollar sign before the command that is not selected or copied, and aria-label names the scroll area. Use it for a command that readers paste into a terminal, such as on an install page."
+}

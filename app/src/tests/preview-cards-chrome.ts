@@ -243,6 +243,44 @@ test("preview card frames judge the direction of a whole wheel gesture", async (
   await expect(html).toHaveAttribute("data-preview-active", "");
 });
 
+test("inline preview cards fit an expanded code block", async ({ page, q }) => {
+  await gotoAndSettle(page, "/react/recipes/code-block/");
+  const article = q.region("Collapsed Long Code", { exact: true });
+  await article.scrollIntoViewIfNeeded();
+  const card = query(article);
+  // Astro removes the ssr attribute once the island hydrates, and the buttons
+  // ignore clicks before that.
+  await expect(article.locator("astro-island[ssr]")).toHaveCount(0);
+  await card.button("Show all 36 lines").click();
+  // The example scrolls in the card, so the button only shows in full when the
+  // expanded block fits in the card.
+  await expect(card.button("Show fewer lines")).toBeInViewport({ ratio: 1 });
+});
+
+test("inline preview cards load the files of an example again after a reload", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/code-block/");
+  const article = q.region("Files Loaded on Tab Change", { exact: true });
+  await article.scrollIntoViewIfNeeded();
+  const card = query(article);
+  // Astro removes the ssr attribute once the island hydrates, and the tabs
+  // ignore clicks before that.
+  await expect(article.locator("astro-island[ssr]")).toHaveCount(0);
+  await card.checkbox("Simulate a slow network").click();
+  await card.tab("toggle.css").click();
+  await expect(card.tabpanel("toggle.css")).toContainText(".toggle {");
+
+  // The example keeps its requests in its state, so the reload loads the file
+  // again, after the delay of the slow network, which is on again.
+  await card.button("Reload preview").click();
+  await card.tab("toggle.css").click();
+  const panel = card.tabpanel("toggle.css");
+  await expect(panel).toHaveAttribute("aria-busy", "true");
+  await expect(panel).toContainText(".toggle {");
+});
+
 // A card near the height of its row grows to the row, with calc-size(), which
 // only Chrome supports. The example stays in place when it grows in its card
 // and when the other card in its row grows.

@@ -1,0 +1,49 @@
+---
+title: Code Block
+category: content
+icon: code-xml
+---
+
+## Overview
+
+These examples build code blocks with the Ariakit UI `CodeBlock` components and syntax highlighting from [Shiki](https://shiki.style). Shiki runs on the server or at build time, so the browser gets finished HTML and never loads the highlighter. Each example has a server file, `index.server.ts`, next to the component. Its `load` function highlights the code, and the result becomes props of the component.
+
+The gallery starts with a block and a copy button, without a header, and a one-line command. Then it adds a file name in a header, line numbers, and marked lines and text, with and without line numbers. The next examples put several files in tabs, more tabs than fit in the block, and code blocks in a documentation page with install commands that remember the package manager. The last examples load files only when they show, collapse long code, wrap long lines, and highlight code that people type.
+
+## Components
+
+`highlight` from `@ariakit/ui/utils/highlight.server` returns the `html` of the lines and the `text` to copy. Import it only in server code, such as a server file, a Next.js server component, a loader, or Astro frontmatter. A module that the browser loads must not import it, or Shiki goes to the browser too. A type import is safe, because it leaves no code. The helper uses the JavaScript regex engine and the GitHub light and dark themes. To support another language, add its grammar to the helper.
+
+Its options mark lines and text, so the source stays plain code. `lines` takes one-based line numbers. `words` takes text: a string marks each occurrence, and a tuple such as `["open", 0, 2]` marks only the first and the third. A mark can span tokens and lines. A mark in one token takes the color of the token, and a mark across tokens gets the color of the line.
+
+`CodeBlock` has the geometry of tabs. Its `title` prop renders a `CodeBlockHeader` with a `CodeBlockTitle`, which looks like a selected folder tab but isn't a tab. A static block like this has no frame of its own and a transparent strip, so only the title and the code show edges. `CodeBlockCode` renders the `html` in a scroll area, half a step lighter than the page, like a tab panel. Its `copy` prop renders a `CodeBlockCopy` in the top end corner of the code, at the end of the first line, in a frame that covers the code. Pass the `text` of `highlight` for a button whose label names the title, such as "Copy counter.tsx", or "Copy code" without a title. Props such as `label` replace it, and a `label` function takes the title, such as for another language.
+
+Token colors come from the light and the dark theme. Each token takes the theme that matches its layer, and its color adapts to the background, so tokens keep enough contrast on any layer, such as a brand-colored callout. Marked lines are layers too, with a bar at the start in the brand color. Adaptive dotted edges in the brand color also mark the top and the bottom of each run of marked lines. Like other adaptive edges, they show only when contrast increases, such as with `prefers-contrast: more`, and they grow stronger with it. The `$lineNumbers`, `$wrap`, and `$prompt` props of `CodeBlockCode` add line numbers, wrap long lines, and show a prompt sign before each command. Line numbers stay in view while the code scrolls sideways. Numbers and signs come from CSS, so they are not selected or copied.
+
+A block fits in the scroll area around it, up to `60rem`: the screen below the sticky bars of an app shell, or a dialog or a popover. Another scroll area can publish the height that its content can use in `--scrollport-height`, and the space that its sticky bars cover in `--scrollport-start` and `--scrollport-end`. The header and the collapse button keep their height, and long code scrolls down inside. `$maxHeight` on `CodeBlock` sets another limit, and `false` shows all lines. A block whose code wraps has no limit, because wrapped code is not a tab stop.
+
+The `maxLines` prop of `CodeBlock` collapses longer code to its first lines and fades out the last ones. A click on the collapsed code, or on the expand button over it, shows all lines. A collapse button under the code shows fewer lines again. The `expand` and `collapse` props take a label, props, or an element, like the `copy` prop of the code. The `label` of the expand button can be a function of the line count, such as for another language. `expanded`, `defaultExpanded`, and `setExpanded` share the state with the page. With file tabs, the block keeps one state for all files, and a shorter file shows all lines.
+
+For file tabs, pass `defaultSelectedId` or `selectedId` to `CodeBlock`, which then shares the tab state. Put a `CodeBlockTabList` with a `CodeBlockTab` for each file as the first child, and then a `CodeBlockPanel` for each file. Each panel is the scroll area of its file. Its `copy` prop renders a copy button while the panel shows, and the label names the tab, such as "Copy toggle.css". The `separator` prop of `CodeBlockTab` puts a `CodeBlockTabSeparator` pipe before the tab, so `separator={!!index}` separates each tab from the one before it. Like `TabList`, a strip that overflows scrolls sideways, fades its tabs at the ends, and shows "Previous tabs" and "Next tabs" buttons with a fine pointer. When the tabs are views of the same code, such as the commands of each package manager, one `CodeBlockPanel` with the `single` prop can follow the selected tab. File tabs have the text size of a title, and more padding, so they are easier to press.
+
+The install commands of the documentation page keep the package manager with `useLocalStorageState` from [use-local-storage-state](https://github.com/astoilkov/use-local-storage-state). Every hook with the same key shares the value, so a tab in one block selects it in the other blocks, and in other browser tabs. The server and the first render show npm, so hydration matches the page, and the saved choice applies right after it.
+
+The `icon` prop of `CodeBlockTab` and `CodeBlockTitle` puts an icon before the file name, and screen readers skip it. The examples keep a few icons in `file-icons.ts`: the file type icons of the Seti theme of VS Code, and the logos of package managers, which Seti doesn't have, from vscode-icons. A server file picks the icon of each file, so only the icons in use reach the page. The colored parts use `ak-text`, which adapts the color to the layer behind them, so each icon keeps its contrast on any tab and in both color schemes.
+
+## Files on demand
+
+A server file can export `lazyFiles`, a record of sources by file name. At build time, a route in the app highlights each file and writes the result to a JSON file. The `load` function receives `getFileUrl`, which returns the URL of each JSON file, and sends only the names, URLs, and line counts with the page. The example loads each file with [TanStack Query](https://tanstack.com/query). The panel of the selected tab reads its file with `useSuspenseQuery`, and a file never goes stale or leaves the cache, so it loads once. The example keeps its `QueryClient` in its state, so a new mount, such as a reload of the preview, loads the files again. An app usually has one client at its root instead. A failed request doesn't try again by itself, and a button starts a new one. A pointer over a tab starts the request earlier with `prefetchQuery`, in an event handler. A local server answers at once, so a checkbox adds a delay before each request, and the skeleton lines show long enough to see.
+
+While a file loads, a `Suspense` boundary shows its fallback: a panel with a `CodeBlockSkeleton` and `aria-busy`, and a status message in the block. `CodeBlockSkeleton` renders skeleton lines in the shapes and the colors of highlighted code. Its `lines` prop takes the line count of the file, so the panel has its final height, and the line numbers and the buttons stay the same when the file arrives. The copy button of that panel is disabled, because Safari rejects a copy that waits for a request. When a request fails, an error boundary shows a button that tries again.
+
+In another app, use a route that is static at build time, such as an Astro endpoint with `getStaticPaths` or a Next.js route handler forced to be static. Code that exists only at run time, such as code from a database, needs a route that highlights each request, and Shiki then goes into the server bundle.
+
+## Accessibility
+
+A scroll area is a tab stop, so keyboard users can scroll long lines in every browser, including Safari. The title names it, so screen readers announce the file name when the area takes focus. A block without a title needs an `aria-label` on `CodeBlockCode`, which then becomes a named region too. With `$wrap`, lines don't scroll, and the code is not a tab stop. A file tab names its panel.
+
+Each copy button needs its own name when the page has more than one. The default label names the title of the block or the tab of the panel, such as "Copy counter.tsx" or "Copy toggle.css". A block without either, such as two install commands that share a package manager, needs a label of its own, such as the command. The copy button of a file that is still loading is disabled.
+
+Collapsed code is inert, so the tab order and screen readers skip it. The expand button is the way in: it moves the focus to the code. The collapse button comes right after the code in the tab order, and it moves the focus back to the expand button. Both buttons set `aria-expanded` and `aria-controls`.
+
+Marks are visual only. When a mark matters, say it in the text next to the block too, such as "The `Disclosure` on line 6 is a button".

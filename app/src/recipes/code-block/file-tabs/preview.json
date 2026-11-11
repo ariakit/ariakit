@@ -1,0 +1,4 @@
+{
+  "title": "File Tabs",
+  "description": "Several files in one CodeBlock, whose defaultSelectedId makes it share the tab state: a CodeBlockTabList with a folder CodeBlockTab for each file, whose separator prop puts a pipe before each tab after the first, and a CodeBlockPanel for each file, so each panel is the named scroll area of its file and keeps its own scroll position. The copy prop of each panel renders a copy button over its code while it shows, and the label names its tab, such as Copy toggle.css. Use it for a component and its styles or hooks, where every file comes with the page."
+}

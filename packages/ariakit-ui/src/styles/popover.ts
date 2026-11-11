@@ -29,6 +29,12 @@ export const popover = cv({
     // Use the Ariakit anchor origin when supplied; native popovers retain the
     // default center origin.
     "origin-(--popover-transform-origin)",
+    // Content that fits in its scroll area, such as a code block, fits in the
+    // room that Ariakit leaves for the popover, inside its padding and edge.
+    // The sticky bars of the page don't cover it. Zero specificity, so a
+    // dialog can publish its own height.
+    "ui-base:[--scrollport-height:calc(var(--popover-available-height,100dvh)-2*(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px)))]",
+    "[--scrollport-start:0px] [--scrollport-end:0px]",
   ],
   variants: {
     /** Sets the surface shadow. Use `none` to omit it. */

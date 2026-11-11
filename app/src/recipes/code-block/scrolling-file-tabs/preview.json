@@ -1,0 +1,4 @@
+{
+  "title": "Scrolling File Tabs",
+  "description": "Eight files in one CodeBlock, so the CodeBlockTabList is wider than the block. The strip scrolls sideways and fades its tabs at the ends, and with a fine pointer it shows Previous tabs and Next tabs buttons outside the tablist, which scroll it without moving the focus. A tab that the keyboard selects scrolls into view, and the copy prop of each panel names its tab. Use it for a component with many files, and File Tabs for a few files that fit."
+}

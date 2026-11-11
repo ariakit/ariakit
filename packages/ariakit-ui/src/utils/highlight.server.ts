@@ -68,11 +68,11 @@ export interface HighlightOptions {
 
 export interface HighlightResult {
   /**
-   * The HTML of the lines, for the inside of a `code` element. Each line is a
-   * `span` element with the `line` class.
+   * The HTML of the lines, for the `html` prop of `CodeBlockCode`. Each line is
+   * a `span` element with the `line` class.
    */
   html: string;
-  /** The code as plain text, such as the text to copy. */
+  /** The text to copy, for the `copy` prop of `CodeBlockCode`. */
   text: string;
 }
 
@@ -213,9 +213,9 @@ function createMarksTransformer(
  * text with `options`.
  * @example
  * const code = highlight(source, "tsx", { lines: [3], words: ["count"] });
- * <pre>
- *   <code dangerouslySetInnerHTML={{ __html: code.html }} />
- * </pre>
+ * <CodeBlock title="counter.tsx">
+ *   <CodeBlockCode html={code.html} copy={code.text} />
+ * </CodeBlock>
  */
 export function highlight(
   code: string,
@@ -226,7 +226,7 @@ export function highlight(
     lang,
     themes: { light: "github-light", dark: "github-dark" },
     // Each token gets --shiki-light and --shiki-dark, and no color of its own.
-    // The page styles choose between them.
+    // The codeBlockCode style recipe adapts them to the layer.
     defaultColor: false,
     transformers: [createMarksTransformer(code, options)],
   });

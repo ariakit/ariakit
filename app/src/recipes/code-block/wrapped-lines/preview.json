@@ -1,0 +1,4 @@
+{
+  "title": "Wrapped Lines",
+  "description": "A package.json in a CodeBlockCode with $wrap, which wraps long lines at the edge of the block instead of scrolling them, with $lineNumbers and a line marked by the lines option of highlight(). A wrapped line keeps one number, and its rows start after the gutter. Without a scroll area, the code is not a tab stop. Use it for prose-like code, such as long strings in JSON or Markdown, where a scroll area would hide the end of each line."
+}

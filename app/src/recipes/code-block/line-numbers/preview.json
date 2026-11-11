@@ -1,0 +1,4 @@
+{
+  "title": "Line Numbers",
+  "description": "A CodeBlockCode with $lineNumbers, which numbers each line with a CSS counter in a gutter as wide as the largest number. The numbers are not selected, copied, or read by screen readers, so the copy button and a text selection give only the code. Use it for longer files that the page text refers to by line."
+}

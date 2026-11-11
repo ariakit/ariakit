@@ -1,0 +1,4 @@
+{
+  "title": "Files Loaded on Tab Change",
+  "description": "File tabs where the server sends only the first file highlighted, and each other file loads from a prerendered JSON file when its tab is selected, or earlier when the pointer moves over the tab. The server file exports lazyFiles for the build and sends their names, URLs, and line counts. The selected panel reads its file with useSuspenseQuery from TanStack Query, with a query client in the state of the example, in a Suspense boundary whose fallback has a CodeBlockSkeleton at the final height and a disabled copy button, and an error boundary with QueryErrorResetBoundary shows a button that tries again. A checkbox, on at first, adds a delay before each request, so the skeleton shows long enough to see. Use it for many or large files, where most readers see only the first one."
+}

@@ -75,9 +75,10 @@ const testExcludes = [...configDefaults.exclude, ".claude/**"];
 
 const isReact18 = reactVersion.startsWith("18.");
 
-// Tests of recipes that require React 19, such as through React Router 8. The
-// React 18 suite skips them.
+// Tests of recipes that require React 19, such as through React Router 8 or
+// use(). The React 18 suite skips them.
 const react19Tests = [
+  "app/src/recipes/code-block/browser-highlighting/**",
   "app/src/recipes/navigation/**",
   "app/src/recipes/tabs/react-router/**",
 ];
