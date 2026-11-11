@@ -1054,7 +1054,7 @@ export function CodeBlockCode({
   // when a label of its own names the code. Text is the value to copy, not the
   // content of the button. The title names the code only without such a label.
   const labelledByTitle =
-    !!titleId && !rest["aria-label"] && !rest["aria-labelledby"];
+    !!titleId && rest["aria-label"] == null && rest["aria-labelledby"] == null;
   const nameId = rest["aria-labelledby"] ?? titleId;
   const name = nameId ? context?.labels.get(nameId) : undefined;
   const copyElement =
