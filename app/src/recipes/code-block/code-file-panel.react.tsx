@@ -107,8 +107,9 @@ export function CodeFilePanel(props: CodeFilePanelProps) {
   const tab = useTabContext();
   const selected = useStoreState(tab, "selectedId") === tabId;
   // A hidden panel doesn't read its file, so the file loads only when its tab
-  // is selected, unless a pointer over the tab started it earlier.
-  if (!selected) return <PlaceholderPanel {...props} />;
+  // is selected, unless a pointer over the tab started it earlier. It renders
+  // no skeleton either, because it doesn't show.
+  if (!selected) return <CodeBlockPanel tabId={tabId} />;
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (

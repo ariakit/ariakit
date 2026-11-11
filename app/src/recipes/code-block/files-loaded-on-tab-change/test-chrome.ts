@@ -46,6 +46,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(panel).toContainText(".toggle {");
   });
 
+  // Hidden panels don't show, so they aren't busy, and the page finishes
+  // loading once the file that shows arrives.
+  test("marks only the panel that loads as busy", async ({ page, q }) => {
+    const busy = page.locator("[aria-busy='true']");
+    await test.expect(busy).toHaveCount(0);
+    await q.checkbox(slowNetwork).click();
+    const requests = await holdRequests(page, cssUrl);
+    await q.tab("toggle.css").click();
+    await test
+      .expect(q.tabpanel("toggle.css"))
+      .toHaveAttribute("aria-busy", "true");
+    await test.expect(busy).toHaveCount(1);
+    await test.expect.poll(requests.getCount).toBe(1);
+    await requests.release();
+    await test.expect(busy).toHaveCount(0);
+  });
+
   test("loads a file when its tab is selected", async ({
     context,
     page,
