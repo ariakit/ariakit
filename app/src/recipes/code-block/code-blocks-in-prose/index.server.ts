@@ -22,7 +22,7 @@ export function Details() {
   return (
     <Ariakit.DisclosureProvider>
       <Ariakit.Disclosure>Show details</Ariakit.Disclosure>
-      <Ariakit.DisclosureContent>
+      <Ariakit.DisclosureContent className="disclosure-content">
         The order ships in two to three days.
       </Ariakit.DisclosureContent>
     </Ariakit.DisclosureProvider>
@@ -31,6 +31,12 @@ export function Details() {
 
 const styles = `.disclosure-content[data-enter] {
   animation: fade-in 150ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
 }`;
 
 function highlightCommands(record: Record<string, string>) {
