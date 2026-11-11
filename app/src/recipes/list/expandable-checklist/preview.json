@@ -1,0 +1,4 @@
+{
+  "title": "Expandable Checklist",
+  "description": "A checklist whose rows are controlled ListDisclosure components, so only one step is open at a time. The open step shows its details and a button that checks the step and opens the next one that is not done, and a Progress bar shows the share of finished steps. Use it for a setup flow where each step needs an action and its own details, rather than the flat checklist that only moves forward and back."
+}

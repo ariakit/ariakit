@@ -1,0 +1,4 @@
+{
+  "title": "Ordered Steps",
+  "description": "An ordered List whose rows hold a title and a paragraph. The paragraphs switch the list to blocks mode, so the rows get more space and a guide joins the numbered markers, with no guide after the last step. Use it for instructions that people follow in order, rather than the plain rows of the basic list."
+}

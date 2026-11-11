@@ -1,0 +1,4 @@
+{
+  "title": "Timeline with Icon Markers",
+  "description": "A timeline of events on a pull request. The list sets $marker to icon, so each ListItem shows its icon in a chip, $markerSize makes the chips larger than one line, and a guide joins them. A comment is a row with its own surface, so it is a card with an icon that the guide runs behind, and the last event shows a tinted check. Use it for a history of events with different kinds, such as an activity feed or an audit log."
+}

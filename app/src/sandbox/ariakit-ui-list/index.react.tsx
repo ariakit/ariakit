@@ -212,7 +212,7 @@ export default function ListExamples() {
 
       <Example
         title="Ordered steps"
-        description="Ordered blocks draw a guide between the chips. The last segment fades out."
+        description="Ordered blocks draw a guide between the chips. The last row draws no guide."
         stretch
         code={`
           <List ordered>
@@ -379,7 +379,7 @@ export default function ListExamples() {
 
       <Example
         title="Nested steps"
-        description="A nested ordered list draws its own guide. The outer segment continues past it, and only the last nested row fades out."
+        description="A nested ordered list draws its own guide. The outer segment continues past it, and the last nested row draws no guide."
         stretch
         code={`
           <List ordered>
@@ -505,7 +505,7 @@ export default function ListExamples() {
 
       <Example
         title="Step cards"
-        description="Rows are frames that paint their own surface and border, and the guide crosses the borders. The arc goes around the number of an open step."
+        description="Rows are frames that paint their own surface and border, and the guide runs between the rows, behind them. The arc goes around the number of an open step."
         stretch
         code={`
           <List ordered $gap={6}>
@@ -1035,7 +1035,7 @@ export default function ListExamples() {
               <p>
                 <strong>مراجعة المعرض</strong>
               </p>
-              <p>يتلاشى المقطع الأخير داخل صفه.</p>
+              <p>الصف الأخير لا يرسم دليلاً.</p>
             </ListItem>
           </List>
         </div>

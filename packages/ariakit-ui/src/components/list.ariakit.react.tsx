@@ -1,11 +1,11 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { CheckIcon } from "lucide-react";
 import * as React from "react";
 import {
   createOptionalRender,
   createRender,
+  hasContent,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
 import {
@@ -17,6 +17,7 @@ import {
   listItemGuide,
   listItemContent,
   listItemMarker,
+  listItemMarkerCheck,
 } from "../styles/list.ts";
 import { progressCircularFill } from "../styles/progress.ts";
 import type {
@@ -77,7 +78,19 @@ export interface ListItemProps
   extends
     ak.RoleProps<"li">,
     VariantProps<typeof listItem>,
-    Pick<ListItemMarkerProps, "checked" | "progress"> {}
+    Pick<ListItemMarkerProps, "checked" | "progress"> {
+  /**
+   * Icon shown in the marker. Use it in a list with `$marker="icon"`, which
+   * draws each marker as a chip. Set `$markerSize` on the list to give the
+   * icons more room. On a checked row, the icon replaces the check.
+   */
+  icon?: React.ReactNode;
+  /**
+   * Custom marker element or `ListItemMarker` props, such as color variants.
+   * The marker still takes `checked`, `progress`, and `icon` from the row.
+   */
+  marker?: React.ReactElement | ListItemMarkerProps;
+}
 
 /**
  * A row inside `List`. Creates its marker and guide, then wraps its children in
@@ -87,12 +100,34 @@ export interface ListItemProps
  *   <ListItem checked>Install</ListItem>
  *   <ListItem progress={0.5}>Configure</ListItem>
  * </List>
+ * @example
+ * <List $marker="icon" $markerSize={8} $guide>
+ *   <ListItem icon={<GitCommitIcon />}>Pushed a commit</ListItem>
+ *   <ListItem icon={<TagIcon />}>Added a tag</ListItem>
+ * </List>
+ * @example
+ * <List>
+ *   <ListItem checked marker={{ $layer: "success" }}>
+ *     Tests passed
+ *   </ListItem>
+ * </List>
  */
-export function ListItem({ checked, progress, ...props }: ListItemProps) {
+export function ListItem({
+  checked,
+  progress,
+  icon,
+  marker,
+  ...props
+}: ListItemProps) {
   const [variantProps, rest] = splitProps(props, listItem);
   return (
     <ak.Role.li {...listItem.jsx(variantProps)} {...rest}>
-      <ListItemMarker checked={checked} progress={progress} />
+      {variantProps.$marker !== false &&
+        createRender(ListItemMarker, marker, {
+          checked,
+          progress,
+          children: icon,
+        })}
       <ListItemGuide />
       <ListItemContent>{rest.children}</ListItemContent>
     </ak.Role.li>
@@ -116,10 +151,12 @@ export interface ListItemMarkerProps
     React.ComponentProps<"span">,
     Omit<VariantProps<typeof listItemMarker>, "$checked" | "$progress"> {
   /**
-   * Progress from `0` to `1`, shown as a circular arc until checked. Omit it to
-   * use the list's marker or the explicit `checked` state.
+   * Progress from `0` to `1`, shown as a circular arc until checked. Set
+   * `"indeterminate"` when the progress is unknown: the arc then spins, or
+   * stays in a fixed position with reduced motion. Omit it to use the list's
+   * marker or the explicit `checked` state.
    */
-  progress?: number;
+  progress?: number | "indeterminate";
   /**
    * Shows a checked or unchecked marker. Defaults to `true` when `progress` is
    * `1`; an explicit value takes precedence over progress completion.
@@ -146,17 +183,21 @@ export function ListItemMarker({
 }: ListItemMarkerProps) {
   const hasCheck = checked != null || progress != null;
   const completed = checked ?? progress === 1;
+  const indeterminate = progress === "indeterminate";
   const [variantProps, rest] = splitProps(props, listItemMarker);
   // Keep progress in the description so the name can convey the check state.
-  const description =
-    !completed && progress != null
-      ? `${Math.round(progress * 100)}% complete`
-      : undefined;
+  const getDescription = () => {
+    if (completed) return;
+    if (progress == null) return;
+    if (progress === "indeterminate") return "In progress";
+    return `${Math.round(progress * 100)}% complete`;
+  };
+  const description = getDescription();
   return (
     <span
       {...listItemMarker.jsx({
         $checked: hasCheck ? completed : undefined,
-        $progress: completed ? undefined : progress,
+        $progress: completed || indeterminate ? undefined : progress,
         ...variantProps,
       })}
       {...rest}
@@ -170,11 +211,17 @@ export function ListItemMarker({
       }
       aria-description={rest["aria-description"] ?? description}
     >
-      {completed ? (
-        <CheckIcon />
-      ) : progress != null ? (
-        <span {...progressCircularFill.jsx()} />
-      ) : null}
+      {/* An icon replaces the check. The check stays in an unchecked marker, so
+          it can show with a wipe. */}
+      {hasCheck && !hasContent(rest.children) && (
+        <span {...listItemMarkerCheck.jsx({ $checked: completed })} />
+      )}
+      {!completed && progress != null && (
+        <span
+          data-indeterminate={indeterminate || undefined}
+          {...progressCircularFill.jsx()}
+        />
+      )}
       {rest.children}
     </span>
   );
@@ -253,8 +300,9 @@ export function ListDisclosure({
 
 export interface ListDisclosureButtonProps
   extends
-    Omit<DisclosureButtonProps<typeof listDisclosureButton>, "recipe">,
-    Pick<ListItemMarkerProps, "checked" | "progress"> {}
+    Omit<DisclosureButtonProps<typeof listDisclosureButton>, "recipe" | "icon">,
+    Pick<ListItemMarkerProps, "checked" | "progress">,
+    Pick<ListItemProps, "icon" | "marker"> {}
 
 /**
  * Toggles a list disclosure and adds its marker, check state, or progress arc.
@@ -274,6 +322,8 @@ export function ListDisclosureButton({
   label,
   checked,
   progress,
+  icon,
+  marker,
   indicator = "chevron-down-next",
   ...props
 }: ListDisclosureButtonProps) {
@@ -282,7 +332,12 @@ export function ListDisclosureButton({
       ? { children: props.children }
       : label;
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
-  const marker = <ListItemMarker checked={checked} progress={progress} />;
+  // In a list, the icon goes in the marker, not in a slot before the label.
+  const markerEl = createRender(ListItemMarker, marker, {
+    checked,
+    progress,
+    children: icon,
+  });
   return (
     <DisclosureButton
       recipe={listDisclosureButton}
@@ -293,7 +348,7 @@ export function ListDisclosureButton({
           ? React.cloneElement(labelEl, {
               children: (
                 <>
-                  {marker}
+                  {markerEl}
                   <ListItemContent>{labelEl.props.children}</ListItemContent>
                 </>
               ),
@@ -301,7 +356,7 @@ export function ListDisclosureButton({
           : null
       }
     >
-      {!labelEl && marker}
+      {!labelEl && markerEl}
       {label !== undefined && props.children}
     </DisclosureButton>
   );

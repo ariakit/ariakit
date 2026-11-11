@@ -117,8 +117,10 @@ export const progressCircularFill = cv({
     // Hit testing ignores the mask, so allow pointer input through to center
     // content.
     "pointer-events-none",
-    "transition-[--progress-value] not-data-indeterminate:starting:[--progress-value:0]!",
-    "data-indeterminate:[--progress-value:0.25]",
+    // Both arcs grow from zero when they show. An indeterminate arc grows to
+    // its fixed length while it spins.
+    "transition-[--progress-value] starting:[--progress-value:0]!",
+    "data-indeterminate:[--progress-value:0.5]",
     "motion-safe:data-indeterminate:animate-spin",
     // Soften aliased edges. Reduce angular feathering at both endpoints to
     // avoid a faint arc at zero or a seam at one.

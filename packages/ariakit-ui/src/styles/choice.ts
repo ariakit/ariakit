@@ -7,6 +7,7 @@ import {
   buttonLabel,
   buttonSlot,
 } from "./button.ts";
+import { checkMark } from "./check-mark.ts";
 import {
   control,
   controlContent,
@@ -39,9 +40,11 @@ const choiceBase = cv({
  * mark.
  */
 export const choice = cv({
-  extend: [choiceBase],
+  extend: [choiceBase, checkMark],
   class: [
     "appearance-none",
+    // The check and a custom child are relative to the box.
+    "[--check-mark-box:var(--size)] [--slot-icon-size:var(--check-mark-size)]",
     // Restore text-line alignment for bare inputs; flex and grid parents still
     // control placement.
     "inline-flex align-middle",
@@ -86,18 +89,14 @@ export const choice = cv({
      * @default "check"
      */
     $mark: {
+      // The check mark style recipe draws the check with the layer's readable
+      // text color. The state comes from the input or a surrounding choice
+      // host, which shows the mark with the wipe of the check mark. The mixed
+      // state replaces the check with a level dash, which the same wipe also
+      // follows.
       check: [
-        // Use the layer's readable text color for the mark in checked and
-        // disabled states.
-        "after:bg-current",
-        "after:size-(--slot-icon-size) after:mask-(--choice-mark-check)",
-        "after:mask-contain after:mask-center after:mask-no-repeat",
         "ui-choice-mixed:after:mask-(--choice-mark-dash)",
-        // Both marks only move rightward at a constant speed: the check's two
-        // strokes are at 45 degrees and the dash is level. A left-to-right wipe
-        // therefore follows the line as if it were being written.
         "after:[clip-path:inset(0_100%_0_0)] ui-choice-on:after:[clip-path:inset(0)]",
-        // Only the on state sets these, so unchecking is immediate.
         "motion-safe:ui-choice-on:after:transition-[clip-path]",
         "motion-safe:ui-choice-on:after:duration-150",
         "motion-safe:ui-choice-on:after:ease-linear",
@@ -137,6 +136,10 @@ export const choice = cv({
   },
   defaultVariants: {
     $mark: "check",
+    $roundBox(defaultValue, variants) {
+      if (variants.$mark !== "check") return defaultValue;
+      return variants.$rounded === "full";
+    },
     // A switch needs more room than a box to show its thumb's two positions.
     $size(defaultValue, variants) {
       // Preserve any size supplied by an extender.
@@ -169,15 +172,6 @@ export const choice = cv({
       if (defaultValue === "transparent") return true;
       return defaultValue;
     },
-  },
-  refine({ variants, addClass }) {
-    // The tip of a check points at a corner, which a round box cuts off. There,
-    // a smaller check keeps about the room that a square box gives its sides.
-    if (variants.$mark === "check" && variants.$rounded === "full") {
-      addClass("[--slot-icon-size:calc(var(--size)*0.6)]");
-      return;
-    }
-    addClass("[--slot-icon-size:calc(var(--size)*0.7)]");
   },
 });
 

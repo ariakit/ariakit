@@ -1,0 +1,4 @@
+{
+  "title": "List in Prose",
+  "description": "Lists between the paragraphs of an article, inside Prose. The lists take their gap from the prose column, so the space around and between the rows follows the rhythm of the text, and a nested list keeps the gap of its parent, so only its indent shows its level. Use it for article and documentation content, rather than a list that stands alone."
+}

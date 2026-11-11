@@ -1,0 +1,4 @@
+{
+  "title": "Collapsible Steps",
+  "description": "An ordered list whose rows are ListDisclosure components. Each ListDisclosureButton shows the number of its step, a label, and a description, and it opens the details of the step below it, while a guide joins the numbers behind the open content. Use it for instructions with long details that people open one step at a time, rather than the steps that always show their text."
+}

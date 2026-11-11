@@ -2,6 +2,7 @@ import { cv } from "clava";
 import { controlSlot, getDisabledContentClass } from "./control.ts";
 import { isLayerColor } from "./layer.ts";
 import { slotFrame, slotFrameText } from "./slot-frame.ts";
+import { tint } from "./tint.ts";
 
 /**
  * A compact badge with a rounded edge. It keeps its pill shape in any parent
@@ -12,7 +13,8 @@ import { slotFrame, slotFrameText } from "./slot-frame.ts";
  * of the badge.
  */
 export const badge = cv({
-  extend: [slotFrame],
+  // The tint supplies the mix and the text colors of each kind.
+  extend: [slotFrame, tint],
   class: [
     // Rules that keep controls at their content width or color the border of a
     // floating slot also match this marker.
@@ -26,6 +28,12 @@ export const badge = cv({
     // Keep badges aligned with surrounding text while allowing flex and grid
     // placement.
     "inline-flex",
+    // In running text, center the capitals on those of the text around the
+    // badge. The parent gives its capital height, which is registered as a
+    // length so it resolves in the parent font. Flex and grid items ignore
+    // vertical-align.
+    "[:where(:has(>&))]:[--badge-text-cap:1cap]",
+    "align-[calc((var(--badge-text-cap)-1cap)/2)]",
     // Keep one-line counts at least square, including padding and borders.
     "min-w-[calc(1lh+(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px))*2)]",
     // In a slot, the slot height sets the size of the badge. The text is a bit
@@ -120,29 +128,6 @@ export const badge = cv({
       if (variants.$layer === "transparent") return false;
       if (isLayerColor(variants.$layer)) return false;
       return true;
-    },
-    $mix(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      if (!isLayerColor(variants.$layer)) return defaultValue;
-      // Blend colored badges into the parent surface for a lighter tint.
-      return defaultValue ?? 15;
-    },
-    $text(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      return defaultValue ?? true;
-    },
-    $textPush(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      return defaultValue ?? 60;
-    },
-    $textWarm(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      return defaultValue ?? 20;
-    },
-    $textChroma(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      if (!isLayerColor(variants.$layer)) return defaultValue;
-      return defaultValue ?? "vivid";
     },
   },
   refine({ variants, addClass }) {
