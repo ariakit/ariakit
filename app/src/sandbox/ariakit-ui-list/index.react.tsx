@@ -421,6 +421,113 @@ export default function ListExamples() {
       </Example>
 
       <Example
+        title="Nested commits"
+        description="Rows with a marker box taller than one line. The nested list has the same space around it as between its rows, and the hashes of all levels end at the same edge."
+        stretch
+        code={`
+          <List $markerSize={8} $guide>
+            <ListItem>
+              <span className="flex justify-between gap-2">
+                Merge the release branch <code>8f2c1ad</code>
+              </span>
+              <List $markerSize={8} $guide>
+                <ListItem>…</ListItem>
+              </List>
+            </ListItem>
+            <ListItem>…</ListItem>
+          </List>
+        `}
+      >
+        <List $markerSize={8} $guide>
+          <ListItem>
+            <span className="flex justify-between gap-2">
+              Merge the release branch <code>8f2c1ad</code>
+            </span>
+            <List $markerSize={8} $guide>
+              <ListItem>
+                <span className="flex justify-between gap-2">
+                  Update the changelog <code>c41e9b0</code>
+                </span>
+              </ListItem>
+              <ListItem>
+                <span className="flex justify-between gap-2">
+                  Bump the version <code>5a7d3e2</code>
+                </span>
+              </ListItem>
+            </List>
+          </ListItem>
+          <ListItem>
+            <span className="flex justify-between gap-2">
+              Publish the package <code>0b9e4c7</code>
+            </span>
+          </ListItem>
+        </List>
+      </Example>
+
+      <Example
+        title="Nested list in disclosure content"
+        description="The disclosure button already makes room for its tall marker box, so a list in the open content starts with the same space as between its rows."
+        stretch
+        code={`
+          <List $markerSize={8}>
+            <li>
+              <ListDisclosure defaultOpen button={<ListDisclosureButton>Release 2.4</ListDisclosureButton>}>
+                <List $markerSize={8}>
+                  <ListItem>Update the changelog</ListItem>
+                  <ListItem>Bump the version</ListItem>
+                </List>
+              </ListDisclosure>
+            </li>
+            <ListItem>Publish the package</ListItem>
+          </List>
+        `}
+      >
+        <List $markerSize={8}>
+          <li>
+            <ListDisclosure
+              defaultOpen
+              button={<ListDisclosureButton>Release 2.4</ListDisclosureButton>}
+            >
+              <List $markerSize={8}>
+                <ListItem>Update the changelog</ListItem>
+                <ListItem>Bump the version</ListItem>
+              </List>
+            </ListDisclosure>
+          </li>
+          <ListItem>Publish the package</ListItem>
+        </List>
+      </Example>
+
+      <Example
+        title="Nested list in a horizontal row"
+        description="A horizontal row puts its tall marker box above its content, so a list nested in the row starts as it does in a row with a one-line marker."
+        stretch
+        code={`
+          <List $markerSize={8} $orientation="horizontal">
+            <ListItem>
+              Build
+              <List $markerSize={8}>
+                <ListItem>Lint</ListItem>
+                <ListItem>Test</ListItem>
+              </List>
+            </ListItem>
+            <ListItem>Deploy</ListItem>
+          </List>
+        `}
+      >
+        <List $markerSize={8} $orientation="horizontal">
+          <ListItem>
+            Build
+            <List $markerSize={8}>
+              <ListItem>Lint</ListItem>
+              <ListItem>Test</ListItem>
+            </List>
+          </ListItem>
+          <ListItem>Deploy</ListItem>
+        </List>
+      </Example>
+
+      <Example
         title="Track"
         description="A guide on an unordered list turns the markers into bullets. The halo keeps the guide one gap away from the check slot."
         stretch

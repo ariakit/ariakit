@@ -37,12 +37,14 @@ export const list = cv({
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
     "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
     // A nested list keeps the gap of its parent, and its indent shows the
-    // level. After the text of its row, it keeps the space that its own rows
-    // have between them. A row with blocks already adds part of it as a gap.
-    "[:is(&_&)]:mt-[calc(var(--list-gap)+var(--list-item-padding)-var(--list-item-gap)*var(--list-row-blocks,0))]",
+    // level. Below the text of its row, or below the marker box when it is
+    // taller, it keeps the space that its own rows have between them. A row
+    // with blocks already adds part of it as a gap.
+    "[:is(&_&)]:mt-[calc(var(--list-gap)+var(--list-item-padding)+var(--list-row-overhang)-var(--list-item-gap)*var(--list-row-blocks,0))]",
     // At the end of its row, the bottom padding of its last row would add to
-    // the bottom padding of the parent row.
-    "[:is(&_&)]:last:-mb-(--list-item-padding)",
+    // the bottom padding of the parent row. Only the padding of the parent row
+    // stays below the last row.
+    "[:is(&_&)]:last:mb-[calc(-1*var(--list-item-padding)-var(--list-row-overhang))]",
     // Reset inherited flags so nested lists start with their own state.
     "[--list-blocks:0] [--list-last-row:0]",
     // Rows without a surface start at the list edge. When a row has a surface,
@@ -186,6 +188,10 @@ const listRow = cv({
     // How far a marker box taller than one line extends past the first line,
     // above and below it.
     "[--list-marker-overhang:max(0px,(var(--list-marker-box,1lh)-1lh)/2)]",
+    // Tell a nested list how much padding the overhang adds around the content
+    // of this row. A horizontal row puts the marker box above its content.
+    "[--list-row-overhang:var(--list-marker-overhang)]",
+    "ui-list-horizontal:[--list-row-overhang:0px]",
   ],
   defaultVariants: {
     $layer: false,
@@ -271,6 +277,13 @@ export const listItem = cv({
       addClass([
         "-ms-[calc(var(--ak-frame-padding)*var(--list-flush))]",
         "in-[.prose]:ms-0 ui-list-horizontal:ms-0",
+      ]);
+      // Its content also ends at the edge of the list, so content at the end of
+      // rows at all levels lines up. Without end padding, the row stays inside
+      // the list and cannot overflow it. A horizontal row stays centered.
+      addClass([
+        "pe-[calc(var(--px)*(1-var(--list-flush,0)))]",
+        "ui-list-horizontal:pe-(--px)",
       ]);
     }
     if (!hasLayerBackground(variants)) return;
@@ -542,6 +555,9 @@ export const listDisclosure = cv({
     // The content reads the marker box for its guide, so reset it one level
     // down.
     "[&>.disclosure-content>*]:[--list-marker-box:initial]",
+    // The button pads its label with the overhang, so a nested list in the
+    // content adds none.
+    "[&>.disclosure-content]:[--list-row-overhang:0px]",
     // With a guide, indent content to the row text. The unpadded root still
     // supplies the frame channels. A registered length keeps the indent of the
     // row when the content sets a font size.

@@ -600,6 +600,14 @@ body > * {
   initial-value: 0px;
 }
 
+/* Resolve the overhang of a list row in the font of the row, so a nested list
+   with another font size moves by the padding of the row. */
+@property --list-row-overhang {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Resolve the guide center on the content so row fonts cannot move it. */
 @property --disclosure-guide-center {
   syntax: "<length>";
