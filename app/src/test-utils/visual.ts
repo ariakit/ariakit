@@ -624,8 +624,18 @@ export async function waitForFonts(page: Page) {
           // A layout flush starts the loads of the fonts that the current
           // styles need.
           document.documentElement.getBoundingClientRect();
+          // WebKit reports a face as "error" once its font-display block period
+          // ends, which with swap is as soon as it starts loading. The set
+          // still counts it as loading until the font arrives, and until then
+          // text lays out in the fallback font.
+          // https://github.com/ariakit/ariakit/issues/8410
+          // https://github.com/WebKit/WebKit/blob/b364907bedd5634d835db171e67267c18f16ebc0/Source/WebCore/css/FontFace.cpp#L382-L383
+          const setLoading = document.fonts.status === "loading";
           return [...document.fonts]
-            .filter((face) => face.status === "loading")
+            .filter((face) => {
+              if (face.status === "loading") return true;
+              return setLoading && face.status === "error";
+            })
             .map((face) => `${face.family} ${face.unicodeRange}`);
         }),
       { message: "Font faces still loading", timeout: FONTS_TIMEOUT },
