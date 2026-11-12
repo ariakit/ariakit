@@ -115,7 +115,7 @@
     "pixelmatch": "8.0.0",
     "pngjs": "7.0.0",
     "rimraf": "6.1.4",
-    "vite": "8.3.6",
+    "vite": "8.3.7",
     "vitest": "5.1.0",
     "wrangler": "4.158.0"
   }
