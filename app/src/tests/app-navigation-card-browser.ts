@@ -17,6 +17,9 @@ import { HIDE_TIMEOUT, gotoPage } from "./app-navigation-card-helpers.ts";
 test("site navigation card keeps the size that the person gives it", async ({
   page,
 }) => {
+  // The test loads the page twice and waits for the navigation to hydrate each
+  // time, which can take most of the default budget in Firefox on CI.
+  test.setTimeout(test.info().timeout * 2);
   const navigation = await gotoPage(page);
   await navigation.link("Radio").hover();
   const card = query(page).dialog("Radio");

@@ -25,10 +25,16 @@ function getCard(page: Page, title: string) {
 // examples, once the card shows.
 const SETTLE_DELAY = 100;
 
+// The time that a preview loads in the card before the loader shows.
+const LOADER_DELAY = 300;
+
 interface CardSwitch {
   /** The previews that show when the card first shows the title. */
   frames: number;
-  /** The milliseconds from the title to the first preview that shows. */
+  /**
+   * The milliseconds from the mouse move that gives the card the title to the
+   * first preview that shows.
+   */
   delay: number;
   /** The box of the frame around the previews, in the card. */
   before: DOMRectInit | null;
@@ -37,7 +43,10 @@ interface CardSwitch {
 
 // Watches the card from the moment it takes the given title until a preview
 // shows in it. The page measures the time, since a test that checks in between
-// can be late on a busy machine.
+// can be late on a busy machine. The time starts at the mouse move that gives
+// the card the title: the settle timer starts after that move, while the
+// mutation observer can see the title only after the task that starts the timer
+// ends.
 function watchCard(page: Page, title: string) {
   return page.evaluate(
     (title) =>
@@ -66,6 +75,11 @@ function watchCard(page: Page, title: string) {
           }
           return { x, y, width: frame.offsetWidth, height: frame.offsetHeight };
         };
+        let moveTime = 0;
+        const onMouseMove = () => {
+          moveTime = performance.now();
+        };
+        addEventListener("mousemove", onMouseMove, true);
         let titled: { time: number; frames: number; box: DOMRectInit | null };
         const observer = new MutationObserver(() => {
           const card = getCard();
@@ -77,13 +91,14 @@ function watchCard(page: Page, title: string) {
             ).find(isShown);
             if (heading?.textContent !== title) return;
             titled = {
-              time: performance.now(),
+              time: moveTime,
               frames: frames.filter(isShown).length,
               box: getFrameBox(card),
             };
           }
           if (!frames.some(isShown)) return;
           observer.disconnect();
+          removeEventListener("mousemove", onMouseMove, true);
           resolve({
             frames: titled.frames,
             delay: performance.now() - titled.time,
@@ -296,21 +311,27 @@ test("site navigation card shows a loader until the preview loads", async ({
     await released;
     await route.continue();
   });
-  // The loader waits 300ms after the frame mounts, so a page that loads by then
-  // shows no loader. The page measures the wait, since a test that checks in
-  // between can be late on a busy machine. A timer never fires early.
+  // The loader waits after the frame mounts, so a page that loads by then shows
+  // no loader. The page measures the wait, since a test that checks in between
+  // can be late on a busy machine. The time starts at the mouse move that
+  // starts the show timeout, since the mutation observer can see the frame only
+  // after the task that starts the loader timer ends. A timer never fires
+  // early.
   const loaderDelay = page.evaluate(
     () =>
       new Promise<number>((resolve) => {
-        let frameTime = 0;
+        let moveTime = 0;
+        const onMouseMove = () => {
+          moveTime ||= performance.now();
+        };
+        addEventListener("mousemove", onMouseMove, true);
         const observer = new MutationObserver(() => {
           const frame = document.querySelector("[role=dialog] iframe");
-          if (!frame) return;
-          frameTime ||= performance.now();
           // The loader lies next to the frame, in the same grid cell.
-          if (!frame.nextElementSibling) return;
+          if (!frame?.nextElementSibling) return;
           observer.disconnect();
-          resolve(performance.now() - frameTime);
+          removeEventListener("mousemove", onMouseMove, true);
+          resolve(performance.now() - moveTime);
         });
         observer.observe(document.body, { childList: true, subtree: true });
       }),
@@ -319,10 +340,9 @@ test("site navigation card shows a loader until the preview loads", async ({
   const frame = query(page).dialog("Breadcrumb").locator("iframe");
   const loader = frame.locator("xpath=following-sibling::*[1]");
   await expect(loader).toBeVisible();
-  // The portal of the card can join the document after the timer starts, so the
-  // measured wait can be shorter than the delay, but a loader without one shows
-  // at once.
-  expect(await loaderDelay).toBeGreaterThanOrEqual(150);
+  expect(await loaderDelay).toBeGreaterThanOrEqual(
+    SHOW_TIMEOUT + LOADER_DELAY - 20,
+  );
   await expect(frame).toHaveCSS("opacity", "0");
   release();
   await expect(frame).toHaveCSS("opacity", "1");
