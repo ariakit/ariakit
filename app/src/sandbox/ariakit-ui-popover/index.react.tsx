@@ -44,6 +44,18 @@ function PopoverCloseButton({ label }: PopoverCloseButtonProps) {
   return <PopoverDismiss aria-label={label} />;
 }
 
+interface PopoverLabeledCloseButtonProps {
+  /** The text of the button, which can be empty, as from a missing message. */
+  label: string | null;
+}
+
+// Passes its optional label on as children, so the dismiss gets children that
+// are present but empty.
+// https://github.com/ariakit/ariakit/issues/8361
+function PopoverLabeledCloseButton({ label }: PopoverLabeledCloseButtonProps) {
+  return <PopoverDismiss>{label}</PopoverDismiss>;
+}
+
 export default function PopoverExamples() {
   return (
     <ExampleGrid>
@@ -457,6 +469,31 @@ export default function PopoverExamples() {
                 <PopoverCloseButton />
               </div>
               <PopoverDescription>No new messages.</PopoverDescription>
+            </Popover>
+          </PopoverProvider>
+        </ExampleStage>
+      </Example>
+
+      {/* Regression fixture: an icon-only dismiss whose children are empty. */}
+      <Example
+        title="Dismiss with an empty label"
+        description="A wrapper passes its optional label on as the dismiss children. When the label is empty, the dismiss keeps its icon and default name."
+        code={`
+          <PopoverDismiss>{label}</PopoverDismiss>
+        `}
+      >
+        <ExampleStage anchor="start" height={42}>
+          <PopoverProvider defaultOpen>
+            <PopoverDisclosure $kind="bevel">Reminders</PopoverDisclosure>
+            <Popover
+              {...openPopoverProps}
+              className="flex w-72 max-w-full flex-col gap-2"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <PopoverHeading>Reminders</PopoverHeading>
+                <PopoverLabeledCloseButton label={null} />
+              </div>
+              <PopoverDescription>No upcoming reminders.</PopoverDescription>
             </Popover>
           </PopoverProvider>
         </ExampleStage>

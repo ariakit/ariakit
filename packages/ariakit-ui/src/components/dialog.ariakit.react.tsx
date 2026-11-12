@@ -3,6 +3,7 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import { XIcon } from "lucide-react";
 import type { ComponentProps } from "react";
+import { hasContent } from "../react-utils/create-render.react.ts";
 import {
   dialog,
   dialogDescription,
@@ -125,8 +126,9 @@ export interface DialogDismissProps
 export function DialogDismiss({ children, ...props }: DialogDismissProps) {
   const [variantProps, rest] = splitProps(props, dialogDismiss);
   // A slot keeps the icon-only button square. Its hidden icon needs a button
-  // label.
-  const iconOnly = children === undefined;
+  // label. Empty children, such as an optional label that is null, render the
+  // icon too, so the button keeps a name.
+  const iconOnly = !hasContent(children);
   const fallbackLabel = iconOnly ? "Dismiss popup" : undefined;
   return (
     <ak.DialogDismiss

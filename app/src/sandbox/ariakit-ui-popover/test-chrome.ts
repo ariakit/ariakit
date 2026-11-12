@@ -132,4 +132,16 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     );
     await test.expect(query(popover).button("Dismiss popup")).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/issues/8361
+  test("names an icon-only dismiss whose children are empty", async ({ q }) => {
+    const box = query(q.article("Dismiss with an empty label"));
+    const popover = box.dialog("Reminders");
+    await test.expect(popover).toBeVisible();
+    const dismiss = query(popover).button("Dismiss popup");
+    // The icon is hidden from the accessibility tree.
+    await test.expect(dismiss.locator("svg")).toBeVisible();
+    await dismiss.click();
+    await test.expect(popover).toBeHidden();
+  });
 });

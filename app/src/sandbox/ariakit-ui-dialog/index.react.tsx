@@ -94,6 +94,20 @@ function DialogCloseButton({ label }: DialogCloseButtonProps) {
   return <DialogDismiss aria-label={label} />;
 }
 
+interface DialogLabeledCloseButtonProps {
+  /** Whether the button shows its text label. */
+  showLabel: boolean;
+}
+
+// Shows its label conditionally, so the dismiss gets children that are present
+// but false.
+// https://github.com/ariakit/ariakit/issues/8361
+function DialogLabeledCloseButton({
+  showLabel,
+}: DialogLabeledCloseButtonProps) {
+  return <DialogDismiss>{showLabel && "Close"}</DialogDismiss>;
+}
+
 export default function DialogExamples() {
   return (
     <ExampleGrid>
@@ -378,6 +392,26 @@ export default function DialogExamples() {
               <DialogCloseButton />
             </div>
             <DialogDescription>No new messages.</DialogDescription>
+          </Dialog>
+        </DialogProvider>
+      </Example>
+
+      {/* Regression fixture: an icon-only dismiss whose children are empty. */}
+      <Example
+        title="Dismiss with a conditional label"
+        description="A wrapper shows the dismiss label only on a condition. When the condition is false, the dismiss keeps its icon and default name."
+        code={`
+          <DialogDismiss>{showLabel && "Close"}</DialogDismiss>
+        `}
+      >
+        <DialogProvider>
+          <DialogDisclosure $kind="bevel">View reminders</DialogDisclosure>
+          <Dialog className="flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-2">
+              <DialogHeading>Reminders</DialogHeading>
+              <DialogLabeledCloseButton showLabel={false} />
+            </div>
+            <DialogDescription>No upcoming reminders.</DialogDescription>
           </Dialog>
         </DialogProvider>
       </Example>
