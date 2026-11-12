@@ -1,3 +1,4 @@
+import { setTimeout as delay } from "node:timers/promises";
 import { invariant } from "@ariakit/utils";
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
@@ -428,6 +429,38 @@ declare global {
   }
 }
 
+// Bounds the wait for scroll-driven animations in frames that don't run their
+// animation frames, such as offscreen iframes or pages with a paused clock.
+const SCROLL_ANIMATIONS_TIMEOUT = 500;
+
+/**
+ * Waits for the scroll-driven animations of the document that just started. A
+ * pending animation reads as its base values, such as a hidden scroll button
+ * and no fade, so a hold would keep them. An animation on an inactive timeline,
+ * such as a strip that doesn't scroll, stays pending, so the wait stops after a
+ * few frames. Playwright evaluates this in each frame, so it must not use
+ * anything outside of its body.
+ */
+async function waitForScrollAnimations() {
+  const nextFrame = () =>
+    new Promise((resolve) => requestAnimationFrame(resolve));
+  const pending = document.getAnimations().filter((animation) => {
+    if (!animation.pending) return false;
+    if (!animation.timeline) return false;
+    return !(animation.timeline instanceof DocumentTimeline);
+  });
+  if (!pending.length) return;
+  const ready = Promise.all(
+    pending.map((animation) => animation.ready.catch(() => {})),
+  );
+  const frames = (async () => {
+    for (let i = 0; i < 3; i++) {
+      await nextFrame();
+    }
+  })();
+  await Promise.race([ready, frames]);
+}
+
 /**
  * Holds the scroll-driven animations of the document at their current values
  * until `__releaseScrollAnimations` runs. Playwright's `animations: "disabled"`
@@ -553,6 +586,16 @@ async function withScrollAnimationsHeld(page: Page, fn: () => Promise<void>) {
   // captures with that option.
   // https://github.com/microsoft/playwright/issues/43986
   const frames = page.frames().filter((frame) => !frame.isDetached());
+  // A timer in Node bounds the wait, since the page's own timers stop with a
+  // paused clock. The hold runs after it either way.
+  await Promise.all(
+    frames.map((frame) =>
+      Promise.race([
+        frame.evaluate(waitForScrollAnimations).catch(() => {}),
+        delay(SCROLL_ANIMATIONS_TIMEOUT),
+      ]),
+    ),
+  );
   await Promise.all(
     frames.map((frame) => frame.evaluate(holdScrollAnimations)),
   );
