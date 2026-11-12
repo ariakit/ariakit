@@ -32,11 +32,11 @@ test("lets a list disclosure count its marker as a leading slot", () => {
   const { root: plain } = getDisclosureParts(list.button("Version 2.9"));
   expect(plain).toHaveAttribute(
     "style",
-    "--frame-padding: var(--list-item-padding); --disclosure-ps: calc(var(--py) + (var(--px) - var(--py) + 1lh) * var(--list-guide)); --disclosure-icon: 0;",
+    "--frame-padding: var(--list-item-padding); --disclosure-ps: var(--list-disclosure-indent); --disclosure-icon: 0;",
   );
   expect(leading).toHaveAttribute(
     "style",
-    "--frame-padding: var(--list-item-padding); --disclosure-ps: calc(var(--py) + (var(--px) - var(--py) + 1lh) * var(--list-guide)); --disclosure-icon: 1;",
+    "--frame-padding: var(--list-item-padding); --disclosure-ps: var(--list-disclosure-indent); --disclosure-icon: 1;",
   );
 });
 

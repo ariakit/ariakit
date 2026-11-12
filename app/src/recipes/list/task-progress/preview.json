@@ -1,0 +1,4 @@
+{
+  "title": "Task Progress",
+  "description": "A list of tasks that complete one after the other. ListItem shows a check on each finished task, a spinning arc on the current task with progress set to indeterminate, and an empty slot on the tasks that wait, while a guide joins the markers and a status region announces each task. Use it to report the steps of a background job, such as a deploy or an import, when people only watch the progress."
+}

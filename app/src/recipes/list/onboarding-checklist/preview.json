@@ -1,0 +1,4 @@
+{
+  "title": "Stepped Checklist",
+  "description": "A card with a checklist of setup steps, each with a title and a description. Buttons move through the steps: ListItem shows a check on the finished steps and an empty slot on the others, a guide joins the markers, and a badge shows the share of finished steps. Use it for a getting-started flow where people finish the steps themselves, rather than the watched progress of the task list."
+}

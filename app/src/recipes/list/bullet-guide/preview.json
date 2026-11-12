@@ -1,0 +1,4 @@
+{
+  "title": "Bullet List with Guide",
+  "description": "An unordered List with the $guide prop, which switches the markers to bullets and joins them with a vertical line that stops at the last row. The rows are plain text, like the basic list. Use it for a short sequence, such as a route or an agenda, where the order matters but numbers would be too heavy."
+}

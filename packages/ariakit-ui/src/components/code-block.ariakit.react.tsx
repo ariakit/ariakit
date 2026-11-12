@@ -835,10 +835,13 @@ export function CodeBlockExpand({
         context.toggleExpanded(true);
       }}
     >
+      {/* Like the folder of a tab, the button scales with the code and keeps
+          the line ratio of text-sm, so prose doesn't make it taller. */}
       <Button
         aria-controls={codeInfo.id}
         aria-expanded={false}
-        $size="sm"
+        $size={0.875}
+        $leading={20 / 14}
         {...props}
         ref={mergedRef}
       >
@@ -882,10 +885,13 @@ export function CodeBlockCollapse({
   if (!context.expanded) return null;
   return (
     <div {...codeBlockCollapse.jsx()}>
+      {/* Like the folder of a tab, the button scales with the code and keeps
+          the line ratio of text-sm, so prose doesn't make it taller. */}
       <Button
         aria-controls={codeInfo.id}
         aria-expanded
-        $size="sm"
+        $size={0.875}
+        $leading={20 / 14}
         $lighten={0.5}
         $border
         {...props}

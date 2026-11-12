@@ -1,0 +1,4 @@
+{
+  "title": "List",
+  "description": "A basic unordered List with ListItem rows of plain text. Each row gets a dash marker, and a row that wraps keeps its text clear of the marker column. Use it as the starting point for a short list of related items before adding numbers, checks, icons, or a guide."
+}

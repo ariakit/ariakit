@@ -592,6 +592,14 @@ body > * {
   initial-value: 0px;
 }
 
+/* Resolve the content indent of a list disclosure at its root, so a content
+   font size cannot move the content away from the label. */
+@property --list-disclosure-indent {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Resolve the guide center on the content so row fonts cannot move it. */
 @property --disclosure-guide-center {
   syntax: "<length>";
@@ -1995,6 +2003,12 @@ body > * {
   }
 }
 
+@custom-variant ui-list-icon {
+  @container style(--list-marker: icon) {
+    @slot;
+  }
+}
+
 @custom-variant ui-list-bullet {
   @container style(--list-marker: bullet) {
     @slot;
@@ -2027,6 +2041,12 @@ body > * {
    matches both. */
 @custom-variant ui-list-sections {
   &:has(:where(h1, h2, h3, h4, h5, h6)) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-horizontal {
+  @container style(--list-orientation: horizontal) {
     @slot;
   }
 }

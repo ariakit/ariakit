@@ -2702,7 +2702,7 @@ export default function ButtonExamples() {
        */}
       <Example
         title="Relative size with a description"
-        description="A number keeps the line-height ratio of the text around the button, and so does the description inside it."
+        description="A smaller number takes two pixels of line height off for each pixel of font size, and the description inside keeps the line-height ratio of the button."
         code={`
           <div className="text-lg">
             <Button $lightnessOffset $rounded="xl" $p={3} $size={0.875}>

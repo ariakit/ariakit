@@ -1,0 +1,4 @@
+{
+  "title": "Icon List",
+  "description": "An unordered List with $marker=\"icon\", where each ListItem passes its own icon through the icon prop. The icons sit in neutral round markers, and the list has no guide because the rows have no order. Use it for a set of features or facts that each need a symbol, rather than the bullets of the basic list or the numbers of ordered steps."
+}

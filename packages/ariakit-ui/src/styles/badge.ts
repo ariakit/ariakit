@@ -2,17 +2,18 @@ import { cv } from "clava";
 import { controlSlot, getDisabledContentClass } from "./control.ts";
 import { isLayerColor } from "./layer.ts";
 import { slotFrame, slotFrameText } from "./slot-frame.ts";
+import { tint } from "./tint.ts";
 
 /**
  * A compact badge with a rounded edge. It keeps its pill shape in any parent
  * frame. With `$forceRounded={false}`, it follows the parent corners, and its
  * radius defaults to `lg`. In a slot, it fills the slot height, so it grows
- * with the control. The slot then sets its text size, so `$size` applies only
- * outside a slot. Use a `box` slot, which is one line tall and takes the width
- * of the badge.
+ * with the control. Use a `box` slot, which is one line tall and takes the
+ * width of the badge.
  */
 export const badge = cv({
-  extend: [slotFrame],
+  // The tint supplies the mix and the text colors of each kind.
+  extend: [slotFrame, tint],
   class: [
     // Rules that keep controls at their content width or color the border of a
     // floating slot also match this marker.
@@ -28,11 +29,9 @@ export const badge = cv({
     "inline-flex",
     // Keep one-line counts at least square, including padding and borders.
     "min-w-[calc(1lh+(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px))*2)]",
-    // In a slot, the slot height sets the size of the badge. The text is a bit
-    // smaller than the text around the slot, and short counts stay at least
-    // square.
+    // In a slot, the slot height sets the size of the badge, and short counts
+    // stay at least square.
     "[.slot-frame-slot>&]:self-stretch [.slot-frame-slot>&]:items-center",
-    "[.slot-frame-slot>&]:text-[0.8125em]",
     "[.slot-frame-slot>&]:min-w-(--slot-height)",
   ],
   variants: {
@@ -70,8 +69,20 @@ export const badge = cv({
       // concentric. A tag shape there reads as intended, unlike a near pill.
       return variants.$forceRounded ? "full" : "lg";
     },
-    $size: "xs",
-    $p: 1,
+    // A bit smaller than the text around the badge. A number follows the parent
+    // font, so the badge scales with it, also in a slot, and can center its
+    // capitals on those of the text around it.
+    $size: 0.8125,
+    // A tinted badge pushes its text further than the shared tint, so a short
+    // label stands out on the small fill.
+    $textPush(defaultValue, variants) {
+      if (variants.$kind !== "tint") return defaultValue;
+      return 40;
+    },
+    // Half a step keeps a badge in running text within a line of leading-tight
+    // or taller, so it doesn't make the line taller. In a slot, the slot height
+    // sets the padding.
+    $p: 0.5,
     $px(defaultValue, variants) {
       // Replace only the text frame default; explicit padding still wins.
       if (defaultValue !== "md") return defaultValue;
@@ -121,31 +132,15 @@ export const badge = cv({
       if (isLayerColor(variants.$layer)) return false;
       return true;
     },
-    $mix(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      if (!isLayerColor(variants.$layer)) return defaultValue;
-      // Blend colored badges into the parent surface for a lighter tint.
-      return defaultValue ?? 15;
-    },
-    $text(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      return defaultValue ?? true;
-    },
-    $textPush(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      return defaultValue ?? 60;
-    },
-    $textWarm(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      return defaultValue ?? 20;
-    },
-    $textChroma(defaultValue, variants) {
-      if (variants.$kind === "solid") return defaultValue;
-      if (!isLayerColor(variants.$layer)) return defaultValue;
-      return defaultValue ?? "vivid";
-    },
   },
   refine({ variants, addClass }) {
+    // In running text, a numeric size centers the capitals of the badge on
+    // those of the text around it. The badge text is the parent text times the
+    // font scale, so the parent capital height is the badge capital height
+    // divided by it. Flex and grid items ignore vertical-align.
+    if (typeof variants.$size === "number") {
+      addClass("align-[calc(1cap*(1/var(--font-scale)-1)/2)]");
+    }
     // A badge in a disabled control fades like the slots of the control.
     addClass(getDisabledContentClass(variants));
     if (variants.$p !== "none") {
