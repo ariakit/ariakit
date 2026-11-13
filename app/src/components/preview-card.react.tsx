@@ -551,12 +551,22 @@ function usePreviewFrame(
   // both.
   const ready = loaded && !opening;
 
+  // An embedded page reports its load with whether it is still opening its
+  // popup. The card can miss the first report, and the load event can come
+  // before the next one, so the load event would show the page too early.
+  // https://github.com/ariakit/ariakit/issues/8429
+  const onLoad = () => {
+    const doc = ref.current?.contentDocument;
+    if (doc?.documentElement.hasAttribute("data-preview-embedded")) return;
+    setLoaded(true);
+  };
+
   return {
     ref,
     viewportRef,
     location,
     ready,
-    setLoaded,
+    onLoad,
     popupRoom,
     history,
     send,
@@ -672,7 +682,7 @@ function PreviewCardViewport({
   fullscreen,
   minHeight,
 }: PreviewCardViewportProps) {
-  const { ref, viewportRef, ready, setLoaded, activate } = frame;
+  const { ref, viewportRef, ready, onLoad, activate } = frame;
   const near = useNearViewport(ref);
   // The first page shows the loader until it's ready, as the server renders the
   // card. A reload or a navigation in the frame shows the loader only when the
@@ -739,7 +749,7 @@ function PreviewCardViewport({
               src={href}
               title={title}
               loading="lazy"
-              onLoad={() => setLoaded(true)}
+              onLoad={onLoad}
               className={cx(
                 "block w-full border-0 bg-transparent transition-opacity",
                 "h-(--preview-frame-height)",

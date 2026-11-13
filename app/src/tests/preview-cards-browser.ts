@@ -488,6 +488,79 @@ test("preview cards wait for a slow example to open its popup", async ({
   expect(revealed.expanded).toBe("true");
 });
 
+// https://github.com/ariakit/ariakit/issues/8429
+test("preview cards wait for the reports of a page whose frame loads first", async ({
+  page,
+}) => {
+  // The card can hydrate after the page in its frame reported that it is
+  // opening its popup, and the load event of the frame can reach the card
+  // before the next report. The docs page holds the reports until the test
+  // delivers them, as a busy main thread would.
+  await page.addInitScript(() => {
+    if (window.self !== window.top) return;
+    const held: MessageEvent[] = [];
+    let holding = true;
+    const holdReport = (event: MessageEvent) => {
+      if (!holding) return;
+      if (event.data?.type !== "ariakit-preview") return;
+      held.push(event);
+      event.stopImmediatePropagation();
+    };
+    window.addEventListener("message", holdReport, true);
+    Reflect.set(window, "deliverPreviewReports", () => {
+      holding = false;
+      for (const { data, source } of held) {
+        window.dispatchEvent(new MessageEvent("message", { data, source }));
+      }
+    });
+  });
+  // The frame loads only after the card island starts to hydrate, so the card
+  // handles the load event of the frame.
+  const { promise: frameLoading, resolve: loadFrame } =
+    Promise.withResolvers<void>();
+  await page.route("**/react/previews/combobox-group/", async (route) => {
+    if (route.request().frame() === page.mainFrame()) return route.fallback();
+    await frameLoading;
+    await route.fallback();
+  });
+  await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  const viewport = page.locator(":has(> iframe[title='Combobox Group'])");
+  const island = page.locator("astro-island", { has: iframe });
+  await expect(island).not.toHaveAttribute("ssr");
+  loadFrame();
+
+  // The initial empty document of the frame is also complete, so the wait reads
+  // the marker of the embedded page too.
+  const isPageLoaded = () => {
+    return iframe.evaluate((element) => {
+      if (!(element instanceof HTMLIFrameElement)) return false;
+      const doc = element.contentDocument;
+      if (!doc?.documentElement.hasAttribute("data-preview-embedded")) {
+        return false;
+      }
+      return doc.readyState === "complete";
+    });
+  };
+  await expect.poll(isPageLoaded).toBe(true);
+  // The load event of the frame follows the load of its page, which no state in
+  // the card reports while the reports are held, and the card renders the
+  // result on the next frames.
+  await flushFrames(page);
+  await expect(viewport).toHaveAttribute("aria-busy", "true");
+
+  await page.evaluate(() => {
+    const deliverPreviewReports = Reflect.get(window, "deliverPreviewReports");
+    if (typeof deliverPreviewReports !== "function") {
+      throw new Error("The init script did not hold the reports");
+    }
+    deliverPreviewReports();
+  });
+  const revealed = await getRevealedComboboxState(page);
+  expect(revealed.hydrated).toBe(true);
+  expect(revealed.expanded).toBe("true");
+});
+
 test("preview cards hover the trigger of an example that opens on hover", async ({
   page,
 }) => {

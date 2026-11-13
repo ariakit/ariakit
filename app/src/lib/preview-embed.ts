@@ -172,7 +172,6 @@ export function setupPreviewEmbed() {
   if (window.self === window.top) return;
   const type = "ariakit-preview";
   const root = document.documentElement;
-  root.dataset.previewEmbedded = "";
   let opening = root.hasAttribute("data-preview-open");
   const openOnHover = root.getAttribute("data-preview-open") === "hover";
 
@@ -1223,8 +1222,12 @@ export function setupPreviewEmbed() {
     });
   }
 
+  // The card waits for the reports of a page with this marker instead of the
+  // load event of its frame. It falls back to the load event for a page whose
+  // setup stopped before this point.
+  root.dataset.previewEmbedded = "";
   // Reports while the page still parses, so the card sends the theme before the
-  // frame renders and before its load event reveals the frame.
+  // frame renders and before the page reports its load.
   postLocation();
 }
 
