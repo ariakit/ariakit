@@ -548,8 +548,10 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     );
     const second = await getItemOffset(box.group("2 of 7"));
     // Past the middle of the way, slide 2 is the closest slide. The page
-    // presses again on the frame after the carousel updates there, so no round
-    // trip after the first press can let the scroll reach slide 2 first.
+    // presses again right after the carousel updates there, on the same frame,
+    // so no round trip after the first press can let the scroll reach slide 2
+    // first. WebKit runs a smooth scroll off the main thread, so a slow frame
+    // on a busy machine can let the scroll end before a later frame.
     await next.evaluate((button, offset) => {
       const viewport = button.ownerDocument.getElementById(
         button.getAttribute("aria-controls") ?? "",
@@ -560,14 +562,14 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
         viewport.dataset.testScrollAtPress = `${Math.abs(viewport.scrollLeft)}`;
         button.click();
       };
-      const check = () => {
-        if (Math.abs(viewport.scrollLeft) > offset / 2 + 2) {
-          requestAnimationFrame(press);
-          return;
-        }
-        requestAnimationFrame(check);
+      // The carousel adds its scroll listener once on mount, before this one,
+      // so it requests its update first.
+      const onScroll = () => {
+        if (Math.abs(viewport.scrollLeft) <= offset / 2 + 2) return;
+        viewport.removeEventListener("scroll", onScroll);
+        requestAnimationFrame(press);
       };
-      check();
+      viewport.addEventListener("scroll", onScroll);
     }, second);
     await next.focus();
     await page.keyboard.press("Enter");
