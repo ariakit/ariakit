@@ -1,12 +1,6 @@
 import * as ak from "@ariakit/react";
 import type { CSSProperties, ReactNode } from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 
 // The page styles don't reach a shadow root, so the elements in it use inline
@@ -65,30 +59,11 @@ function ShadowHost({ name, children }: ShadowHostProps) {
   );
 }
 
-// TODO: Remove this workaround after
-// https://github.com/ariakit/ariakit/issues/8366 is fixed. The document sees
-// focus in a shadow root as focus on the shadow host, so this reads the focused
-// element from the root of each hovercard.
-function hasFocusIn(...cards: Array<HTMLElement | null>) {
-  return cards.some((card) => {
-    if (!card?.isConnected) return false;
-    // The root of a connected element is a document or a shadow root.
-    const root = card.getRootNode() as Document | ShadowRoot;
-    const { activeElement } = root;
-    return !!activeElement && card.contains(activeElement);
-  });
-}
-
 function ProfileHovercard() {
-  const cardRef = useRef<HTMLDivElement>(null);
   return (
     <ak.HovercardProvider placement="bottom-start">
       <ak.HovercardAnchor href="#profile">Profile</ak.HovercardAnchor>
-      <ak.Hovercard
-        ref={cardRef}
-        hideOnHoverOutside={() => !hasFocusIn(cardRef.current)}
-        style={cardStyle}
-      >
+      <ak.Hovercard style={cardStyle}>
         <ak.HovercardHeading>Profile</ak.HovercardHeading>
         <ak.Button>Follow</ak.Button>
       </ak.Hovercard>
@@ -98,29 +73,14 @@ function ProfileHovercard() {
 
 function TeamHovercard() {
   const portalElement = useContext(ShadowPortalContext);
-  const teamRef = useRef<HTMLDivElement>(null);
-  const memberRef = useRef<HTMLDivElement>(null);
   return (
     <ak.HovercardProvider placement="bottom-start">
       <ak.HovercardAnchor href="#team">Team</ak.HovercardAnchor>
-      <ak.Hovercard
-        ref={teamRef}
-        // The member hovercard renders in a portal, outside this one.
-        hideOnHoverOutside={() =>
-          !hasFocusIn(teamRef.current, memberRef.current)
-        }
-        style={cardStyle}
-      >
+      <ak.Hovercard style={cardStyle}>
         <ak.HovercardHeading>Team</ak.HovercardHeading>
         <ak.HovercardProvider placement="right-start">
           <ak.HovercardAnchor href="#member">Member</ak.HovercardAnchor>
-          <ak.Hovercard
-            ref={memberRef}
-            portal
-            portalElement={portalElement}
-            hideOnHoverOutside={() => !hasFocusIn(memberRef.current)}
-            style={cardStyle}
-          >
+          <ak.Hovercard portal portalElement={portalElement} style={cardStyle}>
             <ak.HovercardHeading>Member</ak.HovercardHeading>
             <ak.Button>Message</ak.Button>
           </ak.Hovercard>

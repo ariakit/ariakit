@@ -36,6 +36,7 @@ import {
 } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import { useEscapeClose } from "../dialog/utils/__use-escape-close.ts";
+import { getTreeActiveElement } from "../focusable/__utils.ts";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
 import type { ScrollHoverListener } from "./__scroll-hover.ts";
@@ -87,8 +88,13 @@ function isFrameWindowInside(element: Element, view: Window) {
 function hasFocusInHovercard(card: HTMLElement) {
   if (hasFocusWithin(card)) return true;
   const activeElement = getActiveElement(card, { frame: false });
-  if (!activeElement) return false;
-  return contains(card, activeElement);
+  if (activeElement && contains(card, activeElement)) return true;
+  // A document sees focus inside a shadow root as focus on its host, so a
+  // hovercard in a shadow root reads the focused element of its own tree.
+  // https://github.com/ariakit/ariakit/issues/8366
+  const treeActiveElement = getTreeActiveElement(card);
+  if (!treeActiveElement) return false;
+  return contains(card, treeActiveElement);
 }
 
 /** Where the mouse is. */
