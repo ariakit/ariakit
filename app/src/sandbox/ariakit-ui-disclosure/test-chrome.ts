@@ -1,6 +1,80 @@
+import type { Locator, Page } from "@playwright/test";
+import { hoverOver } from "#app/test-utils/ariakit-ui.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
+// Captures the bottom band of a button as tall as its frame radius, which holds
+// the curve of rounded bottom corners.
+async function captureCornerBand(page: Page, button: Locator) {
+  const box = await button.boundingBox();
+  if (!box) {
+    throw new Error("Missing button box");
+  }
+  const radius = await button.evaluate((node) =>
+    Number.parseFloat(
+      getComputedStyle(node).getPropertyValue("--ak-frame-radius"),
+    ),
+  );
+  if (!(radius > 0)) {
+    throw new Error("Missing frame radius");
+  }
+  return page.screenshot({
+    clip: {
+      x: box.x,
+      y: box.y + box.height - radius,
+      width: box.width,
+      height: radius,
+    },
+  });
+}
+
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // The hover surface of an open button fades out before its rounded bottom
+  // corners, so their curve doesn't show. The hover color is too faint for the
+  // visual capture, so this compares the pixels of the corner band.
+  test("keeps the open hover surface out of rounded bottom corners", async ({
+    page,
+    q,
+  }) => {
+    await page.emulateMedia({ colorScheme: "light", reducedMotion: "reduce" });
+    const button = query(q.article("Default")).button("What is Ariakit?");
+    await test.expect(button).toHaveAttribute("aria-expanded", "true");
+    await button.evaluate((node) => node.scrollIntoView({ block: "center" }));
+    await page.mouse.move(0, 0);
+    const plainButton = await button.screenshot();
+    const plainBand = await captureCornerBand(page, button);
+    await hoverOver(button);
+    // The hover surface shows on the rest of the button.
+    await test.expect
+      .poll(async () => (await button.screenshot()).equals(plainButton))
+      .toBe(false);
+    const hoverBand = await captureCornerBand(page, button);
+    test.expect(hoverBand.equals(plainBand)).toBe(true);
+  });
+
+  // A group squares the bottom corners of a member that is not the last one, so
+  // the hover surface of that member runs into its bottom band when open.
+  test("runs the open hover surface to the square corners of a group member", async ({
+    page,
+    q,
+  }) => {
+    await page.emulateMedia({ colorScheme: "light", reducedMotion: "reduce" });
+    const button = query(q.article("Framed group")).button("Security");
+    await button.click();
+    await test.expect(button).toHaveAttribute("aria-expanded", "true");
+    await button.evaluate((node) => node.scrollIntoView({ block: "center" }));
+    await page.mouse.move(0, 0);
+    await test.expect
+      .poll(() => button.evaluate((node) => node.matches(":hover")))
+      .toBe(false);
+    const plainBand = await captureCornerBand(page, button);
+    await hoverOver(button);
+    await test.expect
+      .poll(async () =>
+        (await captureCornerBand(page, button)).equals(plainBand),
+      )
+      .toBe(false);
+  });
+
   // https://github.com/ariakit/ariakit/issues/7478
   test("keeps a trailing badge beside the label", async ({ q }) => {
     const example = query(q.article("Trailing badge"));

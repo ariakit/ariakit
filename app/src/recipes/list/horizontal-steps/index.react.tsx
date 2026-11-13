@@ -27,6 +27,7 @@ export default function Example() {
         $markerSize={10}
         $guide
         $gap={3}
+        $itemGap={1}
         className="[--steps-orientation:vertical] @md/steps:[--steps-orientation:horizontal]"
       >
         {stages.map((stage, index) => {

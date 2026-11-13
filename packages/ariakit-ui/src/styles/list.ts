@@ -37,7 +37,9 @@ export const list = cv({
     "in-[.prose]:[--list-gap-base:var(--list-gap-root,var(--prose-gap))]",
     "[--list-item-padding:round(--spacing(1),1px)]",
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
-    "[--list-item-gap:calc(var(--list-gap)+var(--list-item-padding)*0.5)]",
+    // The blocks of a row are as far apart as they are from the edges of its
+    // frame, so they read as one group. $itemGap replaces this gap.
+    "[--list-item-gap:var(--list-item-gap-root,var(--list-item-padding))]",
     // A nested list keeps the gap of its parent, and its indent shows the
     // level. Below the text of its row, or below the marker box when it is
     // taller, it keeps the space that its own rows have between them. A row
@@ -67,12 +69,14 @@ export const list = cv({
     // padding. A row in prose stays in place.
     "[--list-row-outset:calc(var(--list-item-padding)*var(--list-flush))]",
     "in-[.prose]:[--list-row-outset:0px]",
-    // All kinds of markers have the same distance to the text of their row. It
-    // is about the white between two lines of text at a line height of 1.5, so
-    // the marker looks as near to the text as the lines are to each other. The
-    // distance runs along the line, so it follows the font size, like the
-    // space between words, and a tall line does not move the text away.
-    "[--list-marker-gap:0.75em]",
+    // The marker box is as far from the text as it is from the edges of the
+    // frame, so a marker in a card or a hover surface sits in even space, and
+    // the marker is as near to the text as the blocks of the row are to each
+    // other. Rows without frames keep at least about the white between two
+    // lines of text at a line height of 1.5, which runs along the line and
+    // follows the font size. The gap starts at the end of the marker, so the
+    // space that it leaves in its box counts.
+    "[--list-marker-gap:max(calc(var(--list-item-padding)+var(--list-marker-space)),calc(0.75em*var(--list-flush)))]",
     // The space that a marker leaves between its end and the end of its box.
     // Without a guide, each marker ends where a counter chip ends. On a guide,
     // a bullet or a dash is on the center of the box.
@@ -223,13 +227,16 @@ export const list = cv({
      * Sets the size of the marker box, which the rows keep for their markers.
      * Counters, icons, checks, and progress grow with the box, and bullets and
      * dashes keep their size. Rows grow with a box taller than one line, and
-     * the marker stays centered on the first line. The text keeps the same
-     * distance to the marker with each size. The box is one line by default. A
-     * vertical list of bullets or dashes on a guide gets a box as wide as the
-     * font size, unless a row has a check or progress; set `1lh` to give it the
-     * box of one line. In such a list, the text of every row keeps its distance
-     * to the check, so a bullet or a dash is farther from its text. Nested
-     * lists don't inherit it. Numbers scale the spacing token.
+     * the marker stays centered on the first line. The text keeps at least the
+     * item padding from the box with each size. In a vertical list, rows
+     * without frames also keep at least 0.75em from the marker, so a bullet or
+     * a dash on a guide, which stays on the center of a larger box, can move
+     * away from its text. The box is one line by default. A vertical list of
+     * bullets or dashes on a guide gets a box as wide as the font size, unless
+     * a row has a check or progress; set `1lh` to give it the box of one line.
+     * In such a list, the text of every row keeps its distance to the check, so
+     * a bullet or a dash is farther from its text. Nested lists don't inherit
+     * it. Numbers scale the spacing token.
      */
     $markerSize(value?: string | number) {
       if (value == null) return;
@@ -238,13 +245,27 @@ export const list = cv({
       };
     },
     /**
-     * Sets the item frame padding. Numbers scale the spacing token and round to
-     * a whole pixel.
+     * Sets the item frame padding. The gap between the blocks of a row and the
+     * distance from the marker to the text follow it, so a marker sits as far
+     * from the text as from the edges of a frame. In a vertical list without
+     * frames, the marker keeps at least 0.75em from the text. Numbers scale the
+     * spacing token and round to a whole pixel.
      */
     $itemPadding(value?: string | number) {
       if (value == null) return;
       return {
         style: { "--list-item-padding": getPaddingValue(value) },
+      };
+    },
+    /**
+     * Sets the gap between the blocks of a row, such as a title and its
+     * description, in place of the item padding. It doesn't move the marker.
+     * Nested lists inherit it. Numbers scale the spacing token.
+     */
+    $itemGap(value?: string | number) {
+      if (value == null) return;
+      return {
+        style: { "--list-item-gap-root": getSpacingValue(value) },
       };
     },
   },
@@ -341,6 +362,14 @@ const listRow = cv({
       return "calc(var(--list-row-border)*-1)";
     },
   },
+  refine({ variants, addClass, addStyle }) {
+    if (!hasLayerBackground(variants)) return;
+    // A row with a surface, such as a card, sits above the guides of the rows
+    // around it, and its own guide starts below it. The style attribute wins
+    // over the flag that every row resets.
+    addClass("z-2");
+    addStyle({ "--list-row-solid": "1" });
+  },
 });
 
 /** A list row with space for a marker and optional block content. */
@@ -374,9 +403,11 @@ export const listItem = cv({
       true: [
         // Reserve the marker box and the distance from it to the text.
         "ps-[calc(var(--py)+var(--list-marker-box,1lh)+var(--list-text-inset))]",
-        // A horizontal row reserves the marker box above its content.
+        // A horizontal row reserves the marker box above its content, as far
+        // from it as from the top edge. The line height adds white above the
+        // text, so it needs no minimum like the marker gap.
         "ui-list-horizontal:ps-(--px)",
-        "ui-list-horizontal:pbs-[calc(var(--py)+var(--list-marker-box,1lh)+var(--list-item-gap))]",
+        "ui-list-horizontal:pbs-[calc(var(--py)*2+var(--list-marker-box,1lh))]",
       ],
       false: "",
     },
@@ -413,7 +444,7 @@ export const listItem = cv({
   defaultVariants: {
     $marker: true,
   },
-  refine({ variants, addClass, addStyle }) {
+  refine({ variants, addClass }) {
     if (hasSlotSurface(variants)) {
       // The list reads this class to keep all its rows in their frames.
       addClass("list-item-surface");
@@ -434,11 +465,6 @@ export const listItem = cv({
         "ui-list-horizontal:pe-(--px)",
       ]);
     }
-    if (!hasLayerBackground(variants)) return;
-    // A row with a surface, such as a card, sits above the guides of the rows
-    // around it. The style attribute wins over the flag that every row resets.
-    addClass("z-2");
-    addStyle({ "--list-row-solid": "1" });
   },
 });
 
@@ -548,7 +574,11 @@ export const listItemMarker = cv({
       ],
       true: [
         "before:hidden",
-        "forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+        // Highlight can be translucent, like the selection color of macOS, so
+        // paint it over Canvas, or the guide shows through the marker.
+        "forced-colors:bg-[Canvas] forced-colors:bg-linear-to-b",
+        "forced-colors:from-[Highlight] forced-colors:to-[Highlight]",
+        "forced-colors:text-[HighlightText]",
       ],
       false: [
         "ring ring-inset ui-list-counter:ring-0",
@@ -633,6 +663,17 @@ export const listItemMarker = cv({
       if (variants.$checked === true) return defaultValue ?? "adaptive";
       return defaultValue ?? (variants.$checked === false ? 25 : "bold");
     },
+  },
+  refine({ variants, addClass }) {
+    if (!variants.$border) return;
+    // The halo starts after the ring, which is transparent unless the edge
+    // shows, so the guide would show through it. Paint the halo color under the
+    // ring. Where the edge is a border, the shadow has no width, and any faint
+    // arc of it in Firefox has the color of the halo that covers it.
+    addClass([
+      "shadow-[0_0_0_var(--ak-frame-ring)_var(--ak-layer-parent)]",
+      "forced-colors:shadow-[0_0_0_var(--ak-frame-ring)_Canvas]",
+    ]);
   },
 });
 
@@ -878,6 +919,16 @@ export const listDisclosureButton = cv({
      * and `progress`.
      */
     $check: "list-item-check",
+    /**
+     * Sets the gap between the label and the description. `auto` uses the gap
+     * between the blocks of a list item, so the description is as far below the
+     * label as the second block of other rows.
+     */
+    $gapY(value?: "none" | "auto") {
+      // Replace the inherited variant instead of adding a competing --gap-y.
+      if (value !== "auto") return;
+      return "[--gap-y:var(--list-item-gap)] gap-y-(--gap-y)";
+    },
   },
 });
 

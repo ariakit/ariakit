@@ -1,4 +1,4 @@
 {
   "title": "Timeline with Icon Markers",
-  "description": "A timeline of events on a pull request. The list sets $marker to icon, so each ListItem shows its icon in a chip, $markerSize makes the chips larger than one line, and a guide joins them. A comment is a row with its own surface, so it is a card with an icon that the guide runs behind, and the last event shows a tinted check. Use it for a history of events with different kinds, such as an activity feed or an audit log."
+  "description": "A timeline of pull request events: the list sets $marker to icon with a $markerSize larger than one line, a guide joins the chips, $itemGap brings each time closer to its title, and the last event shows a check tinted with the success color. A comment is a closed ListDisclosure with its own surface, so the guide runs behind the card, and its ListDisclosureButton opens Prose content. Use it for a history of events with different kinds, such as an activity feed or an audit log."
 }
