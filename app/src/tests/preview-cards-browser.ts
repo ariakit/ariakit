@@ -507,6 +507,18 @@ test("preview cards wait for the reports of a page whose frame loads first", asy
       event.stopImmediatePropagation();
     };
     window.addEventListener("message", holdReport, true);
+    // No state in the card shows the load event of the frame while the reports
+    // are held, so the docs page records it. The initial empty document of the
+    // frame can also fire one, so it must be the embedded page.
+    const recordFrameLoad = (event: Event) => {
+      const { target } = event;
+      if (!(target instanceof HTMLIFrameElement)) return;
+      if (target.title !== "Combobox Group") return;
+      const doc = target.contentDocument;
+      if (!doc?.querySelector("html[data-preview-embedded]")) return;
+      Reflect.set(window, "previewFrameLoaded", true);
+    };
+    document.addEventListener("load", recordFrameLoad, true);
     Reflect.set(window, "deliverPreviewReports", () => {
       holding = false;
       for (const { data, source } of held) {
@@ -526,26 +538,19 @@ test("preview cards wait for the reports of a page whose frame loads first", asy
   await page.goto("/react/recipes/combobox-group/", { waitUntil: "commit" });
   const iframe = page.locator('iframe[title="Combobox Group"]');
   const viewport = page.locator(":has(> iframe[title='Combobox Group'])");
-  const island = page.locator("astro-island", { has: iframe });
-  await expect(island).not.toHaveAttribute("ssr");
+  // On a slow runner, the card can take longer than the assertion timeout to
+  // hydrate, and the frame to load, so these waits use the test budget.
+  await page
+    .locator("astro-island:not([ssr])", { has: iframe })
+    .waitFor({ state: "attached" });
   loadFrame();
 
-  // The initial empty document of the frame is also complete, so the wait reads
-  // the marker of the embedded page too.
-  const isPageLoaded = () => {
-    return iframe.evaluate((element) => {
-      if (!(element instanceof HTMLIFrameElement)) return false;
-      const doc = element.contentDocument;
-      if (!doc?.documentElement.hasAttribute("data-preview-embedded")) {
-        return false;
-      }
-      return doc.readyState === "complete";
-    });
-  };
-  await expect.poll(isPageLoaded).toBe(true);
-  // The load event of the frame follows the load of its page, which no state in
-  // the card reports while the reports are held, and the card renders the
-  // result on the next frames.
+  // WebKit can fire the load event of the frame some time after its page is
+  // complete, so the wait follows the event itself.
+  await page.waitForFunction(() => Reflect.get(window, "previewFrameLoaded"));
+  // The card handles the load event in the same dispatch, and renders the
+  // result on the next frames, which no state reports while the reports are
+  // held.
   await flushFrames(page);
   await expect(viewport).toHaveAttribute("aria-busy", "true");
 
