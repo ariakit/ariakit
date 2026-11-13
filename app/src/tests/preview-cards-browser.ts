@@ -143,6 +143,82 @@ test("preview card frames scroll vertically after a horizontal scroll", async ({
   page,
   q,
 }) => {
+  // TEMPORARY diagnostics for https://github.com/ariakit/ariakit/issues/8428
+  await page.addInitScript(() => {
+    const id = Math.random().toString(36).slice(2, 8);
+    const log: unknown[] = [];
+    Reflect.set(window, "__diag", { id, log });
+    const top = window === window.parent;
+    const now = () => Math.round(performance.now());
+    const root = () => document.documentElement;
+    const scroll = () =>
+      top
+        ? [window.scrollX, window.scrollY]
+        : [root()?.scrollLeft, root()?.scrollTop];
+    const describe = (target: EventTarget | null) =>
+      target instanceof Element
+        ? `${target.tagName}${target.id ? `#${target.id}` : ""}`
+        : target?.constructor.name;
+    window.addEventListener(
+      "wheel",
+      (event) => {
+        log.push({
+          wheel: [event.deltaX, event.deltaY],
+          now: now(),
+          ts: Math.round(event.timeStamp),
+          cancelable: event.cancelable,
+          target: describe(event.target),
+          active: root()?.hasAttribute("data-preview-active"),
+          scroll: scroll(),
+        });
+      },
+      { capture: true, passive: true },
+    );
+    window.addEventListener(
+      "wheel",
+      (event) => {
+        // Reads the result of the default action on the next task.
+        const prevented = event.defaultPrevented;
+        setTimeout(() => {
+          log.push({ prevented, now: now(), scroll: scroll() });
+        });
+      },
+      { passive: true },
+    );
+    window.addEventListener(
+      "scroll",
+      (event) =>
+        log.push({
+          scrolled: scroll(),
+          target: describe(event.target),
+          now: now(),
+        }),
+      { capture: true, passive: true },
+    );
+    window.addEventListener("message", (event) => {
+      const action = event.data?.action;
+      if (!action || action === "size") return;
+      const from =
+        event.source === window.parent
+          ? "parent"
+          : [...document.querySelectorAll("iframe")].find(
+              (frame) => frame.contentWindow === event.source,
+            )?.title;
+      log.push({ message: action, from, now: now() });
+    });
+    // Reading the scroll position here would force a layout right after the
+    // activation, so the scroll events report it instead.
+    new MutationObserver(() => {
+      log.push({
+        attrs: root()?.hasAttribute("data-preview-active"),
+        now: now(),
+      });
+    }).observe(document, {
+      attributes: true,
+      attributeFilter: ["data-preview-active"],
+      subtree: true,
+    });
+  });
   await gotoAndSettle(page, "/react/recipes/combobox-group/");
   const region = q.region("Combobox Group", { exact: true });
   const iframe = page.locator('iframe[title="Combobox Group"]');
@@ -197,9 +273,51 @@ test("preview card frames scroll vertically after a horizontal scroll", async ({
   // direction shows, and those don't scroll the docs page either.
   await page.mouse.wheel(4, 2);
   await page.mouse.wheel(200, 0);
-  await expect
-    .poll(async () => (await getFrameScroll()).left)
-    .toBeGreaterThan(frameScroll.left);
+  try {
+    await expect
+      .poll(async () => (await getFrameScroll()).left)
+      .toBeGreaterThan(frameScroll.left);
+  } catch (error) {
+    // The logs keep the events from before the wheel, so reading them only on
+    // failure leaves the timing of the test unchanged.
+    const point = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    const getLog = () => {
+      const diag = Reflect.get(window, "__diag");
+      const root = document.documentElement;
+      const style = getComputedStyle(root);
+      return {
+        id: diag?.id,
+        timeOrigin: performance.timeOrigin,
+        length: diag?.log.length,
+        log: diag?.log.slice(-80),
+        focus: document.hasFocus(),
+        active: root.hasAttribute("data-preview-active"),
+        overflow: [style.overflowX, style.overflowY],
+        size: [root.scrollWidth, root.clientWidth],
+        scroll: [root.scrollLeft, root.scrollTop],
+      };
+    };
+    // A read can fail if the frame navigated, which must not hide the error.
+    const timeout = 2000;
+    const diagnostics = {
+      box: await iframe.boundingBox({ timeout }).catch(String),
+      point,
+      under: await iframe
+        .evaluate(
+          (element, { x, y }) => {
+            const hit = element.ownerDocument.elementFromPoint(x, y);
+            return hit === element ? "iframe" : hit?.outerHTML.slice(0, 120);
+          },
+          point,
+          { timeout },
+        )
+        .catch(String),
+      page: await page.evaluate(getLog).catch(String),
+      frame: await html.evaluate(getLog, undefined, { timeout }).catch(String),
+    };
+    console.log(`DIAG8428 ${JSON.stringify(diagnostics)}`);
+    throw error;
+  }
   await expect(html).toHaveAttribute("data-preview-active", "");
   await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
 

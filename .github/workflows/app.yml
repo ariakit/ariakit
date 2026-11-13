@@ -107,14 +107,18 @@ jobs:
             name: Safari
             engine: webkit
             project: safari ios
-            test: pnpm -F app run test
+            # TEMPORARY: repeats the flaky test file for
+            # https://github.com/ariakit/ariakit/issues/8428
+            test: pnpm -F app run test src/tests/preview-cards-browser.ts --repeat-each=20 --retries=0
             shard: [1, 2]
             shardWeights: "3:5"
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari ios
-            test: pnpm -F app run test
+            # TEMPORARY: repeats the flaky test file for
+            # https://github.com/ariakit/ariakit/issues/8428
+            test: pnpm -F app run test src/tests/preview-cards-browser.ts --repeat-each=20 --retries=0
             shard: [2, 2]
             shardWeights: "3:5"
     steps:
