@@ -79,7 +79,9 @@ jobs:
   main:
     name: Main
     needs: plan
-    if: needs.plan.outputs.main == 'true'
+    # TEMPORARY: only the Safari tests run while diagnosing
+    # https://github.com/ariakit/ariakit/issues/8428
+    if: false && needs.plan.outputs.main == 'true'
     permissions:
       contents: read
     uses: ./.github/workflows/main.yml
@@ -101,7 +103,9 @@ jobs:
   perf:
     name: Performance
     needs: plan
-    if: needs.plan.outputs.perf == 'true'
+    # TEMPORARY: only the Safari tests run while diagnosing
+    # https://github.com/ariakit/ariakit/issues/8428
+    if: false && needs.plan.outputs.perf == 'true'
     permissions:
       actions: read
       contents: read
@@ -111,7 +115,9 @@ jobs:
   plus:
     name: Plus
     needs: plan
-    if: needs.plan.outputs.plus == 'true'
+    # TEMPORARY: only the Safari tests run while diagnosing
+    # https://github.com/ariakit/ariakit/issues/8428
+    if: false && needs.plan.outputs.plus == 'true'
     permissions:
       contents: read
     uses: ./.github/workflows/plus.yml
@@ -120,7 +126,9 @@ jobs:
   release_preview:
     name: Release preview
     needs: plan
-    if: needs.plan.outputs.release_preview == 'true'
+    # TEMPORARY: only the Safari tests run while diagnosing
+    # https://github.com/ariakit/ariakit/issues/8428
+    if: false && needs.plan.outputs.release_preview == 'true'
     permissions:
       contents: read
     uses: ./.github/workflows/release-preview.yml
@@ -129,7 +137,9 @@ jobs:
   docs:
     name: Docs
     needs: plan
-    if: needs.plan.outputs.docs == 'true'
+    # TEMPORARY: only the Safari tests run while diagnosing
+    # https://github.com/ariakit/ariakit/issues/8428
+    if: false && needs.plan.outputs.docs == 'true'
     permissions:
       contents: read
     uses: ./.github/workflows/docs.yml
@@ -138,7 +148,9 @@ jobs:
   og_images:
     name: OG images
     needs: plan
-    if: needs.plan.outputs.og_images == 'true'
+    # TEMPORARY: only the Safari tests run while diagnosing
+    # https://github.com/ariakit/ariakit/issues/8428
+    if: false && needs.plan.outputs.og_images == 'true'
     permissions:
       contents: read
     uses: ./.github/workflows/og-images.yml
