@@ -854,7 +854,7 @@ export default function ListExamples() {
         description="Checked and progress markers remain visible when a disclosure has no label."
         code={`
           <ListDisclosureButton checked aria-label="Repository connection" />
-          <ListDisclosureButton progress={0.5} description="Half done" />
+          <ListDisclosureButton progress={0.5} aria-label="Environment setup" />
         `}
       >
         <List ordered>
@@ -871,7 +871,10 @@ export default function ListExamples() {
           </li>
           <li>
             <ListDisclosure>
-              <ListDisclosureButton progress={0.5} description="Half done" />
+              <ListDisclosureButton
+                progress={0.5}
+                aria-label="Environment setup"
+              />
               <ListDisclosureContent>
                 <p>Remaining setup tasks</p>
               </ListDisclosureContent>
@@ -883,7 +886,6 @@ export default function ListExamples() {
                 checked
                 label={false}
                 aria-label="Workspace access"
-                description="Access granted"
               />
               <ListDisclosureContent>
                 <p>Workspace access details</p>
@@ -896,7 +898,6 @@ export default function ListExamples() {
                 progress={0.25}
                 label={null}
                 aria-label="Account sync"
-                description="Sync started"
               />
               <ListDisclosureContent>
                 <p>Account sync details</p>
