@@ -1,8 +1,20 @@
 import {
   captureInView,
-  forEachColorScheme,
+  forEachColorSchemeOf,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+
+const forcedColorsCaptures = [
+  ["edgeless", "Edgeless"],
+  ["flat-tabs", "Flat tabs"],
+  ["bevel-tabs", "Bevel tabs"],
+  ["borderless-flat-tabs", "Borderless flat tabs"],
+  ["borderless-bevel-tabs", "Borderless bevel tabs"],
+  ["without-outer-edge", "Without outer edge"],
+  // The selected first folder meets the panel on the hidden root edge.
+  ["without-outer-edge-first-tab", "Without outer edge", "Preview"],
+  ["darkened-strip-without-outer-edge", "Darkened strip without outer edge"],
+] as const;
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/7500#discussion_r3997273277
@@ -16,22 +28,13 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     q,
     visual,
   }) => {
+    const titles = forcedColorsCaptures.map(([, title]) => title);
     await page.emulateMedia({ forcedColors: "active" });
-    await forEachColorScheme(page, async (colorScheme) => {
-      for (const [key, title, tab = "Usage"] of [
-        ["edgeless", "Edgeless"],
-        ["flat-tabs", "Flat tabs"],
-        ["bevel-tabs", "Bevel tabs"],
-        ["borderless-flat-tabs", "Borderless flat tabs"],
-        ["borderless-bevel-tabs", "Borderless bevel tabs"],
-        ["without-outer-edge", "Without outer edge"],
-        // The selected first folder meets the panel on the hidden root edge.
-        ["without-outer-edge-first-tab", "Without outer edge", "Preview"],
-        [
-          "darkened-strip-without-outer-edge",
-          "Darkened strip without outer edge",
-        ],
-      ] as const) {
+    // Captures on the full sandbox left the test close to its time budget on
+    // slow runners, so only the captured boxes load.
+    // https://github.com/ariakit/ariakit/issues/8430
+    await forEachColorSchemeOf(page, titles, async (colorScheme) => {
+      for (const [key, title, tab = "Usage"] of forcedColorsCaptures) {
         const box = q.article(title);
         const selected = query(box).tab(tab);
         await selected.click();
