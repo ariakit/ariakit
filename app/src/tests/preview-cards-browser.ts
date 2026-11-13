@@ -903,6 +903,10 @@ test("preview card links clicked while the page loads move focus to the card", a
   page,
   q,
 }) => {
+  // The test loads the page twice and waits for each load, which waits for
+  // every example script and preview frame of the page. In Safari on CI, that
+  // can take most of the default budget.
+  test.setTimeout(test.info().timeout * 2);
   await page.setViewportSize({ width: 1600, height: 1000 });
   const toc = query(q.navigation("On this page"));
   const getCard = (title: string) =>
