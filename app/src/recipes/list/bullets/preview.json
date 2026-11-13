@@ -1,0 +1,4 @@
+{
+  "title": "Bullet List",
+  "description": "An unordered List with $marker set to bullet, so each row gets a round bullet in place of the dash of the basic list. There is no guide between the bullets, and a row that wraps keeps its text clear of the marker column. Use it for a set of items without an order when bullets fit the design better than dashes, rather than the bullet list with a guide, which reads as a sequence."
+}

@@ -1,7 +1,12 @@
 import { cv } from "clava";
-import { getPaddingValue, getScaledStyleClass } from "../utils/styles.ts";
-import { edge } from "./edge.ts";
+import {
+  getPaddingValue,
+  getScaledStyleClass,
+  getSpacingValue,
+} from "../utils/styles.ts";
+import { edge, hasEdgeColor } from "./edge.ts";
 import { font } from "./font.ts";
+import { guide } from "./guide.ts";
 import { nav, navGroupLabel, navLink } from "./nav.ts";
 
 /**
@@ -16,7 +21,6 @@ export const toc = cv({
   extend: [nav, font],
   class: [
     "toc",
-    "[--toc-indent:--spacing(3)]",
     "[--toc-guide-width:1px]",
     // Normalize the 0–100 contrast scale so high contrast adds only 20%, like
     // the bar of a nav link. Borders snap to device pixels, so a fractional
@@ -47,17 +51,27 @@ export const toc = cv({
      * guide and no thumb. Defaults to `smooth`.
      */
     $guide: {
-      // Guide pieces read these flags: whether rows bend between levels, and
+      // Guide pieces inherit these flags: whether rows bend between levels, and
       // whether a bend curves or runs straight.
-      smooth: "toc-smooth [--toc-bends:1] [--toc-curve:1]",
-      diagonal: "toc-diagonal [--toc-bends:1] [--toc-curve:0]",
+      smooth: "toc-smooth [--toc-bends:1] [--guide-curve:1]",
+      diagonal: "toc-diagonal [--toc-bends:1] [--guide-curve:0]",
       rail: [
-        "toc-rail [--toc-bends:0] [--toc-curve:1]",
+        "toc-rail [--toc-bends:0] [--guide-curve:1]",
         // Numbers of a nested list stay on the guide of the outermost list, so
         // that list needs the gutter of an ordered toc.
         "[&:has(.toc-list-numbers)]:[--toc-gutter:calc(var(--toc-guide-offset)+var(--toc-number-reach))]",
       ],
       false: "toc-unguided",
+    },
+    /**
+     * Sets how far the rows of a nested list move in from the rows of the list
+     * that holds it, which is also the width of a bend of the guide. The indent
+     * stops at the third level. Numbers scale the spacing token. Defaults to
+     * `3`.
+     */
+    $indent(value?: string | number) {
+      if (value == null) return;
+      return { style: { "--toc-indent": getSpacingValue(value) } };
     },
     /**
      * Sets the thickness of the thumb and the marker rings. Numbers are pixels;
@@ -100,6 +114,7 @@ export const toc = cv({
   defaultVariants: {
     $size: "sm",
     $guide: "smooth",
+    $indent: 3,
     $markerHighlight: "fill",
     $gap: 0.5,
     $itemPadding: 1.5,
@@ -260,91 +275,69 @@ export const tocLink = cv({
  * before any script runs.
  */
 const tocLinkPiece = cv({
+  extend: [guide],
   class: [
-    "absolute pointer-events-none z-1 [.toc-unguided_&]:hidden",
-    // The toc root sets system colors in forced colors.
-    "forced-colors:forced-color-adjust-none",
+    "z-1 [.toc-unguided_&]:hidden",
     // Levels to bend in from the parent or out to an earlier level. The first
     // row of the outermost list starts the guide.
     "[--toc-first:0] [li:first-child>*>&]:[--toc-first:var(--toc-lead,0)]",
     "[--toc-in-raw:0] [.toc-list_.toc-list>li:first-child>*>&]:[--toc-in-raw:1]",
     "[--toc-out-raw:0] [li:has(>.toc-list)+li>*>&]:[--toc-out-raw:1]",
     "[li:has(>.toc-list>li:last-child>.toc-list)+li>*>&]:[--toc-out-raw:2]",
-    "[--toc-in:calc(min(var(--toc-in-raw),var(--toc-in-cap,0))*var(--toc-bends,1))]",
+    // The guide draws the bend and the line with the `--guide-*` values. A row
+    // can bend out by two levels, which the span counts.
+    "[--guide-in:calc(min(var(--toc-in-raw),var(--toc-in-cap,0))*var(--toc-bends,1))]",
     "[--toc-out:calc(min(var(--toc-out-raw),var(--toc-out-cap,0))*var(--toc-bends,1))]",
-    "[--toc-bent:min(1,var(--toc-in)+var(--toc-out))]",
-    "[--toc-outward:min(1,var(--toc-out))]",
-    "[--toc-span:calc((var(--toc-in)+var(--toc-out))*var(--toc-indent))]",
+    "[--guide-outward:min(1,var(--toc-out))]",
+    "[--guide-span:calc((var(--guide-in)+var(--toc-out))*var(--toc-indent))]",
     // A bend runs from the end of the previous line, through the gap between
     // the rows, to the start of this one. The script measures the same inset
     // from the row edges to place the thumb.
     "[--toc-joint:var(--py,0px)]",
-    "[--toc-bend-height:calc(var(--nav-gap,0px)+var(--toc-joint)*2)]",
-    // The curve around the corner of a row takes most of a bend, so it follows
-    // that corner: the lower curve of a bend out wraps the top of this row, and
-    // the upper curve of a bend in wraps the bottom of the row before it.
-    "[--toc-bend-lower:calc(0.5+0.15*(var(--toc-outward)-var(--toc-in)))]",
-    // At whole scales, a whole number of pixels gives both curves one exact edge.
-    // Fractions could round to an overlap, which darkens a pixel of a translucent
-    // guide. The span leaves room for the border of the other curve.
-    "[--toc-bend-lower-width:min(var(--toc-span),round(calc((var(--toc-span)+var(--toc-line))*var(--toc-bend-lower)),1px))]",
+    "[--guide-bend-height:calc(var(--nav-gap,0px)+var(--toc-joint)*2)]",
     // The rail keeps the guide of the outermost list at every level.
     "[--toc-x:calc(-1*var(--toc-guide-offset,0px)-(1-var(--toc-bends,1))*var(--toc-depth,0)*var(--toc-indent))]",
-    "top-[calc(var(--toc-joint)-(1-var(--toc-first))*var(--toc-bend-height))]",
+    "top-[calc(var(--toc-joint)-(1-var(--toc-first))*var(--guide-bend-height))]",
     "bottom-(--toc-joint)",
-    "inset-s-[calc(var(--toc-x)-var(--toc-line)/2-var(--toc-in)*var(--toc-indent))]",
-    "w-[calc(var(--toc-span)+var(--toc-line))]",
-    // Mirror diagonal bends in right to left text. Logical insets mirror the
-    // rest.
-    "[--toc-dir:1] rtl:[--toc-dir:-1]",
-    // The first half of a smooth bend is a quarter curve from the previous
-    // line. A diagonal bend is one slanted line instead. A straight piece
-    // leaves it empty.
-    "before:absolute before:top-0 before:box-content before:border-solid before:border-(--toc-line-color)",
-    // Browsers snap a box and its border to device pixels separately, so at
-    // fractional scales a border can be thinner than the line. A border at the
-    // far side of a box keeps the column or row of the line only if the box
-    // adds the border after the content, which ends where the line starts. The
-    // height and the minimum width do that, and an inset as wide as the line
-    // keeps the automatic width below that minimum. Without a far border, the
-    // insets end a curve where the next starts. A slanted line keeps a box as
-    // wide as its border, which is where it rotates.
-    "before:inset-s-[calc(var(--toc-outward)*(var(--toc-curve)*var(--toc-bend-lower-width)+(1-var(--toc-curve))*var(--toc-span)))]",
-    "before:inset-e-[calc((1-var(--toc-curve)*var(--toc-outward))*(var(--toc-curve)*var(--toc-bend-lower-width)+(1-var(--toc-curve))*(var(--toc-span)+var(--toc-line)))+var(--toc-curve)*var(--toc-outward)*var(--toc-line))]",
-    "before:min-w-[calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-span)-var(--toc-bend-lower-width)))]",
-    "before:h-[calc(var(--toc-curve)*((var(--toc-bend-height)+var(--toc-line))*(1-var(--toc-bend-lower))-var(--toc-line))+(1-var(--toc-curve))*var(--toc-bent)*hypot(var(--toc-span),var(--toc-bend-height)))]",
-    "before:border-s-[calc(var(--toc-line)*(var(--toc-curve)*var(--toc-in)+(1-var(--toc-curve))*var(--toc-bent)))]",
-    "before:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-outward))]",
-    "before:border-be-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
-    "before:rounded-es-[calc(100%*var(--toc-curve)*var(--toc-in))]",
-    "before:rounded-ee-[calc(100%*var(--toc-curve)*var(--toc-outward))]",
-    "before:origin-top",
-    "before:rotate-[calc(var(--toc-dir)*(1-var(--toc-curve))*(var(--toc-outward)-var(--toc-in))*atan2(var(--toc-span),var(--toc-bend-height)))]",
-    // The second half of a smooth bend curves into this row and continues as
-    // the line along it. Other pieces draw only the line.
-    "after:absolute after:bottom-0 after:box-content after:border-solid after:border-(--toc-line-color)",
-    "after:top-[calc(var(--toc-bent)*(var(--toc-curve)*((var(--toc-bend-height)+var(--toc-line))*(1-var(--toc-bend-lower))-var(--toc-line))+(1-var(--toc-curve))*var(--toc-bend-height)))]",
-    "after:inset-s-[calc(var(--toc-in)*(var(--toc-curve)*(var(--toc-span)+var(--toc-line)-var(--toc-bend-lower-width))+(1-var(--toc-curve))*var(--toc-span)))]",
-    "after:inset-e-[calc((1-var(--toc-in))*(var(--toc-span)+var(--toc-line)-var(--toc-curve)*max(var(--toc-line),var(--toc-bend-lower-width)))+var(--toc-curve)*var(--toc-in)*var(--toc-line))]",
-    "after:min-w-[calc(var(--toc-curve)*var(--toc-in)*(var(--toc-bend-lower-width)-var(--toc-line)))]",
-    "after:border-bs-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-bent))]",
-    "after:border-e-[calc(var(--toc-line)*var(--toc-curve)*var(--toc-in))]",
-    "after:border-s-[calc(var(--toc-line)*(1-var(--toc-curve)*var(--toc-in)))]",
-    "after:rounded-se-[calc(var(--toc-curve)*var(--toc-in)*var(--toc-bend-lower-width))_calc(var(--toc-curve)*var(--toc-in)*(var(--toc-bend-height)+var(--toc-line))*var(--toc-bend-lower))]",
-    "after:rounded-ss-[calc(var(--toc-curve)*var(--toc-outward)*var(--toc-bend-lower-width))_calc(var(--toc-curve)*var(--toc-outward)*(var(--toc-bend-height)+var(--toc-line))*var(--toc-bend-lower))]",
+    "inset-s-[calc(var(--toc-x)-var(--guide-width)/2-var(--guide-in)*var(--toc-indent))]",
+    "w-[calc(var(--guide-span)+var(--guide-width))]",
   ],
+  defaultVariants: {
+    // A piece takes its color from the toc root, which also sets system colors
+    // in forced colors, so it needs no layer to resolve an edge.
+    $layer: false,
+    // The toc root sets the shape of the bends for the guide and the thumb.
+    $bend: false,
+  },
 });
 
-/** A hidden piece of a link that draws its part of the guide. */
+/**
+ * A hidden piece of a link that draws its part of the guide. The edge variants
+ * give it a color of its own, `$line` sets the line style, and `$radius` sets
+ * the radius of the curves, which the thumb piece of the link must also get.
+ */
 export const tocLinkGuide = cv({
   extend: [tocLinkPiece],
   class: [
     "toc-link-guide",
-    "[--toc-line:var(--toc-guide-width,1px)] [--toc-line-color:var(--toc-guide-color)]",
+    "[--guide-width:var(--toc-guide-width,1px)]",
     // Fade out after the last row.
     "[--toc-end:0] [li:last-child:not(:has(>.toc-list))>*>&]:[--toc-end:1]",
     "[li:last-child:not(:has(>.toc-list))>*>&]:mask-[linear-gradient(to_bottom,#000_calc(100%-var(--toc-tail,0)*var(--toc-end)*(--spacing(2))),transparent)]",
   ],
+  defaultVariants: {
+    // An edge color resolves on the piece, against the surface around it.
+    $layer(defaultValue, variants) {
+      if (!hasEdgeColor(variants.$edge)) return defaultValue;
+      return "transparent";
+    },
+  },
+  refine({ variants, addClass }) {
+    // Without an edge color of its own, the piece takes the color that the toc
+    // root resolves. A class can't clear that color for a piece that has one.
+    if (hasEdgeColor(variants.$edge)) return;
+    addClass("[--guide-color:var(--toc-guide-color)]");
+  },
 });
 
 /** The timing that the thumb glide and the fill of a marker share. */
@@ -373,7 +366,7 @@ export const tocLinkThumb = cv({
   extend: [tocLinkPiece, tocThumbGlide],
   class: [
     "toc-link-thumb",
-    "[--toc-line:var(--toc-thumb-width,1px)] [--toc-line-color:var(--toc-thumb-color)]",
+    "[--guide-width:var(--toc-thumb-width,1px)] [--guide-color:var(--toc-thumb-color)]",
     // Negative side insets keep the slanted lines of diagonal bends whole. A
     // piece that the range doesn't cut keeps its edges outside the clip, which
     // otherwise leaves seams between pieces at fractional pixel positions.

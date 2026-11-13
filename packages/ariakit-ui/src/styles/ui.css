@@ -600,6 +600,29 @@ body > * {
   initial-value: 0px;
 }
 
+/* Resolve the text inset of a list row in the font of the row, so a nested
+   list with another font size finds the text of the row. */
+@property --list-text-inset {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the marker box of a list row and how far its marker is from the
+   center of the box in the font of the row, so a nested list with another
+   font size finds that marker. */
+@property --list-row-marker-box {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --list-row-marker-shift {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Resolve the overhang of a list row in the font of the row, so a nested list
    with another font size moves by the padding of the row. */
 @property --list-row-overhang {
@@ -2069,6 +2092,29 @@ body > * {
 /* The last-row flag reaches guides at any depth and resets in nested lists. */
 @custom-variant ui-list-last-row {
   @container style(--list-last-row: 1) {
+    @slot;
+  }
+}
+
+/* The first-row flag reaches guides at any depth and resets in nested lists. */
+@custom-variant ui-list-first-row {
+  @container style(--list-first-row: 1) {
+    @slot;
+  }
+}
+
+/* The branch flag reaches the rows of a branch list and resets in lists nested
+   in it. */
+@custom-variant ui-list-branch {
+  @container style(--list-branch: 1) {
+    @slot;
+  }
+}
+
+/* The flag of the row that holds a nested list reaches the rows of that list
+   and resets in lists nested in it. */
+@custom-variant ui-list-parent-last-row {
+  @container style(--list-parent-last-row: 1) {
     @slot;
   }
 }

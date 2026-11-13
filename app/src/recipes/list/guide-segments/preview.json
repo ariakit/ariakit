@@ -1,0 +1,4 @@
+{
+  "title": "Colored and Dashed Guide",
+  "description": "The stops of a train route with their times. The guide prop of the list sets $edge, which colors the line and the bullets, and each ListItem from the current stop on sets its own guide with $edge and $line, which replaces the guide of the list, so the part of the route that is still to come is dashed. aria-current marks the current stop. Use it for a single sequence whose line shows a state, such as a route or a delivery, rather than the neutral line of the bullet list with a guide."
+}

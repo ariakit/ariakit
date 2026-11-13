@@ -43,6 +43,20 @@ function isTextNode(node: unknown): node is string | number | bigint {
   return typeof node === "bigint";
 }
 
+/**
+ * Returns the props of a value that `createRender` takes as an element or a
+ * props object, such as a `guide` prop. For an element, these are the props of
+ * that element, whatever its component.
+ * @example
+ * const radius = getRenderProps(guide)?.$radius;
+ */
+export function getRenderProps<P extends object>(
+  value: React.ReactElement<P> | P | undefined,
+) {
+  if (React.isValidElement<P>(value)) return value.props;
+  return value;
+}
+
 /** Like `createRender`, but nullish values and `false` omit the element. */
 export function createOptionalRender<P extends object>(
   Component: React.ElementType<P> | React.ExoticComponent<P>,

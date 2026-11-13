@@ -5,6 +5,7 @@ import * as React from "react";
 import {
   createOptionalRender,
   createRender,
+  getRenderProps,
   hasContent,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
@@ -34,6 +35,49 @@ import {
   DisclosureContentBody,
 } from "./disclosure.ariakit.react.tsx";
 
+interface ListContextValue {
+  /** Whether the rows render the bends that join a branch to its parent. */
+  branch: boolean;
+  /** The guide of the rows that don't set their own. */
+  guide?: ListItemProps["guide"];
+  /** The marker of the rows that don't set their own. */
+  marker?: ListItemProps["marker"];
+  /** The start of the anchor names that join the bends to the stem and tail. */
+  anchor?: string;
+}
+
+// What a list passes to its rows. A nested list passes its own values.
+const ListContext = React.createContext<ListContextValue>({ branch: false });
+
+// Whether the content of a row is around, so a list knows that it is nested.
+const ListRowContext = React.createContext(false);
+
+interface GetMarkerEdgePropsParams extends Pick<
+  ListItemMarkerProps,
+  "checked" | "progress"
+> {
+  /** The guide of the row, as an element or props. */
+  guide?: ListItemProps["guide"];
+}
+
+// A plain marker takes the edge color of the guide of its row, so one color
+// draws the lane. A check, an empty slot, and progress keep their colors.
+function getMarkerEdgeProps({
+  guide,
+  checked,
+  progress,
+}: GetMarkerEdgePropsParams) {
+  if (checked != null) return;
+  if (progress != null) return;
+  const props = getRenderProps<ListItemGuideProps>(guide);
+  if (props?.$edge == null) return;
+  return {
+    $edge: props.$edge,
+    $edgeRaw: props.$edgeRaw,
+    $edgeContrast: props.$edgeContrast,
+  };
+}
+
 export interface ListProps
   extends
     React.ComponentProps<"ol">,
@@ -43,6 +87,19 @@ export interface ListProps
    * Defaults to `false`.
    */
   ordered?: boolean;
+  /**
+   * Joins adjacent markers with a guide. Pass `ListItemGuide` props, such as an
+   * edge color or a line style, or a custom element, to turn the guide on and
+   * style the pieces of all rows. A row can set its own `guide`. `$guide` takes
+   * precedence over whether the guide shows. A marker without a check or
+   * progress takes the edge color of the guide, unless `marker` sets one.
+   */
+  guide?: boolean | React.ReactElement | ListItemGuideProps;
+  /**
+   * Custom marker element or `ListItemMarker` props, such as color variants,
+   * for all rows. A row can set its own `marker`.
+   */
+  marker?: React.ReactElement | ListItemMarkerProps;
 }
 
 /**
@@ -58,26 +115,62 @@ export interface ListProps
  *   <ListItem checked>Item</ListItem>
  * </List>
  * @example
- * <List $guide>
+ * <List guide>
  *   <ListItem>A bulleted row on a guide</ListItem>
  *   <ListItem>The next stop</ListItem>
  * </List>
+ * @example
+ * <List guide={{ $edge: "brand", $line: "dashed" }}>
+ *   <ListItem>A row on a dashed guide in the brand color</ListItem>
+ *   <ListItem>The next stop</ListItem>
+ * </List>
  */
-export function List({ ordered, ...props }: ListProps) {
+export function List({ ordered, guide, marker, ...props }: ListProps) {
   const Component = ordered ? "ol" : "ul";
   const [variantProps, rest] = splitProps(props, list);
+  const nested = React.useContext(ListRowContext);
+  const id = React.useId();
+  const branch = !!variantProps.$branch;
+  const context: ListContextValue = {
+    branch,
+    guide: typeof guide === "boolean" ? undefined : guide,
+    marker,
+    // A CSS identifier can't hold the punctuation of a React id.
+    anchor:
+      branch && nested ? `--list-${id.replace(/[^\w-]/g, "")}` : undefined,
+  };
   return (
-    <Component
-      {...list.jsx({ $ordered: !!ordered, ...variantProps })}
-      {...rest}
-    />
+    <ListContext.Provider value={context}>
+      {context.anchor && (
+        <>
+          {createRender<ListItemGuidePieceProps>(ListItemGuide, context.guide, {
+            $piece: "stem",
+            $anchor: `${context.anchor}-in`,
+          })}
+          {createRender<ListItemGuidePieceProps>(ListItemGuide, context.guide, {
+            $piece: "tail",
+            $anchor: `${context.anchor}-out`,
+          })}
+        </>
+      )}
+      <Component
+        {...list.jsx({
+          $ordered: !!ordered,
+          ...variantProps,
+          // Guide props and a custom element also turn the guide on.
+          $guide: variantProps.$guide ?? (guide == null ? undefined : !!guide),
+        })}
+        {...rest}
+      />
+    </ListContext.Provider>
   );
 }
 
 export interface ListItemProps
   extends
     ak.RoleProps<"li">,
-    VariantProps<typeof listItem>,
+    // The row sets `$check` from `checked` and `progress`.
+    Omit<VariantProps<typeof listItem>, "$check">,
     Pick<ListItemMarkerProps, "checked" | "progress"> {
   /**
    * Icon shown in the marker. Use it in a list with `$marker="icon"`, which
@@ -88,8 +181,15 @@ export interface ListItemProps
   /**
    * Custom marker element or `ListItemMarker` props, such as color variants.
    * The marker still takes `checked`, `progress`, and `icon` from the row.
+   * Defaults to the `marker` of the list.
    */
   marker?: React.ReactElement | ListItemMarkerProps;
+  /**
+   * Custom guide element or `ListItemGuide` props, such as an edge color or a
+   * line style, for the pieces of this row. Defaults to the `guide` of the
+   * list, which also turns the guide on.
+   */
+  guide?: React.ReactElement | ListItemGuideProps;
 }
 
 /**
@@ -111,25 +211,54 @@ export interface ListItemProps
  *     Tests passed
  *   </ListItem>
  * </List>
+ * @example
+ * <List guide>
+ *   <ListItem guide={{ $line: "dashed" }}>Draft, then a dashed line</ListItem>
+ *   <ListItem>Published</ListItem>
+ * </List>
  */
 export function ListItem({
   checked,
   progress,
   icon,
   marker,
+  guide,
   ...props
 }: ListItemProps) {
   const [variantProps, rest] = splitProps(props, listItem);
+  const context = React.useContext(ListContext);
+  const guideProps = guide ?? context.guide;
   return (
-    <ak.Role.li {...listItem.jsx(variantProps)} {...rest}>
+    <ak.Role.li
+      {...listItem.jsx({
+        ...variantProps,
+        $check: checked != null || progress != null,
+      })}
+      {...rest}
+    >
       {variantProps.$marker !== false &&
-        createRender(ListItemMarker, marker, {
+        createRender(ListItemMarker, marker ?? context.marker, {
+          ...getMarkerEdgeProps({ guide: guideProps, checked, progress }),
           checked,
           progress,
           children: icon,
         })}
-      <ListItemGuide />
-      <ListItemContent>{rest.children}</ListItemContent>
+      {createRender(ListItemGuide, guideProps)}
+      {context.branch && (
+        <>
+          {createRender<ListItemGuidePieceProps>(ListItemGuide, guideProps, {
+            $piece: "in",
+            $anchor: context.anchor && `${context.anchor}-in`,
+          })}
+          {createRender<ListItemGuidePieceProps>(ListItemGuide, guideProps, {
+            $piece: "out",
+            $anchor: context.anchor && `${context.anchor}-out`,
+          })}
+        </>
+      )}
+      <ListRowContext.Provider value>
+        <ListItemContent>{rest.children}</ListItemContent>
+      </ListRowContext.Provider>
     </ak.Role.li>
   );
 }
@@ -228,11 +357,38 @@ export function ListItemMarker({
 }
 
 export interface ListItemGuideProps
-  extends React.ComponentProps<"span">, VariantProps<typeof listItemGuide> {}
+  extends
+    React.ComponentProps<"span">,
+    // The list and the list item set which piece each element is, and the
+    // anchor that joins two of them.
+    Omit<VariantProps<typeof listItemGuide>, "$piece" | "$anchor"> {}
+
+// The props of the pieces that `ListItem` creates.
+interface ListItemGuidePieceProps
+  extends
+    ListItemGuideProps,
+    Pick<VariantProps<typeof listItemGuide>, "$piece" | "$anchor"> {}
 
 /**
- * Guide segment created by `ListItem` and `ListDisclosure`. Joins adjacent
- * markers when the list's `$guide` setting enables it.
+ * Guide piece created by `ListItem` and `ListDisclosure`. Joins adjacent
+ * markers when the list enables its guide. In a list with `$branch`, `ListItem`
+ * also creates a piece for each bend, which joins the first row to the parent
+ * guide and the last row back to it. `$bend` and `$radius` set the shape of the
+ * bends. The `guide` prop of `List` and `ListItem` passes props to the pieces.
+ * @example
+ * <List guide={<ListItemGuide $edge="success" $line="dotted" />}>
+ *   <ListItem>A row on a dotted green guide</ListItem>
+ *   <ListItem>The next stop</ListItem>
+ * </List>
+ * @example
+ * <List>
+ *   <ListItem>
+ *     A row with a branch
+ *     <List $branch guide={{ $bend: "diagonal" }}>
+ *       <ListItem>A row that slanted lines join to its parent</ListItem>
+ *     </List>
+ *   </ListItem>
+ * </List>
  */
 export function ListItemGuide(props: ListItemGuideProps) {
   const [variantProps, rest] = splitProps(props, listItemGuide);
@@ -281,6 +437,7 @@ export function ListDisclosure({
   decoration,
   ...props
 }: ListDisclosureProps) {
+  const context = React.useContext(ListContext);
   return (
     <Disclosure
       recipe={listDisclosure}
@@ -289,7 +446,7 @@ export function ListDisclosure({
       decoration={
         <>
           {decoration}
-          <ListItemGuide />
+          {createRender(ListItemGuide, context.guide)}
         </>
       }
       button={createOptionalRender(ListDisclosureButton, button)}
@@ -299,8 +456,12 @@ export function ListDisclosure({
 }
 
 export interface ListDisclosureButtonProps
+  // The button sets `$check` from `checked` and `progress`.
   extends
-    Omit<DisclosureButtonProps<typeof listDisclosureButton>, "recipe" | "icon">,
+    Omit<
+      DisclosureButtonProps<typeof listDisclosureButton>,
+      "recipe" | "icon" | "$check"
+    >,
     Pick<ListItemMarkerProps, "checked" | "progress">,
     Pick<ListItemProps, "icon" | "marker"> {}
 
@@ -332,8 +493,10 @@ export function ListDisclosureButton({
       ? { children: props.children }
       : label;
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
+  const context = React.useContext(ListContext);
   // In a list, the icon goes in the marker, not in a slot before the label.
-  const markerEl = createRender(ListItemMarker, marker, {
+  const markerEl = createRender(ListItemMarker, marker ?? context.marker, {
+    ...getMarkerEdgeProps({ guide: context.guide, checked, progress }),
     checked,
     progress,
     children: icon,
@@ -342,6 +505,7 @@ export function ListDisclosureButton({
     <DisclosureButton
       recipe={listDisclosureButton}
       indicator={indicator}
+      $check={checked != null || progress != null}
       {...props}
       label={
         labelEl

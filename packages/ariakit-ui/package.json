@@ -84,6 +84,7 @@
     "./styles/focus": "./src/styles/focus.ts",
     "./styles/font": "./src/styles/font.ts",
     "./styles/frame": "./src/styles/frame.ts",
+    "./styles/guide": "./src/styles/guide.ts",
     "./styles/heading": "./src/styles/heading.ts",
     "./styles/hover": "./src/styles/hover.ts",
     "./styles/hovercard": "./src/styles/hovercard.ts",
