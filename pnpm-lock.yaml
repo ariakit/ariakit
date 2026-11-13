@@ -401,8 +401,8 @@ importers:
         specifier: 7.4.8
         version: 7.4.8(@astrojs/markdown-remark@7.3.6(supports-color@10.2.2))(@types/node@24.19.2)(aws4fetch@1.0.20)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
       clava:
-        specifier: 0.7.2
-        version: 0.7.2
+        specifier: 0.7.3
+        version: 0.7.3
       hast-util-to-text:
         specifier: 4.0.3
         version: 4.0.3
@@ -945,8 +945,8 @@ importers:
         specifier: 4.6.0
         version: 4.6.0
       clava:
-        specifier: 0.7.2
-        version: 0.7.2
+        specifier: 0.7.3
+        version: 0.7.3
       lucide-react:
         specifier: 1.70.0
         version: 1.70.0(@types/react@19.3.0)(react@19.3.1)
@@ -6068,8 +6068,8 @@ packages:
     resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
 
-  clava@0.7.2:
-    resolution: {integrity: sha512-ohm72e1jWFfUo/T7pCHMxYkRnCo1ajvqqOyP1Hw4c3CSDaqrtYBGRS3YE+cdEmuiBZcA7KkplO4yvv6CS4Yzyg==}
+  clava@0.7.3:
+    resolution: {integrity: sha512-gxeod5Q6GoFvxqQTuaCtWURA/sQIpx81NhSF0masHrJLfo1u1fSF12Rl6AUu7A4KrFLaC1eJ7KV01d+rF8ZfbA==}
 
   client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
@@ -15271,7 +15271,7 @@ snapshots:
 
   ci-info@4.4.0: {}
 
-  clava@0.7.2:
+  clava@0.7.3:
     dependencies:
       clsx: 2.1.1
       csstype: 3.2.3

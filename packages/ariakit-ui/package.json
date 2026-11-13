@@ -126,7 +126,7 @@
     "@ariakit/utils": "workspace:*",
     "@shikijs/langs": "4.6.0",
     "@shikijs/themes": "4.6.0",
-    "clava": "0.7.2",
+    "clava": "0.7.3",
     "lucide-react": "1.70.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
