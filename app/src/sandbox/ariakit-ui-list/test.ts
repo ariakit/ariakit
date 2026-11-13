@@ -81,7 +81,7 @@ test("keeps a bare fragment label separate from its description and badge", asyn
 
 for (const [name, state, description] of [
   ["Repository connection", "Checked", ""],
-  [/Half done/, "Unchecked", "50% complete"],
+  ["Environment setup", "Unchecked", "50% complete"],
   ["Workspace access", "Checked", ""],
   ["Account sync", "Unchecked", "25% complete"],
 ] as const) {

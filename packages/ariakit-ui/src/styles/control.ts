@@ -195,9 +195,12 @@ export const controlLabel = cv({
   ],
 });
 
-/** Secondary control text with optional truncation or line limits. */
+/**
+ * Secondary control text with optional truncation or line limits. Its font size
+ * defaults to `0.875` of the label, with the line height of smaller text.
+ */
 export const controlDescription = cv({
-  extend: [text],
+  extend: [text, font],
   class: [
     // Let active.ts reduce press depth for controls with descriptions.
     "control-description",
@@ -205,7 +208,7 @@ export const controlDescription = cv({
     "ms-0!",
     // Use a full row unless horizontal content has room beside the label.
     "ak-ink-70 basis-full group-[.flex-wrap]/control-content:basis-auto",
-    "font-normal text-[0.875em]",
+    "font-normal",
     "group-ui-disabled/control:ak-ink-0",
   ],
   variants: {
@@ -222,6 +225,12 @@ export const controlDescription = cv({
         class: "line-clamp-(--line-clamp)",
       };
     },
+  },
+  defaultVariants: {
+    // Smaller text than the label. A number keeps the size relative to the
+    // label and gives the line height of smaller text, also where a parent sets
+    // its line height as a length, such as a list row.
+    $size: 0.875,
   },
 });
 

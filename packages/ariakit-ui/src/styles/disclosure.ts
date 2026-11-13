@@ -213,11 +213,11 @@ export const disclosureButton = cv({
       // one.
       if (!value) return;
       return [
-        "transition-[border-radius,--tw-gradient-from-position,var(--active-transition)]",
+        "transition-[border-radius,--tw-gradient-from-position,--tw-gradient-to-position,var(--active-transition)]",
         // Corners and hover fade wait for content closing at half duration;
         // press motion stays immediate.
-        "duration-[calc(var(--disclosure-duration)*0.5),calc(var(--disclosure-duration)*0.5),var(--active-duration)]",
-        "delay-[calc(var(--disclosure-duration)/1.5),calc(var(--disclosure-duration)/1.5),0s]",
+        "duration-[calc(var(--disclosure-duration)*0.5),calc(var(--disclosure-duration)*0.5),calc(var(--disclosure-duration)*0.5),var(--active-duration)]",
+        "delay-[calc(var(--disclosure-duration)/1.5),calc(var(--disclosure-duration)/1.5),calc(var(--disclosure-duration)/1.5),0s]",
         "ui-disclosure-open:delay-0",
       ];
     },
@@ -277,8 +277,16 @@ export const disclosureButton = cv({
       // Fade across twice the button's bottom padding unless the content
       // supplies its own gap.
       "[--disclosure-hover-fade:calc(var(--py,0px)*2*var(--disclosure-open,0)*(1-var(--disclosure-content-padding,0)))]",
+      // End the fade where the rounded bottom corners start, so their curve
+      // doesn't show. A split layout squares the open corners. A pill rounds
+      // half its height at most, and the radius can be much larger.
+      "[--disclosure-hover-end:calc(min(var(--ak-frame-radius,0px),50%)*var(--disclosure-open,0)*(1-var(--disclosure-content-padding,0))*(1-var(--disclosure-split,0)))]",
+      // A group squares the bottom corners of each member but the last one
+      // that shows, or one with $frameEnd, as ak-frame-cover does.
+      "[.disclosure-group>:not(.ak-frame-end):has(~:not([hidden],template))>&]:[--disclosure-hover-end:0px]",
       // Animate the fade on open and close, without animating it on hover.
-      "from-[calc(100%-var(--disclosure-hover-fade))]",
+      "from-[calc(100%-var(--disclosure-hover-fade)-var(--disclosure-hover-end))]",
+      "to-[calc(100%-var(--disclosure-hover-end))]",
       // Replace the opaque layer background so the gradient can fade to
       // transparency.
       "ui-hover:bg-transparent ui-hover:bg-linear-to-b",

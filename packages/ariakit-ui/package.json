@@ -36,6 +36,7 @@
     "./components/copy-button.ariakit.react": "./src/components/copy-button.ariakit.react.tsx",
     "./components/dialog.ariakit.react": "./src/components/dialog.ariakit.react.tsx",
     "./components/disclosure.ariakit.react": "./src/components/disclosure.ariakit.react.tsx",
+    "./components/font.ariakit.react": "./src/components/font.ariakit.react.tsx",
     "./components/frame.ariakit.react": "./src/components/frame.ariakit.react.tsx",
     "./components/heading.ariakit.react": "./src/components/heading.ariakit.react.tsx",
     "./components/hovercard.ariakit.react": "./src/components/hovercard.ariakit.react.tsx",
