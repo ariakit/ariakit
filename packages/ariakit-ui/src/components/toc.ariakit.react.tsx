@@ -12,6 +12,7 @@ import {
   appendOptionalChild,
   createOptionalRender,
   createRender,
+  getRenderProps,
 } from "../react-utils/create-render.react.ts";
 import {
   LandmarkContext,
@@ -52,6 +53,8 @@ const TocRegistryContext = React.createContext<TocRegistry | null>(null);
 const TocCurrentContext = React.createContext<string | null>(null);
 // Whether a `TocItem` already renders the list item around the link.
 const TocItemContext = React.createContext(false);
+// The guide of the links that don't set their own.
+const TocGuideContext = React.createContext<TocLinkProps["guide"]>(undefined);
 
 interface TocSection {
   top: number;
@@ -706,6 +709,13 @@ export interface TocProps
    */
   list?: React.ReactElement | TocListProps | false;
   /**
+   * Custom guide element or `TocLinkGuide` props, such as an edge color, a line
+   * style, or the radius of the curves, for the guide pieces of all links. A
+   * link can set its own `guide`. `$guide` sets the shape of the bends and
+   * whether the guide shows.
+   */
+  guide?: React.ReactElement | TocLinkGuideProps;
+  /**
    * Whether the table of contents renders a `nav` landmark. When omitted, it
    * does unless an ancestor `Nav` or a `ShellSidebar` with `landmark="nav"`
    * already renders one, in which case it renders a `div`. A name from `label`,
@@ -748,10 +758,16 @@ export interface TocProps
  *   <TocLink href="#basics">Basics</TocLink>
  *   <TocLink href="#data">Working with data</TocLink>
  * </Toc>
+ * @example
+ * <Toc label="On this page" $indent={4} guide={{ $radius: 1 }}>
+ *   <TocLink href="#overview">Overview</TocLink>
+ *   <TocLink href="#usage">Usage</TocLink>
+ * </Toc>
  */
 export function Toc({
   label,
   list,
+  guide,
   landmark,
   ordered,
   onCurrentChange,
@@ -783,24 +799,26 @@ export function Toc({
     <LandmarkContext.Provider value={nestedLandmarks}>
       <TocRegistryContext.Provider value={registry}>
         <TocCurrentContext.Provider value={currentId}>
-          <ak.Role.nav
-            // A render prop from the caller still decides the element.
-            render={isLandmark ? undefined : <div />}
-            aria-labelledby={
-              isLandmark && rest["aria-label"] == null ? labelId : undefined
-            }
-            {...toc.jsx({ ...variantProps, $ordered: !!ordered })}
-            {...rest}
-            ref={ref}
-          >
-            {labelElement}
-            {list === false
-              ? children
-              : createRender(TocList, list, {
-                  children,
-                  render: ordered ? <ol /> : undefined,
-                })}
-          </ak.Role.nav>
+          <TocGuideContext.Provider value={guide}>
+            <ak.Role.nav
+              // A render prop from the caller still decides the element.
+              render={isLandmark ? undefined : <div />}
+              aria-labelledby={
+                isLandmark && rest["aria-label"] == null ? labelId : undefined
+              }
+              {...toc.jsx({ ...variantProps, $ordered: !!ordered })}
+              {...rest}
+              ref={ref}
+            >
+              {labelElement}
+              {list === false
+                ? children
+                : createRender(TocList, list, {
+                    children,
+                    render: ordered ? <ol /> : undefined,
+                  })}
+            </ak.Role.nav>
+          </TocGuideContext.Provider>
         </TocCurrentContext.Provider>
       </TocRegistryContext.Provider>
     </LandmarkContext.Provider>
@@ -916,6 +934,12 @@ export interface TocLinkProps
    * `render`, belong to the anchor.
    */
   item?: React.ReactElement | ak.RoleProps<"li"> | false;
+  /**
+   * Custom guide element or `TocLinkGuide` props, such as an edge color or a
+   * line style, for the guide piece of this link. Defaults to the `guide` of
+   * the table of contents.
+   */
+  guide?: React.ReactElement | TocLinkGuideProps;
 }
 
 /**
@@ -934,12 +958,14 @@ export interface TocLinkProps
  *   </TocLink>
  * </Toc>
  */
-export function TocLink({ item, ...props }: TocLinkProps) {
+export function TocLink({ item, guide, ...props }: TocLinkProps) {
   const [variantProps, rest] = splitProps(props, tocLink);
   const id = React.useId();
   const registry = React.useContext(TocRegistryContext);
   const currentId = React.useContext(TocCurrentContext);
   const inItem = React.useContext(TocItemContext);
+  const contextGuide = React.useContext(TocGuideContext);
+  const guideProps = guide ?? contextGuide;
   const linkRef = React.useRef<HTMLAnchorElement>(null);
   const thumbRef = React.useRef<HTMLSpanElement>(null);
   const numberRef = React.useRef<HTMLSpanElement>(null);
@@ -961,8 +987,15 @@ export function TocLink({ item, ...props }: TocLinkProps) {
   // in a nav link.
   const pieces = (
     <>
-      <span aria-hidden {...tocLinkGuide.jsx()} />
-      <span aria-hidden ref={thumbRef} {...tocLinkThumb.jsx()} />
+      {createRender(TocLinkGuide, guideProps)}
+      <span
+        aria-hidden
+        ref={thumbRef}
+        // The thumb covers the guide, so its curves take the same radius.
+        {...tocLinkThumb.jsx({
+          $radius: getRenderProps<TocLinkGuideProps>(guideProps)?.$radius,
+        })}
+      />
       <span aria-hidden ref={numberRef} {...tocLinkMarker.jsx()} />
       <span aria-hidden ref={dotRef} {...tocLinkDot.jsx()} />
     </>
@@ -984,4 +1017,25 @@ export function TocLink({ item, ...props }: TocLinkProps) {
     return link;
   }
   return createRender(ak.Role.li, item, { children: link });
+}
+
+export interface TocLinkGuideProps
+  extends
+    React.ComponentProps<"span">,
+    // The `$guide` variant of the table of contents sets the shape of the
+    // bends for the guide and the thumb.
+    Omit<VariantProps<typeof tocLinkGuide>, "$bend"> {}
+
+/**
+ * Guide piece created by `TocLink`. It draws the bend from the previous row and
+ * the line along its own row, and stays hidden from assistive technology. The
+ * `guide` prop of `Toc` and `TocLink` passes props to it.
+ * @example
+ * <Toc label="On this page" guide={<TocLinkGuide $line="dashed" />}>
+ *   <TocLink href="#overview">Overview</TocLink>
+ * </Toc>
+ */
+export function TocLinkGuide(props: TocLinkGuideProps) {
+  const [variantProps, rest] = splitProps(props, tocLinkGuide);
+  return <span aria-hidden {...tocLinkGuide.jsx(variantProps)} {...rest} />;
 }

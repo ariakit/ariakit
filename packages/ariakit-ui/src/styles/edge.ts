@@ -29,6 +29,11 @@ export function isEdgeColor(value: unknown): value is EdgeColorValues {
   return includes(COLOR_VALUES, value);
 }
 
+/** Checks whether a value of the `$edge` variant sets an edge color. */
+export function hasEdgeColor(value: unknown) {
+  return value != null && value !== "unset";
+}
+
 /** Resolves an edge color for an inherited CSS channel. */
 export function getEdgeColorValue(
   value?: EdgeColorValues | "unset" | (string & {}),
