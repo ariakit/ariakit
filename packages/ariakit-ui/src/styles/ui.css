@@ -665,6 +665,21 @@ body > * {
   initial-value: 0px;
 }
 
+/* Resolve the two lengths whose values a guide piece expands most, once on the
+   piece. Unresolved, they expand again in each value that reads them, and a
+   glide of the table of contents restyles its thumb pieces in each frame. */
+@property --guide-span {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --guide-bend-lower-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Registration lets the table of contents animate its thumb range on each piece
    that reads it. A range that doesn't inherit makes each frame of the glide
    cheaper to restyle in Chrome. */
