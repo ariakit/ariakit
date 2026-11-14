@@ -5,9 +5,9 @@ import {
   getSpacingValue,
 } from "../utils/styles.ts";
 import { edge, hasEdgeColor } from "./edge.ts";
-import { font } from "./font.ts";
 import { guide } from "./guide.ts";
 import { nav, navGroupLabel, navLink } from "./nav.ts";
+import { text } from "./text.ts";
 
 /**
  * A table of contents: a navigation region whose rows sit along a guide that
@@ -18,7 +18,7 @@ import { nav, navGroupLabel, navLink } from "./nav.ts";
  * rows, which also scales their padding and the guide. It defaults to `sm`.
  */
 export const toc = cv({
-  extend: [nav, font],
+  extend: [nav, text],
   class: [
     "toc",
     "[--toc-guide-width:1px]",

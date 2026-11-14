@@ -1,5 +1,4 @@
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
-import { Font } from "@ariakit/ui/components/font.ariakit.react";
 import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import {
@@ -9,6 +8,7 @@ import {
   ListItem,
 } from "@ariakit/ui/components/list.ariakit.react";
 import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
+import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import {
   EyeIcon,
   GitCommitHorizontalIcon,
@@ -30,27 +30,27 @@ export default function Example() {
         <p>
           <span className="font-medium">marisol</span> pushed 2 commits
         </p>
-        <Font $size={0.875} render={<p />} className="ak-ink-60">
+        <Text $size={0.875} render={<p />} $ink={60}>
           5 days ago
-        </Font>
+        </Text>
       </ListItem>
       <ListItem icon={<EyeIcon />}>
         <p>
           <span className="font-medium">marisol</span> requested a review from{" "}
           <span className="font-medium">tobias</span>
         </p>
-        <Font $size={0.875} render={<p />} className="ak-ink-60">
+        <Text $size={0.875} render={<p />} $ink={60}>
           4 days ago
-        </Font>
+        </Text>
       </ListItem>
       <ListItem icon={<TagIcon />}>
         <p>
           <span className="font-medium">marisol</span> added the label{" "}
           <Badge>feature</Badge>
         </p>
-        <Font $size={0.875} render={<p />} className="ak-ink-60">
+        <Text $size={0.875} render={<p />} $ink={60}>
           4 days ago
-        </Font>
+        </Text>
       </ListItem>
       {/* A row with a surface is a card that sits above the guide. All rows
           have the same padding, so its marker stays on the guide. */}
@@ -86,9 +86,9 @@ export default function Example() {
         <p>
           <span className="font-medium">tobias</span> approved these changes
         </p>
-        <Font $size={0.875} render={<p />} className="ak-ink-60">
+        <Text $size={0.875} render={<p />} $ink={60}>
           Today
-        </Font>
+        </Text>
       </ListItem>
     </List>
   );

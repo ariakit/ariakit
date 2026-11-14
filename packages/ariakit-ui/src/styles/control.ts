@@ -1,7 +1,6 @@
 import type { VariantProps } from "clava";
 import { cv, cx } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
-import { font } from "./font.ts";
 import { frame } from "./frame.ts";
 import { hasLayerBackground, isLayerColor, layer } from "./layer.ts";
 import { segmentGroup } from "./segment.ts";
@@ -200,14 +199,14 @@ export const controlLabel = cv({
  * defaults to `0.875` of the label, with the line height of smaller text.
  */
 export const controlDescription = cv({
-  extend: [text, font],
+  extend: [text],
   class: [
     // Let active.ts reduce press depth for controls with descriptions.
     "control-description",
     // Remove sibling slot margins that would indent a full-width description.
     "ms-0!",
     // Use a full row unless horizontal content has room beside the label.
-    "ak-ink-70 basis-full group-[.flex-wrap]/control-content:basis-auto",
+    "basis-full group-[.flex-wrap]/control-content:basis-auto",
     "font-normal",
     "group-ui-disabled/control:ak-ink-0",
   ],
@@ -231,6 +230,7 @@ export const controlDescription = cv({
     // label and gives the line height of smaller text, also where a parent sets
     // its line height as a length, such as a list row.
     $size: 0.875,
+    $ink: 70,
   },
 });
 
@@ -352,9 +352,12 @@ export const controlFieldLabel = cv({
 export const controlFieldDescription = cv({
   extend: [text],
   class: [
-    "control-field-description ak-ink-70 ui-base:text-[0.875em]",
+    "control-field-description ui-base:text-[0.875em]",
     "group-ui-field-disabled/field:ak-ink-0",
   ],
+  defaultVariants: {
+    $ink: 70,
+  },
 });
 
 /**
@@ -726,7 +729,7 @@ export const controlBar = cv({
 
 /** A control group with shared spacing and optional joined edges. */
 export const controlGroup = cv({
-  extend: [frame, segmentGroup, font],
+  extend: [frame, segmentGroup, text],
   class: [
     // Bars inside the controls reach the group's padding edge.
     "control-group [--control-bar-gap:var(--ak-frame-padding)]",

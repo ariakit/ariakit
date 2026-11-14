@@ -156,7 +156,7 @@ function FieldWithAppIds() {
           Anonymous crash and usage data
         </CheckboxDescription>
       </CheckboxField>
-      <Text id={hintId} render={<p />} className="ak-ink-70 text-sm">
+      <Text id={hintId} render={<p />} $size="sm" $ink={70}>
         You can change this later in settings
       </Text>
     </div>
@@ -190,7 +190,7 @@ function CountedCardGrid() {
           ))}
         </CheckboxCardGrid>
       </CheckboxGroup>
-      <Text render={<p />} className="ak-ink-70 text-sm">
+      <Text render={<p />} $size="sm" $ink={70}>
         {selected.length} of {features.length} selected
       </Text>
     </div>

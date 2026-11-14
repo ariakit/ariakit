@@ -1,7 +1,6 @@
 import type { VariantProps } from "clava";
 import { cv } from "clava";
 import { includes } from "../utils/includes.ts";
-import { font } from "./font.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
 import { hasLayerBackground, isLayerColor } from "./layer.ts";
@@ -16,7 +15,7 @@ import { text } from "./text.ts";
  * it, and so can static elements, such as field errors.
  */
 export const slotFrame = cv({
-  extend: [textFrame, text, font],
+  extend: [textFrame, text],
   class: [
     "flex",
     // Subtract glyph side bearings from gaps for optical text alignment.

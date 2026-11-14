@@ -253,6 +253,8 @@ export const navGroupLabel = cv({
       true: "uppercase tracking-wider text-[0.75em]",
       false: "text-[0.8125em]",
     },
+    /** Disables the inherited variant; `$uppercase` sets the label size. */
+    $size: null,
   },
   defaultVariants: {
     // Use lengths resolved by the navigation root, not the smaller label font.
