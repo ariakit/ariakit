@@ -416,12 +416,14 @@ const listRow = cv({
     // it. The pieces of the row, the stem of a branch list in the row, and
     // that list read this distance. A row without a marker has none.
     "[--list-row-marker-cut:calc((var(--list-row-marker-reach)+var(--list-guide-gap,0px))*var(--list-row-marker-on,1))]",
-    // The same distance for the marker of the next row, where a branch list in
-    // this row returns to the guide. The next row can have a check when this
-    // row has none. That row is a list item, or a link or a disclosure in a
-    // list item.
+    // The same distance for the marker of the next row, where the guide piece
+    // of this row stops and a branch list in this row returns to the guide.
+    // The next row can have a check when this row has none. That row is a list
+    // item, or a link or a disclosure in a list item. A row in its own list
+    // item, such as a link or a disclosure, reads the list item after that one.
     "[--list-row-next-marker-cut:calc(var(--list-row-plain-reach)+var(--list-guide-gap,0px))]",
     "has-[+li.list-item-check,+li>.list-item-check,+li>.list-row>.list-item-check]:[--list-row-next-marker-cut:calc(var(--list-row-check-reach)+var(--list-guide-gap,0px))]",
+    "[li:has(+li.list-item-check,+li>.list-item-check,+li>.list-row>.list-item-check)>&]:[--list-row-next-marker-cut:calc(var(--list-row-check-reach)+var(--list-guide-gap,0px))]",
     // The text starts one marker gap after the marker, so it starts after the
     // marker box by that gap, less the space that the marker leaves in the
     // box. A nested list reads this length to find the text of its row.
@@ -1038,49 +1040,41 @@ export const listItemGuide = cv({
         "z-2",
         "[--guide-in:0] [--guide-outward:0]",
         "[--guide-span:0px] [--guide-bend-height:0px]",
-        // The piece runs along its row and the gap after it, so the pieces of
-        // adjacent rows join into one line. Row borders overlap the gap, so
-        // they add no length. Clamp negative gaps to zero, as grid layout does.
-        // The last row has no gap after it.
-        "[--list-guide-reach:max(0px,var(--list-gap))]",
-        "ui-list-last-row:[--list-guide-reach:0px]",
-        // The guide of a row with a surface starts below the row, because the
-        // surface hides the part along the row. It also starts below the
-        // border or the ring of the row, which grow outward, because a
+        // The guide of a row with a surface starts below the row, so the
+        // surface hides the part that runs to its marker. It also starts below
+        // the border or the ring of the row, which grow outward, because a
         // translucent line over a translucent border shows as a darker dot.
-        "[--list-guide-skip:calc((100%+var(--list-row-border,0px)+var(--list-row-ring,0px))*var(--list-row-solid,0))]",
-        "top-(--list-guide-skip)",
+        "[--list-guide-skip:calc((100%-var(--list-guide-start)+var(--list-row-border,0px)+var(--list-row-ring,0px))*var(--list-row-solid,0))]",
+        // The piece of a row runs from its marker to the next marker, so the
+        // guide props of a row style the part of the line that leaves it. Row
+        // borders overlap the gap, so they add no length. Clamp negative gaps
+        // to zero, as grid layout does.
+        "[--list-guide-reach:max(0px,var(--list-gap))]",
+        // A row without a marker starts its piece where the piece of the row
+        // before it stops, one cut before the center of this row.
+        "[--list-guide-lead:calc((var(--list-row-plain-reach)+var(--list-guide-gap,0px))*(1-var(--list-row-marker-on,1))*(1-var(--list-first-row,0))*(1-var(--list-row-solid,0)))]",
+        "top-[calc(var(--list-guide-start)+var(--list-guide-skip)-var(--list-guide-lead))]",
         "inset-s-(--list-guide-x) w-(--guide-width)",
-        "h-[calc(100%+var(--list-guide-reach)-var(--list-guide-skip))]",
-        // The clip removes the line around the marker of the row, so the
-        // surface behind the list shows there, whatever it paints. It also
-        // removes the line before the first marker and after the last one. A
-        // large offset moves an edge of the clip out of the piece: the line
-        // before the marker goes away in the first row, the line after it in
-        // the last row, and a row with a surface, whose piece starts below it,
-        // keeps the whole line.
-        "[--list-guide-clip-before:calc(var(--list-guide-start)-var(--list-row-marker-cut,0px)-(var(--list-first-row,0)+var(--list-row-solid,0))*100000px)]",
-        "[--list-guide-clip-after:calc(var(--list-guide-start)+var(--list-row-marker-cut,0px)+(var(--list-last-row,0)-var(--list-row-solid,0))*100000px)]",
-        // Two rectangles, joined along the start edge. The sides extend past
-        // the piece, so the clip never thins a line that snaps to a device
-        // pixel beside it.
-        "[clip-path:polygon(-1px_-1px,calc(100%+1px)_-1px,calc(100%+1px)_var(--list-guide-clip-before),-1px_var(--list-guide-clip-before),-1px_var(--list-guide-clip-after),calc(100%+1px)_var(--list-guide-clip-after),calc(100%+1px)_calc(100%+1px),-1px_calc(100%+1px))]",
-        // A horizontal guide runs along the row and the gap after it, through
-        // the marker centers. The line runs along the top of the piece, not
-        // along its start edge.
+        "h-[calc(100%+var(--list-guide-reach)-var(--list-guide-skip)+var(--list-guide-lead))]",
+        // The clip removes the line around the marker of the row and around
+        // the next marker, so the surface behind the list shows there,
+        // whatever it paints. The piece of a row with a surface starts below
+        // the row, so it keeps its start. The sides extend past the piece, so
+        // the clip never thins a line that snaps to a device pixel beside it.
+        "[clip-path:inset(calc(var(--list-row-marker-cut,0px)*(1-var(--list-row-solid,0)))_-1px_var(--list-row-next-marker-cut,0px)_-1px)]",
+        // A horizontal guide joins the marker centers across the columns. The
+        // line runs along the top of the piece, not along its start edge.
         "ui-list-horizontal:top-(--list-guide-x)",
-        "ui-list-horizontal:inset-s-0 ui-list-horizontal:h-(--guide-width)",
-        "ui-list-horizontal:w-[calc(100%+var(--list-guide-reach))]",
+        "ui-list-horizontal:inset-s-[calc(50%-var(--list-guide-lead))]",
+        "ui-list-horizontal:h-(--guide-width)",
+        "ui-list-horizontal:w-[calc(100%+var(--list-guide-reach)+var(--list-guide-lead))]",
         "ui-list-horizontal:after:inset-e-0 ui-list-horizontal:after:border-s-0",
         "ui-list-horizontal:after:border-bs-(length:--guide-width)",
-        // The marker is on the center of the row, which is the center of the
-        // piece less half the gap that the piece covers after the row. The
-        // clip takes physical distances, so right to left text swaps its
-        // sides. A row with a surface keeps the line around its marker.
-        "ui-list-horizontal:[--list-guide-center:calc(50%-var(--guide-dir)*var(--list-guide-reach)/2)]",
-        "ui-list-horizontal:[--list-guide-clip-before:calc(var(--list-guide-center)-var(--list-row-marker-cut,0px)-(var(--list-first-row,0)*(1+var(--guide-dir))+var(--list-last-row,0)*(1-var(--guide-dir)))*50000px)]",
-        "ui-list-horizontal:[--list-guide-clip-after:calc(var(--list-guide-center)+var(--list-row-marker-cut,0px)+(var(--list-last-row,0)*(1+var(--guide-dir))+var(--list-first-row,0)*(1-var(--guide-dir)))*50000px)]",
-        "ui-list-horizontal:[clip-path:polygon(-1px_-1px,-1px_calc(100%+1px),var(--list-guide-clip-before)_calc(100%+1px),var(--list-guide-clip-before)_-1px,var(--list-guide-clip-after)_-1px,var(--list-guide-clip-after)_calc(100%+1px),calc(100%+1px)_calc(100%+1px),calc(100%+1px)_-1px)]",
+        // The clip takes physical sides, so right to left text swaps the cut
+        // of this marker and the cut of the next one.
+        "ui-list-horizontal:[clip-path:inset(-1px_calc((var(--list-row-next-marker-cut,0px)*(1+var(--guide-dir))+var(--list-row-marker-cut,0px)*(1-var(--guide-dir)))/2)_-1px_calc((var(--list-row-marker-cut,0px)*(1+var(--guide-dir))+var(--list-row-next-marker-cut,0px)*(1-var(--guide-dir)))/2))]",
+        // No marker follows the last row.
+        "ui-list-last-row:hidden",
       ],
       in: [
         ...listItemGuideBend,
