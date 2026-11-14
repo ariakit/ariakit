@@ -37,4 +37,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await page.mouse.move(0, 0);
     await test.expect.poll(() => getHoverBoxOffset(board)).toBeNull();
   });
+
+  test("starts the hover box on the item under the pointer", async ({
+    page,
+    q,
+  }) => {
+    const hydrated = q.checkbox(/^Hydrated/);
+    await hydrated.uncheck();
+    const box = query(q.article("Hover glider"));
+    const grid = box.radio("Grid");
+    await grid.scrollIntoViewIfNeeded();
+    await grid.hover();
+    // The keyboard turns the glider on, so the pointer stays over Grid and
+    // sends no new pointerover event.
+    await hydrated.focus();
+    await page.keyboard.press("Space");
+    await test.expect(hydrated).toBeChecked();
+    await test.expect.poll(() => getHoverBoxOffset(grid)).toBeLessThan(0.5);
+  });
 });

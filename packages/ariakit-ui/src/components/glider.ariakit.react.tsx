@@ -42,6 +42,8 @@ const stateAttributes = [
   "data-selected",
 ];
 
+const svgNamespace = "http://www.w3.org/2000/svg";
+
 // A copy is only a picture of an item. These attributes would make it take the
 // place of the item for labels, forms, focus, and assistive technologies.
 const identityAttributes = [
@@ -128,6 +130,19 @@ function getGroup(root: HTMLElement | null) {
     group = group.parentElement;
   }
   return group;
+}
+
+/**
+ * The element around the group whose followers follow the selected box of the
+ * group. A group in a follower, such as a segmented control in the panel of
+ * folder tabs, is not the strip of that scope, so it has no followers.
+ */
+function getScope(group: HTMLElement) {
+  const scope = group.closest<HTMLElement>(".glider-scope");
+  if (!scope) return group;
+  const follower = group.closest(".glider-follower");
+  if (follower && scope.contains(follower)) return group;
+  return scope;
 }
 
 function getItems(group: HTMLElement, root: HTMLElement) {
@@ -255,6 +270,8 @@ function createCopy({ element, rect, state, look }: CreateCopyParams) {
   const view = getWindow(element);
   [copy, ...copy.querySelectorAll("*")].forEach((node, index) => {
     for (const attribute of identityAttributes) {
+      // In SVG, href points to the graphic that an element such as use draws.
+      if (attribute === "href" && node.namespaceURI === svgNamespace) continue;
       node.removeAttribute(attribute);
     }
     const source = sources[index];
@@ -312,6 +329,8 @@ interface GliderTrack {
   box: HTMLElement;
   /** The elements that read the place of the box: the box first. */
   followers: HTMLElement[];
+  /** The followers that have the place of the box. */
+  placed: WeakSet<HTMLElement>;
   state: GliderState;
   /** The item and the place that the box copies, to skip equal updates. */
   key: string | null;
@@ -328,6 +347,7 @@ function createTrack(root: HTMLElement, state: GliderState) {
     movers: [mover],
     box,
     followers: [box],
+    placed: new WeakSet(),
     state,
     key: null,
   };
@@ -358,7 +378,7 @@ function moveTrack({
   animated,
   offsets,
 }: MoveTrackParams) {
-  const { element, movers, box, followers, state } = track;
+  const { element, movers, box, followers, placed, state } = track;
   const { x, y, width, height } = rect;
   const stateClass = state === "hover" ? "ui-hovered" : "";
   const className = `${target.className} ${gliderBoxClass} ${stateClass}`;
@@ -366,11 +386,34 @@ function moveTrack({
   // An item can draw its focus state on its surface, which the box paints.
   const focused = isFocusVisible(target);
   const { start = 0, end = 0 } = offsets ?? {};
-  const place = [x, y, width, height, start, end, followers.length];
+  const place = [x, y, width, height, start, end];
   const key = [className, style, focused, ...place].join("|");
-  if (key === track.key) return false;
+  // A new follower, such as a panel that the framework replaced, needs the
+  // place of the box even when the box stays where it is.
+  const fresh = followers.filter((follower) => !placed.has(follower));
+  if (key === track.key && !fresh.length) return false;
   const wasHidden = track.key == null;
   track.key = key;
+  // A track that was not shown has no place to travel from.
+  const instant = wasHidden || !animated;
+  if (!instant && fresh.length) {
+    // A new follower starts at the place of the box, which can be in the middle
+    // of a travel, so it changes with the box. This runs before the box gets
+    // the style of its item, which drops its place until the loop below, so the
+    // flush does not restart the transitions of the box.
+    const boxStyle = getWindow(box).getComputedStyle(box);
+    const boxStart = boxStyle.getPropertyValue("--glider-start");
+    const boxEnd = boxStyle.getPropertyValue("--glider-end");
+    for (const follower of fresh) {
+      follower.setAttribute("data-glider-instant", "");
+      follower.style.setProperty("--glider-start", boxStart);
+      follower.style.setProperty("--glider-end", boxEnd);
+    }
+    element.getBoundingClientRect();
+    for (const follower of fresh) {
+      follower.removeAttribute("data-glider-instant");
+    }
+  }
   // The box takes the look of the item from its classes and its state.
   box.className = className;
   box.style.cssText = style;
@@ -378,13 +421,12 @@ function moveTrack({
   if (state === "selected") {
     box.setAttribute("data-selected", "true");
   }
-  // A track that was not shown has no place to travel from.
-  const instant = wasHidden || !animated;
   element.toggleAttribute("data-instant", instant);
   for (const follower of followers) {
     follower.toggleAttribute("data-glider-instant", instant);
     follower.style.setProperty("--glider-start", `${start}px`);
     follower.style.setProperty("--glider-end", `${end}px`);
+    placed.add(follower);
   }
   for (const mover of movers) {
     mover.style.setProperty("--glider-x", `${x}px`);
@@ -431,7 +473,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   selectedTrack.movers.push(selectedWindow, selectedLayer);
   const selectedMover = selectedTrack.mover;
   // The elements around the group that follow the selected box.
-  const scope = group.closest<HTMLElement>(".glider-scope") ?? group;
+  const scope = getScope(group);
   const scopeFollowers = new Set<HTMLElement>();
   const observedItems = new Set<HTMLElement>();
   const addedClasses = new Set<string>();
@@ -681,6 +723,9 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   const onTransitionEnd = (event: TransitionEvent) => {
     if (event.target !== selectedMover) return;
     if (!event.propertyName.startsWith("--glider-")) return;
+    // The properties of the mover can end at different times. For example, a
+    // width transition that reverses takes less time than the move.
+    if (selectedMover.getAnimations().length) return;
     endTravel();
   };
   selectedMover.addEventListener("transitionend", onTransitionEnd);
@@ -720,6 +765,16 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   // A native input changes its checked state without a mutation.
   group.addEventListener("change", scheduleSync);
 
+  // The pointer can be over an item when the glider starts, with no new
+  // pointerover event to come. A touch leaves its item in :hover, but a touch
+  // does not move the hover box.
+  if (hoverTrack && view.matchMedia("(hover: hover)").matches) {
+    hoveredItem =
+      getItems(group, root).find((element) => {
+        if (!element.matches(":hover")) return false;
+        return !element.matches(disabledSelector);
+      }) ?? null;
+  }
   sync(false);
 
   return () => {

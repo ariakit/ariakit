@@ -92,28 +92,146 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect.poll(() => countBoxes(article)).toBeGreaterThan(0);
   });
 
-  test("gives the panel the corners of the server markup", async ({ q }) => {
-    const cases = [
-      { name: "Folder tabs", tabs: ["Month", "Day"] },
-      { name: "Folder tabs with no outer edge", tabs: ["Month", "Day"] },
-      { name: "Adapted folder curve", tabs: ["Month", "Day"] },
-      { name: "Stretched folder tabs", tabs: ["Year", "Month", "Day"] },
-      { name: "Flat tab before folders", tabs: ["Folder", "Flat"] },
-    ];
-    for (const { name, tabs } of cases) {
-      const box = query(q.article(name));
-      const panel = box.tabpanel();
+  // Turns the glider off to read the corners that the server markup gives the
+  // panel, then turns it on again and expects the same corners.
+  const expectServerCorners = async (
+    article: Locator,
+    hydrated: Locator,
+    item: Locator,
+  ) => {
+    const panel = query(article).tabpanel();
+    await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(0.5);
+    await hydrated.uncheck();
+    await test.expect.poll(() => countBoxes(article)).toBe(0);
+    const serverCorners = await getCorners(panel);
+    test.expect(serverCorners).not.toBeNull();
+    await hydrated.check();
+    await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(0.5);
+    await test.expect.poll(() => getCorners(panel)).toBe(serverCorners);
+  };
+
+  const cornerCases = [
+    { name: "Folder tabs", tabs: ["Month", "Day"] },
+    { name: "Folder tabs with no outer edge", tabs: ["Month", "Day"] },
+    { name: "Adapted folder curve", tabs: ["Month", "Day"] },
+    { name: "Stretched folder tabs", tabs: ["Year", "Month", "Day"] },
+    { name: "Flat tab before folders", tabs: ["Folder", "Flat"] },
+  ];
+
+  for (const { name, tabs } of cornerCases) {
+    test(`gives the panel of ${name.toLowerCase()} the corners of the server markup`, async ({
+      q,
+    }) => {
       for (const tab of tabs) {
-        const item = box.tab(tab);
+        const item = query(q.article(name)).tab(tab);
         await item.click();
-        await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(0.5);
-        await q.checkbox(/^Hydrated/).uncheck();
-        await test.expect.poll(() => countBoxes(q.article(name))).toBe(0);
-        const serverCorners = await getCorners(panel);
-        await q.checkbox(/^Hydrated/).check();
-        await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(0.5);
-        await test.expect.poll(() => getCorners(panel)).toBe(serverCorners);
+        await expectServerCorners(
+          q.article(name),
+          q.checkbox(/^Hydrated/),
+          item,
+        );
       }
-    }
+    });
+  }
+
+  test("keeps the panel corners with a glider in the panel", async ({ q }) => {
+    const name = "Glider in a tab panel";
+    const box = query(q.article(name));
+    const tab = box.tab("Month");
+    await tab.click();
+    await test.expect.poll(() => getBoxOffset(tab)).toBeLessThan(0.5);
+    // The glider in the panel moves to the first radio, which sits at the start
+    // of its own group.
+    const grid = box.radio("Grid");
+    await grid.click();
+    await test.expect.poll(() => getBoxOffset(grid)).toBeLessThan(0.5);
+    const list = box.radio("List");
+    await list.click();
+    await test.expect.poll(() => getBoxOffset(list)).toBeLessThan(0.5);
+    await expectServerCorners(q.article(name), q.checkbox(/^Hydrated/), tab);
+  });
+
+  test("keeps a new panels element with the box", async ({ q }) => {
+    await q.combobox(/^Travel time/).selectOption({ label: "Slow (800ms)" });
+    const article = q.article("Panels that change with the selection");
+    // The box and the panels are presentation, so this probe reads the place
+    // that each one takes on every frame. A new panels element replaces the old
+    // one on each selection, including Day, which the user selects 100ms into
+    // the travel to Week. The corners change only while half of the place is
+    // below the corner radius, so the probe compares the places there, relative
+    // to the radius. Without a start at the place of the box, the gap reaches
+    // many radii. Firefox starts the replacing transition of the box from its
+    // place on the next frame, so the new panels trail it by about one frame.
+    const largestGap = await article.evaluate(async (node) => {
+      const getTab = (label: string) =>
+        Array.from(node.querySelectorAll<HTMLElement>("[role=tab]")).find(
+          (tab) => tab.textContent?.trim() === label,
+        );
+      const getPanels = () => node.querySelector(".glider-follower");
+      const getStart = (element: Element | null) => {
+        if (!element) return Number.NaN;
+        const value =
+          getComputedStyle(element).getPropertyValue("--glider-start");
+        return Number.parseFloat(value);
+      };
+      const box = node.querySelector('.glider-box[data-selected="true"]');
+      const sample = async (duration: number, zone: number) => {
+        let gap = 0;
+        const start = performance.now();
+        while (performance.now() - start < duration) {
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+          const panelsStart = getStart(getPanels());
+          const boxStart = getStart(box);
+          if (Math.min(panelsStart, boxStart) >= zone) continue;
+          gap = Math.max(gap, Math.abs(panelsStart - boxStart));
+        }
+        return gap;
+      };
+      getTab("Month")?.click();
+      // Waits for the box to rest on Month after the 800ms travel.
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const panels = getPanels();
+      if (!panels) return null;
+      const radius = Number.parseFloat(
+        getComputedStyle(panels).borderStartStartRadius,
+      );
+      getTab("Week")?.click();
+      const firstGap = await sample(100, radius * 2);
+      getTab("Day")?.click();
+      const secondGap = await sample(1000, radius * 2);
+      return Math.max(firstGap, secondGap) / radius;
+    });
+    test.expect(largestGap).not.toBeNull();
+    test.expect(largestGap).toBeLessThan(0.5);
+  });
+
+  test("keeps the copies until the box stops", async ({ q }) => {
+    await q.combobox(/^Travel time/).selectOption({ label: "Slow (800ms)" });
+    // The copies and the mask are presentation, so this probe reads them from
+    // the DOM. It selects Board 300ms into the 800ms travel to Grid, so the
+    // width of the box turns back while the box still moves. It returns whether
+    // Board lost its mask before the box reached it.
+    const unmaskedEarly = await q
+      .article("Items of two widths")
+      .evaluate(async (node) => {
+        const getRadio = (value: string) =>
+          node.querySelector<HTMLInputElement>(`input[value="${value}"]`);
+        const box = node.querySelector('.glider-box[data-selected="true"]');
+        const target = getRadio("Board")?.closest(".control");
+        if (!box || !target) return null;
+        getRadio("Grid")?.click();
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        getRadio("Board")?.click();
+        const start = performance.now();
+        while (performance.now() - start < 2000) {
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+          const boxLeft = box.getBoundingClientRect().left;
+          const targetLeft = target.getBoundingClientRect().left;
+          if (Math.abs(boxLeft - targetLeft) < 0.5) return false;
+          if (!target.hasAttribute("data-glider-masked")) return true;
+        }
+        return null;
+      });
+    test.expect(unmaskedEarly).toBe(false);
   });
 });

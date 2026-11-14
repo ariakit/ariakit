@@ -42,7 +42,7 @@ import {
   ListIcon,
 } from "lucide-react";
 import { useState } from "react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   Example,
   ExampleGrid,
@@ -69,12 +69,39 @@ const pages = [
   "Releases",
 ];
 
+// An HTML id has no spaces, and a tab panel names itself with the id of its
+// tab.
+function getTabId(name: string, label: string) {
+  return `${name}-${label}`.toLowerCase().replace(/\s+/g, "-");
+}
+
+// An icon that points to a symbol of an SVG sprite with use.
+function SpriteIcon() {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" className="size-4">
+      <use href="#glider-sprite-dot" />
+    </svg>
+  );
+}
+
+function Sprite() {
+  return (
+    <svg aria-hidden className="hidden">
+      <symbol id="glider-sprite-dot" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="8" fill="currentColor" />
+      </symbol>
+    </svg>
+  );
+}
+
 interface SegmentsProps extends Omit<RadioGroupProps, "label"> {
   name: string;
   item?: Omit<RadioCardProps, "value">;
   /** The props of each item, by position, for items that differ. */
   items?: Array<Omit<RadioCardProps, "value">>;
   icons?: boolean;
+  /** Draws the icons with use and a symbol of an SVG sprite. */
+  sprite?: boolean;
   badge?: boolean;
   /** The props of the glider. Without them, the group has no glider. */
   glider?: GliderProps;
@@ -85,6 +112,7 @@ function Segments({
   item,
   items,
   icons,
+  sprite,
   badge,
   glider,
   ...props
@@ -106,7 +134,7 @@ function Segments({
         >
           {icons && (
             <RadioCardSlot>
-              <Icon aria-hidden />
+              {sprite ? <SpriteIcon /> : <Icon aria-hidden />}
             </RadioCardSlot>
           )}
           <RadioCardLabel>{label}</RadioCardLabel>
@@ -131,10 +159,10 @@ interface GliderExampleProps {
 
 function SegmentedTabs({ name, glider }: GliderExampleProps) {
   return (
-    <TabProvider defaultSelectedId={`${name}-Day`}>
+    <TabProvider defaultSelectedId={getTabId(name, "Day")}>
       <TabList aria-label={name} $kind="segmented">
         {periods.map((period) => (
-          <Tab key={period} id={`${name}-${period}`} $kind="segmented">
+          <Tab key={period} id={getTabId(name, period)} $kind="segmented">
             <TabLabel>{period}</TabLabel>
           </Tab>
         ))}
@@ -149,6 +177,7 @@ interface FolderTabsProps extends GliderExampleProps {
   outerEdge?: TabsProps["$outerEdge"];
   layout?: TabListProps["$layout"];
   indent?: TabsProps["$indent"];
+  panel?: ReactNode;
 }
 
 function FolderTabs({
@@ -158,10 +187,11 @@ function FolderTabs({
   outerEdge,
   layout,
   indent,
+  panel = "The panel of the selected tab.",
 }: FolderTabsProps) {
   return (
     <Tabs
-      defaultSelectedId={`${name}-Day`}
+      defaultSelectedId={getTabId(name, "Day")}
       $folderCurve={folderCurve}
       $outerEdge={outerEdge}
       $indent={indent}
@@ -169,13 +199,40 @@ function FolderTabs({
     >
       <TabList aria-label={name} $layout={layout}>
         {periods.map((period) => (
-          <Tab key={period} id={`${name}-${period}`}>
+          <Tab key={period} id={getTabId(name, period)}>
             <TabLabel>{period}</TabLabel>
           </Tab>
         ))}
         <Glider {...glider} />
       </TabList>
       <TabPanels>
+        <TabPanel single>{panel}</TabPanel>
+      </TabPanels>
+    </Tabs>
+  );
+}
+
+// The panels element changes on each selection, as with panels that each page
+// of a router renders.
+function KeyedPanelsTabs({ name, glider }: GliderExampleProps) {
+  const [selectedId, setSelectedId] = useState<string | null | undefined>(
+    getTabId(name, "Day"),
+  );
+  return (
+    <Tabs
+      selectedId={selectedId}
+      setSelectedId={setSelectedId}
+      className="w-full"
+    >
+      <TabList aria-label={name}>
+        {periods.map((period) => (
+          <Tab key={period} id={getTabId(name, period)}>
+            <TabLabel>{period}</TabLabel>
+          </Tab>
+        ))}
+        <Glider {...glider} />
+      </TabList>
+      <TabPanels key={selectedId}>
         <TabPanel single>The panel of the selected tab.</TabPanel>
       </TabPanels>
     </Tabs>
@@ -235,13 +292,13 @@ function MixedTabs({ name, glider, tabs = mixedTabs }: MixedTabsProps) {
   const [first] = tabs;
   return (
     <Tabs
-      defaultSelectedId={`${name}-${first?.label}`}
+      defaultSelectedId={first && getTabId(name, first.label)}
       $p={3}
       className="w-full"
     >
       <TabList aria-label={name} $p={3}>
         {tabs.map(({ label, props }) => (
-          <Tab key={label} id={`${name}-${label}`} {...props}>
+          <Tab key={label} id={getTabId(name, label)} {...props}>
             <TabLabel>{label}</TabLabel>
           </Tab>
         ))}
@@ -299,6 +356,16 @@ const mixedHover: Array<Omit<RadioCardProps, "value">> = [
   { $hoverInk: 50, $ink: 50 },
 ];
 
+// List, Board, and Calendar have one width, and Grid has twice that width. A
+// box that turns back from Grid to Board reverses its width transition, which
+// then takes less time than the move.
+const twoWidths: Array<Omit<RadioCardProps, "value">> = [
+  { className: "w-20 flex-none" },
+  { className: "w-40 flex-none" },
+  { className: "w-20 flex-none" },
+  { className: "w-20 flex-none" },
+];
+
 const durations = [
   { label: "Normal (200ms)", value: 200 },
   { label: "Slow (800ms)", value: 800 },
@@ -340,6 +407,7 @@ export default function GliderExamples() {
           Hydrated (clear it to see the server markup)
         </label>
       </div>
+      <Sprite />
       <ExampleGrid style={travelTime}>
         <Example
           title="No glider"
@@ -371,6 +439,14 @@ export default function GliderExamples() {
           code={`<Glider $hover />`}
         >
           <Segments name="Icons and a badge" icons badge glider={hoverGlider} />
+        </Example>
+
+        <Example
+          title="Icons from a sprite"
+          description="Icons that draw a symbol of an SVG sprite with use. The copies in the box keep the reference to the symbol, so the icons show while the box travels."
+          code={`<svg><use href="#dot" /></svg>`}
+        >
+          <Segments name="Icons from a sprite" icons sprite glider={glider} />
         </Example>
 
         <Example
@@ -458,6 +534,31 @@ export default function GliderExamples() {
         </Example>
 
         <Example
+          title="Panels that change with the selection"
+          description="The panels element changes on each selection, as with panels that each page of a router renders. A new panels element starts at the place of the box, so its corners change with the folder."
+          code={`<TabPanels key={selectedId} />`}
+          stretch
+        >
+          <KeyedPanelsTabs
+            name="Panels that change with the selection"
+            glider={glider}
+          />
+        </Example>
+
+        <Example
+          title="Glider in a tab panel"
+          description="A segmented control with its own glider in the panel of folder tabs. Only the glider of the tab strip shapes the corners of the panel."
+          code={`<TabPanel><RadioGroup><Glider /></RadioGroup></TabPanel>`}
+          stretch
+        >
+          <FolderTabs
+            name="Glider in a tab panel"
+            glider={glider}
+            panel={<Segments name="View in a tab panel" glider={glider} />}
+          />
+        </Example>
+
+        <Example
           title="Folder tabs with no outer edge"
           description="With no edge around the root, the curve of the folder adapts: it reduces its radius with the panel corner, so both fit the space between the folder and the start of the strip. Set the travel time to very slow, select Month, then Day."
           code={`<Tabs $outerEdge={false}><TabList><Glider /></TabList></Tabs>`}
@@ -541,6 +642,18 @@ export default function GliderExamples() {
             items={mixedHover}
             icons
             glider={hoverGlider}
+          />
+        </Example>
+
+        <Example
+          title="Items of two widths"
+          description="Set the travel time to slow, select Grid, then Board before the box stops. The width of the box turns back sooner than the box arrives, and the box keeps its copies until it stops."
+          code={`<RadioCard className="w-20" /><RadioCard className="w-40" />`}
+        >
+          <Segments
+            name="Items of two widths"
+            items={twoWidths}
+            glider={glider}
           />
         </Example>
 
