@@ -80,7 +80,7 @@ export default function Example() {
             <TocItem>
               <TocLink href="#steps">Steps</TocLink>
               {/* Only this list is ordered. The rows stay at the regular indent,
-                  so the halo of a number cuts into the surface of the current
+                  so a number overlaps the start of the surface of the current
                   row. */}
               <TocList ordered>
                 {steps.map((step) => (

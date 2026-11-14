@@ -585,7 +585,7 @@ export default function ListExamples() {
 
       <Example
         title="Track"
-        description="A guide on an unordered list turns the markers into bullets. The halo keeps the guide one gap away from the check slot."
+        description="A guide on an unordered list turns the markers into bullets. The guide stops one gap away from each bullet and from the check slot."
         stretch
         code={`
           <List $guide>
@@ -623,6 +623,117 @@ export default function ListExamples() {
             </p>
             <p>Signed for at the front door.</p>
           </ListItem>
+        </List>
+      </Example>
+
+      <Example
+        title="Guide on a gradient"
+        description="The guide stops one gap away from each marker, so a surface that is not one flat color shows between them. Only number markers, and checks in a list of numbers, have a thin outline, in the flat color of the layer behind them. A row with its own gradient surface keeps that surface around its marker, apart from that outline."
+        stretch
+        code={`
+          <Frame className="bg-linear-to-b from-sky-500/40 to-rose-500/40">
+            <List $guide>
+              <ListItem>Order placed</ListItem>
+              <ListItem checked={false}>Shipped</ListItem>
+              <ListItem>Delivered</ListItem>
+            </List>
+            <List ordered $guide>
+              <ListItem>Install the package</ListItem>
+              <ListItem
+                $layer
+                $border
+                checked={false}
+                className="bg-linear-to-b from-white/15 to-transparent"
+              >
+                Add the plugin
+              </ListItem>
+              <ListItem>Start the server</ListItem>
+            </List>
+          </Frame>
+        `}
+      >
+        <Frame
+          $rounded="xl"
+          $p={4}
+          className="grid gap-4 bg-linear-to-b from-sky-500/40 to-rose-500/40"
+        >
+          <List $guide>
+            <ListItem>Order placed</ListItem>
+            <ListItem checked={false}>Shipped</ListItem>
+            <ListItem>Delivered</ListItem>
+          </List>
+          <List ordered $guide>
+            <ListItem>Install the package</ListItem>
+            <ListItem
+              $layer
+              $border
+              checked={false}
+              className="bg-linear-to-b from-white/15 to-transparent"
+            >
+              Add the plugin
+            </ListItem>
+            <ListItem>Start the server</ListItem>
+          </List>
+        </Frame>
+      </Example>
+
+      <Example
+        title="Branch between checks"
+        description="A branch leaves a row with a check and joins the guide again at the next row with a check. A check is larger than a bullet, so the bend into the branch and the bend out of it stop one gap away from each check. The last row is a link in its own list item, and the bend before it also stops one gap away."
+        stretch
+        code={`
+          <List $guide>
+            <ListItem checked>
+              Plan the release
+              <List $branch>
+                <ListItem>Write the notes</ListItem>
+                <ListItem>Tag the commit</ListItem>
+              </List>
+            </ListItem>
+            <ListItem checked={false}>
+              Publish the packages
+              <List $branch>
+                <ListItem>Build the packages</ListItem>
+              </List>
+            </ListItem>
+            <li>
+              <ListItem checked={false} render={<Button render={<a href="#announce" />} $p="var(--list-item-padding)" $rounded="xl" $lightnessOffset={false} />}>
+                Announce the release
+              </ListItem>
+            </li>
+          </List>
+        `}
+      >
+        <List $guide>
+          <ListItem checked>
+            Plan the release
+            <List $branch>
+              <ListItem>Write the notes</ListItem>
+              <ListItem>Tag the commit</ListItem>
+            </List>
+          </ListItem>
+          <ListItem checked={false}>
+            Publish the packages
+            <List $branch>
+              <ListItem>Build the packages</ListItem>
+            </List>
+          </ListItem>
+          <li>
+            <ListItem
+              checked={false}
+              render={
+                <Button
+                  render={<a href="#announce" />}
+                  $p="var(--list-item-padding)"
+                  $rounded="xl"
+                  $lightnessOffset={false}
+                  className={linkRowClassName}
+                />
+              }
+            >
+              Announce the release
+            </ListItem>
+          </li>
         </List>
       </Example>
 

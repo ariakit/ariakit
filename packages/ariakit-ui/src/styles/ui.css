@@ -710,6 +710,14 @@ body > * {
   initial-value: 0px;
 }
 
+/* Resolve how far the gap around a marker passes the first line, once on the
+   nav root, so the guide pieces of a navigation read one length. */
+@property --nav-marker-overreach {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Resolve the two lengths whose values a guide piece expands most, once on the
    piece. Unresolved, they expand again in each value that reads them, and a
    glide of the bar of a navigation restyles its pieces in each frame. */

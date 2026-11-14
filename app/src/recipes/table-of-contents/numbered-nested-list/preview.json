@@ -1,5 +1,5 @@
 {
   "title": "Numbered Nested List",
-  "description": "A Toc with the ordered prop on one nested TocList, which renders only that list as an ordered list and numbers its rows with markers on the guide, while the rows around it stay unnumbered. The rows keep the regular indent, so the halo of a marker cuts into the surface of the current row. Use it for a tutorial with one sequence of steps inside a larger page, rather than the Numbered Chapters layout, which numbers every top-level row.",
+  "description": "A Toc with the ordered prop on one nested TocList, which renders only that list as an ordered list and numbers its rows with markers on the guide, while the rows around it stay unnumbered. The rows keep the regular indent, so a marker overlaps the start of the surface of the current row. Use it for a tutorial with one sequence of steps inside a larger page, rather than the Numbered Chapters layout, which numbers every top-level row.",
   "fullscreen": true
 }
