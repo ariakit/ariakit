@@ -1,7 +1,6 @@
-import { setTimeout as delay } from "node:timers/promises";
 import { invariant } from "@ariakit/utils";
-import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import type { Frame, Locator, Page } from "@playwright/test";
+import { errors, expect, test } from "@playwright/test";
 import {
   visual as captureVisual,
   visualBatch as captureVisualBatch,
@@ -429,36 +428,110 @@ declare global {
   }
 }
 
-// Bounds the wait for scroll-driven animations in frames that don't run their
-// animation frames, such as offscreen iframes or pages with a paused clock.
-const SCROLL_ANIMATIONS_TIMEOUT = 500;
+// Bounds the wait for scroll timelines in frames that don't update their
+// rendering, such as offscreen iframes.
+const SCROLL_ANIMATIONS_TIMEOUT = 2000;
 
 /**
- * Waits for the scroll-driven animations of the document that just started. A
- * pending animation reads as its base values, such as a hidden scroll button
- * and no fade, so a hold would keep them. An animation on an inactive timeline,
- * such as a strip that doesn't scroll, stays pending, so the wait stops after a
- * few frames. Playwright evaluates this in each frame, so it must not use
- * anything outside of its body.
+ * Returns whether the scroll-driven animations of the document follow the
+ * layout and scroll position. A browser samples a scroll timeline only when it
+ * updates the rendering, so a strip that starts to overflow, such as after a
+ * resize, keeps an inactive timeline until then, and a strip that a script
+ * scrolls keeps its previous progress. Its animations, like the ones that just
+ * started, read as those values, such as a hidden scroll button or no fade. A
+ * timeline whose source doesn't overflow stays inactive, which is the right
+ * state for a strip that doesn't scroll. Playwright evaluates this in each
+ * frame, so it must not use anything outside of its body.
  */
-async function waitForScrollAnimations() {
-  const nextFrame = () =>
-    new Promise((resolve) => requestAnimationFrame(resolve));
-  const pending = document.getAnimations().filter((animation) => {
-    if (!animation.pending) return false;
-    if (!animation.timeline) return false;
-    return !(animation.timeline instanceof DocumentTimeline);
-  });
-  if (!pending.length) return;
-  const ready = Promise.all(
-    pending.map((animation) => animation.ready.catch(() => {})),
-  );
-  const frames = (async () => {
-    for (let i = 0; i < 3; i++) {
-      await nextFrame();
+function areScrollAnimationsCurrent() {
+  if (typeof ScrollTimeline === "undefined") return true;
+  const getScrollRange = (timeline: ScrollTimeline) => {
+    const { source, axis } = timeline;
+    if (!source) return null;
+    const style = getComputedStyle(source);
+    const inlineAxis = style.writingMode.startsWith("horizontal") ? "x" : "y";
+    const blockAxis = inlineAxis === "x" ? "y" : "x";
+    const physicalAxis =
+      axis === "inline" ? inlineAxis : axis === "block" ? blockAxis : axis;
+    const horizontal = physicalAxis === "x";
+    // Content that overflows an element that doesn't scroll leaves its timeline
+    // inactive. The viewport scrolls the root element, whose overflow reads as
+    // visible.
+    if (source !== document.scrollingElement) {
+      const overflow = horizontal ? style.overflowX : style.overflowY;
+      if (overflow === "visible") return null;
+      if (overflow === "clip") return null;
     }
-  })();
-  await Promise.race([ready, frames]);
+    if (horizontal) {
+      // The offset is negative in a right-to-left strip.
+      const offset = Math.abs(source.scrollLeft);
+      return { offset, size: source.scrollWidth - source.clientWidth };
+    }
+    const offset = Math.abs(source.scrollTop);
+    return { offset, size: source.scrollHeight - source.clientHeight };
+  };
+  // Chromium and WebKit report the progress of a scroll timeline as a
+  // percentage. Firefox reports a number in other units, and a view timeline
+  // measures its subject, so neither has a progress to compare.
+  const getProgress = (timeline: ScrollTimeline) => {
+    if (typeof ViewTimeline !== "undefined") {
+      if (timeline instanceof ViewTimeline) return null;
+    }
+    if (typeof CSSUnitValue === "undefined") return null;
+    const time = timeline.currentTime;
+    if (!(time instanceof CSSUnitValue)) return null;
+    if (time.unit !== "percent") return null;
+    return time.value / 100;
+  };
+  const isLagging = (animation: Animation, timeline: ScrollTimeline) => {
+    const range = getScrollRange(timeline);
+    if (!range) return false;
+    // Firefox keeps the timeline of a source that overflows by less than a
+    // pixel inactive, while the rounded sizes differ by one. So the wait also
+    // skips a source that overflows by one pixel, which barely scrolls.
+    if (range.size <= 1) return false;
+    if (timeline.currentTime == null) return true;
+    if (animation.pending) return true;
+    const progress = getProgress(timeline);
+    if (progress == null) return false;
+    // Scroll offsets and sizes round to whole pixels.
+    return Math.abs(progress * range.size - range.offset) > 1;
+  };
+  return document.getAnimations().every((animation) => {
+    const { timeline } = animation;
+    if (!(timeline instanceof ScrollTimeline)) return true;
+    return !isLagging(animation, timeline);
+  });
+}
+
+/**
+ * Waits until the scroll-driven animations of a frame follow its layout, so a
+ * hold keeps the scroll buttons and fades that the layout shows.
+ */
+async function waitForScrollAnimations(frame: Frame) {
+  // Polling on animation frames lets the browser update the rendering even when
+  // nothing else needs it. Playwright keeps the native requestAnimationFrame,
+  // which a paused clock doesn't stop.
+  const options = {
+    polling: "raf",
+    timeout: SCROLL_ANIMATIONS_TIMEOUT,
+  } as const;
+  try {
+    // The result handle would otherwise stay until the page navigates.
+    await using _handle = await frame.waitForFunction(
+      areScrollAnimationsCurrent,
+      undefined,
+      options,
+    );
+  } catch (error) {
+    // A frame that detached has nothing to capture.
+    if (frame.isDetached()) return;
+    if (!(error instanceof errors.TimeoutError)) throw error;
+    console.debug("waitForScrollAnimations timed out", {
+      scrollAnimationsTimeout: SCROLL_ANIMATIONS_TIMEOUT,
+      url: frame.url(),
+    });
+  }
 }
 
 /**
@@ -585,17 +658,10 @@ async function withScrollAnimationsHeld(page: Page, fn: () => Promise<void>) {
   // that don't scroll, and Chromium hid them on strips that do. Visonaut always
   // captures with that option.
   // https://github.com/microsoft/playwright/issues/43986
-  const frames = page.frames().filter((frame) => !frame.isDetached());
-  // A timer in Node bounds the wait, since the page's own timers stop with a
-  // paused clock. The hold runs after it either way.
-  await Promise.all(
-    frames.map((frame) =>
-      Promise.race([
-        frame.evaluate(waitForScrollAnimations).catch(() => {}),
-        delay(SCROLL_ANIMATIONS_TIMEOUT),
-      ]),
-    ),
-  );
+  const waitedFrames = page.frames().filter((frame) => !frame.isDetached());
+  await Promise.all(waitedFrames.map(waitForScrollAnimations));
+  // A frame can detach during the wait.
+  const frames = waitedFrames.filter((frame) => !frame.isDetached());
   await Promise.all(
     frames.map((frame) => frame.evaluate(holdScrollAnimations)),
   );
