@@ -942,8 +942,10 @@ export const navLinkPiece = cv({
     "[--guide-outward:min(1,var(--nav-guide-out))]",
     "[--guide-span:calc((var(--guide-in)+var(--nav-guide-out))*var(--nav-indent))]",
     // A bend runs from the end of the previous line, through the gap between
-    // the rows, to the start of this one.
-    "[--nav-guide-joint:var(--py,0px)]",
+    // the rows, to the start of this one. All rows take the row padding that
+    // the navigation resolves, so the pieces join when a link sets its own
+    // padding.
+    "[--nav-guide-joint:var(--nav-py)]",
     "[--guide-bend-height:calc(var(--list-gap,0px)+var(--nav-guide-joint)*2)]",
     // The rail keeps the guide of the outermost list at every level.
     "[--nav-guide-x:calc(-1*var(--nav-guide-offset,0px)-(1-var(--nav-guide-bends,1))*var(--nav-depth,0)*var(--nav-indent))]",
@@ -1022,11 +1024,14 @@ export const navLinkGuideBar = cv({
     // the previous row.
     "[--nav-bar-row:calc((1-var(--nav-guide-first))*var(--guide-bend-height))]",
     // A bar stops at the marker of its link. The halo of a dot is shorter than
-    // its row, so a bar that ran to the row edge would show past the halo.
-    "ui-list-counter:[--nav-bar-marker-top:calc(0.5lh-var(--nav-number-size)/2)]",
-    "ui-list-counter:[--nav-bar-marker-bottom:calc(0.5lh+var(--nav-number-size)/2)]",
-    "ui-list-bullet:[--nav-bar-marker-top:calc(0.5lh-var(--list-bullet-size)/2)]",
-    "ui-list-bullet:[--nav-bar-marker-bottom:calc(0.5lh+var(--list-bullet-size)/2)]",
+    // its row, so a bar that ran to the row edge would show past the halo. The
+    // marker centers on the first line after the padding of its link, which
+    // can differ from the joint of the guide.
+    "[--nav-bar-marker-shift:calc(var(--py,0px)-var(--nav-guide-joint))]",
+    "ui-list-counter:[--nav-bar-marker-top:calc(var(--nav-bar-marker-shift)+0.5lh-var(--nav-number-size)/2)]",
+    "ui-list-counter:[--nav-bar-marker-bottom:calc(var(--nav-bar-marker-shift)+0.5lh+var(--nav-number-size)/2)]",
+    "ui-list-bullet:[--nav-bar-marker-top:calc(var(--nav-bar-marker-shift)+0.5lh-var(--list-bullet-size)/2)]",
+    "ui-list-bullet:[--nav-bar-marker-bottom:calc(var(--nav-bar-marker-shift)+0.5lh+var(--list-bullet-size)/2)]",
     // The range of a current link without a script. The style attribute of a
     // measured range wins over it.
     "group-ui-selected/control:[--nav-bar-start:calc(var(--nav-bar-row)+var(--nav-bar-marker-top,0px))]",

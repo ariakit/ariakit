@@ -201,6 +201,32 @@ export default function NavGuideExamples() {
       </Example>
 
       <Example
+        title="Padded link on a guide"
+        description="A link with its own padding keeps the guide continuous with the links around it, and its bar still stops at its number."
+        code={`
+          <Nav ordered $guide="smooth" bar>
+            <NavLink>Overview</NavLink>
+            <NavLink $p={3} aria-current="page">Guides</NavLink>
+            <NavLink>FAQ</NavLink>
+          </Nav>
+        `}
+      >
+        <Nav
+          aria-label="Padded link on a guide"
+          ordered
+          $guide="smooth"
+          bar
+          className="w-full"
+        >
+          <NavLink href="#overview">Overview</NavLink>
+          <NavLink href="#guides" $p={3} aria-current="page">
+            Guides
+          </NavLink>
+          <NavLink href="#faq">FAQ</NavLink>
+        </Nav>
+      </Example>
+
+      <Example
         title="Bar on the guide"
         description="The bar of the current link draws on the guide. Click a link to make it current."
         code={`
