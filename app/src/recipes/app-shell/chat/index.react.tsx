@@ -1,11 +1,12 @@
 import * as ak from "@ariakit/react";
+import type { AvatarProps } from "@ariakit/ui/components/avatar.ariakit.react";
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Nav,
@@ -55,22 +56,16 @@ function getInitials(name: string) {
     .join("");
 }
 
-interface AvatarProps {
+interface PersonAvatarProps extends AvatarProps {
   person: Person;
-  className?: string;
 }
 
-function Avatar({ person, className = "size-7 text-xs" }: AvatarProps) {
+// The name follows each avatar, so the avatars stay decorative.
+function PersonAvatar({ person, ...props }: PersonAvatarProps) {
   return (
-    <Frame
-      $layer="brand"
-      $hue={person.hue}
-      $rounded="full"
-      $p="none"
-      className={`${className} grid shrink-0 place-items-center font-semibold`}
-    >
+    <Avatar $layer="brand" $hue={person.hue} {...props}>
       {getInitials(person.name)}
-    </Frame>
+    </Avatar>
   );
 }
 
@@ -134,13 +129,8 @@ export default function Example() {
               <NavList>
                 {directMessages.map(({ person, unread }) => (
                   <NavLink key={person.id} href={`#${person.id}`}>
-                    <NavSlot
-                      $kind="avatar"
-                      $layer="brand"
-                      $hue={person.hue}
-                      $size={6}
-                    >
-                      {getInitials(person.name)}
+                    <NavSlot $kind="box" $size={6}>
+                      <PersonAvatar person={person} />
                     </NavSlot>
                     <NavLinkLabel className="truncate">
                       {person.name}
@@ -159,7 +149,7 @@ export default function Example() {
           </Nav>
         </ShellSidebarBody>
         <ShellSidebarFooter className="flex items-center gap-2">
-          <Avatar person={lucia} className="size-8 text-xs" />
+          <PersonAvatar person={lucia} $size={8} />
           <div className="min-w-0 text-sm">
             <p className="truncate font-semibold">{lucia.name}</p>
             <p className="ak-ink-70 truncate text-xs">In a meeting</p>
@@ -215,7 +205,7 @@ export default function Example() {
             <ul className="mt-3 grid gap-3">
               {members.map((person) => (
                 <li key={person.id} className="flex items-center gap-2 text-sm">
-                  <Avatar person={person} />
+                  <PersonAvatar person={person} />
                   <div className="min-w-0">
                     <p className="truncate font-medium">{person.name}</p>
                     <p className="ak-ink-70 truncate text-xs">
@@ -237,7 +227,7 @@ export default function Example() {
             >
               {messages.map((message) => (
                 <li key={message.id} className="flex gap-3">
-                  <Avatar person={message.author} />
+                  <PersonAvatar person={message.author} $size={8} />
                   <div className="min-w-0">
                     <p className="flex items-baseline gap-2">
                       <span className="font-semibold">

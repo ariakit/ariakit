@@ -1,3 +1,4 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Nav,
@@ -81,22 +82,15 @@ export default function Example() {
               {library.map((item) => (
                 <RouterNavLink key={item.title} to={getPath(item.title)}>
                   {/* A two-row slot spans the title and the description. */}
-                  {item.artist ? (
-                    <NavSlot $kind="avatar" $size="xl" $rowSpan={2} aria-hidden>
-                      {item.artist}
-                    </NavSlot>
-                  ) : (
-                    <NavSlot
-                      $kind="avatar"
-                      $rounded="md"
-                      $size="xl"
-                      $rowSpan={2}
-                      $layer="brand"
-                      $hue={item.hue}
-                    >
-                      {item.icon && <item.icon aria-hidden />}
-                    </NavSlot>
-                  )}
+                  <NavSlot $kind="box" $size="xl" $rowSpan={2}>
+                    {item.artist ? (
+                      <Avatar>{item.artist}</Avatar>
+                    ) : (
+                      <Avatar $rounded="md" $layer="brand" $hue={item.hue}>
+                        {item.icon && <item.icon />}
+                      </Avatar>
+                    )}
+                  </NavSlot>
                   <NavLinkContent>
                     <NavLinkLabel>{item.title}</NavLinkLabel>
                     <NavLinkDescription>{item.description}</NavLinkDescription>

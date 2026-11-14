@@ -9,6 +9,10 @@
  */
 import * as ak from "@ariakit/react";
 import {
+  Avatar,
+  AvatarImage,
+} from "@ariakit/ui/components/avatar.ariakit.react";
+import {
   Badge,
   BadgeLabel,
   BadgeSlot,
@@ -70,7 +74,13 @@ function AvatarShape() {
   const [round, setRound] = useState(true);
   return (
     <div className="flex items-center gap-3">
-      <ButtonSlot $kind={round ? "avatar" : "icon"} $size="xl">
+      <ButtonSlot
+        $kind={round ? "box" : "icon"}
+        $size="xl"
+        $square
+        $rounded={round ? "full" : "auto"}
+        className="overflow-clip"
+      >
         <AvatarPicture />
       </ButtonSlot>
       <Button aria-pressed={round} onClick={() => setRound(!round)}>
@@ -585,17 +595,17 @@ export default function ButtonExamples() {
 
       <Example
         title="Initial avatar"
-        description="A round avatar slot that paints its own surface behind two initials."
+        description="A round avatar in a box slot paints its own surface behind two initials."
         code={`
           <Button>
-            <ButtonSlot $kind="avatar" $layer="brand">WW</ButtonSlot>
+            <ButtonSlot $kind="box"><Avatar $layer="brand">WW</Avatar></ButtonSlot>
             <ButtonLabel>Will Williams</ButtonLabel>
           </Button>
         `}
       >
         <Button>
-          <ButtonSlot $kind="avatar" $layer="brand">
-            WW
+          <ButtonSlot $kind="box">
+            <Avatar $layer="brand">WW</Avatar>
           </ButtonSlot>
           <ButtonLabel>Will Williams</ButtonLabel>
         </Button>
@@ -603,27 +613,27 @@ export default function ButtonExamples() {
 
       <Example
         title="Large avatar initials"
-        description="Avatars that extend into the button padding use the label text size."
+        description="Avatars in slots that extend into the button padding. The initials scale with the avatar."
         code={`
           <Button>
-            <ButtonSlot $kind="avatar" $size="2xl">AT</ButtonSlot>
+            <ButtonSlot $kind="box" $size="2xl"><Avatar>AT</Avatar></ButtonSlot>
             <ButtonLabel>Ava Thompson</ButtonLabel>
           </Button>
           <Button>
-            <ButtonSlot $kind="avatar" $size="full">NP</ButtonSlot>
+            <ButtonSlot $kind="box" $size="full"><Avatar>NP</Avatar></ButtonSlot>
             <ButtonLabel>Noah Patel</ButtonLabel>
           </Button>
         `}
       >
         <Button>
-          <ButtonSlot $kind="avatar" $size="2xl">
-            AT
+          <ButtonSlot $kind="box" $size="2xl">
+            <Avatar>AT</Avatar>
           </ButtonSlot>
           <ButtonLabel>Ava Thompson</ButtonLabel>
         </Button>
         <Button>
-          <ButtonSlot $kind="avatar" $size="full">
-            NP
+          <ButtonSlot $kind="box" $size="full">
+            <Avatar>NP</Avatar>
           </ButtonSlot>
           <ButtonLabel>Noah Patel</ButtonLabel>
         </Button>
@@ -634,14 +644,14 @@ export default function ButtonExamples() {
         description="An avatar follows the font's normal line height in a small button."
         code={`
           <Button $size="xs" style={{ lineHeight: "normal" }}>
-            <ButtonSlot $kind="avatar" $layer="brand">WW</ButtonSlot>
+            <ButtonSlot $kind="box"><Avatar $layer="brand">WW</Avatar></ButtonSlot>
             <ButtonLabel>Will Williams</ButtonLabel>
           </Button>
         `}
       >
         <Button $size="xs" style={{ lineHeight: "normal" }}>
-          <ButtonSlot $kind="avatar" $layer="brand">
-            WW
+          <ButtonSlot $kind="box">
+            <Avatar $layer="brand">WW</Avatar>
           </ButtonSlot>
           <ButtonLabel>Will Williams</ButtonLabel>
         </Button>
@@ -652,17 +662,21 @@ export default function ButtonExamples() {
         description="Initials from separate first and last name values fit in one avatar."
         code={`
           <Button>
-            <ButtonSlot $kind="avatar" $layer="brand">
-              {firstInitial}{lastInitial}
+            <ButtonSlot $kind="box">
+              <Avatar $layer="brand">
+                {firstInitial}{lastInitial}
+              </Avatar>
             </ButtonSlot>
             <ButtonLabel>Will Williams</ButtonLabel>
           </Button>
         `}
       >
         <Button>
-          <ButtonSlot $kind="avatar" $layer="brand">
-            {firstInitial}
-            {lastInitial}
+          <ButtonSlot $kind="box">
+            <Avatar $layer="brand">
+              {firstInitial}
+              {lastInitial}
+            </Avatar>
           </ButtonSlot>
           <ButtonLabel>Will Williams</ButtonLabel>
         </Button>
@@ -673,19 +687,23 @@ export default function ButtonExamples() {
         description="A fragment can group initials without changing their size."
         code={`
           <Button>
-            <ButtonSlot $kind="avatar" $layer="brand">
-              <>{firstInitial}<>{lastInitial}</></>
+            <ButtonSlot $kind="box">
+              <Avatar $layer="brand">
+                <>{firstInitial}<>{lastInitial}</></>
+              </Avatar>
             </ButtonSlot>
             <ButtonLabel>Will Williams</ButtonLabel>
           </Button>
         `}
       >
         <Button>
-          <ButtonSlot $kind="avatar" $layer="brand">
-            <>
-              {firstInitial}
-              <>{lastInitial}</>
-            </>
+          <ButtonSlot $kind="box">
+            <Avatar $layer="brand">
+              <>
+                {firstInitial}
+                <>{lastInitial}</>
+              </>
+            </Avatar>
           </ButtonSlot>
           <ButtonLabel>Will Williams</ButtonLabel>
         </Button>
@@ -693,9 +711,15 @@ export default function ButtonExamples() {
 
       <Example
         title="Avatar shape"
-        description="Change the image color, then switch between a round avatar and a square icon. The selected color stays the same."
+        description="Change the image color, then switch the slot between a round box and a square icon. The selected color stays the same."
         code={`
-          <ButtonSlot $kind={round ? "avatar" : "icon"} $size="xl">
+          <ButtonSlot
+            $kind={round ? "box" : "icon"}
+            $rounded={round ? "full" : "auto"}
+            $size="xl"
+            $square
+            className="overflow-clip"
+          >
             <AvatarPicture />
           </ButtonSlot>
         `}
@@ -708,14 +732,20 @@ export default function ButtonExamples() {
         description="An image avatar fills a slot that reaches the edge of a round button."
         code={`
           <Button $kind="bevel" $rounded="full">
-            <ButtonSlot $kind="avatar" $size="full" />
+            <ButtonSlot $kind="box" $size="full">
+              <Avatar>
+                <AvatarImage src={avatarImage} />
+              </Avatar>
+            </ButtonSlot>
             <ButtonLabel>Ariakit</ButtonLabel>
           </Button>
         `}
       >
         <Button $kind="bevel" $rounded="full">
-          <ButtonSlot $kind="avatar" $size="full">
-            <img alt="" src={avatarImage} className="size-full" />
+          <ButtonSlot $kind="box" $size="full">
+            <Avatar>
+              <AvatarImage src={avatarImage} />
+            </Avatar>
           </ButtonSlot>
           <ButtonLabel>Ariakit</ButtonLabel>
         </Button>
@@ -952,7 +982,7 @@ export default function ButtonExamples() {
         description="A label over a description, both truncated. The avatar spans the two rows, and the shortcut stays on the first."
         code={`
           <Button $lightnessOffset $rounded="xl" $p={3}>
-            <ButtonSlot $kind="avatar" $layer="secondary" $size="lg" $rowSpan={2}>UI</ButtonSlot>
+            <ButtonSlot $kind="box" $size="lg" $rowSpan={2}><Avatar $layer="secondary">UI</Avatar></ButtonSlot>
             <ButtonContent>
               <ButtonLabel>Open Ariakit UI</ButtonLabel>
               <ButtonDescription>…</ButtonDescription>
@@ -969,8 +999,8 @@ export default function ButtonExamples() {
           $p={3}
           className="max-w-96 justify-start text-start"
         >
-          <ButtonSlot $kind="avatar" $layer="secondary" $size="lg" $rowSpan={2}>
-            UI
+          <ButtonSlot $kind="box" $size="lg" $rowSpan={2}>
+            <Avatar $layer="secondary">UI</Avatar>
           </ButtonSlot>
           <ButtonContent>
             <ButtonLabel>Open Ariakit UI</ButtonLabel>
@@ -1095,26 +1125,30 @@ export default function ButtonExamples() {
         description="Disabled controls with an initial avatar and an image avatar."
         code={`
           <Button disabled>
-            <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
+            <ButtonSlot $kind="box"><Avatar $layer="brand">J</Avatar></ButtonSlot>
             <ButtonLabel>Jane Doe</ButtonLabel>
           </Button>
           <Button disabled>
-            <ButtonSlot $kind="avatar">
-              <img alt="" src={avatarImage} className="size-full" />
+            <ButtonSlot $kind="box">
+              <Avatar>
+                <AvatarImage src={avatarImage} />
+              </Avatar>
             </ButtonSlot>
             <ButtonLabel>Ariakit</ButtonLabel>
           </Button>
         `}
       >
         <Button disabled>
-          <ButtonSlot $kind="avatar" $layer="brand">
-            J
+          <ButtonSlot $kind="box">
+            <Avatar $layer="brand">J</Avatar>
           </ButtonSlot>
           <ButtonLabel>Jane Doe</ButtonLabel>
         </Button>
         <Button disabled>
-          <ButtonSlot $kind="avatar">
-            <img alt="" src={avatarImage} className="size-full" />
+          <ButtonSlot $kind="box">
+            <Avatar>
+              <AvatarImage src={avatarImage} />
+            </Avatar>
           </ButtonSlot>
           <ButtonLabel>Ariakit</ButtonLabel>
         </Button>
@@ -1134,7 +1168,7 @@ export default function ButtonExamples() {
               </Button>
             </legend>
             <Button>
-              <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
+              <ButtonSlot $kind="box"><Avatar $layer="brand">J</Avatar></ButtonSlot>
               <ButtonLabel>Jane Doe</ButtonLabel>
               <ButtonSlot $kind="box">
                 <Badge $kind="solid">3</Badge>
@@ -1153,8 +1187,8 @@ export default function ButtonExamples() {
             </Button>
           </legend>
           <Button>
-            <ButtonSlot $kind="avatar" $layer="brand">
-              J
+            <ButtonSlot $kind="box">
+              <Avatar $layer="brand">J</Avatar>
             </ButtonSlot>
             <ButtonLabel>Jane Doe</ButtonLabel>
             <ButtonSlot $kind="box">
@@ -1166,11 +1200,11 @@ export default function ButtonExamples() {
 
       <Example
         title="Nested badge and avatar"
-        description="Badge and avatar slots can sit inside the button content."
+        description="A badge and an avatar in box slots can sit inside the button content."
         code={`
           <Button>
             <ButtonContent $orientation="horizontal">
-              <ButtonSlot $kind="avatar" $layer="brand">J</ButtonSlot>
+              <ButtonSlot $kind="box"><Avatar $layer="brand">J</Avatar></ButtonSlot>
               <ButtonLabel>Jane Doe</ButtonLabel>
               <ButtonSlot $kind="box">
                 <Badge $kind="solid">3</Badge>
@@ -1181,8 +1215,8 @@ export default function ButtonExamples() {
       >
         <Button>
           <ButtonContent $orientation="horizontal">
-            <ButtonSlot $kind="avatar" $layer="brand">
-              J
+            <ButtonSlot $kind="box">
+              <Avatar $layer="brand">J</Avatar>
             </ButtonSlot>
             <ButtonLabel>Jane Doe</ButtonLabel>
             <ButtonSlot $kind="box">
@@ -2540,7 +2574,7 @@ export default function ButtonExamples() {
           <Button disabled $lightnessOffset>
             <ButtonLabel>Plan</ButtonLabel>
             <Badge $layer="brand">
-              <BadgeSlot $kind="avatar">A</BadgeSlot>
+              <BadgeSlot $kind="box"><Avatar>A</Avatar></BadgeSlot>
               <BadgeSlot><Sparkles /></BadgeSlot>
               <BadgeLabel>New</BadgeLabel>
             </Badge>
@@ -2553,7 +2587,7 @@ export default function ButtonExamples() {
           </Button>
           <Button disabled $lightnessOffset>
             <ButtonSlot $kind="thumbnail"><img alt="" src={picture} /></ButtonSlot>
-            <ButtonSlot $kind="avatar"><img alt="" src={picture} /></ButtonSlot>
+            <ButtonSlot $kind="box"><Avatar><AvatarImage src={picture} /></Avatar></ButtonSlot>
             <ButtonLabel>Photo</ButtonLabel>
           </Button>
         `}
@@ -2561,7 +2595,9 @@ export default function ButtonExamples() {
         <Button disabled $lightnessOffset>
           <ButtonLabel>Plan</ButtonLabel>
           <Badge $layer="brand">
-            <BadgeSlot $kind="avatar">A</BadgeSlot>
+            <BadgeSlot $kind="box">
+              <Avatar>A</Avatar>
+            </BadgeSlot>
             <BadgeSlot>
               <Sparkles />
             </BadgeSlot>
@@ -2578,8 +2614,10 @@ export default function ButtonExamples() {
           <ButtonSlot $kind="thumbnail">
             <img alt="" src={avatarImage} />
           </ButtonSlot>
-          <ButtonSlot $kind="avatar">
-            <img alt="" src={avatarImage} className="size-full" />
+          <ButtonSlot $kind="box">
+            <Avatar>
+              <AvatarImage src={avatarImage} />
+            </Avatar>
           </ButtonSlot>
           <ButtonLabel>Photo</ButtonLabel>
         </Button>

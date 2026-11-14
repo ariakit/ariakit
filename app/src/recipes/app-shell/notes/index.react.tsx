@@ -1,4 +1,5 @@
 import * as ak from "@ariakit/react";
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Breadcrumb,
@@ -16,7 +17,6 @@ import {
   CheckboxField,
   CheckboxLabel,
 } from "@ariakit/ui/components/checkbox.ariakit.react";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
   HeadingDescription,
@@ -115,17 +115,17 @@ export default function Example() {
             className="flex items-center gap-1"
           >
             {collaborators.map((person) => (
-              <Frame
+              <Avatar
                 key={person.initials}
+                aria-label={person.name}
                 title={person.name}
-                $rounded="full"
-                $p="none"
-                $borderType="dashed"
+                $layer="transparent"
                 $border
-                className="grid size-7 place-items-center text-xs font-medium"
+                $borderType="dashed"
+                $size={7}
               >
                 {person.initials}
-              </Frame>
+              </Avatar>
             ))}
           </div>
           <Button>

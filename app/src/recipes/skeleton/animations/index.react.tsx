@@ -1,3 +1,4 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { CheckboxField } from "@ariakit/ui/components/checkbox.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import type { SkeletonProps } from "@ariakit/ui/components/skeleton.ariakit.react";
@@ -49,16 +50,9 @@ export default function Example() {
               </SkeletonBox>
               <div className="flex items-center gap-2 px-1 pb-1">
                 <SkeletonCircle className="size-8 shrink-0">
-                  <Frame
-                    $layer="secondary"
-                    $rounded="full"
-                    $forceRounded
-                    $p="none"
-                    aria-hidden
-                    className="grid size-8 shrink-0 place-items-center"
-                  >
-                    <span className="text-xs font-semibold">LN</span>
-                  </Frame>
+                  <Avatar $layer="secondary" $size={8}>
+                    LN
+                  </Avatar>
                 </SkeletonCircle>
                 <div className="grid min-w-0 flex-1 text-sm">
                   <SkeletonLine className="w-4/5">

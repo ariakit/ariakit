@@ -1,3 +1,4 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import {
   ComboboxEmpty,
   ComboboxGroup,
@@ -56,15 +57,10 @@ export default function Example() {
             <ComboboxGroup key={type} label={type}>
               {items.map((item) => (
                 <ComboboxItem key={item.name} value={item.name}>
-                  <ComboboxItemSlot
-                    $kind="avatar"
-                    $size="md"
-                    $rowSpan={2}
-                    $layer="brand"
-                    $contrast
-                    aria-hidden
-                  >
-                    {getInitials(item.name)}
+                  <ComboboxItemSlot $kind="box" $size="md" $rowSpan={2}>
+                    <Avatar $layer="brand" $contrast>
+                      {getInitials(item.name)}
+                    </Avatar>
                   </ComboboxItemSlot>
                   <ComboboxItemContent>
                     <ComboboxItemLabel>{item.name}</ComboboxItemLabel>

@@ -1,3 +1,4 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
@@ -160,16 +161,9 @@ function PostCard({ post, image }: PostCardProps) {
     >
       <div className="flex items-center gap-3">
         <SkeletonCircle className="size-9 shrink-0">
-          <Frame
-            $layer="brand"
-            $rounded="full"
-            $forceRounded
-            $p="none"
-            aria-hidden
-            className="grid size-9 shrink-0 place-items-center"
-          >
-            <span className="text-xs font-semibold">{post?.initials}</span>
-          </Frame>
+          <Avatar $layer="brand" $size={9}>
+            {post?.initials}
+          </Avatar>
         </SkeletonCircle>
         <div className="flex min-w-0 flex-1 items-baseline gap-2 text-sm">
           <SkeletonLine className="w-28">

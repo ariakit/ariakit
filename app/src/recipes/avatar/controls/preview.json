@@ -1,0 +1,4 @@
+{
+  "title": "Avatars in Control Slots",
+  "description": "Avatars inside controls: a Button with an Avatar in a box ButtonSlot before its label, a round account button whose only content is an Avatar, and NavLink rows where a two-row box NavSlot holds the Avatar beside a label and a description. The slot sets the size of each Avatar, and the avatars stay out of the accessible names. Use it when an avatar belongs to a button, a link, or another control, instead of standing in the page."
+}

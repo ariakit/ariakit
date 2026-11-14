@@ -1,5 +1,5 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Skeleton,
   SkeletonCircle,
@@ -150,18 +150,9 @@ function OrderRow({ order }: OrderRowProps) {
       <TableCell>
         <div className="flex items-center gap-2.5">
           <SkeletonCircle className="size-7 shrink-0">
-            <Frame
-              $layer="brand"
-              $rounded="full"
-              $forceRounded
-              $p="none"
-              aria-hidden
-              className="grid size-7 shrink-0 place-items-center"
-            >
-              <span className="text-[0.625rem] font-semibold">
-                {order?.initials}
-              </span>
-            </Frame>
+            <Avatar $layer="brand" $size={7}>
+              {order?.initials}
+            </Avatar>
           </SkeletonCircle>
           <SkeletonLine className="w-24">{order?.customer}</SkeletonLine>
         </div>

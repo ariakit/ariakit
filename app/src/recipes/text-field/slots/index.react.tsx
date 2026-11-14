@@ -1,3 +1,4 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import {
   ComboboxItem,
   ComboboxPopover,
@@ -112,8 +113,8 @@ export default function Example() {
         <InputLabel htmlFor={`${id}-name`}>Display name</InputLabel>
         {/* The avatar shows the initials of the name as you type it. */}
         <InputGroup>
-          <InputSlot aria-hidden $kind="avatar" $layer="brand">
-            {getInitials(name)}
+          <InputSlot $kind="box">
+            <Avatar $layer="brand">{getInitials(name)}</Avatar>
           </InputSlot>
           <Input
             id={`${id}-name`}

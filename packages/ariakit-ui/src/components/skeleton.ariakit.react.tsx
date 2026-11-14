@@ -163,7 +163,10 @@ export interface SkeletonProps
  * @example
  * <Skeleton loading={!user}>
  *   <SkeletonCircle className="size-10">
- *     <img src={user?.avatar} alt="" className="size-10 rounded-full" />
+ *     <Avatar $size={10}>
+ *       <AvatarImage src={user?.avatar} />
+ *       {user?.initials}
+ *     </Avatar>
  *   </SkeletonCircle>
  *   <SkeletonLine className="w-32">{user?.name}</SkeletonLine>
  * </Skeleton>
@@ -392,7 +395,10 @@ export interface SkeletonCircleProps
  * a `Skeleton`, it renders a static placeholder.
  * @example
  * <SkeletonCircle className="size-10">
- *   <img src={user?.avatar} alt="" className="size-10 rounded-full" />
+ *   <Avatar $size={10}>
+ *     <AvatarImage src={user?.avatar} />
+ *     {user?.initials}
+ *   </Avatar>
  * </SkeletonCircle>
  */
 export function SkeletonCircle({

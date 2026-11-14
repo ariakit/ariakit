@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   ComboboxDescription,
@@ -203,14 +204,14 @@ export default function ComboboxExamples() {
             <ComboboxInput />
             <ComboboxPopover>
               <ComboboxItem value="Ava Thompson">
-                <ComboboxItemSlot $kind="avatar" $rowSpan={2} $layer="brand" $contrast>AT</ComboboxItemSlot>
+                <ComboboxItemSlot $kind="box" $rowSpan={2}><Avatar $layer="brand" $contrast>AT</Avatar></ComboboxItemSlot>
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Ava Thompson</ComboboxItemLabel>
                   <ComboboxItemDescription>ava@example.com</ComboboxItemDescription>
                 </ComboboxItemContent>
               </ComboboxItem>
               <ComboboxItem value="Noah Patel">
-                <ComboboxItemSlot $kind="avatar" $rowSpan={2}>NP</ComboboxItemSlot>
+                <ComboboxItemSlot $kind="box" $rowSpan={2}><Avatar>NP</Avatar></ComboboxItemSlot>
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Noah Patel</ComboboxItemLabel>
                   <ComboboxItemDescription>…</ComboboxItemDescription>
@@ -228,14 +229,10 @@ export default function ComboboxExamples() {
             </div>
             <ComboboxPopover {...openListProps} sameWidth>
               <ComboboxItem value="Ava Thompson">
-                <ComboboxItemSlot
-                  $kind="avatar"
-                  $rowSpan={2}
-                  $layer="brand"
-                  $contrast
-                  aria-hidden
-                >
-                  AT
+                <ComboboxItemSlot $kind="box" $rowSpan={2}>
+                  <Avatar $layer="brand" $contrast>
+                    AT
+                  </Avatar>
                 </ComboboxItemSlot>
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Ava Thompson</ComboboxItemLabel>
@@ -245,8 +242,8 @@ export default function ComboboxExamples() {
                 </ComboboxItemContent>
               </ComboboxItem>
               <ComboboxItem value="Noah Patel">
-                <ComboboxItemSlot $kind="avatar" $rowSpan={2} aria-hidden>
-                  NP
+                <ComboboxItemSlot $kind="box" $rowSpan={2}>
+                  <Avatar>NP</Avatar>
                 </ComboboxItemSlot>
                 <ComboboxItemContent>
                   <ComboboxItemLabel>Noah Patel</ComboboxItemLabel>

@@ -1,5 +1,5 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react";
 import type { ReactNode } from "react";
 
@@ -39,23 +39,10 @@ function Commit({ hash, message, author, action, children }: CommitProps) {
         <Badge className="font-mono">{hash}</Badge>
       </div>
       <p className="ak-ink-60 flex items-center gap-2 text-sm">
-        {/* The name follows the avatar, so the initials are decoration. */}
-        <Frame
-          render={<span />}
-          aria-hidden
-          $layer="brand"
-          $hue={author.hue}
-          // A frame in a list row takes a radius that fits the corners of the
-          // row. The avatar keeps its own shape.
-          $rounded="full"
-          $forceRounded
-          $p="none"
-          className="grid size-6 flex-none place-items-center font-semibold"
-        >
-          {/* The spacing scale follows the font size, so the small text goes
-              on a child and the avatar keeps its size. */}
-          <span className="text-[0.625rem]">{getInitials(author.name)}</span>
-        </Frame>
+        {/* The name follows the avatar, so the avatar stays decorative. */}
+        <Avatar $layer="brand" $hue={author.hue} $size={6}>
+          {getInitials(author.name)}
+        </Avatar>
         <span>
           <span className="ak-ink-80 font-medium">{author.name}</span> {action}
         </span>

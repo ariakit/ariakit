@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as Ariakit from "@ariakit/react";
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { DisclosureButtonLabel } from "@ariakit/ui/components/disclosure.ariakit.react";
 import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
@@ -445,7 +446,9 @@ function BadgesAndAvatars() {
               icon={<Palette strokeWidth={1.5} />}
               label="Design"
             >
-              <NavSlot $kind="avatar">MK</NavSlot>
+              <NavSlot $kind="box">
+                <Avatar>MK</Avatar>
+              </NavSlot>
             </NavDisclosureButton>
           }
         >
@@ -469,7 +472,9 @@ function BadgesAndAvatars() {
             <Settings strokeWidth={1.5} />
           </NavSlot>
           <NavLinkLabel>Profile</NavLinkLabel>
-          <NavSlot $kind="avatar">JD</NavSlot>
+          <NavSlot $kind="box">
+            <Avatar>JD</Avatar>
+          </NavSlot>
         </NavLink>
         <NavLink href="#notifications">
           <NavSlot $kind="box">
@@ -480,7 +485,9 @@ function BadgesAndAvatars() {
           <NavLinkLabel>Notifications</NavLinkLabel>
         </NavLink>
         <NavLink href="#ana-lima">
-          <NavSlot $kind="avatar">AL</NavSlot>
+          <NavSlot $kind="box">
+            <Avatar>AL</Avatar>
+          </NavSlot>
           <NavLinkLabel>Ana Lima</NavLinkLabel>
         </NavLink>
       </Nav>
@@ -1636,7 +1643,7 @@ export default function NavExamples() {
 
       <Example
         title="Badges and avatars"
-        description="A badge or an avatar in a NavSlot takes the nav's slot size before or after the label, in a link row and a section row alike, so its label lines up with the icon rows. A badge is round, so one digit fits the slot size. The select changes the nav's slot size."
+        description="A badge or an avatar in a box NavSlot takes the nav's slot size before or after the label, in a link row and a section row alike, so its label lines up with the icon rows. Without a slot size, a box after the label takes the line height. A badge is round, so one digit fits the slot size. The select changes the nav's slot size."
         code={`
           <Nav $slotSize={5}>
             <NavDisclosure defaultOpen button={
@@ -1653,7 +1660,7 @@ export default function NavExamples() {
             </NavDisclosure>
             <NavDisclosure button={
               <NavDisclosureButton icon={<Palette />} label="Design">
-                <NavSlot $kind="avatar">MK</NavSlot>
+                <NavSlot $kind="box"><Avatar>MK</Avatar></NavSlot>
               </NavDisclosureButton>
             }>
               <NavList>
@@ -1674,7 +1681,7 @@ export default function NavExamples() {
                 <Settings />
               </NavSlot>
               <NavLinkLabel>Profile</NavLinkLabel>
-              <NavSlot $kind="avatar">JD</NavSlot>
+              <NavSlot $kind="box"><Avatar>JD</Avatar></NavSlot>
             </NavLink>
             <NavLink>
               <NavSlot $kind="box">
@@ -1683,7 +1690,7 @@ export default function NavExamples() {
               <NavLinkLabel>Notifications</NavLinkLabel>
             </NavLink>
             <NavLink>
-              <NavSlot $kind="avatar">AL</NavSlot>
+              <NavSlot $kind="box"><Avatar>AL</Avatar></NavSlot>
               <NavLinkLabel>Ana Lima</NavLinkLabel>
             </NavLink>
           </Nav>
@@ -1724,7 +1731,7 @@ export default function NavExamples() {
                   <NavLinkLabel>Guidelines</NavLinkLabel>
                 </NavLink>
                 <NavLink>
-                  <NavSlot $kind="avatar">MK</NavSlot>
+                  <NavSlot $kind="box"><Avatar>MK</Avatar></NavSlot>
                   <NavLinkLabel>Members</NavLinkLabel>
                 </NavLink>
                 <NavDisclosure $slotSize={5} defaultOpen button={
@@ -1781,7 +1788,9 @@ export default function NavExamples() {
                 <NavLinkLabel>Guidelines</NavLinkLabel>
               </NavLink>
               <NavLink href="#members">
-                <NavSlot $kind="avatar">MK</NavSlot>
+                <NavSlot $kind="box">
+                  <Avatar>MK</Avatar>
+                </NavSlot>
                 <NavLinkLabel>Members</NavLinkLabel>
               </NavLink>
               <NavDisclosure
@@ -1814,7 +1823,7 @@ export default function NavExamples() {
         code={`
           <Nav>
             <NavLink>
-              <NavSlot $kind="avatar">WW</NavSlot>
+              <NavSlot $kind="box"><Avatar>WW</Avatar></NavSlot>
               <NavLinkLabel>Will Williams</NavLinkLabel>
             </NavLink>
             <NavLink>
@@ -1828,7 +1837,9 @@ export default function NavExamples() {
       >
         <Nav aria-label="Initials" className="w-full">
           <NavLink href="#will-williams">
-            <NavSlot $kind="avatar">WW</NavSlot>
+            <NavSlot $kind="box">
+              <Avatar>WW</Avatar>
+            </NavSlot>
             <NavLinkLabel>Will Williams</NavLinkLabel>
           </NavLink>
           <NavLink href="#inbox">

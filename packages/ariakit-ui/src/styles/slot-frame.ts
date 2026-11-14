@@ -1,6 +1,5 @@
 import type { VariantProps } from "clava";
 import { cv } from "clava";
-import { includes } from "../utils/includes.ts";
 import type { FrameRoundedValue } from "./frame.ts";
 import { frame, getFrameRoundedClass } from "./frame.ts";
 import { hasLayerBackground, isLayerColor } from "./layer.ts";
@@ -69,10 +68,6 @@ export const slotFrame = cv({
   },
 });
 
-// Single-row avatars need extra content space; multi-row slots keep their
-// requested size.
-const PADDED_SLOT_SIZES = ["xs", "sm", "md", "lg"] as const;
-
 const slotSizeClasses = {
   unset: "",
   xs: "[--size:1ex]",
@@ -110,7 +105,8 @@ export function hasSlotSurface(variants: VariantProps<typeof frame>) {
 /**
  * A text-aligned slot in a slot frame for an icon, avatar, badge, thumbnail,
  * keyboard key, or short text. Its margins follow the padding of the frame.
- * Controls extend it, and so can static rows, such as tooltips.
+ * Controls extend it, and so can static rows, such as tooltips. An avatar or a
+ * badge goes inside a `box` slot.
  */
 export const slotFrameSlot = cv({
   extend: [frame],
@@ -182,18 +178,17 @@ export const slotFrameSlot = cv({
     },
     /**
      * Sets the slot content type. `box` is one line tall and takes the width of
-     * what fills it, such as a `Badge`, a flat `Kbd`, a keycap, or a select. It
-     * sits as far from the side as from the top. `thumbnail` is a bordered 4:3
-     * box that an image or another picture fills. `text`, such as a count or a
-     * duration, is one line tall and keeps the side padding of the row text,
-     * while other slots move into it. Put plain `Kbd` keys in a `text` slot. A
-     * chord can be one `Kbd` or one per key.
+     * what fills it, such as a `Badge`, an `Avatar`, a flat `Kbd`, a keycap, or
+     * a select. It sits as far from the side as from the top. `thumbnail` is a
+     * bordered 4:3 box that an image or another picture fills. `text`, such as
+     * a count or a duration, is one line tall and keeps the side padding of the
+     * row text, while other slots move into it. Put plain `Kbd` keys in a
+     * `text` slot. A chord can be one `Kbd` or one per key.
      */
     $kind: {
       icon: "",
       box: "",
       thumbnail: "overflow-clip aspect-4/3 *:size-full *:object-cover",
-      avatar: "overflow-clip",
       // Keep the side padding of the row text, and let nested slots move again.
       // Fit short text, such as a single digit, instead of a line-wide box.
       // Tailwind sorts min-width utilities by name, so min-w-0 follows the base
@@ -251,19 +246,13 @@ export const slotFrameSlot = cv({
     $layer(defaultValue, variants) {
       // Replace only frame's transparent default; preserve explicit colors.
       if (defaultValue !== "transparent") return defaultValue;
-      // Avatars and floating slots paint their own surface.
-      if (variants.$kind === "avatar") return true;
+      // A floating slot paints its own surface.
       if (variants.$floating) return true;
       return defaultValue;
-    },
-    $lightnessOffset(defaultValue, variants) {
-      if (variants.$kind !== "avatar") return defaultValue;
-      return defaultValue ?? true;
     },
     $rounded(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;
       if (variants.$floating) return "full";
-      if (variants.$kind === "avatar") return "full";
       return "auto";
     },
     $rowSpan: 1,
@@ -283,36 +272,16 @@ export const slotFrameSlot = cv({
     },
     $square(defaultValue, variants) {
       if (variants.$kind === "icon") return defaultValue ?? true;
-      if (variants.$kind === "avatar") return defaultValue ?? true;
       return defaultValue;
     },
   },
-  refine({ variants, setVariants, addClass }) {
-    const paintsIcon =
-      variants.$kind === "icon" && isLayerColor(variants.$layer);
-    if (paintsIcon && variants.$rowSpan === 1) {
-      // Inset icons on painted tiles; multi-row slots already have extra space.
-      addClass("[--slot-icon-scale:0.6]");
-    }
-    if (variants.$kind !== "avatar") return;
-    // Forced colors remove the slot's fill, which may be its only boundary.
-    if (variants.$border == null && hasLayerBackground(variants)) {
-      addClass("forced-colors:ak-frame-border");
-    }
+  refine({ variants, addClass }) {
+    if (variants.$kind !== "icon") return;
+    if (!isLayerColor(variants.$layer)) return;
+    // Multi-row slots already have extra space.
     if (variants.$rowSpan !== 1) return;
-    if (variants.$size === "2xl") return;
-    if (variants.$size === "full") return;
-    addClass([
-      // Preserve line height and set initials' capital height to 0.3 times the
-      // slot size. tan(atan2(a,b)) divides lengths where Firefox calc() cannot.
-      "leading-[1lh] [font-size-adjust:cap-height_calc(0.3*tan(atan2(var(--size,1lh),1em)))]",
-      // Use the frame's measured inset so the adjusted font does not change
-      // margins.
-      "[--px:calc(var(--py)+var(--text-frame-inset))]",
-    ]);
-    if (includes(PADDED_SLOT_SIZES, variants.$size)) {
-      setVariants({ $size: "xl" });
-    }
+    // Inset icons on painted tiles.
+    addClass("[--slot-icon-scale:0.6]");
   },
 });
 
