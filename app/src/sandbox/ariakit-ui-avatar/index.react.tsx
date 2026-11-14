@@ -37,6 +37,10 @@ const brokenPhoto = "data:image/png;base64,AAAA";
 // once the image has mounted.
 const missingPhoto = "/ariakit-ui-avatar-missing-photo.png";
 
+// Another path that the server does not have. The retry test serves it after
+// the first failure, as when a network error goes away.
+const firstPhoto = "/ariakit-ui-avatar-retry-photo.png";
+
 const people = [
   { name: "Hana Kobayashi", initials: "HK", hue: "magenta" },
   { name: "Tom Becker", initials: "TB", hue: "blue" },
@@ -47,8 +51,9 @@ const people = [
 function PhotoSource() {
   const [presses, setPresses] = useState(0);
   const broken = presses % 2 === 0;
-  // Each missing source has a new URL, so the image requests it again and the
-  // error event arrives after the image mounts.
+  // Each press gives the missing source a new URL, so each one is a source that
+  // the image has not tried. The Photo retry example covers a source that comes
+  // back.
   const src = broken ? `${missingPhoto}?${presses}` : photo;
   return (
     <div className="flex items-center gap-3">
@@ -58,6 +63,21 @@ function PhotoSource() {
       </Avatar>
       <Button aria-pressed={!broken} onClick={() => setPresses(presses + 1)}>
         Working photo
+      </Button>
+    </div>
+  );
+}
+
+function PhotoRetry() {
+  const [other, setOther] = useState(false);
+  return (
+    <div className="flex items-center gap-3">
+      <Avatar aria-label="Rosa Delgado" $layer="brand" $hue="green">
+        <AvatarImage src={other ? photo : firstPhoto} />
+        RD
+      </Avatar>
+      <Button aria-pressed={other} onClick={() => setOther(!other)}>
+        Other photo
       </Button>
     </div>
   );
@@ -254,6 +274,19 @@ export default function AvatarExamples() {
         `}
       >
         <PhotoSourceSet />
+      </Example>
+
+      <Example
+        title="Photo retry"
+        description="The first photo fails. The button shows another photo, and when it switches back, the image tries the first photo again, so it shows if the error went away."
+        code={`
+          <Avatar aria-label="Rosa Delgado" $layer="brand" $hue="green">
+            <AvatarImage src={other ? photo : firstPhoto} />
+            RD
+          </Avatar>
+        `}
+      >
+        <PhotoRetry />
       </Example>
 
       <Example

@@ -98,6 +98,12 @@ export function AvatarImage({ ref, ...props }: AvatarImageProps) {
   const failed =
     failure != null && failure.src === src && failure.srcSet === srcSet;
 
+  // Forget a failure once the source changes, so a source that failed before
+  // gets a new try when it comes back, such as after a network error.
+  if (failure != null && !failed) {
+    setFailure(null);
+  }
+
   // An image in the server HTML can fail before React attaches onError, and
   // React does not replay that event. Read the result once the image mounts.
   useEffect(() => {

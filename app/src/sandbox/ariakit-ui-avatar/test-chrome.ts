@@ -1,5 +1,8 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
+const retrySvg =
+  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><rect width='40' height='40' fill='green'/></svg>";
+
 withFramework(import.meta.dirname, async ({ query, test }) => {
   test("hides an avatar without a label from assistive technology", async ({
     q,
@@ -64,6 +67,29 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const photo = avatar.locator("img");
     await test.expect(photo).toHaveCount(0);
     await box.button("Working photo set").click();
+    await test.expect(photo).toHaveJSProperty("complete", true);
+    await test.expect(photo).not.toHaveJSProperty("naturalWidth", 0);
+  });
+
+  test("tries a failed photo again when its source comes back", async ({
+    page,
+    q,
+  }) => {
+    const box = query(q.article("Photo retry"));
+    const avatar = box.img("Rosa Delgado");
+    const button = box.button("Other photo");
+    // The photo is decorative, so it has no role to query.
+    const photo = avatar.locator("img");
+    await test.expect(photo).toHaveCount(0);
+    // From now on, the route serves the first photo, as when a network error
+    // goes away.
+    await page.route("**/ariakit-ui-avatar-retry-photo.png", (route) =>
+      route.fulfill({ contentType: "image/svg+xml", body: retrySvg }),
+    );
+    await button.click();
+    await test.expect(photo).not.toHaveJSProperty("naturalWidth", 0);
+    await button.click();
+    await test.expect(photo).toHaveAttribute("src", /retry-photo/);
     await test.expect(photo).toHaveJSProperty("complete", true);
     await test.expect(photo).not.toHaveJSProperty("naturalWidth", 0);
   });
