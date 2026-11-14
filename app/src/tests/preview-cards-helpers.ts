@@ -65,8 +65,18 @@ export async function widenExample(scroller: Locator) {
       return display !== "contents" && display !== "none";
     });
     if (!(example instanceof HTMLElement)) throw new Error("No example");
+    // The example grows around its center, and scroll anchoring can follow a
+    // node picked at an earlier scroll. Restoring the position drops that
+    // anchor, and `overflow-anchor` keeps a new one from following the example.
+    // https://github.com/ariakit/ariakit/issues/8428
+    const doc = element.ownerDocument;
+    const target =
+      element === doc.body ? (doc.scrollingElement ?? element) : element;
+    const { scrollLeft: left, scrollTop: top } = target;
+    element.style.overflowAnchor = "none";
     example.style.minWidth = "3000px";
     example.style.minHeight = "3000px";
+    target.scrollTo({ left, top, behavior: "instant" });
   });
 }
 
