@@ -1,4 +1,4 @@
-import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   test("ends the bends on the edges of the lines they join", async ({ q }) => {
@@ -63,36 +63,35 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
-  test("shows the first range without filling the markers", async ({
-    page,
-    q,
-  }) => {
-    // The transition can end before any later read, so a listener from the
-    // start of the page counts it. No user-facing state tracks the transitions.
+  test("grows the first range from its start", async ({ page, q }) => {
+    // The growth can end before any later read, so a listener from the start of
+    // the page records it. No user-facing state tracks the transitions.
     await page.addInitScript(() => {
       const runs: string[] = [];
-      Object.assign(window, { fillRuns: runs });
+      Object.assign(window, { rangeRuns: runs });
       document.addEventListener(
         "transitionrun",
         (event) => {
-          if (event.pseudoElement !== "::after") return;
           if (!(event.target instanceof HTMLElement)) return;
-          runs.push(event.target.className);
+          if (!event.target.matches(".toc-link-bar")) return;
+          runs.push(event.propertyName);
         },
         true,
       );
     });
     await page.reload();
-    const dot = query(q.navigation("Dot steps"))
+    const bar = query(q.navigation("Dot steps"))
       .link("Install")
-      .locator(".toc-link-marker");
-    await test.expect(dot).toHaveAttribute("style", /--nav-bar-top/);
-    // The range is in place above, and transitionrun fires on a later frame.
-    await flushFrames(page);
-    const runs = await page.evaluate(() => {
-      return "fillRuns" in window ? window.fillRuns : null;
-    });
-    test.expect(runs).toEqual([]);
+      .locator(".toc-link-bar");
+    await test.expect(bar).toHaveAttribute("style", /--nav-bar-top/);
+    const getRuns = () => {
+      return page.evaluate(() => {
+        return "rangeRuns" in window ? window.rangeRuns : null;
+      });
+    };
+    // The end of the range leaves its start, which stays in place.
+    await test.expect.poll(getRuns).toContain("--nav-bar-end");
+    test.expect(await getRuns()).not.toContain("--nav-bar-start");
   });
 
   test("shows each marker only at the rows of its own list", async ({ q }) => {

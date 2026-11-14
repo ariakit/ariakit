@@ -28,6 +28,55 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(nav.button("Components")).toBeInViewport();
   });
 
+  test("shows the new bar at once when the old one is scrolled out of the section", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 420 });
+    const site = q.navigation("Site");
+    const nav = query(site);
+    const tabs = nav.link("Tabs");
+    const button = nav.link("Button");
+    await tabs.scrollIntoViewIfNeeded();
+    await tabs.click();
+    await test.expect(tabs).toHaveAttribute("aria-current", "page");
+    await test.expect(tabs.locator(".control-bar")).toBeVisible();
+    // The travel time is a custom property. A long one would keep a travel on
+    // its way while the test reads the bars.
+    await page.addStyleTag({ content: ":root { --glider-duration: 30s; }" });
+    // The section scrolls the bar of Tabs out of view. A bar that traveled from
+    // there would fly over the section buttons.
+    await button.scrollIntoViewIfNeeded();
+    await test.expect(tabs).not.toBeInViewport();
+    await button.click();
+    await test.expect(button).toHaveAttribute("aria-current", "page");
+    await test.expect(button.locator(".control-bar")).toBeVisible();
+    await test.expect(site).not.toHaveAttribute("data-bar-traveling");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/8454#discussion_r4575739534
+  test("ends the travel when the section scrolls the new bar out of view", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 420 });
+    // The travel time is a custom property. A long one keeps the bar on its way
+    // while the section scrolls.
+    await page.addStyleTag({ content: ":root { --glider-duration: 30s; }" });
+    const site = q.navigation("Site");
+    const nav = query(site);
+    const button = nav.link("Button");
+    await button.scrollIntoViewIfNeeded();
+    await button.click();
+    await test.expect(button).toHaveAttribute("aria-current", "page");
+    await test.expect(site).toHaveAttribute("data-bar-traveling");
+    // The last link of the section scrolls the section to its end, which hides
+    // the first link and its bar.
+    await nav.link("Tabs").scrollIntoViewIfNeeded();
+    await test.expect(button).not.toBeInViewport();
+    await test.expect(site).not.toHaveAttribute("data-bar-traveling");
+  });
+
   test("scrolls the page once the open section reaches its end", async ({
     page,
     q,

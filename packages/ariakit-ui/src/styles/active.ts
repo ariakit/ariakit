@@ -22,7 +22,8 @@ export const active = cv({
       // A press can't change a settled element, such as the current page, so
       // it doesn't scale, and neither does a bar inside it. An element that
       // settles while easing back from a press drops to full size at once, so
-      // a view transition captures it where it rests.
+      // a script that measures it, such as for a bar that glides, reads it
+      // where it rests.
       "ui-settled:scale-none ui-settled:[--active-transition:--none]",
     ],
     /**

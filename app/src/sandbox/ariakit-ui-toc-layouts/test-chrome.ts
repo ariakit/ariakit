@@ -115,8 +115,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   // https://github.com/ariakit/ariakit/issues/8141
   test("glides the bar on its pieces, not on the rows", async ({ page, q }) => {
     // A glide on the root restyles every row in each frame, so only the bar
-    // pieces and the number markers with rings animate. Read the paused glide
-    // halfway to compare the range on the pieces and the rings.
+    // pieces and the number markers with a highlight animate. Read the paused
+    // glide halfway to compare the range on the pieces and the rings.
     const chapters = q.navigation("Ringed chapters");
     const numbers = q.navigation("Numbers over the bar");
     await pauseGlides(page, [chapters, numbers], "chapter-12");
@@ -156,12 +156,12 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         targets: getTargets(nav),
         unringedTargets: other ? getTargets(other) : null,
         markers: markers.length,
-        ranges: [...new Set([...bars, ...markers].map((piece) => read(piece)))],
+        ranges: [...new Set(bars.map((bar) => read(bar)))],
         rings: [...new Set(rings)],
       };
     }, unringed);
     test.expect(glide.targets).toEqual(["bar", "marker"]);
-    // Markers without rings don't read the range.
+    // Markers without a highlight don't read the range.
     test.expect(glide.unringedTargets).toEqual(["bar"]);
     test.expect(glide.markers).toBe(12);
     // The rings glide with the bar.
@@ -169,10 +169,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(glide.rings).toEqual(glide.ranges);
   });
 
-  test("fills only the markers that the bar reaches, over time", async ({
-    page,
-    q,
-  }) => {
+  test("fills the markers as the bar reaches them", async ({ page, q }) => {
     const nav = q.navigation("Twelve chapters");
     await page.evaluate(() => {
       document.getElementById("chapter-1")?.scrollIntoView({ block: "start" });
@@ -184,40 +181,42 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await pauseGlides(page, [nav], "chapter-6");
     const fill = await nav.evaluate((element) => {
       const animations = element.getAnimations({ subtree: true });
-      const fills = animations.flatMap((animation) => {
-        const { effect } = animation;
-        if (!(effect instanceof KeyframeEffect)) return [];
-        if (effect.pseudoElement !== "::after") return [];
-        return effect.target ? [{ animation, target: effect.target }] : [];
-      });
+      // The height of the part of a marker that its fill shows. The clip of the
+      // fill cuts it from the top and from the bottom.
+      const getFillHeight = (name: string) => {
+        const links = [...element.querySelectorAll("a")];
+        const link = links.find((item) => item.textContent === name);
+        const marker = link?.querySelector(".toc-link-marker");
+        if (!marker) return Number.NaN;
+        const { clipPath } = getComputedStyle(marker, "::after");
+        const insets = clipPath.match(/-?[\d.]+/g)?.map(Number) ?? [];
+        // An inset with one or two values has the same top and bottom.
+        const [top = 0, , bottom = top] = insets;
+        const { height } = marker.getBoundingClientRect();
+        return height - Math.max(0, top) - Math.max(0, bottom);
+      };
       const read = (time: number) => {
-        return fills.map(({ animation, target }) => {
+        for (const animation of animations) {
           animation.currentTime = time;
-          return getComputedStyle(target, "::after").clipPath;
-        });
+        }
+        return {
+          left: getFillHeight("Chapter 1"),
+          reached: getFillHeight("Chapter 6"),
+          past: getFillHeight("Chapter 12"),
+        };
       };
-      const start = read(0);
-      const isWithinMarker = (clip: string, index: number) => {
-        const target = fills[index]?.target;
-        if (!(target instanceof HTMLElement)) return false;
-        const insets = [...clip.matchAll(/-?[\d.]+(?=px)/g)].map(Number);
-        return Math.max(...insets) <= target.offsetHeight + 2;
-      };
-      return {
-        links: fills.map(({ target }) => target.parentElement?.textContent),
-        start,
-        middle: read(100),
-        startsAtMarker: start.every(isWithinMarker),
-      };
+      return { start: read(0), end: read(199) };
     });
-    // The clip stops at the edges of a marker, so the fill takes the whole
-    // transition, and a marker past the bar stays out of it, however far the
-    // range moves. A marker that the bar leaves empties at once.
-    test.expect(fill.startsAtMarker).toBe(true);
-    test.expect(fill.links).toContain("Chapter 6");
-    test.expect(fill.links).not.toContain("Chapter 12");
-    test.expect(fill.links).not.toContain("Chapter 1");
-    test.expect(fill.middle).not.toEqual(fill.start);
+    // The fill follows the range. The marker that the bar leaves is full when
+    // the glide starts and empty when it ends, the marker that the bar reaches
+    // is empty when the glide starts and full when it ends, and a marker past
+    // the bar stays empty.
+    test.expect(fill.start.left).toBeGreaterThan(0);
+    test.expect(fill.end.left).toBeLessThanOrEqual(0);
+    test.expect(fill.start.reached).toBeLessThanOrEqual(0);
+    test.expect(fill.end.reached).toBeGreaterThan(0);
+    test.expect(fill.start.past).toBeLessThanOrEqual(0);
+    test.expect(fill.end.past).toBeLessThanOrEqual(0);
   });
 
   test("shows numbers only at the rows of the outermost list", async ({

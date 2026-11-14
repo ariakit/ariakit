@@ -24,20 +24,13 @@ import {
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
 
-interface TreeNavProps extends NavProps {
-  /** The name of the link that is current at first. */
-  initialCurrent: string;
-  /** Draws a dot at each link of the nested list. */
-  dots?: boolean;
-}
-
 /**
- * A navigation with three levels of links. A click makes a link current, so the
- * bar can be watched as it moves.
+ * Keeps the current link of a navigation in state. A click makes a link
+ * current, so the bar can be watched as it moves.
  */
-function TreeNav({ initialCurrent, dots, ...props }: TreeNavProps) {
+function useCurrentLink(initialCurrent: string) {
   const [current, setCurrent] = useState(initialCurrent);
-  const getProps = (name: string) => ({
+  return (name: string) => ({
     href: `#${name.toLowerCase()}`,
     "aria-current": current === name ? ("page" as const) : undefined,
     children: name,
@@ -46,6 +39,18 @@ function TreeNav({ initialCurrent, dots, ...props }: TreeNavProps) {
       setCurrent(name);
     },
   });
+}
+
+interface TreeNavProps extends NavProps {
+  /** The name of the link that is current at first. */
+  initialCurrent: string;
+  /** Draws a dot at each link of the nested list. */
+  dots?: boolean;
+}
+
+/** A navigation with three levels of links. */
+function TreeNav({ initialCurrent, dots, ...props }: TreeNavProps) {
+  const getProps = useCurrentLink(initialCurrent);
   return (
     <Nav className="w-full" {...props}>
       <NavLink {...getProps("Overview")} />
@@ -63,6 +68,42 @@ function TreeNav({ initialCurrent, dots, ...props }: TreeNavProps) {
         </NavList>
       </NavItem>
       <NavLink {...getProps("FAQ")} />
+    </Nav>
+  );
+}
+
+/**
+ * Links on a guide around a disclosure, whose links are not on the guide. The
+ * bar leaves the guide while a link of the disclosure is current.
+ */
+function DisclosureNav(props: NavProps) {
+  const getProps = useCurrentLink("Overview");
+  return (
+    <Nav $guide="smooth" bar className="w-full" {...props}>
+      <NavLink {...getProps("Overview")} />
+      <NavDisclosure button="Guides" defaultOpen>
+        <NavList>
+          <NavLink {...getProps("Install")} />
+          <NavLink {...getProps("Deploy")} />
+        </NavList>
+      </NavDisclosure>
+      <NavLink {...getProps("FAQ")} />
+      <NavLink {...getProps("Support")} />
+    </Nav>
+  );
+}
+
+/**
+ * Links on a guide where one link keeps its bar at the end side, off the guide.
+ * The guide has no bar while that link is current.
+ */
+function OffGuideBarNav(props: NavProps) {
+  const getProps = useCurrentLink("Guides");
+  return (
+    <Nav $guide="smooth" bar className="w-full" {...props}>
+      <NavLink {...getProps("Overview")} />
+      <NavLink {...getProps("Guides")} />
+      <NavLink {...getProps("Support")} bar={{ $side: "end" }} />
     </Nav>
   );
 }
@@ -334,6 +375,38 @@ export default function NavGuideExamples() {
           </NavDisclosure>
           <NavLink href="#faq">FAQ</NavLink>
         </Nav>
+      </Example>
+
+      <Example
+        title="Bar around a disclosure"
+        description="The bar leaves the guide while a link of the disclosure is current, and comes back to the guide with a link around the disclosure. Click a link to make it current."
+        code={`
+          <Nav $guide="smooth" bar>
+            <NavLink aria-current="page">Overview</NavLink>
+            <NavDisclosure button="Guides">
+              <NavList>
+                <NavLink>Install</NavLink>
+              </NavList>
+            </NavDisclosure>
+            <NavLink>FAQ</NavLink>
+          </Nav>
+        `}
+      >
+        <DisclosureNav aria-label="Bar around a disclosure" />
+      </Example>
+
+      <Example
+        title="Bar off the guide on one link"
+        description="One link keeps its bar at the end side. When it becomes current, the bar leaves the guide at once. Click a link to make it current."
+        code={`
+          <Nav $guide="smooth" bar>
+            <NavLink>Overview</NavLink>
+            <NavLink aria-current="page">Guides</NavLink>
+            <NavLink bar={{ $side: "end" }}>Support</NavLink>
+          </Nav>
+        `}
+      >
+        <OffGuideBarNav aria-label="Bar off the guide on one link" />
       </Example>
     </ExampleGrid>
   );

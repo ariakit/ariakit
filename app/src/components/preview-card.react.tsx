@@ -733,9 +733,6 @@ function PreviewCardViewport({
                 ? "min-h-full"
                 : "min-h-[var(--preview-card-min-height,100%)]",
               getFallbackHeight({ fullscreen, minHeight }),
-              // While the page holds the frame, the box keeps the height of
-              // the frame, so the page doesn't shift when it shows.
-              "[:root[data-preview-frames-held]_&]:h-(--preview-frame-height)",
             ].join(" ")}
           >
             {/* The page script in preview-card.astro sets the width of the frame,
@@ -753,9 +750,6 @@ function PreviewCardViewport({
               className={cx(
                 "block w-full border-0 bg-transparent transition-opacity",
                 "h-(--preview-frame-height)",
-                // The layout holds the frame during a view transition into
-                // the page. A lazy frame without a box doesn't load.
-                "[:root[data-preview-frames-held]_&]:hidden",
                 // The frame fills its box between the minimum height and the
                 // limited window height.
                 "max-h-full min-h-full",

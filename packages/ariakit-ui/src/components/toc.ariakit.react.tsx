@@ -654,13 +654,9 @@ export function Toc({
   const [variantProps, rest] = splitProps(props, toc);
   const rootRef = React.useRef<HTMLElement>(null);
   const ref = useMergeRefs(rootRef, rest.ref);
-  // The bar range measures its pieces before the spy sets the first range. A
-  // ring glides with the whole range, and other highlights read only the part
-  // that reaches each marker.
-  const barRange = useNavBarRange({
-    rootRef,
-    clampMarkers: variantProps.$markerHighlight !== "ring",
-  });
+  // The bar range measures its pieces before the spy sets the first range.
+  // Nothing draws a bar before that range, so the bar grows to it.
+  const barRange = useNavBarRange({ rootRef, growFirstRange: true });
   const { registry, currentId } = useTocSpy({
     rootRef,
     barRange,

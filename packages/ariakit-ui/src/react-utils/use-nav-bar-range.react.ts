@@ -28,6 +28,11 @@ export interface NavBarRangeStore {
    * at the first link.
    */
   setRange: (range: NavBarRange | null) => void;
+  /**
+   * Removes the measured range, so CSS draws the bar of each current link
+   * again, as before the first range. The next range appears at once.
+   */
+  clearRange: () => void;
 }
 
 /**
@@ -63,13 +68,11 @@ export interface UseNavBarRangeParams {
   /** The navigation element, which is the origin of the range. */
   rootRef: React.RefObject<HTMLElement | null>;
   /**
-   * Writes to each marker only the part of the range that reaches it, which
-   * skips the restyle of the markers that a change of the range doesn't reach.
-   * A filled marker clips the range to its own box, so it draws the same fill.
-   * A marker that reads the whole range, such as a ring that glides with it,
-   * needs the exact range. Defaults to `false`.
+   * Grows the first range from no length at its start, so the bar doesn't show
+   * at once. Use it when nothing draws a bar before the first range, as in a
+   * table of contents, whose range comes from a script. Defaults to `false`.
    */
-  clampMarkers?: boolean;
+  growFirstRange?: boolean;
 }
 
 /**
@@ -77,7 +80,9 @@ export interface UseNavBarRangeParams {
  * can cover a range of links with one bar. It keeps the range in the inline
  * styles of the pieces and of the markers, so a new range re-renders nothing.
  * Provide the returned store with `NavBarRangeContext`, so the links register
- * their pieces, and set the range with `setRange`.
+ * their pieces, and set the range with `setRange`. Until the first range, and
+ * after `clearRange`, CSS draws the bar of each current link. The first range
+ * shows at once, or grows from its start with `growFirstRange`.
  * @example
  * const barRange = useNavBarRange({ rootRef });
  * barRange.setRange({ first, last });
@@ -87,10 +92,15 @@ export interface UseNavBarRangeParams {
  */
 export function useNavBarRange({
   rootRef,
-  clampMarkers = false,
+  growFirstRange = false,
 }: UseNavBarRangeParams) {
   const entriesRef = React.useRef(new Map<string, NavBarRangeEntry>());
-  // No range is known before the owner sets the first one.
+  // The first range waits, then has no length for one frame, then shows.
+  const firstRangeRef = React.useRef<"waiting" | "collapsed" | "shown">(
+    "waiting",
+  );
+  // No range is known before the owner sets the first one, or after it clears
+  // the range.
   const rangeRef = React.useRef<NavBarRange | null | undefined>(undefined);
   const applyRef = React.useRef<(() => void) | null>(null);
   const [version, setVersion] = React.useState(0);
@@ -109,6 +119,10 @@ export function useNavBarRange({
         rangeRef.current = range;
         applyRef.current?.();
       },
+      clearRange: () => {
+        rangeRef.current = undefined;
+        applyRef.current?.();
+      },
     }),
     [],
   );
@@ -119,8 +133,14 @@ export function useNavBarRange({
     const doc = getDocument(root);
     const win = getWindow(root);
     const entries = [...entriesRef.current];
+    // A navigation without pieces, such as one without a guide, has no range.
+    if (!entries.length) return;
     let rows = new Map<string, NavBarRow>();
     let markers: NavBarMarkerRow[] = [];
+    // The top of each bar piece. It goes on the piece with the range, because
+    // the range that CSS sets without a measured one is in the box of the
+    // piece.
+    let barTops = new Map<HTMLElement, number>();
     let firstRow: NavBarRow | null = null;
     let ready = false;
 
@@ -135,6 +155,7 @@ export function useNavBarRange({
       const getOffset = (y: number) => (y - originTop) / zoom;
       rows = new Map();
       markers = [];
+      barTops = new Map();
       firstRow = null;
       for (const [id, entry] of entries) {
         const link = entry.link.current;
@@ -153,7 +174,7 @@ export function useNavBarRange({
         if (!isVisible(bar)) continue;
         const linkRect = link.getBoundingClientRect();
         const barRect = bar.getBoundingClientRect();
-        bar.style.setProperty("--nav-bar-top", `${getOffset(barRect.top)}px`);
+        barTops.set(bar, getOffset(barRect.top));
         // A piece ends this far from the row edges, so the bar covers the line
         // along the links in the range and the bends between them.
         const joint = linkRect.bottom - barRect.bottom;
@@ -181,47 +202,73 @@ export function useNavBarRange({
       return { start, end };
     };
 
+    // The pieces that read the range: the bars and the markers that show.
+    const getPieces = () => {
+      const bars = entries.map(([, entry]) => entry.bar.current);
+      const elements = markers.map((marker) => marker.element);
+      return [...bars, ...elements].filter((piece) => piece != null);
+    };
+
+    // CSS draws the bar of each current link from a range in the box of its own
+    // piece, so the measured values go. The pieces stop their transitions until
+    // the next measured range, because a glide between the CSS ranges of two
+    // pieces would show their bends for a moment.
+    const clear = () => {
+      for (const piece of getPieces()) {
+        piece.style.transitionDuration = "0s";
+        piece.style.removeProperty("--nav-bar-start");
+        piece.style.removeProperty("--nav-bar-end");
+        piece.style.removeProperty("--nav-bar-top");
+      }
+    };
+
     const apply = () => {
+      if (rangeRef.current === undefined) {
+        clear();
+        ready = false;
+        return;
+      }
       const range = getRange();
-      // A hidden navigation has no range. When it shows again, its first range
-      // appears at once, like the first one after hydration.
+      // A hidden navigation has no range. When it shows again, its range
+      // appears at once.
       if (!range) {
         ready = false;
         return;
       }
+      // The first range starts with no length at its start, and grows to its
+      // place on the next frame. Until then, every update keeps it without a
+      // length, so an update in the same frame doesn't end the growth before it
+      // starts.
+      if (growFirstRange && firstRangeRef.current === "waiting") {
+        firstRangeRef.current = "collapsed";
+        win.requestAnimationFrame(() => {
+          firstRangeRef.current = "shown";
+          applyRef.current?.();
+        });
+      }
+      const collapsed = growFirstRange && firstRangeRef.current === "collapsed";
+      const start = `${range.start}px`;
+      const end = collapsed ? start : `${range.end}px`;
       // The range goes on each piece that reads it, which glides it, so a glide
-      // restyles only these pieces, not every row.
-      const bars = entries.map(([, entry]) => entry.bar.current);
-      const elements = markers.map((marker) => marker.element);
-      const pieces = [...bars, ...elements].filter((piece) => piece != null);
+      // restyles only these pieces, not every row. The top of a piece goes on
+      // with the range.
+      const pieces = getPieces();
       const setRange = () => {
-        for (const bar of bars) {
+        for (const [, entry] of entries) {
+          const bar = entry.bar.current;
           if (!bar) continue;
-          bar.style.setProperty("--nav-bar-start", `${range.start}px`);
-          bar.style.setProperty("--nav-bar-end", `${range.end}px`);
+          bar.style.setProperty("--nav-bar-start", start);
+          bar.style.setProperty("--nav-bar-end", end);
+          const top = barTops.get(bar);
+          if (top == null) continue;
+          bar.style.setProperty("--nav-bar-top", `${top}px`);
         }
-        // A marker fills over time where the bar arrives, and empties at once
-        // where it leaves, because the bar has already gone by then. The fill
-        // reads the position of the marker, which goes on with the range,
-        // because a layout read before the first range would start the fill
-        // transition.
-        for (const { element, top, bottom } of markers) {
-          // The fill clips the range to the marker and 1px around it, so a
-          // range clamped the same way draws the same fill. A marker that a
-          // change doesn't reach then keeps its values, which skips its
-          // restyle.
-          const getValue = (value: number) => {
-            if (!clampMarkers) return `${value}px`;
-            return `${Math.min(bottom + 1, Math.max(top - 1, value))}px`;
-          };
-          element.style.setProperty("--nav-bar-start", getValue(range.start));
-          element.style.setProperty("--nav-bar-end", getValue(range.end));
+        // The highlight of a marker reads the whole range, so it follows the
+        // bar as the range glides.
+        for (const { element, top } of markers) {
+          element.style.setProperty("--nav-bar-start", start);
+          element.style.setProperty("--nav-bar-end", end);
           element.style.setProperty("--nav-bar-top", `${top}px`);
-          if (range.start <= top && bottom <= range.end) {
-            element.style.removeProperty("--nav-fill-duration");
-          } else {
-            element.style.setProperty("--nav-fill-duration", "0s");
-          }
         }
       };
       if (ready) {
@@ -230,15 +277,17 @@ export function useNavBarRange({
       }
       ready = true;
       // Reading the style applies the range before the transitions turn back
-      // on, so only later ranges glide. The fill of a marker is a
-      // pseudo-element with its own transition, so it needs its own read.
+      // on, so only later ranges glide. The highlight of a marker animates the
+      // range on a pseudo-element, which takes its duration from the marker and
+      // needs its own read.
       for (const piece of pieces) {
         piece.style.transitionDuration = "0s";
       }
       setRange();
       for (const piece of pieces) {
         win.getComputedStyle(piece).getPropertyValue("--nav-bar-start");
-        win.getComputedStyle(piece, "::after").getPropertyValue("clip-path");
+        const highlight = win.getComputedStyle(piece, "::after");
+        highlight.getPropertyValue("--nav-bar-start");
       }
       for (const piece of pieces) {
         piece.style.transitionDuration = "";
@@ -303,7 +352,7 @@ export function useNavBarRange({
       doc.removeEventListener("transitionend", onAnimationEnd, true);
       doc.removeEventListener("animationend", onAnimationEnd, true);
     };
-  }, [rootRef, clampMarkers, version]);
+  }, [rootRef, growFirstRange, version]);
 
   return store;
 }

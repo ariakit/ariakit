@@ -1,4 +1,5 @@
 import * as ak from "@ariakit/react";
+import { useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
 import type { VariantProps } from "clava";
 import { cx, splitProps } from "clava";
 import * as React from "react";
@@ -18,6 +19,16 @@ import {
   useDescription,
   useDescriptionRegistry,
 } from "../react-utils/use-description.react.ts";
+import type {
+  NavBarRangeEntry,
+  NavBarRangeStore,
+  UseNavBarRangeParams,
+} from "../react-utils/use-nav-bar-range.react.ts";
+import { useNavBarRange } from "../react-utils/use-nav-bar-range.react.ts";
+import {
+  NavBarTravelContext,
+  useNavBarTravel,
+} from "../react-utils/use-nav-bar-travel.react.ts";
 import { carouselViewportBase } from "../styles/carousel.ts";
 import { isNamedBarOffset } from "../styles/control.ts";
 import { frame } from "../styles/frame.ts";
@@ -75,6 +86,67 @@ const NavBarContext = React.createContext<NavLinkBarValue | undefined>(
   undefined,
 );
 
+interface NavGuideBar {
+  /** Registers the pieces of a link, and returns a function that removes it. */
+  register: NavBarRangeStore["register"];
+  /** Makes a link current, and returns a function that undoes it. */
+  addCurrent: (id: string) => () => void;
+}
+
+// Covers the current link with a bar range, so the bar on the guide glides to
+// the next current link.
+function createNavGuideBar(barRange: NavBarRangeStore): NavGuideBar {
+  const entries = new Map<string, NavBarRangeEntry>();
+  const ids = new Set<string>();
+  let scheduled = false;
+  const sync = () => {
+    scheduled = false;
+    const [id] = ids;
+    // One range can't cover several current links, so CSS draws their bars.
+    if (id == null || ids.size > 1) {
+      barRange.clearRange();
+      return;
+    }
+    // A link whose bar is off the guide, such as a bar at the end side, has no
+    // piece for the range to cover. Its own bar shows at once.
+    if (!entries.get(id)?.bar.current) {
+      barRange.clearRange();
+      return;
+    }
+    barRange.setRange({ first: id, last: id });
+  };
+  // In one update, the old link leaves before the new one comes. The range
+  // waits for both, so it goes from one link to the other.
+  const scheduleSync = () => {
+    if (scheduled) return;
+    scheduled = true;
+    queueMicrotask(sync);
+  };
+  return {
+    register: (id, entry) => {
+      entries.set(id, entry);
+      const unregister = barRange.register(id, entry);
+      return () => {
+        entries.delete(id);
+        unregister();
+      };
+    },
+    addCurrent: (id) => {
+      ids.add(id);
+      scheduleSync();
+      return () => {
+        ids.delete(id);
+        scheduleSync();
+      };
+    },
+  };
+}
+
+function useNavGuideBar(params: UseNavBarRangeParams) {
+  const barRange = useNavBarRange(params);
+  return React.useMemo(() => createNavGuideBar(barRange), [barRange]);
+}
+
 interface NavPiecesContextValue {
   /** Whether the links render their guide piece and their marker. */
   pieces: boolean;
@@ -84,6 +156,8 @@ interface NavPiecesContextValue {
   guide?: NavLinkProps["guide"];
   /** The marker of the links that don't set their own. */
   marker?: NavLinkProps["marker"];
+  /** The bar on the guide, which covers the current link. */
+  guideBar?: NavGuideBar;
 }
 
 // What a navigation passes to its links. A list with a marker turns the pieces
@@ -97,9 +171,17 @@ interface NavLinkPartsContextValue {
   guided: boolean;
   /** The radius of the curves of the guide piece, which the bar follows. */
   radius?: NavLinkGuideProps["$radius"];
+  /** Whether the navigation measures the pieces, so their range glides. */
+  glide: boolean;
+  /** Whether the link is current, so its bar shows. */
+  current: boolean;
+  /** Takes the bar on the guide, which the navigation measures. */
+  barRef: React.RefObject<HTMLElement | null>;
+  /** Takes the marker, which the navigation measures. */
+  markerRef: React.RefObject<HTMLElement | null>;
 }
 
-// What a link with pieces passes to its bar.
+// What a link passes to its bar and to its pieces.
 const NavLinkPartsContext =
   React.createContext<NavLinkPartsContextValue | null>(null);
 
@@ -229,10 +311,6 @@ export function Nav({
   ...props
 }: NavProps) {
   const [variantProps, rest] = splitProps(props, nav);
-  // Each navigation names its bar by default, so view transitions can move it
-  // between links. React 18 ids contain colons, which CSS names can't hold.
-  const id = React.useId().replace(/[^\w-]/g, "");
-  const $barTransitionName = variantProps.$barTransitionName ?? `nav-bar-${id}`;
   const landmarks = React.useContext(LandmarkContext);
   const named = rest["aria-label"] != null || rest["aria-labelledby"] != null;
   const isLandmark = landmark ?? (!landmarks.navigation || named);
@@ -250,23 +328,27 @@ export function Nav({
   // The guide needs a vertical navigation.
   const guided = variants.$guide !== false && variants.$layout !== "horizontal";
   const active = variants.$guide !== false || variants.$marker !== "none";
+  const rootRef = React.useRef<HTMLElement>(null);
+  const navRef = useMergeRefs(rootRef, ref);
+  // The markers read the whole range, so their highlight follows the bar as it
+  // glides.
+  const guideBar = useNavGuideBar({ rootRef });
   const pieces = React.useMemo<NavPiecesContextValue>(
-    () => ({ pieces: active, guided, guide, marker }),
-    [active, guided, guide, marker],
+    () => ({ pieces: active, guided, guide, marker, guideBar }),
+    [active, guided, guide, marker, guideBar],
   );
+  // A bar that is not on the guide travels from the last current link to the
+  // new one.
+  const barTravel = useNavBarTravel({ rootRef });
   const navigation = () => {
     // A render prop from the caller still decides the element.
     const element = isLandmark ? undefined : <div />;
     if (variants.$layout !== "horizontal") {
       return (
         <ak.Role.nav
-          ref={ref}
+          ref={navRef}
           render={element}
-          {...nav.jsx({
-            ...variantProps,
-            $ordered: !!ordered,
-            $barTransitionName,
-          })}
+          {...nav.jsx({ ...variantProps, $ordered: !!ordered })}
           {...rest}
         >
           {rows}
@@ -300,12 +382,8 @@ export function Nav({
         <CarouselViewport
           recipe={carouselViewportBase}
           $fade
-          {...nav.jsx({
-            ...navProps,
-            $ordered: !!ordered,
-            $barTransitionName,
-          })}
-          render={<ak.Role.nav ref={ref} render={element} {...rest} />}
+          {...nav.jsx({ ...navProps, $ordered: !!ordered })}
+          render={<ak.Role.nav ref={navRef} render={element} {...rest} />}
         >
           {rows}
         </CarouselViewport>
@@ -316,7 +394,9 @@ export function Nav({
     <LandmarkContext.Provider value={nestedLandmarks}>
       <NavBarContext.Provider value={bar}>
         <NavPiecesContext.Provider value={pieces}>
-          {navigation()}
+          <NavBarTravelContext.Provider value={barTravel}>
+            {navigation()}
+          </NavBarTravelContext.Provider>
         </NavPiecesContext.Provider>
       </NavBarContext.Provider>
     </LandmarkContext.Provider>
@@ -363,10 +443,10 @@ export function NavList({ ordered, ...props }: NavListProps) {
   const $marker = variantProps.$marker ?? (ordered ? "counter" : "none");
   // A list with a marker turns the pieces on for its own links.
   const active = context.pieces || $marker !== "none";
-  const { guided, guide, marker } = context;
+  const { guided, guide, marker, guideBar } = context;
   const pieces = React.useMemo<NavPiecesContextValue>(
-    () => ({ pieces: active, guided, guide, marker }),
-    [active, guided, guide, marker],
+    () => ({ pieces: active, guided, guide, marker, guideBar }),
+    [active, guided, guide, marker, guideBar],
   );
   return (
     <NavPiecesContext.Provider value={pieces}>
@@ -449,7 +529,16 @@ export interface NavLinkMarkerProps
  */
 export function NavLinkMarker(props: NavLinkMarkerProps) {
   const [variantProps, rest] = splitProps(props, navLinkMarker);
-  return <span aria-hidden {...navLinkMarker.jsx(variantProps)} {...rest} />;
+  const parts = React.useContext(NavLinkPartsContext);
+  const ref = useMergeRefs(parts?.markerRef, rest.ref);
+  return (
+    <span
+      aria-hidden
+      {...navLinkMarker.jsx({ $glide: parts?.glide, ...variantProps })}
+      {...rest}
+      ref={ref}
+    />
+  );
 }
 
 export interface NavLinkBarProps
@@ -465,10 +554,14 @@ function isGuideBar(variants: VariantProps<typeof navLinkBar>) {
 
 /**
  * A thin bar that marks the current link. Pass it, or its props, to the `bar`
- * prop of `Nav` or `NavLink` so it renders as the link's last child. In a `Nav`
- * with `$guide`, the bar draws on the guide and follows its bends. There, only
- * `$width` applies. Set `$side="end"`, or a number or a length as `$offset`, to
- * keep the bar off the guide.
+ * prop of `Nav` or `NavLink` so it renders as the link's last child. When the
+ * current link of a `Nav` changes without a page load, the bar travels from the
+ * old link to the new one. It changes at once with reduced motion or forced
+ * colors, and when a scroll area in the `Nav` hides the old or the new bar,
+ * such as the open section of a filled `NavDisclosureGroup`. In a `Nav` with
+ * `$guide`, the bar draws on the guide, follows its bends, and glides along the
+ * guide instead. There, only `$width` applies. Set `$side="end"`, or a number
+ * or a length as `$offset`, to keep the bar off the guide.
  * @example
  * <Nav aria-label="Main" bar={<NavLinkBar $offset="halfway" />}>
  *   <NavLink href="/" currentUrl="/">Home</NavLink>
@@ -483,7 +576,22 @@ function isGuideBar(variants: VariantProps<typeof navLinkBar>) {
 export function NavLinkBar(props: NavLinkBarProps) {
   const [variantProps, rest] = splitProps(props, navLinkBar);
   const parts = React.useContext(NavLinkPartsContext);
-  if (parts?.guided && isGuideBar(variantProps)) {
+  const onGuide = !!parts?.guided && isGuideBar(variantProps);
+  const barTravel = React.useContext(NavBarTravelContext);
+  const plainBarRef = React.useRef<HTMLElement>(null);
+  // The navigation measures a bar on the guide to set its range, and travels
+  // between the other bars.
+  const ref = useMergeRefs(onGuide ? parts?.barRef : plainBarRef, rest.ref);
+  const current = !onGuide && !!parts?.current;
+
+  // The bar of the last current link travels to this bar.
+  useSafeLayoutEffect(() => {
+    if (!barTravel) return;
+    if (!current) return;
+    return barTravel.addCurrent(plainBarRef);
+  }, [barTravel, current]);
+
+  if (parts && onGuide) {
     const { $width, className, style } = variantProps;
     return (
       <ak.Role.span
@@ -492,15 +600,22 @@ export function NavLinkBar(props: NavLinkBarProps) {
         {...navLinkGuideBar.jsx({
           $width,
           $radius: parts.radius,
+          $glide: parts.glide,
           className,
           style,
         })}
         {...rest}
+        ref={ref}
       />
     );
   }
   return (
-    <ak.Role.span aria-hidden {...navLinkBar.jsx(variantProps)} {...rest} />
+    <ak.Role.span
+      aria-hidden
+      {...navLinkBar.jsx(variantProps)}
+      {...rest}
+      ref={ref}
+    />
   );
 }
 
@@ -579,9 +694,30 @@ export function NavLink({
   const inItem = React.useContext(NavItemContext);
   const guideValue = guide ?? piecesContext.guide;
   const radius = getRenderProps<NavLinkGuideProps>(guideValue)?.$radius;
+  const id = React.useId();
+  const linkRef = React.useRef<HTMLAnchorElement>(null);
+  const barRef = React.useRef<HTMLElement>(null);
+  const markerRef = React.useRef<HTMLElement>(null);
+  const ref = useMergeRefs(linkRef, rest.ref);
+  // Only a link on the guide has pieces for the navigation to measure.
+  const guideBar = pieces && guided ? piecesContext.guideBar : undefined;
+  const glide = !!guideBar;
+  const isCurrent = isCurrentPage(currentUrl, rest.href);
+  // An `aria-current` from the caller replaces the computed one. The link is
+  // current as the ui-selected variant reads the attribute: any value except an
+  // empty one and "false". The prop type doesn't list the empty value, but
+  // spread props can pass it, so the value is unknown here.
+  const ariaCurrent: unknown = Object.hasOwn(rest, "aria-current")
+    ? rest["aria-current"]
+    : isCurrent;
+  const current =
+    ariaCurrent != null &&
+    ariaCurrent !== false &&
+    ariaCurrent !== "" &&
+    ariaCurrent !== "false";
   const parts = React.useMemo<NavLinkPartsContextValue>(
-    () => ({ guided, radius }),
-    [guided, radius],
+    () => ({ guided, radius, glide, current, barRef, markerRef }),
+    [guided, radius, glide, current],
   );
   const defaultBar = React.useContext(NavBarContext);
   const barValue = bar ?? defaultBar;
@@ -599,11 +735,14 @@ export function NavLink({
       {createRender(NavLinkMarker, marker ?? piecesContext.marker)}
     </NavLinkPartsContext.Provider>
   ) : (
-    barElement
+    barElement && (
+      <NavLinkPartsContext.Provider value={parts}>
+        {barElement}
+      </NavLinkPartsContext.Provider>
+    )
   );
   const children =
     rest.children ?? (text == null ? undefined : <NavLinkLabel text={text} />);
-  const isCurrent = isCurrentPage(currentUrl, rest.href);
   const disclosures = React.useContext(NavDisclosureContext);
   const { descriptionId, context } = useDescriptionRegistry();
   // A caller description replaces the automatic one, so the description text
@@ -617,6 +756,22 @@ export function NavLink({
     }
   }, [isCurrent, disclosures]);
 
+  useSafeLayoutEffect(() => {
+    if (!guideBar) return;
+    return guideBar.register(id, {
+      link: linkRef,
+      bar: barRef,
+      marker: markerRef,
+    });
+  }, [guideBar, id]);
+
+  // The bar on the guide covers the current link.
+  useSafeLayoutEffect(() => {
+    if (!guideBar) return;
+    if (!current) return;
+    return guideBar.addCurrent(id);
+  }, [guideBar, id, current]);
+
   const link = (
     <DescriptionContext.Provider value={describes ? context : null}>
       <ak.Role.a
@@ -628,6 +783,7 @@ export function NavLink({
           ...variantProps,
         })}
         {...rest}
+        ref={ref}
         // An explicit undefined from the caller must not drop the description.
         aria-describedby={rest["aria-describedby"] ?? descriptionId}
       >
