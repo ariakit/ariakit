@@ -63,6 +63,9 @@ export default function Example() {
             <ListDisclosureButton
               icon={<MessageSquareIcon />}
               description="2 days ago"
+              // The label is a sentence like the other rows, not a title, so
+              // only the name is emphasized.
+              className="font-normal"
             >
               <span className="font-medium">tobias</span> commented
             </ListDisclosureButton>
