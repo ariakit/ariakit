@@ -1,3 +1,4 @@
+import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
 import {
   RadioCard,
   RadioCardLabel,
@@ -31,6 +32,7 @@ export default function Example() {
             <RadioCardLabel>{label}</RadioCardLabel>
           </RadioCard>
         ))}
+        <Glider />
       </RadioGroup>
     </div>
   );

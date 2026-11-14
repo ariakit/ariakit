@@ -1,4 +1,5 @@
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
+import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
 import {
   RadioCard,
   RadioCardLabel,
@@ -24,6 +25,7 @@ export default function Example() {
           <Badge $layer="success">Save 20%</Badge>
         </RadioCardSlot>
       </RadioCard>
+      <Glider />
     </RadioGroup>
   );
 }

@@ -1,3 +1,4 @@
+import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
 import {
   Tab,
   TabList,
@@ -17,6 +18,7 @@ export default function Example() {
         <Tab id="project-members" separator>
           Members
         </Tab>
+        <Glider />
       </TabList>
       <TabPanels>
         <TabPanel tabId="project-overview">
