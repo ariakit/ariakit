@@ -15,6 +15,7 @@ const restingTocs = {
     "numbered-steps": "Numbered steps",
     "numbered-steps-diagonal": "Numbered steps, diagonal",
     "numbered-steps-rail": "Numbered steps, rail",
+    "numbered-steps-gradient": "Numbered steps on a gradient",
     "numbered-steps-indent-only": "Numbered steps, indent only",
     "chapters-indent-only": "Chapters, indent only",
     "right-to-left-numbered-steps": "Right to left, numbered steps",
@@ -24,6 +25,7 @@ const restingTocs = {
     "dot-steps-diagonal": "Dot steps, diagonal",
     "dot-steps-rail": "Dot steps, rail",
     "dot-steps-wide-bar": "Dot steps, wide bar",
+    "dot-steps-gradient": "Dot steps on a gradient",
     "right-to-left-dot-steps": "Right to left, dot steps",
   },
 };
