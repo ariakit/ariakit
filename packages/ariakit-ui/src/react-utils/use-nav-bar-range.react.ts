@@ -157,8 +157,8 @@ export function useNavBarRange({
         // A piece ends this far from the row edges, so the bar covers the line
         // along the links in the range and the bends between them.
         const joint = linkRect.bottom - barRect.bottom;
-        // The bar stops at a marker. The halo of a dot is shorter than its row,
-        // so a bar that ran to the row edge would show past the halo.
+        // The bar stops at a marker. The gap around a dot is shorter than its
+        // row, so a bar that ran to the row edge would show past the gap.
         const row = markerRow ?? {
           top: getOffset(linkRect.top + joint),
           bottom: getOffset(barRect.bottom),

@@ -106,8 +106,8 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         colorScheme,
         item: `${id}/ringed-chapters-lit`,
       });
-      // The ring takes the width of a bar wider than the marker halo, which
-      // widens the halo to keep the ring off the number.
+      // The ring takes the width of a bar wider than the marker gap, which
+      // widens the gap to keep the ring off the number.
       const wide = q.navigation("Wide bar chapters");
       await test
         .expect(query(wide).link("Chapter 10"))

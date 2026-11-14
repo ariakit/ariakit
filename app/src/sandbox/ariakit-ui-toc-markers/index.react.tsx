@@ -61,6 +61,9 @@ const dotSteps: Entry[] = [
   { slug: "dot-faq", text: "FAQ" },
 ];
 
+// A surface that is not one flat color, behind a table of contents.
+const gradientClass = "bg-linear-to-b from-sky-500/40 to-rose-500/40";
+
 // Two-digit numbers fill the markers of an ordered table of contents.
 const chapters: Entry[] = Array.from({ length: 12 }, (_, index) => ({
   slug: `chapter-${index + 1}`,
@@ -177,6 +180,18 @@ export default function Example() {
           entries={dotSteps}
           $barWidth={3}
         />
+        {/* The guide and the bar stop before each marker, so a surface that
+            is not one flat color shows there. Only a number has a thin
+            outline in the color of the surface around the rows. */}
+        <Frame $layer $rounded="xl" $p={3} className={gradientClass}>
+          <Contents
+            label="Numbered steps on a gradient"
+            entries={numberedSteps}
+          />
+        </Frame>
+        <Frame $layer $rounded="xl" $p={3} className={gradientClass}>
+          <Contents label="Dot steps on a gradient" entries={dotSteps} />
+        </Frame>
         <div dir="rtl" className="flex flex-wrap items-start gap-6">
           <Contents
             label="Right to left, numbered steps"

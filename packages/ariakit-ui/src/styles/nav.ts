@@ -42,8 +42,8 @@ const navBarSizeClass = cx(
   "[--nav-bar-size:round(calc(var(--bar-width,2px)*(1+0.2*var(--contrast,0)/100)),1px)]",
 );
 
-// The gutter of a list with numbers, which holds half a number and its halo
-// after the guide offset.
+// The gutter of a list with numbers, which holds half a number and the gap
+// around it after the guide offset.
 const navNumbersGutterClass = cx(
   "[--nav-guide-offset:--spacing(2)]",
   "[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
@@ -92,21 +92,28 @@ export const nav = cv({
     // guide. A list in a link row keeps the automatic indent of a list.
     "[--nav-indent:var(--list-indent,--spacing(3))]",
     navBarSizeClass,
-    // The halo of a marker cuts the guide around it. A ring around a marker
-    // draws inside the halo with the width of the bar, so a wider bar widens
-    // the halo to keep the ring off the number.
-    "[--nav-marker-halo:max(--spacing(1),var(--nav-bar-size))]",
+    // The guide and the bar stop this far from a marker, so the surface around
+    // the navigation shows between them, whatever it paints. A ring around a
+    // marker draws in this gap with the width of the bar, so a wider bar widens
+    // the gap to keep the ring off the number.
+    "[--nav-marker-gap:max(--spacing(1),var(--nav-bar-size))]",
     // How far a number reaches from the guide: half a counter chip of a list,
-    // and the halo. These stay unregistered, so they resolve in the font of
+    // and the gap. These stay unregistered, so they resolve in the font of
     // each element that reads them.
     "[--nav-number-size:calc(var(--list-marker-box,1.75em)-0.4em)]",
-    "[--nav-number-reach:calc(var(--nav-number-size)/2+var(--nav-marker-halo))]",
+    "[--nav-number-reach:calc(var(--nav-number-size)/2+var(--nav-marker-gap))]",
+    // How far the gap around a marker passes the first line of its link, above
+    // and below it. A dot of the default size stays inside the line. A number
+    // is taller than half a line, and a navigation has numbers when it is
+    // ordered or when one of its lists is. The guide pieces read this length.
+    "[--nav-marker-overreach:max(0px,var(--list-bullet-size)/2+var(--nav-marker-gap)-0.5lh)]",
+    "[.nav-numbers,:has(.nav-list-numbers)]:[--nav-marker-overreach:max(0px,max(var(--nav-number-reach),var(--list-bullet-size)/2+var(--nav-marker-gap))-0.5lh)]",
     // Colors resolve against this element, so pieces inside a current link
     // keep the colors of the surface around the rows.
     "[--nav-guide-color:var(--ak-edge)]",
-    "[--nav-halo-color:var(--ak-layer)]",
+    "[--nav-surface-color:var(--ak-layer)]",
     "forced-colors:[--nav-guide-color:GrayText]",
-    "forced-colors:[--nav-halo-color:Canvas]",
+    "forced-colors:[--nav-surface-color:Canvas]",
     // A bar on the guide takes the text color at full strength.
     "[--nav-bar-color:oklch(from_var(--ak-text)_l_c_h/1)]",
     "forced-colors:[--nav-bar-color:CanvasText]",
@@ -282,11 +289,12 @@ export const nav = cv({
       return;
     }
     // The guide and the markers sit in a gutter before the top-level rows.
-    // Number markers need a wider gutter to stay inside the navigation. Their
-    // halo cuts into the surface and the focus ring of a row, which keeps the
-    // rows at the same distance from the markers with and without a guide.
+    // Number markers need a wider gutter to stay inside the navigation. A
+    // number overlaps the start of its row, which keeps the rows at the same
+    // distance from the markers with and without a guide. The class tells the
+    // navigation that its links have numbers.
     if (numbered) {
-      addClass(navNumbersGutterClass);
+      addClass(["nav-numbers", navNumbersGutterClass]);
       return;
     }
     addClass([
@@ -356,7 +364,7 @@ export const navList = cv({
      * so only the rows of this list show one, and a list inside it sets its
      * own. `counter` numbers the rows, and the `ordered` prop of the style
      * component also sets it and renders an ordered list. The rows stay in
-     * place, so the halo of a number cuts into the surface of a current row.
+     * place, so a number overlaps the start of the surface of a current row.
      * Without a guide, a nested list also makes room for its numbers. `bullet`
      * draws a dot, which needs a guide. Defaults to `none`, which shows no
      * marker in a nested list and keeps the marker of the navigation in the
@@ -944,8 +952,10 @@ export const navLinkPiece = cv({
     // A bend runs from the end of the previous line, through the gap between
     // the rows, to the start of this one. All rows take the row padding that
     // the navigation resolves, so the pieces join when a link sets its own
-    // padding.
-    "[--nav-guide-joint:var(--nav-py)]",
+    // padding. The gap around a marker must stay inside the piece of its own
+    // link, so the joint moves toward the row edge by how far that gap passes
+    // the first line. All pieces of a navigation move it by the same length.
+    "[--nav-guide-joint:max(0px,var(--nav-py)-var(--nav-marker-overreach,0px))]",
     "[--guide-bend-height:calc(var(--list-gap,0px)+var(--nav-guide-joint)*2)]",
     // The rail keeps the guide of the outermost list at every level.
     "[--nav-guide-x:calc(-1*var(--nav-guide-offset,0px)-(1-var(--nav-guide-bends,1))*var(--nav-depth,0)*var(--nav-indent))]",
@@ -953,6 +963,26 @@ export const navLinkPiece = cv({
     "bottom-(--nav-guide-joint)",
     "inset-s-[calc(var(--nav-guide-x)-var(--guide-width)/2-var(--guide-in)*var(--nav-indent))]",
     "w-[calc(var(--guide-span)+var(--guide-width))]",
+    // A piece stops one gap before the marker of its link and starts again
+    // one gap after it, so nothing paints around a marker to hide the piece.
+    // A link without a marker keeps the whole piece.
+    "[--nav-marker-cut:0px]",
+    "ui-list-counter:[--nav-marker-cut:var(--nav-number-reach)]",
+    "ui-list-bullet:[--nav-marker-cut:calc(var(--list-bullet-size)/2+var(--nav-marker-gap))]",
+    // The center of the marker in the piece. It is on the line along the row,
+    // which is at the end column after a bend in and at the start column
+    // otherwise, and on the first line of the link. Mask positions are
+    // physical, so right to left text swaps the columns.
+    "[--nav-hole-x:calc((var(--guide-in)*var(--guide-dir)+(1-var(--guide-dir))/2)*var(--guide-span)+var(--guide-width)/2)]",
+    "[--nav-hole-y:calc(var(--py,0px)+0.5lh-var(--nav-guide-joint)+(1-var(--nav-guide-first))*var(--guide-bend-height))]",
+    // A mask cuts the hole, because a bend can end inside it. The mask is 2em
+    // larger than the piece on each side, so it keeps a line that draws
+    // outside the box, such as a slanted bend.
+    "[--nav-hole:radial-gradient(circle_at_calc(var(--nav-hole-x)+2em)_calc(var(--nav-hole-y)+2em),#0000_var(--nav-marker-cut),#000_0)]",
+    "ui-list-counter:mask-(--nav-hole)",
+    "ui-list-bullet:mask-(--nav-hole)",
+    "mask-[-2em_-2em] mask-size-[calc(100%+4em)_calc(100%+4em)]",
+    "mask-no-repeat mask-no-clip",
   ],
   defaultVariants: {
     // A piece takes its color from the navigation, which also sets system
@@ -973,10 +1003,16 @@ export const navLinkGuide = cv({
   class: [
     "nav-link-guide",
     "[--guide-width:var(--nav-guide-width,1px)]",
-    // Fade out after the last row.
+    // Fade out after the last row. The fade is a second mask layer over the
+    // hole around the marker, in the box of the piece. The piece shows only
+    // where both layers do.
     "[--nav-guide-end:0]",
     "[li:last-child:not(:has(>.nav-list))>*>&]:[--nav-guide-end:1]",
-    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-[linear-gradient(to_bottom,#000_calc(100%-var(--nav-guide-tail,0)*var(--nav-guide-end)*(--spacing(2))),transparent)]",
+    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-[linear-gradient(to_bottom,#000_calc(100%-var(--nav-guide-tail,0)*var(--nav-guide-end)*(--spacing(2))),transparent),var(--nav-hole)]",
+    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-position-[0_0,-2em_-2em]",
+    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-size-[100%_100%,calc(100%+4em)_calc(100%+4em)]",
+    "[li:last-child:not(:has(>.nav-list))>*>&]:[mask-clip:border-box,no-clip]",
+    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-intersect",
   ],
   defaultVariants: {
     // An edge color resolves on the piece, against the surface around it.
@@ -1023,10 +1059,10 @@ export const navLinkGuideBar = cv({
     // Where the line along the row starts in the piece, after the bend from
     // the previous row.
     "[--nav-bar-row:calc((1-var(--nav-guide-first))*var(--guide-bend-height))]",
-    // A bar stops at the marker of its link. The halo of a dot is shorter than
-    // its row, so a bar that ran to the row edge would show past the halo. The
-    // marker centers on the first line after the padding of its link, which
-    // can differ from the joint of the guide.
+    // A bar stops at the marker of its link. The gap around a dot is shorter
+    // than its row, so a bar that ran to the row edge would show past the gap.
+    // The marker centers on the first line after the padding of its link,
+    // which can differ from the joint of the guide.
     "[--nav-bar-marker-shift:calc(var(--py,0px)-var(--nav-guide-joint))]",
     "ui-list-counter:[--nav-bar-marker-top:calc(var(--nav-bar-marker-shift)+0.5lh-var(--nav-number-size)/2)]",
     "ui-list-counter:[--nav-bar-marker-bottom:calc(var(--nav-bar-marker-shift)+0.5lh+var(--nav-number-size)/2)]",
@@ -1083,10 +1119,10 @@ export const navLinkGuideBar = cv({
  * list flags of the navigation and of each `navList` pick a number or a dot,
  * `$markerSize` on the navigation sets the size of the numbers, and
  * `$bulletSize` sets the size of the dots. Unlike in a list row, it sits on the
- * guide before the link, and a halo in the surface color cuts the guide around
- * it. A dot needs a guide. With `$markerHighlight` on the navigation, the
- * marker fills with the bar color where a bar on the guide passes, or a ring in
- * the halo lights up.
+ * guide before the link, and the guide and the bar stop one gap before it. A
+ * dot needs a guide. With `$markerHighlight` on the navigation, the marker
+ * fills with the bar color where a bar on the guide passes, or a ring in the
+ * gap lights up.
  */
 export const navLinkMarker = cv({
   extend: [listItemMarker],
@@ -1107,10 +1143,6 @@ export const navLinkMarker = cv({
     // A dot takes the color of the guide, also in forced colors. The link
     // selector outranks the edge color of a list marker.
     "[.nav-link>&]:ui-list-bullet:[--ak-edge:var(--nav-guide-color)]",
-    // A shadow halo, unlike the outline halo of a list marker, paints under a
-    // ring that the highlight draws around the marker.
-    "[--list-guide-gap:0px]",
-    "shadow-[0_0_0_var(--nav-marker-halo)_var(--nav-halo-color)]",
     // The size of the marker as a length, which the clip of the fill needs.
     "[--nav-marker-size:var(--list-marker-size)]",
     "ui-list-bullet:[--nav-marker-size:var(--list-bullet-size)]",
@@ -1131,20 +1163,20 @@ export const navLinkMarker = cv({
     // to zero on a marker that a measured range leaves, which empties it at
     // once, and on the first range.
     "[--nav-fill-clip:inset(min(var(--nav-marker-size)+1px,max(-1px,var(--nav-bar-start)-var(--nav-bar-top,0px)))_-1px_min(var(--nav-marker-size)+1px,max(-1px,var(--nav-bar-top,0px)+var(--nav-marker-size)-var(--nav-bar-end)))_-1px)]",
-    // The ring is clipped to the range widened by the halo, so a marker is
+    // The ring is clipped to the range widened by the gap, so a marker is
     // either lit or not while the bar is still. An empty range, with no link
     // to cover, doesn't widen.
-    "[--nav-ring-reach:min(var(--nav-marker-halo),max(0px,(var(--nav-bar-end)-var(--nav-bar-start))*1000))]",
+    "[--nav-ring-reach:min(var(--nav-marker-gap),max(0px,(var(--nav-bar-end)-var(--nav-bar-start))*1000))]",
     // The range doesn't inherit, so the ring takes it from the marker.
     "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-bar-start:inherit]",
     "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-bar-end:inherit]",
     "[.nav-marker-ring_&]:ui-list-guide:after:absolute",
-    "[.nav-marker-ring_&]:ui-list-guide:after:-inset-(--nav-marker-halo)",
+    "[.nav-marker-ring_&]:ui-list-guide:after:-inset-(--nav-marker-gap)",
     "[.nav-marker-ring_&]:ui-list-guide:after:rounded-full",
     "[.nav-marker-ring_&]:ui-list-guide:after:border-solid",
     "[.nav-marker-ring_&]:ui-list-guide:after:border-(length:--nav-bar-size)",
     "[.nav-marker-ring_&]:ui-list-guide:after:border-(--nav-bar-color)",
-    "[.nav-marker-ring_&]:ui-list-guide:after:[clip-path:inset(max(-2px,var(--nav-bar-start)-var(--nav-bar-top,0px)+var(--nav-marker-halo)-var(--nav-ring-reach))_-2px_max(-2px,var(--nav-bar-top,0px)+100%-var(--nav-bar-end)-var(--nav-marker-halo)-var(--nav-ring-reach))_-2px)]",
+    "[.nav-marker-ring_&]:ui-list-guide:after:[clip-path:inset(max(-2px,var(--nav-bar-start)-var(--nav-bar-top,0px)+var(--nav-marker-gap)-var(--nav-ring-reach))_-2px_max(-2px,var(--nav-bar-top,0px)+100%-var(--nav-bar-end)-var(--nav-marker-gap)-var(--nav-ring-reach))_-2px)]",
     // The fill shows only where the bar covers the marker. On a number, it
     // repeats the number in the surface color, so the number flips along with
     // the surface.
@@ -1154,7 +1186,7 @@ export const navLinkMarker = cv({
     "[.nav-marker-fill_&]:ui-list-guide:after:place-items-center",
     "[.nav-marker-fill_&]:ui-list-guide:after:rounded-full",
     "[.nav-marker-fill_&]:ui-list-guide:after:bg-(--nav-bar-color)",
-    "[.nav-marker-fill_&]:ui-list-guide:after:text-(--nav-halo-color)",
+    "[.nav-marker-fill_&]:ui-list-guide:after:text-(--nav-surface-color)",
     "[.nav-marker-fill_&]:ui-list-guide:ui-list-counter:after:content-[counter(list-item)]",
     "[.nav-marker-fill_&]:ui-list-guide:after:font-semibold",
     "[.nav-marker-fill_&]:ui-list-guide:after:leading-(--nav-marker-size)",
