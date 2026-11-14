@@ -78,7 +78,7 @@
     "react-dom": "19.3.1",
     "rimraf": "6.1.4",
     "rolldown-plugin-react-forward-ref": "0.2.1",
-    "solid-js": "1.9.18",
+    "solid-js": "1.9.19",
     "tsup": "9.0.0",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
