@@ -679,7 +679,7 @@ export default function ListExamples() {
 
       <Example
         title="Branch between checks"
-        description="A branch leaves a row with a check and joins the guide again at the next row with a check. A check is larger than a bullet, so the bend into the branch and the bend out of it stop one gap away from each check."
+        description="A branch leaves a row with a check and joins the guide again at the next row with a check. A check is larger than a bullet, so the bend into the branch and the bend out of it stop one gap away from each check. The last row is a link in its own list item, and the bend before it also stops one gap away."
         stretch
         code={`
           <List $guide>
@@ -690,7 +690,17 @@ export default function ListExamples() {
                 <ListItem>Tag the commit</ListItem>
               </List>
             </ListItem>
-            <ListItem checked={false}>Publish the packages</ListItem>
+            <ListItem checked={false}>
+              Publish the packages
+              <List $branch>
+                <ListItem>Build the packages</ListItem>
+              </List>
+            </ListItem>
+            <li>
+              <ListItem checked={false} render={<Button render={<a href="#announce" />} $p="var(--list-item-padding)" $rounded="xl" $lightnessOffset={false} />}>
+                Announce the release
+              </ListItem>
+            </li>
           </List>
         `}
       >
@@ -702,7 +712,28 @@ export default function ListExamples() {
               <ListItem>Tag the commit</ListItem>
             </List>
           </ListItem>
-          <ListItem checked={false}>Publish the packages</ListItem>
+          <ListItem checked={false}>
+            Publish the packages
+            <List $branch>
+              <ListItem>Build the packages</ListItem>
+            </List>
+          </ListItem>
+          <li>
+            <ListItem
+              checked={false}
+              render={
+                <Button
+                  render={<a href="#announce" />}
+                  $p="var(--list-item-padding)"
+                  $rounded="xl"
+                  $lightnessOffset={false}
+                  className={linkRowClassName}
+                />
+              }
+            >
+              Announce the release
+            </ListItem>
+          </li>
         </List>
       </Example>
 

@@ -418,9 +418,10 @@ const listRow = cv({
     "[--list-row-marker-cut:calc((var(--list-row-marker-reach)+var(--list-guide-gap,0px))*var(--list-row-marker-on,1))]",
     // The same distance for the marker of the next row, where a branch list in
     // this row returns to the guide. The next row can have a check when this
-    // row has none. That row is a list item, or a disclosure in a list item.
+    // row has none. That row is a list item, or a link or a disclosure in a
+    // list item.
     "[--list-row-next-marker-cut:calc(var(--list-row-plain-reach)+var(--list-guide-gap,0px))]",
-    "has-[+li.list-item-check,+li>.list-row>.list-item-check]:[--list-row-next-marker-cut:calc(var(--list-row-check-reach)+var(--list-guide-gap,0px))]",
+    "has-[+li.list-item-check,+li>.list-item-check,+li>.list-row>.list-item-check]:[--list-row-next-marker-cut:calc(var(--list-row-check-reach)+var(--list-guide-gap,0px))]",
     // The text starts one marker gap after the marker, so it starts after the
     // marker box by that gap, less the space that the marker leaves in the
     // box. A nested list reads this length to find the text of its row.
