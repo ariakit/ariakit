@@ -1,4 +1,5 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
 import {
   TabList,
   TabPanel,
@@ -22,7 +23,9 @@ export default function Example() {
           tabs={Object.fromEntries(
             ranges.map((range) => [range.id, range.label]),
           )}
-        />
+        >
+          <Glider />
+        </TabList>
         {ranges.map((range) => (
           <TabPanel key={range.id} tabId={range.id}>
             <dl className="grid grid-cols-2 gap-3">

@@ -1,4 +1,5 @@
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
 import { Nav } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   SkeletonBox,
@@ -45,6 +46,7 @@ function Feed() {
               text={label}
             />
           ))}
+          <Glider />
         </Nav>
       </Frame>
       <Frame

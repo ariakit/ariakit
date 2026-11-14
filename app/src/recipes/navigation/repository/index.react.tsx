@@ -1,5 +1,6 @@
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
 import {
   Nav,
   NavLinkLabel,
@@ -84,6 +85,9 @@ function Repository() {
               )}
             </RouterNavLink>
           ))}
+          {/* The current tab has no surface of its own, so the glider moves
+              only the hover surface between the tabs. */}
+          <Glider $hover />
         </Nav>
       </Frame>
       <Frame
