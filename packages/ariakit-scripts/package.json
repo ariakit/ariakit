@@ -17,7 +17,7 @@
     "rolldown-plugin-dts": "0.30.1",
     "ts-morph": "28.0.0",
     "typescript": "npm:@typescript/typescript6@6.0.2",
-    "vite-plugin-solid": "2.11.15"
+    "vite-plugin-solid": "2.11.16"
   },
   "devDependencies": {
     "@playwright/test": "1.65.0",
