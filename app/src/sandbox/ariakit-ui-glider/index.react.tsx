@@ -8,6 +8,10 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
+import {
+  Button,
+  ButtonLabel,
+} from "@ariakit/ui/components/button.ariakit.react";
 import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
 import type { GliderProps } from "@ariakit/ui/components/glider.ariakit.react";
 import { Nav, NavLink } from "@ariakit/ui/components/nav.ariakit.react";
@@ -103,6 +107,10 @@ interface SegmentsProps extends Omit<RadioGroupProps, "label"> {
   /** Draws the icons with use and a symbol of an SVG sprite. */
   sprite?: boolean;
   badge?: boolean;
+  /** A separator before each item after the first. */
+  separator?: boolean;
+  /** A count in a badge on Board. */
+  count?: number;
   /** The props of the glider. Without them, the group has no glider. */
   glider?: GliderProps;
 }
@@ -114,6 +122,8 @@ function Segments({
   icons,
   sprite,
   badge,
+  separator,
+  count,
   glider,
   ...props
 }: SegmentsProps) {
@@ -129,6 +139,7 @@ function Segments({
           key={label}
           value={label}
           $kind="segmented"
+          separator={separator && index > 0}
           {...item}
           {...items?.[index]}
         >
@@ -145,6 +156,11 @@ function Segments({
               </Badge>
             </RadioCardSlot>
           )}
+          {count != null && label === "Board" && (
+            <RadioCardSlot $kind="box">
+              <Badge $rounded="md">{count}</Badge>
+            </RadioCardSlot>
+          )}
         </RadioCard>
       ))}
       {glider && <Glider {...glider} />}
@@ -155,6 +171,44 @@ function Segments({
 interface GliderExampleProps {
   name: string;
   glider: GliderProps;
+}
+
+// A count that changes while the box can travel, like a count of new items.
+function CountSegments({ name, glider }: GliderExampleProps) {
+  const [count, setCount] = useState(0);
+  return (
+    <div className="flex flex-col items-start gap-3">
+      <Segments name={name} count={count} glider={glider} />
+      <Button onClick={() => setCount((value) => value + 1)}>
+        <ButtonLabel>Add a card</ButtonLabel>
+      </Button>
+    </div>
+  );
+}
+
+// Buttons outside the group change the selection, like a keyboard shortcut or a
+// route. The pointer and the focus stay away from the items.
+function SeparatorSegments({ name, glider }: GliderExampleProps) {
+  const [value, setValue] = useState<string | number | null>("List");
+  return (
+    <div className="flex flex-col items-start gap-3">
+      <Segments
+        name={name}
+        value={value}
+        setValue={setValue}
+        separator
+        glider={glider}
+      />
+      <div className="flex gap-2">
+        <Button onClick={() => setValue("Board")}>
+          <ButtonLabel>Show the board</ButtonLabel>
+        </Button>
+        <Button onClick={() => setValue("Calendar")}>
+          <ButtonLabel>Show the calendar</ButtonLabel>
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 function SegmentedTabs({ name, glider }: GliderExampleProps) {
@@ -655,6 +709,22 @@ export default function GliderExamples() {
             items={twoWidths}
             glider={glider}
           />
+        </Example>
+
+        <Example
+          title="Separators"
+          description="Set the travel time to slow, then press Show the calendar. The separator beside Calendar fades with the travel of the box, so it is gone when the box arrives. Then press Show the board. The separator between Board and Calendar stays hidden. A hover or a focus on an item hides the separator beside it in its own time."
+          code={`<RadioCard separator /><Glider />`}
+        >
+          <SeparatorSegments name="Separators" glider={glider} />
+        </Example>
+
+        <Example
+          title="A count that changes"
+          description="Set the travel time to very slow, select Calendar, then add a card before the box stops. The copy of Board in the box shows the new count."
+          code={`<RadioCard>Board <Badge>{count}</Badge></RadioCard>`}
+        >
+          <CountSegments name="A count that changes" glider={glider} />
         </Example>
 
         <Example

@@ -2402,8 +2402,8 @@ body > * {
    consistent across selected variants. data-selected="true" marks an element
    that looks selected but has no selectable role, such as the title of a code
    block, which looks like a selected tab. data-selected="false" marks an
-   element that looks unselected whatever its state, such as the item that a
-   glider box travels to. That check adds no specificity. */
+   element that looks unselected whatever its state, such as a selected item
+   that a glider reads in its idle state. That check adds no specificity. */
 @custom-variant ui-selected {
   &:is(
       :checked,

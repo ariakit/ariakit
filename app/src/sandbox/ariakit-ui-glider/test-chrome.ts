@@ -63,4 +63,32 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       )
       .toBe(true);
   });
+
+  test("shows a new count in the copies while the box travels", async ({
+    q,
+  }) => {
+    // The very slow travel time keeps the copies in the box long enough to add
+    // a card.
+    await q.combobox(/^Travel time/).selectOption({ label: "Very slow (3s)" });
+    const article = q.article("A count that changes");
+    const box = query(article);
+    const calendar = box.radio("Calendar");
+    await calendar.click();
+    const control = calendar.locator(
+      "xpath=ancestor-or-self::*[contains(concat(' ', @class, ' '), ' control ')][1]",
+    );
+    await test.expect(control).toHaveAttribute("data-glider-masked");
+    await box.button("Add a card").click();
+    // The copies are presentation with aria-hidden, so this probe reads them
+    // from the DOM. The box travels over Board, so Board has a copy in it.
+    await test.expect
+      .poll(() =>
+        article.evaluate((node) => {
+          const copies = Array.from(node.querySelectorAll(".glider-copy"));
+          const texts = copies.map((copy) => copy.textContent?.trim());
+          return texts.find((text) => text?.startsWith("Board")) ?? null;
+        }),
+      )
+      .toBe("Board1");
+  });
 });

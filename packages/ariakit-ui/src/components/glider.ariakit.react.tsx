@@ -507,10 +507,10 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     group.style.setProperty(property, String(value));
   }
 
-  // After the travel, the selected item shows its own content again, and the
-  // box goes back behind the items. Nothing changes on the screen.
-  const endTravel = () => {
-    view.clearTimeout(travelTimeout);
+  // Without copies, the selected item shows its own content again, and the box
+  // goes back behind the items. After the travel, nothing changes on the
+  // screen.
+  const removeCopies = () => {
     selectedTrack.element.removeAttribute("data-traveling");
     selectedLayer.replaceChildren();
     idleLayer.replaceChildren();
@@ -520,15 +520,16 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     dropOwnMutations();
   };
 
+  const endTravel = () => {
+    view.clearTimeout(travelTimeout);
+    removeCopies();
+  };
+
   // While the selected box travels, it covers the items under it, and its
   // window shows a copy of those items in the selected state. So the content of
   // an item changes state at the edge of the box. The item that the box travels
   // to shows an idle copy of its content until the box arrives.
-  const startTravel = (from: ItemRect, target: HTMLElement, to: ItemRect) => {
-    // The timeout ends a travel that sends no transitionend event, such as one
-    // that a new place for the box interrupts.
-    const duration = getTransitionTime(selectedMover);
-    travelTimeout = view.setTimeout(endTravel, duration + 100);
+  const showCopies = (from: ItemRect, target: HTMLElement, to: ItemRect) => {
     // A box that shows the items behind it can't cover their content, so the
     // items change their own content at once.
     if (!hasOpaqueSurface(selectedTrack.box)) return;
@@ -592,6 +593,14 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     dropOwnMutations();
   };
 
+  const startTravel = (from: ItemRect, target: HTMLElement, to: ItemRect) => {
+    // The timeout ends a travel that sends no transitionend event, such as one
+    // that a new place for the box interrupts.
+    const duration = getTransitionTime(selectedMover);
+    travelTimeout = view.setTimeout(endTravel, duration + 100);
+    showCopies(from, target, to);
+  };
+
   // The elements of nested scopes follow their own gliders.
   const findFollowers = () => {
     const elements = scope.querySelectorAll<HTMLElement>(".glider-follower");
@@ -628,12 +637,21 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       !!previousItem &&
       !!selectedItem &&
       selectedItem !== previousItem;
+    // The items can change while the box travels, such as a count in a badge,
+    // so the copies start again from the place of the box. The travel keeps its
+    // end time.
+    const refreshes =
+      animated &&
+      !!maskedItem &&
+      !!selectedItem &&
+      selectedItem === previousItem;
     if (!animated || selectedItem !== previousItem) {
       endTravel();
     }
     if (selectedItem) {
       // The box can be between two items when the selection changes again.
-      const from = travels ? getRect(group, selectedTrack.box) : null;
+      const from =
+        travels || refreshes ? getRect(group, selectedTrack.box) : null;
       const to = getRect(group, selectedItem);
       const offsets = getInlineOffsets(group, to);
       findFollowers();
@@ -648,8 +666,11 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       // item.
       const { borderRadius } = view.getComputedStyle(selectedItem);
       selectedWindow.style.borderRadius = borderRadius;
-      if (from) {
+      if (from && travels) {
         startTravel(from, selectedItem, to);
+      } else if (from && refreshes) {
+        removeCopies();
+        showCopies(from, selectedItem, to);
       }
       // The focus can reach the item after the travel starts. The copies in the
       // box show the same focus state as the box.
@@ -704,9 +725,13 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     });
   };
 
+  // A text change matters only to the copies, which exist during a travel.
+  const needsSync = (record: MutationRecord) => {
+    if (root.contains(record.target)) return false;
+    return record.type !== "characterData" || !!maskedItem;
+  };
   const mutationObserver = new view.MutationObserver((records) => {
-    const external = records.some((record) => !root.contains(record.target));
-    if (!external) return;
+    if (!records.some(needsSync)) return;
     scheduleSync();
   });
   // The glider changes how items look during a travel. Those changes are not
@@ -716,6 +741,8 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   };
   mutationObserver.observe(group, {
     attributes: true,
+    // The copies show the text of the items, such as a count in a badge.
+    characterData: true,
     childList: true,
     subtree: true,
   });

@@ -139,6 +139,11 @@ export const gliderGroup = cv({
     // copy shows its content in the idle state until the box arrives.
     "[&_.control[data-glider-masked]]:text-transparent!",
     "[&_.control[data-glider-masked]>:not(input)]:opacity-0!",
+    // A separator that hides beside the item that the box travels to fades with
+    // the travel, so it is gone when the box arrives. A transition takes the
+    // timing of the new state, so a hover or focus fade keeps its own timing.
+    "[&_.control-separator]:ui-adjacent-selected:duration-(--glider-duration,200ms)",
+    "[&_.control-separator]:ui-adjacent-selected:ease-[cubic-bezier(0.3,0,0,1)]",
   ],
   variants: {
     /**

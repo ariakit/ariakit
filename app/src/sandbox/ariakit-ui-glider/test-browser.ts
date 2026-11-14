@@ -72,6 +72,62 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(item).toBeChecked();
   });
 
+  test("fades the separators beside an item with the travel of the box", async ({
+    page,
+    q,
+  }) => {
+    // The very slow travel time keeps the box away from the items long enough
+    // to read the separators.
+    await q.combobox(/^Travel time/).selectOption({ label: "Very slow (3s)" });
+    const box = query(q.article("Separators"));
+    const getControl = (item: Locator) =>
+      item.locator(
+        "xpath=ancestor-or-self::*[contains(concat(' ', @class, ' '), ' control ')][1]",
+      );
+    const calendar = getControl(box.radio("Calendar"));
+    const board = getControl(box.radio("Board"));
+    // The separators are presentation, so this probe reads the one before an
+    // item from the DOM.
+    const getOpacity = (control: Locator) =>
+      control.evaluate((node) => {
+        const separator = node.previousElementSibling;
+        if (!separator) return Number.NaN;
+        return Number.parseFloat(getComputedStyle(separator).opacity);
+      });
+    // A separator hides with a 200ms opacity transition when no box travels.
+    const separatorTime = 200;
+
+    // A hover does not move the selected box, so the separator between Grid and
+    // Board hides in its own time.
+    await box.radio("Grid").hover();
+    // The 1s limit is far above the 200ms of the separator and far below the 3s
+    // travel time.
+    await test.expect.poll(() => getOpacity(board), { timeout: 1000 }).toBe(0);
+    await page.mouse.move(0, 0);
+
+    // A hover or a focus on an item hides the separator beside it in its own
+    // time, so buttons outside the group select the items here.
+    await box.button("Show the calendar").click();
+    await test.expect(calendar).toHaveAttribute("data-glider-masked");
+    // Without the travel time, the separator between Board and Calendar would
+    // be gone after its 200ms transition, which no state tracks.
+    await page.waitForTimeout(separatorTime);
+    test.expect(await getOpacity(calendar)).toBeGreaterThan(0);
+    await test.expect(calendar).toHaveAttribute("data-glider-masked");
+    await test.expect(calendar).not.toHaveAttribute("data-glider-masked");
+    await test.expect.poll(() => getOpacity(calendar)).toBe(0);
+
+    // The separator between Board and Calendar is beside the selected item for
+    // the whole travel, so it stays hidden while the box moves across it.
+    await box.button("Show the board").click();
+    await test.expect(board).toHaveAttribute("data-glider-masked");
+    // A separator that wrongly fades in has its 200ms transition to show, which
+    // no state tracks.
+    await page.waitForTimeout(separatorTime);
+    test.expect(await getOpacity(calendar)).toBe(0);
+    await test.expect(board).toHaveAttribute("data-glider-masked");
+  });
+
   test("lets the items paint their own state when it is off", async ({
     page,
     q,
