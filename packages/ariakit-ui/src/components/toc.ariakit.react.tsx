@@ -807,6 +807,9 @@ export function TocItem(props: TocItemProps) {
   );
 }
 
+// The marker of a link takes no props, so its classes resolve once.
+const tocLinkMarkerProps = tocLinkMarker.jsx();
+
 export interface TocLinkProps
   extends ak.RoleProps<"a">, VariantProps<typeof tocLink> {
   /**
@@ -872,20 +875,25 @@ export function TocLink({ item, guide, ...props }: TocLinkProps) {
   }, [registry, id, href]);
 
   // The pieces come last, so slot styles that look at earlier siblings work as
-  // in a nav link.
-  const pieces = (
-    <>
-      {createRender(TocLinkGuide, guideProps)}
-      <span
-        aria-hidden
-        ref={barRef}
-        // The bar covers the guide, so its curves take the same radius.
-        {...tocLinkBar.jsx({
-          $radius: getRenderProps<TocLinkGuideProps>(guideProps)?.$radius,
-        })}
-      />
-      <span aria-hidden ref={markerRef} {...tocLinkMarker.jsx()} />
-    </>
+  // in a nav link. A change of the current link renders every link again, and
+  // the pieces don't depend on it, so they keep the same elements, which React
+  // skips.
+  const pieces = React.useMemo(
+    () => (
+      <>
+        {createRender(TocLinkGuide, guideProps)}
+        <span
+          aria-hidden
+          ref={barRef}
+          // The bar covers the guide, so its curves take the same radius.
+          {...tocLinkBar.jsx({
+            $radius: getRenderProps<TocLinkGuideProps>(guideProps)?.$radius,
+          })}
+        />
+        <span aria-hidden ref={markerRef} {...tocLinkMarkerProps} />
+      </>
+    ),
+    [guideProps],
   );
   const link = (
     <ak.Role.a
