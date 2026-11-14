@@ -276,4 +276,20 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(styling).toHaveAttribute("aria-expanded", "false");
     await test.expect(bar).toHaveCount(0);
   });
+
+  test("moves the bar to the new current link when idle links carry an empty aria-current", async ({
+    page,
+    q,
+  }) => {
+    // The travel time is a custom property. A long one keeps the bar on its way
+    // while the test reads it.
+    await page.addStyleTag({ content: ":root { --glider-duration: 30s; }" });
+    const nav = q.navigation("Empty, false, and unknown current values");
+    const changelog = query(nav).link("Changelog");
+    await changelog.click();
+    await test.expect(changelog).toHaveAttribute("aria-current", "active");
+    // Overview and Themes now carry an empty value, which is not current, so
+    // the bar has one link to travel to.
+    await test.expect(nav).toHaveAttribute("data-bar-traveling");
+  });
 });

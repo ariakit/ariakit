@@ -42,11 +42,6 @@ export interface AppNavigationProps {
    * its links when they need more space.
    */
   fill?: boolean;
-  /**
-   * The view transition name of the current link's bar. A bar that moves across
-   * page loads needs the same name on both pages.
-   */
-  barTransitionName?: string;
 }
 
 /**
@@ -57,12 +52,7 @@ export interface AppNavigationProps {
  * it shows them. The links share the card, which slides from one link to the
  * next.
  */
-export function AppNavigation({
-  groups,
-  links,
-  fill,
-  barTransitionName,
-}: AppNavigationProps) {
+export function AppNavigation({ groups, links, fill }: AppNavigationProps) {
   const currentGroup = groups.find((group) =>
     group.links.some((link) => link.current),
   );
@@ -82,7 +72,6 @@ export function AppNavigation({
       $cover
       $fill={fill}
       bar={{ $offset: "halfway" }}
-      $barTransitionName={barTransitionName}
     >
       {!!links?.length && (
         <NavList>

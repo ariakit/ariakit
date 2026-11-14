@@ -18,9 +18,6 @@
   --spacing: 0.25em;
   --spacing-px: 1px;
 
-  --duration-bar: 250ms;
-  --ease-bar: cubic-bezier(0.2, 0, 0, 1);
-
   --animate-ui-progress: ui-progress 1.5s ease-in-out infinite;
 
   @keyframes ui-progress {
@@ -126,7 +123,9 @@ body > * {
 /* Registration lets a glider box travel: the Glider style component sets the
    place and the size of the box, and the browser animates them as lengths. They
    don't inherit, so an animation frame changes only the element that travels,
-   not the box or the copies of the items inside it. */
+   not the box or the copies of the items inside it. The bar that travels
+   between the links of a navigation takes its place and its size from the same
+   values, which the Nav style component sets on the navigation. */
 @property --glider-x {
   syntax: "<length>";
   inherits: false;
@@ -513,57 +512,6 @@ body > * {
   &:is(:hover, :focus) {
     visibility: visible !important;
     animation-name: none !important;
-  }
-}
-
-/* Before and after the range, the bar is outside the row. Between them, the
-   thin keyframes keep it named. */
-@keyframes ui-nav-bar-clip {
-  from,
-  to {
-    --nav-bar-name: none;
-  }
-  0.01%,
-  99.99% {
-    --nav-bar-name: var(--bar-transition-name, none);
-  }
-}
-
-/**
- * Keeps an old bar that a scrolling row clips out of view transitions. A captured
- * bar paints above the page, where the row can't clip it, so it would fly in from
- * outside the row. A new bar has no timeline progress when the browser captures
- * it, so it keeps its name. The range reaches 1px past a fully visible bar, so a
- * bar flush with the edge of the row stays named. The row sets
- * `--nav-bar-clip-inset` to its padding, because the scroll padding that the
- * view timeline would use also covers the fades and the scroll buttons, which
- * the first and last bars sit under at rest. Without scroll-driven animations,
- * the bar keeps its name.
- */
-@utility ui-nav-bar-clip {
-  @supports (animation-timeline: view()) {
-    animation-name: ui-nav-bar-clip;
-    animation-timing-function: linear;
-    animation-fill-mode: both;
-    animation-timeline: view(inline var(--nav-bar-clip-inset, auto));
-    animation-range: contain -1px contain calc(100% + 1px);
-  }
-}
-
-/* A view transition moves a named bar from its old item to its new one. */
-::view-transition-group(*.bar) {
-  animation-duration: var(--duration-bar);
-  animation-timing-function: var(--ease-bar);
-}
-
-/* Transitions of the `bar` type move only bars. The page stays out of them, so
-   it shows its new state at once. A captured page would also stop taking
-   clicks until the transition ends. */
-:root:active-view-transition-type(bar) {
-  view-transition-name: none;
-  /* The overlay that holds the moving bars lets clicks reach the page. */
-  &::view-transition {
-    pointer-events: none;
   }
 }
 

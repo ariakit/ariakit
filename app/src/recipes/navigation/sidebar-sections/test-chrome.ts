@@ -28,6 +28,32 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(nav.button("Components")).toBeInViewport();
   });
 
+  test("shows the new bar at once when the old one is scrolled out of the section", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 420 });
+    const site = q.navigation("Site");
+    const nav = query(site);
+    const tabs = nav.link("Tabs");
+    const button = nav.link("Button");
+    await tabs.scrollIntoViewIfNeeded();
+    await tabs.click();
+    await test.expect(tabs).toHaveAttribute("aria-current", "page");
+    await test.expect(tabs.locator(".control-bar")).toBeVisible();
+    // The travel time is a custom property. A long one would keep a travel on
+    // its way while the test reads the bars.
+    await page.addStyleTag({ content: ":root { --glider-duration: 30s; }" });
+    // The section scrolls the bar of Tabs out of view. A bar that traveled from
+    // there would fly over the section buttons.
+    await button.scrollIntoViewIfNeeded();
+    await test.expect(tabs).not.toBeInViewport();
+    await button.click();
+    await test.expect(button).toHaveAttribute("aria-current", "page");
+    await test.expect(button.locator(".control-bar")).toBeVisible();
+    await test.expect(site).not.toHaveAttribute("data-bar-traveling");
+  });
+
   test("scrolls the page once the open section reaches its end", async ({
     page,
     q,

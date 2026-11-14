@@ -256,50 +256,6 @@ const drawerNavigation = navigation.map((group) => ({
         );
       })();
     </script>
-    <script is:inline>
-      // Preview frames load and render their pages on the main thread, so a
-      // view transition into the page would drop frames. They stay hidden, so
-      // lazy frames don't load, until the transition ends. Lazy frames start
-      // to load in the first render, which pagereveal comes before.
-      addEventListener(
-        "pagereveal",
-        /** @param {PageRevealEvent} event */
-        (event) => {
-          const transition = event.viewTransition;
-          if (!transition) return;
-          const root = document.documentElement;
-          root.setAttribute("data-preview-frames-held", "");
-          transition.finished.finally(() => {
-            root.removeAttribute("data-preview-frames-held");
-          });
-        },
-        { once: true },
-      );
-    </script>
-    {/* Navigating between site pages moves the navigation bars in a view
-        transition. Examples in the page content name their own bars, which
-        the next page doesn't have, so page loads leave them out. */}
-    <style is:global>
-      @media (prefers-reduced-motion: no-preference) {
-        @view-transition {
-          navigation: auto;
-          types: bar page-load;
-        }
-      }
-      :root:active-view-transition-type(page-load) main .control-bar {
-        view-transition-name: none;
-      }
-      /* The examples in the page content share this document, so a transition
-         in one of them captures the bars of the others. Captured bars paint
-         above the page, even a bar that scrolled behind the top bar, so only
-         the navigation in use takes part. */
-      :root:active-view-transition-type(bar)
-        main
-        .nav:not(:hover, :focus-within)
-        .control-bar {
-        view-transition-name: none;
-      }
-    </style>
   </head>
   <body>
     {/* The outer shell holds the page and a full-height theme panel at the
@@ -388,7 +344,6 @@ const drawerNavigation = navigation.map((group) => ({
               $layout="horizontal"
               aria-label="Main"
               $p="none"
-              $barTransitionName="main-nav-bar"
               buttons={false}
             >
               {
@@ -454,7 +409,6 @@ const drawerNavigation = navigation.map((group) => ({
                   client:load
                   groups={navigation}
                   fill
-                  barTransitionName="site-nav-bar"
                 />
               </ShellSidebarBody>
             </ShellSidebar>
@@ -487,7 +441,6 @@ const drawerNavigation = navigation.map((group) => ({
               client:load
               links={drawerSections}
               groups={drawerNavigation}
-              barTransitionName="drawer-nav-bar"
             />
             <div class="grid gap-6 px-3 pt-6 pb-3">
               <span class="ak-ink-70 text-xs font-medium">Theme</span>

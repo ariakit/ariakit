@@ -139,9 +139,41 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       });
     test.expect(centers.bar).toBeCloseTo(centers.guide, 1);
     await query(nav).link("Theme").click();
+    // The bar glides to the new current link, so it gets there over time.
+    await test.expect
+      .poll(async () => getShown(await getBars(nav)))
+      .toEqual(["Theme"]);
+    await test.expect
+      .poll(async () => {
+        const bar = await getCurrentBar("Theme");
+        return Math.abs(bar.start - bar.lineStart);
+      })
+      .toBeLessThan(0.05);
     const theme = await getCurrentBar("Theme");
     test.expect(theme.start).toBeCloseTo(theme.lineStart, 1);
     test.expect(theme.end).toBeCloseTo(theme.lineEnd, 1);
+  });
+
+  test("glides the bar along the guide to the next current link", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Bar on the guide");
+    await test.expect
+      .poll(async () => getShown(await getBars(nav)))
+      .toEqual(["Guides"]);
+    // A long glide keeps the bar on its way while the test reads it.
+    await page.addStyleTag({
+      content: ".nav-link-guide-bar { transition-duration: 30s !important; }",
+    });
+    await query(nav).link("Deploy").click();
+    // The bar passes the links between the old current link and the new one.
+    await test.expect
+      .poll(async () => {
+        const shown = getShown(await getBars(nav));
+        return shown.some((name) => name !== "Guides" && name !== "Deploy");
+      })
+      .toBe(true);
   });
 
   test("stops the bar at the dot of the current link and fills the dot", async ({
@@ -157,11 +189,12 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           element.closest("nav")?.getBoundingClientRect().top ?? Number.NaN;
         const rect = marker.getBoundingClientRect();
         const fill = getComputedStyle(marker, "::after");
+        const insets = fill.clipPath.match(/-?[\d.]+/g) ?? [];
         return {
           top: rect.top - origin,
           bottom: rect.bottom - origin,
           // The fill shows the whole dot when its clip has no positive inset.
-          clip: fill.clipPath,
+          filled: insets.every((inset) => Number.parseFloat(inset) <= 0),
         };
       });
     };
@@ -171,12 +204,77 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(getShown(bars)).toEqual(["Configure"]);
     test.expect(bar?.start).toBeCloseTo(dot.top, 1);
     test.expect(bar?.end).toBeCloseTo(dot.bottom, 1);
-    test.expect(dot.clip).toBe("inset(-1px)");
+    test.expect(dot.filled).toBe(true);
     await query(nav).link("Install").click();
-    // The fill of the dot that the bar leaves wipes out over a transition.
+    // The dot that the bar leaves loses its fill.
+    await test.expect.poll(async () => (await getDot()).filled).toBe(false);
+    await link.click();
+    // The dot fills again when the bar comes back to it.
+    await test.expect.poll(async () => (await getDot()).filled).toBe(true);
+  });
+
+  test("keeps the dot of the new current link empty until the bar reaches it", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Bar and dots");
+    const link = query(nav).link("Configure");
+    // The height of the part of the dot that its fill shows. The clip of the
+    // fill cuts it from the top and from the bottom.
+    const getFillHeight = () => {
+      return link.evaluate((element) => {
+        const marker = element.querySelector(".nav-link-marker");
+        if (!marker) throw new Error("The link has no marker");
+        const { clipPath } = getComputedStyle(marker, "::after");
+        const insets = clipPath.match(/-?[\d.]+/g)?.map(Number) ?? [];
+        // An inset with one or two values has the same top and bottom.
+        const [top = 0, , bottom = top] = insets;
+        const { height } = marker.getBoundingClientRect();
+        return height - Math.max(0, top) - Math.max(0, bottom);
+      });
+    };
+    await query(nav).link("FAQ").click();
     await test.expect
-      .poll(async () => (await getDot()).clip)
-      .not.toBe("inset(-1px)");
+      .poll(async () => getShown(await getBars(nav)))
+      .toEqual(["FAQ"]);
+    await test.expect.poll(getFillHeight).toBeLessThanOrEqual(0);
+    // A long glide keeps the bar on its way while the test reads it.
+    await page.addStyleTag({
+      content:
+        ".nav-link-guide-bar, .nav-link-marker { transition-duration: 30s !important; }",
+    });
+    await link.click();
+    // The bar is on its way, along the links between the old current link and
+    // the dot.
+    await test.expect
+      .poll(async () => {
+        const shown = getShown(await getBars(nav));
+        return shown.some((name) => name === "Deploy" || name === "Theme");
+      })
+      .toBe(true);
+    test.expect(await getFillHeight()).toBeLessThanOrEqual(0);
+  });
+
+  test("draws the bar on the guide again after a link in a disclosure was current", async ({
+    q,
+  }) => {
+    const nav = q.navigation("Bar around a disclosure");
+    const getShownBars = async () => getShown(await getBars(nav));
+    await test.expect.poll(getShownBars).toEqual(["Overview"]);
+    await query(nav).link("Install").click();
+    // The link in the disclosure has a plain bar, so the guide has no bar.
+    await test.expect.poll(getShownBars).toEqual([]);
+    await test
+      .expect(query(nav).link("Install").locator(".control-bar"))
+      .toBeVisible();
+    await query(nav).link("Overview").click();
+    await test.expect.poll(getShownBars).toEqual(["Overview"]);
+    const bars = await getBars(nav);
+    const overview = bars.find((item) => item.name === "Overview");
+    test.expect(overview?.start).toBeCloseTo(overview?.lineStart ?? 0, 1);
+    test.expect(overview?.end).toBeCloseTo(overview?.lineEnd ?? 0, 1);
+    await query(nav).link("Support").click();
+    await test.expect.poll(getShownBars).toEqual(["Support"]);
   });
 
   test("keeps a plain bar at the end side and in a disclosure", async ({

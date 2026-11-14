@@ -1,14 +1,7 @@
 import type { NavLinkProps } from "@ariakit/ui/components/nav.ariakit.react";
 import { NavLink } from "@ariakit/ui/components/nav.ariakit.react";
 import type { ReactNode } from "react";
-import {
-  ViewTransition,
-  addTransitionType,
-  createContext,
-  startTransition,
-  useContext,
-  useState,
-} from "react";
+import { createContext, useContext, useState } from "react";
 import {
   createMemoryRouter,
   RouterProvider,
@@ -28,10 +21,7 @@ function getFragment(path: string) {
   return `#${path.slice(1)}`;
 }
 
-/**
- * A `NavLink` that navigates with React Router in a view transition of the
- * `bar` type.
- */
+/** A `NavLink` that navigates with React Router, without a page load. */
 export function RouterNavLink({ to, onClick, ...props }: RouterNavLinkProps) {
   const { pathname } = useLocation();
   const handleClick = useLinkClickHandler(to);
@@ -43,13 +33,7 @@ export function RouterNavLink({ to, onClick, ...props }: RouterNavLinkProps) {
       onClick={(event) => {
         onClick?.(event);
         if (event.defaultPrevented) return;
-        // React applies a transition type only to updates in the same
-        // transition, so the link runs React Router's click handling inside
-        // one.
-        startTransition(() => {
-          addTransitionType("bar");
-          handleClick(event);
-        });
+        handleClick(event);
       }}
     />
   );
@@ -59,20 +43,7 @@ export function RouterNavLink({ to, onClick, ...props }: RouterNavLinkProps) {
 const ContentContext = createContext<ReactNode>(null);
 
 function Content() {
-  const { pathname } = useLocation();
-  return (
-    <>
-      {useContext(ContentContext)}
-      {/* React starts a view transition only when an update reaches a
-          ViewTransition boundary. A boundary around the content would capture
-          it, and captured content stops taking clicks until the transition
-          ends. This empty boundary changes on every navigation and captures
-          nothing. */}
-      <ViewTransition key={pathname}>
-        <span hidden />
-      </ViewTransition>
-    </>
-  );
+  return useContext(ContentContext);
 }
 
 const routes = [{ path: "*", Component: Content }];

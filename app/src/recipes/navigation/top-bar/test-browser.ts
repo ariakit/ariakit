@@ -1,26 +1,72 @@
+import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
+function getCenter(locator: Locator) {
+  return locator.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return rect.left + rect.width / 2;
+  });
+}
+
+// The bar that travels is the `::after` pseudo-element of the navigation, which
+// no locator finds, so its place comes from its computed style.
+function getTravelingBarCenter(nav: Locator) {
+  return nav.evaluate((element) => {
+    const style = getComputedStyle(element, "::after");
+    const rect = element.getBoundingClientRect();
+    const start = rect.left + element.clientLeft - element.scrollLeft;
+    const left = Number.parseFloat(style.left);
+    return start + left + Number.parseFloat(style.width) / 2;
+  });
+}
+
 withFramework(import.meta.dirname, async ({ test, query }) => {
-  test("keeps the links clickable while the bar moves", async ({ page, q }) => {
-    // The bar duration is a theme token. A long one keeps the transition
-    // running while the test presses another link.
-    await page.addStyleTag({ content: ":root { --duration-bar: 30s; }" });
-    const nav = query(q.navigation("Main"));
-    const transition = page.locator(":root:active-view-transition");
-    await nav.link("Analytics").click();
-    await test.expect(transition).toHaveCount(1);
-    // Locator actions wait until nothing covers the link, so they would press
-    // it only after the transition. The raw mouse presses whatever the browser
-    // hits now. A captured page takes the press in Firefox.
-    const projects = nav.link("Projects");
-    const box = await projects.boundingBox();
-    if (!box) throw new Error("The Projects link has no box");
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    await page.mouse.down();
+  test("moves the bar from the old current link to the new one", async ({
+    page,
+    q,
+  }) => {
+    // The travel time is a custom property. A long one keeps the bar on its way
+    // while the test reads it.
+    await page.addStyleTag({ content: ":root { --glider-duration: 30s; }" });
+    const nav = q.navigation("Main");
+    const overview = query(nav).link("Overview");
+    const analytics = query(nav).link("Analytics");
+    await analytics.click();
+    await test.expect(analytics).toHaveAttribute("aria-current", "page");
+    await test.expect(nav).toHaveAttribute("data-bar-traveling");
+    // The bar of the new current link waits for the bar that travels to it.
+    await test.expect(analytics.locator(".control-bar")).toBeHidden();
     await test.expect
-      .poll(() => projects.evaluate((link) => link.matches(":active")))
+      .poll(async () => {
+        const center = await getTravelingBarCenter(nav);
+        if (center <= (await getCenter(overview))) return false;
+        return center < (await getCenter(analytics));
+      })
       .toBe(true);
-    await test.expect(transition).toHaveCount(1);
-    await page.mouse.up();
+  });
+
+  test("shows the bar of the new current link when the travel ends", async ({
+    q,
+  }) => {
+    const nav = q.navigation("Main");
+    const analytics = query(nav).link("Analytics");
+    await analytics.click();
+    // The bar shows only after the bar that travels to it arrives.
+    await test.expect(analytics.locator(".control-bar")).toBeVisible();
+    await test.expect(nav).not.toHaveAttribute("data-bar-traveling");
+  });
+
+  test("shows the bar of the new current link at once with reduced motion", async ({
+    page,
+    q,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    // A travel would hide the bar for this long.
+    await page.addStyleTag({ content: ":root { --glider-duration: 30s; }" });
+    const nav = q.navigation("Main");
+    const analytics = query(nav).link("Analytics");
+    await analytics.click();
+    await test.expect(analytics.locator(".control-bar")).toBeVisible();
+    await test.expect(nav).not.toHaveAttribute("data-bar-traveling");
   });
 });

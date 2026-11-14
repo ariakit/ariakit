@@ -49,6 +49,32 @@ const navNumbersGutterClass = cx(
   "[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
 );
 
+// The bar that travels from the bar of the last current link to the bar of the
+// new one, for bars that each link draws by itself. It is a pseudo-element, so
+// the navigation gets no child that its rows or a covering frame could count.
+// The `Nav` style component writes the place, the size, the color, and the
+// corners of the bar to the navigation, and sets `data-bar-traveling` while the
+// bar travels. Only then does the pseudo-element have a box. Each `after:`
+// utility below also sets the content of the pseudo-element, which
+// `after:content-none` takes back at rest.
+const navBarTravelerClass = cx(
+  "after:content-none data-bar-traveling:after:content-['']",
+  "after:absolute after:z-1 after:pointer-events-none",
+  // The place and the size are the registered values of a glider, which don't
+  // inherit, so the pseudo-element takes them from the navigation.
+  "after:[--glider-x:inherit] after:[--glider-y:inherit]",
+  "after:[--glider-width:inherit] after:[--glider-height:inherit]",
+  "after:top-(--glider-y) after:left-(--glider-x)",
+  "after:w-(--glider-width) after:h-(--glider-height)",
+  "after:bg-(--nav-bar-traveler-color) after:rounded-(--nav-bar-traveler-radius)",
+  // The travel takes the time and the easing of a glider, so the bar arrives
+  // with the selected box of a glider in the same navigation.
+  "after:[transition-property:--glider-x,--glider-y,--glider-width,--glider-height]",
+  "after:duration-(--glider-duration,200ms) after:ease-[cubic-bezier(0.3,0,0,1)]",
+  // The bar goes to the place that it leaves from at once.
+  "data-bar-instant:after:transition-none",
+);
+
 /**
  * A navigation region: a list whose rows are links, with groups and current-row
  * bars. Like a list, `$itemPadding` sets the padding of its rows, `$gap` sets
@@ -68,10 +94,11 @@ const navNumbersGutterClass = cx(
  * disclosure.
  *
  * With a guide, the bar of a link draws over the guide, and CSS shows it along
- * each current link. A style component can also cover a range of links with one
- * bar, as the table of contents does: it sets `--nav-bar-start` and
- * `--nav-bar-end` on each bar and marker, in pixels from the top of this
- * element.
+ * each current link. A style component can also measure the links and set one
+ * range on all of them: `--nav-bar-start` and `--nav-bar-end` on each bar and
+ * marker, in pixels from the top of this element. `Nav` covers the current link
+ * in this way, so the bar glides along the guide to the next current link. The
+ * table of contents covers the links of the sections on screen.
  */
 export const nav = cv({
   extend: [list, frame, segmentGroup],
@@ -119,6 +146,7 @@ export const nav = cv({
     // A bar on the guide takes the text color at full strength.
     "[--nav-bar-color:oklch(from_var(--ak-text)_l_c_h/1)]",
     "forced-colors:[--nav-bar-color:CanvasText]",
+    navBarTravelerClass,
   ],
   variants: {
     /**
@@ -172,9 +200,6 @@ export const nav = cv({
         // rows use the button gap.
         "[&>.control,&>.nav-list>li>.control]:gap-[calc(var(--px)-var(--sidebearing))]",
         carouselFrameClass,
-        // Bars in view transitions measure whether they show from the padding,
-        // not from the scroll padding, which also covers the fades and buttons.
-        "[--nav-bar-clip-inset:var(--ak-frame-padding)]",
       ],
     },
     /**
@@ -202,23 +227,6 @@ export const nav = cv({
       if (value == null) return;
       return {
         style: { "--nav-slot-size": getSpacingValue(value) },
-      };
-    },
-    /**
-     * Names the bar of the current link for view transitions, so a transition
-     * moves the bar from the old link to the new one. Each navigation on a page
-     * needs its own name, and a bar that moves across page loads needs the same
-     * name on both pages. Set `none` to keep the bar out of view transitions.
-     * `Nav` defaults it to a unique name from `useId`, which can differ between
-     * pages. Only one link can be current while the bar is named. Browsers skip
-     * a view transition that finds two bars with the same name. In browsers
-     * with scroll-driven animations, an old bar that a horizontal navigation
-     * clips stays out of the transition, so the bar of the new link fades in.
-     */
-    $barTransitionName(value?: string) {
-      if (value == null) return;
-      return {
-        style: { "--bar-transition-name": value },
       };
     },
     // A link draws only numbers and dots, so the type leaves out the icons and
@@ -709,20 +717,16 @@ export const navButtonContent = cv({
 /**
  * A thin bar inside a navigation link that marks it while current. Render it as
  * the link's last child. Vertical navigations draw it at the row's inline start
- * by default, and horizontal ones below the row. In a navigation with a guide,
- * `navLinkGuideBar` draws the bar on the guide instead.
+ * by default, and horizontal ones below the row. When the current link changes
+ * without a page load, the `Nav` style component moves a copy of the bar from
+ * the old link to the new one, which the navigation draws. In a navigation with
+ * a guide, `navLinkGuideBar` draws the bar on the guide instead.
  */
 export const navLinkBar = cv({
   extend: [barBase],
   class: [
     // Measure from the row to the edge of the region that holds it.
     "[--bar-gap:var(--nav-bar-gap,0px)]",
-    // The navigation's name lets view transitions move the bar between links.
-    // The name must be unique, so it works only while one link is current.
-    // Reduced motion keeps the bar out of view transitions.
-    "motion-safe:[view-transition-name:var(--nav-bar-name,var(--bar-transition-name,none))] [view-transition-class:bar]",
-    // A horizontal row scrolls, so a bar outside it can't take part.
-    "[.nav.horizontal_&]:ui-nav-bar-clip",
     "[.nav.vertical_&]:top-(--bar-inset) [.nav.vertical_&]:bottom-(--bar-inset)",
     "[.nav.vertical_&]:w-(--bar) [.nav.vertical_&]:inset-e-auto",
     "[.nav.vertical_&]:inset-s-[calc(var(--nav-bar-guide,calc(-1*(var(--bar-offset)+var(--bar))))-var(--control-border,0px))]",
@@ -1037,7 +1041,7 @@ export const navLinkGuide = cv({
   },
 });
 
-// The timing that the glide of a bar and the fill of a marker share.
+// The timing that the glide of a bar and the highlight of a marker share.
 const navGlideTimingClass = cx(
   "duration-200 ease-[cubic-bezier(0.25,0.7,0.3,1)]",
 );
@@ -1051,15 +1055,14 @@ const navGlideTimingClass = cx(
  *
  * By default, CSS sets these values in a current link, so the bar covers the
  * line along that link, or stops at its marker. A style component can measure
- * the pieces and set one range on every piece instead, as the table of contents
- * does, and `$glide` animates that range. `$radius` sets the radius of the
- * curves, which must match the guide piece of the link.
+ * the pieces and set one range on every piece instead, as `Nav` and the table
+ * of contents do, and `$glide` animates that range. `$radius` sets the radius
+ * of the curves, which must match the guide piece of the link.
  */
 export const navLinkGuideBar = cv({
   extend: [navLinkPiece],
   class: [
-    // The class of every bar, which page styles select to keep bars out of a
-    // view transition.
+    // A bar on the guide is a bar of its control too.
     "nav-link-guide-bar control-bar",
     navBarSizeClass,
     "[--guide-width:var(--nav-bar-size)] [--guide-color:var(--nav-bar-color)]",
@@ -1102,18 +1105,13 @@ export const navLinkGuideBar = cv({
      * range at the same time, so they glide as one bar through the bends.
      * Without it, the range comes from CSS and changes at once, because a glide
      * from the empty range of another link would show the bend for a moment.
-     * The bar of the current link then takes the view transition name of the
-     * navigation, like a bar outside the guide.
      */
     $glide: {
       true: [
         navGlideTimingClass,
         "transition-[--nav-bar-start,--nav-bar-end] motion-reduce:transition-none",
       ],
-      false: [
-        "[view-transition-class:bar]",
-        "motion-safe:group-ui-selected/control:[view-transition-name:var(--bar-transition-name,none)]",
-      ],
+      false: "",
     },
   },
   defaultVariants: {
@@ -1157,26 +1155,20 @@ export const navLinkMarker = cv({
     // its marker. The bar comes before the marker in the link.
     "[.nav-link-guide-bar~&]:group-ui-selected/control:[--nav-bar-start:-100000px]",
     "[.nav-link-guide-bar~&]:group-ui-selected/control:[--nav-bar-end:100000px]",
-    // Only the fill transitions, so the colors follow the theme at once and a
-    // glide of the range doesn't restyle the marker in each frame. The fill
-    // reads the timing from here.
+    // The marker has no transition, so its colors follow the theme at once.
+    // With `$glide`, the highlight animates the range on its own
+    // pseudo-element, which is much cheaper to restyle in each frame of a glide
+    // than the marker. It reads the timing from here.
     "transition-none",
-    // The clip of a fill, which resolves here because the range doesn't
-    // inherit. It stops at the edges of the marker, so the fill takes the whole
-    // transition however far the range moves, and only the markers that the
-    // bar reaches animate, which needs lengths instead of percentages. The
-    // fill starts from the side of the bar. An empty clip passes the edge, so
-    // a fractional size leaves no line. The style component sets the duration
-    // to zero on a marker that a measured range leaves, which empties it at
-    // once, and on the first range.
-    "[--nav-fill-clip:inset(min(var(--nav-marker-size)+1px,max(-1px,var(--nav-bar-start)-var(--nav-bar-top,0px)))_-1px_min(var(--nav-marker-size)+1px,max(-1px,var(--nav-bar-top,0px)+var(--nav-marker-size)-var(--nav-bar-end)))_-1px)]",
+    // The range doesn't inherit, so the highlight takes it from the marker.
+    "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-bar-start:inherit]",
+    "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-bar-end:inherit]",
+    "[.nav-marker-fill_&]:ui-list-guide:after:[--nav-bar-start:inherit]",
+    "[.nav-marker-fill_&]:ui-list-guide:after:[--nav-bar-end:inherit]",
     // The ring is clipped to the range widened by the gap, so a marker is
     // either lit or not while the bar is still. An empty range, with no link
     // to cover, doesn't widen.
-    "[--nav-ring-reach:min(var(--nav-marker-gap),max(0px,(var(--nav-bar-end)-var(--nav-bar-start))*1000))]",
-    // The range doesn't inherit, so the ring takes it from the marker.
-    "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-bar-start:inherit]",
-    "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-bar-end:inherit]",
+    "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-ring-reach:min(var(--nav-marker-gap),max(0px,(var(--nav-bar-end)-var(--nav-bar-start))*1000))]",
     "[.nav-marker-ring_&]:ui-list-guide:after:absolute",
     "[.nav-marker-ring_&]:ui-list-guide:after:-inset-(--nav-marker-gap)",
     "[.nav-marker-ring_&]:ui-list-guide:after:rounded-full",
@@ -1198,23 +1190,32 @@ export const navLinkMarker = cv({
     "[.nav-marker-fill_&]:ui-list-guide:after:font-semibold",
     "[.nav-marker-fill_&]:ui-list-guide:after:leading-(--nav-marker-size)",
     "[.nav-marker-fill_&]:ui-list-guide:after:[font-size-adjust:0.45]",
-    "[.nav-marker-fill_&]:ui-list-guide:after:[clip-path:var(--nav-fill-clip)]",
-    "[.nav-marker-fill_&]:ui-list-guide:after:transition-[clip-path]",
-    "[.nav-marker-fill_&]:ui-list-guide:after:duration-(--nav-fill-duration,inherit)",
-    "[.nav-marker-fill_&]:ui-list-guide:after:ease-[inherit]",
-    "motion-reduce:[.nav-marker-fill_&]:ui-list-guide:after:transition-none",
+    // The clip of the fill follows the range, so the fill grows from the side
+    // where the bar arrives and shrinks to the side where the bar leaves. It
+    // stops at the edges of the marker, which needs lengths instead of
+    // percentages. An empty clip passes the edge, so a fractional size leaves
+    // no line.
+    "[.nav-marker-fill_&]:ui-list-guide:after:[clip-path:inset(min(var(--nav-marker-size)+1px,max(-1px,var(--nav-bar-start)-var(--nav-bar-top,0px)))_-1px_min(var(--nav-marker-size)+1px,max(-1px,var(--nav-bar-top,0px)+var(--nav-marker-size)-var(--nav-bar-end)))_-1px)]",
   ],
   variants: {
     /**
-     * Animates the ring of `$markerHighlight` with the range, for a range that
-     * a style component measures and sets on every piece, like `$glide` on the
-     * bar of the link. Only the ring glides, so other markers don't restyle in
-     * each frame of a glide.
+     * Animates the highlight of `$markerHighlight` with the range, for a range
+     * that a style component measures and sets on every piece, like `$glide` on
+     * the bar of the link. The highlight animates the range with the timing of
+     * the bar, so a fill grows as the bar arrives and shrinks as the bar
+     * leaves, and a ring lights up while the bar passes. A marker without a
+     * highlight doesn't animate. Without it, the highlight changes at once.
      */
     $glide: {
       true: [
-        "[.nav-marker-ring_&]:ui-list-guide:transition-[--nav-bar-start,--nav-bar-end]",
-        "motion-reduce:[.nav-marker-ring_&]:ui-list-guide:transition-none",
+        "[.nav-marker-ring_&]:ui-list-guide:after:transition-[--nav-bar-start,--nav-bar-end]",
+        "[.nav-marker-ring_&]:ui-list-guide:after:duration-[inherit]",
+        "[.nav-marker-ring_&]:ui-list-guide:after:ease-[inherit]",
+        "motion-reduce:[.nav-marker-ring_&]:ui-list-guide:after:transition-none",
+        "[.nav-marker-fill_&]:ui-list-guide:after:transition-[--nav-bar-start,--nav-bar-end]",
+        "[.nav-marker-fill_&]:ui-list-guide:after:duration-[inherit]",
+        "[.nav-marker-fill_&]:ui-list-guide:after:ease-[inherit]",
+        "motion-reduce:[.nav-marker-fill_&]:ui-list-guide:after:transition-none",
       ],
       false: "",
     },

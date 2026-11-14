@@ -24,20 +24,13 @@ import {
   ExampleGrid,
 } from "#app/components/ariakit-ui-example.react.tsx";
 
-interface TreeNavProps extends NavProps {
-  /** The name of the link that is current at first. */
-  initialCurrent: string;
-  /** Draws a dot at each link of the nested list. */
-  dots?: boolean;
-}
-
 /**
- * A navigation with three levels of links. A click makes a link current, so the
- * bar can be watched as it moves.
+ * Keeps the current link of a navigation in state. A click makes a link
+ * current, so the bar can be watched as it moves.
  */
-function TreeNav({ initialCurrent, dots, ...props }: TreeNavProps) {
+function useCurrentLink(initialCurrent: string) {
   const [current, setCurrent] = useState(initialCurrent);
-  const getProps = (name: string) => ({
+  return (name: string) => ({
     href: `#${name.toLowerCase()}`,
     "aria-current": current === name ? ("page" as const) : undefined,
     children: name,
@@ -46,6 +39,18 @@ function TreeNav({ initialCurrent, dots, ...props }: TreeNavProps) {
       setCurrent(name);
     },
   });
+}
+
+interface TreeNavProps extends NavProps {
+  /** The name of the link that is current at first. */
+  initialCurrent: string;
+  /** Draws a dot at each link of the nested list. */
+  dots?: boolean;
+}
+
+/** A navigation with three levels of links. */
+function TreeNav({ initialCurrent, dots, ...props }: TreeNavProps) {
+  const getProps = useCurrentLink(initialCurrent);
   return (
     <Nav className="w-full" {...props}>
       <NavLink {...getProps("Overview")} />
@@ -63,6 +68,27 @@ function TreeNav({ initialCurrent, dots, ...props }: TreeNavProps) {
         </NavList>
       </NavItem>
       <NavLink {...getProps("FAQ")} />
+    </Nav>
+  );
+}
+
+/**
+ * Links on a guide around a disclosure, whose links are not on the guide. The
+ * bar leaves the guide while a link of the disclosure is current.
+ */
+function DisclosureNav(props: NavProps) {
+  const getProps = useCurrentLink("Overview");
+  return (
+    <Nav $guide="smooth" bar className="w-full" {...props}>
+      <NavLink {...getProps("Overview")} />
+      <NavDisclosure button="Guides" defaultOpen>
+        <NavList>
+          <NavLink {...getProps("Install")} />
+          <NavLink {...getProps("Deploy")} />
+        </NavList>
+      </NavDisclosure>
+      <NavLink {...getProps("FAQ")} />
+      <NavLink {...getProps("Support")} />
     </Nav>
   );
 }
@@ -334,6 +360,24 @@ export default function NavGuideExamples() {
           </NavDisclosure>
           <NavLink href="#faq">FAQ</NavLink>
         </Nav>
+      </Example>
+
+      <Example
+        title="Bar around a disclosure"
+        description="The bar leaves the guide while a link of the disclosure is current, and comes back to the guide with a link around the disclosure. Click a link to make it current."
+        code={`
+          <Nav $guide="smooth" bar>
+            <NavLink aria-current="page">Overview</NavLink>
+            <NavDisclosure button="Guides">
+              <NavList>
+                <NavLink>Install</NavLink>
+              </NavList>
+            </NavDisclosure>
+            <NavLink>FAQ</NavLink>
+          </Nav>
+        `}
+      >
+        <DisclosureNav aria-label="Bar around a disclosure" />
       </Example>
     </ExampleGrid>
   );
