@@ -123,6 +123,51 @@ body > * {
   initial-value: 0;
 }
 
+/* Registration lets a glider box travel: the Glider style component sets the
+   place and the size of the box, and the browser animates them as lengths. They
+   don't inherit, so an animation frame changes only the element that travels,
+   not the box or the copies of the items inside it. */
+@property --glider-x {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-height {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* How far the selected glider box is from the start and from the end of its
+   group, along the inline axis. The Glider style component writes them to the
+   box and to the elements that follow it, and registration lets the browser
+   animate them with the box. A rule can then shape an element from the place of
+   the box, as the curves of a folder tab and the corners of its panel do. */
+@property --glider-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* Resolve the tab indent at the root so strip, tab, and panel fonts cannot
    change it. */
 @property --tabs-indent {
@@ -2356,16 +2401,18 @@ body > * {
 /* Any nonempty aria-current value except "false" is current. Keep this check
    consistent across selected variants. data-selected="true" marks an element
    that looks selected but has no selectable role, such as the title of a code
-   block, which looks like a selected tab. */
+   block, which looks like a selected tab. data-selected="false" marks an
+   element that looks unselected whatever its state, such as the item that a
+   glider box travels to. That check adds no specificity. */
 @custom-variant ui-selected {
   &:is(
-    :checked,
-    label:has(input:checked),
-    [aria-checked="true"],
-    [aria-selected="true"],
-    [data-selected="true"],
-    [aria-current]:not([aria-current=""], [aria-current="false"])
-  ) {
+      :checked,
+      label:has(input:checked),
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [data-selected="true"],
+      [aria-current]:not([aria-current=""], [aria-current="false"])
+    ):not(:where([data-selected="false"])) {
     @slot;
   }
 }
@@ -2381,7 +2428,7 @@ body > * {
     [role="radio"][aria-checked="true"],
     input[type="radio"]:checked,
     label:has(input[type="radio"]:checked)
-  ) {
+  ):not(:where([data-selected="false"])) {
     @slot;
   }
 }
