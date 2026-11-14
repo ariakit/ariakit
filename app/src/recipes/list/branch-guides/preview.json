@@ -1,4 +1,4 @@
 {
   "title": "List with Branches",
-  "description": "A commit history where each merge row holds a nested List with $branch, so curves join the commits of the branch to the guide of the main list and back to it. The guide prop sets $edge on each list, which colors its line, its curves, and its bullets, and a small $gap keeps the rows of one line close. Use it for a history or a tree whose branches leave a main line and return to it, such as a commit graph, rather than the single line of the bullet list with a guide."
+  "description": "A commit history where each merge row holds a nested List with $branch, so curves join the commits of the branch to the guide of the main list and back to it. The guide prop sets $edge on each list, which colors its line, its curves, and its bullets, and $gap set to 0 keeps the rows of one line close. Use it for a history or a tree whose branches leave a main line and return to it, such as a commit graph, rather than the single line of the bullet list with a guide."
 }

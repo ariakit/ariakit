@@ -26,9 +26,9 @@ function Commit({ hash, message, children }: CommitProps) {
 export default function Example() {
   return (
     // The guide prop turns the guide on and sets its color. The bullets take
-    // the color of their guide. A small gap keeps the rows as close as the
+    // the color of their guide. Without a gap, the rows are as close as the
     // lines of a log.
-    <List guide={{ $edge: "brand" }} $gap={2} className="w-96 max-w-full">
+    <List guide={{ $edge: "brand" }} $gap={0} className="w-96 max-w-full">
       <Commit hash="8f2c1ad" message='Merge branch "dark-theme"'>
         {/* A nested list with $branch leaves the guide of its parent before
             its first row and joins that guide again after its last row. */}

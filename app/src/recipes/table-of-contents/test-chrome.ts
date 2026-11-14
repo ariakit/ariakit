@@ -2,30 +2,30 @@ import type { Locator, Page } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
-// Returns the names of the links whose rows the thumb covers. A row counts when
-// the thumb range covers more than one pixel of the line along it, which ends
-// the same distance from both edges of the row.
-function getThumbLinks(nav: Locator) {
+// Returns the names of the links whose rows the bar covers. A row counts when
+// the bar range covers more than one pixel of the line along it, which ends the
+// same distance from both edges of the row.
+function getBarLinks(nav: Locator) {
   return nav.evaluate((element) => {
     return [...element.querySelectorAll("a")].flatMap((link) => {
-      const thumb = link.querySelector<HTMLElement>(".toc-link-thumb");
-      if (!thumb) return [];
-      // Each thumb piece holds the range that glides on it.
-      const style = getComputedStyle(thumb);
+      const bar = link.querySelector<HTMLElement>(".toc-link-bar");
+      if (!bar) return [];
+      // Each bar piece holds the range that glides on it.
+      const style = getComputedStyle(bar);
       const start = Number.parseFloat(
-        style.getPropertyValue("--toc-thumb-start"),
+        style.getPropertyValue("--nav-bar-start"),
       );
-      const end = Number.parseFloat(style.getPropertyValue("--toc-thumb-end"));
+      const end = Number.parseFloat(style.getPropertyValue("--nav-bar-end"));
       const top = Number.parseFloat(
-        thumb.style.getPropertyValue("--toc-piece-top"),
+        bar.style.getPropertyValue("--nav-bar-top"),
       );
       // Rects include the CSS zoom of the page, unlike the lengths of the
       // pieces.
       const zoom = link.currentCSSZoom || 1;
       const linkRect = link.getBoundingClientRect();
-      const thumbRect = thumb.getBoundingClientRect();
-      const joint = (linkRect.bottom - thumbRect.bottom) / zoom;
-      const lineBottom = top + thumb.offsetHeight;
+      const barRect = bar.getBoundingClientRect();
+      const joint = (linkRect.bottom - barRect.bottom) / zoom;
+      const lineBottom = top + bar.offsetHeight;
       const lineTop = lineBottom - (linkRect.height / zoom - 2 * joint);
       const covered = Math.min(end, lineBottom) - Math.max(start, lineTop);
       return covered > 1 ? [link.textContent] : [];
@@ -91,7 +91,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toHaveAttribute("aria-current", "location");
   });
 
-  test("covers the rows of the sections on screen with the thumb", async ({
+  test("covers the rows of the sections on screen with the bar", async ({
     page,
     q,
   }) => {
@@ -104,7 +104,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // heading above the bottom of the viewport.
     const expected = await getSectionsOnScreen(page, "Usage");
     test.expect(expected.length).toBeGreaterThan(1);
-    await test.expect.poll(() => getThumbLinks(nav)).toEqual(expected);
+    await test.expect.poll(() => getBarLinks(nav)).toEqual(expected);
   });
 
   test("follows the page of a site that zooms its root element", async ({
@@ -123,24 +123,22 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // At the top, the zoom pushes the second heading below the viewport.
     const top = await getSectionsOnScreen(page, "Overview");
     test.expect(top).toEqual(["Overview"]);
-    await test.expect.poll(() => getThumbLinks(nav)).toEqual(top);
+    await test.expect.poll(() => getBarLinks(nav)).toEqual(top);
     await query(nav).link("Installation").click();
     await test
       .expect(query(nav).link("Installation"))
       .toHaveAttribute("aria-current", "location");
     const expected = await getSectionsOnScreen(page, "Installation");
-    await test.expect.poll(() => getThumbLinks(nav)).toEqual(expected);
+    await test.expect.poll(() => getBarLinks(nav)).toEqual(expected);
   });
 
-  test("keeps the thumb still with reduced motion", async ({ page, q }) => {
+  test("keeps the bar still with reduced motion", async ({ page, q }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    // The thumb glides on its pieces.
-    const thumb = q.navigation("On this page").locator(".toc-link-thumb");
-    await test.expect(thumb.first()).toHaveCSS("transition-property", "none");
+    // The bar glides on its pieces.
+    const bar = q.navigation("On this page").locator(".toc-link-bar");
+    await test.expect(bar.first()).toHaveCSS("transition-property", "none");
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await test
-      .expect(thumb.first())
-      .not.toHaveCSS("transition-property", "none");
+    await test.expect(bar.first()).not.toHaveCSS("transition-property", "none");
   });
 
   test("lets the next Tab reach the link of a clicked heading", async ({

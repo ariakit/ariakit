@@ -18,8 +18,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     await page.addStyleTag({
       content: `
-        .toc { --toc-guide-color: #f0f !important; }
-        .toc-link-thumb, .toc-link-marker, .toc-link-dot { display: none !important; }
+        .toc { --nav-guide-color: #f0f !important; }
+        .toc-link-bar, .toc-link-marker { display: none !important; }
         .toc-link-guide { mask: none !important; }
         .toc a { background: transparent !important; }
       `,

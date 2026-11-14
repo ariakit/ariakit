@@ -108,10 +108,10 @@ export default function Example() {
               return (
                 <TocItem key={section.slug}>
                   <TocLink href={href}>{section.title}</TocLink>
-                  {/* A dot marks each nested row and fills while the thumb
+                  {/* A dot marks each nested row and fills while the bar
                       covers it. The dots fit in the regular guide offset, and
                       the list stays unordered. */}
-                  <TocList $marker="dot">
+                  <TocList $marker="bullet">
                     {section.children.map((child) => (
                       <TocLink key={child.slug} href={`#${child.slug}`}>
                         {child.title}

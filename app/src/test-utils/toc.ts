@@ -1,7 +1,7 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
-// The duration of the thumb glide in the toc style recipe.
+// The duration of the bar glide in the toc style recipe.
 const GLIDE_DURATION = 200;
 
 function getAnimationCount(nav: Locator) {
@@ -11,12 +11,12 @@ function getAnimationCount(nav: Locator) {
 }
 
 /**
- * Lets the thumb glide that a scroll starts run to the end. Polling the
+ * Lets the bar glide that a scroll starts run to the end. Polling the
  * animations in every frame would add script work that grows with the animated
  * pieces, so this waits for the glide duration and then checks that no piece
  * still animates.
  */
-export async function expectTocThumbStill(page: Page, nav: Locator) {
+export async function expectTocBarStill(page: Page, nav: Locator) {
   // The glide runs on a CSS transition with no observable end state, so the
   // wait crosses its duration before the check.
   await page.waitForTimeout(GLIDE_DURATION);

@@ -11,7 +11,7 @@ import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { gotoAndSettle } from "#app/test-utils/preview.ts";
-import { expectTocThumbStill } from "#app/test-utils/toc.ts";
+import { expectTocBarStill } from "#app/test-utils/toc.ts";
 
 type Query = ReturnType<typeof query>;
 
@@ -19,7 +19,7 @@ const recipePath = "/react/recipes/tooltip/";
 
 // The first example of each gallery row at 1600px, which becomes the current
 // link, and then the first section after the gallery. Each step moves the rows
-// on screen, so the thumb glides again.
+// on screen, so the bar glides again.
 const steps = [
   { id: "disabled", link: "Disabled Action" },
   { id: "sidebar", link: "Collapsed Sidebar" },
@@ -45,7 +45,7 @@ test("scroll through the gallery of a recipe page", async ({ page, perf }) => {
         }, step.id);
         const link = query(getNav(q)).link(step.link);
         await expect(link).toHaveAttribute("aria-current", "location");
-        await expectTocThumbStill(page, getNav(q));
+        await expectTocBarStill(page, getNav(q));
       }
     },
     {
@@ -54,7 +54,7 @@ test("scroll through the gallery of a recipe page", async ({ page, perf }) => {
         // The table of contents is an island, which marks a current link once
         // it hydrates.
         await expect(getNav(q).locator("[aria-current]")).toHaveCount(1);
-        await expectTocThumbStill(page, getNav(q));
+        await expectTocBarStill(page, getNav(q));
       },
       verify: async ({ q }) => {
         const link = query(getNav(q)).link("Overview");

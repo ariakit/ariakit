@@ -1,5 +1,5 @@
 {
   "title": "Numbered Chapters",
-  "description": "A Toc with the ordered prop, which numbers the top-level chapter rows with markers on the guide, renders them as an ordered list for screen readers, and fills each number with the thumb color where the thumb passes, with nested TocList lessons under some chapters. Use it for courses, books, or step-by-step content where section order matters, rather than an unnumbered list.",
+  "description": "A Toc with the ordered prop, which numbers the top-level chapter rows with markers on the guide, renders them as an ordered list for screen readers, and fills each number with the bar color where the bar passes, with nested TocList lessons under some chapters. Use it for courses, books, or step-by-step content where section order matters, rather than an unnumbered list.",
   "fullscreen": true
 }

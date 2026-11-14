@@ -53,20 +53,20 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           const boxRect = box.getBoundingClientRect();
           const rows = { covered: 0, outside: [] as string[] };
           for (const link of element.querySelectorAll("a")) {
-            const thumb = link.querySelector<HTMLElement>(".toc-link-thumb");
-            if (!thumb) continue;
-            // The inline range is where the thumb glides to.
-            const { style } = thumb;
+            const bar = link.querySelector<HTMLElement>(".toc-link-bar");
+            if (!bar) continue;
+            // The inline range is where the bar glides to.
+            const { style } = bar;
             const start = Number.parseFloat(
-              style.getPropertyValue("--toc-thumb-start"),
+              style.getPropertyValue("--nav-bar-start"),
             );
             const end = Number.parseFloat(
-              style.getPropertyValue("--toc-thumb-end"),
+              style.getPropertyValue("--nav-bar-end"),
             );
             const top = Number.parseFloat(
-              thumb.style.getPropertyValue("--toc-piece-top"),
+              bar.style.getPropertyValue("--nav-bar-top"),
             );
-            const line = Math.min(end, top + thumb.offsetHeight);
+            const line = Math.min(end, top + bar.offsetHeight);
             if (line - Math.max(start, top) <= 1) continue;
             rows.covered++;
             const rect = link.getBoundingClientRect();

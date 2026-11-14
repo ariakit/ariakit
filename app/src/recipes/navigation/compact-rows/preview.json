@@ -1,0 +1,4 @@
+{
+  "title": "Compact Rows",
+  "description": "A settings sidebar with many links in a small height: $itemPadding on the Nav sets the padding of every NavLink and NavGroupLabel at once, and $gap and $groupGap bring the rows and the groups closer. Icons in a NavSlot and the labels keep their alignment. Use it when a sidebar must show many links without scrolling, in place of a padding prop on each link."
+}

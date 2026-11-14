@@ -51,7 +51,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         return animations.flatMap((animation) => {
           const { effect } = animation;
           if (!(effect instanceof KeyframeEffect)) return [];
-          if (!effect.target?.matches(".toc-link-marker, .toc-link-dot")) {
+          if (!effect.target?.matches(".toc-link-marker")) {
             return [];
           }
           return animation instanceof CSSTransition
@@ -85,8 +85,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.reload();
     const dot = query(q.navigation("Dot steps"))
       .link("Install")
-      .locator(".toc-link-dot");
-    await test.expect(dot).toHaveAttribute("style", /--toc-piece-top/);
+      .locator(".toc-link-marker");
+    await test.expect(dot).toHaveAttribute("style", /--nav-bar-top/);
     // The range is in place above, and transitionrun fires on a later frame.
     await flushFrames(page);
     const runs = await page.evaluate(() => {
@@ -102,12 +102,14 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       marker: "number" | "dot" | null,
     ) => {
       const row = query(q.navigation(nav)).link(link);
-      await test
-        .expect(row.locator(".toc-link-marker"))
-        .toBeVisible({ visible: marker === "number" });
-      await test
-        .expect(row.locator(".toc-link-dot"))
-        .toBeVisible({ visible: marker === "dot" });
+      const element = row.locator(".toc-link-marker");
+      await test.expect(element).toBeVisible({ visible: marker != null });
+      if (!marker) return;
+      // One element draws both markers, and only a number has content.
+      const content = await element.evaluate((node) => {
+        return getComputedStyle(node, "::before").content;
+      });
+      test.expect(content !== "none").toBe(marker === "number");
     };
     // A nested list has its own marker, which neither the rows around it nor a
     // list inside it take.
@@ -121,11 +123,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   test("measures dots that show after the first render", async ({ q }) => {
     const nav = q.navigation("Dots shown later");
-    const dot = query(nav).link("Install").locator(".toc-link-dot");
+    const dot = query(nav).link("Install").locator(".toc-link-marker");
     await test.expect(dot).toBeHidden();
     await q.button("Show dots").click();
     await test.expect(dot).toBeVisible();
     // The fill reads the position of the dot, which only a visible dot has.
-    await test.expect(dot).toHaveAttribute("style", /--toc-piece-top:\s*[1-9]/);
+    await test.expect(dot).toHaveAttribute("style", /--nav-bar-top:\s*[1-9]/);
   });
 });

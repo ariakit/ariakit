@@ -6,6 +6,7 @@ import {
   appendOptionalChild,
   createOptionalRender,
   createRender,
+  getRenderProps,
   isRenderable,
 } from "../react-utils/create-render.react.ts";
 import {
@@ -18,6 +19,7 @@ import {
   useDescriptionRegistry,
 } from "../react-utils/use-description.react.ts";
 import { carouselViewportBase } from "../styles/carousel.ts";
+import { isNamedBarOffset } from "../styles/control.ts";
 import { frame } from "../styles/frame.ts";
 import {
   nav,
@@ -29,11 +31,15 @@ import {
   navDisclosureGroup,
   navGroup,
   navGroupLabel,
+  navItem,
   navLink,
   navLinkBar,
   navLinkContent,
   navLinkDescription,
+  navLinkGuide,
+  navLinkGuideBar,
   navLinkLabel,
+  navLinkMarker,
   navList,
   navSlot,
 } from "../styles/nav.ts";
@@ -69,8 +75,48 @@ const NavBarContext = React.createContext<NavLinkBarValue | undefined>(
   undefined,
 );
 
+interface NavPiecesContextValue {
+  /** Whether the links render their guide piece and their marker. */
+  pieces: boolean;
+  /** Whether the navigation has a guide, which holds the bars of the links. */
+  guided: boolean;
+  /** The guide of the links that don't set their own. */
+  guide?: NavLinkProps["guide"];
+  /** The marker of the links that don't set their own. */
+  marker?: NavLinkProps["marker"];
+}
+
+// What a navigation passes to its links. A list with a marker turns the pieces
+// on for its own links.
+const defaultPieces: NavPiecesContextValue = { pieces: false, guided: false };
+const NavPiecesContext =
+  React.createContext<NavPiecesContextValue>(defaultPieces);
+
+interface NavLinkPartsContextValue {
+  /** Whether the bar of the link draws on the guide. */
+  guided: boolean;
+  /** The radius of the curves of the guide piece, which the bar follows. */
+  radius?: NavLinkGuideProps["$radius"];
+}
+
+// What a link with pieces passes to its bar.
+const NavLinkPartsContext =
+  React.createContext<NavLinkPartsContextValue | null>(null);
+
+// Whether a `NavItem` already renders the list item around the link, and
+// whether a `NavList` is nested in one.
+const NavItemContext = React.createContext(false);
+
 export interface NavProps
-  extends ak.RoleProps<"nav">, VariantProps<typeof nav> {
+  extends
+    ak.RoleProps<"nav">,
+    // `ordered` sets `$ordered`. The guide of a navigation bends into every
+    // nested list, its rows hold one line of content, and `$gap` always sets
+    // the space between them.
+    Omit<
+      VariantProps<typeof nav>,
+      "$ordered" | "$branch" | "$itemGap" | "$baseGap"
+    > {
   /**
    * The list that holds the rows, as an element or `NavList` props. Defaults to
    * a `NavList` containing the children. Set `false` for groups that supply
@@ -81,9 +127,30 @@ export interface NavProps
   /**
    * Default bar for the current link, including links in groups and
    * disclosures. Set `true` for the default `NavLinkBar`, or supply an element
-   * or props. A link's own `bar` prop overrides it. Omitted by default.
+   * or props. A link's own `bar` prop overrides it. Omitted by default. With
+   * `$guide`, the bar draws on the guide.
    */
   bar?: NavLinkBarValue;
+  /**
+   * Renders the default list as an `ol` and numbers its top-level links with
+   * markers before them, unless `$marker` sets another marker. Nested lists
+   * stay unnumbered, unless a `NavList` sets its own marker with `ordered` or
+   * `$marker`.
+   */
+  ordered?: boolean;
+  /**
+   * Custom guide element or `NavLinkGuide` props, such as an edge color, a line
+   * style, or the radius of the curves, for the guide pieces of all links. A
+   * link can set its own `guide`. `$guide` sets the shape of the bends and
+   * whether the guide shows.
+   */
+  guide?: React.ReactElement | NavLinkGuideProps;
+  /**
+   * Custom marker element or `NavLinkMarker` props, such as color variants, for
+   * all links. A link can set its own `marker`. `$marker` sets which marker
+   * shows.
+   */
+  marker?: React.ReactElement | NavLinkMarkerProps;
   /**
    * Whether the navigation renders a `nav` landmark. When omitted, it does
    * unless an ancestor `Nav` or a `ShellSidebar` with `landmark="nav"` already
@@ -136,10 +203,23 @@ export interface NavProps
  *     <NavList><NavLink href="/install">Install</NavLink></NavList>
  *   </NavGroup>
  * </Nav>
+ * @example
+ * <Nav aria-label="Steps" ordered $guide="smooth">
+ *   <NavLink href="/install">Install</NavLink>
+ *   <NavItem>
+ *     <NavLink href="/configure">Configure</NavLink>
+ *     <NavList>
+ *       <NavLink href="/theme">Theme</NavLink>
+ *     </NavList>
+ *   </NavItem>
+ * </Nav>
  */
 export function Nav({
   list,
   bar,
+  ordered,
+  guide,
+  marker,
   landmark,
   ref,
   buttons,
@@ -160,8 +240,20 @@ export function Nav({
     navigation: isLandmark,
   });
   const rows =
-    list === false ? children : createRender(NavList, list, { children });
-  const variants = nav.getVariants(variantProps);
+    list === false
+      ? children
+      : createRender(NavList, list, {
+          children,
+          render: ordered ? <ol /> : undefined,
+        });
+  const variants = nav.getVariants({ ...variantProps, $ordered: !!ordered });
+  // The guide needs a vertical navigation.
+  const guided = variants.$guide !== false && variants.$layout !== "horizontal";
+  const active = variants.$guide !== false || variants.$marker !== "none";
+  const pieces = React.useMemo<NavPiecesContextValue>(
+    () => ({ pieces: active, guided, guide, marker }),
+    [active, guided, guide, marker],
+  );
   const navigation = () => {
     // A render prop from the caller still decides the element.
     const element = isLandmark ? undefined : <div />;
@@ -170,7 +262,11 @@ export function Nav({
         <ak.Role.nav
           ref={ref}
           render={element}
-          {...nav.jsx({ ...variantProps, $barTransitionName })}
+          {...nav.jsx({
+            ...variantProps,
+            $ordered: !!ordered,
+            $barTransitionName,
+          })}
           {...rest}
         >
           {rows}
@@ -204,7 +300,11 @@ export function Nav({
         <CarouselViewport
           recipe={carouselViewportBase}
           $fade
-          {...nav.jsx({ ...navProps, $barTransitionName })}
+          {...nav.jsx({
+            ...navProps,
+            $ordered: !!ordered,
+            $barTransitionName,
+          })}
           render={<ak.Role.nav ref={ref} render={element} {...rest} />}
         >
           {rows}
@@ -215,42 +315,190 @@ export function Nav({
   return (
     <LandmarkContext.Provider value={nestedLandmarks}>
       <NavBarContext.Provider value={bar}>
-        {navigation()}
+        <NavPiecesContext.Provider value={pieces}>
+          {navigation()}
+        </NavPiecesContext.Provider>
       </NavBarContext.Provider>
     </LandmarkContext.Provider>
   );
 }
 
 export interface NavListProps
-  extends ak.RoleProps<"ul">, VariantProps<typeof navList> {}
+  extends
+    ak.RoleProps<"ul">,
+    // The list sets `$gutter` in a navigation with a guide or markers.
+    Omit<VariantProps<typeof navList>, "$gutter"> {
+  /**
+   * Renders the list as an `ol` and numbers its links with markers before them,
+   * unless `$marker` sets another marker. The numbers start at one in each
+   * list. An outermost list, such as the list of a `NavGroup`, makes room for
+   * its numbers, and the group label lines up with the links. For the default
+   * list of a `Nav`, set `ordered` on the `Nav` instead.
+   */
+  ordered?: boolean;
+}
 
 /**
  * A semantic list for navigation rows. `Nav` creates one by default; use
- * additional lists inside groups and disclosures.
+ * additional lists inside groups and disclosures. In a `NavItem`, it holds the
+ * nested links of the item.
  * @example
  * <Nav aria-label="Main" list={<NavList />}>
  *   <NavLink href="/">Home</NavLink>
  * </Nav>
+ * @example
+ * <Nav aria-label="Docs" $guide="smooth">
+ *   <NavItem>
+ *     <NavLink href="/examples">Examples</NavLink>
+ *     <NavList $marker="bullet">
+ *       <NavLink href="/examples/basic">Basic</NavLink>
+ *     </NavList>
+ *   </NavItem>
+ * </Nav>
  */
-export function NavList(props: NavListProps) {
+export function NavList({ ordered, ...props }: NavListProps) {
   const [variantProps, rest] = splitProps(props, navList);
-  return <ak.Role.ul {...navList.jsx(variantProps)} {...rest} />;
+  const context = React.useContext(NavPiecesContext);
+  const nested = React.useContext(NavItemContext);
+  const $marker = variantProps.$marker ?? (ordered ? "counter" : "none");
+  // A list with a marker turns the pieces on for its own links.
+  const active = context.pieces || $marker !== "none";
+  const { guided, guide, marker } = context;
+  const pieces = React.useMemo<NavPiecesContextValue>(
+    () => ({ pieces: active, guided, guide, marker }),
+    [active, guided, guide, marker],
+  );
+  return (
+    <NavPiecesContext.Provider value={pieces}>
+      {/* Links in a new level render their own list items again. */}
+      <NavItemContext.Provider value={false}>
+        <ak.Role.ul
+          render={ordered ? <ol /> : undefined}
+          {...navList.jsx({
+            ...variantProps,
+            $marker,
+            // An outermost list with numbers makes room for them, also in a
+            // navigation without markers.
+            $gutter: (context.pieces || $marker === "counter") && !nested,
+          })}
+          {...rest}
+        />
+      </NavItemContext.Provider>
+    </NavPiecesContext.Provider>
+  );
+}
+
+export interface NavItemProps
+  extends ak.RoleProps<"li">, VariantProps<typeof navItem> {}
+
+/**
+ * A list item that holds a `NavLink` and the `NavList` of its nested links,
+ * which always show. The link inside renders without its own list item. Use a
+ * `NavDisclosure` for nested links that collapse.
+ * @example
+ * <Nav aria-label="Docs" $guide="smooth">
+ *   <NavItem>
+ *     <NavLink href="/usage">Usage</NavLink>
+ *     <NavList>
+ *       <NavLink href="/usage/basic">Basic example</NavLink>
+ *     </NavList>
+ *   </NavItem>
+ * </Nav>
+ */
+export function NavItem(props: NavItemProps) {
+  const [variantProps, rest] = splitProps(props, navItem);
+  return (
+    <NavItemContext.Provider value={true}>
+      <ak.Role.li {...navItem.jsx(variantProps)} {...rest} />
+    </NavItemContext.Provider>
+  );
+}
+
+export interface NavLinkGuideProps
+  extends
+    React.ComponentProps<"span">,
+    // The `$guide` variant of the navigation sets the shape of the bends.
+    Omit<VariantProps<typeof navLinkGuide>, "$bend"> {}
+
+/**
+ * Guide piece created by `NavLink` in a `Nav` with `$guide`. It draws the bend
+ * from the previous link and the line along its own link, and stays hidden from
+ * assistive technology. The `guide` prop of `Nav` and `NavLink` passes props to
+ * it.
+ * @example
+ * <Nav aria-label="Docs" $guide="smooth" guide={<NavLinkGuide $line="dashed" />}>
+ *   <NavLink href="/install">Install</NavLink>
+ * </Nav>
+ */
+export function NavLinkGuide(props: NavLinkGuideProps) {
+  const [variantProps, rest] = splitProps(props, navLinkGuide);
+  return <span aria-hidden {...navLinkGuide.jsx(variantProps)} {...rest} />;
+}
+
+export interface NavLinkMarkerProps
+  extends React.ComponentProps<"span">, VariantProps<typeof navLinkMarker> {}
+
+/**
+ * Marker created by `NavLink` in a `Nav` or a `NavList` with a marker: a number
+ * or a dot before the link, hidden from assistive technology. The `marker` prop
+ * of `Nav` and `NavLink` passes props to it.
+ * @example
+ * <Nav aria-label="Steps" ordered marker={<NavLinkMarker $layer="brand" />}>
+ *   <NavLink href="/install">Install</NavLink>
+ * </Nav>
+ */
+export function NavLinkMarker(props: NavLinkMarkerProps) {
+  const [variantProps, rest] = splitProps(props, navLinkMarker);
+  return <span aria-hidden {...navLinkMarker.jsx(variantProps)} {...rest} />;
 }
 
 export interface NavLinkBarProps
   extends ak.RoleProps<"span">, VariantProps<typeof navLinkBar> {}
 
+// A bar at the start of the row with a named offset is on the guide of a
+// navigation that has one.
+function isGuideBar(variants: VariantProps<typeof navLinkBar>) {
+  if (variants.$side === "end") return false;
+  if (variants.$offset == null) return true;
+  return isNamedBarOffset(variants.$offset);
+}
+
 /**
  * A thin bar that marks the current link. Pass it, or its props, to the `bar`
- * prop of `Nav` or `NavLink` so it renders as the link's last child.
+ * prop of `Nav` or `NavLink` so it renders as the link's last child. In a `Nav`
+ * with `$guide`, the bar draws on the guide and follows its bends. There, only
+ * `$width` applies. Set `$side="end"`, or a number or a length as `$offset`, to
+ * keep the bar off the guide.
  * @example
  * <Nav aria-label="Main" bar={<NavLinkBar $offset="halfway" />}>
  *   <NavLink href="/" currentUrl="/">Home</NavLink>
  *   <NavLink href="/docs">Docs</NavLink>
  * </Nav>
+ * @example
+ * <Nav aria-label="Docs" $guide="smooth" bar>
+ *   <NavLink href="/install" currentUrl="/install">Install</NavLink>
+ *   <NavLink href="/usage">Usage</NavLink>
+ * </Nav>
  */
 export function NavLinkBar(props: NavLinkBarProps) {
   const [variantProps, rest] = splitProps(props, navLinkBar);
+  const parts = React.useContext(NavLinkPartsContext);
+  if (parts?.guided && isGuideBar(variantProps)) {
+    const { $width, className, style } = variantProps;
+    return (
+      <ak.Role.span
+        aria-hidden
+        // The bar covers the guide, so its curves take the same radius.
+        {...navLinkGuideBar.jsx({
+          $width,
+          $radius: parts.radius,
+          className,
+          style,
+        })}
+        {...rest}
+      />
+    );
+  }
   return (
     <ak.Role.span aria-hidden {...navLinkBar.jsx(variantProps)} {...rest} />
   );
@@ -266,12 +514,24 @@ export interface NavLinkProps
    */
   currentUrl?: string | URL;
   /**
-   * Custom list item element or props around the link. Defaults to an `li`; set
+   * Custom list item element or props around the link. Defaults to an `li`,
+   * unless the link is in a `NavItem`, which renders the list item itself. Set
    * `false` for a standalone link or an existing item wrapper. All other props,
    * including `ref` and `render`, belong to the anchor. The default item needs
    * a `NavList` or another `ul`, `ol`, or `menu` parent.
    */
   item?: React.ReactElement | ak.RoleProps<"li"> | false;
+  /**
+   * Custom guide element or `NavLinkGuide` props, such as an edge color or a
+   * line style, for the guide piece of this link. Defaults to the `guide` of
+   * the `Nav`.
+   */
+  guide?: React.ReactElement | NavLinkGuideProps;
+  /**
+   * Custom marker element or `NavLinkMarker` props, such as color variants, for
+   * the marker of this link. Defaults to the `marker` of the `Nav`.
+   */
+  marker?: React.ReactElement | NavLinkMarkerProps;
   /**
    * A bar that marks the link while current, as `true`, an element, or
    * `NavLinkBar` props. Rendered after the children. Defaults to the `bar` prop
@@ -309,14 +569,37 @@ export function NavLink({
   item,
   bar,
   text,
+  guide,
+  marker,
   ...props
 }: NavLinkProps) {
   const [variantProps, rest] = splitProps(props, navLink);
+  const piecesContext = React.useContext(NavPiecesContext);
+  const { pieces, guided } = piecesContext;
+  const inItem = React.useContext(NavItemContext);
+  const guideValue = guide ?? piecesContext.guide;
+  const radius = getRenderProps<NavLinkGuideProps>(guideValue)?.$radius;
+  const parts = React.useMemo<NavLinkPartsContextValue>(
+    () => ({ guided, radius }),
+    [guided, radius],
+  );
   const defaultBar = React.useContext(NavBarContext);
   const barValue = bar ?? defaultBar;
   const barElement = createOptionalRender(
     NavLinkBar,
     barValue === true ? {} : barValue,
+  );
+  // The pieces come last, so slot styles that look at earlier siblings work as
+  // in a link without pieces. A bar on the guide draws over the guide piece,
+  // and the marker draws over both.
+  const extras = pieces ? (
+    <NavLinkPartsContext.Provider value={parts}>
+      {createRender(NavLinkGuide, guideValue)}
+      {barElement}
+      {createRender(NavLinkMarker, marker ?? piecesContext.marker)}
+    </NavLinkPartsContext.Provider>
+  ) : (
+    barElement
   );
   const children =
     rest.children ?? (text == null ? undefined : <NavLinkLabel text={text} />);
@@ -338,16 +621,22 @@ export function NavLink({
     <DescriptionContext.Provider value={describes ? context : null}>
       <ak.Role.a
         aria-current={isCurrent ? "page" : undefined}
-        {...navLink.jsx(variantProps)}
+        {...navLink.jsx({
+          // The guide and marker pieces sit inside the link, so press scaling
+          // would pull them out of line with the pieces of the other links.
+          $active: pieces ? false : undefined,
+          ...variantProps,
+        })}
         {...rest}
         // An explicit undefined from the caller must not drop the description.
         aria-describedby={rest["aria-describedby"] ?? descriptionId}
       >
-        {appendOptionalChild(children, barElement)}
+        {appendOptionalChild(children, extras)}
       </ak.Role.a>
     </DescriptionContext.Provider>
   );
   if (item === false) return link;
+  if (item == null && inItem) return link;
   return createRender(ak.Role.li, item, { children: link });
 }
 
@@ -726,7 +1015,13 @@ export interface NavDisclosureContentProps extends DisclosureContentProps {
  */
 export function NavDisclosureContent(props: NavDisclosureContentProps) {
   const body = createRender(NavDisclosureContentBody, props.body);
-  return <DisclosureContent guide {...props} body={body} />;
+  return (
+    // The guide and the markers of the navigation don't join the rows of a
+    // disclosure, so its links keep their plain bars.
+    <NavPiecesContext.Provider value={defaultPieces}>
+      <DisclosureContent guide {...props} body={body} />
+    </NavPiecesContext.Provider>
+  );
 }
 
 export interface NavDisclosureContentBodyProps extends Omit<

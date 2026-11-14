@@ -1,0 +1,4 @@
+{
+  "title": "Numbered Steps on a Guide",
+  "description": "A setup guide whose Nav has the ordered prop and $guide set to smooth, so each top-level NavLink gets a number marker in a gutter before the link, and a guide joins the numbers. One step is a NavItem with a nested NavList, and the guide bends into its unnumbered links and back. Use it for a sequence of pages that people follow in order, such as a tutorial or an onboarding flow."
+}

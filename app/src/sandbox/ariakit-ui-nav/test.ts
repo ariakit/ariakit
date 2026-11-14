@@ -56,13 +56,13 @@ test("lets a nav disclosure override the defaults of its row", () => {
   expect(account).toHaveClass("ak-frame-lg");
   expect(account).toHaveAttribute(
     "style",
-    "--frame-padding: round(calc(var(--spacing) * (2)), 1px); --disclosure-gap: var(--nav-row-gap, calc(var(--spacing) * 3)); --disclosure-body-offset: var(--nav-gap, calc(var(--spacing) * 1));",
+    "--frame-padding: var(--list-item-padding); --disclosure-gap: var(--nav-row-gap, calc(var(--spacing) * 3)); --disclosure-body-offset: var(--list-gap, calc(var(--spacing) * 1));",
   );
   expect(settings).toHaveClass("ak-frame-none");
   expect(settings).not.toHaveClass("ak-frame-lg");
   expect(settings).toHaveAttribute(
     "style",
-    "--frame-padding: round(calc(var(--spacing) * (2)), 1px); --disclosure-gap: var(--nav-row-gap, calc(var(--spacing) * 3)); --disclosure-body-offset: calc(var(--spacing) * (3));",
+    "--frame-padding: var(--list-item-padding); --disclosure-gap: var(--nav-row-gap, calc(var(--spacing) * 3)); --disclosure-body-offset: calc(var(--spacing) * (3));",
   );
 });
 
