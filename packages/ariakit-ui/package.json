@@ -130,7 +130,7 @@
     "@shikijs/langs": "4.6.0",
     "@shikijs/themes": "4.6.0",
     "clava": "0.7.3",
-    "lucide-react": "1.71.0",
+    "lucide-react": "1.72.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "shiki": "4.6.0",
