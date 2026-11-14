@@ -8,7 +8,7 @@ import { text } from "./text.ts";
 export const heading = cv({
   extend: [text],
   class: [
-    "ak-ink-100 font-medium",
+    "font-medium",
     // Larger text needs less space between lines and letters. These values read
     // the final font size, so $level needs no extra rule.
     // Preserve list-item line height. Zero specificity permits overrides;
@@ -46,6 +46,16 @@ export const heading = cv({
       // order.
       return { style: { fontSize: `var(--heading-size-${value})` } };
     },
+    /**
+     * Disables the inherited variant, which the heading line height outside
+     * list items would override. A `leading-*` class still sets the line
+     * height.
+     */
+    $leading: null,
+  },
+  defaultVariants: {
+    // Full strength, also inside a parent with weaker ink.
+    $ink: 100,
   },
 });
 

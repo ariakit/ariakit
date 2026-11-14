@@ -10,6 +10,7 @@ import {
   COLOR_VALUES,
 } from "../utils/styles.ts";
 import type { ChromaValues, HueValues, ColorValues } from "../utils/styles.ts";
+import { ink } from "./ink.ts";
 
 const DEFAULT_MIX_AMOUNT = 50;
 const DEFAULT_FADE_AMOUNT = 50;
@@ -65,6 +66,7 @@ function isLayerModifier(key: string, value: string | number | boolean) {
  * A background color context with adaptive text contrast and color modifiers.
  */
 export const layer = cv({
+  extend: [ink],
   variants: {
     /**
      * Sets the base background and color context. `true` inherits the parent
@@ -94,19 +96,6 @@ export const layer = cv({
         class: "ak-layer ak-layer-color-(--layer-color)",
         style: { "--layer-color": value },
       };
-    },
-    /**
-     * Sets text strength from `0` (minimum readable contrast) to `100` (full
-     * strength). The amount inherits through nested layers. `false` clears a
-     * component default.
-     */
-    $ink(value?: (string & {}) | number | false) {
-      return getScaledStyleClass({
-        value,
-        allowZero: true,
-        property: "--ink",
-        class: "ak-ink-(--ink)",
-      });
     },
     /** Inverts the layer's base background color. */
     $invert: "[--layer-lightness-multiplier:2]",

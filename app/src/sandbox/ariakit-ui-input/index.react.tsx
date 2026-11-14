@@ -157,7 +157,8 @@ export default function InputExamples() {
         <div className="grid w-full gap-1.5">
           <Text
             render={<label htmlFor="input-display-name" />}
-            className="text-sm font-medium"
+            $size="sm"
+            className="font-medium"
           >
             Display name
           </Text>
@@ -166,7 +167,7 @@ export default function InputExamples() {
             defaultValue="Marta Oliveira"
             aria-describedby="input-display-name-hint"
           />
-          <Text id="input-display-name-hint" className="ak-ink-70 text-sm">
+          <Text id="input-display-name-hint" $size="sm" $ink={70}>
             Shown on your public profile.
           </Text>
         </div>
@@ -184,7 +185,8 @@ export default function InputExamples() {
         <div className="grid w-full gap-1.5">
           <Text
             render={<label htmlFor="input-email" />}
-            className="text-sm font-medium"
+            $size="sm"
+            className="font-medium"
           >
             Email
           </Text>
@@ -194,7 +196,7 @@ export default function InputExamples() {
             aria-invalid
             aria-describedby="input-email-error"
           />
-          <Text id="input-email-error" $text="danger" className="text-sm">
+          <Text id="input-email-error" $text="danger" $size="sm">
             Enter a valid email address.
           </Text>
         </div>
@@ -645,7 +647,7 @@ export default function InputExamples() {
       >
         <InputGroup>
           <span className="flex min-w-0 flex-1 items-center gap-2">
-            <Text className="ak-ink-60">https://</Text>
+            <Text $ink={60}>https://</Text>
             <input
               aria-label="Share link"
               defaultValue="ariakit.com/ui"
@@ -950,7 +952,7 @@ export default function InputExamples() {
               </InputFieldContent>
             </InputField>
             <fieldset className="grid gap-2">
-              <Text render={<legend />} className="text-sm ak-ink-70">
+              <Text render={<legend />} $size="sm" $ink={70}>
                 Contact
               </Text>
               <InputField $orientation="horizontal">

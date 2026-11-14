@@ -110,9 +110,11 @@ export const comboboxGroup = cv({
 /** A compact, muted label for a group of combobox options. */
 export const comboboxGroupLabel = cv({
   extend: [textFrame, text],
-  class: "cursor-default text-sm font-medium ak-ink-50",
+  class: "cursor-default font-medium",
   defaultVariants: {
     $p: 2,
+    $size: "sm",
+    $ink: 50,
   },
 });
 

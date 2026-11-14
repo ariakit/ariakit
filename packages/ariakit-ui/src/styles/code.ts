@@ -1,11 +1,11 @@
 import { cv } from "clava";
 import { edge } from "./edge.ts";
-import { font } from "./font.ts";
 import { isLayerColor } from "./layer.ts";
+import { text } from "./text.ts";
 
 /** A code chip that scales with the surrounding text. */
 export const code = cv({
-  extend: [edge, font],
+  extend: [edge, text],
   class: [
     "px-1 py-[0.18em] rounded ring",
     // A layer supplies the edge channel; raw edges keep their full opacity.

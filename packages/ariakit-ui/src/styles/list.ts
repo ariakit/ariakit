@@ -7,7 +7,6 @@ import {
   disclosureContentBody,
 } from "./disclosure.ts";
 import { hasEdgeColor } from "./edge.ts";
-import { font } from "./font.ts";
 import { frame } from "./frame.ts";
 import { guide } from "./guide.ts";
 import { hasLayerBackground, isLayerColor } from "./layer.ts";
@@ -934,9 +933,9 @@ export const listDisclosureButton = cv({
 
 /** Disclosure content with the spacing of other list items. */
 export const listDisclosureContentBody = cv({
-  // The font sets the text size of the content, such as a smaller size for the
-  // details of a step.
-  extend: [disclosureContentBody, font],
+  // The text variants set the text size of the content, such as a smaller size
+  // for the details of a step.
+  extend: [disclosureContentBody, text],
   class: [
     "grid gap-(--list-item-gap)",
     "in-[.list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
