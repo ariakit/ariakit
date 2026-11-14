@@ -139,203 +139,79 @@ test("preview card frames do not scroll or take focus until activated", async ({
   await expect.poll(getFrameScroll).toBeGreaterThan(frameScroll);
 });
 
-// TEMPORARY: repeats the test among the full Safari suite, where it fails on
-// CI. https://github.com/ariakit/ariakit/issues/8428
-for (let run = 0; run < 20; run++) {
-  test(`preview card frames scroll vertically after a horizontal scroll (${run})`, async ({
-    page,
-    q,
-  }) => {
-    // TEMPORARY diagnostics for https://github.com/ariakit/ariakit/issues/8428
-    await page.addInitScript(() => {
-      const id = Math.random().toString(36).slice(2, 8);
-      const log: unknown[] = [];
-      Reflect.set(window, "__diag", { id, log });
-      const top = window === window.parent;
-      const now = () => Math.round(performance.now());
-      const root = () => document.documentElement;
-      const scroll = () =>
-        top
-          ? [window.scrollX, window.scrollY]
-          : [root()?.scrollLeft, root()?.scrollTop];
-      const describe = (target: EventTarget | null) =>
-        target instanceof Element
-          ? `${target.tagName}${target.id ? `#${target.id}` : ""}`
-          : target?.constructor.name;
-      window.addEventListener(
-        "wheel",
-        (event) => {
-          log.push({
-            wheel: [event.deltaX, event.deltaY],
-            now: now(),
-            ts: Math.round(event.timeStamp),
-            cancelable: event.cancelable,
-            target: describe(event.target),
-            active: root()?.hasAttribute("data-preview-active"),
-            scroll: scroll(),
-          });
-        },
-        { capture: true, passive: true },
-      );
-      window.addEventListener(
-        "wheel",
-        (event) => {
-          // Reads the result of the default action on the next task.
-          const prevented = event.defaultPrevented;
-          setTimeout(() => {
-            log.push({ prevented, now: now(), scroll: scroll() });
-          });
-        },
-        { passive: true },
-      );
-      window.addEventListener(
-        "scroll",
-        (event) =>
-          log.push({
-            scrolled: scroll(),
-            target: describe(event.target),
-            now: now(),
-          }),
-        { capture: true, passive: true },
-      );
-      window.addEventListener("message", (event) => {
-        const action = event.data?.action;
-        if (!action || action === "size") return;
-        const from =
-          event.source === window.parent
-            ? "parent"
-            : [...document.querySelectorAll("iframe")].find(
-                (frame) => frame.contentWindow === event.source,
-              )?.title;
-        log.push({ message: action, from, now: now() });
-      });
-      // Reading the scroll position here would force a layout right after the
-      // activation, so the scroll events report it instead.
-      new MutationObserver(() => {
-        log.push({
-          attrs: root()?.hasAttribute("data-preview-active"),
-          now: now(),
-        });
-      }).observe(document, {
-        attributes: true,
-        attributeFilter: ["data-preview-active"],
-        subtree: true,
-      });
-    });
-    await gotoAndSettle(page, "/react/recipes/combobox-group/");
-    const region = q.region("Combobox Group", { exact: true });
-    const iframe = page.locator('iframe[title="Combobox Group"]');
-    const frame = await waitForFrameHydration(iframe);
-    // The card activates the frame for the page, so it waits for the card to
-    // hydrate too, which can come after the frame.
-    await waitForShownFrame(page, "Combobox Group");
-    // The handle names the viewport it resizes.
-    const handle = query(region).separator("Resize preview", {
-      includeHidden: true,
-    });
-    const viewportId = await handle.getAttribute("aria-controls");
-    const viewport = page.locator(`[id="${viewportId}"]`);
-    const html = frame.locator("html");
-    const getFrameScroll = () =>
-      html.evaluate((element) => ({
-        left: element.scrollLeft,
-        top: element.scrollTop,
-      }));
-    const getPageScroll = () => page.evaluate(() => window.scrollY);
-    await widenExample(frame.locator("body"));
-    await expect
-      .poll(() => html.evaluate((el) => el.scrollWidth > el.clientWidth))
-      .toBe(true);
-    await iframe.scrollIntoViewIfNeeded();
-    const frameScroll = await getFrameScroll();
-    const box = await iframe.boundingBox();
-    expect(box).not.toBeNull();
-    if (!box) return;
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    // A vertical scroll still scrolls the docs page, even when the gesture
-    // drifts sideways. The drift stays under the 10 pixels that make a gesture
-    // horizontal, so the preview stays inactive whether or not it comes within
-    // 200ms of the vertical event. Tests in preview-cards-chrome.ts set the
-    // event times to cover a larger drift within the gesture.
-    const inactiveScroll = await getPageScroll();
-    await page.mouse.wheel(0, 100);
-    await page.mouse.wheel(8, 0);
-    await expect.poll(getPageScroll).toBeGreaterThan(inactiveScroll);
-    // The card would activate the frame with messages between the documents,
-    // which no state reports until the frame becomes active.
-    await flushFrames(page);
-    expect(await getFrameScroll()).toEqual(frameScroll);
-    await expect(html).not.toHaveAttribute("data-preview-active", "");
-    const pageScroll = await getPageScroll();
-    // The preview takes a wheel gesture as horizontal once it moved more
-    // sideways than up or down, and a gesture ends 200ms after its last event.
-    await page.waitForTimeout(250);
-
-    // A horizontal scroll does not move the docs page, so the frame takes it.
-    // Trackpads start a gesture with small deltas in both directions, before
-    // its direction shows, and those don't scroll the docs page either.
-    await page.mouse.wheel(4, 2);
-    await page.mouse.wheel(200, 0);
-    try {
-      await expect
-        .poll(async () => (await getFrameScroll()).left)
-        .toBeGreaterThan(frameScroll.left);
-    } catch (error) {
-      // The logs keep the events from before the wheel, so reading them only on
-      // failure leaves the timing of the test unchanged.
-      const point = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
-      const getLog = () => {
-        const diag = Reflect.get(window, "__diag");
-        const root = document.documentElement;
-        const style = getComputedStyle(root);
-        return {
-          id: diag?.id,
-          timeOrigin: performance.timeOrigin,
-          length: diag?.log.length,
-          log: diag?.log.slice(-80),
-          focus: document.hasFocus(),
-          active: root.hasAttribute("data-preview-active"),
-          overflow: [style.overflowX, style.overflowY],
-          size: [root.scrollWidth, root.clientWidth],
-          scroll: [root.scrollLeft, root.scrollTop],
-        };
-      };
-      // A read can fail if the frame navigated, which must not hide the error.
-      const timeout = 2000;
-      const diagnostics = {
-        box: await iframe.boundingBox({ timeout }).catch(String),
-        point,
-        under: await iframe
-          .evaluate(
-            (element, { x, y }) => {
-              const hit = element.ownerDocument.elementFromPoint(x, y);
-              return hit === element ? "iframe" : hit?.outerHTML.slice(0, 120);
-            },
-            point,
-            { timeout },
-          )
-          .catch(String),
-        page: await page.evaluate(getLog).catch(String),
-        frame: await html
-          .evaluate(getLog, undefined, { timeout })
-          .catch(String),
-      };
-      console.log(`DIAG8428 ${JSON.stringify(diagnostics)}`);
-      throw error;
-    }
-    await expect(html).toHaveAttribute("data-preview-active", "");
-    await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
-
-    // WebKit applies the new root overflow to wheel scrolling on a later
-    // rendering update, which no page state reports.
-    await flushFrames(page);
-    await page.mouse.wheel(0, 200);
-    await expect
-      .poll(async () => (await getFrameScroll()).top)
-      .toBeGreaterThan(frameScroll.top);
-    expect(await getPageScroll()).toBe(pageScroll);
+test("preview card frames scroll vertically after a horizontal scroll", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/recipes/combobox-group/");
+  const region = q.region("Combobox Group", { exact: true });
+  const iframe = page.locator('iframe[title="Combobox Group"]');
+  const frame = await waitForFrameHydration(iframe);
+  // The card activates the frame for the page, so it waits for the card to
+  // hydrate too, which can come after the frame.
+  await waitForShownFrame(page, "Combobox Group");
+  // The handle names the viewport it resizes.
+  const handle = query(region).separator("Resize preview", {
+    includeHidden: true,
   });
-}
+  const viewportId = await handle.getAttribute("aria-controls");
+  const viewport = page.locator(`[id="${viewportId}"]`);
+  const html = frame.locator("html");
+  const getFrameScroll = () =>
+    html.evaluate((element) => ({
+      left: element.scrollLeft,
+      top: element.scrollTop,
+    }));
+  const getPageScroll = () => page.evaluate(() => window.scrollY);
+  await widenExample(frame.locator("body"));
+  await expect
+    .poll(() => html.evaluate((el) => el.scrollWidth > el.clientWidth))
+    .toBe(true);
+  await iframe.scrollIntoViewIfNeeded();
+  const frameScroll = await getFrameScroll();
+  const box = await iframe.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  // A vertical scroll still scrolls the docs page, even when the gesture drifts
+  // sideways. The drift stays under the 10 pixels that make a gesture
+  // horizontal, so the preview stays inactive whether or not it comes within
+  // 200ms of the vertical event. Tests in preview-cards-chrome.ts set the event
+  // times to cover a larger drift within the gesture.
+  const inactiveScroll = await getPageScroll();
+  await page.mouse.wheel(0, 100);
+  await page.mouse.wheel(8, 0);
+  await expect.poll(getPageScroll).toBeGreaterThan(inactiveScroll);
+  // The card would activate the frame with messages between the documents,
+  // which no state reports until the frame becomes active.
+  await flushFrames(page);
+  expect(await getFrameScroll()).toEqual(frameScroll);
+  await expect(html).not.toHaveAttribute("data-preview-active", "");
+  const pageScroll = await getPageScroll();
+  // The preview takes a wheel gesture as horizontal once it moved more sideways
+  // than up or down, and a gesture ends 200ms after its last event.
+  await page.waitForTimeout(250);
+
+  // A horizontal scroll does not move the docs page, so the frame takes it.
+  // Trackpads start a gesture with small deltas in both directions, before its
+  // direction shows, and those don't scroll the docs page either.
+  await page.mouse.wheel(4, 2);
+  await page.mouse.wheel(200, 0);
+  await expect
+    .poll(async () => (await getFrameScroll()).left)
+    .toBeGreaterThan(frameScroll.left);
+  await expect(html).toHaveAttribute("data-preview-active", "");
+  await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
+
+  // WebKit applies the new root overflow to wheel scrolling on a later
+  // rendering update, which no page state reports.
+  await flushFrames(page);
+  await page.mouse.wheel(0, 200);
+  await expect
+    .poll(async () => (await getFrameScroll()).top)
+    .toBeGreaterThan(frameScroll.top);
+  expect(await getPageScroll()).toBe(pageScroll);
+});
 
 test("preview card frames pass the wheel to the page over contained scroll areas", async ({
   page,

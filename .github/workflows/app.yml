@@ -74,15 +74,41 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TEMPORARY: while diagnosing, only shard 2 of Safari runs, twice, since
-        # it runs the flaky test. https://github.com/ariakit/ariakit/issues/8428
         include:
+          - os: ubuntu-latest
+            name: Chrome
+            engine: chromium
+            project: chrome android
+            test: xvfb-run pnpm -F app run test
+            shard: [1, 2]
+            shardWeights: "3:4"
+          - os: ubuntu-latest
+            name: Chrome
+            engine: chromium
+            project: chrome android
+            test: xvfb-run pnpm -F app run test
+            shard: [2, 2]
+            shardWeights: "3:4"
+          - os: ubuntu-latest
+            name: Firefox
+            engine: firefox
+            project: firefox
+            test: xvfb-run pnpm -F app run test
+            shard: [1, 2]
+            shardWeights: "4:5"
+          - os: ubuntu-latest
+            name: Firefox
+            engine: firefox
+            project: firefox
+            test: xvfb-run pnpm -F app run test
+            shard: [2, 2]
+            shardWeights: "4:5"
           - os: macos-latest
-            name: Safari copy
+            name: Safari
             engine: webkit
             project: safari ios
             test: pnpm -F app run test
-            shard: [2, 2]
+            shard: [1, 2]
             shardWeights: "3:5"
           - os: macos-latest
             name: Safari
@@ -155,9 +181,6 @@ jobs:
   visual:
     name: Visual Capture (${{ matrix.shard }})
     needs: [build, build-nextjs]
-    # TEMPORARY: only the Safari tests run while diagnosing
-    # https://github.com/ariakit/ariakit/issues/8428
-    if: false
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
     permissions:
@@ -361,9 +384,7 @@ jobs:
     # Keep PR previews and the existing main deployment; merge-queue runs only test.
     name: Preview
     needs: [build, build-nextjs]
-    # TEMPORARY: only the Safari tests run while diagnosing
-    # https://github.com/ariakit/ariakit/issues/8428
-    if: ${{ false && always() && github.event_name != 'merge_group' }}
+    if: ${{ always() && github.event_name != 'merge_group' }}
     permissions:
       actions: read
       contents: read
