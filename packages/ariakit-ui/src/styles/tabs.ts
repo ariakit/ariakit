@@ -14,6 +14,7 @@ import {
   carouselStepClasses,
 } from "./carousel.ts";
 import { frame } from "./frame.ts";
+import { gliderFollower } from "./glider.ts";
 import {
   isSegmentedKind,
   segmentGroupClass,
@@ -48,7 +49,8 @@ function hidesTabsEdge(variants: TabsEdgeVariants) {
 export const tabs = cv({
   extend: [frame],
   class: [
-    "tabs",
+    // The panels follow a glider in the strip, so they are in its scope.
+    "tabs glider-scope",
     // Keep one stack for the strip, panel (1), and tabs (6), so selected tabs
     // cover the panel seam.
     "isolate",
@@ -223,12 +225,13 @@ const tabCurves = cx(
 // outer folder starts twice the meet from that side, and its border is as wide
 // as the root edge, so the curve passes the side by the radius less both. A
 // folder on that side, with no meet, has no room past its own border, so it has
-// no curve, like an adapted one.
+// no curve, like an adapted one. The box of a glider in the strip paints the
+// selected folder, so it takes the same curve.
 const tabCutCurves = cx(
-  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&]:ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius))*1000000)]",
-  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&]:ui-selected:after:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet-end,var(--tabs-radius))*1000000)]",
-  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&]:ui-selected:before:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-bordering))]",
-  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&]:ui-selected:after:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-bordering))]",
+  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&,.tabs-folder-cut>.tabs-strip_&.glider-box,.tabs-folder-cut>*>.tabs-strip_&.glider-box]:ui-selected:before:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet,var(--tabs-radius))*1000000)]",
+  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&,.tabs-folder-cut>.tabs-strip_&.glider-box,.tabs-folder-cut>*>.tabs-strip_&.glider-box]:ui-selected:after:[--folder-radius:min(var(--tabs-radius),var(--tabs-meet-end,var(--tabs-radius))*1000000)]",
+  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&,.tabs-folder-cut>.tabs-strip_&.glider-box,.tabs-folder-cut>*>.tabs-strip_&.glider-box]:ui-selected:before:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-bordering))]",
+  "[.tabs-folder-cut>.tabs-strip>&,.tabs-folder-cut>*>.tabs-strip>&,.tabs-folder-cut>.tabs-strip_&.glider-box,.tabs-folder-cut>*>.tabs-strip_&.glider-box]:ui-selected:after:[--folder-cut:calc(var(--tabs-radius)-2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-bordering))]",
 );
 
 // Forced colors remove the fill, the only mark of a selected folder under a
@@ -297,6 +300,10 @@ function inheritsTabsBorder(variants: TabsBorderVariants) {
 // surface.
 const tabFolder = cx(
   "ui-folder",
+  // The box of a glider paints the selected folder, wherever it is. It takes
+  // the meet from its own place, so its curves change while it travels.
+  "[&.glider-box]:[--tabs-meet:calc(var(--glider-start)/2)]",
+  "[.tabs-stretch_&.glider-box]:[--tabs-meet-end:calc(var(--glider-end)/2)]",
   tabsBorder,
   tabCurves,
   tabCutCurves,
@@ -677,6 +684,13 @@ export const tabPanels = cv({
   class: [
     "relative z-1 overflow-clip",
     tabsBorder,
+    // With a glider in the strip, a selected folder is where the box is. A
+    // first folder sits at twice the meet from the start of the strip, so the
+    // corners take the meet from the place of the box, and change with it
+    // while it travels. Other selected tabs don't meet the panel.
+    gliderFollower,
+    "[.tabs:has(>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-meet:calc(var(--glider-start)/2)]",
+    "[.tabs:has(>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-meet-end:calc(var(--glider-end)/2)]",
     // Overlap the strip notch and root edge so the selected folder covers the
     // seam. The top margin and corners here apply only below a strip. A panel
     // with no strip before it keeps those of $cover, like the first frame.

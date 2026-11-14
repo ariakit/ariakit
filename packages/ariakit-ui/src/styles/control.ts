@@ -493,7 +493,7 @@ const separatorShy = cx(
 export const controlSeparator = cv({
   extend: [layer],
   class: [
-    "[.vertical>&]:hidden",
+    "control-separator [.vertical>&]:hidden",
     // Resolve the separator edge against a layer without painting a background.
     "bg-transparent flex items-center justify-center pointer-events-none",
     "transition-opacity duration-200 ease-out",
