@@ -265,7 +265,7 @@ export const navGroupLabel = cv({
   },
 });
 
-/** Shared slot sizing and margins for navigation icons, boxes, and avatars. */
+/** Shared slot sizing and margins for navigation icons and boxes. */
 const navSlotBase = cv({
   extend: [buttonSlot],
   variants: {
@@ -273,8 +273,8 @@ const navSlotBase = cv({
      * Sets the slot size. `auto` follows the navigation `$slotSize`, or the
      * text size; without `$slotSize`, a box after the label takes the line
      * height instead. Numbers scale the spacing token; other lengths apply
-     * directly. Named sizes `xs` to `lg` become `xl` for avatars; `xl` and
-     * larger add label spacing, except for thumbnails and text.
+     * directly. `xl` and larger add label spacing, except for thumbnails and
+     * text.
      */
     $size(value?: SlotSize | "auto" | number | (string & {})) {
       if (value == null) return;
@@ -296,15 +296,13 @@ const navSlotBase = cv({
     },
   },
   defaultVariants: {
-    // Resolve before slotFrameSlot refinement converts the named sizes of
-    // avatars.
     $size: "auto",
   },
 });
 
 /**
- * An icon, box, avatar, or text slot aligned with navigation labels. A box can
- * hold a badge or a keyboard key.
+ * An icon, box, or text slot aligned with navigation labels. A box can hold a
+ * badge, an avatar, or a keyboard key.
  */
 export const navSlot = cv({
   extend: [navSlotBase],

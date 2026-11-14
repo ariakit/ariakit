@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
@@ -914,7 +915,7 @@ export default function RadioExamples() {
           <RadioGroup defaultValue="jane" aria-label="Assignee" disabled={disabled}>
             <RadioCardGrid>
               <RadioCard value="jane">
-                <RadioCardSlot $kind="avatar" $layer="brand">J</RadioCardSlot>
+                <RadioCardSlot $kind="box"><Avatar $layer="brand">J</Avatar></RadioCardSlot>
                 <RadioCardLabel>Jane Doe</RadioCardLabel>
                 <RadioCardSlot $kind="box">
                   <Badge $kind="solid">3</Badge>
@@ -934,8 +935,8 @@ export default function RadioExamples() {
         >
           <RadioCardGrid>
             <RadioCard value="jane">
-              <RadioCardSlot $kind="avatar" $layer="brand">
-                J
+              <RadioCardSlot $kind="box">
+                <Avatar $layer="brand">J</Avatar>
               </RadioCardSlot>
               <RadioCardLabel>Jane Doe</RadioCardLabel>
               <RadioCardSlot $kind="box">

@@ -1,11 +1,13 @@
 import * as ak from "@ariakit/react";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import {
+  Avatar,
+  AvatarGroup,
+} from "@ariakit/ui/components/avatar.ariakit.react";
 import {
   TooltipAnchor,
   TooltipPopover,
   TooltipProvider,
 } from "@ariakit/ui/components/tooltip.ariakit.react";
-import { focus } from "@ariakit/ui/styles/focus";
 
 interface Person {
   name: string;
@@ -32,14 +34,6 @@ function getHref(name: string) {
   return `#${name.toLowerCase().replaceAll(" ", "-")}`;
 }
 
-// Each avatar overlaps the one before it, with a ring in the color of the
-// surface around it.
-const avatarClass = [
-  focus.jsx({ $focus: true, $focusOffset: 2 }).className,
-  "grid size-9 place-items-center text-xs font-semibold",
-  "-ms-1.5 ring-2 ring-(--ak-layer-parent) first:ms-0",
-].join(" ");
-
 interface AvatarLinkProps {
   href: string;
   label: string;
@@ -51,16 +45,14 @@ function AvatarLink({ href, label, children, hue }: AvatarLinkProps) {
   return (
     <TooltipAnchor
       render={
-        <Frame
+        // The avatar is a link, so the label names the link.
+        <Avatar
           render={<a href={href} />}
           aria-label={label}
-          $layer={hue ? "brand" : true}
+          $layer={hue ? "brand" : undefined}
           $hue={hue}
-          // A neutral avatar needs a surface that differs from the page.
-          $lightnessOffset={hue ? undefined : true}
-          $rounded="full"
-          $p="none"
-          className={avatarClass}
+          $focus
+          $focusOffset={2}
         />
       }
     >
@@ -82,7 +74,7 @@ function SharedTooltip() {
 export default function Example() {
   return (
     <TooltipProvider>
-      <div role="group" aria-label="Project members" className="flex">
+      <AvatarGroup aria-label="Project members" $size={9}>
         {people.map((person) => (
           <AvatarLink
             key={person.name}
@@ -96,7 +88,7 @@ export default function Example() {
         <AvatarLink href="#members" label={`${MORE_COUNT} more members`}>
           {`+${MORE_COUNT}`}
         </AvatarLink>
-      </div>
+      </AvatarGroup>
       <SharedTooltip />
     </TooltipProvider>
   );

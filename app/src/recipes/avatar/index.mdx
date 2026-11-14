@@ -1,0 +1,35 @@
+---
+title: Avatar
+category: content
+icon: circle-user
+---
+
+## Overview
+
+These examples show people, teams, and workspaces with the Ariakit UI `Avatar` component. An avatar is a round box with initials, a photo, or an icon. Its size follows the text around it.
+
+The gallery starts with a list of people, where each row has an avatar beside a name. Then it shows photos that fall back to initials, sizes that follow the text, and avatars inside buttons and links. The last example puts several avatars in an overlapping group with a count.
+
+## Components
+
+`Avatar` uses the `avatar` style recipe, which extends `frame` and `focus`. It is neutral by default. Set `$layer` to fill it with a color, and `$hue` to change that color. It is round, and `$rounded` takes a radius step for a rounded square, such as for a team or a workspace.
+
+Set the size with `$size`. A number is a count of spacing steps, so the avatar follows the font size. A string is a CSS length, such as `"1lh"` for one line of text. Without `$size`, the avatar is two lines of the text around it. The initials scale with the avatar, and an icon takes half of it.
+
+For a photo, put an `AvatarImage` in the avatar, before the initials. The photo covers the initials. They show while the photo loads, and they stay when the photo fails, because the image then removes itself. This also works when the photo fails before the page scripts start. `AvatarImage` is a real `img` element, so `loading`, `srcSet`, and `referrerPolicy` work. Pass `render` to use the image component of a framework. A transparent image shows the initials under it.
+
+In a control, put the avatar in a slot with `$kind="box"`, as in the Avatars in Control Slots example. The slot sets the size of the avatar, so `$size` and `$rowSpan` go on the slot.
+
+`AvatarGroup` lays its avatars in a row, where each one covers the end of the one before it. A ring in the color of the surface around the group keeps them apart. The ring is one color, so put the group on a plain surface, not on a photo or a gradient. `$size` on the group sets the size of all its avatars. For a count of the people that the group does not show, add one more `Avatar`, as in the Overlapping Group with Count example. The Avatar Stack example of the Tooltip recipe makes each avatar a link with a tooltip.
+
+## Accessibility
+
+An avatar usually sits beside the name of the person. A screen reader that reads the initials before the name adds noise, so an `Avatar` is hidden from assistive technology by default.
+
+When an avatar stands alone, pass `aria-label` with the name. The avatar then becomes one image with that name, and screen readers skip the initials and the photo inside it. The photo has an empty `alt` for the same reason, so put the name on the `Avatar`, not on the `AvatarImage`.
+
+When you pass `render` or `role`, such as for a link, the avatar keeps the role and the name that you give it. Name a link or a button after what it does.
+
+`AvatarGroup` gets the `group` role when it has `aria-label` or `aria-labelledby`. Label the avatars inside it when no names follow them.
+
+The text of an avatar must be readable on its color. The layer colors choose a readable text color, but check the result when you set a custom color.

@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import {
   CheckboxField,
@@ -115,14 +116,7 @@ function Comments({ keepLoading }: CommentsProps) {
         {(data ?? comments).map((comment) => (
           <div key={comment.id} className="flex items-center gap-3 text-sm">
             <SkeletonCircle className="size-8 shrink-0">
-              <Frame
-                $layer="secondary"
-                $rounded="full"
-                $forceRounded
-                $p="none"
-                aria-hidden
-                className="size-8 shrink-0"
-              />
+              <Avatar $layer="secondary" $size={8} />
             </SkeletonCircle>
             <div className="grid min-w-0 flex-1">
               <SkeletonLine className="w-24">

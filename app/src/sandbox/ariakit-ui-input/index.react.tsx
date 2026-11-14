@@ -7,6 +7,10 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import {
+  Avatar,
+  AvatarImage,
+} from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
@@ -981,15 +985,17 @@ export default function InputExamples() {
             <InputSlot $size="xl" $layer="brand" $mix={20}>
               <Lock />
             </InputSlot>
-            <InputSlot $kind="avatar"><img alt="" src={picture} /></InputSlot>
+            <InputSlot $kind="box"><Avatar><AvatarImage src={picture} /></Avatar></InputSlot>
             <Input disabled />
             <InputSlot $kind="box" $size="2xl">
               <Button $size="sm">
                 <ButtonSlot $size="xl" $layer="brand" $mix={20}>
                   <Search />
                 </ButtonSlot>
-                <ButtonSlot $kind="avatar">
-                  <img alt="" src={picture} />
+                <ButtonSlot $kind="box">
+                  <Avatar>
+                    <AvatarImage src={picture} />
+                  </Avatar>
                 </ButtonSlot>
                 Find
               </Button>
@@ -1001,8 +1007,10 @@ export default function InputExamples() {
           <InputSlot $size="xl" $layer="brand" $mix={20}>
             <Lock />
           </InputSlot>
-          <InputSlot $kind="avatar">
-            <img alt="" src={avatarImage} className="size-full" />
+          <InputSlot $kind="box">
+            <Avatar>
+              <AvatarImage src={avatarImage} />
+            </Avatar>
           </InputSlot>
           <Input aria-label="Owner" defaultValue="marta" disabled />
           <InputSlot $size="2xl" $kind="box">
@@ -1010,8 +1018,10 @@ export default function InputExamples() {
               <ButtonSlot $size="xl" $layer="brand" $mix={20}>
                 <Search />
               </ButtonSlot>
-              <ButtonSlot $kind="avatar">
-                <img alt="" src={avatarImage} className="size-full" />
+              <ButtonSlot $kind="box">
+                <Avatar>
+                  <AvatarImage src={avatarImage} />
+                </Avatar>
               </ButtonSlot>
               Find
             </Button>

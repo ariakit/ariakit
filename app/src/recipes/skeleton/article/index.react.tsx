@@ -1,3 +1,4 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Heading,
@@ -45,16 +46,9 @@ export default function Example() {
         </HeadingLevel>
         <div className="flex items-center gap-3 text-sm">
           <SkeletonCircle className="size-9 shrink-0">
-            <Frame
-              $layer="secondary"
-              $rounded="full"
-              $forceRounded
-              $p="none"
-              aria-hidden
-              className="grid size-9 shrink-0 place-items-center"
-            >
-              <span className="text-xs font-semibold">{data?.initials}</span>
-            </Frame>
+            <Avatar $layer="secondary" $size={9}>
+              {data?.initials}
+            </Avatar>
           </SkeletonCircle>
           <div className="grid">
             <SkeletonLine className="w-24">

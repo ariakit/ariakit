@@ -84,8 +84,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       // The text size is 16px at the sandbox's font, and $slotSize={5} and
       // $slotSize={8} are five and eight spacing steps, 20px and 32px. A badge
       // or an avatar takes that size like an icon, before or after the label,
-      // in a section row and a link row alike. Without $slotSize, a badge after
-      // the label takes the line height instead, like a button badge.
+      // in a section row and a link row alike. Without $slotSize, a badge or an
+      // avatar after the label takes the line height instead, like a button
+      // badge.
       const lineHeight = await drafts.evaluate((node) =>
         Number.parseFloat(getComputedStyle(node).lineHeight),
       );
@@ -96,8 +97,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         [slot(notifications, "9"), size],
         [slot(anaLima, "AL"), size],
         [slot(drafts, "3"), trailingSize],
-        [slot(profile, "JD"), size],
-        [slot(design, "MK"), size],
+        [slot(profile, "JD"), trailingSize],
+        [slot(design, "MK"), trailingSize],
       ] as const;
       for (const [square, squareSize] of squares) {
         await expect
@@ -145,7 +146,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       );
       for (const [link, text, trailingSlotSize] of [
         [drafts, "3", trailingSize],
-        [profile, "JD", size],
+        [profile, "JD", trailingSize],
       ] as const) {
         const [linkBox, trailing] = await Promise.all([
           getBox(link),

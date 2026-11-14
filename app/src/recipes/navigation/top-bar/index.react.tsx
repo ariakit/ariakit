@@ -1,3 +1,4 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import {
   Button,
   ButtonSlot,
@@ -64,8 +65,8 @@ function Page() {
             </ButtonSlot>
           </Button>
           <Button aria-label="Account" className="rounded-full p-0">
-            <ButtonSlot $kind="avatar" $layer="brand" aria-hidden>
-              MR
+            <ButtonSlot $kind="box">
+              <Avatar $layer="brand">MR</Avatar>
             </ButtonSlot>
           </Button>
         </ShellEnd>

@@ -1,0 +1,4 @@
+{
+  "title": "Sizes that Follow Text",
+  "description": "Avatars sized by the text around them: one line with $size=\"1lh\" inside a sentence, the default two lines beside a name and a role, and a number $size that scales with the font size of a profile header. The initials scale with each avatar. Use it when avatars must stay in proportion with text of different sizes, instead of fixed pixel sizes."
+}
