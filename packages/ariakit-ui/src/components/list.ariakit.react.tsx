@@ -54,6 +54,12 @@ const ListContext = React.createContext<ListContextValue>({
   markers: true,
 });
 
+// Whether the list disclosure around a button has a marker. It is undefined
+// outside a `ListDisclosure`.
+const ListDisclosureMarkerContext = React.createContext<boolean | undefined>(
+  undefined,
+);
+
 // Whether the content of a row is around, so a list knows that it is nested.
 const ListRowContext = React.createContext(false);
 
@@ -446,21 +452,25 @@ export function ListDisclosure({
   ...props
 }: ListDisclosureProps) {
   const context = React.useContext(ListContext);
+  const $marker = props.$marker ?? context.markers;
   return (
-    <Disclosure
-      recipe={listDisclosure}
-      $marker={context.markers}
-      {...props}
-      // The root lets the guide span both the button and open content.
-      decoration={
-        <>
-          {decoration}
-          {createRender(ListItemGuide, context.guide)}
-        </>
-      }
-      button={createOptionalRender(ListDisclosureButton, button)}
-      content={createRender(ListDisclosureContent, content)}
-    />
+    // The button shows a marker only when its disclosure has one.
+    <ListDisclosureMarkerContext.Provider value={$marker}>
+      <Disclosure
+        recipe={listDisclosure}
+        {...props}
+        $marker={$marker}
+        // The root lets the guide span both the button and open content.
+        decoration={
+          <>
+            {decoration}
+            {createRender(ListItemGuide, context.guide)}
+          </>
+        }
+        button={createOptionalRender(ListDisclosureButton, button)}
+        content={createRender(ListDisclosureContent, content)}
+      />
+    </ListDisclosureMarkerContext.Provider>
   );
 }
 
@@ -503,7 +513,8 @@ export function ListDisclosureButton({
       : label;
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
   const context = React.useContext(ListContext);
-  const $marker = props.$marker ?? context.markers;
+  const disclosureMarker = React.useContext(ListDisclosureMarkerContext);
+  const $marker = props.$marker ?? disclosureMarker ?? context.markers;
   // In a list, the icon goes in the marker, not in a slot before the label.
   const markerEl =
     $marker &&

@@ -203,6 +203,37 @@ export default function ListExamples() {
       </Example>
 
       <Example
+        title="Disclosure without a marker"
+        description="A disclosure row in a list with tall markers can leave out its own marker. Its button shows none and keeps even inline padding."
+        stretch
+        code={`
+          <List $markerSize={12}>
+            <ListItem>Keyboard shortcuts</ListItem>
+            <li>
+              <ListDisclosure $marker={false} button={{ children: "Right-to-left layouts", indicator: "chevron-down-end" }}>
+                …
+              </ListDisclosure>
+            </li>
+          </List>
+        `}
+      >
+        <List $markerSize={12}>
+          <ListItem>Keyboard shortcuts</ListItem>
+          <li>
+            <ListDisclosure
+              $marker={false}
+              button={{
+                children: "Right-to-left layouts",
+                indicator: "chevron-down-end",
+              }}
+            >
+              <p>Logical properties place every part of the row.</p>
+            </ListDisclosure>
+          </li>
+        </List>
+      </Example>
+
+      <Example
         title="Unordered blocks"
         description="Paragraph children switch the list to blocks mode, with a larger gap and row padding. Dashes draw no guide."
         stretch

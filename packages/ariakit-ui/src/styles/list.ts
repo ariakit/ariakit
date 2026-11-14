@@ -1132,10 +1132,6 @@ export const listDisclosureButton = cv({
     // Make room for a marker box taller than one line.
     "pbs-[calc(var(--py)+var(--list-marker-overhang))]",
     "pbe-[calc(var(--py)+var(--list-marker-overhang))]",
-    // Slots read --py to sit as far from the side as from the top. The end
-    // padding grows like the block padding, so slots and text at the end keep
-    // that distance.
-    "pe-[calc(var(--px)+var(--list-marker-overhang))]",
     // Hover and press surfaces cover the guide; the marker stays above both.
     "z-3",
     // Put the marker in the padding corner. Label content resets this offset.
@@ -1147,7 +1143,14 @@ export const listDisclosureButton = cv({
      * component sets `false` in a list with `$marker="none"`.
      */
     $marker: {
-      true: "[--disclosure-ps:calc(var(--py)+var(--list-marker-box,1lh)+var(--list-text-inset))]",
+      true: [
+        "[--disclosure-ps:calc(var(--py)+var(--list-marker-box,1lh)+var(--list-text-inset))]",
+        // Slots read --py to sit as far from the side as from the top. The end
+        // padding grows like the block padding, so slots and text at the end
+        // keep that distance. A button without a marker keeps its inline
+        // padding even, like a row without one.
+        "pe-[calc(var(--px)+var(--list-marker-overhang))]",
+      ],
       // The label starts where the text of a row without a marker starts.
       false: "[--disclosure-ps:var(--px)]",
     },
