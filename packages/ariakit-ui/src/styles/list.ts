@@ -390,7 +390,9 @@ export const listItem = cv({
     // its content under the marker.
     "ui-list-horizontal:row-start-1",
     "ui-list-horizontal:text-center ui-list-horizontal:justify-items-center",
-    "ui-list-horizontal:pbe-(--py)",
+    // A horizontal row puts the marker box above its content, so it adds no
+    // overhang to its padding.
+    "ui-list-horizontal:pbe-(--py) ui-list-horizontal:pe-(--px)",
   ],
   variants: {
     /**
@@ -447,6 +449,12 @@ export const listItem = cv({
     if (hasSlotSurface(variants)) {
       // The list reads this class to keep all its rows in their frames.
       addClass("list-item-surface");
+      // The end padding of a row with a marker grows like the block padding, so
+      // text at the end is as far from the side as from the top. A row without
+      // a marker keeps its inline padding even.
+      if (variants.$marker) {
+        addClass("pe-[calc(var(--px)+var(--list-marker-overhang))]");
+      }
     } else {
       // A row without a surface or a border starts at the edge of the list, so
       // its marker lines up with the text around the list. The row moves out by
@@ -458,11 +466,13 @@ export const listItem = cv({
       ]);
       // Its content also ends at the edge of the list, so content at the end of
       // rows at all levels lines up. Without end padding, the row stays inside
-      // the list and cannot overflow it. A horizontal row stays centered.
-      addClass([
-        "pe-[calc(var(--px)*(1-var(--list-flush,0)))]",
-        "ui-list-horizontal:pe-(--px)",
-      ]);
+      // the list and cannot overflow it. A row that keeps its frame has the end
+      // padding of a row with a surface, so their content ends at one line.
+      addClass(
+        variants.$marker
+          ? "pe-[calc((var(--px)+var(--list-marker-overhang))*(1-var(--list-flush,0)))]"
+          : "pe-[calc(var(--px)*(1-var(--list-flush,0)))]",
+      );
     }
   },
 });
@@ -906,6 +916,10 @@ export const listDisclosureButton = cv({
     // Make room for a marker box taller than one line.
     "pbs-[calc(var(--py)+var(--list-marker-overhang))]",
     "pbe-[calc(var(--py)+var(--list-marker-overhang))]",
+    // Slots read --py to sit as far from the side as from the top. The end
+    // padding grows like the block padding, so slots and text at the end keep
+    // that distance.
+    "pe-[calc(var(--px)+var(--list-marker-overhang))]",
     // Hover and press surfaces cover the guide; the marker stays above both.
     "z-3",
     // Put the marker in the padding corner. Label content resets this offset.
