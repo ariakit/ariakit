@@ -1,0 +1,4 @@
+{
+  "title": "Photo with Initials Fallback",
+  "description": "Avatars that stand alone, each named with aria-label, where an AvatarImage covers the initials. The initials show while the photo loads, stay when the photo fails because the image removes itself, and are the only content when the person has no photo. Use it when people can have a photo, instead of the baseline avatar with initials only."
+}

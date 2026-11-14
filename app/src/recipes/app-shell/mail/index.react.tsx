@@ -1,10 +1,10 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
   ButtonGroup,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
-import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Heading } from "@ariakit/ui/components/heading.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
@@ -350,14 +350,10 @@ export default function Example() {
             <ShellMainIntro>
               <Heading $level={2}>{selectedMessage.subject}</Heading>
               <div className="flex items-center gap-3">
-                <Frame
-                  $layer="brand"
-                  $rounded="full"
-                  $p="none"
-                  className="grid size-10 shrink-0 place-items-center rounded-full text-sm font-semibold"
-                >
+                {/* The sender name follows the avatar. */}
+                <Avatar $layer="brand">
                   {initialsOf(selectedMessage.sender)}
-                </Frame>
+                </Avatar>
                 <div className="text-sm">
                   <p className="font-medium">
                     {isOutgoing(selectedMessage)

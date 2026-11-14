@@ -1,0 +1,4 @@
+{
+  "title": "Avatar",
+  "description": "Baseline list of people where each row has an Avatar with initials and a hue beside the name and the role. The Avatar takes two lines of the row text by default and stays hidden from assistive technology, because the name follows it. Use it for member lists, comments, and other rows that already show the name, before adding a photo, a custom size, or a group."
+}

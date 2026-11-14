@@ -1,3 +1,4 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
@@ -112,8 +113,8 @@ export default function Example() {
             {/*
              * The wider margin brings the label in line with the nav labels.
              */}
-            <ButtonSlot $kind="avatar" $layer="brand" $mx="2xl">
-              A
+            <ButtonSlot $kind="box" $mx="2xl">
+              <Avatar $layer="brand">A</Avatar>
             </ButtonSlot>
             <ButtonLabel $grow>Acme</ButtonLabel>
             <ButtonSlot>

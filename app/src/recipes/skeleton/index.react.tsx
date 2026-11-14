@@ -1,3 +1,4 @@
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
@@ -39,16 +40,9 @@ export default function Example() {
       <Skeleton loading={loading} className="grid gap-5">
         <div className="flex items-center gap-4">
           <SkeletonCircle className="size-14 shrink-0">
-            <Frame
-              $layer="brand"
-              $rounded="full"
-              $forceRounded
-              $p="none"
-              aria-hidden
-              className="grid size-14 shrink-0 place-items-center"
-            >
-              <span className="text-lg font-semibold">{user?.initials}</span>
-            </Frame>
+            <Avatar $layer="brand" $size={14}>
+              {user?.initials}
+            </Avatar>
           </SkeletonCircle>
           <div className="grid min-w-0 flex-1 gap-2">
             <HeadingLevel level={3}>

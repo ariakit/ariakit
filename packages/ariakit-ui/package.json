@@ -25,6 +25,7 @@
     "clean": "ariakit clean"
   },
   "exports": {
+    "./components/avatar.ariakit.react": "./src/components/avatar.ariakit.react.tsx",
     "./components/badge.ariakit.react": "./src/components/badge.ariakit.react.tsx",
     "./components/breadcrumb.ariakit.react": "./src/components/breadcrumb.ariakit.react.tsx",
     "./components/button.ariakit.react": "./src/components/button.ariakit.react.tsx",
@@ -68,6 +69,7 @@
     "./react-utils/use-perceptible-value.react": "./src/react-utils/use-perceptible-value.react.ts",
     "./react-utils/use-truncation.react": "./src/react-utils/use-truncation.react.ts",
     "./styles/active": "./src/styles/active.ts",
+    "./styles/avatar": "./src/styles/avatar.ts",
     "./styles/badge": "./src/styles/badge.ts",
     "./styles/breadcrumb": "./src/styles/breadcrumb.ts",
     "./styles/button": "./src/styles/button.ts",
@@ -132,7 +134,7 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "shiki": "4.6.0",
-    "solid-js": "1.9.18"
+    "solid-js": "1.9.19"
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",

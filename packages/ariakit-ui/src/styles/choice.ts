@@ -24,9 +24,9 @@ import { hover } from "./hover.ts";
 import { hasLayerBackground } from "./layer.ts";
 import { isSegmentedKind } from "./segment.ts";
 
-// The box radius wins over the radius that a slot computes for floating and
-// avatar slots. The switch mark can't set it in the same object, so it replaces
-// this value in its computed default.
+// The box radius wins over the radius that a slot computes for floating slots.
+// The switch mark can't set it in the same object, so it replaces this value in
+// its computed default.
 const choiceBase = cv({
   extend: [controlSlot, hover],
   defaultVariants: {

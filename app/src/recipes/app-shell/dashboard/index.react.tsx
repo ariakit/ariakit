@@ -1,4 +1,5 @@
 import * as ak from "@ariakit/react";
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import { Badge, BadgeLabel } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
@@ -90,15 +91,9 @@ export default function Example() {
         </ShellSidebarBody>
         <ShellSidebarFooter>
           <div className="flex items-center gap-3">
-            <Frame
-              $layer="brand"
-              $rounded="full"
-              $p="none"
-              aria-hidden
-              className="grid size-8 shrink-0 place-items-center text-xs font-semibold"
-            >
+            <Avatar $layer="brand" $size={8}>
               MR
-            </Frame>
+            </Avatar>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">Maya Rossi</p>
               <p className="ak-ink-70 truncate text-xs">maya@acme.dev</p>
@@ -139,8 +134,8 @@ export default function Example() {
                 </ButtonSlot>
               </Button>
               <Button aria-label="Account menu" className="rounded-full p-0">
-                <ButtonSlot $kind="avatar" $layer="brand" aria-hidden>
-                  MR
+                <ButtonSlot $kind="box">
+                  <Avatar $layer="brand">MR</Avatar>
                 </ButtonSlot>
               </Button>
             </div>

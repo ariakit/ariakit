@@ -8,6 +8,10 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import {
+  Avatar,
+  AvatarImage,
+} from "@ariakit/ui/components/avatar.ariakit.react";
+import {
   Badge,
   BadgeLabel,
   BadgeSlot,
@@ -75,8 +79,7 @@ const features: Feature[] = [
 ];
 
 // A drawn portrait instead of a network image, so the screenshots do not depend
-// on a remote service. An avatar slot is made for images; text initials
-// overflow its disc.
+// on a remote service.
 const avatarSource = `data:image/svg+xml,${encodeURIComponent(
   [
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">',
@@ -659,10 +662,14 @@ export default function CheckboxExamples() {
 
       <Example
         title="Card with avatar"
-        description="An avatar slot shows a person's image, and the check moves to the end of the row."
+        description="An avatar in a box slot shows a person's image, and the check moves to the end of the row."
         code={`
           <CheckboxCard value="maya" defaultChecked>
-            <CheckboxCardSlot $kind="avatar" />
+            <CheckboxCardSlot $kind="box">
+              <Avatar>
+                <AvatarImage src={avatarSource} />
+              </Avatar>
+            </CheckboxCardSlot>
             <CheckboxCardContent>
               <CheckboxCardLabel>Maya Chen</CheckboxCardLabel>
               <CheckboxCardDescription>Designer</CheckboxCardDescription>
@@ -672,8 +679,10 @@ export default function CheckboxExamples() {
         `}
       >
         <CheckboxCard value="maya" defaultChecked>
-          <CheckboxCardSlot $kind="avatar">
-            <img alt="" src={avatarSource} />
+          <CheckboxCardSlot $kind="box">
+            <Avatar>
+              <AvatarImage src={avatarSource} />
+            </Avatar>
           </CheckboxCardSlot>
           <CheckboxCardContent>
             <CheckboxCardLabel>Maya Chen</CheckboxCardLabel>

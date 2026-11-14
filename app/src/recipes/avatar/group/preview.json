@@ -1,0 +1,4 @@
+{
+  "title": "Overlapping Group with Count",
+  "description": "An AvatarGroup of labelled avatars where each one covers the end of the one before it, with a ring in the color of the surface around the group and one size from $size. The code slices the list, and one more Avatar shows the count of the people that the group leaves out. Use it to show who takes part in a project, a thread, or a file, when the list can be longer than the space."
+}

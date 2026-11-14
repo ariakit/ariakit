@@ -1,4 +1,4 @@
 {
   "title": "Branches with Detailed Rows",
-  "description": "A commit history with branches whose rows hold a message, a Badge with the commit hash, and a line with the avatar and the name of the author. The paragraphs switch the lists to blocks mode, and the curves of each nested List with $branch leave the guide of the main list after the text of the merge row. Use it when each row of a branching history needs more than one line, rather than the compact rows of the list with branches."
+  "description": "A commit history with branches whose rows hold a message, a Badge with the commit hash, and a line with the Avatar and the name of the author. The paragraphs switch the lists to blocks mode, and the curves of each nested List with $branch leave the guide of the main list after the text of the merge row. Use it when each row of a branching history needs more than one line, rather than the compact rows of the list with branches."
 }

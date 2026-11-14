@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Avatar } from "@ariakit/ui/components/avatar.ariakit.react";
 import {
   Badge,
   BadgeLabel,
@@ -394,17 +395,17 @@ export default function BadgeExamples() {
 
       <Example
         title="Avatar"
-        description="A round avatar slot that paints its own surface behind two initials."
+        description="A round avatar in a box slot paints its own surface behind two initials."
         code={`
           <Badge>
-            <BadgeSlot $kind="avatar" $layer="brand">WW</BadgeSlot>
+            <BadgeSlot $kind="box"><Avatar $layer="brand">WW</Avatar></BadgeSlot>
             <BadgeLabel>Will</BadgeLabel>
           </Badge>
         `}
       >
         <Badge>
-          <BadgeSlot $kind="avatar" $layer="brand">
-            WW
+          <BadgeSlot $kind="box">
+            <Avatar $layer="brand">WW</Avatar>
           </BadgeSlot>
           <BadgeLabel>Will</BadgeLabel>
         </Badge>

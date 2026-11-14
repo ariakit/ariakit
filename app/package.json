@@ -85,7 +85,7 @@
     "rehype-autolink-headings": "7.1.0",
     "rehype-parse": "9.0.1",
     "shiki": "4.6.0",
-    "solid-js": "1.9.18",
+    "solid-js": "1.9.19",
     "stripe": "23.1.0",
     "tailwindcss": "4.3.5",
     "textarea-caret": "3.1.0",
@@ -117,6 +117,6 @@
     "rimraf": "6.1.4",
     "vite": "8.3.7",
     "vitest": "5.1.0",
-    "wrangler": "4.159.0"
+    "wrangler": "4.160.0"
   }
 }
