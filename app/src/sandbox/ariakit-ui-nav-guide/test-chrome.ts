@@ -277,6 +277,27 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect.poll(getShownBars).toEqual(["Support"]);
   });
 
+  // https://github.com/ariakit/ariakit/pull/8454#discussion_r4575739532
+  test("removes the bar from the guide at once when the new current link has its bar off the guide", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Bar off the guide on one link");
+    const getShownBars = async () => getShown(await getBars(nav));
+    await test.expect.poll(getShownBars).toEqual(["Guides"]);
+    // A long glide would keep the bar on the guide while the test reads it. The
+    // rule isn't important, so the inline duration that stops a cleared range
+    // still wins.
+    await page.addStyleTag({
+      content: ".nav-link-guide-bar { transition-duration: 30s; }",
+    });
+    const support = query(nav).link("Support");
+    await support.click();
+    await test.expect(support).toHaveAttribute("aria-current", "page");
+    await test.expect.poll(getShownBars).toEqual([]);
+    await test.expect(support.locator(".control-bar")).toBeVisible();
+  });
+
   test("keeps a plain bar at the end side and in a disclosure", async ({
     q,
   }) => {

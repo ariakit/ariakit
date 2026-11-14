@@ -93,6 +93,21 @@ function DisclosureNav(props: NavProps) {
   );
 }
 
+/**
+ * Links on a guide where one link keeps its bar at the end side, off the guide.
+ * The guide has no bar while that link is current.
+ */
+function OffGuideBarNav(props: NavProps) {
+  const getProps = useCurrentLink("Guides");
+  return (
+    <Nav $guide="smooth" bar className="w-full" {...props}>
+      <NavLink {...getProps("Overview")} />
+      <NavLink {...getProps("Guides")} />
+      <NavLink {...getProps("Support")} bar={{ $side: "end" }} />
+    </Nav>
+  );
+}
+
 export default function NavGuideExamples() {
   return (
     <ExampleGrid>
@@ -378,6 +393,20 @@ export default function NavGuideExamples() {
         `}
       >
         <DisclosureNav aria-label="Bar around a disclosure" />
+      </Example>
+
+      <Example
+        title="Bar off the guide on one link"
+        description="One link keeps its bar at the end side. When it becomes current, the bar leaves the guide at once. Click a link to make it current."
+        code={`
+          <Nav $guide="smooth" bar>
+            <NavLink>Overview</NavLink>
+            <NavLink aria-current="page">Guides</NavLink>
+            <NavLink bar={{ $side: "end" }}>Support</NavLink>
+          </Nav>
+        `}
+      >
+        <OffGuideBarNav aria-label="Bar off the guide on one link" />
       </Example>
     </ExampleGrid>
   );

@@ -20,6 +20,7 @@ import {
   useDescriptionRegistry,
 } from "../react-utils/use-description.react.ts";
 import type {
+  NavBarRangeEntry,
   NavBarRangeStore,
   UseNavBarRangeParams,
 } from "../react-utils/use-nav-bar-range.react.ts";
@@ -95,6 +96,7 @@ interface NavGuideBar {
 // Covers the current link with a bar range, so the bar on the guide glides to
 // the next current link.
 function createNavGuideBar(barRange: NavBarRangeStore): NavGuideBar {
+  const entries = new Map<string, NavBarRangeEntry>();
   const ids = new Set<string>();
   let scheduled = false;
   const sync = () => {
@@ -102,6 +104,12 @@ function createNavGuideBar(barRange: NavBarRangeStore): NavGuideBar {
     const [id] = ids;
     // One range can't cover several current links, so CSS draws their bars.
     if (id == null || ids.size > 1) {
+      barRange.clearRange();
+      return;
+    }
+    // A link whose bar is off the guide, such as a bar at the end side, has no
+    // piece for the range to cover. Its own bar shows at once.
+    if (!entries.get(id)?.bar.current) {
       barRange.clearRange();
       return;
     }
@@ -115,7 +123,14 @@ function createNavGuideBar(barRange: NavBarRangeStore): NavGuideBar {
     queueMicrotask(sync);
   };
   return {
-    register: barRange.register,
+    register: (id, entry) => {
+      entries.set(id, entry);
+      const unregister = barRange.register(id, entry);
+      return () => {
+        entries.delete(id);
+        unregister();
+      };
+    },
     addCurrent: (id) => {
       ids.add(id);
       scheduleSync();
