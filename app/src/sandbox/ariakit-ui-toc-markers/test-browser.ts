@@ -23,7 +23,7 @@ const restingTocs = {
     "dot-steps": "Dot steps",
     "dot-steps-diagonal": "Dot steps, diagonal",
     "dot-steps-rail": "Dot steps, rail",
-    "dot-steps-wide-thumb": "Dot steps, wide thumb",
+    "dot-steps-wide-bar": "Dot steps, wide bar",
     "right-to-left-dot-steps": "Right to left, dot steps",
   },
 };
@@ -61,7 +61,7 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
     });
   }
 
-  test("fills the dots that the thumb covers @visual", async ({
+  test("fills the dots that the bar covers @visual", async ({
     page,
     q,
     visual,

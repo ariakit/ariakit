@@ -22,13 +22,13 @@ export default function Example() {
       {/* The stages go in a row when the container has room for four columns,
           and in a column when it is narrower. */}
       <List
-        $orientation="var(--steps-orientation)"
+        $layout="var(--steps-layout)"
         $marker="icon"
         $markerSize={10}
         $guide
-        $gap={3}
+        $gap={0.25}
         $itemGap={1}
-        className="[--steps-orientation:vertical] @md/steps:[--steps-orientation:horizontal]"
+        className="[--steps-layout:vertical] @md/steps:[--steps-layout:horizontal]"
       >
         {stages.map((stage, index) => {
           const done = index < currentIndex;

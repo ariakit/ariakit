@@ -1,4 +1,4 @@
-import { cv } from "clava";
+import { cv, cx } from "clava";
 import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
 import { checkMark } from "./check-mark.ts";
 import {
@@ -6,9 +6,8 @@ import {
   disclosureButton,
   disclosureContentBody,
 } from "./disclosure.ts";
-import { hasEdgeColor } from "./edge.ts";
+import { edge, hasEdgeColor } from "./edge.ts";
 import { frame } from "./frame.ts";
-import { guide } from "./guide.ts";
 import { hasLayerBackground, isLayerColor } from "./layer.ts";
 import { hasSlotSurface } from "./slot-frame.ts";
 import { textFrame } from "./text-frame.ts";
@@ -20,34 +19,60 @@ import { tint } from "./tint.ts";
 const CHIP_LIGHTNESS = 1.5;
 const SLOT_LIGHTNESS = 1;
 
+/**
+ * The flags that a list sets for the markers of its rows, for a style recipe
+ * that picks the marker of the rows in a part of a list, such as a nested list
+ * in a table of contents.
+ */
+export const listMarkerClasses = {
+  counter: cx("[--list-marker:counter] [--list-counter:1] [--list-glyph:0]"),
+  // The glyph width is the width that the marker draws a bullet with. The rows
+  // read it to find where their text starts.
+  bullet: cx(
+    "[--list-marker:bullet] [--list-counter:0] [--list-glyph:1]",
+    "[--list-glyph-width:var(--list-bullet-size)]",
+  ),
+  // Clear the inherited flags, so a marker in a row, such as a status icon,
+  // sits like a marker outside a list.
+  none: cx(
+    "[--list-marker:initial] [--list-counter:initial] [--list-glyph:initial]",
+  ),
+};
+
 /** A list with adaptive item spacing, markers, and optional guides. */
 export const list = cv({
   class: [
-    "list grid gap-(--list-gap)",
+    "list gap-(--list-gap)",
     // Markers read the native counter, so the `start` attribute applies. They
     // increment it themselves because a grid row does not count. This rule
     // stops the implied increment of other rows, which would count twice.
     "[&>li]:[counter-increment:list-item_0]",
     // Only list elements scope the native counter by default.
     "[&:not(ol,ul,menu)]:[counter-reset:list-item]",
-    "[--list-gap-base:var(--list-gap-root,--spacing(4))]",
-    // Prose supplies the default gap. Explicit `$gap` wins through the style
-    // attribute; nested lists win by specificity.
-    "in-[.prose]:[--list-gap-base:var(--list-gap-root,var(--prose-gap))]",
+    // The base gap is the rhythm of the text around the list. The space
+    // between two rows derives from it, by how much content the rows hold.
+    "[--list-gap-base:var(--list-gap-base-root,--spacing(4))]",
+    // Prose supplies the default base gap. Explicit `$baseGap` wins through the
+    // style attribute; nested lists win by specificity.
+    "in-[.prose]:[--list-gap-base:var(--list-gap-base-root,var(--prose-gap))]",
     "[--list-item-padding:round(--spacing(1),1px)]",
-    "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
+    // Rows have padding that doesn't show without a surface, so the derived
+    // gap takes it out. `$gap` sets the space between two rows directly.
+    "[--list-gap:var(--list-gap-root,calc(var(--list-gap-base)*0.5-var(--list-item-padding)))]",
     // The blocks of a row are as far apart as they are from the edges of its
     // frame, so they read as one group. $itemGap replaces this gap.
     "[--list-item-gap:var(--list-item-gap-root,var(--list-item-padding))]",
-    // A nested list keeps the gap of its parent, and its indent shows the
-    // level. Below the text of its row, or below the marker box when it is
-    // taller, it keeps the space that its own rows have between them. A row
-    // with blocks already adds part of it as a gap.
-    "[:is(&_&)]:mt-[calc(var(--list-gap)+var(--list-item-padding)+var(--list-row-overhang)-var(--list-item-gap)*var(--list-row-blocks,0))]",
+    // A list in a row of another list keeps the gap of its parent, and its
+    // indent shows the level. Below the text of its row, or below the marker
+    // box when it is taller, it keeps the space that its own rows have between
+    // them. A row with blocks already adds part of it as a gap. A list that
+    // another list holds outside its rows, such as the list of a navigation,
+    // is not nested.
+    "[.list-row_&]:mt-[calc(var(--list-gap)+var(--list-item-padding)+var(--list-row-overhang)-var(--list-item-gap)*var(--list-row-blocks,0))]",
     // At the end of its row, the bottom padding of its last row would add to
     // the bottom padding of the parent row. Only the padding of the parent row
     // stays below the last row.
-    "[:is(&_&)]:last:mb-[calc(-1*var(--list-item-padding)-var(--list-row-overhang))]",
+    "[.list-row_&]:last:mb-[calc(-1*var(--list-item-padding)-var(--list-row-overhang))]",
     // Reset inherited flags so nested lists start with their own state.
     "[--list-blocks:0] [--list-last-row:0] [--list-first-row:0]",
     // A nested list reads the marker box of the row that holds it, so its
@@ -99,16 +124,19 @@ export const list = cv({
     "[--list-indent-auto:calc(var(--list-parent-marker-box,1lh)/2+var(--list-marker-box,1lh)/2+var(--list-text-inset,0px)+var(--list-item-padding)-var(--list-row-outset)-var(--list-parent-marker-shift)+var(--list-marker-shift))]",
     // An explicit indent moves a nested list by its difference from that
     // distance. The list grows at its start, so its rows end where they did.
-    "[:is(&_&)]:ms-[calc(var(--list-indent,var(--list-indent-auto))-var(--list-indent-auto))]",
+    "[.list-row_&]:ms-[calc(var(--list-indent,var(--list-indent-auto))-var(--list-indent-auto))]",
     // A surface-colored halo hides the guide around each marker.
     "[--list-guide-gap:--spacing(1)]",
+    // The size of a bullet, which equals seven pixels at a 16px font size.
+    // $bulletSize replaces it.
+    "[--list-bullet-size:0.4375em]",
     // Block content increases item spacing; nested lists inherit this mode.
     "ui-list-blocks:[--list-blocks:1]",
     "ui-list-blocks:[--list-item-padding:--spacing(2)]",
-    "ui-list-blocks:[--list-gap:calc(var(--list-gap-base)*0.75-var(--list-item-padding))]",
+    "ui-list-blocks:[--list-gap:var(--list-gap-root,calc(var(--list-gap-base)*0.75-var(--list-item-padding)))]",
     // The sections variant is registered last, so its gap overrides block
     // mode.
-    "ui-list-sections:[--list-gap:calc(var(--list-gap-base)*1-var(--list-item-padding))]",
+    "ui-list-sections:[--list-gap:var(--list-gap-root,calc(var(--list-gap-base)*1-var(--list-item-padding)))]",
   ],
   variants: {
     /**
@@ -123,39 +151,34 @@ export const list = cv({
      * (`horizontal`). A horizontal list puts each marker above its content, and
      * the guide runs between the markers. It does not support disclosure rows.
      * Another string is a CSS value that resolves to one of the two names. Pass
-     * a `var()` to change the orientation with CSS, such as in a container
-     * query.
+     * a `var()` to change the layout with CSS, such as in a container query.
      */
-    $orientation(value?: "vertical" | "horizontal" | (string & {})) {
+    $layout(value?: "vertical" | "horizontal" | (string & {})) {
       if (value == null) return;
       // Always set the flag, so a nested list does not inherit it.
-      if (value === "vertical") return "[--list-orientation:vertical]";
+      if (value === "vertical") return "grid [--list-layout:vertical]";
       // The rows place themselves in one grid row, in columns of equal width.
       if (value === "horizontal") {
-        return "[--list-orientation:horizontal] auto-cols-fr";
+        return "grid [--list-layout:horizontal] auto-cols-fr";
       }
       return {
-        class: "auto-cols-fr",
-        style: { "--list-orientation": value },
+        class: "grid auto-cols-fr",
+        style: { "--list-layout": value },
       };
     },
     /**
-     * Sets the row marker: `counter`, `icon`, `bullet`, `dash`, or `auto`.
-     * Defaults to counters for ordered lists, bullets when `$guide` is `true`,
-     * and `auto` otherwise. `auto` draws dashes, and a list nested in it draws
-     * bullets, in turns. An `icon` marker is a chip that holds the icon of its
-     * row.
+     * Sets the row marker: `counter`, `icon`, `bullet`, `dash`, `auto`, or
+     * `none`. Defaults to counters for ordered lists, bullets when `$guide` is
+     * `true`, and `auto` otherwise. `auto` draws dashes, and a list nested in
+     * it draws bullets, in turns. An `icon` marker is a chip that holds the
+     * icon of its row. With `none`, the rows have no marker and keep no room
+     * for one, and the guide is off by default.
      */
     $marker: {
-      counter: "[--list-marker:counter] [--list-counter:1] [--list-glyph:0]",
+      counter: listMarkerClasses.counter,
       // An icon chip takes the surface and the automatic guide of a counter.
       icon: "[--list-marker:icon] [--list-counter:1] [--list-glyph:0]",
-      // The glyph width is the width that the marker draws a bullet or a dash
-      // with. The rows read it to find where their text starts.
-      bullet: [
-        "[--list-marker:bullet] [--list-counter:0] [--list-glyph:1]",
-        "[--list-glyph-width:0.4375em]",
-      ],
+      bullet: listMarkerClasses.bullet,
       dash: [
         "[--list-marker:dash] [--list-counter:0] [--list-glyph:1]",
         "[--list-glyph-width:0.5lh]",
@@ -165,12 +188,13 @@ export const list = cv({
         "[--list-glyph-width:0.5lh]",
         // Each level of automatic lists outranks the level before it.
         "[:is(&_&)]:[--list-marker:bullet]",
-        "[:is(&_&)]:[--list-glyph-width:0.4375em]",
+        "[:is(&_&)]:[--list-glyph-width:var(--list-bullet-size)]",
         "[:is(&_&_&)]:[--list-marker:dash]",
         "[:is(&_&_&)]:[--list-glyph-width:0.5lh]",
         "[:is(&_&_&_&)]:[--list-marker:bullet]",
-        "[:is(&_&_&_&)]:[--list-glyph-width:0.4375em]",
+        "[:is(&_&_&_&)]:[--list-glyph-width:var(--list-bullet-size)]",
       ],
+      none: listMarkerClasses.none,
     },
     /**
      * Joins adjacent markers with a guide. `auto` enables guides for counters
@@ -213,13 +237,29 @@ export const list = cv({
       };
     },
     /**
-     * Sets the base gap between items before the mode formulas apply. Nested
-     * lists inherit it. Numbers scale the spacing token.
+     * Sets the space between two rows. It applies as it is, whatever the rows
+     * hold and whatever their padding is, so `0` makes the frames of the rows
+     * touch. Nested lists inherit it. Numbers scale the spacing token. By
+     * default, the space derives from `$baseGap`.
      */
     $gap(value?: string | number) {
       if (value == null) return;
       return {
         style: { "--list-gap-root": getSpacingValue(value) },
+      };
+    },
+    /**
+     * Sets the base gap that the default space between two rows derives from:
+     * half of it for rows of text, three quarters for rows with blocks, and all
+     * of it for rows with headings, less the item padding. It defaults to the
+     * gap of the prose around the list, so a list keeps the rhythm of its text.
+     * Nested lists inherit it. Numbers scale the spacing token. `$gap` replaces
+     * the derived space.
+     */
+    $baseGap(value?: string | number) {
+      if (value == null) return;
+      return {
+        style: { "--list-gap-base-root": getSpacingValue(value) },
       };
     },
     /**
@@ -241,6 +281,17 @@ export const list = cv({
       if (value == null) return;
       return {
         style: { "--list-marker-box": getSpacingValue(value) },
+      };
+    },
+    /**
+     * Sets the size of a bullet marker. The text of the rows keeps its distance
+     * to the bullet. Nested lists don't inherit it. Numbers scale the spacing
+     * token. Defaults to `0.4375em`.
+     */
+    $bulletSize(value?: string | number) {
+      if (value == null) return;
+      return {
+        style: { "--list-bullet-size": getSpacingValue(value) },
       };
     },
     /**
@@ -272,13 +323,16 @@ export const list = cv({
     $ordered: false,
     // Always resolve the branch flag to reset the inherited one.
     $branch: false,
-    // Always resolve the orientation to reset the inherited flag.
-    $orientation: "vertical",
+    // Always resolve the layout to reset the inherited flag.
+    $layout: "vertical",
     // A branch draws its curves with the guide. Clava passes `false` as the
     // default of a variant with boolean keys, so it can't mean an explicit
     // value here.
     $guide(_defaultValue, variants) {
-      return variants.$branch ? true : "auto";
+      if (variants.$branch) return true;
+      // The automatic guide reads the marker flags, which this marker clears.
+      if (variants.$marker === "none") return false;
+      return "auto";
     },
     // Always resolve the marker to reset inherited list flags.
     $marker(defaultValue, variants) {
@@ -295,7 +349,7 @@ export const list = cv({
     if (variants.$marker === "counter") return;
     if (variants.$marker === "icon") return;
     // A horizontal row puts the marker box above its content.
-    if (variants.$orientation === "horizontal") return;
+    if (variants.$layout === "horizontal") return;
     // A check or a progress marker fills the marker box, less its inset, and
     // the guide goes through the center of each marker. The text of a list with
     // such a row takes its distance from that marker. The row is the list item,
@@ -318,7 +372,8 @@ export const list = cv({
 const listRow = cv({
   extend: [textFrame],
   class: [
-    "relative",
+    // A list nested in the row reads this class.
+    "list-row relative",
     // Freeze line height as a length so larger child text stays aligned with
     // the marker.
     "leading-[1lh]",
@@ -398,7 +453,8 @@ export const listItem = cv({
     /**
      * Reserves the marker column. Set `false` for a row without a marker that
      * spans the full width, such as a card in a timeline. The guide still
-     * passes the row, so raise the content above it.
+     * passes the row, so raise the content above it. The style component sets
+     * `false` in a list with `$marker="none"`.
      */
     $marker: {
       true: [
@@ -570,9 +626,7 @@ export const listItemMarker = cv({
         "ui-list-dash:inset-s-[calc(var(--list-marker-center-x)-0.25lh+(var(--list-marker-reach)-0.25lh)*var(--list-marker-hang))]",
         "ui-list-dash:w-[0.5lh] ui-list-dash:h-auto",
         "ui-list-dash:rounded-none ui-list-dash:border-b",
-        // Use a filled disc; thick rounded borders can leave a hole. The size
-        // equals seven pixels at a 16px font size.
-        "[--list-bullet-size:0.4375em]",
+        // Use a filled disc; thick rounded borders can leave a hole.
         "ui-list-bullet:top-[calc(var(--list-marker-center-y)-var(--list-bullet-size)/2)]",
         "ui-list-bullet:inset-s-[calc(var(--list-marker-center-x)-var(--list-bullet-size)/2+(var(--list-marker-reach)-var(--list-bullet-size)/2)*var(--list-marker-hang))]",
         "ui-list-bullet:w-(--list-bullet-size) ui-list-bullet:h-(--list-bullet-size)",
@@ -721,6 +775,153 @@ export const listItemMarkerCheck = cv({
   },
 });
 
+/**
+ * A piece of a guide: a line that runs along a row and can bend from one column
+ * to the next one at the top of the piece. The pieces of adjacent rows join
+ * into one guide. The piece spans both columns: its start edge is the start
+ * column and its end edge is the end column, each widened by the line. Its
+ * `::before` draws the first half of the bend, and its `::after` draws the
+ * second half and the line. A piece that doesn't bend draws only the line,
+ * along its start edge.
+ *
+ * The line takes the edge color of the piece, so the edge variants color it. A
+ * chosen `$edge` color shows at full strength, and it gets darker or lighter
+ * when it has less than 3:1 against the surface around the piece. The style
+ * recipe that extends this one, such as the guide of a list item or of a table
+ * of contents link, places the piece and sets these values on it or on an
+ * element around it:
+ *
+ * - `--guide-in`: `1` to bend from the start column to the end column.
+ * - `--guide-outward`: `1` to bend from the end column to the start column.
+ * - `--guide-span`: the distance between the two columns.
+ * - `--guide-bend-height`: how tall the bend is, from the top of the piece.
+ * - `--guide-width`: the width of the line.
+ * - `--guide-color`: a color for the line, in place of the edge color. Use it
+ *   for a color that another element resolves, with `$layer: false`.
+ */
+export const listGuide = cv({
+  extend: [edge],
+  class: [
+    "absolute pointer-events-none",
+    // Keep the line in forced colors, with a system color.
+    "forced-colors:forced-color-adjust-none forced-colors:[--ak-edge:CanvasText]",
+    "[--guide-bent:min(1,var(--guide-in)+var(--guide-outward))]",
+    // The two curves of a bend take the same share of it, so they have the
+    // same size.
+    "[--guide-bend-lower:0.5]",
+    // At whole scales, a whole number of pixels gives both curves one exact edge.
+    // Fractions could round to an overlap, which darkens a pixel of a translucent
+    // guide. The span leaves room for the border of the other curve.
+    "[--guide-bend-lower-width:min(var(--guide-span),round(calc((var(--guide-span)+var(--guide-width))*var(--guide-bend-lower)),1px))]",
+    // The radius of the curves grows with the span, so a wide bend does not
+    // look square, and a narrow bend keeps a radius that is easy to see.
+    "[--guide-radius:max(--spacing(1.5),var(--guide-span)/3)]",
+    // A curve is a quarter of a circle, so its radius is at most the width and
+    // the height of its half of the bend. A straight part joins two curves that
+    // don't fill the bend.
+    "[--guide-curve-radius:min(var(--guide-radius),var(--guide-bend-lower-width),var(--guide-span)+var(--guide-width)-var(--guide-bend-lower-width),(var(--guide-bend-height)+var(--guide-width))*var(--guide-bend-lower))]",
+    // Mirror diagonal bends in right to left text. Logical insets mirror the
+    // rest.
+    "[--guide-dir:1] rtl:[--guide-dir:-1]",
+    // The first half of a smooth bend is a quarter curve from the previous
+    // line. A diagonal bend is one slanted line instead. A straight piece
+    // leaves it empty.
+    "before:absolute before:top-0 before:box-content before:border-(--guide-color,var(--ak-edge))",
+    // Browsers snap a box and its border to device pixels separately, so at
+    // fractional scales a border can be thinner than the line. A border at the
+    // far side of a box keeps the column or row of the line only if the box
+    // adds the border after the content, which ends where the line starts. The
+    // height and the minimum width do that, and an inset as wide as the line
+    // keeps the automatic width below that minimum. Without a far border, the
+    // insets end a curve where the next starts. A slanted line keeps a box as
+    // wide as its border, which is where it rotates.
+    "before:inset-s-[calc(var(--guide-outward)*(var(--guide-curve)*var(--guide-bend-lower-width)+(1-var(--guide-curve))*var(--guide-span)))]",
+    "before:inset-e-[calc((1-var(--guide-curve)*var(--guide-outward))*(var(--guide-curve)*var(--guide-bend-lower-width)+(1-var(--guide-curve))*(var(--guide-span)+var(--guide-width)))+var(--guide-curve)*var(--guide-outward)*var(--guide-width))]",
+    "before:min-w-[calc(var(--guide-curve)*var(--guide-outward)*(var(--guide-span)-var(--guide-bend-lower-width)))]",
+    "before:h-[calc(var(--guide-curve)*((var(--guide-bend-height)+var(--guide-width))*(1-var(--guide-bend-lower))-var(--guide-width))+(1-var(--guide-curve))*var(--guide-bent)*hypot(var(--guide-span),var(--guide-bend-height)))]",
+    "before:border-s-[calc(var(--guide-width)*(var(--guide-curve)*var(--guide-in)+(1-var(--guide-curve))*var(--guide-bent)))]",
+    "before:border-e-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-outward))]",
+    "before:border-be-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-bent))]",
+    "before:rounded-es-[calc(var(--guide-curve-radius)*var(--guide-curve)*var(--guide-in))]",
+    "before:rounded-ee-[calc(var(--guide-curve-radius)*var(--guide-curve)*var(--guide-outward))]",
+    // Only a diagonal bend rotates. A rotation of zero degrees still makes
+    // Firefox paint the curve one device pixel away from the line it leaves.
+    // This rule is for a piece that takes the shape from an element around
+    // it, and the `$bend` variant has the rule for its own shape.
+    "before:origin-top",
+    "[@container_style(--guide-curve:_0)]:before:rotate-[calc(var(--guide-dir)*(var(--guide-outward)-var(--guide-in))*atan2(var(--guide-span),var(--guide-bend-height)))]",
+    // The second half of a smooth bend curves into this row and continues as
+    // the line along it. Other pieces draw only the line.
+    "after:absolute after:bottom-0 after:box-content after:border-(--guide-color,var(--ak-edge))",
+    "after:top-[calc(var(--guide-bent)*(var(--guide-curve)*((var(--guide-bend-height)+var(--guide-width))*(1-var(--guide-bend-lower))-var(--guide-width))+(1-var(--guide-curve))*var(--guide-bend-height)))]",
+    "after:inset-s-[calc(var(--guide-in)*(var(--guide-curve)*(var(--guide-span)+var(--guide-width)-var(--guide-bend-lower-width))+(1-var(--guide-curve))*var(--guide-span)))]",
+    "after:inset-e-[calc((1-var(--guide-in))*(var(--guide-span)+var(--guide-width)-var(--guide-curve)*max(var(--guide-width),var(--guide-bend-lower-width)))+var(--guide-curve)*var(--guide-in)*var(--guide-width))]",
+    "after:min-w-[calc(var(--guide-curve)*var(--guide-in)*(var(--guide-bend-lower-width)-var(--guide-width)))]",
+    "after:border-bs-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-bent))]",
+    "after:border-e-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-in))]",
+    "after:border-s-[calc(var(--guide-width)*(1-var(--guide-curve)*var(--guide-in)))]",
+    "after:rounded-se-[calc(var(--guide-curve-radius)*var(--guide-curve)*var(--guide-in))]",
+    "after:rounded-ss-[calc(var(--guide-curve-radius)*var(--guide-curve)*var(--guide-outward))]",
+  ],
+  variants: {
+    /**
+     * Sets the shape of a bend: two curves with a straight part between them
+     * (`smooth`), or one slanted line (`diagonal`). `false` sets no shape, for
+     * a piece that takes `--guide-curve` from an element around it, with `1`
+     * for curves or `0` for a slanted line.
+     */
+    $bend: {
+      smooth: "[--guide-curve:1]",
+      diagonal: [
+        "[--guide-curve:0]",
+        "before:rotate-[calc(var(--guide-dir)*(var(--guide-outward)-var(--guide-in))*atan2(var(--guide-span),var(--guide-bend-height)))]",
+      ],
+      false: "",
+    },
+    /**
+     * Sets the radius of the curves of a smooth bend. The curves never get
+     * larger than the bend. By default, the radius is a third of the distance
+     * between the two columns, and at least `1.5`. Numbers scale the spacing
+     * token.
+     */
+    $radius(value?: string | number) {
+      if (value == null) return;
+      return { style: { "--guide-radius": getSpacingValue(value) } };
+    },
+    /**
+     * Sets the line style. Dashes and dots start again in each piece and in
+     * each curve of a bend.
+     */
+    $line: {
+      solid: "before:border-solid after:border-solid",
+      dashed: "before:border-dashed after:border-dashed",
+      dotted: "before:border-dotted after:border-dotted",
+    },
+  },
+  defaultVariants: {
+    // Resolve the edge against the surface around the piece without painting a
+    // layer over the guides under it.
+    $layer: "transparent",
+    $bend: "smooth",
+    $line: "solid",
+    // A chosen color shows at full strength, like the lane of a commit graph,
+    // not at the alpha of a neutral edge.
+    $edgeRaw(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (!hasEdgeColor(variants.$edge)) return defaultValue;
+      return true;
+    },
+    // A chosen color carries meaning, such as the lane of a commit graph, so it
+    // keeps 3:1 or more against the surface around the piece. A color with less
+    // contrast, such as a yellow on a light surface, moves its lightness.
+    $edgeContrast(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (!hasEdgeColor(variants.$edge)) return defaultValue;
+      return true;
+    },
+  },
+});
+
 // The geometry that both bends of a branch list share.
 const listItemGuideBend = [
   // Keep the bends below the line of the parent list and the surfaces of rows.
@@ -767,7 +968,7 @@ const listItemGuideLink = [
 export const listItemGuide = cv({
   // The guide draws the line and the bends, the way the guide of a table of
   // contents bends into a nested list, and colors them with its edge.
-  extend: [guide],
+  extend: [listGuide],
   class: [
     "list-guide",
     "[--guide-width:calc(var(--list-guide,0)*1px)]",
@@ -900,10 +1101,26 @@ export const listDisclosure = cv({
     "ui-list-guide:[&>.disclosure-content]:[--disclosure-guide-center:calc(var(--disclosure-padding)+var(--list-marker-box,1lh)/2)]",
     "ui-list-guide:[&>.disclosure-content]:[--disclosure-guide:var(--disclosure-guide-center)]",
   ],
+  variants: {
+    /**
+     * Whether the row has a marker. Without one, the content starts at the
+     * label, like the content of other disclosures. The style component sets
+     * `false` in a list with `$marker="none"`.
+     */
+    $marker: {
+      true: "",
+      false: "",
+    },
+  },
   defaultVariants: {
     // Restore the transparent layer that listRow disables.
     $layer: "transparent",
-    $indent: "var(--list-disclosure-indent)",
+    $marker: true,
+    $indent(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (!variants.$marker) return defaultValue;
+      return "var(--list-disclosure-indent)";
+    },
     $leadingIcon: false,
   },
 });
@@ -912,20 +1129,31 @@ export const listDisclosure = cv({
 export const listDisclosureButton = cv({
   extend: [disclosureButton],
   class: [
-    "[--disclosure-ps:calc(var(--py)+var(--list-marker-box,1lh)+var(--list-text-inset))]",
     // Make room for a marker box taller than one line.
     "pbs-[calc(var(--py)+var(--list-marker-overhang))]",
     "pbe-[calc(var(--py)+var(--list-marker-overhang))]",
-    // Slots read --py to sit as far from the side as from the top. The end
-    // padding grows like the block padding, so slots and text at the end keep
-    // that distance.
-    "pe-[calc(var(--px)+var(--list-marker-overhang))]",
     // Hover and press surfaces cover the guide; the marker stays above both.
     "z-3",
     // Put the marker in the padding corner. Label content resets this offset.
     "[--list-marker-offset:var(--ak-frame-padding)]",
   ],
   variants: {
+    /**
+     * Reserves the marker column, like `$marker` on a list item. The style
+     * component sets `false` in a list with `$marker="none"`.
+     */
+    $marker: {
+      true: [
+        "[--disclosure-ps:calc(var(--py)+var(--list-marker-box,1lh)+var(--list-text-inset))]",
+        // Slots read --py to sit as far from the side as from the top. The end
+        // padding grows like the block padding, so slots and text at the end
+        // keep that distance. A button without a marker keeps its inline
+        // padding even, like a row without one.
+        "pe-[calc(var(--px)+var(--list-marker-overhang))]",
+      ],
+      // The label starts where the text of a row without a marker starts.
+      false: "[--disclosure-ps:var(--px)]",
+    },
     /**
      * Marks a row whose marker shows a check, an empty check slot, or progress,
      * like `$check` on a list item. The style component sets it from `checked`
@@ -942,6 +1170,9 @@ export const listDisclosureButton = cv({
       if (value !== "auto") return;
       return "[--gap-y:var(--list-item-gap)] gap-y-(--gap-y)";
     },
+  },
+  defaultVariants: {
+    $marker: true,
   },
 });
 

@@ -10,16 +10,16 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const nav = q.navigation("On this page");
     await test.expect(query(nav).link("Basic example")).toBeVisible();
     await test.expect(nav.locator("[aria-current]")).toHaveCount(0);
-    // CSS draws the guide from the list structure. The thumb range stays empty
+    // CSS draws the guide from the list structure. The bar range stays empty
     // until the script measures the visible rows.
     await test.expect(nav.locator(".toc-link-guide").first()).toBeVisible();
     const ranges = await nav.evaluate((element) => {
-      const thumbs = element.querySelectorAll(".toc-link-thumb");
-      return [...thumbs].map((thumb) => {
-        const style = getComputedStyle(thumb);
+      const bars = element.querySelectorAll(".toc-link-bar");
+      return [...bars].map((bar) => {
+        const style = getComputedStyle(bar);
         return [
-          style.getPropertyValue("--toc-thumb-start"),
-          style.getPropertyValue("--toc-thumb-end"),
+          style.getPropertyValue("--nav-bar-start"),
+          style.getPropertyValue("--nav-bar-end"),
         ].join(" ");
       });
     });

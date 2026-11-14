@@ -48,7 +48,7 @@ export default function Example() {
           {done ? "Everything went well." : "This may take a minute."}
         </HeadingDescription>
       </div>
-      <List $guide $gap={3}>
+      <List $guide $gap={0.5}>
         {tasks.map((task, index) => (
           <ListItem key={task} {...getTaskState(index, current)}>
             {task}

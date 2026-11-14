@@ -92,7 +92,7 @@ export default function Example() {
         <ShellSidebarBody>
           {/* The ordered list numbers the chapters on the guide, and the
               ordered list element gives their order to screen readers. Each
-              number fills with the thumb color where the thumb passes. */}
+              number fills with the bar color where the bar passes. */}
           <Toc label="Chapters" ordered $cover>
             {chapters.map((chapter) => {
               const href = `#${chapter.slug}`;

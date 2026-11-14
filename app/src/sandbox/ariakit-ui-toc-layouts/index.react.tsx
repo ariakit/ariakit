@@ -391,7 +391,7 @@ export default function Example() {
         />
         <Contents label="Straight rail" entries={deep} $guide="rail" />
         <Contents label="Indent only" entries={deep} $guide={false} />
-        <Contents label="Wide thumb" entries={deep} $thumbWidth={3} />
+        <Contents label="Wide bar" entries={deep} $barWidth={3} />
         <Contents
           label="Bold current link"
           entries={deep}
@@ -405,7 +405,7 @@ export default function Example() {
           link={{ $parentInk: 100, $parentBold: true }}
         />
         <Contents
-          label="Numbers over the thumb"
+          label="Numbers over the bar"
           entries={chapters}
           ordered
           $markerHighlight={false}
@@ -417,11 +417,11 @@ export default function Example() {
           $markerHighlight="ring"
         />
         <Contents
-          label="Wide thumb chapters"
+          label="Wide bar chapters"
           entries={chapters}
           ordered
           $markerHighlight="ring"
-          $thumbWidth={5}
+          $barWidth={5}
         />
         {/* The rows scroll in their own box below the label, which is shorter
             than the rows of the sections on screen. */}

@@ -40,6 +40,16 @@ test("lets a list disclosure count its marker as a leading slot", () => {
   );
 });
 
+// https://github.com/ariakit/ariakit/pull/8439#discussion_r4570792640
+test("leaves out the button marker of a disclosure without a marker", () => {
+  const box = q.within(q.article("Disclosure without a marker"));
+  const button = box.button("Right-to-left layouts");
+  expect(button.querySelector(".list-marker")).toBeNull();
+  // The other rows of the list keep their markers.
+  const row = box.text("Keyboard shortcuts").closest("li");
+  expect(row?.querySelector(".list-marker")).not.toBeNull();
+});
+
 // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
 test("keeps a disclosure badge beside the label without a description", async () => {
   const button = q.button("Project tasks 3");

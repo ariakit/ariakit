@@ -86,6 +86,20 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(checked.img("Checked")).toBeVisible();
   });
 
+  // https://github.com/ariakit/ariakit/pull/8439#discussion_r4570792640
+  test("leaves out the button marker of a disclosure without a marker", async ({
+    q,
+  }) => {
+    const box = query(q.article("Disclosure without a marker"));
+    // The other rows of the list keep their markers, which also shows that the
+    // list rendered before the check for the missing marker.
+    const row = box.listitem().filter({ hasText: "Keyboard shortcuts" });
+    await test.expect(row.locator(".list-marker")).toHaveCount(1);
+    const button = box.button("Right-to-left layouts");
+    await test.expect(button).toBeVisible();
+    await test.expect(button.locator(".list-marker")).toHaveCount(0);
+  });
+
   // https://github.com/ariakit/ariakit/issues/7553
   test("starts a row's open content past its marker when the marker leads", async ({
     q,

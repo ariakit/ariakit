@@ -1,5 +1,5 @@
 {
   "title": "Indent Without a Guide",
-  "description": "A Toc with $guide set to false, which shows the hierarchy with the indent of nested TocList rows only, with no guide and no thumb, so only the current link shows where the reader is. Use it for a quiet sidebar where the rows on screen don't need a mark, rather than the guide of the basic layout.",
+  "description": "A Toc with $guide set to false, which shows the hierarchy with the indent of nested TocList rows only, with no guide and no bar, so only the current link shows where the reader is. Use it for a quiet sidebar where the rows on screen don't need a mark, rather than the guide of the basic layout.",
   "fullscreen": true
 }

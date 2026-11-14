@@ -1,0 +1,4 @@
+{
+  "title": "Nested Links on a Bending Guide",
+  "description": "A docs sidebar whose Nav has $guide set to smooth: a guide runs before the links of each NavGroup and bends into the nested NavList of a NavItem, whose links always show. The nested lists set $marker to bullet, which draws a dot on the guide at each nested link. The bar prop draws the bar of the current link on the guide, and it fills the dot of a nested link. Use it for a page tree with a few levels that stay open, rather than NavDisclosure sections that collapse."
+}

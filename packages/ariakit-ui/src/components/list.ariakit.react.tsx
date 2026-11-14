@@ -38,6 +38,8 @@ import {
 interface ListContextValue {
   /** Whether the rows render the bends that join a branch to its parent. */
   branch: boolean;
+  /** Whether the rows have markers. A list with `$marker="none"` has none. */
+  markers: boolean;
   /** The guide of the rows that don't set their own. */
   guide?: ListItemProps["guide"];
   /** The marker of the rows that don't set their own. */
@@ -47,7 +49,16 @@ interface ListContextValue {
 }
 
 // What a list passes to its rows. A nested list passes its own values.
-const ListContext = React.createContext<ListContextValue>({ branch: false });
+const ListContext = React.createContext<ListContextValue>({
+  branch: false,
+  markers: true,
+});
+
+// Whether the list disclosure around a button has a marker. It is undefined
+// outside a `ListDisclosure`.
+const ListDisclosureMarkerContext = React.createContext<boolean | undefined>(
+  undefined,
+);
 
 // Whether the content of a row is around, so a list knows that it is nested.
 const ListRowContext = React.createContext(false);
@@ -133,6 +144,7 @@ export function List({ ordered, guide, marker, ...props }: ListProps) {
   const branch = !!variantProps.$branch;
   const context: ListContextValue = {
     branch,
+    markers: variantProps.$marker !== "none",
     guide: typeof guide === "boolean" ? undefined : guide,
     marker,
     // A CSS identifier can't hold the punctuation of a React id.
@@ -228,15 +240,17 @@ export function ListItem({
   const [variantProps, rest] = splitProps(props, listItem);
   const context = React.useContext(ListContext);
   const guideProps = guide ?? context.guide;
+  const $marker = variantProps.$marker ?? context.markers;
   return (
     <ak.Role.li
       {...listItem.jsx({
         ...variantProps,
+        $marker,
         $check: checked != null || progress != null,
       })}
       {...rest}
     >
-      {variantProps.$marker !== false &&
+      {$marker &&
         createRender(ListItemMarker, marker ?? context.marker, {
           ...getMarkerEdgeProps({ guide: guideProps, checked, progress }),
           checked,
@@ -438,20 +452,25 @@ export function ListDisclosure({
   ...props
 }: ListDisclosureProps) {
   const context = React.useContext(ListContext);
+  const $marker = props.$marker ?? context.markers;
   return (
-    <Disclosure
-      recipe={listDisclosure}
-      {...props}
-      // The root lets the guide span both the button and open content.
-      decoration={
-        <>
-          {decoration}
-          {createRender(ListItemGuide, context.guide)}
-        </>
-      }
-      button={createOptionalRender(ListDisclosureButton, button)}
-      content={createRender(ListDisclosureContent, content)}
-    />
+    // The button shows a marker only when its disclosure has one.
+    <ListDisclosureMarkerContext.Provider value={$marker}>
+      <Disclosure
+        recipe={listDisclosure}
+        {...props}
+        $marker={$marker}
+        // The root lets the guide span both the button and open content.
+        decoration={
+          <>
+            {decoration}
+            {createRender(ListItemGuide, context.guide)}
+          </>
+        }
+        button={createOptionalRender(ListDisclosureButton, button)}
+        content={createRender(ListDisclosureContent, content)}
+      />
+    </ListDisclosureMarkerContext.Provider>
   );
 }
 
@@ -494,19 +513,24 @@ export function ListDisclosureButton({
       : label;
   const labelEl = createOptionalRender(DisclosureButtonLabel, labelProps);
   const context = React.useContext(ListContext);
+  const disclosureMarker = React.useContext(ListDisclosureMarkerContext);
+  const $marker = props.$marker ?? disclosureMarker ?? context.markers;
   // In a list, the icon goes in the marker, not in a slot before the label.
-  const markerEl = createRender(ListItemMarker, marker ?? context.marker, {
-    ...getMarkerEdgeProps({ guide: context.guide, checked, progress }),
-    checked,
-    progress,
-    children: icon,
-  });
+  const markerEl =
+    $marker &&
+    createRender(ListItemMarker, marker ?? context.marker, {
+      ...getMarkerEdgeProps({ guide: context.guide, checked, progress }),
+      checked,
+      progress,
+      children: icon,
+    });
   return (
     <DisclosureButton
       recipe={listDisclosureButton}
       indicator={indicator}
       $check={checked != null || progress != null}
       {...props}
+      $marker={$marker}
       label={
         labelEl
           ? React.cloneElement(labelEl, {

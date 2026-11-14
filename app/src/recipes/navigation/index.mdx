@@ -8,7 +8,7 @@ icon: compass
 
 These examples build navigation with the Ariakit UI `Nav` components. Most examples show only the navigation, with placeholders where the rest of the page would be. The Accordion Sections and Top Bar examples use the `Shell` components to show full pages. Open them in a new tab and resize the window to see how they adapt.
 
-The gallery includes a list of links, a list with a brand selection, a top bar, course lessons, a workspace sidebar, a sidebar with collapsible sections and thumbnails, an API reference, a music library, repository tabs, and a feed with links in a segmented control.
+The gallery includes a list of links, a list with a brand selection, a top bar, course lessons, a workspace sidebar, a sidebar with collapsible sections and thumbnails, an API reference, a music library, repository tabs, a feed with links in a segmented control, numbered steps on a guide, a page tree on a guide, and a settings sidebar with compact rows.
 
 ## Components
 
@@ -19,6 +19,14 @@ When the current link changes in a view transition, the bar moves from the old l
 Set `aria-current="page"` on the current `NavLink`, or pass `currentUrl` to compare it with the `href`. Put an icon, badge, avatar, shortcut, or thumbnail in a `NavSlot`, and the text in a `NavLinkLabel`. In a horizontal row, the current link uses the normal weight unless it gets its plain text through `text`, as in `<NavLink text="Overview" />`, or through `<NavLinkLabel text="Issues" />` beside slots. The label then reserves the width of the heavier text, so the current link turns heavier without moving the links after it. Wrap a label and a `NavLinkDescription` in `NavLinkContent` to show secondary text below or beside the label.
 
 Set `$kind="segmented"` on a horizontal `Nav` and on its `NavLink` elements to show the links as a segmented control, as in the Segmented Links with an Inverted Thumb example. The current link is the selected segment, and the links stay in a navigation landmark. Set `$invert` on the links to invert only the current one.
+
+A `Nav` is a list of links, so it takes the row props of a `List`. `$itemPadding` sets the padding of every link and group label at once, as in the Compact Rows example. `$gap` sets the space between two rows, and `$groupGap` the space between two groups.
+
+Set `ordered` on the `Nav` to render an ordered list and number its top-level links, as in the Numbered Steps on a Guide example. The numbers are the counters of a `List`. They sit in a gutter before the links, so the surface of a link does not cover them. `$markerSize` sets their size, and the `marker` prop of `Nav` and `NavLink` takes `NavLinkMarker` props, such as a color.
+
+Set `$guide` to `smooth`, `diagonal`, or `rail` to join the links with a guide. For nested links that always show, put a `NavLink` and a `NavList` in a `NavItem`. The guide bends into the nested list, and `$indent` sets how far the nested links move in. Set `ordered` on a nested `NavList` to number its links, or `$marker="bullet"` to draw a dot on the guide at each of them, as in the Nested Links on a Bending Guide example. `$bulletSize` sets the size of the dots. The `guide` prop of `Nav` and `NavLink` takes `NavLinkGuide` props, such as an edge color or a line style. The markers and the guide need a vertical `Nav`, and they don't join the rows of a `NavDisclosure`.
+
+With a guide, the `bar` of a link draws on the guide and follows its bends, and the marker of the link fills with the bar color. Set `$markerHighlight="ring"` to light up a ring around the marker instead, and `$barWidth` to set the thickness of the bar. A bar with `$side="end"`, or with a number as its `$offset`, stays off the guide. For a bar that follows the scroll position of a page, use the `Toc` components, which make the same bar cover the rows of the sections on screen.
 
 `NavGroup` and `NavGroupLabel` put rows under a small heading. Set `$divider` on a group to draw a line before it, or `$uppercase` on a label to show it in small uppercase letters. `NavDisclosure` shows nested rows in a collapsible section. `NavDisclosureGroup` puts sections in a shared frame with dividers. Set `$fill` on the group and on the `Nav` in a sidebar, and the open section takes the height that the closed sections leave and scrolls its own rows.
 

@@ -1,5 +1,5 @@
 {
   "title": "Diagonal Guide",
-  "description": "A Toc with $guide set to diagonal, where the guide and the thumb bend into three levels of nested TocList rows with slanted lines instead of curves. Use it when straight angles fit the visual style of the page better than the smooth curves of the basic layout.",
+  "description": "A Toc with $guide set to diagonal, where the guide and the bar bend into three levels of nested TocList rows with slanted lines instead of curves. Use it when straight angles fit the visual style of the page better than the smooth curves of the basic layout.",
   "fullscreen": true
 }

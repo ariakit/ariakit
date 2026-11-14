@@ -16,7 +16,7 @@ const restingTocs = {
     "five-levels-diagonal": "Five levels, diagonal",
     "straight-rail": "Straight rail",
     "indent-only": "Indent only",
-    "wide-thumb": "Wide thumb",
+    "wide-bar": "Wide bar",
   },
   "shows the link styles, the chapters, and right to left at rest": {
     "bold-current-link": "Bold current link",
@@ -84,8 +84,8 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         colorScheme,
         item: `${id}/twelve-chapters-lit`,
       });
-      // Without a highlight, the markers sit over the thumb.
-      const plain = q.navigation("Numbers over the thumb");
+      // Without a highlight, the markers sit over the bar.
+      const plain = q.navigation("Numbers over the bar");
       await test
         .expect(query(plain).link("Chapter 10"))
         .toHaveAttribute("aria-current", "location");
@@ -93,9 +93,9 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         visual,
         box: plain,
         colorScheme,
-        item: `${id}/numbers-over-thumb`,
+        item: `${id}/numbers-over-bar`,
       });
-      // With a ring, the thumb runs through the marker.
+      // With a ring, the bar runs through the marker.
       const ringed = q.navigation("Ringed chapters");
       await test
         .expect(query(ringed).link("Chapter 10"))
@@ -106,9 +106,9 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         colorScheme,
         item: `${id}/ringed-chapters-lit`,
       });
-      // The ring takes the width of a thumb wider than the marker halo, which
+      // The ring takes the width of a bar wider than the marker halo, which
       // widens the halo to keep the ring off the number.
-      const wide = q.navigation("Wide thumb chapters");
+      const wide = q.navigation("Wide bar chapters");
       await test
         .expect(query(wide).link("Chapter 10"))
         .toHaveAttribute("aria-current", "location");
@@ -116,12 +116,12 @@ withCaptures(import.meta.dirname, async ({ id, test, query }) => {
         visual,
         box: wide,
         colorScheme,
-        item: `${id}/wide-thumb-chapters-lit`,
+        item: `${id}/wide-bar-chapters-lit`,
       });
     });
   });
 
-  test("keeps the guide, the thumb, the rings, and the current row in forced colors @visual", async ({
+  test("keeps the guide, the bar, the rings, and the current row in forced colors @visual", async ({
     page,
     q,
     visual,

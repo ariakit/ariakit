@@ -4,7 +4,7 @@ import {
   useMergeRefs,
   useSafeLayoutEffect,
 } from "@ariakit/react-utils";
-import { getDocument, getWindow } from "@ariakit/utils";
+import { getDocument, getWindow, isNode } from "@ariakit/utils";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
@@ -18,15 +18,19 @@ import {
   LandmarkContext,
   useNestedLandmarks,
 } from "../react-utils/landmark.react.ts";
+import type { NavBarRangeStore } from "../react-utils/use-nav-bar-range.react.ts";
+import {
+  NavBarRangeContext,
+  useNavBarRange,
+} from "../react-utils/use-nav-bar-range.react.ts";
 import {
   toc,
   tocItem,
   tocLabel,
   tocLink,
-  tocLinkDot,
+  tocLinkBar,
   tocLinkGuide,
   tocLinkMarker,
-  tocLinkThumb,
   tocList,
 } from "../styles/toc.ts";
 
@@ -36,13 +40,11 @@ const END_LINE_INSET = 4;
 // The space kept around the current link when a long list scrolls to it.
 const SCROLL_MARGIN = 12;
 
-// Refs, not elements, so pieces that remount without registering again stay
-// current.
+// A ref, not an element, so a link that remounts without registering again
+// stays current.
 interface TocEntry {
   href?: string;
   link: React.RefObject<HTMLElement | null>;
-  thumb: React.RefObject<HTMLElement | null>;
-  markers: React.RefObject<HTMLElement | null>[];
 }
 
 interface TocRegistry {
@@ -73,15 +75,6 @@ interface TocSpyState {
   last: number;
 }
 
-interface TocRow {
-  top: number;
-  bottom: number;
-}
-
-interface TocMarkerRow extends TocRow {
-  element: HTMLElement;
-}
-
 // Returns the element that a link's hash points to, if any.
 function getTarget(doc: Document, href?: string) {
   if (!href) return null;
@@ -109,14 +102,6 @@ function isTargetVisible(target: Element) {
   }
   if (!isVisible(target)) return false;
   return getWindow(target).getComputedStyle(target).visibility === "visible";
-}
-
-// Event targets can come from another realm, so this checks the node type
-// instead of the Element constructor.
-function isElementNode(target: EventTarget | null): target is Element {
-  if (!target) return false;
-  if (!("nodeType" in target)) return false;
-  return target.nodeType === 1;
 }
 
 function isScrollContainer(element: Element) {
@@ -350,14 +335,6 @@ function keepInView({ box, link, start, end }: KeepInViewParams) {
   });
 }
 
-// CSS decides which marker of a row shows, if any.
-function getVisibleMarker(entry: TocEntry) {
-  for (const { current: marker } of entry.markers) {
-    if (marker && isVisible(marker)) return marker;
-  }
-  return null;
-}
-
 function sortEntries(entries: Map<string, TocEntry>) {
   return [...entries].sort(([, a], [, b]) => {
     const linkA = a.link.current;
@@ -371,13 +348,15 @@ function sortEntries(entries: Map<string, TocEntry>) {
 
 interface UseTocSpyParams {
   rootRef: React.RefObject<HTMLElement | null>;
+  /** The bar range of the navigation, which the sections on screen set. */
+  barRange: NavBarRangeStore;
   onCurrentChange?: (href: string | null) => void;
 }
 
-// Keeps the current link in React state and the thumb range in the inline
-// styles of the thumb pieces and markers, so scrolling re-renders only when the
-// current link changes.
-function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
+// Keeps the current link in React state and gives the links of the sections on
+// screen to the bar range, which keeps them in inline styles, so scrolling
+// re-renders only when the current link changes.
+function useTocSpy({ rootRef, barRange, onCurrentChange }: UseTocSpyParams) {
   const [currentId, setCurrentId] = React.useState<string | null>(null);
   // Links that register again restart the effect, which must not report the
   // same current link twice.
@@ -409,13 +388,10 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
     const sorted = sortEntries(entriesRef.current);
     const entries = sorted.map(([, entry]) => entry);
     const ids = sorted.map(([id]) => id);
-    let rows: (TocRow | null)[] = [];
-    let markers: TocMarkerRow[] = [];
     let state: TocSpyState | null = null;
     let container: HTMLElement | null = null;
     let headings: Element | null = null;
     let frame = 0;
-    let ready = false;
 
     // Finds the scroll container of the first heading again and tells whether
     // it changed.
@@ -430,112 +406,16 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
       return container !== previous;
     };
 
-    // Measures each piece relative to the content of the root, which stays the
-    // same while the page or the root scrolls.
-    const measure = () => {
-      // Rects include the CSS zoom of the root, unlike the lengths the pieces
-      // compare in CSS.
-      const zoom = root.currentCSSZoom || 1;
-      const rootRect = root.getBoundingClientRect();
-      const originTop = rootRect.top + (root.clientTop - root.scrollTop) * zoom;
-      const getOffset = (y: number) => (y - originTop) / zoom;
-      markers = [];
-      rows = entries.map((entry) => {
-        const link = entry.link.current;
-        const thumb = entry.thumb.current;
-        const marker = getVisibleMarker(entry);
-        const markerRect = marker?.getBoundingClientRect();
-        const markerRow = markerRect && {
-          top: getOffset(markerRect.top),
-          bottom: getOffset(markerRect.bottom),
-        };
-        if (marker && markerRow) {
-          markers.push({ ...markerRow, element: marker });
-        }
-        if (!link) return null;
-        if (!thumb) return null;
-        if (!isVisible(thumb)) return null;
-        const linkRect = link.getBoundingClientRect();
-        const thumbRect = thumb.getBoundingClientRect();
-        const thumbTop = getOffset(thumbRect.top);
-        thumb.style.setProperty("--toc-piece-top", `${thumbTop}px`);
-        // The thumb stops at a marker. The halo of a dot is shorter than its
-        // row, so a thumb that ran to the row edge would show past the halo.
-        if (markerRow) return markerRow;
-        // A piece ends this far from the row edges, so the thumb covers the
-        // line along the visible rows and the bends between them.
-        const joint = linkRect.bottom - thumbRect.bottom;
-        return {
-          top: getOffset(linkRect.top + joint),
-          bottom: getOffset(thumbRect.bottom),
-        };
-      });
-    };
-
-    const getRange = () => {
-      if (!state) return null;
-      const firstRow = rows.find((row) => row != null);
-      if (!firstRow) return null;
-      // With no section on screen, the empty range waits at the first row.
-      if (state.first === -1) {
-        return { start: firstRow.top, end: firstRow.top };
-      }
-      const start = rows[state.first]?.top ?? firstRow.top;
-      const end = rows[state.last]?.bottom ?? start;
-      return { start, end };
-    };
-
-    const applyRange = () => {
-      const range = getRange();
-      // A hidden table of contents has no range. When it shows again, its first
-      // range appears at once, like the first one after hydration.
-      if (!range) {
-        ready = false;
+    // The bar covers the rows of the sections on screen. With none, its empty
+    // range waits at the first row.
+    const applyRange = (spy: TocSpyState) => {
+      const first = ids[spy.first];
+      const last = ids[spy.last];
+      if (first == null || last == null) {
+        barRange.setRange(null);
         return;
       }
-      // The range goes on each piece that reads it, which glides it, so a glide
-      // restyles only these pieces, not every row.
-      const thumbs = entries.map((entry) => entry.thumb.current);
-      const elements = markers.map((marker) => marker.element);
-      const pieces = [...thumbs, ...elements].filter((piece) => piece != null);
-      const setRange = () => {
-        for (const piece of pieces) {
-          piece.style.setProperty("--toc-thumb-start", `${range.start}px`);
-          piece.style.setProperty("--toc-thumb-end", `${range.end}px`);
-        }
-        // A marker fills over time where the thumb arrives, and empties at once
-        // where it leaves, because the thumb has already gone by then. The fill
-        // reads the position of the marker, which goes on with the range,
-        // because a layout read before the first range would start the fill
-        // transition.
-        for (const { element, top, bottom } of markers) {
-          element.style.setProperty("--toc-piece-top", `${top}px`);
-          if (range.start <= top && bottom <= range.end) {
-            element.style.removeProperty("--toc-fill-duration");
-          } else {
-            element.style.setProperty("--toc-fill-duration", "0s");
-          }
-        }
-      };
-      if (ready) {
-        setRange();
-        return;
-      }
-      ready = true;
-      // Reading the style applies the range before the transitions turn back
-      // on, so only later ranges glide. The fill of a marker is a
-      // pseudo-element with its own transition, so it needs its own read.
-      for (const piece of pieces) {
-        piece.style.transitionDuration = "0s";
-      }
-      setRange();
-      for (const piece of pieces) {
-        win.getComputedStyle(piece).getPropertyValue("--toc-thumb-start");
-        win.getComputedStyle(piece, "::after").getPropertyValue("clip-path");
-      }
-      for (const piece of pieces) {
-        piece.style.transitionDuration = "";
-      }
+      barRange.setRange({ first, last });
     };
 
     // Keeps the rows of the sections on screen in view in a list that scrolls
@@ -561,7 +441,7 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
       const next = getSpyState(result);
       if (state && isSameSpyState(state, next)) return;
       state = next;
-      applyRange();
+      applyRange(next);
       keepRangeInView(next);
       const id = ids[next.current] ?? null;
       if (id === currentIdRef.current) return;
@@ -616,10 +496,10 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
     // A hidden table of contents or hidden headings, such as in a closed
     // dialog, have no scroll container until they show, which resizes them. The
     // state applies again, so a table of contents that shows also brings its
-    // rows into view.
+    // rows into view. The bar range measures its pieces again by itself, before
+    // this runs.
     const refresh = () => {
       updateContainer();
-      measure();
       state = null;
       update();
       scheduleUpdate();
@@ -631,12 +511,6 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
     observer.observe(root);
     const lists = new Set<Element>();
     for (const entry of entries) {
-      // CSS can show a marker without resizing its row.
-      for (const { current: marker } of entry.markers) {
-        if (marker) {
-          observer.observe(marker);
-        }
-      }
       const link = entry.link.current;
       if (!link) continue;
       observer.observe(link);
@@ -650,15 +524,15 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
     }
 
     // A popover or dialog can scale the table of contents and its headings
-    // while it opens, and a transform doesn't resize them, so the pieces and
-    // the sections are measured again when an animation around the root ends.
-    // The corrected range appears at once.
+    // while it opens, and a transform doesn't resize them, so the sections are
+    // measured again when an animation around the root ends. The bar range
+    // measures its pieces again in the same way.
     const onAnimationEnd = (event: Event) => {
       const { target } = event;
       if (target === root) return;
-      if (!isElementNode(target)) return;
+      // Event targets can come from another realm, which this check allows.
+      if (!isNode(target)) return;
       if (!target.contains(root)) return;
-      ready = false;
       refresh();
     };
 
@@ -672,13 +546,6 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
     doc.addEventListener("animationend", onAnimationEnd, true);
     win.addEventListener("resize", scheduleUpdate);
     win.addEventListener("hashchange", scheduleUpdate);
-    // Late fonts resize the rows, which the observer measures again, and can
-    // wrap labels without a resize of the list.
-    void doc.fonts?.ready.then(() => {
-      if (!root.isConnected) return;
-      measure();
-      applyRange();
-    });
 
     return () => {
       win.cancelAnimationFrame(frame);
@@ -690,13 +557,22 @@ function useTocSpy({ rootRef, onCurrentChange }: UseTocSpyParams) {
       win.removeEventListener("resize", scheduleUpdate);
       win.removeEventListener("hashchange", scheduleUpdate);
     };
-  }, [rootRef, version, onChange]);
+  }, [rootRef, barRange, version, onChange]);
 
   return { registry, currentId };
 }
 
 export interface TocProps
-  extends ak.RoleProps<"nav">, Omit<VariantProps<typeof toc>, "$ordered"> {
+  extends
+    ak.RoleProps<"nav">,
+    // `ordered` sets `$ordered`. The guide of a table of contents bends into
+    // every nested list, its rows hold one line of content, and `$gap` always
+    // sets the space between them. The sections on screen set the range of the
+    // bar.
+    Omit<
+      VariantProps<typeof toc>,
+      "$ordered" | "$branch" | "$itemGap" | "$baseGap"
+    > {
   /**
    * A visible title above the rows, as content or `TocLabel` props. It names
    * the landmark unless `aria-label` or `aria-labelledby` is set.
@@ -725,8 +601,9 @@ export interface TocProps
   landmark?: boolean;
   /**
    * Renders the root list as an `ol` and numbers its top-level rows with
-   * markers on the guide. Nested lists stay unnumbered, unless a `TocList` sets
-   * its own marker with `ordered` or `$marker`.
+   * markers on the guide, unless `$marker` sets another marker. Nested lists
+   * stay unnumbered, unless a `TocList` sets its own marker with `ordered` or
+   * `$marker`.
    */
   ordered?: boolean;
   /**
@@ -740,7 +617,7 @@ export interface TocProps
  * A table of contents for the headings of a page. Its links stay native, and
  * the link of the section being read gets `aria-current="location"`: the last
  * heading above the activation line, which is the scroll padding of the scroll
- * container plus the scroll margin of the heading. A thumb on the guide covers
+ * container plus the scroll margin of the heading. A bar on the guide covers
  * the rows whose sections are on screen. The scroll container is the nearest
  * one around the first heading, or the page.
  * @example
@@ -777,8 +654,16 @@ export function Toc({
   const [variantProps, rest] = splitProps(props, toc);
   const rootRef = React.useRef<HTMLElement>(null);
   const ref = useMergeRefs(rootRef, rest.ref);
+  // The bar range measures its pieces before the spy sets the first range. A
+  // ring glides with the whole range, and other highlights read only the part
+  // that reaches each marker.
+  const barRange = useNavBarRange({
+    rootRef,
+    clampMarkers: variantProps.$markerHighlight !== "ring",
+  });
   const { registry, currentId } = useTocSpy({
     rootRef,
+    barRange,
     onCurrentChange,
   });
   const defaultLabelId = React.useId();
@@ -800,24 +685,26 @@ export function Toc({
       <TocRegistryContext.Provider value={registry}>
         <TocCurrentContext.Provider value={currentId}>
           <TocGuideContext.Provider value={guide}>
-            <ak.Role.nav
-              // A render prop from the caller still decides the element.
-              render={isLandmark ? undefined : <div />}
-              aria-labelledby={
-                isLandmark && rest["aria-label"] == null ? labelId : undefined
-              }
-              {...toc.jsx({ ...variantProps, $ordered: !!ordered })}
-              {...rest}
-              ref={ref}
-            >
-              {labelElement}
-              {list === false
-                ? children
-                : createRender(TocList, list, {
-                    children,
-                    render: ordered ? <ol /> : undefined,
-                  })}
-            </ak.Role.nav>
+            <NavBarRangeContext.Provider value={barRange}>
+              <ak.Role.nav
+                // A render prop from the caller still decides the element.
+                render={isLandmark ? undefined : <div />}
+                aria-labelledby={
+                  isLandmark && rest["aria-label"] == null ? labelId : undefined
+                }
+                {...toc.jsx({ ...variantProps, $ordered: !!ordered })}
+                {...rest}
+                ref={ref}
+              >
+                {labelElement}
+                {list === false
+                  ? children
+                  : createRender(TocList, list, {
+                      children,
+                      render: ordered ? <ol /> : undefined,
+                    })}
+              </ak.Role.nav>
+            </NavBarRangeContext.Provider>
           </TocGuideContext.Provider>
         </TocCurrentContext.Provider>
       </TocRegistryContext.Provider>
@@ -878,7 +765,7 @@ export interface TocListProps
  * <Toc label="On this page">
  *   <TocItem>
  *     <TocLink href="#examples">Examples</TocLink>
- *     <TocList $marker="dot">
+ *     <TocList $marker="bullet">
  *       <TocLink href="#basic">Basic</TocLink>
  *       <TocLink href="#nested">Nested</TocLink>
  *     </TocList>
@@ -887,7 +774,7 @@ export interface TocListProps
  */
 export function TocList({ ordered, ...props }: TocListProps) {
   const [variantProps, rest] = splitProps(props, tocList);
-  const $marker = variantProps.$marker ?? (ordered ? "number" : false);
+  const $marker = variantProps.$marker ?? (ordered ? "counter" : "none");
   return (
     // Links in a new level render their own list items again.
     <TocItemContext.Provider value={false}>
@@ -925,6 +812,9 @@ export function TocItem(props: TocItemProps) {
   );
 }
 
+// The marker of a link takes no props, so its classes resolve once.
+const tocLinkMarkerProps = tocLinkMarker.jsx();
+
 export interface TocLinkProps
   extends ak.RoleProps<"a">, VariantProps<typeof tocLink> {
   /**
@@ -944,9 +834,9 @@ export interface TocLinkProps
 
 /**
  * A link to a heading on the page. `Toc` marks it with
- * `aria-current="location"` while its section is being read. The guide and
- * thumb pieces, and the markers, which only a list with markers shows, render
- * after the children and stay hidden from assistive technology.
+ * `aria-current="location"` while its section is being read. The guide and bar
+ * pieces, and the marker, which only a list with markers shows, render after
+ * the children and stay hidden from assistive technology.
  * @example
  * <Toc label="On this page">
  *   <TocLink href="#overview">Overview</TocLink>
@@ -962,43 +852,53 @@ export function TocLink({ item, guide, ...props }: TocLinkProps) {
   const [variantProps, rest] = splitProps(props, tocLink);
   const id = React.useId();
   const registry = React.useContext(TocRegistryContext);
+  const barRange = React.useContext(NavBarRangeContext);
   const currentId = React.useContext(TocCurrentContext);
   const inItem = React.useContext(TocItemContext);
   const contextGuide = React.useContext(TocGuideContext);
   const guideProps = guide ?? contextGuide;
   const linkRef = React.useRef<HTMLAnchorElement>(null);
-  const thumbRef = React.useRef<HTMLSpanElement>(null);
-  const numberRef = React.useRef<HTMLSpanElement>(null);
-  const dotRef = React.useRef<HTMLSpanElement>(null);
+  const barRef = React.useRef<HTMLSpanElement>(null);
+  const markerRef = React.useRef<HTMLSpanElement>(null);
   const ref = useMergeRefs(linkRef, rest.ref);
   const { href } = rest;
 
+  // The bar range measures the pieces, and the spy finds the heading. Both take
+  // the same id, so the spy can name the links that the bar covers.
+  useSafeLayoutEffect(() => {
+    if (!barRange) return;
+    return barRange.register(id, {
+      link: linkRef,
+      bar: barRef,
+      marker: markerRef,
+    });
+  }, [barRange, id]);
+
   useSafeLayoutEffect(() => {
     if (!registry) return;
-    return registry.register(id, {
-      href,
-      link: linkRef,
-      thumb: thumbRef,
-      markers: [numberRef, dotRef],
-    });
+    return registry.register(id, { href, link: linkRef });
   }, [registry, id, href]);
 
   // The pieces come last, so slot styles that look at earlier siblings work as
-  // in a nav link.
-  const pieces = (
-    <>
-      {createRender(TocLinkGuide, guideProps)}
-      <span
-        aria-hidden
-        ref={thumbRef}
-        // The thumb covers the guide, so its curves take the same radius.
-        {...tocLinkThumb.jsx({
-          $radius: getRenderProps<TocLinkGuideProps>(guideProps)?.$radius,
-        })}
-      />
-      <span aria-hidden ref={numberRef} {...tocLinkMarker.jsx()} />
-      <span aria-hidden ref={dotRef} {...tocLinkDot.jsx()} />
-    </>
+  // in a nav link. A change of the current link renders every link again, and
+  // the pieces don't depend on it, so they keep the same elements, which React
+  // skips.
+  const pieces = React.useMemo(
+    () => (
+      <>
+        {createRender(TocLinkGuide, guideProps)}
+        <span
+          aria-hidden
+          ref={barRef}
+          // The bar covers the guide, so its curves take the same radius.
+          {...tocLinkBar.jsx({
+            $radius: getRenderProps<TocLinkGuideProps>(guideProps)?.$radius,
+          })}
+        />
+        <span aria-hidden ref={markerRef} {...tocLinkMarkerProps} />
+      </>
+    ),
+    [guideProps],
   );
   const link = (
     <ak.Role.a
@@ -1023,7 +923,7 @@ export interface TocLinkGuideProps
   extends
     React.ComponentProps<"span">,
     // The `$guide` variant of the table of contents sets the shape of the
-    // bends for the guide and the thumb.
+    // bends for the guide and the bar.
     Omit<VariantProps<typeof tocLinkGuide>, "$bend"> {}
 
 /**

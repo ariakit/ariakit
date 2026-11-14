@@ -1,8 +1,8 @@
 import type { Locator, Page } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
-import { expectTocThumbStill } from "#app/test-utils/toc.ts";
+import { expectTocBarStill } from "#app/test-utils/toc.ts";
 
-// Scrolls to the heading and pauses the thumb glides as soon as each table of
+// Scrolls to the heading and pauses the bar glides as soon as each table of
 // contents sets its range. A slow frame can outlast the glide, which then
 // starts and ends between two frame callbacks.
 async function pauseGlides(page: Page, navs: Locator[], id: string) {
@@ -38,26 +38,26 @@ async function pauseGlides(page: Page, navs: Locator[], id: string) {
   );
 }
 
-// Returns the names of the links whose rows the thumb covers. A row counts when
-// the thumb range covers more than one pixel of the line along it, which ends
-// the same distance from both edges of the row.
-function getThumbLinks(nav: Locator) {
+// Returns the names of the links whose rows the bar covers. A row counts when
+// the bar range covers more than one pixel of the line along it, which ends the
+// same distance from both edges of the row.
+function getBarLinks(nav: Locator) {
   return nav.evaluate((element) => {
     return [...element.querySelectorAll("a")].flatMap((link) => {
-      const thumb = link.querySelector<HTMLElement>(".toc-link-thumb");
-      if (!thumb) return [];
-      // Each thumb piece holds the range that glides on it.
-      const style = getComputedStyle(thumb);
+      const bar = link.querySelector<HTMLElement>(".toc-link-bar");
+      if (!bar) return [];
+      // Each bar piece holds the range that glides on it.
+      const style = getComputedStyle(bar);
       const start = Number.parseFloat(
-        style.getPropertyValue("--toc-thumb-start"),
+        style.getPropertyValue("--nav-bar-start"),
       );
-      const end = Number.parseFloat(style.getPropertyValue("--toc-thumb-end"));
+      const end = Number.parseFloat(style.getPropertyValue("--nav-bar-end"));
       const top = Number.parseFloat(
-        thumb.style.getPropertyValue("--toc-piece-top"),
+        bar.style.getPropertyValue("--nav-bar-top"),
       );
       const linkRect = link.getBoundingClientRect();
-      const joint = linkRect.bottom - thumb.getBoundingClientRect().bottom;
-      const lineBottom = top + thumb.offsetHeight;
+      const joint = linkRect.bottom - bar.getBoundingClientRect().bottom;
+      const lineBottom = top + bar.offsetHeight;
       const lineTop = lineBottom - (linkRect.height - 2 * joint);
       const covered = Math.min(end, lineBottom) - Math.max(start, lineTop);
       return covered > 1 ? [link.textContent] : [];
@@ -77,10 +77,7 @@ function isInList(link: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
-  test("glides the thumb as one bar through every piece", async ({
-    page,
-    q,
-  }) => {
+  test("glides the bar as one bar through every piece", async ({ page, q }) => {
     // Jump from the top to the end, so the range moves far, then read the
     // paused glide at several times.
     const nav = q.navigation("Five levels");
@@ -90,18 +87,18 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       const read = (target: Element) => {
         const style = getComputedStyle(target);
         return [
-          style.getPropertyValue("--toc-thumb-start"),
-          style.getPropertyValue("--toc-thumb-end"),
+          style.getPropertyValue("--nav-bar-start"),
+          style.getPropertyValue("--nav-bar-end"),
         ].join(" ");
       };
       return [0, 40, 80, 120, 160].map((time) => {
         for (const animation of animations) {
           animation.currentTime = time;
         }
-        const thumbs = [...element.querySelectorAll(".toc-link-thumb")];
+        const bars = [...element.querySelectorAll(".toc-link-bar")];
         return {
           animations: animations.length,
-          pieces: [...new Set(thumbs.map(read))],
+          pieces: [...new Set(bars.map(read))],
         };
       });
     });
@@ -109,22 +106,19 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     for (const frame of frames) {
       test.expect(frame.animations).toBeGreaterThan(0);
       // Every piece glides through the same range, so no piece moves ahead of
-      // the others and splits the thumb.
+      // the others and splits the bar.
       test.expect(frame.pieces).toHaveLength(1);
     }
     test.expect(frames[0]?.pieces).not.toEqual(frames[4]?.pieces);
   });
 
   // https://github.com/ariakit/ariakit/issues/8141
-  test("glides the thumb on its pieces, not on the rows", async ({
-    page,
-    q,
-  }) => {
-    // A glide on the root restyles every row in each frame, so only the thumb
+  test("glides the bar on its pieces, not on the rows", async ({ page, q }) => {
+    // A glide on the root restyles every row in each frame, so only the bar
     // pieces and the number markers with rings animate. Read the paused glide
     // halfway to compare the range on the pieces and the rings.
     const chapters = q.navigation("Ringed chapters");
-    const numbers = q.navigation("Numbers over the thumb");
+    const numbers = q.navigation("Numbers over the bar");
     await pauseGlides(page, [chapters, numbers], "chapter-12");
     const unringed = await numbers.elementHandle();
     const glide = await chapters.evaluate((nav, other) => {
@@ -142,7 +136,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             const { effect } = animation;
             const target = effect instanceof KeyframeEffect && effect.target;
             if (!target) return "none";
-            if (target.matches(".toc-link-thumb")) return "thumb";
+            if (target.matches(".toc-link-bar")) return "bar";
             if (target.matches(".toc-link-marker")) return "marker";
             return target.tagName.toLowerCase();
           });
@@ -151,33 +145,31 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       const read = (target: Element, pseudo?: string) => {
         const style = getComputedStyle(target, pseudo);
         return [
-          style.getPropertyValue("--toc-thumb-start"),
-          style.getPropertyValue("--toc-thumb-end"),
+          style.getPropertyValue("--nav-bar-start"),
+          style.getPropertyValue("--nav-bar-end"),
         ].join(" ");
       };
-      const thumbs = [...nav.querySelectorAll(".toc-link-thumb")];
+      const bars = [...nav.querySelectorAll(".toc-link-bar")];
       const markers = [...nav.querySelectorAll(".toc-link-marker")];
       const rings = markers.map((marker) => read(marker, "::after"));
       return {
         targets: getTargets(nav),
         unringedTargets: other ? getTargets(other) : null,
         markers: markers.length,
-        ranges: [
-          ...new Set([...thumbs, ...markers].map((piece) => read(piece))),
-        ],
+        ranges: [...new Set([...bars, ...markers].map((piece) => read(piece)))],
         rings: [...new Set(rings)],
       };
     }, unringed);
-    test.expect(glide.targets).toEqual(["marker", "thumb"]);
+    test.expect(glide.targets).toEqual(["bar", "marker"]);
     // Markers without rings don't read the range.
-    test.expect(glide.unringedTargets).toEqual(["thumb"]);
+    test.expect(glide.unringedTargets).toEqual(["bar"]);
     test.expect(glide.markers).toBe(12);
-    // The rings glide with the thumb.
+    // The rings glide with the bar.
     test.expect(glide.ranges).toHaveLength(1);
     test.expect(glide.rings).toEqual(glide.ranges);
   });
 
-  test("fills only the markers that the thumb reaches, over time", async ({
+  test("fills only the markers that the bar reaches, over time", async ({
     page,
     q,
   }) => {
@@ -188,7 +180,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test
       .expect(query(nav).link("Chapter 1"))
       .toHaveAttribute("aria-current", "location");
-    await expectTocThumbStill(page, nav);
+    await expectTocBarStill(page, nav);
     await pauseGlides(page, [nav], "chapter-6");
     const fill = await nav.evaluate((element) => {
       const animations = element.getAnimations({ subtree: true });
@@ -219,8 +211,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       };
     });
     // The clip stops at the edges of a marker, so the fill takes the whole
-    // transition, and a marker past the thumb stays out of it, however far the
-    // range moves. A marker that the thumb leaves empties at once.
+    // transition, and a marker past the bar stays out of it, however far the
+    // range moves. A marker that the bar leaves empties at once.
     test.expect(fill.startsAtMarker).toBe(true);
     test.expect(fill.links).toContain("Chapter 6");
     test.expect(fill.links).not.toContain("Chapter 12");
@@ -240,7 +232,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await test
         .expect(row.locator(".toc-link-marker"))
         .toBeVisible({ visible });
-      await test.expect(row.locator(".toc-link-dot")).toBeHidden();
     };
     await expectNumber("Right to left", "الاستخدام", true);
     await expectNumber("Right to left", "مثال بسيط", false);
@@ -396,8 +387,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test
       .expect(nav.link("Dates"))
       .toHaveAttribute("aria-current", "location");
-    // The thumb covers both headings of the row. A heading beside the first one
-    // doesn't end its section. The thumb glides through the rows above on its
+    // The bar covers both headings of the row. A heading beside the first one
+    // doesn't end its section. The bar glides through the rows above on its
     // pieces, so the range counts only once the glide ends.
     const sideNav = q.navigation("Side by side");
     await test.expect
@@ -408,7 +399,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       )
       .toBe(0);
     test
-      .expect(await getThumbLinks(sideNav))
+      .expect(await getBarLinks(sideNav))
       .toEqual(test.expect.arrayContaining(["Cherries", "Dates"]));
     // Scrolling on starts from that heading, without going back to the first
     // one of its row. Read the current link after the frame that updates it.
@@ -466,14 +457,12 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // scroll container until the details show.
     await q.article("Steps").scrollIntoViewIfNeeded();
     await test.expect
-      .poll(() => getThumbLinks(nav))
+      .poll(() => getBarLinks(nav))
       .toEqual(["First step", "Second step", "Third step"]);
     // The details push the later steps out of the panel, and the panel starts
     // to scroll.
     await q.button("Show details").click();
-    await test.expect
-      .poll(() => getThumbLinks(nav))
-      .not.toContain("Third step");
+    await test.expect.poll(() => getBarLinks(nav)).not.toContain("Third step");
     // The last step can't reach the top. At the end of the panel, the
     // activation line has slid down past it.
     await q.heading("Third step").evaluate((element) => {
@@ -482,6 +471,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test
       .expect(query(nav).link("Third step"))
       .toHaveAttribute("aria-current", "location");
-    await test.expect.poll(() => getThumbLinks(nav)).toContain("Third step");
+    await test.expect.poll(() => getBarLinks(nav)).toContain("Third step");
   });
 });

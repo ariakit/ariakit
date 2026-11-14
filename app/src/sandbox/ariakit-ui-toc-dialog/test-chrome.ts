@@ -2,9 +2,9 @@ import type { Locator } from "@playwright/test";
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
-// Returns the names of the links whose rows the thumb covers but whose headings
-// start below the scroll viewport, and how many rows the thumb covers.
-function getHiddenThumbLinks(dialog: Locator) {
+// Returns the names of the links whose rows the bar covers but whose headings
+// start below the scroll viewport, and how many rows the bar covers.
+function getHiddenBarLinks(dialog: Locator) {
   return dialog.evaluate((element) => {
     const nav = element.querySelector("nav");
     const viewport = element.firstElementChild;
@@ -14,18 +14,18 @@ function getHiddenThumbLinks(dialog: Locator) {
     let covered = 0;
     const hidden: string[] = [];
     for (const link of nav.querySelectorAll("a")) {
-      const thumb = link.querySelector<HTMLElement>(".toc-link-thumb");
-      if (!thumb) continue;
-      // Each thumb piece holds the range that glides on it.
-      const style = getComputedStyle(thumb);
+      const bar = link.querySelector<HTMLElement>(".toc-link-bar");
+      if (!bar) continue;
+      // Each bar piece holds the range that glides on it.
+      const style = getComputedStyle(bar);
       const start = Number.parseFloat(
-        style.getPropertyValue("--toc-thumb-start"),
+        style.getPropertyValue("--nav-bar-start"),
       );
-      const end = Number.parseFloat(style.getPropertyValue("--toc-thumb-end"));
+      const end = Number.parseFloat(style.getPropertyValue("--nav-bar-end"));
       const top = Number.parseFloat(
-        thumb.style.getPropertyValue("--toc-piece-top"),
+        bar.style.getPropertyValue("--nav-bar-top"),
       );
-      if (Math.min(end, top + thumb.offsetHeight) - Math.max(start, top) <= 1) {
+      if (Math.min(end, top + bar.offsetHeight) - Math.max(start, top) <= 1) {
         continue;
       }
       covered++;
@@ -70,7 +70,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect
       .poll(() => dialog.evaluate((element) => element.getAnimations().length))
       .toBe(0);
-    const rows = await getHiddenThumbLinks(dialog);
+    const rows = await getHiddenBarLinks(dialog);
     test.expect(rows?.covered).toBeGreaterThan(0);
     test.expect(rows?.hidden).toEqual([]);
   });

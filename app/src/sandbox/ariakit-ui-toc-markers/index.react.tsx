@@ -15,7 +15,7 @@ interface Entry {
   slug: string;
   text: string;
   ordered?: boolean;
-  marker?: "dot";
+  marker?: "bullet";
   children?: Entry[];
 }
 
@@ -47,7 +47,7 @@ const dotSteps: Entry[] = [
   {
     slug: "dot-guide",
     text: "Guide",
-    marker: "dot",
+    marker: "bullet",
     children: [
       { slug: "dot-install", text: "Install" },
       {
@@ -173,9 +173,9 @@ export default function Example() {
         />
         <Contents label="Dot steps, rail" entries={dotSteps} $guide="rail" />
         <Contents
-          label="Dot steps, wide thumb"
+          label="Dot steps, wide bar"
           entries={dotSteps}
-          $thumbWidth={3}
+          $barWidth={3}
         />
         <div dir="rtl" className="flex flex-wrap items-start gap-6">
           <Contents

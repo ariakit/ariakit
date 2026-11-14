@@ -667,7 +667,7 @@ body > * {
 
 /* Resolve the two lengths whose values a guide piece expands most, once on the
    piece. Unresolved, they expand again in each value that reads them, and a
-   glide of the table of contents restyles its thumb pieces in each frame. */
+   glide of the bar of a navigation restyles its pieces in each frame. */
 @property --guide-span {
   syntax: "<length>";
   inherits: true;
@@ -680,32 +680,32 @@ body > * {
   initial-value: 0px;
 }
 
-/* Registration lets the table of contents animate its thumb range on each piece
-   that reads it. A range that doesn't inherit makes each frame of the glide
-   cheaper to restyle in Chrome. */
-@property --toc-thumb-start {
+/* Registration lets a navigation animate the range of the bar on its guide on
+   each piece that reads it. A range that doesn't inherit makes each frame of
+   the glide cheaper to restyle in Chrome. */
+@property --nav-bar-start {
   syntax: "<length>";
   inherits: false;
   initial-value: 0px;
 }
 
-@property --toc-thumb-end {
+@property --nav-bar-end {
   syntax: "<length>";
   inherits: false;
   initial-value: 0px;
 }
 
-/* Resolve the guide gutter at the table of contents root to align the smaller
-   label with the rows. */
-@property --toc-gutter {
+/* Resolve the guide gutter at the nav root to align the smaller group labels
+   with the rows. */
+@property --nav-gutter {
   syntax: "<length>";
   inherits: true;
   initial-value: 0px;
 }
 
-/* Resolve the size of a table of contents marker on the marker, so its number,
-   which has its own line height, reads the same size. */
-@property --toc-marker-size {
+/* Resolve the size of a navigation marker on the marker, so the clip of its
+   fill, which needs lengths, reads one length for a number and for a dot. */
+@property --nav-marker-size {
   syntax: "<length>";
   inherits: true;
   initial-value: 0px;
@@ -2092,7 +2092,7 @@ body > * {
 }
 
 @custom-variant ui-list-horizontal {
-  @container style(--list-orientation: horizontal) {
+  @container style(--list-layout: horizontal) {
     @slot;
   }
 }

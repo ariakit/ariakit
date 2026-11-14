@@ -1,4 +1,4 @@
 {
   "title": "Horizontal Steps",
-  "description": "The stages of an order in a row. In a horizontal list, each ListItem shows its icon chip above its label and a guide joins the chips. The list takes $orientation from a custom property that a container query sets, so the stages go in a column when the container is narrow. The finished stages show a check, and aria-current marks the current stage. Use it for a short sequence of three to five stages with short labels, such as order tracking or a checkout, when there is room for a row."
+  "description": "The stages of an order in a row. In a horizontal list, each ListItem shows its icon chip above its label and a guide joins the chips. The list takes $layout from a custom property that a container query sets, so the stages go in a column when the container is narrow. The finished stages show a check, and aria-current marks the current stage. Use it for a short sequence of three to five stages with short labels, such as order tracking or a checkout, when there is room for a row."
 }

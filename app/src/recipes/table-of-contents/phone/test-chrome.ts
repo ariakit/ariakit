@@ -19,7 +19,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.button("Make the dough")).toBeVisible();
   });
 
-  test("shows the thumb at once when the popover opens again", async ({
+  test("shows the bar at once when the popover opens again", async ({
     page,
     q,
   }) => {
@@ -38,7 +38,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // sets the range before the next frames paint. No state marks that moment,
     // and a glide from the old range would still run for its 200ms after it.
     await flushFrames(page);
-    // The thumb glides on its pieces, inside the root.
+    // The bar glides on its pieces, inside the root.
     const animations = await nav.evaluate(
       (element) => element.getAnimations({ subtree: true }).length,
     );
@@ -52,7 +52,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.button("On this page").click();
     await test.expect(nav).toBeVisible();
     // The popover opens from a smaller scale, which doesn't resize the rows.
-    // Once it ends, each piece of the thumb sits where its row is.
+    // Once it ends, each piece of the bar sits where its row is.
     await test.expect
       .poll(() =>
         q
@@ -62,10 +62,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toBe(0);
     const offsets = await nav.evaluate((element) => {
       const top = element.getBoundingClientRect().top + element.clientTop;
-      const thumbs = element.querySelectorAll<HTMLElement>(".toc-link-thumb");
-      return [...thumbs].map((thumb) => {
-        const piece = thumb.style.getPropertyValue("--toc-piece-top");
-        const offset = thumb.getBoundingClientRect().top - top;
+      const bars = element.querySelectorAll<HTMLElement>(".toc-link-bar");
+      return [...bars].map((bar) => {
+        const piece = bar.style.getPropertyValue("--nav-bar-top");
+        const offset = bar.getBoundingClientRect().top - top;
         return Math.abs(Number.parseFloat(piece) - offset);
       });
     });

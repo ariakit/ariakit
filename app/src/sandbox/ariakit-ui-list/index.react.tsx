@@ -178,6 +178,62 @@ export default function ListExamples() {
       </Example>
 
       <Example
+        title="Rows without markers"
+        description="With no marker, the rows keep no room for one, and a disclosure row starts its label where the other rows start their text."
+        stretch
+        code={`
+          <List $marker="none">
+            <ListItem>Keyboard shortcuts</ListItem>
+            <ListItem>Screen reader support</ListItem>
+            <li>
+              <ListDisclosure button="Right-to-left layouts">…</ListDisclosure>
+            </li>
+          </List>
+        `}
+      >
+        <List $marker="none">
+          <ListItem>Keyboard shortcuts</ListItem>
+          <ListItem>Screen reader support</ListItem>
+          <li>
+            <ListDisclosure button="Right-to-left layouts">
+              <p>Logical properties place every part of the row.</p>
+            </ListDisclosure>
+          </li>
+        </List>
+      </Example>
+
+      <Example
+        title="Disclosure without a marker"
+        description="A disclosure row in a list with tall markers can leave out its own marker. Its button shows none and keeps even inline padding."
+        stretch
+        code={`
+          <List $markerSize={12}>
+            <ListItem>Keyboard shortcuts</ListItem>
+            <li>
+              <ListDisclosure $marker={false} button={{ children: "Right-to-left layouts", indicator: "chevron-down-end" }}>
+                …
+              </ListDisclosure>
+            </li>
+          </List>
+        `}
+      >
+        <List $markerSize={12}>
+          <ListItem>Keyboard shortcuts</ListItem>
+          <li>
+            <ListDisclosure
+              $marker={false}
+              button={{
+                children: "Right-to-left layouts",
+                indicator: "chevron-down-end",
+              }}
+            >
+              <p>Logical properties place every part of the row.</p>
+            </ListDisclosure>
+          </li>
+        </List>
+      </Example>
+
+      <Example
         title="Unordered blocks"
         description="Paragraph children switch the list to blocks mode, with a larger gap and row padding. Dashes draw no guide."
         stretch
@@ -503,7 +559,7 @@ export default function ListExamples() {
         description="A horizontal row puts its tall marker box above its content, so a list nested in the row starts as it does in a row with a one-line marker."
         stretch
         code={`
-          <List $markerSize={8} $orientation="horizontal">
+          <List $markerSize={8} $layout="horizontal">
             <ListItem>
               Build
               <List $markerSize={8}>
@@ -515,7 +571,7 @@ export default function ListExamples() {
           </List>
         `}
       >
-        <List $markerSize={8} $orientation="horizontal">
+        <List $markerSize={8} $layout="horizontal">
           <ListItem>
             Build
             <List $markerSize={8}>
@@ -575,14 +631,14 @@ export default function ListExamples() {
         description="A guide on inline rows. The gap sets the length of each segment."
         stretch
         code={`
-          <List $guide $gap={6}>
+          <List $guide $gap={2}>
             <ListItem>9:00 Doors open</ListItem>
             <ListItem>10:00 Opening talk</ListItem>
             <ListItem>12:30 Lunch</ListItem>
           </List>
         `}
       >
-        <List $guide $gap={6}>
+        <List $guide $gap={2}>
           <ListItem>9:00 Doors open</ListItem>
           <ListItem>10:00 Opening talk</ListItem>
           <ListItem>12:30 Lunch</ListItem>
@@ -615,7 +671,7 @@ export default function ListExamples() {
         description="Rows are frames that paint their own surface and border, and the guide runs between the rows, behind them. The arc goes around the number of an open step."
         stretch
         code={`
-          <List ordered $gap={6}>
+          <List ordered $gap={2.5}>
             <ListItem $layer $border $rounded="xl" $p={3} checked>
               Create an account
               Done on Monday.
@@ -631,7 +687,7 @@ export default function ListExamples() {
           </List>
         `}
       >
-        <List ordered $gap={6}>
+        <List ordered $gap={2.5}>
           <ListItem $layer $border $rounded="xl" $p={3} checked>
             <p>
               <strong>Create an account</strong>
@@ -974,14 +1030,33 @@ export default function ListExamples() {
         description="The gap and the item padding set the spacing."
         stretch
         code={`
-          <List $gap={1} $itemPadding={0}>
+          <List $gap={0.5} $itemPadding={0}>
             <ListItem>Milk</ListItem>
             <ListItem>Eggs</ListItem>
             <ListItem>Bread</ListItem>
           </List>
         `}
       >
-        <List $gap={1} $itemPadding={0}>
+        <List $gap={0.5} $itemPadding={0}>
+          <ListItem>Milk</ListItem>
+          <ListItem>Eggs</ListItem>
+          <ListItem>Bread</ListItem>
+        </List>
+      </Example>
+
+      <Example
+        title="Base gap"
+        description="Without a gap, the list derives the space between two rows from the base gap, by how much content the rows hold. A larger base gap moves the rows apart and keeps that rule."
+        stretch
+        code={`
+          <List $baseGap={8}>
+            <ListItem>Milk</ListItem>
+            <ListItem>Eggs</ListItem>
+            <ListItem>Bread</ListItem>
+          </List>
+        `}
+      >
+        <List $baseGap={8}>
           <ListItem>Milk</ListItem>
           <ListItem>Eggs</ListItem>
           <ListItem>Bread</ListItem>

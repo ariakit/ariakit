@@ -110,7 +110,7 @@ export default function Example() {
         $layer="transparent"
       >
         <ShellSidebarBody>
-          {/* Without a guide, there is no thumb, and only the current link
+          {/* Without a guide, there is no bar, and only the current link
               shows where the reader is. */}
           <Toc label="On this page" $guide={false} $cover>
             <Rows items={sections} />
