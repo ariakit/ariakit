@@ -62,6 +62,14 @@ function getVisibleMarker(entry: NavBarRangeEntry) {
 export interface UseNavBarRangeParams {
   /** The navigation element, which is the origin of the range. */
   rootRef: React.RefObject<HTMLElement | null>;
+  /**
+   * Writes to each marker only the part of the range that reaches it, which
+   * skips the restyle of the markers that a change of the range doesn't reach.
+   * A filled marker clips the range to its own box, so it draws the same fill.
+   * A marker that reads the whole range, such as a ring that glides with it,
+   * needs the exact range. Defaults to `false`.
+   */
+  clampMarkers?: boolean;
 }
 
 /**
@@ -77,7 +85,10 @@ export interface UseNavBarRangeParams {
  *   <nav ref={rootRef} />
  * </NavBarRangeContext.Provider>
  */
-export function useNavBarRange({ rootRef }: UseNavBarRangeParams) {
+export function useNavBarRange({
+  rootRef,
+  clampMarkers = false,
+}: UseNavBarRangeParams) {
   const entriesRef = React.useRef(new Map<string, NavBarRangeEntry>());
   // No range is known before the owner sets the first one.
   const rangeRef = React.useRef<NavBarRange | null | undefined>(undefined);
@@ -184,9 +195,10 @@ export function useNavBarRange({ rootRef }: UseNavBarRangeParams) {
       const elements = markers.map((marker) => marker.element);
       const pieces = [...bars, ...elements].filter((piece) => piece != null);
       const setRange = () => {
-        for (const piece of pieces) {
-          piece.style.setProperty("--nav-bar-start", `${range.start}px`);
-          piece.style.setProperty("--nav-bar-end", `${range.end}px`);
+        for (const bar of bars) {
+          if (!bar) continue;
+          bar.style.setProperty("--nav-bar-start", `${range.start}px`);
+          bar.style.setProperty("--nav-bar-end", `${range.end}px`);
         }
         // A marker fills over time where the bar arrives, and empties at once
         // where it leaves, because the bar has already gone by then. The fill
@@ -194,6 +206,16 @@ export function useNavBarRange({ rootRef }: UseNavBarRangeParams) {
         // because a layout read before the first range would start the fill
         // transition.
         for (const { element, top, bottom } of markers) {
+          // The fill clips the range to the marker and 1px around it, so a
+          // range clamped the same way draws the same fill. A marker that a
+          // change doesn't reach then keeps its values, which skips its
+          // restyle.
+          const getValue = (value: number) => {
+            if (!clampMarkers) return `${value}px`;
+            return `${Math.min(bottom + 1, Math.max(top - 1, value))}px`;
+          };
+          element.style.setProperty("--nav-bar-start", getValue(range.start));
+          element.style.setProperty("--nav-bar-end", getValue(range.end));
           element.style.setProperty("--nav-bar-top", `${top}px`);
           if (range.start <= top && bottom <= range.end) {
             element.style.removeProperty("--nav-fill-duration");
@@ -281,7 +303,7 @@ export function useNavBarRange({ rootRef }: UseNavBarRangeParams) {
       doc.removeEventListener("transitionend", onAnimationEnd, true);
       doc.removeEventListener("animationend", onAnimationEnd, true);
     };
-  }, [rootRef, version]);
+  }, [rootRef, clampMarkers, version]);
 
   return store;
 }
