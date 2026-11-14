@@ -435,13 +435,14 @@ const SCROLL_ANIMATIONS_TIMEOUT = 2000;
 /**
  * Returns whether the scroll-driven animations of the document follow the
  * layout and scroll position. A browser samples a scroll timeline only when it
- * updates the rendering, so a strip that starts to overflow, such as after a
- * resize, keeps an inactive timeline until then, and a strip that a script
- * scrolls keeps its previous progress. Its animations, like the ones that just
- * started, read as those values, such as a hidden scroll button or no fade. A
- * timeline whose source doesn't overflow stays inactive, which is the right
- * state for a strip that doesn't scroll. Playwright evaluates this in each
- * frame, so it must not use anything outside of its body.
+ * updates the rendering. Until then, a strip that starts to overflow, such as
+ * after a resize, keeps an inactive timeline, a strip that stops overflowing
+ * keeps an active one, and a strip that a script scrolls keeps its previous
+ * progress. Their animations, like the ones that just started, read as those
+ * values, such as a scroll button or a fade in the wrong state. Animations on a
+ * scroll timeline whose source doesn't overflow can stay pending, which is the
+ * right state for a strip that doesn't scroll. Playwright evaluates this in
+ * each frame, so it must not use anything outside of its body.
  */
 function areScrollAnimationsCurrent() {
   if (typeof ScrollTimeline === "undefined") return true;
@@ -470,13 +471,16 @@ function areScrollAnimationsCurrent() {
     const offset = Math.abs(source.scrollTop);
     return { offset, size: source.scrollHeight - source.clientHeight };
   };
+  // A view timeline measures its subject, so it has no scroll progress to
+  // compare, and it stays active on a source that doesn't overflow.
+  const isViewTimeline = (timeline: ScrollTimeline) => {
+    if (typeof ViewTimeline === "undefined") return false;
+    return timeline instanceof ViewTimeline;
+  };
   // Chromium and WebKit report the progress of a scroll timeline as a
-  // percentage. Firefox reports a number in other units, and a view timeline
-  // measures its subject, so neither has a progress to compare.
+  // percentage. Firefox reports a number in other units.
   const getProgress = (timeline: ScrollTimeline) => {
-    if (typeof ViewTimeline !== "undefined") {
-      if (timeline instanceof ViewTimeline) return null;
-    }
+    if (isViewTimeline(timeline)) return null;
     if (typeof CSSUnitValue === "undefined") return null;
     const time = timeline.currentTime;
     if (!(time instanceof CSSUnitValue)) return null;
@@ -486,6 +490,12 @@ function areScrollAnimationsCurrent() {
   const isLagging = (animation: Animation, timeline: ScrollTimeline) => {
     const range = getScrollRange(timeline);
     if (!range) return false;
+    if (range.size <= 0) {
+      if (isViewTimeline(timeline)) return false;
+      // A strip that stops overflowing, such as after a resize, keeps its
+      // active timeline until the browser samples it again.
+      return timeline.currentTime != null;
+    }
     // Firefox keeps the timeline of a source that overflows by less than a
     // pixel inactive, while the rounded sizes differ by one. So the wait also
     // skips a source that overflows by one pixel, which barely scrolls.
