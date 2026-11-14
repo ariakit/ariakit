@@ -106,6 +106,8 @@ export const nav = cv({
     // and below it. A dot of the default size stays inside the line. A number
     // is taller than half a line, and a navigation has numbers when it is
     // ordered or when one of its lists is. The guide pieces read this length.
+    // It is registered, so it resolves here once, in the font of the
+    // navigation, and each glide frame doesn't evaluate it again on each piece.
     "[--nav-marker-overreach:max(0px,var(--list-bullet-size)/2+var(--nav-marker-gap)-0.5lh)]",
     "[.nav-numbers,:has(.nav-list-numbers)]:[--nav-marker-overreach:max(0px,max(var(--nav-number-reach),var(--list-bullet-size)/2+var(--nav-marker-gap))-0.5lh)]",
     // Colors resolve against this element, so pieces inside a current link
@@ -955,7 +957,7 @@ export const navLinkPiece = cv({
     // padding. The gap around a marker must stay inside the piece of its own
     // link, so the joint moves toward the row edge by how far that gap passes
     // the first line. All pieces of a navigation move it by the same length.
-    "[--nav-guide-joint:max(0px,var(--nav-py)-var(--nav-marker-overreach,0px))]",
+    "[--nav-guide-joint:max(0px,var(--nav-py)-var(--nav-marker-overreach))]",
     "[--guide-bend-height:calc(var(--list-gap,0px)+var(--nav-guide-joint)*2)]",
     // The rail keeps the guide of the outermost list at every level.
     "[--nav-guide-x:calc(-1*var(--nav-guide-offset,0px)-(1-var(--nav-guide-bends,1))*var(--nav-depth,0)*var(--nav-indent))]",
@@ -965,20 +967,24 @@ export const navLinkPiece = cv({
     "w-[calc(var(--guide-span)+var(--guide-width))]",
     // A piece stops one gap before the marker of its link and starts again
     // one gap after it, so nothing paints around a marker to hide the piece.
-    // A link without a marker keeps the whole piece.
-    "[--nav-marker-cut:0px]",
+    // A link without a marker keeps the whole piece. Only a piece with a
+    // marker declares the hole, because a glide of the bar restyles every
+    // piece in each frame.
     "ui-list-counter:[--nav-marker-cut:var(--nav-number-reach)]",
     "ui-list-bullet:[--nav-marker-cut:calc(var(--list-bullet-size)/2+var(--nav-marker-gap))]",
     // The center of the marker in the piece. It is on the line along the row,
     // which is at the end column after a bend in and at the start column
     // otherwise, and on the first line of the link. Mask positions are
     // physical, so right to left text swaps the columns.
-    "[--nav-hole-x:calc((var(--guide-in)*var(--guide-dir)+(1-var(--guide-dir))/2)*var(--guide-span)+var(--guide-width)/2)]",
-    "[--nav-hole-y:calc(var(--py,0px)+0.5lh-var(--nav-guide-joint)+(1-var(--nav-guide-first))*var(--guide-bend-height))]",
+    "ui-list-counter:[--nav-hole-x:calc((var(--guide-in)*var(--guide-dir)+(1-var(--guide-dir))/2)*var(--guide-span)+var(--guide-width)/2)]",
+    "ui-list-bullet:[--nav-hole-x:calc((var(--guide-in)*var(--guide-dir)+(1-var(--guide-dir))/2)*var(--guide-span)+var(--guide-width)/2)]",
+    "ui-list-counter:[--nav-hole-y:calc(var(--py,0px)+0.5lh-var(--nav-guide-joint)+(1-var(--nav-guide-first))*var(--guide-bend-height))]",
+    "ui-list-bullet:[--nav-hole-y:calc(var(--py,0px)+0.5lh-var(--nav-guide-joint)+(1-var(--nav-guide-first))*var(--guide-bend-height))]",
     // A mask cuts the hole, because a bend can end inside it. The mask is 2em
     // larger than the piece on each side, so it keeps a line that draws
     // outside the box, such as a slanted bend.
-    "[--nav-hole:radial-gradient(circle_at_calc(var(--nav-hole-x)+2em)_calc(var(--nav-hole-y)+2em),#0000_var(--nav-marker-cut),#000_0)]",
+    "ui-list-counter:[--nav-hole:radial-gradient(circle_at_calc(var(--nav-hole-x)+2em)_calc(var(--nav-hole-y)+2em),#0000_var(--nav-marker-cut),#000_0)]",
+    "ui-list-bullet:[--nav-hole:radial-gradient(circle_at_calc(var(--nav-hole-x)+2em)_calc(var(--nav-hole-y)+2em),#0000_var(--nav-marker-cut),#000_0)]",
     "ui-list-counter:mask-(--nav-hole)",
     "ui-list-bullet:mask-(--nav-hole)",
     "mask-[-2em_-2em] mask-size-[calc(100%+4em)_calc(100%+4em)]",
@@ -1005,10 +1011,11 @@ export const navLinkGuide = cv({
     "[--guide-width:var(--nav-guide-width,1px)]",
     // Fade out after the last row. The fade is a second mask layer over the
     // hole around the marker, in the box of the piece. The piece shows only
-    // where both layers do.
+    // where both layers do. A piece without a marker has no hole, so its
+    // second layer shows everything.
     "[--nav-guide-end:0]",
     "[li:last-child:not(:has(>.nav-list))>*>&]:[--nav-guide-end:1]",
-    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-[linear-gradient(to_bottom,#000_calc(100%-var(--nav-guide-tail,0)*var(--nav-guide-end)*(--spacing(2))),transparent),var(--nav-hole)]",
+    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-[linear-gradient(to_bottom,#000_calc(100%-var(--nav-guide-tail,0)*var(--nav-guide-end)*(--spacing(2))),transparent),var(--nav-hole,linear-gradient(#000,#000))]",
     "[li:last-child:not(:has(>.nav-list))>*>&]:mask-position-[0_0,-2em_-2em]",
     "[li:last-child:not(:has(>.nav-list))>*>&]:mask-size-[100%_100%,calc(100%+4em)_calc(100%+4em)]",
     "[li:last-child:not(:has(>.nav-list))>*>&]:[mask-clip:border-box,no-clip]",
