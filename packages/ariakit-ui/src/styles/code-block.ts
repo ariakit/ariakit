@@ -1,8 +1,8 @@
 import { cv, cx } from "clava";
 import { focus } from "./focus.ts";
-import { font } from "./font.ts";
 import { frame } from "./frame.ts";
 import { tab, tabList, tabPanels, tabSeparator, tabs } from "./tabs.ts";
+import { text } from "./text.ts";
 
 // The block fits in the scroll area around it, between its sticky bars, which a
 // shell, a dialog, or a popover publishes. Without a height, it fits on the
@@ -158,7 +158,7 @@ export const codeBlockTitle = cv({
  * left to right, so the frame goes on its right, on a right-to-left page too.
  */
 export const codeBlockCopy = cv({
-  extend: [frame, font],
+  extend: [frame, text],
   class: [
     "code-block-copy flex",
     "[.code-block>&]:row-start-1 [.code-block>&]:z-7",
@@ -261,7 +261,7 @@ const lineNumbers = cx(
  * variables, and follow the layer of each line.
  */
 export const codeBlockCode = cv({
-  extend: [tabPanels, focus, font],
+  extend: [tabPanels, focus, text],
   class: [
     "code-block-code block min-w-0",
     "tab-2",
