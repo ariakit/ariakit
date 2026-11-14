@@ -290,4 +290,47 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
     test.expect(unmaskedEarly).toBe(false);
   });
+
+  test("keeps the copies while the item that the box travels to moves", async ({
+    q,
+  }) => {
+    await q.combobox(/^Travel time/).selectOption({ label: "Very slow (3s)" });
+    // The copies and the mask are presentation, so this probe reads them from
+    // the DOM. It adds a card 2s into the 3s travel to Calendar. The badge
+    // makes Board grow, so Calendar moves, and the box starts a new move. It
+    // returns whether Calendar lost its mask before the box reached it, or null
+    // when Calendar did not move.
+    const unmaskedEarly = await q
+      .article("A count that changes")
+      .evaluate(async (node) => {
+        const calendar = node.querySelector<HTMLInputElement>(
+          'input[value="Calendar"]',
+        );
+        const target = calendar?.closest(".control");
+        const button = Array.from(node.querySelectorAll("button")).find(
+          (element) => element.textContent?.trim() === "Add a card",
+        );
+        const box = node.querySelector('.glider-box[data-selected="true"]');
+        if (!calendar || !target || !button || !box) return null;
+        calendar.click();
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const calendarLeft = target.getBoundingClientRect().left;
+        button.click();
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        const moved = target.getBoundingClientRect().left - calendarLeft;
+        if (Math.abs(moved) < 1) return null;
+        const start = performance.now();
+        while (performance.now() - start < 5000) {
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+          const boxRect = box.getBoundingClientRect();
+          const targetRect = target.getBoundingClientRect();
+          const left = Math.abs(boxRect.left - targetRect.left);
+          const width = Math.abs(boxRect.width - targetRect.width);
+          if (left < 0.5 && width < 0.5) return false;
+          if (!target.hasAttribute("data-glider-masked")) return true;
+        }
+        return null;
+      });
+    test.expect(unmaskedEarly).toBe(false);
+  });
 });

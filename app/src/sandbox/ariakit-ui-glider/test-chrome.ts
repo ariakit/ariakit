@@ -78,6 +78,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       "xpath=ancestor-or-self::*[contains(concat(' ', @class, ' '), ' control ')][1]",
     );
     await test.expect(control).toHaveAttribute("data-glider-masked");
+    // The first card adds the badge to Board, and the second one changes only
+    // the text of the badge.
+    await box.button("Add a card").click();
     await box.button("Add a card").click();
     // The copies are presentation with aria-hidden, so this probe reads them
     // from the DOM. The box travels over Board, so Board has a copy in it.
@@ -89,6 +92,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           return texts.find((text) => text?.startsWith("Board")) ?? null;
         }),
       )
-      .toBe("Board1");
+      .toBe("Board2");
   });
 });

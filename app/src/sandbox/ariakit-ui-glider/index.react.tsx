@@ -109,7 +109,7 @@ interface SegmentsProps extends Omit<RadioGroupProps, "label"> {
   badge?: boolean;
   /** A separator before each item after the first. */
   separator?: boolean;
-  /** A count in a badge on Board. */
+  /** A count in a badge on Board, which shows when it is more than 0. */
   count?: number;
   /** The props of the glider. Without them, the group has no glider. */
   glider?: GliderProps;
@@ -156,7 +156,7 @@ function Segments({
               </Badge>
             </RadioCardSlot>
           )}
-          {count != null && label === "Board" && (
+          {!!count && label === "Board" && (
             <RadioCardSlot $kind="box">
               <Badge $rounded="md">{count}</Badge>
             </RadioCardSlot>
@@ -173,12 +173,28 @@ interface GliderExampleProps {
   glider: GliderProps;
 }
 
-// A count that changes while the box can travel, like a count of new items.
+// A count that changes while the box can travel, like a count of new items. The
+// group has a fixed width, and Calendar fills the rest of it. So when the badge
+// shows, Board grows, and Calendar moves without a change to the size of the
+// group.
+const growingBoard: Array<Omit<RadioCardProps, "value">> = [
+  { className: "flex-none" },
+  { className: "flex-none" },
+  { className: "flex-none" },
+  { className: "flex-1" },
+];
+
 function CountSegments({ name, glider }: GliderExampleProps) {
   const [count, setCount] = useState(0);
   return (
     <div className="flex flex-col items-start gap-3">
-      <Segments name={name} count={count} glider={glider} />
+      <Segments
+        name={name}
+        count={count}
+        items={growingBoard}
+        className="w-md"
+        glider={glider}
+      />
       <Button onClick={() => setCount((value) => value + 1)}>
         <ButtonLabel>Add a card</ButtonLabel>
       </Button>
@@ -721,8 +737,8 @@ export default function GliderExamples() {
 
         <Example
           title="A count that changes"
-          description="Set the travel time to very slow, select Calendar, then add a card before the box stops. The copy of Board in the box shows the new count."
-          code={`<RadioCard>Board <Badge>{count}</Badge></RadioCard>`}
+          description="Set the travel time to very slow, select Calendar, then add a card before the box stops. The copy of Board in the box shows the new count. Board grows, so Calendar moves, and the box keeps its copies until it reaches the new place of Calendar."
+          code={`<RadioCard>Board {count > 0 && <Badge>{count}</Badge>}</RadioCard><RadioCard className="flex-1">Calendar</RadioCard>`}
         >
           <CountSegments name="A count that changes" glider={glider} />
         </Example>

@@ -593,11 +593,23 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     dropOwnMutations();
   };
 
-  const startTravel = (from: ItemRect, target: HTMLElement, to: ItemRect) => {
-    // The timeout ends a travel that sends no transitionend event, such as one
-    // that a new place for the box interrupts.
+  // The timeout ends a travel that sends no transitionend event, such as one
+  // that a new place for the box interrupts. The box can still move when the
+  // timeout comes, because the item can change its place during the travel, so
+  // the timeout waits for that move.
+  const waitForTravelEnd = () => {
     const duration = getTransitionTime(selectedMover);
-    travelTimeout = view.setTimeout(endTravel, duration + 100);
+    travelTimeout = view.setTimeout(() => {
+      if (selectedMover.getAnimations().length) {
+        waitForTravelEnd();
+        return;
+      }
+      endTravel();
+    }, duration + 100);
+  };
+
+  const startTravel = (from: ItemRect, target: HTMLElement, to: ItemRect) => {
+    waitForTravelEnd();
     showCopies(from, target, to);
   };
 
@@ -639,7 +651,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       selectedItem !== previousItem;
     // The items can change while the box travels, such as a count in a badge,
     // so the copies start again from the place of the box. The travel keeps its
-    // end time.
+    // timeout.
     const refreshes =
       animated &&
       !!maskedItem &&
