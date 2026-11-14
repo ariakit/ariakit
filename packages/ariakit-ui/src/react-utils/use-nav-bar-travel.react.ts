@@ -177,6 +177,9 @@ function createNavBarTravel({ rootRef }: UseNavBarTravelParams) {
     const root = rootRef.current;
     if (!root) return false;
     if (!target) return false;
+    // A scroll during the travel can hide the bar that it goes to. The travel
+    // then ends, and that bar shows at once in its scroll area.
+    if (isClipped(root, target)) return false;
     const next = getPlace(root, target);
     if (!next) return false;
     moveTo(root, next);

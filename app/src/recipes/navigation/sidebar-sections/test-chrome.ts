@@ -54,6 +54,29 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(site).not.toHaveAttribute("data-bar-traveling");
   });
 
+  // https://github.com/ariakit/ariakit/pull/8454#discussion_r4575739534
+  test("ends the travel when the section scrolls the new bar out of view", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 1024, height: 420 });
+    // The travel time is a custom property. A long one keeps the bar on its way
+    // while the section scrolls.
+    await page.addStyleTag({ content: ":root { --glider-duration: 30s; }" });
+    const site = q.navigation("Site");
+    const nav = query(site);
+    const button = nav.link("Button");
+    await button.scrollIntoViewIfNeeded();
+    await button.click();
+    await test.expect(button).toHaveAttribute("aria-current", "page");
+    await test.expect(site).toHaveAttribute("data-bar-traveling");
+    // The last link of the section scrolls the section to its end, which hides
+    // the first link and its bar.
+    await nav.link("Tabs").scrollIntoViewIfNeeded();
+    await test.expect(button).not.toBeInViewport();
+    await test.expect(site).not.toHaveAttribute("data-bar-traveling");
+  });
+
   test("scrolls the page once the open section reaches its end", async ({
     page,
     q,
