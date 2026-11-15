@@ -445,6 +445,10 @@ export const choiceCardCheck = cv({
       "motion-safe:ui-choice-on:transition-[scale]",
       "motion-safe:ui-choice-on:duration-(--duration-overshoot)",
       "motion-safe:ui-choice-on:ease-overshoot",
+      // While the check grows, the browser draws it on a layer of its own. If
+      // the layer went away when the check stopped, the check would move to
+      // the nearest pixel, so it keeps the layer while it shows.
+      "motion-safe:ui-choice-on:will-change-[scale]",
       // The state changes the colors at once. Hold them until the check has
       // shrunk.
       "motion-safe:not-ui-choice-on:transition-[scale,background-color,color]",
