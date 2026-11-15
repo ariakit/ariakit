@@ -126,6 +126,15 @@ export function AppNavigationCard({ links }: AppNavigationCardProps) {
   }
   const recentHrefs = [...recentLinks.keys()];
 
+  // The client router replaces the body, which holds the portal of the card,
+  // while the navigation stays. The card renders in a new portal on each page.
+  const [page, setPage] = useState(0);
+  useEffect(() => {
+    const onSwap = () => setPage((page) => page + 1);
+    document.addEventListener("astro:after-swap", onSwap);
+    return () => document.removeEventListener("astro:after-swap", onSwap);
+  }, []);
+
   // A resize with the grip of the card changes its size between a press and the
   // release that follows. The card keeps that size from then on.
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -153,6 +162,7 @@ export function AppNavigationCard({ links }: AppNavigationCardProps) {
 
   return (
     <Hovercard
+      key={page}
       portal
       fixed
       $slide

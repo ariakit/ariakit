@@ -62,6 +62,9 @@
       }
     };
     apply();
+    // The client router gives the root the attributes of the next page, which
+    // has no theme.
+    document.addEventListener("astro:after-swap", apply);
     window.addEventListener("storage", (event) => {
       if (!event.key?.startsWith("app-theme:")) return;
       // Another document stored this value, so a fallback from a failed write

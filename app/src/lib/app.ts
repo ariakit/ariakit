@@ -10,10 +10,26 @@
 import type { RecipeCategory } from "./recipe-categories.ts";
 import type { RecipeIcon } from "./recipe-icons.ts";
 
+declare global {
+  interface Window {
+    /**
+     * Whether the panel script listens for the next page of the client router,
+     * so that only the first panel of the page adds the listener.
+     */
+    appPanelSwapListener?: boolean;
+  }
+}
+
 export interface AppLink {
   href: string;
   label: string;
   current: boolean;
+  /**
+   * The path of the pages where the link is current, when they are not the
+   * pages under `href`, such as the pages of a section that links to its first
+   * page.
+   */
+  currentPath?: string;
   /**
    * The number of examples on the page, which shows at the end of the link.
    */
@@ -43,6 +59,25 @@ export interface AppLinkExample {
   fullscreen?: boolean;
 }
 
+/**
+ * Returns the path as links write it, with a trailing slash. Astro serves
+ * routes with and without one.
+ */
+export function getLinkPathname(pathname: string) {
+  return pathname.replace(/\/?$/, "/");
+}
+
+/**
+ * Returns whether the link is current on the page with the given path: on its
+ * own page and on nested pages, such as the API reference pages of a component.
+ */
+export function isCurrentLink(
+  link: Pick<AppLink, "href" | "currentPath">,
+  pathname: string,
+) {
+  return pathname.startsWith(link.currentPath ?? link.href);
+}
+
 export interface AppNavigationGroup {
   label: string;
   links: AppLink[];
@@ -52,6 +87,28 @@ export interface AppHeading {
   slug: string;
   text: string;
   depth: number;
+}
+
+/**
+ * The id of the script element that holds the `AppTocData` of the page. The
+ * table of contents stays across pages, and reads the data of the page that
+ * shows.
+ */
+export const APP_TOC_DATA_ID = "app-toc-data";
+
+/** The table of contents of a page. */
+export interface AppTocData {
+  /** The title of the page, which links to the top of the page. */
+  title?: string;
+  headings: AppHeading[];
+}
+
+/** Returns whether the value read from a page is the data of its contents. */
+export function isAppTocData(value: unknown): value is AppTocData {
+  if (typeof value !== "object") return false;
+  if (value == null) return false;
+  if (!("headings" in value)) return false;
+  return Array.isArray(value.headings);
 }
 
 /**

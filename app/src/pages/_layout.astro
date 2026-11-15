@@ -22,7 +22,6 @@ import {
   ShellEnd,
   ShellStart,
   ShellHeader,
-  ShellCenter,
   ShellMain,
   ShellMainBody,
   ShellMainIntro,
@@ -34,7 +33,10 @@ import {
 } from "@ariakit/ui/components/shell.ariakit.react";
 import Meta from "#app/components/meta.astro";
 import PanelScript from "#app/components/panel-script.astro";
-import { AppNavigation } from "#app/components/app-navigation.react.tsx";
+import {
+  AppNavigation,
+  AppSectionNavigation,
+} from "#app/components/app-navigation.react.tsx";
 import { AppToc } from "#app/components/app-toc.react.tsx";
 import {
   AppThemeOptions,
@@ -52,14 +54,19 @@ import type {
 import { getCachedCollection } from "#app/lib/collection-cache.ts";
 import { compareNavigationOrder, getGuideDetail } from "#app/lib/content.ts";
 import { getEntryExamples } from "#app/lib/gallery.ts";
+import { serializeStructuredData } from "#app/lib/trail.ts";
 import {
   APP_DRAWER_ID,
   APP_NAVIGATION_ID,
+  APP_TOC_DATA_ID,
   APP_TOP_ID,
   getGalleryIds,
+  getLinkPathname,
+  isCurrentLink,
   THEME_PANEL_ID,
 } from "#app/lib/app.ts";
 import { getCollection } from "astro:content";
+import { ClientRouter } from "astro:transitions";
 import { Menu, PanelLeft, SwatchBook, X } from "lucide-react";
 
 type Section = "components" | "recipes";
@@ -105,9 +112,7 @@ const {
   size = "lg",
   maxWidth,
 } = Astro.props;
-// Astro serves routes with and without a trailing slash, and every link ends
-// with one.
-const pathname = Astro.url.pathname.replace(/\/?$/, "/");
+const pathname = getLinkPathname(Astro.url.pathname);
 
 // The preview cards in the gallery are headings under the examples heading,
 // and the cards find their ids here.
@@ -134,12 +139,10 @@ const sectionTypes = [
   { type: "recipes", label: "Recipes" },
 ] as const;
 
-// A link is current on its own page and on nested pages, such as the API
-// reference pages of a component.
 const getLink = (href: string, label: string): AppLink => ({
   href,
   label,
-  current: pathname.startsWith(href),
+  current: isCurrentLink({ href }, pathname),
 });
 
 const getEntryHref = (type: Section, id: string) =>
@@ -161,8 +164,10 @@ const sections = (
     sectionTypes.map(async ({ type, label }): Promise<AppLink[]> => {
       const [first] = await getSortedEntries(type);
       if (!first) return [];
-      const current = pathname.startsWith(`/${navigationFramework}/${type}/`);
-      return [{ href: getEntryHref(type, first.id), label, current }];
+      const href = getEntryHref(type, first.id);
+      const currentPath = `/${navigationFramework}/${type}/`;
+      const current = isCurrentLink({ href, currentPath }, pathname);
+      return [{ href, label, current, currentPath }];
     }),
   )
 ).flat();
@@ -234,9 +239,13 @@ const drawerNavigation = navigation.map((group) => ({
 ---
 
 <!doctype html>
-<html lang="en">
+{/* The client router loads the next page without a page animation. The
+    navigation islands stay across pages, so their bars travel to the new
+    current link. */}
+<html lang="en" transition:animate="none">
   <head>
     <slot name="meta"><Meta {title} /></slot>
+    <ClientRouter />
     <ThemeScript />
     <script is:inline>
       // Links work while the page parses, before its scripts run. This records
@@ -255,6 +264,73 @@ const drawerNavigation = navigation.map((group) => ({
           { once: true },
         );
       })();
+    </script>
+    <script is:inline>
+      // The client router shows the next page in a view transition, which has
+      // no animation here. Safari doesn't run the CSS transitions that start
+      // in a view transition, such as the travel of a navigation bar, so the
+      // router skips it.
+      document.addEventListener("astro:before-swap", (event) => {
+        const transition = event.viewTransition;
+        // A skipped view transition rejects this promise, which no one reads.
+        transition.ready.catch(() => {});
+        transition.skipTransition();
+      });
+    </script>
+    <script is:inline>
+      // The client router takes a link to a place on this page and changes the
+      // hash without a hashchange event, which page scripts wait for. The
+      // router keeps the history entry, so Back still works after the next
+      // page. Its click listener is on the document and changes the hash at
+      // once, so a window listener in the same click sends the event after it.
+      (() => {
+        /** @param {string} url */
+        const getPage = (url) => url.split("#")[0];
+        /** @type {string | null} */
+        let clickURL = null;
+        document.addEventListener(
+          "click",
+          () => {
+            clickURL = window.location.href;
+          },
+          { capture: true },
+        );
+        window.addEventListener("click", () => {
+          const oldURL = clickURL;
+          clickURL = null;
+          if (oldURL == null) return;
+          const newURL = window.location.href;
+          if (newURL === oldURL) return;
+          if (getPage(newURL) !== getPage(oldURL)) return;
+          window.dispatchEvent(
+            new HashChangeEvent("hashchange", { oldURL, newURL }),
+          );
+        });
+      })();
+    </script>
+    <script is:inline>
+      // The client router moves the elements that stay to the next page. The
+      // move can reset their scroll positions, and always does in Safari, so
+      // the scroll positions go back after the move.
+      document.addEventListener("astro:before-swap", () => {
+        /** @type {Map<Element, { left: number, top: number }>} */
+        const scrolls = new Map();
+        const selector = "[data-astro-transition-persist] *";
+        for (const element of document.querySelectorAll(selector)) {
+          const { scrollLeft: left, scrollTop: top } = element;
+          if (!left && !top) continue;
+          scrolls.set(element, { left, top });
+        }
+        document.addEventListener(
+          "astro:after-swap",
+          () => {
+            for (const [element, { left, top }] of scrolls) {
+              element.scrollTo({ left, top, behavior: "instant" });
+            }
+          },
+          { once: true },
+        );
+      });
     </script>
   </head>
   <body>
@@ -296,7 +372,11 @@ const drawerNavigation = navigation.map((group) => ({
           below the intro. It shows once the main body starts, after the intro,
           instead of moving down when the intro arrives. */}
       <Shell className="[&>.shell-sidebar-end:not(:has(~.shell-main>.shell-main-body))]:invisible">
-        <ShellHeader $height="sm" $blur className="text-sm">
+        <ShellHeader
+          $height="sm"
+          $blur
+          className="text-sm [&>astro-island]:col-2 [&>astro-island]:self-stretch @max-2xl/shell:[&>astro-island]:hidden!"
+        >
           {/* The global styles give islands the display of their parent, so a
               hidden button would leave an empty flex item and its gap. */}
           <ShellStart className="[&>astro-island]:contents!">
@@ -336,28 +416,16 @@ const drawerNavigation = navigation.map((group) => ({
               <Logotype size="1.25em" className="@max-xl/shell:hidden" />
             </a>
           </ShellStart>
-          <ShellCenter className="@max-2xl/shell:hidden">
-            {/* Astro renders each link apart from the Nav, so the links take the
-                bar themselves. The Nav doesn't hydrate, so it leaves out the
-                scroll buttons, which need script. */}
-            <Nav
-              $layout="horizontal"
-              aria-label="Main"
-              $p="none"
-              buttons={false}
-            >
-              {
-                sections.map((link) => (
-                  <NavLink
-                    href={link.href}
-                    aria-current={link.current ? "page" : undefined}
-                    bar
-                    text={link.label}
-                  />
-                ))
-              }
-            </Nav>
-          </ShellCenter>
+          {/* The island stays across pages and takes the links of the next
+              page, so the bar travels to the new current section. The header
+              sizes a navigation in an element directly inside it, so the island
+              takes the place of the center part. */}
+          <AppSectionNavigation
+            client:load
+            transition:persist="section-navigation"
+            links={sections}
+            {pathname}
+          />
           <ShellEnd>
             {/* The phone menu holds the theme options below 48rem. A viewport
                 query matches the outer shell, which spans the viewport. */}
@@ -379,8 +447,9 @@ const drawerNavigation = navigation.map((group) => ({
         </ShellHeader>
         {/* The theme panel restores its state before the header parses, so
             the header toggles sync with it here instead of at the end of the
-            body. Panels after the header sync their own toggles. */}
-        <script is:inline>
+            body. Panels after the header sync their own toggles. The client
+            router runs the script again for the header of each page. */}
+        <script is:inline data-astro-rerun>
           (() => {
             const toggles = document.querySelectorAll("[data-shell-toggle]");
             for (const toggle of toggles) {
@@ -405,9 +474,13 @@ const drawerNavigation = navigation.map((group) => ({
                   which takes the display of its parent. The wrapper must not
                   grow past the body, so the open group scrolls its links. */}
               <ShellSidebarBody className="flex flex-col [&>astro-island]:min-h-0 [&>astro-island]:flex-1">
+                {/* The navigation stays across the pages of a section, which
+                    list the same links. */}
                 <AppNavigation
                   client:load
+                  transition:persist={`site-navigation-${section}`}
                   groups={navigation}
+                  {pathname}
                   fill
                 />
               </ShellSidebarBody>
@@ -439,8 +512,10 @@ const drawerNavigation = navigation.map((group) => ({
           <ShellSidebarBody>
             <AppNavigation
               client:load
+              transition:persist={`drawer-navigation-${section ?? "site"}`}
               links={drawerSections}
               groups={drawerNavigation}
+              {pathname}
             />
             <div class="grid gap-6 px-3 pt-6 pb-3">
               <span class="ak-ink-70 text-xs font-medium">Theme</span>
@@ -468,7 +543,23 @@ const drawerNavigation = navigation.map((group) => ({
                 {/* The island marks the link of the section being read. The
                     server renders the links and the guide before it
                     hydrates. */}
-                <AppToc client:load {title} headings={tocHeadings} />
+                {/* The island stays across pages, and reads the headings of
+                    the page that shows here, before its props come. */}
+                <script
+                  is:inline
+                  type="application/json"
+                  id={APP_TOC_DATA_ID}
+                  set:html={serializeStructuredData({
+                    title,
+                    headings: tocHeadings,
+                  })}
+                />
+                <AppToc
+                  client:load
+                  transition:persist="toc"
+                  {title}
+                  headings={tocHeadings}
+                />
               </ShellSidebarBody>
             </ShellSidebar>
           )
@@ -533,11 +624,16 @@ const drawerNavigation = navigation.map((group) => ({
         </ShellFooter>
       </Shell>
     </Shell>
-    <script is:inline>
+    <script is:inline data-astro-rerun>
       // The shell renders without hydration. Panel scripts restore the saved
       // panel choices earlier. This script syncs the toggles and wires the
-      // panels.
+      // panels. The client router runs it again for the shell of each page.
       (() => {
+        // The document outlives the page, so its listeners go with the page.
+        const page = new AbortController();
+        document.addEventListener("astro:before-swap", () => page.abort(), {
+          once: true,
+        });
         /**
          * @param {string} key
          * @param {string | null} value
@@ -585,14 +681,18 @@ const drawerNavigation = navigation.map((group) => ({
           if (panel.hasAttribute("data-shell-transient")) return;
           write(`app-panel:${panel.id}`, String(open));
         };
-        document.addEventListener("keydown", (event) => {
-          if (event.key !== "Escape") return;
-          if (event.defaultPrevented) return;
-          const selector = "[data-shell-transient][data-open]";
-          for (const panel of queryAll(document, selector)) {
-            setOpen(panel, false);
-          }
-        });
+        document.addEventListener(
+          "keydown",
+          (event) => {
+            if (event.key !== "Escape") return;
+            if (event.defaultPrevented) return;
+            const selector = "[data-shell-transient][data-open]";
+            for (const panel of queryAll(document, selector)) {
+              setOpen(panel, false);
+            }
+          },
+          { signal: page.signal },
+        );
         for (const toggle of queryAll(document, "[data-shell-toggle]")) {
           const panel = getControlled(toggle);
           if (!panel) continue;

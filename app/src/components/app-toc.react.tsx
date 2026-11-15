@@ -14,8 +14,9 @@ import {
   TocLink,
   TocList,
 } from "@ariakit/ui/components/toc.ariakit.react";
-import type { AppHeading } from "#app/lib/app.ts";
-import { APP_TOP_ID } from "#app/lib/app.ts";
+import type { AppHeading, AppTocData } from "#app/lib/app.ts";
+import { APP_TOC_DATA_ID, APP_TOP_ID, isAppTocData } from "#app/lib/app.ts";
+import { usePageData } from "#app/lib/use-page.react.ts";
 
 interface AppTocEntry extends AppHeading {
   children: AppTocEntry[];
@@ -64,21 +65,18 @@ function Entries({ entries }: { entries: AppTocEntry[] }) {
   });
 }
 
-export interface AppTocProps {
-  /**
-   * The title of the page, which links to the top of the page before the
-   * headings.
-   */
-  title?: string;
-  headings: AppHeading[];
-}
+export interface AppTocProps extends AppTocData {}
 
 /**
  * The table of contents of a site page. Render it inside a navigation landmark
  * named "On this page", such as a `ShellSidebar` rendered as `nav`. The
  * landmark renders outside this island, so the table of contents skips its own.
+ * It stays across pages, where it lists the headings in the page element with
+ * the id `APP_TOC_DATA_ID`, so its bar glides to the sections of the next page.
  */
-export function AppToc({ title, headings }: AppTocProps) {
+export function AppToc(props: AppTocProps) {
+  const { title, headings } =
+    usePageData(APP_TOC_DATA_ID, isAppTocData) ?? props;
   return (
     <Toc landmark={false} label={<TocLabel>On this page</TocLabel>} $cover>
       {title && <TocLink href={`#${APP_TOP_ID}`}>{title}</TocLink>}
