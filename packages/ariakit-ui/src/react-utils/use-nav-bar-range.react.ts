@@ -48,12 +48,43 @@ interface NavBarRow {
   bottom: number;
 }
 
+// The range in the inline styles of the pieces, as CSS lengths.
+interface NavBarShownRange {
+  start: string;
+  end: string;
+}
+
 interface NavBarMarkerRow extends NavBarRow {
   element: HTMLElement;
 }
 
 function isVisible(element: Element) {
   return element.getClientRects().length > 0;
+}
+
+// Moves the range that the pieces show to where the bar is now. A glide
+// animates the range on each piece, so the bar can be between two ranges. Only
+// a piece with a box animates.
+function updateShownRange(
+  entries: Map<string, NavBarRangeEntry>,
+  shownRangeRef: React.RefObject<NavBarShownRange | null>,
+) {
+  if (!shownRangeRef.current) return;
+  for (const [, entry] of entries) {
+    const bar = entry.bar.current;
+    if (!bar?.isConnected) continue;
+    // A piece that registered in the same update has no range yet, so it reads
+    // the range that CSS sets in its own box, or none.
+    if (!bar.style.getPropertyValue("--nav-bar-start")) continue;
+    if (!isVisible(bar)) continue;
+    const style = getWindow(bar).getComputedStyle(bar);
+    const start = style.getPropertyValue("--nav-bar-start");
+    const end = style.getPropertyValue("--nav-bar-end");
+    if (!start) continue;
+    if (!end) continue;
+    shownRangeRef.current = { start, end };
+    return;
+  }
 }
 
 // CSS decides whether the marker of a link shows.
@@ -82,7 +113,9 @@ export interface UseNavBarRangeParams {
  * Provide the returned store with `NavBarRangeContext`, so the links register
  * their pieces, and set the range with `setRange`. Until the first range, and
  * after `clearRange`, CSS draws the bar of each current link. The first range
- * shows at once, or grows from its start with `growFirstRange`.
+ * shows at once, or grows from its start with `growFirstRange`. When the pieces
+ * change, such as with the links of another page, the bar glides from its last
+ * range to the range of the new pieces.
  * @example
  * const barRange = useNavBarRange({ rootRef });
  * barRange.setRange({ first, last });
@@ -102,15 +135,22 @@ export function useNavBarRange({
   // No range is known before the owner sets the first one, or after it clears
   // the range.
   const rangeRef = React.useRef<NavBarRange | null | undefined>(undefined);
+  // The range that the pieces show, which outlives the pieces.
+  const shownRangeRef = React.useRef<NavBarShownRange | null>(null);
   const applyRef = React.useRef<(() => void) | null>(null);
   const [version, setVersion] = React.useState(0);
 
   const store = React.useMemo<NavBarRangeStore>(
     () => ({
       register: (id, entry) => {
+        // The pieces start where the bar is now, which is not the end of its
+        // glide yet, so a new piece joins the others there.
+        updateShownRange(entriesRef.current, shownRangeRef);
         entriesRef.current.set(id, entry);
         setVersion((value) => value + 1);
         return () => {
+          // The pieces are still in the document here.
+          updateShownRange(entriesRef.current, shownRangeRef);
           entriesRef.current.delete(id);
           setVersion((value) => value + 1);
         };
@@ -121,6 +161,8 @@ export function useNavBarRange({
       },
       clearRange: () => {
         rangeRef.current = undefined;
+        // The next range shows at once, even when no pieces apply this clear.
+        shownRangeRef.current = null;
         applyRef.current?.();
       },
     }),
@@ -143,6 +185,10 @@ export function useNavBarRange({
     let barTops = new Map<HTMLElement, number>();
     let firstRow: NavBarRow | null = null;
     let ready = false;
+    // The range that other pieces showed before these registered. The first
+    // range of these pieces glides from it.
+    let lastRange = shownRangeRef.current;
+    let glideFrame = 0;
 
     // Measures each piece relative to the content of the root, which stays the
     // same while the page or the root scrolls.
@@ -214,6 +260,8 @@ export function useNavBarRange({
     // the next measured range, because a glide between the CSS ranges of two
     // pieces would show their bends for a moment.
     const clear = () => {
+      lastRange = null;
+      shownRangeRef.current = null;
       for (const piece of getPieces()) {
         piece.style.transitionDuration = "0s";
         piece.style.removeProperty("--nav-bar-start");
@@ -233,6 +281,8 @@ export function useNavBarRange({
       // appears at once.
       if (!range) {
         ready = false;
+        lastRange = null;
+        shownRangeRef.current = null;
         return;
       }
       // The first range starts with no length at its start, and grows to its
@@ -253,7 +303,8 @@ export function useNavBarRange({
       // restyles only these pieces, not every row. The top of a piece goes on
       // with the range.
       const pieces = getPieces();
-      const setRange = () => {
+      const setRange = ({ start, end }: NavBarShownRange) => {
+        shownRangeRef.current = { start, end };
         for (const [, entry] of entries) {
           const bar = entry.bar.current;
           if (!bar) continue;
@@ -272,7 +323,9 @@ export function useNavBarRange({
         }
       };
       if (ready) {
-        setRange();
+        // The bar waits at the last range until its glide starts.
+        if (glideFrame) return;
+        setRange({ start, end });
         return;
       }
       ready = true;
@@ -283,7 +336,11 @@ export function useNavBarRange({
       for (const piece of pieces) {
         piece.style.transitionDuration = "0s";
       }
-      setRange();
+      // New pieces start at the range that the last pieces showed, so the bar
+      // glides from there to their range.
+      const startRange = lastRange;
+      lastRange = null;
+      setRange(startRange ?? { start, end });
       for (const piece of pieces) {
         win.getComputedStyle(piece).getPropertyValue("--nav-bar-start");
         const highlight = win.getComputedStyle(piece, "::after");
@@ -292,6 +349,16 @@ export function useNavBarRange({
       for (const piece of pieces) {
         piece.style.transitionDuration = "";
       }
+      if (!startRange) return;
+      // New pieces can come in a slow frame, such as the first frame of a new
+      // page, which would take the start of the glide. So the browser paints
+      // the bar at its start first, and the next frame moves it.
+      glideFrame = win.requestAnimationFrame(() => {
+        glideFrame = win.requestAnimationFrame(() => {
+          glideFrame = 0;
+          applyRef.current?.();
+        });
+      });
     };
 
     const refresh = () => {
@@ -348,6 +415,7 @@ export function useNavBarRange({
 
     return () => {
       applyRef.current = null;
+      win.cancelAnimationFrame(glideFrame);
       observer.disconnect();
       doc.removeEventListener("transitionend", onAnimationEnd, true);
       doc.removeEventListener("animationend", onAnimationEnd, true);

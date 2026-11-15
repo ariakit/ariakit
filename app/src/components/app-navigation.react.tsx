@@ -26,14 +26,42 @@ import {
 import { useId, useState } from "react";
 import { AppNavigationCard } from "#app/components/app-navigation-card.react.tsx";
 import type { AppLink, AppNavigationGroup } from "#app/lib/app.ts";
+import { isCurrentLink } from "#app/lib/app.ts";
 import { recipeCategories } from "#app/lib/recipe-categories.ts";
 import type { RecipeCategory } from "#app/lib/recipe-categories.ts";
 import { recipeIcons } from "#app/lib/recipe-icons.ts";
+import { usePathname } from "#app/lib/use-page.react.ts";
+
+// An island that stays across pages gets the props of the next page a little
+// after the client router shows that page. This returns the path of the page
+// that shows while the props are for another page, given the path of the page
+// that the props are for.
+function useNextPathname(pathname: string) {
+  const pagePathname = usePathname();
+  if (pagePathname === pathname) return null;
+  return pagePathname;
+}
+
+// Until the props of the next page come, the links follow the path of that
+// page, so the bar of the current link moves with the page.
+function getPageLinks(links: AppLink[], nextPathname: string | null) {
+  if (nextPathname == null) return links;
+  return links.map((link) => {
+    const current = isCurrentLink(link, nextPathname);
+    if (current === link.current) return link;
+    return { ...link, current };
+  });
+}
 
 export interface AppNavigationProps {
   groups: AppNavigationGroup[];
   /**
-   * Links listed before the groups, such as the site sections.
+   * The path of the page that the current links of the groups are for.
+   */
+  pathname: string;
+  /**
+   * Links listed before the groups, such as the site sections. They are current
+   * only as their `current` says.
    */
   links?: AppLink[];
   /**
@@ -52,13 +80,28 @@ export interface AppNavigationProps {
  * it shows them. The links share the card, which slides from one link to the
  * next.
  */
-export function AppNavigation({ groups, links, fill }: AppNavigationProps) {
+export function AppNavigation({
+  groups: groupsProp,
+  pathname,
+  links,
+  fill,
+}: AppNavigationProps) {
+  const nextPathname = useNextPathname(pathname);
+  const groups = groupsProp.map((group) => {
+    return { ...group, links: getPageLinks(group.links, nextPathname) };
+  });
   const currentGroup = groups.find((group) =>
     group.links.some((link) => link.current),
   );
-  const [openLabel, setOpenLabel] = useState(
-    currentGroup?.label ?? groups[0]?.label,
-  );
+  const currentLabel = currentGroup?.label;
+  const [openLabel, setOpenLabel] = useState(currentLabel ?? groups[0]?.label);
+  // The navigation stays across pages. The group of the next page opens when it
+  // differs from the group of the last page.
+  const [lastCurrentLabel, setLastCurrentLabel] = useState(currentLabel);
+  if (currentLabel !== lastCurrentLabel) {
+    setLastCurrentLabel(currentLabel);
+    setOpenLabel(currentLabel ?? groups[0]?.label);
+  }
   const cardLinks = groups
     .flatMap((group) => group.links)
     .filter((link) => !!link.examples?.length);
@@ -112,6 +155,38 @@ export function AppNavigation({ groups, links, fill }: AppNavigationProps) {
       {nav}
       <AppNavigationCard links={cardLinks} />
     </HovercardProvider>
+  );
+}
+
+export interface AppSectionNavigationProps {
+  links: AppLink[];
+  /**
+   * The path of the page that the current links are for.
+   */
+  pathname: string;
+}
+
+/**
+ * The links to the site sections in the header. The bar travels from the last
+ * current section to the next when the links change without a page load.
+ */
+export function AppSectionNavigation({
+  links,
+  pathname,
+}: AppSectionNavigationProps) {
+  const pageLinks = getPageLinks(links, useNextPathname(pathname));
+  return (
+    <Nav $layout="horizontal" aria-label="Main" $p="none" buttons={false}>
+      {pageLinks.map((link) => (
+        <NavLink
+          key={link.href}
+          href={link.href}
+          aria-current={link.current ? "page" : undefined}
+          bar
+          text={link.label}
+        />
+      ))}
+    </Nav>
   );
 }
 

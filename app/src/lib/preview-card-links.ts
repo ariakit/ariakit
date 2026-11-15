@@ -94,27 +94,33 @@ export function setupPreviewCardLinks() {
     },
     { once: true },
   );
-  document.addEventListener("click", (event) => {
-    // The person moved on from the link clicked before this ran.
-    earlyClick = undefined;
-    const clicked = getClickedCard(event);
-    if (!clicked) return;
-    const { link, target, card } = clicked;
-    const focusCard = () => card.focus({ preventScroll: true });
-    // The link scrolls to the section after the click and clears focus, even
-    // for the current hash. Firefox does it later than the next task, and only
-    // a new hash reports when it's done. So a link to the current hash scrolls
-    // here instead, which also follows the scroll margin.
-    if (link.hash === window.location.hash) {
-      event.preventDefault();
-      target.scrollIntoView();
-      focusCard();
-      return;
-    }
-    const onHashChange = () => {
-      if (window.location.hash !== link.hash) return;
-      focusCard();
-    };
-    window.addEventListener("hashchange", onHashChange, { once: true });
-  });
+  // The client router cancels the clicks on the links that it takes, which
+  // include links to a place on this page, so this listens before it does.
+  document.addEventListener(
+    "click",
+    (event) => {
+      // The person moved on from the link clicked before this ran.
+      earlyClick = undefined;
+      const clicked = getClickedCard(event);
+      if (!clicked) return;
+      const { link, target, card } = clicked;
+      const focusCard = () => card.focus({ preventScroll: true });
+      // The link scrolls to the section after the click and clears focus, even
+      // for the current hash. Firefox does it later than the next task, and
+      // only a new hash reports when it's done. So a link to the current hash
+      // scrolls here instead, which also follows the scroll margin.
+      if (link.hash === window.location.hash) {
+        event.preventDefault();
+        target.scrollIntoView();
+        focusCard();
+        return;
+      }
+      const onHashChange = () => {
+        if (window.location.hash !== link.hash) return;
+        focusCard();
+      };
+      window.addEventListener("hashchange", onHashChange, { once: true });
+    },
+    { capture: true },
+  );
 }

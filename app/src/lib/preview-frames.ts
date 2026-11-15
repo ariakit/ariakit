@@ -98,7 +98,9 @@ interface PreviewFrameState {
  * frame follows it right away.
  *
  * Cards hydrate as they come near the viewport, so this runs once for the page
- * and covers the frames of cards that have not hydrated yet.
+ * and covers the frames of cards that have not hydrated yet. Returns a function
+ * that stops it, so the observers don't run for the frames of a page that is
+ * gone.
  */
 export function setupPreviewFrames() {
   const states = new Map<Element, PreviewFrameState>();
@@ -208,4 +210,8 @@ export function setupPreviewFrames() {
     resizeObserver.observe(stage);
     resizeObserver.observe(viewport);
   }
+  return () => {
+    intersectionObserver.disconnect();
+    resizeObserver.disconnect();
+  };
 }

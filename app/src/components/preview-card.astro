@@ -79,9 +79,24 @@ const files = Object.entries(source.files);
   import { setupPreviewCardLinks } from "#app/lib/preview-card-links.ts";
   import { setupPreviewFrames } from "#app/lib/preview-frames.ts";
 
-  setupPreviewFrames();
-  setupPreviewCardBars();
+  // The client router runs this script once, so the cards of each next page
+  // need their own setup. The observers of the previous page stop first, so
+  // they don't run for its removed elements. The links listen on the
+  // document, which stays.
+  function setupCards() {
+    const stopFrames = setupPreviewFrames();
+    const stopBars = setupPreviewCardBars();
+    return () => {
+      stopFrames();
+      stopBars();
+    };
+  }
+  let stopCards = setupCards();
   setupPreviewCardLinks();
+  document.addEventListener("astro:after-swap", () => {
+    stopCards();
+    stopCards = setupCards();
+  });
 </script>
 
 <ShellWide

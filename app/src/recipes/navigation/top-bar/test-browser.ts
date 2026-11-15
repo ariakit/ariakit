@@ -9,13 +9,15 @@ function getCenter(locator: Locator) {
 }
 
 // The bar that travels is the `::after` pseudo-element of the navigation, which
-// no locator finds, so its place comes from its computed style.
+// no locator finds, so its place comes from its computed style. The bar moves
+// from the start of the navigation with a translation.
 function getTravelingBarCenter(nav: Locator) {
   return nav.evaluate((element) => {
     const style = getComputedStyle(element, "::after");
     const rect = element.getBoundingClientRect();
     const start = rect.left + element.clientLeft - element.scrollLeft;
-    const left = Number.parseFloat(style.left);
+    const [x = "0"] = style.translate.split(" ");
+    const left = Number.parseFloat(x) || 0;
     return start + left + Number.parseFloat(style.width) / 2;
   });
 }

@@ -23,7 +23,9 @@ const CODE_LABEL_MIN_WIDTH = 32;
  * https://issues.chromium.org/issues/578117951
  *
  * Cards hydrate as they come near the viewport, so this runs once for the page
- * and covers the bars of cards that have not hydrated yet.
+ * and covers the bars of cards that have not hydrated yet. Returns a function
+ * that stops it, so the observer doesn't run for the bars of a page that is
+ * gone.
  */
 export function setupPreviewCardBars() {
   const observer = new ResizeObserver((entries) => {
@@ -37,4 +39,5 @@ export function setupPreviewCardBars() {
   for (const bar of document.querySelectorAll("[data-preview-bar]")) {
     observer.observe(bar);
   }
+  return () => observer.disconnect();
 }

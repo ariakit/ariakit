@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Button } from "@ariakit/ui/components/button.ariakit.react";
 import type { NavProps } from "@ariakit/ui/components/nav.ariakit.react";
 import {
   Nav,
@@ -105,6 +106,48 @@ function OffGuideBarNav(props: NavProps) {
       <NavLink {...getProps("Guides")} />
       <NavLink {...getProps("Support")} bar={{ $side: "end" }} />
     </Nav>
+  );
+}
+
+/**
+ * Links on a guide that change while the navigation stays, like the links of
+ * another page. The bar glides from where it is to the current link of the new
+ * links, and shows at once when the navigation had no links before. A link
+ * added during a glide joins the bar where it is.
+ */
+function ChangingLinksNav(props: NavProps) {
+  const [links, setLinks] = useState<"docs" | "blog" | "none">("docs");
+  const [changelog, setChangelog] = useState(false);
+  const getDocsProps = useCurrentLink("Overview");
+  const getBlogProps = useCurrentLink("Archive");
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => setLinks("docs")}>Show docs links</Button>
+        <Button onClick={() => setLinks("blog")}>Show blog links</Button>
+        <Button onClick={() => setLinks("none")}>Show no links</Button>
+        <Button onClick={() => setChangelog(true)}>Add a Changelog link</Button>
+      </div>
+      <Nav $guide="smooth" bar className="w-full" {...props}>
+        {links === "docs" && (
+          <>
+            <NavLink {...getDocsProps("Overview")} />
+            <NavLink {...getDocsProps("Install")} />
+            <NavLink {...getDocsProps("Configure")} />
+            <NavLink {...getDocsProps("Deploy")} />
+            <NavLink {...getDocsProps("FAQ")} />
+            {changelog && <NavLink {...getDocsProps("Changelog")} />}
+          </>
+        )}
+        {links === "blog" && (
+          <>
+            <NavLink {...getBlogProps("Latest")} />
+            <NavLink {...getBlogProps("Releases")} />
+            <NavLink {...getBlogProps("Archive")} />
+          </>
+        )}
+      </Nav>
+    </div>
   );
 }
 
@@ -407,6 +450,20 @@ export default function NavGuideExamples() {
         `}
       >
         <OffGuideBarNav aria-label="Bar off the guide on one link" />
+      </Example>
+
+      <Example
+        title="Bar on a guide whose links change"
+        description="The links change while the navigation stays, like the links of another page. The bar glides from where it is to the current link of the new links. Click a link to make it current, or a button to change the links."
+        code={`
+          <Nav $guide="smooth" bar>
+            {links.map((link) => (
+              <NavLink key={link.href} {...link} />
+            ))}
+          </Nav>
+        `}
+      >
+        <ChangingLinksNav aria-label="Bar on a guide whose links change" />
       </Example>
     </ExampleGrid>
   );

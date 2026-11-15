@@ -142,6 +142,7 @@ function createNavBarTravel({ rootRef }: UseNavBarTravelParams) {
   let target: HTMLElement | null = null;
   let place: NavBarPlace | null = null;
   let cancelFrame: (() => void) | null = null;
+  let removeEndListener: (() => void) | null = null;
   let scheduled = false;
 
   // An equal place writes nothing, so a frame of the travel changes the styles
@@ -159,6 +160,8 @@ function createNavBarTravel({ rootRef }: UseNavBarTravelParams) {
   const finish = () => {
     cancelFrame?.();
     cancelFrame = null;
+    removeEndListener?.();
+    removeEndListener = null;
     target?.style.removeProperty("visibility");
     target = null;
     place = null;
@@ -199,6 +202,22 @@ function createNavBarTravel({ rootRef }: UseNavBarTravelParams) {
       follow(view);
     });
     cancelFrame = () => view.cancelAnimationFrame(id);
+  };
+
+  // The travel ends in the frame where its transitions end, before the browser
+  // paints it. A frame later, Safari would paint the bar at its start again.
+  const listenToEnd = (root: HTMLElement) => {
+    if (removeEndListener) return;
+    const onTransitionEnd = (event: TransitionEvent) => {
+      if (event.target !== root) return;
+      if (event.pseudoElement !== "::after") return;
+      if (turn()) return;
+      finish();
+    };
+    root.addEventListener("transitionend", onTransitionEnd);
+    removeEndListener = () => {
+      root.removeEventListener("transitionend", onTransitionEnd);
+    };
   };
 
   // What a travel to a bar needs. Without one of these, the bar shows at once.
@@ -256,11 +275,21 @@ function createNavBarTravel({ rootRef }: UseNavBarTravelParams) {
     }
     root.style.setProperty("--nav-bar-traveler-color", backgroundColor);
     root.style.setProperty("--nav-bar-traveler-radius", borderRadius);
-    moveTo(root, to);
     // A hidden bar keeps its box, which each frame of the travel measures.
     bar.style.visibility = "hidden";
+    const turning = !!target;
     target = bar;
-    follow(view);
+    listenToEnd(root);
+    if (turning) {
+      moveTo(root, to);
+      follow(view);
+      return;
+    }
+    // The current link can change in a slow frame, such as the first frame of a
+    // new page, which would take the start of the travel. So the browser paints
+    // the bar at its start first, and the next frame moves it.
+    const id = view.requestAnimationFrame(() => follow(view));
+    cancelFrame = () => view.cancelAnimationFrame(id);
   };
 
   // In one update, the bar of the old link leaves before the bar of the new one

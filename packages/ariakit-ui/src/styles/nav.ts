@@ -61,15 +61,23 @@ const navBarTravelerClass = cx(
   "after:content-none data-bar-traveling:after:content-['']",
   "after:absolute after:z-1 after:pointer-events-none",
   // The place and the size are the registered values of a glider, which don't
-  // inherit, so the pseudo-element takes them from the navigation.
-  "after:[--glider-x:inherit] after:[--glider-y:inherit]",
-  "after:[--glider-width:inherit] after:[--glider-height:inherit]",
-  "after:top-(--glider-y) after:left-(--glider-x)",
-  "after:w-(--glider-width) after:h-(--glider-height)",
+  // inherit. The navigation copies them to values that inherit, so the
+  // pseudo-element gets them. Safari doesn't update a pseudo-element that takes
+  // the registered values with `inherit`.
+  "[--nav-bar-traveler-x:var(--glider-x)] [--nav-bar-traveler-y:var(--glider-y)]",
+  "[--nav-bar-traveler-width:var(--glider-width)]",
+  "[--nav-bar-traveler-height:var(--glider-height)]",
+  // The place is a translation, which the browser animates off the main
+  // thread. The travel then stays smooth while the page works, such as when the
+  // current link changes with a new page.
+  "after:top-0 after:left-0",
+  "after:translate-x-(--nav-bar-traveler-x)",
+  "after:translate-y-(--nav-bar-traveler-y)",
+  "after:w-(--nav-bar-traveler-width) after:h-(--nav-bar-traveler-height)",
   "after:bg-(--nav-bar-traveler-color) after:rounded-(--nav-bar-traveler-radius)",
   // The travel takes the time and the easing of a glider, so the bar arrives
   // with the selected box of a glider in the same navigation.
-  "after:[transition-property:--glider-x,--glider-y,--glider-width,--glider-height]",
+  "after:[transition-property:translate,width,height]",
   "after:duration-(--glider-duration,200ms) after:ease-[cubic-bezier(0.3,0,0,1)]",
   // The bar goes to the place that it leaves from at once.
   "data-bar-instant:after:transition-none",

@@ -27,20 +27,28 @@ export const gliderTrack = cv({
 
 /**
  * An element that travels. The `Glider` style component writes its place and
- * its size as registered properties, which the browser animates. Each mover has
- * its own values, so a frame of the travel changes the styles of the mover
- * only, and not of the elements inside it.
+ * its size as registered properties, and the shift from its last place. The
+ * mover goes to its place at once, and the shift travels to zero. The browser
+ * animates the shift off the main thread, so the travel stays smooth while the
+ * page works. It animates the size with the layout. Each mover has its own
+ * values, so a frame of the travel changes the styles of the mover only, and
+ * not of the elements inside it.
  */
 export const gliderMover = cv({
   class: [
     // The browser places the mover on whole pixels, like the item, so the box
-    // has the same sharp edges at rest. A move with translate would not.
+    // has the same sharp edges at rest. A place that only a shift sets would
+    // not. At rest, the shift is zero.
     "glider-mover absolute top-(--glider-y) left-(--glider-x)",
     "w-(--glider-width) h-(--glider-height)",
-    "[transition-property:--glider-x,--glider-y,--glider-width,--glider-height]",
+    "translate-x-(--glider-shift-x,0px) translate-y-(--glider-shift-y,0px)",
+    "[transition-property:translate,--glider-width,--glider-height]",
     "duration-(--glider-duration,200ms) ease-[cubic-bezier(0.3,0,0,1)]",
     // A track with no place to travel from goes to its item at once.
     "[[data-instant]_&]:[transition-property:none]",
+    // The shift from the last place applies at once, and then travels. The size
+    // keeps its travel.
+    "[[data-shifting]_&]:[transition-property:--glider-width,--glider-height]",
   ],
 });
 
@@ -86,10 +94,15 @@ export const gliderLayer = cv({
     "glider-layer absolute top-0 left-0 size-0",
     "[.glider-window>&]:-left-(--glider-x)",
     "[.glider-window>&]:-top-(--glider-y)",
-    "[.glider-window>&]:[transition-property:--glider-x,--glider-y]",
+    "[.glider-window>&]:-translate-x-(--glider-shift-x,0px)",
+    "[.glider-window>&]:-translate-y-(--glider-shift-y,0px)",
+    "[.glider-window>&]:[transition-property:translate]",
     "[.glider-window>&]:duration-(--glider-duration,200ms)",
     "[.glider-window>&]:ease-[cubic-bezier(0.3,0,0,1)]",
     "[[data-instant]_&]:[transition-property:none]",
+    // The selector also names the window, so this rule wins over the rule
+    // above that names it.
+    "[[data-shifting]_.glider-window>&]:transition-none",
   ],
   variants: {
     /** Puts the copies behind the items, like a box at rest. */

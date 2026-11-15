@@ -11,26 +11,45 @@
 ---
 
 {/* Render this script as the first child of a shell panel. */}
-<script is:inline>
+<script is:inline data-app-panel-script>
   // Restores the saved state of the panel around this script as soon as the
   // panel starts parsing. Long pages paint well before the layout script at
   // the end of the body runs, so a late restore would move the content, and a
   // restore after a painted panel would animate it.
   (() => {
-    const panel = document.currentScript?.parentElement;
-    if (!panel?.id) return;
-    let saved = null;
-    try {
-      saved = localStorage.getItem(`app-panel:${panel.id}`);
-    } catch {}
-    if (saved == null) return;
-    const open = saved === "true";
-    panel.toggleAttribute("data-open", open);
-    // Toggles parsed before the panel follow it now. A script after the header
-    // syncs the toggles that come after the panel.
-    const selector = `[data-shell-toggle][aria-controls="${panel.id}"]`;
-    for (const toggle of document.querySelectorAll(selector)) {
-      toggle.setAttribute("aria-expanded", String(open));
-    }
+    /**
+     * @param {Element | null | undefined} panel
+     * @param {Document} root
+     */
+    const restore = (panel, root) => {
+      if (!panel?.id) return;
+      let saved = null;
+      try {
+        saved = localStorage.getItem(`app-panel:${panel.id}`);
+      } catch {}
+      if (saved == null) return;
+      const open = saved === "true";
+      panel.toggleAttribute("data-open", open);
+      // Toggles parsed before the panel follow it now. A script after the
+      // header syncs the toggles that come after the panel.
+      const selector = `[data-shell-toggle][aria-controls="${panel.id}"]`;
+      for (const toggle of root.querySelectorAll(selector)) {
+        toggle.setAttribute("aria-expanded", String(open));
+      }
+    };
+    restore(document.currentScript?.parentElement, document);
+    // The client router doesn't run this script again on the next page, since
+    // the same script was on this one. It restores the panels of the next page
+    // before the page shows, for the same reason as above.
+    // Each panel runs this script, and the first one adds the listener.
+    if (window.appPanelSwapListener) return;
+    window.appPanelSwapListener = true;
+    document.addEventListener("astro:before-swap", (event) => {
+      const { newDocument } = event;
+      const scripts = newDocument.querySelectorAll("[data-app-panel-script]");
+      for (const script of scripts) {
+        restore(script.parentElement, newDocument);
+      }
+    });
   })();
 </script>

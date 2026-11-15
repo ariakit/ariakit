@@ -359,6 +359,27 @@ function hideTrack(track: GliderTrack) {
   track.key = null;
 }
 
+/**
+ * The place where a mover shows now: the place that it has, with the shift of a
+ * travel that is still on its way. A mover without a place returns null.
+ */
+function getShownPlace(mover: HTMLElement) {
+  const x = Number.parseFloat(mover.style.getPropertyValue("--glider-x"));
+  const y = Number.parseFloat(mover.style.getPropertyValue("--glider-y"));
+  if (Number.isNaN(x)) return null;
+  if (Number.isNaN(y)) return null;
+  // The computed value has one length when the other is zero, and is `none`
+  // without a shift.
+  const { translate } = getWindow(mover).getComputedStyle(mover);
+  const [shiftX = "", shiftY = ""] = translate.split(" ");
+  return {
+    x,
+    y,
+    shownX: x + (Number.parseFloat(shiftX) || 0),
+    shownY: y + (Number.parseFloat(shiftY) || 0),
+  };
+}
+
 interface MoveTrackParams {
   track: GliderTrack;
   target: HTMLElement;
@@ -396,6 +417,13 @@ function moveTrack({
   track.key = key;
   // A track that was not shown has no place to travel from.
   const instant = wasHidden || !animated;
+  // The box travels from the place where it shows now. This reads the style of
+  // the mover before the box gets the style of its item, like the flush below.
+  const from = instant ? null : getShownPlace(track.mover);
+  const shift =
+    from && (from.x !== x || from.y !== y)
+      ? { x: from.shownX - x, y: from.shownY - y }
+      : null;
   if (!instant && fresh.length) {
     // A new follower starts at the place of the box, which can be in the middle
     // of a travel, so it changes with the box. This runs before the box gets
@@ -422,6 +450,7 @@ function moveTrack({
     box.setAttribute("data-selected", "true");
   }
   element.toggleAttribute("data-instant", instant);
+  element.toggleAttribute("data-shifting", !!shift);
   for (const follower of followers) {
     follower.toggleAttribute("data-glider-instant", instant);
     follower.style.setProperty("--glider-start", `${start}px`);
@@ -433,6 +462,26 @@ function moveTrack({
     mover.style.setProperty("--glider-y", `${y}px`);
     mover.style.setProperty("--glider-width", `${width}px`);
     mover.style.setProperty("--glider-height", `${height}px`);
+    // The movers go to the new place at once. The shift keeps them where they
+    // show, and an instant move drops the shift of a travel on its way.
+    if (shift) {
+      mover.style.setProperty("--glider-shift-x", `${shift.x}px`);
+      mover.style.setProperty("--glider-shift-y", `${shift.y}px`);
+    } else if (instant) {
+      mover.style.setProperty("--glider-shift-x", "0px");
+      mover.style.setProperty("--glider-shift-y", "0px");
+    }
+  }
+  if (shift) {
+    // Apply the shift before its travel comes back. Then the shift travels to
+    // zero, which moves the box from where it shows to its new place.
+    const moverStyle = getWindow(element).getComputedStyle(track.mover);
+    moverStyle.getPropertyValue("translate");
+    element.removeAttribute("data-shifting");
+    for (const mover of movers) {
+      mover.style.setProperty("--glider-shift-x", "0px");
+      mover.style.setProperty("--glider-shift-y", "0px");
+    }
   }
   // The first box replaces the surface of its item with no fade, so hydration
   // does not flash.
@@ -761,7 +810,11 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
 
   const onTransitionEnd = (event: TransitionEvent) => {
     if (event.target !== selectedMover) return;
-    if (!event.propertyName.startsWith("--glider-")) return;
+    // The box moves with `translate` and changes its size with the glider
+    // properties.
+    const { propertyName } = event;
+    const isMove = propertyName === "translate";
+    if (!isMove && !propertyName.startsWith("--glider-")) return;
     // The properties of the mover can end at different times. For example, a
     // width transition that reverses takes less time than the move.
     if (selectedMover.getAnimations().length) return;
