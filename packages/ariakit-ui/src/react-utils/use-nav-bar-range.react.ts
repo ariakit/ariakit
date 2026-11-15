@@ -62,6 +62,28 @@ function isVisible(element: Element) {
   return element.getClientRects().length > 0;
 }
 
+// Moves the range that the pieces show to where the bar is now. A glide
+// animates the range on each piece, so the bar can be between two ranges. Only
+// a piece with a box animates.
+function updateShownRange(
+  entries: Map<string, NavBarRangeEntry>,
+  shownRangeRef: React.RefObject<NavBarShownRange | null>,
+) {
+  if (!shownRangeRef.current) return;
+  for (const [, entry] of entries) {
+    const bar = entry.bar.current;
+    if (!bar?.isConnected) continue;
+    if (!isVisible(bar)) continue;
+    const style = getWindow(bar).getComputedStyle(bar);
+    const start = style.getPropertyValue("--nav-bar-start");
+    const end = style.getPropertyValue("--nav-bar-end");
+    if (!start) continue;
+    if (!end) continue;
+    shownRangeRef.current = { start, end };
+    return;
+  }
+}
+
 // CSS decides whether the marker of a link shows.
 function getVisibleMarker(entry: NavBarRangeEntry) {
   const marker = entry.marker.current;
@@ -121,6 +143,9 @@ export function useNavBarRange({
         entriesRef.current.set(id, entry);
         setVersion((value) => value + 1);
         return () => {
+          // The next pieces start where the bar is now, which is not the end of
+          // its glide yet. The pieces are still in the document here.
+          updateShownRange(entriesRef.current, shownRangeRef);
           entriesRef.current.delete(id);
           setVersion((value) => value + 1);
         };
@@ -131,6 +156,8 @@ export function useNavBarRange({
       },
       clearRange: () => {
         rangeRef.current = undefined;
+        // The next range shows at once, even when no pieces apply this clear.
+        shownRangeRef.current = null;
         applyRef.current?.();
       },
     }),
@@ -228,6 +255,7 @@ export function useNavBarRange({
     // the next measured range, because a glide between the CSS ranges of two
     // pieces would show their bends for a moment.
     const clear = () => {
+      lastRange = null;
       shownRangeRef.current = null;
       for (const piece of getPieces()) {
         piece.style.transitionDuration = "0s";

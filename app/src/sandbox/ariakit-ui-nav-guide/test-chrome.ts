@@ -43,6 +43,17 @@ function getBars(nav: Locator) {
   });
 }
 
+// Reads the start of the range that the pieces show, from the top of the
+// content of the navigation. It changes on each frame of a glide.
+function getRangeStart(nav: Locator) {
+  return nav.evaluate((element) => {
+    const bar = element.querySelector(".nav-link-guide-bar");
+    if (!bar) return Number.NaN;
+    const style = getComputedStyle(bar);
+    return Number.parseFloat(style.getPropertyValue("--nav-bar-start"));
+  });
+}
+
 function getShown(bars: Piece[]) {
   return bars.filter((bar) => bar.end - bar.start > 0.5).map((bar) => bar.name);
 }
@@ -326,5 +337,60 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         );
       });
     test.expect(guideTop).toBeGreaterThanOrEqual(0);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/8458#discussion_r4576843778
+  test("glides the bar from where it is when the links change during a glide", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Bar on a guide whose links change");
+    await test.expect
+      .poll(async () => getShown(await getBars(nav)))
+      .toEqual(["Overview"]);
+    const getStart = () => getRangeStart(nav);
+    const overviewStart = await getStart();
+    const faq = (await getBars(nav)).find((bar) => bar.name === "FAQ");
+    const faqStart = faq?.lineStart ?? Number.NaN;
+    // A long glide keeps the bar on its way while the links change.
+    await page.addStyleTag({
+      content: ".nav-link-guide-bar { transition-duration: 30s; }",
+    });
+    await query(nav).link("FAQ").click();
+    await test.expect.poll(getStart).toBeGreaterThan(overviewStart + 1);
+    const glideStart = await getStart();
+    await q.button("Show blog links").click();
+    await test.expect(query(nav).link("Archive")).toBeVisible();
+    // The new links start from the bar on its way, near where the glide was,
+    // not from the end of the glide at FAQ.
+    test.expect(await getStart()).toBeLessThan((glideStart + faqStart) / 2);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/8458#discussion_r4576843772
+  test("shows the bar at once when the links come back after no links", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Bar on a guide whose links change");
+    const getShownBars = async () => getShown(await getBars(nav));
+    await test.expect.poll(getShownBars).toEqual(["Overview"]);
+    await query(nav).link("FAQ").click();
+    await test.expect.poll(getShownBars).toEqual(["FAQ"]);
+    await q.button("Show no links").click();
+    await test.expect(query(nav).link("FAQ")).toHaveCount(0);
+    // A glide from the bar at FAQ would take this long to reach the new links.
+    await page.addStyleTag({
+      content: ".nav-link-guide-bar { transition-duration: 30s; }",
+    });
+    await q.button("Show blog links").click();
+    await test.expect
+      .poll(async () => {
+        const bars = await getBars(nav);
+        const archive = bars.find((bar) => bar.name === "Archive");
+        if (!archive) return false;
+        if (Math.abs(archive.start - archive.lineStart) > 1) return false;
+        return Math.abs(archive.end - archive.lineEnd) <= 1;
+      })
+      .toBe(true);
   });
 });
