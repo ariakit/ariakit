@@ -513,7 +513,15 @@ test("site navigation card title links to the example on its page", async ({
   expect(href).toMatch(/^\/react\/recipes\/breadcrumb\/#./);
   const id = href?.split("#")[1] ?? "";
   await title.click();
-  await expect(page).toHaveURL(new RegExp(`/react/recipes/breadcrumb/#${id}$`));
+  // The client router changes the URL after it fetches the next page and swaps
+  // it in, which can take as long as a page load. Page loads have no time limit
+  // of their own in this config, so the URL gets the time of the test.
+  await expect(page).toHaveURL(
+    new RegExp(`/react/recipes/breadcrumb/#${id}$`),
+    {
+      timeout: 0,
+    },
+  );
   // The gallery card of the example takes the id that the title links to.
   await expect(page.locator(`section[id="${id}"]`)).toHaveAccessibleName(
     "Breadcrumb",

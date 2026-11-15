@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { query } from "@ariakit/test/playwright";
+import type { Locator } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { gotoAndSettle } from "#app/test-utils/preview.ts";
@@ -17,6 +18,13 @@ import { gotoAndSettle } from "#app/test-utils/preview.ts";
 // browser. History and fragment navigation also differ between browsers.
 
 const recipePath = "/react/recipes/avatar/";
+
+// A client navigation fetches the next page and swaps it in, which can take as
+// long as a page load. Page loads have no time limit of their own in this
+// config, so the heading of the next page gets the time of the test.
+function expectNextPage(heading: Locator) {
+  return expect(heading).toBeVisible({ timeout: 0 });
+}
 
 test("site navigation stays across pages and marks the next page", async ({
   page,
@@ -38,7 +46,7 @@ test("site navigation stays across pages and marks the next page", async ({
   await query(navigation)
     .link(/^Breadcrumb/)
     .click();
-  await expect(q.heading("Breadcrumb", { level: 1 })).toBeVisible();
+  await expectNextPage(q.heading("Breadcrumb", { level: 1 }));
   await expect(query(navigation).link(/^Breadcrumb/)).toHaveAttribute(
     "aria-current",
     "page",
@@ -56,6 +64,10 @@ test("Back after a link to a place on the page shows that page", async ({
   page,
   q,
 }) => {
+  // The test loads a page and makes two client navigations that fetch a page,
+  // which can take the whole default budget on a slow runner, so it gets twice
+  // the budget.
+  test.setTimeout(test.info().timeout * 2);
   await gotoAndSettle(page, recipePath);
   const toc = q.navigation("On this page");
   await expect(toc.locator("astro-island")).not.toHaveAttribute("ssr");
@@ -65,10 +77,10 @@ test("Back after a link to a place on the page shows that page", async ({
   await query(q.navigation("Site"))
     .link(/^Breadcrumb/)
     .click();
-  await expect(q.heading("Breadcrumb", { level: 1 })).toBeVisible();
+  await expectNextPage(q.heading("Breadcrumb", { level: 1 }));
   await page.goBack();
   await expect(page).toHaveURL(hashURL);
-  await expect(q.heading("Avatar", { level: 1 })).toBeVisible();
+  await expectNextPage(q.heading("Avatar", { level: 1 }));
   await page.goBack();
   await expect(page).toHaveURL(/\/react\/recipes\/avatar\/$/);
   await expect(q.heading("Avatar", { level: 1 })).toBeVisible();
@@ -103,7 +115,7 @@ test("saved panel states apply before the next page shows", async ({
   });
   await gotoAndSettle(page, recipePath);
   await query(q.navigation("Main")).link("Components").click();
-  await expect(q.heading("Separator", { level: 1 })).toBeVisible();
+  await expectNextPage(q.heading("Separator", { level: 1 }));
   await expect(q.button("Toggle navigation")).toHaveAttribute(
     "aria-expanded",
     "false",
