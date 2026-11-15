@@ -73,6 +73,9 @@ function updateShownRange(
   for (const [, entry] of entries) {
     const bar = entry.bar.current;
     if (!bar?.isConnected) continue;
+    // A piece that registered in the same update has no range yet, so it reads
+    // the range that CSS sets in its own box, or none.
+    if (!bar.style.getPropertyValue("--nav-bar-start")) continue;
     if (!isVisible(bar)) continue;
     const style = getWindow(bar).getComputedStyle(bar);
     const start = style.getPropertyValue("--nav-bar-start");
@@ -140,11 +143,13 @@ export function useNavBarRange({
   const store = React.useMemo<NavBarRangeStore>(
     () => ({
       register: (id, entry) => {
+        // The pieces start where the bar is now, which is not the end of its
+        // glide yet, so a new piece joins the others there.
+        updateShownRange(entriesRef.current, shownRangeRef);
         entriesRef.current.set(id, entry);
         setVersion((value) => value + 1);
         return () => {
-          // The next pieces start where the bar is now, which is not the end of
-          // its glide yet. The pieces are still in the document here.
+          // The pieces are still in the document here.
           updateShownRange(entriesRef.current, shownRangeRef);
           entriesRef.current.delete(id);
           setVersion((value) => value + 1);

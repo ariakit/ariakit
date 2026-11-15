@@ -112,10 +112,12 @@ function OffGuideBarNav(props: NavProps) {
 /**
  * Links on a guide that change while the navigation stays, like the links of
  * another page. The bar glides from where it is to the current link of the new
- * links, and shows at once when the navigation had no links before.
+ * links, and shows at once when the navigation had no links before. A link
+ * added during a glide joins the bar where it is.
  */
 function ChangingLinksNav(props: NavProps) {
   const [links, setLinks] = useState<"docs" | "blog" | "none">("docs");
+  const [changelog, setChangelog] = useState(false);
   const getDocsProps = useCurrentLink("Overview");
   const getBlogProps = useCurrentLink("Archive");
   return (
@@ -124,6 +126,7 @@ function ChangingLinksNav(props: NavProps) {
         <Button onClick={() => setLinks("docs")}>Show docs links</Button>
         <Button onClick={() => setLinks("blog")}>Show blog links</Button>
         <Button onClick={() => setLinks("none")}>Show no links</Button>
+        <Button onClick={() => setChangelog(true)}>Add a Changelog link</Button>
       </div>
       <Nav $guide="smooth" bar className="w-full" {...props}>
         {links === "docs" && (
@@ -133,6 +136,7 @@ function ChangingLinksNav(props: NavProps) {
             <NavLink {...getDocsProps("Configure")} />
             <NavLink {...getDocsProps("Deploy")} />
             <NavLink {...getDocsProps("FAQ")} />
+            {changelog && <NavLink {...getDocsProps("Changelog")} />}
           </>
         )}
         {links === "blog" && (

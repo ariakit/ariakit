@@ -350,8 +350,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toEqual(["Overview"]);
     const getStart = () => getRangeStart(nav);
     const overviewStart = await getStart();
-    const faq = (await getBars(nav)).find((bar) => bar.name === "FAQ");
-    const faqStart = faq?.lineStart ?? Number.NaN;
     // A long glide keeps the bar on its way while the links change.
     await page.addStyleTag({
       content: ".nav-link-guide-bar { transition-duration: 30s; }",
@@ -361,9 +359,52 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const glideStart = await getStart();
     await q.button("Show blog links").click();
     await test.expect(query(nav).link("Archive")).toBeVisible();
-    // The new links start from the bar on its way, near where the glide was,
-    // not from the end of the glide at FAQ.
-    test.expect(await getStart()).toBeLessThan((glideStart + faqStart) / 2);
+    // The new links start from the bar on its way, not from the end of the
+    // glide at FAQ, nor from a new piece that has no range yet. The bar moves a
+    // few pixels between the two reads.
+    const start = await getStart();
+    test.expect(Math.abs(start - glideStart)).toBeLessThan(5);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/8458#discussion_r4576918195
+  test("starts an added link from where the bar is during a glide", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Bar on a guide whose links change");
+    await test.expect
+      .poll(async () => getShown(await getBars(nav)))
+      .toEqual(["Overview"]);
+    const getStart = () => getRangeStart(nav);
+    const overviewStart = await getStart();
+    // A long glide keeps the bar on its way while the link comes.
+    await page.addStyleTag({
+      content: ".nav-link-guide-bar { transition-duration: 30s; }",
+    });
+    await query(nav).link("FAQ").click();
+    await test.expect.poll(getStart).toBeGreaterThan(overviewStart + 1);
+    await q.button("Add a Changelog link").click();
+    const changelog = query(nav).link("Changelog");
+    await test.expect(changelog).toBeVisible();
+    // The piece of the new link reads the same range as the other pieces, not
+    // the end of the glide at FAQ.
+    const starts = await nav.evaluate((element) => {
+      const read = (bar: Element | null | undefined) => {
+        if (!bar) return Number.NaN;
+        const value = getComputedStyle(bar).getPropertyValue("--nav-bar-start");
+        return Number.parseFloat(value);
+      };
+      const links = [...element.querySelectorAll("a")];
+      const getBar = (name: string) =>
+        links
+          .find((link) => link.textContent === name)
+          ?.querySelector(".nav-link-guide-bar");
+      return {
+        overview: read(getBar("Overview")),
+        added: read(getBar("Changelog")),
+      };
+    });
+    test.expect(Math.abs(starts.added - starts.overview)).toBeLessThan(1);
   });
 
   // https://github.com/ariakit/ariakit/pull/8458#discussion_r4576843772
