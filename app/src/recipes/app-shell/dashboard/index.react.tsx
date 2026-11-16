@@ -34,12 +34,16 @@ import {
   ShellSidebarHeader,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import {
+  SlotFrame,
+  SlotFrameSlot,
+  SlotFrameText,
+} from "@ariakit/ui/components/slot-frame.ariakit.react";
+import {
   Table,
   TableCell,
   TableRow,
   TableRowGroup,
 } from "@ariakit/ui/components/table.ariakit.react";
-import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import {
   Bell,
@@ -68,10 +72,12 @@ export default function Example() {
         landmark="nav"
       >
         <ShellSidebarHeader>
-          <TextFrame $p={2} className="flex items-center gap-2 font-semibold">
-            <Hexagon strokeWidth={1.5} className="size-5" aria-hidden />
-            Acme Analytics
-          </TextFrame>
+          <SlotFrame $p={2} className="font-semibold">
+            <SlotFrameSlot $size="lg" aria-hidden>
+              <Hexagon strokeWidth={1.5} />
+            </SlotFrameSlot>
+            <SlotFrameText>Acme Analytics</SlotFrameText>
+          </SlotFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
           <Nav $cover bar={{ $offset: "halfway" }}>

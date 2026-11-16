@@ -37,6 +37,11 @@ import {
   ShellFull,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import {
+  SlotFrame,
+  SlotFrameSlot,
+  SlotFrameText,
+} from "@ariakit/ui/components/slot-frame.ariakit.react";
+import {
   CircleUser,
   Compass,
   Home,
@@ -73,8 +78,13 @@ export default function Example() {
         aria-label="Library"
         landmark="nav"
       >
-        <ShellSidebarHeader className="gap-2 px-4 text-lg font-semibold">
-          <Music className="size-5" /> Wavelength
+        <ShellSidebarHeader>
+          <SlotFrame $p={2} className="items-center font-semibold">
+            <SlotFrameSlot $size="lg" aria-hidden>
+              <Music />
+            </SlotFrameSlot>
+            <SlotFrameText className="text-lg">Wavelength</SlotFrameText>
+          </SlotFrame>
         </ShellSidebarHeader>
         <ShellSidebarBody>
           <Nav $cover list={false} bar={{ $offset: "halfway" }}>

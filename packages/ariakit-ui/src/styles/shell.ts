@@ -1,6 +1,7 @@
 import { cv, cx } from "clava";
 import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
-import { frame, frameBase } from "./frame.ts";
+import { frame, frameBase, getFramePaddingClass } from "./frame.ts";
+import type { FramePaddingValue } from "./frame.ts";
 
 export type ShellWidth = string | number;
 
@@ -47,17 +48,30 @@ export const shell = cv({
     "[--shell-end-1-width:0px] [--shell-end-2-width:0px]",
     // Without a main size, Prose is 1rem, so this is 42em of its text.
     "[--shell-header-height:0px] [--shell-main-max-width:42rem]",
+    // The bar heights don't include the facing edge of the bar. Each bar
+    // publishes its edge width, and the offsets of sticky parts add it.
+    "[--shell-header-border:0px] [--shell-footer-border:0px] [--shell-main-header-border:0px]",
     // A shell inside a sized main doesn't pass that size on to its Prose.
     "[.shell-main-sized_&]:[--prose-size:initial]",
     "[--shell-duration:300ms] [--shell-motion:1] motion-reduce:[--shell-motion:0]",
     "[--shell-time:calc(var(--shell-duration)*var(--shell-motion))]",
     "[--shell-ease:cubic-bezier(0.2,0,0,1)]",
-    "[--shell-local-header-height:calc(var(--shell-header-step)*16)]",
-    "[&:has(>.shell-header)]:[--shell-local-header-height:var(--shell-header-height)]",
-    "[--shell-main-header-height:var(--shell-local-header-height)] [--shell-main-head:0px]",
+    // A default control is one line of the shell's text with two spacing steps
+    // of padding above and below it, which round like frame padding. A bar is
+    // that tall plus its space above and below, which is three steps by
+    // default, plus its facing edge.
+    "[--shell-control-height:calc(var(--shell-header-step)*4*var(--shell-leading)+2*round(var(--shell-header-step)*2,1px))]",
+    "[--shell-bar-space:round(calc(var(--shell-header-step)*3),1px)]",
+    // Each bar publishes its space as a number of steps, and the shell turns
+    // it into a height here. The main header and the sidebar headers take the
+    // space of the shell header unless they set their own.
+    "[--shell-header-space:3] [--shell-main-header-space:var(--shell-header-space)]",
+    "[&:has(>.shell-header)]:[--shell-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-header-space),1px))]",
+    "[&:has(>.shell-footer)]:[--shell-footer-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-footer-space),1px))]",
+    "[--shell-main-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-main-header-space),1px))] [--shell-main-head:0px]",
     "[--shell-head:0px]",
-    "[&:has(>.shell-header-sticky)]:[--shell-head:var(--shell-header-height)]",
-    "[&:has(>.shell-footer-sticky)]:[--shell-foot:var(--shell-footer-height)]",
+    "[&:has(>.shell-header-sticky)]:[--shell-head:calc(var(--shell-header-height)+var(--shell-header-border))]",
+    "[&:has(>.shell-footer-sticky)]:[--shell-foot:calc(var(--shell-footer-height)+var(--shell-footer-border))]",
     // Alternating registered lengths avoid same-element custom-property
     // cycles. These mutually exclusive selectors support three shell levels;
     // each further level needs another rule with the opposite channel.
@@ -138,7 +152,7 @@ export const shell = cv({
      * and main. The shell, its bars, and its own sidebars keep the full width.
      * Next to that inner shell, the areas in the bars take this width less the
      * bar's padding on each side, so they start where parts at the bar's edges
-     * do, inside the box. With the default padding and height, that is on the
+     * do, inside the box. With the default space of the bars, that is on the
      * rows of its sidebars. A `$maxWidth` on a bar or on `ShellMain` replaces
      * the default for that part. On the inner `Shell`, it sets the defaults for
      * that shell's parts, and the box keeps this width. `$show` on the inner
@@ -207,7 +221,8 @@ const seam = cv({
           "border-dashed [--shell-facing-border:var(--border-width)]",
         );
       }
-      return "[--shell-facing-border:0px]";
+      // The marker lets a bar tell the shell that it has no facing edge.
+      return "[--shell-facing-border:0px] shell-edge-none";
     },
   },
   defaultVariants: {
@@ -230,14 +245,27 @@ const seam = cv({
 });
 
 /**
- * Default bar padding. At the default `md` height, three spacing steps match
- * the space above and below a default control and the default main gutter. Each
- * height step shrinks or grows that space by half a step on each side, so the
- * side insets follow it. The three steps and the height adjustment round to
- * whole pixels separately, like the main gutter and the main header, so they
- * all keep one edge.
+ * Default padding at the sides of a bar: the space above and below a default
+ * control. Each bar reads it from its own space, so a bar that takes its space
+ * from the shell header gets that header's space. The space rounds to a whole
+ * pixel like the space in the bar's height, so the sides match the space above
+ * and below a default control. The default three steps round like the main
+ * gutter and the sidebar body's padding, so they all keep one edge.
  */
 const barInsetDefault = "var(--shell-bar-inset)";
+
+/** The padding at the sides of a bar, apart from the space that `$p` sets. */
+const barPaddingVariants = {
+  /**
+   * Sets the padding at the sides apart from `$p`, which still sets the height.
+   * Numbers scale the spacing token and round to a whole pixel; strings pass
+   * through as CSS lengths or expressions. `none` removes the padding. Defaults
+   * to the space that `$p` sets.
+   */
+  $px(value?: FramePaddingValue) {
+    return getFramePaddingClass(value);
+  },
+};
 
 /**
  * Three columns keep the center aligned until a side needs more room. Content
@@ -274,11 +302,11 @@ const bar = cx(
   "col-[page] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
   // Next to a shell inside a shell with `$maxWidth`, a content area starts the
   // bar's padding inside that shell's box, like parts at the bar's edges and in
-  // that shell's own bars. With the default padding, that is on the rows of its
-  // sidebars at the default bar height. It skips compensation, so an outer
-  // sidebar doesn't move it off the box. The
-  // bar looks for that shell among its siblings: a `:has()` on the outer shell
-  // would restyle the whole page on each sidebar toggle in Chrome.
+  // that shell's own bars. With the default space of the bar, that is on the
+  // rows of its sidebars. It skips compensation, so an outer sidebar doesn't
+  // move it off the box. The bar looks for that shell among its siblings: a
+  // `:has()` on the outer shell would restyle the whole page on each sidebar
+  // toggle in Chrome.
   "[.shell-paged>&:has(~.shell)]:[--shell-main-max-width:calc(var(--shell-max-width)-2*var(--ak-frame-padding))]",
   "[.shell-paged>.shell~&]:[--shell-main-max-width:calc(var(--shell-max-width)-2*var(--ak-frame-padding))]",
   "[.shell-paged>&:has(~.shell)]:[--shell-comp-start:0px] [.shell-paged>&:has(~.shell)]:[--shell-comp-end:0px]",
@@ -307,11 +335,11 @@ const blur = cx(
 const barAreaVariants = {
   /**
    * Sets the main gutter that a content area in this bar uses to find main's
-   * column. Set it to the same value as `$p` on `ShellMain`. `$p` stays the
-   * smallest space at the bar's edge. Numbers scale the spacing token and round
-   * to a whole pixel, and they follow the element's text. So when `ShellMain`
-   * sets `$size`, set a CSS length on both. Defaults to the default main
-   * gutter.
+   * column. Set it to the same value as `$p` on `ShellMain`. The padding at the
+   * bar's sides stays the smallest space at its edge. Numbers scale the spacing
+   * token and round to a whole pixel, and they follow the element's text. So
+   * when `ShellMain` sets `$size`, set a CSS length on both. Defaults to the
+   * default main gutter.
    */
   $gutter(value?: "none" | (string & {}) | number) {
     if (value == null) return;
@@ -342,36 +370,71 @@ export const shellHeader = cv({
   extend: [seam],
   class: [
     bar,
-    "shell-header row-[header] box-border min-h-(--shell-header-height) @container/shell-header",
+    "shell-header row-[header] box-border min-h-[calc(var(--shell-header-height)+var(--shell-facing-border,0px))] @container/shell-header",
+    // Without a facing edge, the shell adds no edge width to its offsets.
+    "[.shell:has(>&.shell-edge-none)]:[--shell-header-border:0px]",
     // Let edge bars in a centered navigation row reach the inner edge.
-    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
-    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-var(--shell-facing-border,0px))]",
+    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:var(--shell-header-height)]",
+    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:var(--shell-header-height)]",
     "z-6",
-    "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-header-height)-var(--shell-header-step)*16)/2,1px)))]",
+    "[--shell-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-header-space),1px))]",
+    "[--shell-bar-inset:round(var(--shell-header-step)*var(--shell-header-space),1px)]",
   ],
   variants: {
     ...barAreaVariants,
+    ...barPaddingVariants,
+    /**
+     * Sets the space around the content, in whole steps of the spacing token
+     * from 0 to 6. It pads the sides, and it makes the header as tall as a
+     * default control plus this space above and below it. The facing edge adds
+     * to that height. A taller part takes its extra height from the space. The
+     * shell reads the height from this value to place sticky parts, so a CSS
+     * length goes to `$px`, which sets only the sides. Defaults to 3.
+     */
+    $p: {
+      0: "[.shell:has(>&)]:[--shell-header-space:0] [--shell-header-space:0]",
+      1: "[.shell:has(>&)]:[--shell-header-space:1] [--shell-header-space:1]",
+      2: "[.shell:has(>&)]:[--shell-header-space:2] [--shell-header-space:2]",
+      3: "[.shell:has(>&)]:[--shell-header-space:3] [--shell-header-space:3]",
+      4: "[.shell:has(>&)]:[--shell-header-space:4] [--shell-header-space:4]",
+      5: "[.shell:has(>&)]:[--shell-header-space:5] [--shell-header-space:5]",
+      6: "[.shell:has(>&)]:[--shell-header-space:6] [--shell-header-space:6]",
+    },
+    /**
+     * Sets the facing edge width in whole pixels from 0 to 5. `true` means 1px;
+     * `false` means zero. `inherit` uses the inherited edge color and width.
+     * The edge adds to the height that `$p` sets. The shell reads that sum to
+     * place sticky parts, so the width is one of these values.
+     */
+    $border: {
+      true: "[--border-width:1px] [.shell:has(>&)]:[--shell-header-border:1px]",
+      false:
+        "[--border-width:0px] [.shell:has(>&)]:[--shell-header-border:0px]",
+      0: "[--border-width:0px] [.shell:has(>&)]:[--shell-header-border:0px]",
+      1: "[--border-width:1px] [.shell:has(>&)]:[--shell-header-border:1px]",
+      2: "[--border-width:2px] [.shell:has(>&)]:[--shell-header-border:2px]",
+      3: "[--border-width:3px] [.shell:has(>&)]:[--shell-header-border:3px]",
+      4: "[--border-width:4px] [.shell:has(>&)]:[--shell-header-border:4px]",
+      5: "[--border-width:5px] [.shell:has(>&)]:[--shell-header-border:5px]",
+      inherit:
+        "ak-edge-inherit [.shell:has(>&)]:[--shell-header-border:var(--border-width,0px)]",
+    },
     /**
      * Keeps the header in view within its row and reserves its space. Sticky
      * sidebars and anchors use its height as an offset. Defaults to `true`.
      */
     $sticky: "shell-header-sticky sticky inset-bs-(--shell-top)",
-    /** Sets the outer height, including the border. Defaults to `md`. */
-    $height: {
-      sm: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*14)] [--shell-header-height:calc(var(--shell-header-step)*14)]",
-      md: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*16)] [--shell-header-height:calc(var(--shell-header-step)*16)]",
-      lg: "[.shell:has(>&)]:[--shell-header-height:calc(var(--shell-header-step)*18)] [--shell-header-height:calc(var(--shell-header-step)*18)]",
-    },
     /**
      * Blurs the page behind a translucent surface. Uses an opaque surface when
      * backdrop filters are unsupported or transparency is reduced.
      */
     $blur: blur,
     /**
-     * Moves the center section to a full-width second row below 40rem. Supply a
-     * matching `$height` class for the taller layout. A center section in a
-     * content area keeps its row even when CSS hides it, so render it only
-     * where it shows.
+     * Moves the center section to a full-width second row below 40rem. The
+     * header grows by that row, but the shell still reads the height that `$p`
+     * sets. So parts that stick below a sticky header keep the offset of one
+     * row. A center section in a content area keeps its row even when CSS hides
+     * it, so render it only where it shows.
      */
     $stackCenter: [
       "@max-[40rem]/shell-header:[&>.shell-bar-center]:col-span-full",
@@ -387,8 +450,8 @@ export const shellHeader = cv({
   },
   defaultVariants: {
     $sticky: true,
-    $height: "md",
-    $p: barInsetDefault,
+    $p: 3,
+    $px: barInsetDefault,
   },
 });
 
@@ -422,11 +485,19 @@ export const shellBarPart = cv({
   },
 });
 
+/**
+ * A side part alone in a bar spans the bar, not only its side track, which is
+ * half the bar. So its content wraps only when the bar has no more room.
+ */
+const loneSidePart = cx("[.shell-bar>&:only-child]:col-span-full");
+
 /** The start section of a shell header, footer, or main header. */
 export const shellStart = cv({
   extend: [shellBarPart],
-  class:
+  class: [
     "shell-bar-start col-1 [&:has(~.shell-band)]:me-2 [.shell-main-header>&]:me-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-1 [.shell-bar>.shell-band>&]:col-1",
+    loneSidePart,
+  ],
   variants: {
     // The track also holds the part's margin, so the cap leaves room for it.
     $shrink: {
@@ -454,8 +525,10 @@ export const shellCenter = cv({
 /** The end section of a shell header, footer, or main header. */
 export const shellEnd = cv({
   extend: [shellBarPart],
-  class:
+  class: [
     "shell-bar-end col-3 [.shell-band~&]:ms-2 [.shell-main-header>&]:ms-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-3 [.shell-bar>.shell-band>&]:col-3",
+    loneSidePart,
+  ],
   variants: {
     // The track also holds the part's margin, so the cap leaves room for it.
     $shrink: {
@@ -475,29 +548,64 @@ export const shellFooter = cv({
     bar,
     // The footer ends the sidebar columns, pushing sticky sidebar bodies up
     // without a fixed footer height.
-    "shell-footer row-[footer] box-border min-h-(--shell-footer-height) @container/shell-footer",
+    "shell-footer row-[footer] box-border min-h-[calc(var(--shell-footer-height)+var(--shell-facing-border,0px))] @container/shell-footer",
+    // Without a facing edge, the shell adds no edge width to its offsets.
+    "[.shell:has(>&.shell-edge-none)]:[--shell-footer-border:0px]",
     // Let edge bars in a centered navigation row reach the inner edge.
     // The bottom safe area pads the footer, so it doesn't hold the row.
-    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
-    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-var(--shell-facing-border,0px)-env(safe-area-inset-bottom))]",
+    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-env(safe-area-inset-bottom))]",
+    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-env(safe-area-inset-bottom))]",
     "z-5",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
-    "[--shell-bar-inset:max(0px,calc(round(--spacing(3),1px)+round((var(--shell-footer-height)-var(--shell-header-step)*16)/2,1px)))]",
+    "[--shell-footer-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-footer-space),1px))]",
+    "[--shell-bar-inset:round(var(--shell-header-step)*var(--shell-footer-space),1px)]",
   ],
   variants: {
     ...barAreaVariants,
+    ...barPaddingVariants,
+    /**
+     * Sets the space around the content, in whole steps of the spacing token
+     * from 0 to 6. It pads the sides, and it makes the footer as tall as a
+     * default control plus this space above and below it. The facing edge adds
+     * to that height. A taller part takes its extra height from the space. The
+     * shell reads the height from this value to place parts above a sticky
+     * footer, so a CSS length goes to `$px`, which sets only the sides.
+     * Defaults to 3.
+     */
+    $p: {
+      0: "[.shell:has(>&)]:[--shell-footer-space:0] [--shell-footer-space:0]",
+      1: "[.shell:has(>&)]:[--shell-footer-space:1] [--shell-footer-space:1]",
+      2: "[.shell:has(>&)]:[--shell-footer-space:2] [--shell-footer-space:2]",
+      3: "[.shell:has(>&)]:[--shell-footer-space:3] [--shell-footer-space:3]",
+      4: "[.shell:has(>&)]:[--shell-footer-space:4] [--shell-footer-space:4]",
+      5: "[.shell:has(>&)]:[--shell-footer-space:5] [--shell-footer-space:5]",
+      6: "[.shell:has(>&)]:[--shell-footer-space:6] [--shell-footer-space:6]",
+    },
+    /**
+     * Sets the facing edge width in whole pixels from 0 to 5. `true` means 1px;
+     * `false` means zero. `inherit` uses the inherited edge color and width.
+     * The edge adds to the height that `$p` sets. The shell reads that sum to
+     * place parts above a sticky footer, so the width is one of these values.
+     */
+    $border: {
+      true: "[--border-width:1px] [.shell:has(>&)]:[--shell-footer-border:1px]",
+      false:
+        "[--border-width:0px] [.shell:has(>&)]:[--shell-footer-border:0px]",
+      0: "[--border-width:0px] [.shell:has(>&)]:[--shell-footer-border:0px]",
+      1: "[--border-width:1px] [.shell:has(>&)]:[--shell-footer-border:1px]",
+      2: "[--border-width:2px] [.shell:has(>&)]:[--shell-footer-border:2px]",
+      3: "[--border-width:3px] [.shell:has(>&)]:[--shell-footer-border:3px]",
+      4: "[--border-width:4px] [.shell:has(>&)]:[--shell-footer-border:4px]",
+      5: "[--border-width:5px] [.shell:has(>&)]:[--shell-footer-border:5px]",
+      inherit:
+        "ak-edge-inherit [.shell:has(>&)]:[--shell-footer-border:var(--border-width,0px)]",
+    },
     /**
      * Keeps the footer in view at the bottom of the scroll area. Sticky
      * sidebars stop above it, and main content scrolls focused elements above
      * it. Defaults to `false`.
      */
     $sticky: "shell-footer-sticky sticky inset-be-0",
-    /** Sets the outer height, including the border. Defaults to `md`. */
-    $height: {
-      sm: "[.shell:has(>&)]:[--shell-footer-height:calc(var(--shell-header-step)*14)] [--shell-footer-height:calc(var(--shell-header-step)*14)]",
-      md: "[.shell:has(>&)]:[--shell-footer-height:calc(var(--shell-header-step)*16)] [--shell-footer-height:calc(var(--shell-header-step)*16)]",
-      lg: "[.shell:has(>&)]:[--shell-footer-height:calc(var(--shell-header-step)*18)] [--shell-footer-height:calc(var(--shell-header-step)*18)]",
-    },
     /**
      * Blurs the page behind a translucent surface. Uses an opaque surface when
      * backdrop filters are unsupported or transparency is reduced.
@@ -505,8 +613,8 @@ export const shellFooter = cv({
     $blur: blur,
   },
   defaultVariants: {
-    $p: barInsetDefault,
-    $height: "md",
+    $p: 3,
+    $px: barInsetDefault,
   },
 });
 
@@ -706,22 +814,33 @@ export const shellSidebarPanel = cv({
 export const shellSidebarHeader = cv({
   extend: [seam],
   class: [
-    "shell-sidebar-header flex flex-none items-center box-border min-h-(--shell-local-header-height) py-0!",
+    "shell-sidebar-header flex flex-none items-center box-border min-h-[calc(var(--shell-local-header-height)+var(--shell-facing-border,0px))] py-0!",
+    "[--shell-local-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-sidebar-header-space,var(--shell-header-space)),1px))]",
+    "[--shell-bar-inset:round(var(--shell-header-step)*var(--shell-sidebar-header-space,var(--shell-header-space)),1px)]",
   ],
   variants: {
+    ...barPaddingVariants,
     /**
-     * Sets the outer height, including the border. Defaults to the shell
-     * header.
+     * Sets the space around the content, in whole steps of the spacing token
+     * from 0 to 6. It pads the sides, and it makes the header as tall as a
+     * default control plus this space above and below it. The facing edge adds
+     * to that height. A taller part takes its extra height from the space.
+     * Defaults to the space of the shell header, or to 3 without one. At the
+     * default 3, the sides match the default padding of the sidebar body. At
+     * another space, set the same `$p` on the sidebar body to keep header and
+     * body content on one edge.
      */
-    $height: {
-      sm: "[--shell-local-header-height:calc(var(--shell-header-step)*14)]",
-      md: "[--shell-local-header-height:calc(var(--shell-header-step)*16)]",
-      lg: "[--shell-local-header-height:calc(var(--shell-header-step)*18)]",
+    $p: {
+      0: "[--shell-sidebar-header-space:0]",
+      1: "[--shell-sidebar-header-space:1]",
+      2: "[--shell-sidebar-header-space:2]",
+      3: "[--shell-sidebar-header-space:3]",
+      4: "[--shell-sidebar-header-space:4]",
+      5: "[--shell-sidebar-header-space:5]",
+      6: "[--shell-sidebar-header-space:6]",
     },
   },
-  // Unlike other bars, the padding keeps the sidebar body's default, so header
-  // and body content share one edge at any height.
-  defaultVariants: { $p: 3 },
+  defaultVariants: { $px: barInsetDefault },
 });
 
 /**
@@ -1001,7 +1120,10 @@ export const shellMainHeader = cv({
   class: [
     content,
     "shell-main-header col-start-1 col-end-[calc(2+var(--shell-header-free-1)+var(--shell-header-free-1)*var(--shell-header-free-2))] row-[main-header]",
-    "box-border min-h-(--shell-main-header-height) content-center py-0! z-3",
+    "box-border min-h-[calc(var(--shell-main-header-height)+var(--shell-facing-border,0px))] content-center py-0! z-3",
+    "[--shell-main-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-main-header-space),1px))]",
+    // Without a facing edge, the shell adds no edge width to its offsets.
+    "[.shell:has(>.shell-main>&.shell-edge-none)]:[--shell-main-header-border:0px]",
     // The spacing inside the bar follows its own text size, like the shell
     // header. Without this, the bar takes the step of a sized main, which has
     // larger text.
@@ -1011,14 +1133,15 @@ export const shellMainHeader = cv({
     "[.shell-main-sized>&]:ui-base:text-[calc(var(--shell-header-step)*4)]",
     "[.shell-main-sized>&]:ui-base:[line-height:var(--shell-leading)]",
     "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
-    // Like other bars, a shorter or taller header than `md` shrinks or grows
-    // its side insets with the space around its controls. This is only the
-    // smallest space at the edge. The column keeps the main gutter, so it
-    // matches the body until the edge reaches it, with no query. Round only the
-    // height adjustment, so a raw main gutter still matches the body. The bar
-    // inset rounds the same adjustment, so a header over a default main gutter
-    // stays on the edge of the bars.
-    "[--shell-track-gutter:max(0px,calc(var(--shell-gutter)+round((var(--shell-main-header-height)-var(--shell-header-step)*16)/2,1px)))]",
+    // Like other bars, a header with less or more space than the default three
+    // steps shrinks or grows its side insets by the difference. This is only
+    // the smallest space at the edge. The column keeps the main gutter, so it
+    // matches the body until the edge reaches it, with no query. Both spaces
+    // round to a whole pixel like the space in the bar heights, so a header
+    // over a default main gutter stays on the edge of the bars. At the default
+    // space the difference is zero, so a raw main gutter still matches the
+    // body.
+    "[--shell-track-gutter:max(0px,calc(var(--shell-gutter)+round(var(--shell-header-step)*var(--shell-main-header-space),1px)-var(--shell-bar-space)))]",
     // With a Start, Center, or End part, the header uses the tracks of a bar.
     // Other children share the middle track, and aim for the same column.
     "[&:has(>.shell-bar-part)]:shell-bar-tracks",
@@ -1035,17 +1158,57 @@ export const shellMainHeader = cv({
     "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:items-center [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:my-0! [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:py-0",
     "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
     "[&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:rounded-none! [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:rounded-none!",
-    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-main-header-height)-var(--shell-facing-border,0px))]",
+    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-block-size:var(--shell-main-header-height)]",
   ],
   variants: {
     ...contentVariants,
     /**
-     * Sets the minimum content gutter. Numbers scale the spacing token and
-     * round to a whole pixel. Defaults to the main gutter, with the smallest
-     * space at the edge adjusted by half the height difference from an `md`
-     * header. `none` removes the space; `unset` keeps the default.
+     * Sets the space above and below the content, in whole steps of the spacing
+     * token from 0 to 6. It makes the header as tall as a default control plus
+     * this space above and below it. The facing edge adds to that height. A
+     * taller part takes its extra height from the space. At the sides, the
+     * smallest space at the edge grows or shrinks by the difference from the
+     * default 3, and the content keeps the main gutter. The shell reads the
+     * height from this value to place sticky parts, so a CSS length goes to
+     * `$px`, which sets only the gutter. Defaults to the space of the shell
+     * header, or to 3 without one.
      */
-    $p(value?: "unset" | "none" | (string & {}) | number) {
+    $p: {
+      0: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:0] [--shell-main-header-space:0]",
+      1: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:1] [--shell-main-header-space:1]",
+      2: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:2] [--shell-main-header-space:2]",
+      3: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:3] [--shell-main-header-space:3]",
+      4: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:4] [--shell-main-header-space:4]",
+      5: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:5] [--shell-main-header-space:5]",
+      6: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:6] [--shell-main-header-space:6]",
+    },
+    /**
+     * Sets the facing edge width in whole pixels from 0 to 5. `true` means 1px;
+     * `false` means zero. `inherit` uses the inherited edge color and width.
+     * The edge adds to the height that `$p` sets. The shell reads that sum to
+     * place sticky parts, so the width is one of these values.
+     */
+    $border: {
+      true: "[--border-width:1px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:1px]",
+      false:
+        "[--border-width:0px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:0px]",
+      0: "[--border-width:0px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:0px]",
+      1: "[--border-width:1px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:1px]",
+      2: "[--border-width:2px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:2px]",
+      3: "[--border-width:3px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:3px]",
+      4: "[--border-width:4px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:4px]",
+      5: "[--border-width:5px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:5px]",
+      inherit:
+        "ak-edge-inherit [.shell:has(>.shell-main>&)]:[--shell-main-header-border:var(--border-width,0px)]",
+    },
+    /**
+     * Sets the minimum content gutter apart from `$p`, which still sets the
+     * height. Numbers scale the spacing token and round to a whole pixel.
+     * Defaults to the main gutter, with the smallest space at the edge adjusted
+     * for the space that `$p` sets. `none` removes the gutter; `unset` keeps
+     * the default.
+     */
+    $px(value?: FramePaddingValue) {
       if (value == null) return;
       if (value === "unset") return;
       const gutter = getPaddingValue(value === "none" ? 0 : value);
@@ -1094,19 +1257,10 @@ export const shellMainHeader = cv({
       "max-6xl": "shell-main-header-show-max-6xl @6xl/shell:hidden",
       "max-7xl": "shell-main-header-show-max-7xl @7xl/shell:hidden",
     },
-    /**
-     * Sets the outer height, including the border. Defaults to the shell
-     * header.
-     */
-    $height: {
-      sm: "[.shell:has(>.shell-main>&)]:[--shell-main-header-height:calc(var(--shell-header-step)*14)] [--shell-main-header-height:calc(var(--shell-header-step)*14)]",
-      md: "[.shell:has(>.shell-main>&)]:[--shell-main-header-height:calc(var(--shell-header-step)*16)] [--shell-main-header-height:calc(var(--shell-header-step)*16)]",
-      lg: "[.shell:has(>.shell-main>&)]:[--shell-main-header-height:calc(var(--shell-header-step)*18)] [--shell-main-header-height:calc(var(--shell-header-step)*18)]",
-    },
     /** Blurs the page behind the header through a translucent surface. */
     $blur: blur,
   },
-  defaultVariants: { $p: "unset", $sticky: true, $show: true },
+  defaultVariants: { $sticky: true, $show: true },
 });
 
 /** The introduction inside the main landmark, above its body. */

@@ -125,12 +125,14 @@ export interface ShellHeaderProps
   extends ak.RoleProps<"header">, VariantProps<typeof shellHeader> {}
 
 /**
- * The top bar of a shell, sticky by default, as tall as its height token. Its
- * parts, `ShellStart`, `ShellCenter` and `ShellEnd`, sit at the start, on the
- * middle and at the end. Render them in that order: a part after a later one
- * wraps to a new row. To align content with main's column, render
- * `ShellContent` or a wider band instead of `ShellCenter`. It aligns while it
- * has room, and the edge next to a wide side part moves to make room.
+ * The top bar of a shell, sticky by default. `$p` sets the space around its
+ * content: the padding at the sides, and the height, which is a default control
+ * plus that space above and below it, plus the border. Its parts, `ShellStart`,
+ * `ShellCenter` and `ShellEnd`, sit at the start, on the middle and at the end.
+ * Render them in that order: a part after a later one wraps to a new row. To
+ * align content with main's column, render `ShellContent` or a wider band
+ * instead of `ShellCenter`. It aligns while it has room, and the edge next to a
+ * wide side part moves to make room.
  *
  * Use `portal` for overlays to escape the bar's stacking context. Portalled
  * elements no longer inherit the shell's tokens.
@@ -151,13 +153,13 @@ export interface ShellFooterProps
   extends ak.RoleProps<"footer">, VariantProps<typeof shellFooter> {}
 
 /**
- * The bottom bar of a shell, as tall as its content. It is static by default,
- * and a sticky sidebar body ends above it at the end of the page. Set `$sticky`
- * to keep it at the bottom of the viewport, such as for a message composer;
- * sticky sidebars and scrolled-to elements then end above it. Its parts are
- * `ShellStart`, `ShellCenter` and `ShellEnd`, in that order. To align content
- * with main's column, render `ShellContent` or a wider band instead of
- * `ShellCenter`.
+ * The bottom bar of a shell. `$p` sets the space around its content, like in
+ * `ShellHeader`. It is static by default, and a sticky sidebar body ends above
+ * it at the end of the page. Set `$sticky` to keep it at the bottom of the
+ * viewport, such as for a message composer; sticky sidebars and scrolled-to
+ * elements then end above it. Its parts are `ShellStart`, `ShellCenter` and
+ * `ShellEnd`, in that order. To align content with main's column, render
+ * `ShellContent` or a wider band instead of `ShellCenter`.
  * @example
  * <Shell>
  *   <ShellFooter>
@@ -275,17 +277,17 @@ export interface ShellMainHeaderProps
 
 /**
  * A main header that sticks below the shell header by default. Its outer height
- * matches `ShellHeader` unless `$height` sets a local preset. Borders are
- * contained inside that height. Its surface spans adjacent end columns whose
- * sidebars start at the intro or body; content stays aligned with the body. Use
- * `$sticky={false}` for a static header. `$show="3xl"` shows it at shell widths
- * of 48rem and above; `$show="max-3xl"` shows it only below 48rem.
- * `$show={false}` hides it at every width. A hidden header takes no space and
- * has no sticky offset. Direct element children occupy the content column; wrap
- * text in an element such as `div`. Use `ShellStart`, `ShellCenter`, and
- * `ShellEnd` to place parts at its edges and on its middle, like in
- * `ShellHeader`. Children between the side parts still aim for the content
- * column.
+ * matches `ShellHeader` unless `$p` sets its own space or the two have
+ * different borders, because the border adds to that height. Its surface spans
+ * adjacent end columns whose sidebars start at the intro or body; content stays
+ * aligned with the body. Use `$sticky={false}` for a static header.
+ * `$show="3xl"` shows it at shell widths of 48rem and above; `$show="max-3xl"`
+ * shows it only below 48rem. `$show={false}` hides it at every width. A hidden
+ * header takes no space and has no sticky offset. Direct element children
+ * occupy the content column; wrap text in an element such as `div`. Use
+ * `ShellStart`, `ShellCenter`, and `ShellEnd` to place parts at its edges and
+ * on its middle, like in `ShellHeader`. Children between the side parts still
+ * aim for the content column.
  * @example
  * <Shell>
  *   <ShellMain>
@@ -312,7 +314,7 @@ export interface ShellMainBodyProps
  *
  * Fragment links clear the configured sticky headers. For keyboard focus, also
  * set scroll padding on the page's scroll port to their total height, for
- * example `html { scroll-padding-block-start: 128px }` for two default headers.
+ * example `html { scroll-padding-block-start: 114px }` for two default headers.
  * Content must fit the configured header heights.
  * @example
  * <Shell>
@@ -573,8 +575,9 @@ export interface ShellSidebarHeaderProps
   extends ak.RoleProps<"div">, VariantProps<typeof shellSidebarHeader> {}
 
 /**
- * A fixed header inside the sidebar panel. It shares `ShellHeader`'s outer
- * height by default; a local `$height` includes the local border.
+ * A fixed header inside the sidebar panel. It takes the space of `ShellHeader`
+ * by default, at its sides and above and below a default control. `$p` sets its
+ * own space, like in `ShellHeader`. The border adds to the height.
  * @example
  * <Shell>
  *   <ShellSidebar landmark="nav" aria-label="Docs">

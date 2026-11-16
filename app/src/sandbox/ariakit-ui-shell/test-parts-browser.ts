@@ -95,12 +95,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     const panel = q.navigation("Part navigation");
-    await expect(panel).toHaveCSS("max-height", "836px");
-    // The 40rem pane minus the 64px sticky header, instead of the viewport.
+    await expect(panel).toHaveCSS("max-height", "835px");
+    // The 40rem pane minus the 65px sticky header, instead of the viewport.
     await q.checkbox("Size container pane").check();
-    await expect(panel).toHaveCSS("max-height", "576px");
+    await expect(panel).toHaveCSS("max-height", "575px");
     await q.checkbox("Size container pane").uncheck();
-    await expect(panel).toHaveCSS("max-height", "836px");
+    await expect(panel).toHaveCSS("max-height", "835px");
+  });
+
+  test("lets a lone side part take the whole bar before its text wraps", async ({
+    page,
+    q,
+  }) => {
+    // The note is wider than half of this bar and narrower than all of it.
+    await page.setViewportSize({ width: 600, height: 900 });
+    await q.checkbox("Sticky footer").check();
+    await q.checkbox("Long footer note").check();
+    const footer = q.contentinfo("Part footer");
+    const start = footer.locator(":scope > .shell-bar-start");
+    await expect(start).toHaveText(/wider than half of the bar/);
+    const lineHeight = await start.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).lineHeight),
+    );
+    const footerBox = await getBox(footer);
+    const startBox = await getBox(start);
+    expect(startBox.width).toBeGreaterThan(footerBox.width / 2);
+    expect(startBox.height).toBeCloseTo(lineHeight, 0);
   });
 
   test("sets the space above and below the parts with $py on main", async ({
@@ -135,7 +155,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect(body).toHaveCSS("padding-block-start", "12px");
       await expect(q.region("Main content")).toHaveCSS(
         "scroll-margin-block-start",
-        `${64 + Math.max(16, space)}px`,
+        `${65 + Math.max(16, space)}px`,
       );
       // The nested main keeps its own 1rem gutter.
       await expect(nestedBody).toHaveCSS("padding-block-start", "16px");
@@ -182,7 +202,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect.poll(getBodyEndError).toBeLessThan(0.1);
       // A target can't read the percentage, so it clears the largest space at
       // every width, and a table of contents marks it current at the top.
-      await expect(title).toHaveCSS("scroll-margin-block-start", "120px");
+      await expect(title).toHaveCSS("scroll-margin-block-start", "121px");
     }
     // A sidebar beside the intro reduces the space. The end sidebar that starts
     // at the body doesn't, so the space returns when it stops being beside it.
@@ -204,11 +224,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.checkbox("Second start sidebar").uncheck();
     await page.setViewportSize({ width: 1440, height: 800 });
     await q.checkbox("More targets in the intro").check();
-    // A nested main doesn't take the space of an intro around it: the 64px page
+    // A nested main doesn't take the space of an intro around it: the 65px page
     // header and the minimum 16px, not the 56px of the intro.
     await expect(q.text("Nested shell target")).toHaveCSS(
       "scroll-margin-block-start",
-      "80px",
+      "81px",
     );
     // This target has a larger font and sits in a query container, and the
     // space still resolves at the intro.
@@ -236,7 +256,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       );
       // A target in the intro stops where it starts, so a table of contents
       // marks it current at the top of the page.
-      const margin = `${64 + Math.max(16, space)}px`;
+      const margin = `${65 + Math.max(16, space)}px`;
       await expect(title).toHaveCSS("scroll-margin-block-start", margin);
       await expect(queryTarget).toHaveCSS("scroll-margin-block-start", margin);
     }
@@ -262,7 +282,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.combobox("Intro block padding").selectOption("10 steps");
     await q.combobox("Main block padding").selectOption("2em");
     await expect(intro).toHaveCSS("padding-block-start", "40px");
-    await expect(title).toHaveCSS("scroll-margin-block-start", "104px");
+    await expect(title).toHaveCSS("scroll-margin-block-start", "105px");
     // After an intro that sets `$py`, `$py` on main sets the body's end.
     await q.combobox("Main block padding").selectOption("None");
     await expect(body).toHaveCSS("padding-block-end", "0px");
@@ -270,7 +290,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.combobox("Intro block padding").selectOption("Auto");
     await expect(intro).toHaveCSS("padding-block-start", "32px");
     await expect(intro).toHaveCSS("padding-block-end", "44px");
-    await expect(title).toHaveCSS("scroll-margin-block-start", "96px");
+    await expect(title).toHaveCSS("scroll-margin-block-start", "97px");
   });
 
   test("keeps the intro space at the end of an intro without a body", async ({
@@ -375,32 +395,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect(header).toBeHidden();
       for (const name of ["Part details", "More details"]) {
         await expect(q.complementary(name)).toBeVisible();
-        await expect(q.complementary(name)).toHaveCSS("top", "64px");
-        await expect(q.complementary(name)).toHaveCSS("max-height", "836px");
+        await expect(q.complementary(name)).toHaveCSS("top", "65px");
+        await expect(q.complementary(name)).toHaveCSS("max-height", "835px");
       }
-      await expect(nestedHeader).toHaveCSS("top", "64px");
+      await expect(nestedHeader).toHaveCSS("top", "65px");
       await expect(q.region("Main content")).toHaveCSS(
         "scroll-margin-block-start",
-        "80px",
+        "81px",
       );
       // Playwright can scroll the page to click "Narrow shell", such as when it
       // retries the click while the columns still move.
       // https://github.com/ariakit/ariakit/issues/7595
       await page.evaluate(() => window.scrollTo(0, 0));
       expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
-        64,
+        65,
         0,
       );
       await page.evaluate(() => window.scrollTo(0, 700));
       await expect
         .poll(async () => (await getBox(q.complementary("Part details"))).y)
-        .toBeCloseTo(64, 0);
+        .toBeCloseTo(65, 0);
       await q.checkbox("Narrow shell").uncheck();
       await expect(header).toBeVisible();
-      await expect(q.complementary("Part details")).toHaveCSS("top", "128px");
-      await expect(nestedHeader).toHaveCSS("top", "128px");
+      await expect(q.complementary("Part details")).toHaveCSS("top", "134px");
+      await expect(nestedHeader).toHaveCSS("top", "134px");
       await q.checkbox("Sticky main header").uncheck();
-      await expect(q.complementary("Part details")).toHaveCSS("top", "64px");
+      await expect(q.complementary("Part details")).toHaveCSS("top", "65px");
       await q.combobox("Main header visibility").selectOption("always");
       await q.checkbox("Narrow shell").check();
       await expect(header).toBeVisible();
@@ -423,32 +443,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
         for (const name of ["Part details", "More details"]) {
           await expect(q.complementary(name)).toHaveCSS(
             "top",
-            visible ? "128px" : "64px",
+            visible ? "134px" : "65px",
           );
           await expect(q.complementary(name)).toHaveCSS(
             "max-height",
-            visible ? "772px" : "836px",
+            visible ? "766px" : "835px",
           );
         }
-        await expect(nestedHeader).toHaveCSS("top", visible ? "128px" : "64px");
+        await expect(nestedHeader).toHaveCSS("top", visible ? "134px" : "65px");
         await expect(q.region("Main content")).toHaveCSS(
           "scroll-margin-block-start",
-          `${(visible ? 128 : 64) + getScrollGap(width)}px`,
+          `${(visible ? 134 : 65) + getScrollGap(width)}px`,
         );
       }
       await q.checkbox("Narrow shell").check();
       await expect(header).toBeVisible();
-      await expect(q.complementary("Part details")).toHaveCSS("top", "128px");
+      await expect(q.complementary("Part details")).toHaveCSS("top", "134px");
       await page.evaluate(() => window.scrollTo(0, 700));
       await expect
         .poll(async () => (await getBox(q.complementary("Part details"))).y)
-        .toBeCloseTo(128, 0);
+        .toBeCloseTo(134, 0);
       await q.checkbox("Narrow shell").uncheck();
       await expect(header).toBeHidden();
       await page.evaluate(() => window.scrollTo(0, 700));
       await expect
         .poll(async () => (await getBox(q.complementary("Part details"))).y)
-        .toBeCloseTo(64, 0);
+        .toBeCloseTo(65, 0);
     });
 
     test(`hides the main header at every width and releases sticky ${from} sidebars`, async ({
@@ -465,32 +485,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(header).toBeHidden();
         for (const name of ["Part details", "More details"]) {
           await expect(q.complementary(name)).toBeVisible();
-          await expect(q.complementary(name)).toHaveCSS("top", "64px");
-          await expect(q.complementary(name)).toHaveCSS("max-height", "836px");
+          await expect(q.complementary(name)).toHaveCSS("top", "65px");
+          await expect(q.complementary(name)).toHaveCSS("max-height", "835px");
         }
-        await expect(nestedHeader).toHaveCSS("top", "64px");
+        await expect(nestedHeader).toHaveCSS("top", "65px");
         await expect(nestedHeader).toBeVisible();
         await expect(q.region("Main content")).toHaveCSS(
           "scroll-margin-block-start",
-          `${64 + getScrollGap(width)}px`,
+          `${65 + getScrollGap(width)}px`,
         );
         await page.evaluate(() => window.scrollTo(0, 0));
         expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
-          64,
+          65,
           0,
         );
         await page.evaluate(() => window.scrollTo(0, 700));
         await expect
           .poll(async () => (await getBox(q.complementary("Part details"))).y)
-          .toBeCloseTo(64, 0);
+          .toBeCloseTo(65, 0);
         for (const visibility of ["always", "default"]) {
           await q.combobox("Main header visibility").selectOption(visibility);
           await expect(header).toBeVisible();
           await expect(q.complementary("Part details")).toHaveCSS(
             "top",
-            "128px",
+            "134px",
           );
-          await expect(nestedHeader).toHaveCSS("top", "128px");
+          await expect(nestedHeader).toHaveCSS("top", "134px");
         }
       }
     });
@@ -572,15 +592,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(getSidebar(q, "Part details")).toHaveCSS("width", "160px");
   });
 
-  test("inherits outer height and contains local borders in explicit presets", async ({
+  test("inherits the height of the shell header and adds local borders", async ({
     q,
     page,
   }) => {
     const mainHeader = page.locator(".shell-main-header");
     const sidebarHeader = page.locator(".shell-sidebar-header");
     const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
+    // The 64px of the shell header without its border, plus the local border.
     for (const header of [mainHeader, sidebarHeader]) {
-      await expect(header).toHaveCSS("height", "64px");
+      await expect(header).toHaveCSS("height", "69px");
       await expect(header).toHaveCSS("border-bottom-width", "5px");
     }
     const headerBox = await getBox(mainHeader);
@@ -591,30 +612,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
       headerBox.y + (headerBox.height - 5) / 2,
       0,
     );
-    await expect(nestedHeader).toHaveCSS("top", "128px");
-    await expect(q.complementary("Part details")).toHaveCSS("top", "128px");
-    await expect(q.navigation("Part navigation")).toHaveCSS("top", "64px");
+    await expect(nestedHeader).toHaveCSS("top", "134px");
+    await expect(q.complementary("Part details")).toHaveCSS("top", "134px");
+    await expect(q.navigation("Part navigation")).toHaveCSS("top", "65px");
     await q.checkbox("Wide global border").check();
     await expect(q.banner()).toHaveCSS("border-bottom-width", "3px");
-    for (const header of [q.banner(), mainHeader, sidebarHeader]) {
-      await expect(header).toHaveCSS("height", "64px");
+    // The wider border adds to the shell header only.
+    await expect(q.banner()).toHaveCSS("height", "67px");
+    for (const header of [mainHeader, sidebarHeader]) {
+      await expect(header).toHaveCSS("height", "69px");
     }
     await q.checkbox("Compact local headers").check();
     for (const header of [mainHeader, sidebarHeader]) {
-      await expect(header).toHaveCSS("height", "56px");
+      await expect(header).toHaveCSS("height", "61px");
     }
-    await expect(nestedHeader).toHaveCSS("top", "120px");
+    await expect(nestedHeader).toHaveCSS("top", "128px");
     await page.evaluate(() => window.scrollTo(0, 700));
     await expect
       .poll(async () => (await getBox(mainHeader)).y)
-      .toBeCloseTo(64, 0);
+      .toBeCloseTo(67, 0);
     await q.checkbox("Sticky main header").uncheck();
-    await expect(nestedHeader).toHaveCSS("top", "64px");
-    await expect(q.complementary("Part details")).toHaveCSS("top", "64px");
+    await expect(nestedHeader).toHaveCSS("top", "67px");
+    await expect(q.complementary("Part details")).toHaveCSS("top", "67px");
     await q.checkbox("Global header").uncheck();
-    await expect(mainHeader).toHaveCSS("height", "56px");
+    await expect(mainHeader).toHaveCSS("height", "61px");
     await q.checkbox("Compact local headers").uncheck();
-    await expect(mainHeader).toHaveCSS("height", "64px");
+    await expect(mainHeader).toHaveCSS("height", "69px");
     await expect(nestedHeader).toHaveCSS("top", "0px");
   });
 
@@ -634,25 +657,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
     );
     await expect(middle.locator(":scope > .shell-header")).toHaveCSS(
       "top",
-      "128px",
+      "134px",
     );
-    await expect(middleHeader).toHaveCSS("top", "192px");
-    await expect(middleHeader).toHaveCSS("height", "56px");
-    await expect(innerHeader).toHaveCSS("top", "248px");
-    await expect(innerMainHeader).toHaveCSS("top", "312px");
-    await expect(innerMainHeader).toHaveCSS("height", "72px");
+    await expect(middleHeader).toHaveCSS("top", "199px");
+    await expect(middleHeader).toHaveCSS("height", "57px");
+    await expect(innerHeader).toHaveCSS("top", "256px");
+    await expect(innerMainHeader).toHaveCSS("top", "321px");
+    await expect(innerMainHeader).toHaveCSS("height", "73px");
     await q.checkbox("Taller nested main header").check();
-    await expect(middleHeader).toHaveCSS("height", "72px");
-    await expect(middleHeader).toHaveCSS("top", "192px");
-    await expect(innerHeader).toHaveCSS("top", "264px");
-    await expect(innerMainHeader).toHaveCSS("top", "328px");
+    await expect(middleHeader).toHaveCSS("height", "73px");
+    await expect(middleHeader).toHaveCSS("top", "199px");
+    await expect(innerHeader).toHaveCSS("top", "272px");
+    await expect(innerMainHeader).toHaveCSS("top", "337px");
     await page.evaluate(() => window.scrollTo(0, 1400));
     await expect
       .poll(async () => (await getBox(innerHeader)).y)
-      .toBeCloseTo(264, 0);
+      .toBeCloseTo(272, 0);
     await expect
       .poll(async () => (await getBox(innerMainHeader)).y)
-      .toBeCloseTo(328, 0);
+      .toBeCloseTo(337, 0);
   });
 
   for (const unbounded of [false, true]) {
@@ -670,7 +693,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       for (const size of ["text-sm", "text-lg"]) {
         await q.combobox("Local text size").selectOption(size);
         for (const header of [mainHeader, sidebarHeader]) {
-          await expect(header).toHaveCSS("height", "64px");
+          await expect(header).toHaveCSS("height", "69px");
         }
         const contentBox = await getBox(content);
         if (!unbounded) {
@@ -682,12 +705,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
           expect((await getBox(part)).x).toBeCloseTo(contentBox.x, 0);
           expect((await getBox(part)).width).toBeCloseTo(contentBox.width, 0);
         }
-        await expect(nestedHeader).toHaveCSS("top", "128px");
+        await expect(nestedHeader).toHaveCSS("top", "134px");
         await q.checkbox("Compact local headers").check();
         for (const header of [mainHeader, sidebarHeader]) {
-          await expect(header).toHaveCSS("height", "56px");
+          await expect(header).toHaveCSS("height", "61px");
         }
-        await expect(nestedHeader).toHaveCSS("top", "120px");
+        await expect(nestedHeader).toHaveCSS("top", "126px");
         await page.evaluate(() => window.scrollTo(0, 900));
         const headerBox = await getBox(mainHeader);
         expect((await getBox(q.complementary("Part details"))).y).toBeCloseTo(
@@ -725,11 +748,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
         );
         await expect(q.complementary("Part details")).toHaveCSS(
           "top",
-          from === "main" ? "64px" : "128px",
+          from === "main" ? "65px" : "134px",
         );
         await expect(q.complementary("More details")).toHaveCSS(
           "top",
-          from === "main" ? "64px" : "128px",
+          from === "main" ? "65px" : "134px",
         );
         for (const unbounded of [false, true]) {
           await q.checkbox("Unbounded content").setChecked(unbounded);
@@ -754,7 +777,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       expect(
         (await getBox(header)).width - (await getBox(body)).width,
       ).toBeCloseTo(160, 0);
-      await expect(q.complementary("More details")).toHaveCSS("top", "128px");
+      await expect(q.complementary("More details")).toHaveCSS("top", "134px");
       await q.checkbox("Open end sidebar").check();
       await page.setViewportSize({ width: 700, height: 900 });
       await expect(getSidebar(q, "Part details")).toHaveCSS("width", "0px");
@@ -789,7 +812,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // moves after the shell rows change, and main scrolls with the page.
     // https://github.com/ariakit/ariakit/issues/8059
     await page.evaluate(() => window.scrollTo(0, 0));
-    expect((await getBox(q.main())).y).toBeCloseTo(64, 0);
+    expect((await getBox(q.main())).y).toBeCloseTo(65, 0);
   });
 
   test("keeps sidebar header and footer fixed while its body scrolls", async ({
@@ -809,7 +832,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const panelBox = await getBox(panel);
     expect(panelBox.y + panelBox.height).toBeLessThanOrEqual(900);
     await page.evaluate(() => window.scrollTo(0, 400));
-    await expect.poll(async () => (await getBox(header)).y).toBeCloseTo(64, 0);
+    await expect.poll(async () => (await getBox(header)).y).toBeCloseTo(65, 0);
   });
 
   test("selects shared padding from the nearest shell width and supports local overrides", async ({

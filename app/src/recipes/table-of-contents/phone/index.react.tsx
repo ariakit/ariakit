@@ -38,7 +38,7 @@ export default function Example() {
   const title = headings.find((heading) => `#${heading.slug}` === current);
   return (
     <Shell>
-      <ShellHeader $blur $height="sm">
+      <ShellHeader $blur $p={2}>
         <ShellStart>
           <PopoverProvider placement="bottom-start">
             {/* The button shows the section being read. The popover keeps

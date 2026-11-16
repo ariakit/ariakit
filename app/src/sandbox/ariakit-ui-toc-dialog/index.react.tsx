@@ -82,7 +82,7 @@ export default function Example() {
                   it concentric with the corner of the dialog. The title lines
                   up with the wider padding of the terms, and truncates rather
                   than wrap and grow the header. */}
-              <ShellHeader $blur $height="sm">
+              <ShellHeader $blur $p={2}>
                 <ShellStart
                   $shrink
                   className="ps-[calc(var(--spacing)*6-var(--shell-bar-inset))]"

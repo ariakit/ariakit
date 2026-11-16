@@ -24,7 +24,11 @@ import {
   SkeletonBox,
   SkeletonLine,
 } from "@ariakit/ui/components/skeleton.ariakit.react";
-import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
+import {
+  SlotFrame,
+  SlotFrameSlot,
+  SlotFrameText,
+} from "@ariakit/ui/components/slot-frame.ariakit.react";
 import { Hexagon } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "react-router";
@@ -92,16 +96,12 @@ function Site() {
     <Shell>
       <ShellHeader $blur>
         <ShellStart>
-          {/* An icon starts the logo, so its sides keep the frame padding, like
-              the leading icon of a button. */}
-          <TextFrame
-            $p={2}
-            $px="sm"
-            className="flex items-center gap-2 font-semibold"
-          >
-            <Hexagon strokeWidth={1.5} className="size-5" aria-hidden />
-            Acme UI
-          </TextFrame>
+          <SlotFrame $p={2} className="font-semibold">
+            <SlotFrameSlot $size="lg" aria-hidden>
+              <Hexagon strokeWidth={1.5} />
+            </SlotFrameSlot>
+            <SlotFrameText>Acme UI</SlotFrameText>
+          </SlotFrame>
         </ShellStart>
       </ShellHeader>
       <ShellSidebar>

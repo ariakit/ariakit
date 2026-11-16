@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { getSidebar, selectScenario } from "./test-helpers.ts";
+import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
@@ -65,6 +65,30 @@ withFramework(import.meta.dirname, async ({ test }) => {
       for (const side of ["top", "right", "bottom", "left"]) {
         await expect(element).toHaveCSS(`border-${side}-width`, "0px");
       }
+    }
+  });
+
+  test("places sticky sidebars below the header and the width of its seam", async ({
+    page,
+    q,
+  }) => {
+    const contents = q.navigation("Layout contents");
+    // The header is 64px tall without its seam, and the shell adds the width
+    // that the header publishes for each seam setting.
+    const cases = [
+      { type: "border", show: true, inherit: false, top: 66 },
+      { type: "dashed", show: true, inherit: false, top: 66 },
+      { type: "none", show: true, inherit: false, top: 64 },
+      { type: "border", show: false, inherit: false, top: 64 },
+      { type: "border", show: true, inherit: true, top: 67 },
+    ];
+    for (const { type, show, inherit, top } of cases) {
+      await q.combobox("Seam type").selectOption(type);
+      await q.checkbox("Show seams").setChecked(show);
+      await q.checkbox("Inherit seams").setChecked(inherit);
+      await page.evaluate(() => window.scrollTo(0, 500));
+      await expect.poll(async () => (await getBox(contents)).y).toBe(top);
+      await page.evaluate(() => window.scrollTo(0, 0));
     }
   });
 

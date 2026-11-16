@@ -31,6 +31,11 @@ import {
   ShellPopout,
   ShellFeature,
 } from "@ariakit/ui/components/shell.ariakit.react";
+import {
+  SlotFrame,
+  SlotFrameSlot,
+  SlotFrameText,
+} from "@ariakit/ui/components/slot-frame.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { BookOpen, Calendar, CircleUser, Hexagon } from "lucide-react";
 import { useState } from "react";
@@ -41,9 +46,12 @@ export default function Example() {
     <Shell>
       <ShellHeader $blur $border={false}>
         <ShellStart>
-          <a href="#" className="flex items-center gap-2 font-semibold">
-            <Hexagon strokeWidth={1.5} className="size-5" /> Field Notes
-          </a>
+          <SlotFrame $p={2} className="font-semibold" render={<a href="#" />}>
+            <SlotFrameSlot $size="lg" aria-hidden>
+              <Hexagon strokeWidth={1.5} />
+            </SlotFrameSlot>
+            <SlotFrameText>Field Notes</SlotFrameText>
+          </SlotFrame>
         </ShellStart>
         <ShellEnd>
           <Button

@@ -25,7 +25,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       (await getBox(footerText)).x,
       0,
     );
-    await expect(q.banner()).toHaveCSS("height", "64px");
+    // The header's 2px border adds to its 64px.
+    await expect(q.banner()).toHaveCSS("height", "66px");
     await q.checkbox("Compact gutter").check();
     expect((await getBox(content)).x).toBeCloseTo(8, 0);
     expect((await getBox(headerText)).x).toBeCloseTo(12, 0);
@@ -33,7 +34,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     expect((await getBox(content)).x).toBeCloseTo(8, 0);
     expect((await getBox(headerText)).x).toBeCloseTo(48, 0);
     expect((await getBox(footerText)).x).toBeCloseTo(48, 0);
-    await expect(q.banner()).toHaveCSS("height", "64px");
+    await expect(q.banner()).toHaveCSS("height", "66px");
   });
 
   // https://github.com/ariakit/ariakit/issues/7532
@@ -84,7 +85,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
           (await getBox(q.main().locator(":scope > .shell-main-body"))).x,
       )
       .toBeCloseTo(320, 0);
-    await expect(q.banner()).toHaveCSS("height", "72px");
-    await expect(q.navigation("Layout navigation")).toHaveCSS("top", "72px");
+    // The header's 2px border adds to its 72px.
+    await expect(q.banner()).toHaveCSS("height", "74px");
+    await expect(q.navigation("Layout navigation")).toHaveCSS("top", "74px");
   });
 });

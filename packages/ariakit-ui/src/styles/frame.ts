@@ -52,6 +52,23 @@ export function getFrameRoundedClass(
   };
 }
 
+export type FramePaddingValue = "unset" | "none" | (string & {}) | number;
+
+/**
+ * Resolves frame padding from a number of spacing steps or a CSS length or
+ * expression. Extenders that set frame padding from another variant must call
+ * this.
+ */
+export function getFramePaddingClass(value?: FramePaddingValue) {
+  if (value == null) return;
+  if (value === "unset") return;
+  if (value === "none") return "ak-frame-p-0";
+  return {
+    class: "ak-frame-p-(--frame-padding)",
+    style: { "--frame-padding": getPaddingValue(value) },
+  };
+}
+
 /**
  * Frame geometry and concentric corners without a background layer. Use `frame`
  * when the element also needs layer and edge colors.
@@ -107,14 +124,8 @@ export const frameBase = cv({
      * pixel; strings pass through as raw lengths or expressions. Values below
      * `1rem` affect nested corner rounding.
      */
-    $p(value?: "unset" | "none" | (string & {}) | number) {
-      if (value == null) return;
-      if (value === "unset") return;
-      if (value === "none") return "ak-frame-p-0";
-      return {
-        class: "ak-frame-p-(--frame-padding)",
-        style: { "--frame-padding": getPaddingValue(value) },
-      };
+    $p(value?: FramePaddingValue) {
+      return getFramePaddingClass(value);
     },
     /**
      * Sets frame margin. Nested corner rounding applies while parent padding

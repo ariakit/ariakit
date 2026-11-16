@@ -44,8 +44,8 @@ const startTexts = {
 };
 type StartText = keyof typeof startTexts;
 
-const heights = ["sm", "md", "lg"] as const;
-type Height = (typeof heights)[number];
+const barSpaces = { "2": 2, "3": 3, "4": 4 } as const;
+type BarSpace = keyof typeof barSpaces;
 
 const sizes = ["auto", "sm", "md", "lg"] as const;
 type Size = (typeof sizes)[number];
@@ -128,7 +128,7 @@ export function AreasScenario({ controls }: { controls: ReactNode }) {
   const [band, setBand] = useState<Band>("content");
   const [middle, setMiddle] = useState<Middle>("area");
   const [startText, setStartText] = useState<StartText>("short");
-  const [barHeight, setBarHeight] = useState<Height>("md");
+  const [barSpace, setBarSpace] = useState<BarSpace>("3");
   const [size, setSize] = useState<Size>("auto");
   const [from, setFrom] = useState<From>("main");
   const [barParts, setBarParts] = useState(true);
@@ -167,7 +167,7 @@ export function AreasScenario({ controls }: { controls: ReactNode }) {
   const areaClassName = minWidth ? "min-w-[160px]" : undefined;
   const shell = (
     <Shell>
-      <ShellHeader {...barProps} $height={barHeight}>
+      <ShellHeader {...barProps} $p={barSpaces[barSpace]}>
         {barParts && startPart}
         {barArea && (
           <Band role="group" aria-label="Header area" className={areaClassName}>
@@ -190,7 +190,7 @@ export function AreasScenario({ controls }: { controls: ReactNode }) {
         $maxWidth={customWidth ? 200 : undefined}
         $p={customGutter ? 8 : undefined}
       >
-        <ShellMainHeader $p={noGutter ? "none" : undefined}>
+        <ShellMainHeader $px={noGutter ? "none" : undefined}>
           {cover && <Nav aria-label="Cover" $cover />}
           {mainParts && startPart}
           {middle === "plain" && (
@@ -267,10 +267,10 @@ export function AreasScenario({ controls }: { controls: ReactNode }) {
                 onChange={setStartText}
               />
               <Select
-                label="Bar height"
-                value={barHeight}
-                options={heights}
-                onChange={setBarHeight}
+                label="Bar space"
+                value={barSpace}
+                options={["2", "3", "4"]}
+                onChange={setBarSpace}
               />
               <Select
                 label="Main size"
