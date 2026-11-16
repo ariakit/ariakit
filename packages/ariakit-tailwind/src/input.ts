@@ -887,6 +887,7 @@ const inputs = {
   frameStart: _ak.prop.zero("frame-start"),
   frameEnd: _ak.prop.zero("frame-end"),
   frameForce: _ak.prop.zero("frame-force"),
+  frameDivide: _ak.prop.len("frame-divide", { initial: "0px" }),
   frameJoinActive: _ak.prop.zero("frame-join-active"),
   frameJoinFill: _ak.prop.zero("frame-join-fill"),
   // Keep joining scoped to the immediate parent.
@@ -2958,6 +2959,7 @@ function getLayerEdgeContextDeclarations() {
   ]);
 }
 
+const FIRST_VISIBLE_SELECTOR = "&:nth-child(1 of :not([hidden],template))";
 const LAST_VISIBLE_SELECTOR = "&:not(:has(~ *:not([hidden],template)))";
 
 /**
@@ -3241,6 +3243,61 @@ utility(
   }),
 );
 
+/**
+ * Draws a border on the sides of a frame that face a sibling on the parent's
+ * main axis. The first frame omits its start side and the last frame omits its
+ * end side. The body stays small because each width and variant emits it again.
+ */
+function getFrameDivideDeclarations() {
+  const widths = fn.join(
+    [
+      fn.mul(inputs.frameDivide, fn.invert(inputs.frameStart)),
+      fn.mul(inputs.frameDivide, fn.invert(inputs.frameEnd)),
+    ],
+    " ",
+  );
+  return [
+    // Flags like those of ak-frame-cover, so the utility also works without it.
+    // Hidden siblings do not count on either side.
+    rule(FIRST_VISIBLE_SELECTOR, set(inputs.frameStart, 1)),
+    rule(LAST_VISIBLE_SELECTOR, set(inputs.frameEnd, 1)),
+    set.borderBlockWidth(widths),
+    // The query reads the orientation that the element inherits from its
+    // parent, not one that the element sets for its own children.
+    at.container(
+      fn.style(inputs.frameRow, 1),
+      set.borderBlockWidth("0px"),
+      set.borderInlineWidth(widths),
+    ),
+  ];
+}
+
+utility(
+  "frame-divide",
+  set(inputs.frameDivide, "1px"),
+  getFrameDivideDeclarations(),
+);
+utility(
+  "frame-divide-*",
+  getFrameBorderWidthDeclarations(inputs.frameDivide),
+  getFrameDivideDeclarations(),
+);
+
+// The width of the parent frame's edge, as in ak-frame-bordering-inherit.
+utility(
+  "frame-divide-inherit",
+  frameContext.read(({ inherit }) => [
+    set(
+      inputs.frameDivide,
+      fn.max(
+        inherit(vars.frameParentBorderingBorderContext, "0px"),
+        inherit(vars.frameParentBorderingRingContext, "0px"),
+      ),
+    ),
+  ]),
+  getFrameDivideDeclarations(),
+);
+
 utility("frame-row", set(inputs.frameRow, 1));
 utility("frame-col", set(inputs.frameRow, 0));
 
@@ -3265,10 +3322,7 @@ utility(
     rule(
       "&:not([hidden])",
       set.position("relative"),
-      rule(
-        "&:nth-child(1 of :not([hidden],template))",
-        set(inputs.frameStart, 1),
-      ),
+      rule(FIRST_VISIBLE_SELECTOR, set(inputs.frameStart, 1)),
       rule(LAST_VISIBLE_SELECTOR, set(inputs.frameEnd, 1)),
       // The owner's surface covers the old edge before its translucent edge
       // paints. The flag also works when layer-transparent comes from @apply.

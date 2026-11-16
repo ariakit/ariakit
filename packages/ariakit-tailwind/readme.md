@@ -1000,6 +1000,38 @@ The backdrop is a background layer, and a background layer in the element's own 
 
 `ak-frame-cover` uses logical margin and radius properties so row covers follow the frame direction. When overriding its stretch margin on the same element, prefer axis or side utilities such as `mx-*`, `my-*`, `ms-*`, `me-*`, `mt-*`, `mr-*`, `mb-*`, or `ml-*`; Tailwind sorts the bare `m-*` shorthand before the cover declarations, so it will not reset the logical stretch. Covers should also share the frame's `dir` and `writing-mode`; apply direction changes inside the cover when the content needs a different flow.
 
+### Dividers
+
+`ak-frame-divide` draws a border only on the sides of a frame that face a sibling in the parent flow. The first frame omits its start side, and the last frame omits its end side. On a cover frame, the parent edge stays as it is on the other sides, so a dialog footer or a header band shows one line.
+
+```html
+<div class="ak-layer ak-frame ak-frame-2xl/4 ak-frame-border flex flex-col">
+  <div
+    class="ak-layer ak-layer-darken-3 ak-frame ak-frame-cover ak-frame-divide"
+  >
+    Header
+  </div>
+  <p>Body</p>
+  <!-- Only the top border draws -->
+  <div
+    class="ak-layer ak-layer-darken-3 ak-frame ak-frame-cover ak-frame-divide"
+  >
+    Footer
+  </div>
+</div>
+```
+
+| Utility                                       | Description                                                                                                                                |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ak-frame-divide` / `ak-frame-divide-<width>` | Draws a border on the sides that face a sibling. Accepts no argument (`1px`), named widths (`0`, `1`, `2`, `4`, `8`), or arbitrary values. |
+| `ak-frame-divide-inherit`                     | Takes the width of the nearest ancestor frame border, ring, or bordering, as `ak-frame-bordering-inherit` does. Falls back to `0px`.       |
+
+The parent orientation sets the axis. In a parent with `ak-frame-row`, the frame draws its inline start and end sides, which follow the text direction. Otherwise, it draws its block start and end sides. A margin does not add sides.
+
+The utility does not need `ak-frame-cover`. It sets the same start and end flags as `ak-frame-cover`. Siblings with the `hidden` attribute and `template` elements do not count on either side. Without a cover, the frame keeps its own radius, so the lines curve at rounded corners.
+
+The border does not count as the frame border, so the cover stretch and the radius of nested frames stay the same. The border takes the frame edge color. Add `ak-edge-inherit` for the parent edge color, and use `border-dashed` or `border-dotted` for the line style. Do not put `ak-frame-divide` on the same element as `ak-frame-border`, `ak-frame-ring`, or `ak-frame-bordering`. Two frames with `ak-frame-divide` next to each other draw two lines between them, so put it on one of them.
+
 ### Joined surfaces
 
 Use `ak-frame-join` on a frame and `ak-frame-join-item` on each participating child. The group must be a single row or column with no gap, in DOM order. Set `ak-frame-row` or `ak-frame-col` to match its layout. Each item needs `ak-frame` and `ak-layer` and the same declared edge width. Borders, outside rings, and adaptive bordering can participate.

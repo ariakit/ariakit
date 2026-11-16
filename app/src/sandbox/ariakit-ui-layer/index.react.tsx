@@ -16,6 +16,7 @@ import {
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import type { FrameProps } from "@ariakit/ui/components/frame.ariakit.react";
 import { Layer } from "@ariakit/ui/components/layer.ariakit.react";
 import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { button } from "@ariakit/ui/styles/button";
@@ -145,6 +146,39 @@ function TextModifierCases() {
     </>
   );
 }
+
+/** A dialog-like parent frame for the `$divide` examples. */
+function DividePanel({ className, ...props }: FrameProps) {
+  const direction = props.$orientation === "horizontal" ? "" : "flex-col";
+  return (
+    <Frame
+      $layer="canvas"
+      $lighten
+      $border
+      $rounded="2xl"
+      $forceRounded
+      $p={4}
+      className={`flex w-56 shadow-xl ${direction} ${className ?? ""}`}
+      {...props}
+    />
+  );
+}
+
+interface DivideContentProps {
+  label: string;
+}
+
+/** Content between the cover frames of a `DividePanel`. */
+function DivideContent({ label }: DivideContentProps) {
+  return <div className="flex-1 py-3">{label}</div>;
+}
+
+const divideStyles: Array<{ label: string; props: FrameProps }> = [
+  { label: "Brand divide", props: { $divide: 2, $edge: "brand" } },
+  { label: "Dashed divide", props: { $divide: 4, $divideType: "dashed" } },
+  { label: "Dotted divide", props: { $divide: 4, $divideType: "dotted" } },
+];
+
 export default function LayerExamples() {
   return (
     <ExampleGrid>
@@ -288,6 +322,117 @@ export default function LayerExamples() {
             <TextModifierCases />
           </Layer>
         </div>
+      </Example>
+      <Example
+        title="Frame divide"
+        description="$divide draws only the sides of a frame that face a sibling in the parent's orientation, so a cover frame leaves the parent edge as it is."
+        wide
+        code={`
+          <Frame $layer="canvas" $lighten $border $rounded="2xl" $p={4}>
+            <Frame $cover $darken={0.5} $divide>Header</Frame>
+            ...
+            <Frame $cover $darken={0.5} $divide>Middle</Frame>
+            ...
+            <Frame $cover $darken={0.5} $divide>Footer</Frame>
+          </Frame>
+          <Frame $orientation="horizontal" $border $rounded="2xl" $p={4}>
+            <Frame $cover $darken={0.5} $divide>Sidebar</Frame>
+            ...
+          </Frame>
+        `}
+      >
+        <DividePanel>
+          <Frame $cover $darken={0.5} $divide>
+            Header
+          </Frame>
+          <DivideContent label="Content" />
+          <Frame $cover $darken={0.5} $divide>
+            Middle
+          </Frame>
+          <DivideContent label="Content" />
+          <Frame $cover $darken={0.5} $divide>
+            Footer
+          </Frame>
+        </DividePanel>
+        <DividePanel $orientation="horizontal" className="gap-4">
+          <Frame $cover $darken={0.5} $divide>
+            Sidebar
+          </Frame>
+          <DivideContent label="Content" />
+        </DividePanel>
+        <DividePanel $orientation="horizontal" className="gap-4" dir="rtl">
+          <Frame $cover $darken={0.5} $divide>
+            RTL sidebar
+          </Frame>
+          <DivideContent label="Content" />
+        </DividePanel>
+      </Example>
+
+      <Example
+        title="Frame divide widths and styles"
+        description='A number sets the width in pixels, and $divideType sets the line style. $divide="inherit" takes the width and color of the parent edge.'
+        wide
+        code={`
+          <Frame $cover $darken={0.5} $divide={2} $edge="brand" />
+          <Frame $cover $darken={0.5} $divide={4} $divideType="dashed" />
+          <Frame $cover $darken={0.5} $divide={4} $divideType="dotted" />
+          <Frame $border={4} $borderType="border" $rounded="2xl" $p={4}>
+            ...
+            <Frame $cover $darken={0.5} $divide="inherit" />
+          </Frame>
+        `}
+      >
+        {divideStyles.map(({ label, props }) => (
+          <DividePanel key={label}>
+            <DivideContent label={label} />
+            <Frame $cover $darken={0.5} className="h-10" {...props} />
+          </DividePanel>
+        ))}
+        <DividePanel $border={4} $borderType="border">
+          <DivideContent label="Inherited divide" />
+          <Frame $cover $darken={0.5} $divide="inherit" className="h-10" />
+        </DividePanel>
+      </Example>
+
+      <Example
+        title="Frame divide without cover"
+        description="Without $cover, the first frame omits its start side and the last frame omits its end side."
+        wide
+        code={`
+          <Frame $border $rounded="2xl" $p="none">
+            <Frame $p={3}>One</Frame>
+            <Frame $p={3} $darken={0.5} $divide>Two</Frame>
+            <Frame $p={3}>Three</Frame>
+          </Frame>
+        `}
+      >
+        <DividePanel $p="none">
+          <Frame $p={3}>One</Frame>
+          <Frame $p={3} $darken={0.5} $divide>
+            Two
+          </Frame>
+          <Frame $p={3}>Three</Frame>
+        </DividePanel>
+        <DividePanel $p="none">
+          <Frame $p={3} $darken={0.5} $divide>
+            One
+          </Frame>
+          <Frame $p={3}>Two</Frame>
+          <Frame $p={3} $darken={0.5} $divide>
+            Three
+          </Frame>
+        </DividePanel>
+        <DividePanel $p="none" $orientation="horizontal">
+          <Frame $p={3} className="flex-1">
+            One
+          </Frame>
+          <Frame $p={3} $darken={0.5} $divide className="flex-1">
+            Two
+          </Frame>
+          <Frame $p={3} className="flex-1">
+            Three
+          </Frame>
+        </DividePanel>
       </Example>
     </ExampleGrid>
   );
