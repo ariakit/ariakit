@@ -6,9 +6,13 @@ import type { ComponentProps } from "react";
 import { hasContent } from "../react-utils/create-render.react.ts";
 import {
   dialog,
+  dialogClose,
   dialogDescription,
   dialogDisclosure,
   dialogDismiss,
+  dialogHeader,
+  dialogHeaderContent,
+  dialogHeaderSlot,
   dialogHeading,
   dialogScroll,
 } from "../styles/dialog.ts";
@@ -146,6 +150,111 @@ export function DialogDismiss({ children, ...props }: DialogDismissProps) {
       )}
     </ak.DialogDismiss>
   );
+}
+
+export interface DialogCloseProps
+  extends ak.DialogDismissProps, VariantProps<typeof dialogClose> {}
+
+/**
+ * Renders an icon button that closes its dialog, named "Dismiss popup". Without
+ * a surface, its hover surface takes the room around the icon, so the icon
+ * lines up with the content of the dialog. Put it at the end of a
+ * `DialogHeader`.
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog>
+ *     <DialogHeader>
+ *       <DialogHeaderContent>
+ *         <DialogHeading>Project details</DialogHeading>
+ *       </DialogHeaderContent>
+ *       <DialogClose />
+ *     </DialogHeader>
+ *     <p>The project is ready.</p>
+ *   </Dialog>
+ * </DialogProvider>
+ */
+export function DialogClose({ children, ...props }: DialogCloseProps) {
+  const [variantProps, rest] = splitProps(props, dialogClose);
+  // Empty children, such as an optional icon that is null, render the default
+  // icon too, so the button keeps a name.
+  const defaultIcon = !hasContent(children);
+  const fallbackLabel = defaultIcon ? "Dismiss popup" : undefined;
+  return (
+    <ak.DialogDismiss
+      {...dialogClose.jsx(variantProps)}
+      {...rest}
+      // Preserve the fallback when the caller passes undefined.
+      aria-label={rest["aria-label"] ?? fallbackLabel}
+    >
+      <ButtonSlot>{defaultIcon ? <XIcon /> : children}</ButtonSlot>
+    </ak.DialogDismiss>
+  );
+}
+
+export interface DialogHeaderProps
+  extends ak.RoleProps<"div">, VariantProps<typeof dialogHeader> {}
+
+/**
+ * Renders a row for the title, the description, and the close button of a
+ * dialog. Put the heading and the description in a `DialogHeaderContent`, an
+ * icon before it in a `DialogHeaderSlot`, and a `DialogClose` after it.
+ * @example
+ * <DialogProvider defaultOpen>
+ *   <Dialog>
+ *     <DialogHeader>
+ *       <DialogHeaderContent>
+ *         <DialogHeading>Project details</DialogHeading>
+ *         <DialogDescription>The project is ready.</DialogDescription>
+ *       </DialogHeaderContent>
+ *       <DialogClose />
+ *     </DialogHeader>
+ *   </Dialog>
+ * </DialogProvider>
+ */
+export function DialogHeader(props: DialogHeaderProps) {
+  const [variantProps, rest] = splitProps(props, dialogHeader);
+  return <ak.Role.div {...dialogHeader.jsx(variantProps)} {...rest} />;
+}
+
+export interface DialogHeaderSlotProps
+  extends ak.RoleProps<"div">, VariantProps<typeof dialogHeaderSlot> {}
+
+/**
+ * Renders an icon, an avatar, or a picture beside the title of a dialog, in a
+ * `DialogHeader`.
+ * @example
+ * <DialogHeader>
+ *   <DialogHeaderSlot $layer="brand" $size="xl" $rowSpan={2}>
+ *     <UserPlusIcon />
+ *   </DialogHeaderSlot>
+ *   <DialogHeaderContent>
+ *     <DialogHeading>Invite people</DialogHeading>
+ *     <DialogDescription>They can see every project.</DialogDescription>
+ *   </DialogHeaderContent>
+ * </DialogHeader>
+ */
+export function DialogHeaderSlot(props: DialogHeaderSlotProps) {
+  const [variantProps, rest] = splitProps(props, dialogHeaderSlot);
+  return <ak.Role.div {...dialogHeaderSlot.jsx(variantProps)} {...rest} />;
+}
+
+export interface DialogHeaderContentProps
+  extends ak.RoleProps<"div">, VariantProps<typeof dialogHeaderContent> {}
+
+/**
+ * Renders the heading and the description of a dialog in a `DialogHeader`.
+ * @example
+ * <DialogHeader>
+ *   <DialogHeaderContent>
+ *     <DialogHeading>Project details</DialogHeading>
+ *     <DialogDescription>The project is ready.</DialogDescription>
+ *   </DialogHeaderContent>
+ *   <DialogClose />
+ * </DialogHeader>
+ */
+export function DialogHeaderContent(props: DialogHeaderContentProps) {
+  const [variantProps, rest] = splitProps(props, dialogHeaderContent);
+  return <ak.Role.div {...dialogHeaderContent.jsx(variantProps)} {...rest} />;
 }
 
 export interface DialogScrollProps

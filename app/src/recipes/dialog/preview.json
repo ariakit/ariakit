@@ -1,0 +1,5 @@
+{
+  "title": "Dialog",
+  "description": "A modal dialog built with DialogProvider, DialogDisclosure, and Dialog that invites a person by email. A DialogHeader holds the DialogHeading, the DialogDescription, and a DialogClose icon button in the top end corner, and the form field sets autoFocus, so focus moves to it when the dialog opens. Use it as the starting point for a dialog with a short form or a few actions.",
+  "open": true
+}

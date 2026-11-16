@@ -300,6 +300,28 @@ export function getIconSlotSize<Size extends string>(
 }
 
 /**
+ * The text parts of a slot frame row, such as a label and a description. It
+ * fills the free space in the row and spaces its parts with the gaps of the
+ * frame. Controls extend it, and so can static rows, such as dialog headers.
+ */
+export const slotFrameContent = cv({
+  class: "flex-1 min-w-0 content-start gap-x-(--gap) gap-y-(--gap-y)",
+  variants: {
+    /**
+     * Arranges the parts in a row or column. `unset` omits layout styles.
+     */
+    $orientation: {
+      unset: "",
+      horizontal: "flex flex-wrap items-baseline",
+      vertical: "flex flex-col",
+    },
+  },
+  defaultVariants: {
+    $orientation: "vertical",
+  },
+});
+
+/**
  * Text in a slot frame row, such as a label. Controls extend it, and static
  * rows, such as badges, use it directly.
  */

@@ -19,7 +19,7 @@ interface Scheme {
 }
 
 // The canvas colors are the Ariakit UI canvas in each scheme. The status colors
-// are the Ariakit UI warning and danger colors for that scheme. The danger
+// are the Ariakit UI warning color for that scheme and a vivid red. The red
 // surface leaves sRGB, so browsers paint it clipped. The vivid edges leave sRGB
 // too, on their own or after the contrast-more push. The near edges pass the
 // floor by a small margin on the canvas.

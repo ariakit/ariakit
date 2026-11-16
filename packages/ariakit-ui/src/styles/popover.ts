@@ -13,12 +13,20 @@ export const popover = cv({
     "z-10",
     // Use transition utilities so `transition-none` can disable motion. Open
     // and closed states supply their own durations.
-    "transition-[overlay,display,scale,opacity] transition-discrete",
+    // Translate is in the list so an extender can slide the popup in, such as
+    // a dialog at a side of the viewport.
+    "transition-[overlay,display,scale,translate,opacity] transition-discrete",
     // Keep the browser easing curve when closing.
     "ease-[ease]",
-    "ui-open:duration-(--duration-overshoot) ui-open:ease-overshoot",
-    "ui-open:starting:scale-95 ui-open:starting:opacity-0",
-    "ui-closed:duration-250 ui-closed:scale-95 ui-closed:opacity-0",
+    "ui-open:duration-(--duration-overshoot)",
+    // An extender can set --popover-open-ease to change the opening curve, and
+    // --popover-hidden-scale to change the scale of the hidden popup. Each
+    // popup sets the defaults with zero specificity, so a popup inside another
+    // one, such as a side sheet, doesn't inherit the values of that one.
+    "ui-base:[--popover-open-ease:var(--ease-overshoot)] ui-base:[--popover-hidden-scale:95%]",
+    "ui-open:ease-(--popover-open-ease)",
+    "ui-open:starting:scale-(--popover-hidden-scale) ui-open:starting:opacity-0",
+    "ui-closed:duration-250 ui-closed:scale-(--popover-hidden-scale) ui-closed:opacity-0",
     // Animate only backdrop opacity. A display transition would delay removal
     // of the Ariakit backdrop after it is hidden.
     "ui-backdrop:transition-opacity ui-backdrop:duration-250 ui-backdrop:ease-[ease]",

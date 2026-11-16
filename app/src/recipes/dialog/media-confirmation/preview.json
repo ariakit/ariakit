@@ -1,0 +1,5 @@
+{
+  "title": "Confirmation with Media Tile",
+  "description": "An alert dialog with a tile at the start of its DialogHeader that shows the action, and the title and message beside it, with the actions at the end. It sets role=\"alertdialog\" and hideOnInteractOutside={false}, and the Archive DialogDismiss updates the page in its onClick before the dialog closes. Use it for a confirmation of an action that people can revert, where the tile adds context.",
+  "open": true
+}

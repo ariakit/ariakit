@@ -1,0 +1,19 @@
+import PreviewCard from "#app/components/preview-card.astro";
+import PreviewGrid from "#app/components/preview-grid.astro";
+import { source as s0 } from "./preview.astro";
+import { source as s1 } from "./tinted-footer/preview.astro";
+import { source as s2 } from "./icon-header/preview.astro";
+import { source as s3 } from "./destructive-confirmation/preview.astro";
+import { source as s4 } from "./media-confirmation/preview.astro";
+import { source as s5 } from "./side-sheet/preview.astro";
+import { source as s6 } from "./settings/preview.astro";
+
+<PreviewGrid>
+  <PreviewCard source={s0} />
+  <PreviewCard source={s1} />
+  <PreviewCard source={s2} />
+  <PreviewCard source={s3} />
+  <PreviewCard source={s4} />
+  <PreviewCard source={s5} />
+  <PreviewCard source={s6} class="col-span-full" />
+</PreviewGrid>

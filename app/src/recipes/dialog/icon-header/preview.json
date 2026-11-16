@@ -1,0 +1,5 @@
+{
+  "title": "Header with Icon",
+  "description": "An invite dialog with an icon beside its title and description. A DialogHeaderSlot in the DialogHeader is a brand tile two text rows tall, so the icon lines up with the text without fixed sizes. Use it when an icon helps people recognize the task of the dialog; use the baseline when the title alone is enough.",
+  "open": true
+}

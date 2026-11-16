@@ -1,0 +1,6 @@
+{
+  "title": "Settings with Section Navigation",
+  "description": "A large dialog that a Shell fills, with a Settings title and grouped sections in a sidebar, a sticky blurred header for the current section with the close button, and a sticky footer with the save action. The sidebar title is the DialogHeading, the dialog sets $height and $maxWidth, and a second Shell in main holds the footer, so it spans main and not the sidebar. Use it for settings or other content that has its own navigation inside the dialog.",
+  "open": true,
+  "minHeight": "38rem"
+}
