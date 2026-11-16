@@ -65,7 +65,7 @@
     "fs-extra": "11.4.1",
     "glob": "14.0.6",
     "happy-dom": "21.0.4",
-    "jsdom": "31.0.0",
+    "jsdom": "31.0.1",
     "lefthook": "2.2.2",
     "open-cli": "9.0.0",
     "oxfmt": "0.78.0",
