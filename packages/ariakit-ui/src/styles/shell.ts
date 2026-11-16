@@ -270,10 +270,13 @@ const barPaddingVariants = {
 /**
  * Three columns keep the center aligned until a side needs more room. Content
  * minimums come from `1fr`; physical safe-area insets set the minimum side
- * padding. With a content area, the columns aim the middle one at main's column
- * instead. Every bar reads the sidebars, because a selector can't let only the
- * bars with an area through the shell's reset without restyling what they hold
- * on each toggle.
+ * padding. Without a center part, each side track fits its part, so a side part
+ * can take the room that the other side part leaves before its content wraps.
+ * Other content in the middle track needs a center part to stay centered. A
+ * side part with `$grow` keeps its half. With a content area, the columns aim
+ * the middle one at main's column instead. Every bar reads the sidebars,
+ * because a selector can't let only the bars with an area through the shell's
+ * reset without restyling what they hold on each toggle.
  */
 const bar = cx(
   "shell-bar shell-slot-state shell-bar-spaces",
@@ -300,6 +303,7 @@ const bar = cx(
   "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
   "[&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:rounded-none! [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:rounded-none!",
   "col-[page] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
+  "[&:not(:has(>.shell-bar-center,>.shell-band,>.shell-bar-grow))]:grid-cols-[auto_1fr_auto]",
   // Next to a shell inside a shell with `$maxWidth`, a content area starts the
   // bar's padding inside that shell's box, like parts at the bar's edges and in
   // that shell's own bars. With the default space of the bar, that is on the
@@ -480,14 +484,14 @@ export const shellBarPart = cv({
     },
     /** Fills the section's track instead of using its resting alignment. */
     $grow: {
-      true: "justify-self-stretch",
+      true: "shell-bar-grow justify-self-stretch",
     },
   },
 });
 
 /**
- * A side part alone in a bar spans the bar, not only its side track, which is
- * half the bar. So its content wraps only when the bar has no more room.
+ * A side part alone in a bar spans the bar, not only its side track. So its
+ * content wraps only when the bar has no more room.
  */
 const loneSidePart = cx("[.shell-bar>&:only-child]:col-span-full");
 
@@ -518,7 +522,7 @@ export const shellCenter = cv({
      * fit within one quarter. Set `$shrink` on both sides for exact centering.
      * Avoid `$shrink` on this section: it fixes the columns at a 1:2:1 ratio.
      */
-    $grow: { true: "shell-bar-grow", false: "justify-self-center" },
+    $grow: { false: "justify-self-center" },
   },
 });
 
@@ -1381,6 +1385,8 @@ const mainBand = cv({
     // track above.
     "[.shell-bar>&.shell-band:has(>.shell-bar-part)]:grid-cols-[1fr_auto_1fr] [.shell-bar>&.shell-band:has(>.shell-bar-part)]:items-center [.shell-bar>&.shell-band:has(>.shell-bar-part)]:gap-2",
     "[.shell-bar>&.shell-band:has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
+    // Without a center part, each side part fits its own track, like in a bar.
+    "[.shell-bar>&.shell-band:has(>.shell-bar-part):not(:has(>.shell-bar-center,>.shell-bar-grow))]:grid-cols-[auto_1fr_auto]",
     // Parts keep their content minimum unless they set `$shrink`.
     "*:col-span-full *:not-[:where(.shell-bar-part)]:min-w-0",
   ],

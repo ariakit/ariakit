@@ -123,6 +123,56 @@ withFramework(import.meta.dirname, async ({ test }) => {
     expect(startBox.height).toBeCloseTo(lineHeight, 0);
   });
 
+  // https://github.com/ariakit/ariakit/issues/8474
+  test("lets a side part take the room that the other side part leaves before its text wraps", async ({
+    page,
+    q,
+  }) => {
+    // The actions are wider than half of this bar and fit beside the note.
+    await page.setViewportSize({ width: 600, height: 900 });
+    await q.checkbox("Sticky footer").check();
+    await q.checkbox("Footer actions").check();
+    const footer = q.contentinfo("Part footer");
+    const start = footer.locator(":scope > .shell-bar-start");
+    const end = footer.locator(":scope > .shell-bar-end");
+    await expect(end).toHaveText(/Discard or save/);
+    const lineHeight = await end.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).lineHeight),
+    );
+    const footerBox = await getBox(footer);
+    const startBox = await getBox(start);
+    const endBox = await getBox(end);
+    expect(endBox.width).toBeGreaterThan(footerBox.width / 2);
+    expect(endBox.height).toBeCloseTo(lineHeight, 0);
+    // The parts stay at the edges of the bar and apart.
+    expect(startBox.x).toBeCloseTo(12, 0);
+    expect(endBox.x + endBox.width).toBeCloseTo(footerBox.width - 12, 0);
+    expect(startBox.x + startBox.width).toBeLessThan(endBox.x);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8474
+  test("keeps the room of a side part while its popover is open", async ({
+    page,
+    q,
+  }) => {
+    // The popover is in a portal, so it adds an anchor after its disclosure,
+    // which is the end part.
+    await page.setViewportSize({ width: 600, height: 900 });
+    await q.checkbox("Sticky footer").check();
+    await q.checkbox("Footer actions").check();
+    const footer = q.contentinfo("Part footer");
+    const end = footer.locator(":scope > .shell-bar-end");
+    const lineHeight = await end.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).lineHeight),
+    );
+    await q.button(/Discard or save/).click();
+    await expect(q.dialog("Footer actions")).toBeVisible();
+    const footerBox = await getBox(footer);
+    const endBox = await getBox(end);
+    expect(endBox.width).toBeGreaterThan(footerBox.width / 2);
+    expect(endBox.height).toBeCloseTo(lineHeight, 0);
+  });
+
   test("sets the space above and below the parts with $py on main", async ({
     q,
     page,

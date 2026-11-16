@@ -304,6 +304,35 @@ for (const { name, from } of [
   });
 }
 
+// The top bar renders its navigation in the middle track without a center part.
+// Side tracks that fit their parts would move it next to the logo.
+// https://github.com/ariakit/ariakit/issues/8474
+test("top bar keeps its navigation on the middle of the bar", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await gotoAndSettle(page, recipePath);
+  const nav = q.navigation("Main");
+  await expect(nav).toBeVisible();
+  const header = nav.locator("xpath=ancestor::header[1]");
+  const links = query(nav).link();
+  // The navigation can stretch across the middle track, so the links show where
+  // its content sits.
+  const getCenterOffset = async () => {
+    const [firstBox, lastBox, headerBox] = await Promise.all([
+      links.first().boundingBox(),
+      links.last().boundingBox(),
+      header.boundingBox(),
+    ]);
+    if (!firstBox || !lastBox || !headerBox) return Number.POSITIVE_INFINITY;
+    const linksCenter = (firstBox.x + lastBox.x + lastBox.width) / 2;
+    const headerCenter = headerBox.x + headerBox.width / 2;
+    return Math.abs(linksCenter - headerCenter);
+  };
+  await expect.poll(getCenterOffset).toBeLessThan(1);
+});
+
 test("guide pages name their group without a link", async ({ page, q }) => {
   await gotoAndSettle(page, "/react/components/getting-started/");
   const guides = query(q.navigation("Guides"));

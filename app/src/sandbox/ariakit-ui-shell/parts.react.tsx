@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import * as ak from "@ariakit/react";
 import {
   Shell,
   ShellFooter,
@@ -119,6 +120,8 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
   const [endSticky, setEndSticky] = useState(true);
   const [stickyFooter, setStickyFooter] = useState(false);
   const [longFooterNote, setLongFooterNote] = useState(false);
+  const [footerActions, setFooterActions] = useState(false);
+  const footerMenu = ak.usePopoverStore();
   const [showHeader, setShowHeader] = useState(true);
   const [visibility, setVisibility] = useState<Visibility>("default");
   const [showIntro, setShowIntro] = useState(true);
@@ -372,6 +375,16 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
             <label>
               <input
                 type="checkbox"
+                checked={footerActions}
+                onChange={(event) =>
+                  setFooterActions(event.currentTarget.checked)
+                }
+              />{" "}
+              Footer actions
+            </label>
+            <label>
+              <input
+                type="checkbox"
                 checked={showGlobalHeader}
                 onChange={(event) =>
                   setShowGlobalHeader(event.currentTarget.checked)
@@ -600,6 +613,18 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
               ? "Part footer with a note that is wider than half of the bar"
               : "Part footer"}
           </ShellStart>
+          {footerActions && (
+            // A popover in a portal adds an anchor after its disclosure while
+            // it is open.
+            <ak.PopoverDisclosure store={footerMenu} render={<ShellEnd />}>
+              Discard or save all of the changes to this part
+            </ak.PopoverDisclosure>
+          )}
+          {footerActions && (
+            <ak.Popover store={footerMenu} portal aria-label="Footer actions">
+              Choose an action.
+            </ak.Popover>
+          )}
         </ShellFooter>
       )}
     </Shell>
