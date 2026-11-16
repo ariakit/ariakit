@@ -15,7 +15,6 @@
   --font-mono: Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
 
   --radius: 0.25em;
-  --spacing: 0.25em;
   --spacing-px: 1px;
 
   --animate-ui-progress: ui-progress 1.5s ease-in-out infinite;
@@ -111,6 +110,37 @@ body {
 
 body > * {
   @apply ak-dark:scheme-dark;
+}
+
+/* Registration resolves the em step of ui-spacing-em on the element that sets
+   it. Without it, each element inside would resolve the step against its own
+   text size. Only that element reads the value, so it does not inherit. */
+@property --spacing-context {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* The spacing step of a spacing context. It is not registered, so it stays in
+   em, and each element that reads it resolves it against its own text size. A
+   component uses it for a length that it gives to its controls, such as the
+   padding of the rows of a list. Then a row with smaller text gets less
+   padding. */
+:root {
+  --spacing-em: 0.25em;
+}
+
+/**
+ * Makes the element a spacing context: the spacing step of the element and of
+ * the content inside it follows the text size of the element. The content
+ * inherits the step as a resolved length, so parts with different text sizes
+ * keep the same spacing. Set --spacing-em to change the step. Outside a
+ * spacing context, the step is the Tailwind default, which follows the root
+ * text size.
+ */
+@utility ui-spacing-em {
+  --spacing-context: var(--spacing-em);
+  --spacing: var(--spacing-context);
 }
 
 /* Registration lets progress fills animate their width or conic sweep. */

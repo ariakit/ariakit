@@ -8,6 +8,9 @@ import { frame } from "./frame.ts";
  */
 export const textFrame = cv({
   extend: [frame],
+  // The padding of the frame and the spacing of the content inside it follow
+  // the text size of the frame, so smaller text gets a smaller frame.
+  class: "ui-spacing-em",
   variants: {
     /**
      * Sets side padding. Named sizes scale the optical extra added to frame

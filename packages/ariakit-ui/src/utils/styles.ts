@@ -65,6 +65,29 @@ export function getPaddingValue(value: string | number) {
   return `round(${getSpacingValue(value)}, 1px)`;
 }
 
+/**
+ * Converts a spacing prop value to CSS, like `getSpacingValue`, but numbers
+ * scale the `--spacing-em` step. The value stays in em, so each element that
+ * reads it resolves it against its own text size. Use it for a length that a
+ * component gives to its controls, such as the gap between the slots of the
+ * rows of a navigation. Then a row with smaller text gets a smaller length.
+ */
+export function getEmSpacingValue(value: string | number) {
+  return typeof value === "string"
+    ? value
+    : `calc(var(--spacing-em) * (${value}))`;
+}
+
+/**
+ * Converts a padding prop value to CSS, like `getPaddingValue`, but numbers
+ * scale the `--spacing-em` step. Use it for a padding that a component gives to
+ * its controls, such as the padding of the rows of a list.
+ */
+export function getEmPaddingValue(value: string | number) {
+  if (typeof value === "string") return value;
+  return `round(${getEmSpacingValue(value)}, 1px)`;
+}
+
 interface GetScaledStyleClassParams {
   /** Class name to emit when the value produces a style class. */
   class: string;

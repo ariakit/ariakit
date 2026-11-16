@@ -573,7 +573,8 @@ export const choiceCardGrid = cv({
 export const choiceGroup = cv({
   class: [
     // The label and the description read the disabled state of the group.
-    "choice-group group/choice-group min-w-0",
+    // The gaps of the group follow its text size.
+    "choice-group ui-spacing-em group/choice-group min-w-0",
     // The label covers the gap with its padding, as in a field.
     "[--_field-gap:var(--choice-group-gap)] gap-(--choice-group-gap)",
     // Zero specificity lets caller layout classes win.
@@ -656,7 +657,8 @@ export const choiceGroupDescription = cv({
     // the group gap when it is smaller, such as none. The padding of a legend
     // makes the gap, so the margin also works there. The field gap holds the
     // group gap resolved in the group's font, which is larger than this text.
-    "[.choice-group-label+&]:-mt-[max(0px,var(--_field-gap)-(--spacing(1)))]",
+    // The small gap is one em step, so it follows this text.
+    "[.choice-group-label+&]:-mt-[max(0px,var(--_field-gap)-var(--spacing-em))]",
     "group-ui-disabled/choice-group:ak-ink-0",
     "group-ui-disabled/choice-group:forced-colors:text-[GrayText]",
   ],

@@ -41,7 +41,8 @@ export const carouselNoFadeClass = cx(
 export const carousel = cv({
   extend: [frame, text],
   class: [
-    "carousel",
+    // The sizes of the buttons and the fades follow the text size.
+    "carousel ui-spacing-em",
     // The first grid cell holds the viewport and both buttons. Let the root
     // shrink in flex and grid layouts so the viewport can scroll.
     "grid min-w-0 grid-cols-[minmax(0,1fr)]",

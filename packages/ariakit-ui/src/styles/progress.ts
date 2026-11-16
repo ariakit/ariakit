@@ -6,6 +6,8 @@ import { frame } from "./frame.ts";
 const progressBase = cv({
   extend: [frame],
   class: [
+    // A number thickness follows the text size.
+    "ui-spacing-em",
     "relative",
     // Forced colors remove shadow edges; an outer outline keeps the track
     // visible without covering the fill.

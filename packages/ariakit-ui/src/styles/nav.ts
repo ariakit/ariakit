@@ -1,5 +1,5 @@
 import { cv, cx } from "clava";
-import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
+import { getEmPaddingValue, getEmSpacingValue } from "../utils/styles.ts";
 import {
   button,
   buttonContent,
@@ -45,7 +45,7 @@ const navBarSizeClass = cx(
 // The gutter of a list with numbers, which holds half a number and the gap
 // around it after the guide offset.
 const navNumbersGutterClass = cx(
-  "[--nav-guide-offset:--spacing(2)]",
+  "[--nav-guide-offset:calc(var(--spacing-em)*2)]",
   "[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
 );
 
@@ -113,8 +113,10 @@ export const nav = cv({
   class: [
     // Keep rows at the start when the navigation region stretches.
     "nav content-start min-w-0",
-    "[--nav-group-gap:--spacing(4)]",
-    "[--nav-row-gap:--spacing(3)]",
+    // The rows read these lengths, so they use the em step, like the item
+    // padding of a list.
+    "[--nav-group-gap:calc(var(--spacing-em)*4)]",
+    "[--nav-row-gap:calc(var(--spacing-em)*3)]",
     // Registered lengths resolve the row padding in the navigation font,
     // keeping smaller group labels aligned with rows.
     "[--nav-py:var(--list-item-padding)]",
@@ -125,13 +127,13 @@ export const nav = cv({
     "[--nav-guide-width:1px]",
     // The indent of a nested list, which is also the width of a bend of the
     // guide. A list in a link row keeps the automatic indent of a list.
-    "[--nav-indent:var(--list-indent,--spacing(3))]",
+    "[--nav-indent:var(--list-indent,calc(var(--spacing-em)*3))]",
     navBarSizeClass,
     // The guide and the bar stop this far from a marker, so the surface around
     // the navigation shows between them, whatever it paints. A ring around a
     // marker draws in this gap with the width of the bar, so a wider bar widens
     // the gap to keep the ring off the number.
-    "[--nav-marker-gap:max(--spacing(1),var(--nav-bar-size))]",
+    "[--nav-marker-gap:max(calc(var(--spacing-em)*1),var(--nav-bar-size))]",
     // How far a number reaches from the guide: half a counter chip of a list,
     // and the gap. These stay unregistered, so they resolve in the font of
     // each element that reads them.
@@ -223,7 +225,7 @@ export const nav = cv({
     $groupGap(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--nav-group-gap": getSpacingValue(value) },
+        style: { "--nav-group-gap": getEmSpacingValue(value) },
       };
     },
     /**
@@ -234,7 +236,7 @@ export const nav = cv({
     $slotSize(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--nav-slot-size": getSpacingValue(value) },
+        style: { "--nav-slot-size": getEmSpacingValue(value) },
       };
     },
     // A link draws only numbers and dots, so the type leaves out the icons and
@@ -316,7 +318,7 @@ export const nav = cv({
       return;
     }
     addClass([
-      "[--nav-guide-offset:--spacing(2)] [--nav-gutter:calc(var(--nav-guide-offset)+(--spacing(1)))]",
+      "[--nav-guide-offset:calc(var(--spacing-em)*2)] [--nav-gutter:calc(var(--nav-guide-offset)+var(--spacing-em))]",
       // One guide runs along all groups, so an outermost list with numbers
       // widens the gutter of every list.
       "[&:has(>.nav-list-numbers,>.nav-group>.nav-list-numbers)]:[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
@@ -392,7 +394,7 @@ export const navList = cv({
       counter: [
         "nav-list-numbers",
         listMarkerClasses.counter,
-        "not-ui-list-guide:[--nav-guide-offset:--spacing(2)]",
+        "not-ui-list-guide:[--nav-guide-offset:calc(var(--spacing-em)*2)]",
         "not-ui-list-guide:[.nav-item>&]:ps-[calc(var(--nav-indent)+var(--nav-guide-offset)+var(--nav-number-reach))]",
       ],
       bullet: listMarkerClasses.bullet,
@@ -432,7 +434,7 @@ export const navGroup = cv({
     navRowsClass,
     // The label lines up with the links of a list with numbers, as in an
     // ordered navigation.
-    "has-[>.nav-list-numbers]:[--nav-guide-offset:--spacing(2)]",
+    "has-[>.nav-list-numbers]:[--nav-guide-offset:calc(var(--spacing-em)*2)]",
     "has-[>.nav-list-numbers]:[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
     "[.nav.vertical>*+&]:mt-[calc(var(--nav-group-gap)-var(--list-gap))]",
     "[.nav.horizontal>*+&]:ms-[calc(var(--nav-group-gap)-var(--list-gap))]",
@@ -552,7 +554,7 @@ const navSlotBase = cv({
       if (value === "auto") return "[--size:var(--nav-slot-size,1em)]";
       const named = getSlotSizeClass(value);
       if (named != null) return named;
-      return { style: { "--size": getSpacingValue(value) } };
+      return { style: { "--size": getEmSpacingValue(value) } };
     },
     /**
      * Sets horizontal slot margins. `auto` keeps the row gap before trailing
@@ -630,7 +632,7 @@ export const navLink = cv({
     $gap: "none",
     // The item padding of the navigation, like a list row, or the padding of a
     // control outside a navigation.
-    $p: `var(--list-item-padding, ${getPaddingValue(2)})`,
+    $p: `var(--list-item-padding, ${getEmPaddingValue(2)})`,
   },
   refine({ variants, addClass }) {
     // Segments take their weight from the segmented kinds, like the segments of
@@ -713,7 +715,7 @@ export const navButton = cv({
     $gap: "none",
     // The item padding of the navigation, or the padding of a control outside a
     // navigation.
-    $p: `var(--list-item-padding, ${getPaddingValue(2)})`,
+    $p: `var(--list-item-padding, ${getEmPaddingValue(2)})`,
   },
 });
 
@@ -865,7 +867,7 @@ export const navDisclosure = cv({
      */
     $slotSize(value?: string | number) {
       if (value == null) return;
-      const size = getSpacingValue(value);
+      const size = getEmSpacingValue(value);
       return {
         style: { "--disclosure-icon-size": size, "--nav-slot-size": size },
       };

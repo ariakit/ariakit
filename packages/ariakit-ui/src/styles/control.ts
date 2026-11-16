@@ -242,7 +242,9 @@ export const controlDescription = cv({
  */
 export const controlField = cv({
   class: [
-    "control-field group/field min-w-0",
+    // The gaps between the label, the control, and the texts follow the text
+    // size.
+    "control-field ui-spacing-em group/field min-w-0",
     // Labels read the gap to cover it. Set --field-gap on the field or an
     // ancestor to change it.
     "[--_field-gap:var(--field-gap,--spacing(1.5))] gap-(--_field-gap)",
@@ -731,6 +733,9 @@ export const controlBar = cv({
 export const controlGroup = cv({
   extend: [frame, segmentGroup, text],
   class: [
+    // The padding and the gap of the group follow its text size, like those of
+    // the controls inside it.
+    "ui-spacing-em",
     // Bars inside the controls reach the group's padding edge.
     "control-group [--control-bar-gap:var(--ak-frame-padding)]",
     // Forced colors remove the selected surface, which may be the only mark of

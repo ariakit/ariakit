@@ -1,5 +1,5 @@
 import { cv } from "clava";
-import { getSpacingValue } from "../utils/styles.ts";
+import { getEmSpacingValue } from "../utils/styles.ts";
 import {
   button,
   buttonContent,
@@ -67,6 +67,8 @@ export const disclosureGroup = cv({
 export const disclosure = cv({
   extend: [frame],
   class: [
+    // The padding and the gaps of the parts follow the text size.
+    "ui-spacing-em",
     // Descendants use the frame padding; the empty root must not apply it
     // again, including through caller utilities.
     "p-0!",
@@ -92,7 +94,7 @@ export const disclosure = cv({
     // offset.
     "[--disclosure-body-offset:0px]",
     // Share the slot gap with the body to align it under the label.
-    "[--disclosure-gap:max(--spacing(2),var(--disclosure-padding)/2)]",
+    "[--disclosure-gap:max(calc(var(--spacing-em)*2),var(--disclosure-padding)/2)]",
     // Include oversized leading-icon overflow. Registered lengths preserve
     // root-font measurements in descendants; the button must keep the root line
     // height.
@@ -130,7 +132,7 @@ export const disclosure = cv({
     $iconSize(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-icon-size": getSpacingValue(value) },
+        style: { "--disclosure-icon-size": getEmSpacingValue(value) },
       };
     },
     /**
@@ -141,7 +143,7 @@ export const disclosure = cv({
     $slotGap(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-gap": getSpacingValue(value) },
+        style: { "--disclosure-gap": getEmSpacingValue(value) },
       };
     },
     /**
@@ -151,7 +153,7 @@ export const disclosure = cv({
     $bodyOffset(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-body-offset": getSpacingValue(value) },
+        style: { "--disclosure-body-offset": getEmSpacingValue(value) },
       };
     },
     /**
@@ -161,7 +163,7 @@ export const disclosure = cv({
     $indent(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-ps": getSpacingValue(value) },
+        style: { "--disclosure-ps": getEmSpacingValue(value) },
       };
     },
     /**

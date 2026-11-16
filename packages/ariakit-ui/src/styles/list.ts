@@ -1,5 +1,5 @@
 import { cv, cx } from "clava";
-import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
+import { getEmPaddingValue, getEmSpacingValue } from "../utils/styles.ts";
 import { checkMark } from "./check-mark.ts";
 import {
   disclosure,
@@ -42,7 +42,8 @@ export const listMarkerClasses = {
 /** A list with adaptive item spacing, markers, and optional guides. */
 export const list = cv({
   class: [
-    "list gap-(--list-gap)",
+    // The gaps and the insets of the list follow its text size.
+    "list ui-spacing-em gap-(--list-gap)",
     // Markers read the native counter, so the `start` attribute applies. They
     // increment it themselves because a grid row does not count. This rule
     // stops the implied increment of other rows, which would count twice.
@@ -51,11 +52,15 @@ export const list = cv({
     "[&:not(ol,ul,menu)]:[counter-reset:list-item]",
     // The base gap is the rhythm of the text around the list. The space
     // between two rows derives from it, by how much content the rows hold.
-    "[--list-gap-base:var(--list-gap-base-root,--spacing(4))]",
+    "[--list-gap-base:var(--list-gap-base-root,calc(var(--spacing-em)*4))]",
     // Prose supplies the default base gap. Explicit `$baseGap` wins through the
     // style attribute; nested lists win by specificity.
     "in-[.prose]:[--list-gap-base:var(--list-gap-base-root,var(--prose-gap))]",
-    "[--list-item-padding:round(--spacing(1),1px)]",
+    // The rows read these lengths. The em step keeps each length in em, so a
+    // row with smaller text resolves it against its own text size. The step of
+    // the list is a resolved length, which would give every row the same
+    // padding.
+    "[--list-item-padding:round(calc(var(--spacing-em)*1),1px)]",
     // Rows have padding that doesn't show without a surface, so the derived
     // gap takes it out. `$gap` sets the space between two rows directly.
     "[--list-gap:var(--list-gap-root,calc(var(--list-gap-base)*0.5-var(--list-item-padding)))]",
@@ -127,7 +132,7 @@ export const list = cv({
     "[.list-row_&]:ms-[calc(var(--list-indent,var(--list-indent-auto))-var(--list-indent-auto))]",
     // The guide stops this far from each marker, so the surface around the
     // list shows between them, whatever it paints.
-    "[--list-guide-gap:--spacing(1)]",
+    "[--list-guide-gap:calc(var(--spacing-em)*1)]",
     // A nested list reads how far the guide stops from the marker of the row
     // that holds it, and from the marker of the row after that one, so its
     // branch connectors stop there too.
@@ -138,7 +143,7 @@ export const list = cv({
     "[--list-bullet-size:0.4375em]",
     // Block content increases item spacing; nested lists inherit this mode.
     "ui-list-blocks:[--list-blocks:1]",
-    "ui-list-blocks:[--list-item-padding:--spacing(2)]",
+    "ui-list-blocks:[--list-item-padding:calc(var(--spacing-em)*2)]",
     "ui-list-blocks:[--list-gap:var(--list-gap-root,calc(var(--list-gap-base)*0.75-var(--list-item-padding)))]",
     // The sections variant is registered last, so its gap overrides block
     // mode.
@@ -239,7 +244,7 @@ export const list = cv({
     $indent(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--list-indent": getSpacingValue(value) },
+        style: { "--list-indent": getEmSpacingValue(value) },
       };
     },
     /**
@@ -251,7 +256,7 @@ export const list = cv({
     $gap(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--list-gap-root": getSpacingValue(value) },
+        style: { "--list-gap-root": getEmSpacingValue(value) },
       };
     },
     /**
@@ -265,7 +270,7 @@ export const list = cv({
     $baseGap(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--list-gap-base-root": getSpacingValue(value) },
+        style: { "--list-gap-base-root": getEmSpacingValue(value) },
       };
     },
     /**
@@ -286,7 +291,7 @@ export const list = cv({
     $markerSize(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--list-marker-box": getSpacingValue(value) },
+        style: { "--list-marker-box": getEmSpacingValue(value) },
       };
     },
     /**
@@ -297,7 +302,7 @@ export const list = cv({
     $bulletSize(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--list-bullet-size": getSpacingValue(value) },
+        style: { "--list-bullet-size": getEmSpacingValue(value) },
       };
     },
     /**
@@ -310,7 +315,7 @@ export const list = cv({
     $itemPadding(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--list-item-padding": getPaddingValue(value) },
+        style: { "--list-item-padding": getEmPaddingValue(value) },
       };
     },
     /**
@@ -321,7 +326,7 @@ export const list = cv({
     $itemGap(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--list-item-gap-root": getSpacingValue(value) },
+        style: { "--list-item-gap-root": getEmSpacingValue(value) },
       };
     },
   },
@@ -929,7 +934,7 @@ export const listGuide = cv({
      */
     $radius(value?: string | number) {
       if (value == null) return;
-      return { style: { "--guide-radius": getSpacingValue(value) } };
+      return { style: { "--guide-radius": getEmSpacingValue(value) } };
     },
     /**
      * Sets the line style. Dashes and dots start again in each piece and in
