@@ -113,11 +113,11 @@ body > * {
 }
 
 /* Registration resolves the em step of ui-spacing-em on the element that sets
-   it. Without it, each element inside would resolve the step against its own
-   text size. Only that element reads the value, so it does not inherit. */
+   it, and the content inside inherits that length. Without it, each element
+   inside would resolve the step against its own text size. */
 @property --spacing-context {
   syntax: "<length>";
-  inherits: false;
+  inherits: true;
   initial-value: 0px;
 }
 
@@ -140,7 +140,16 @@ body > * {
  */
 @utility ui-spacing-em {
   --spacing-context: var(--spacing-em);
-  --spacing: var(--spacing-context);
+  /* The element reads the em step, not the registered length. In Firefox, a
+     line height that reads a registered em length makes a cycle with the
+     font, so leading-* on the element would drop its line height and step. */
+  --spacing: var(--spacing-em);
+  /* The children take the resolved step. The rule has no specificity, so a
+     child that is a spacing context, or that sets --spacing with a utility,
+     keeps its own step. Variants of this utility apply to the rule too. */
+  :where(&) > * {
+    --spacing: var(--spacing-context);
+  }
 }
 
 /* Registration lets progress fills animate their width or conic sweep. */
