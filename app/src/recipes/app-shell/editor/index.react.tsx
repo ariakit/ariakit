@@ -90,7 +90,7 @@ export default function Example() {
 
   return (
     <Shell>
-      <ShellHeader $height="sm" $stackCenter>
+      <ShellHeader $p={2} $stackCenter>
         <ShellStart $shrink>
           <div className="flex min-w-0 items-center gap-2">
             <Button
@@ -172,7 +172,7 @@ export default function Example() {
             Layers
           </TextFrame>
         </ShellSidebarHeader>
-        <ShellSidebarBody>
+        <ShellSidebarBody $p={2}>
           <Nav $cover bar={{ $offset: "halfway" }}>
             {layers.map((layer) => (
               <NavLink
@@ -287,7 +287,7 @@ export default function Example() {
         <ShellSidebarHeader>
           <span className="font-medium">Properties</span>
         </ShellSidebarHeader>
-        <ShellSidebarBody>
+        <ShellSidebarBody $p={2}>
           {selectedLayer ? (
             <div key={selectedLayer.id} className="grid grid-cols-1 gap-4">
               <label className="grid grid-cols-1 gap-1.5 text-sm">
@@ -374,7 +374,7 @@ export default function Example() {
         </ShellSidebarBody>
       </ShellSidebar>
 
-      <ShellFooter $height="sm">
+      <ShellFooter $p={2}>
         <ShellStart>
           <span className="tabular-nums ak-ink-70">Zoom 100%</span>
         </ShellStart>

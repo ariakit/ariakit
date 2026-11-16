@@ -75,7 +75,7 @@ export default function Example() {
   return (
     <Shell>
       <Shell $size={appliedTheme.density === "compact" ? "sm" : "md"}>
-        <ShellHeader $blur $height="sm">
+        <ShellHeader $blur $p={2}>
           <ShellStart>
             <Button
               className="@max-3xl/shell:hidden"

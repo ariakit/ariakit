@@ -232,7 +232,7 @@ export default function Example() {
         aria-label="Mailboxes"
         landmark="nav"
       >
-        <ShellSidebarHeader $p={2}>
+        <ShellSidebarHeader $px={2}>
           <Button $layer="brand" $kind="bevel" className="w-full">
             <ButtonSlot>
               <Plus />

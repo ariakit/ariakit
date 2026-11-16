@@ -49,6 +49,11 @@ import {
   ShellMainIntro,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import {
+  SlotFrame,
+  SlotFrameSlot,
+  SlotFrameText,
+} from "@ariakit/ui/components/slot-frame.ariakit.react";
+import {
   BookOpen,
   FileText,
   MessageSquare,
@@ -81,7 +86,7 @@ export default function Example() {
   return (
     <Shell>
       <ShellHeader
-        $height="sm"
+        $p={2}
         $blur
         $borderType="dashed"
         $hue="yellow"
@@ -156,20 +161,20 @@ export default function Example() {
         $hue="yellow"
         $chroma="muted"
       >
-        <ShellSidebarHeader
-          $borderType="dashed"
-          $p={4}
-          className="flex items-center gap-2"
-        >
-          <BookOpen className="size-4 shrink-0" />
-          <span className="flex-1 truncate font-semibold">Field Notes</span>
+        <ShellSidebarHeader $borderType="dashed">
+          <SlotFrame $p={2} className="min-w-0 flex-1 font-semibold">
+            <SlotFrameSlot aria-hidden>
+              <BookOpen />
+            </SlotFrameSlot>
+            <SlotFrameText $truncate>Field Notes</SlotFrameText>
+          </SlotFrame>
           <Button aria-label="New page">
             <ButtonSlot>
               <Plus />
             </ButtonSlot>
           </Button>
         </ShellSidebarHeader>
-        <ShellSidebarBody>
+        <ShellSidebarBody $p={2}>
           <Nav $cover list={false} bar={{ $offset: "halfway" }}>
             <NavGroup>
               <NavGroupLabel>Pages</NavGroupLabel>

@@ -118,6 +118,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
   const [secondEndOpen, setSecondEndOpen] = useState(true);
   const [endSticky, setEndSticky] = useState(true);
   const [stickyFooter, setStickyFooter] = useState(false);
+  const [longFooterNote, setLongFooterNote] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const [visibility, setVisibility] = useState<Visibility>("default");
   const [showIntro, setShowIntro] = useState(true);
@@ -131,7 +132,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
   const [narrowShell, setNarrowShell] = useState(false);
   const [nestedHeaders, setNestedHeaders] = useState(false);
   const [tallerNestedHeader, setTallerNestedHeader] = useState(false);
-  const height = compact ? "sm" : undefined;
+  const space = compact ? 2 : undefined;
   return (
     <Shell $size="md" className={narrowShell ? "max-w-[60rem]" : undefined}>
       {showGlobalHeader && (
@@ -146,7 +147,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
         aria-label="Part navigation"
         landmark="nav"
       >
-        <ShellSidebarHeader $height={height} $border={5} className={textSize}>
+        <ShellSidebarHeader $p={space} $border={5} className={textSize}>
           Navigation
         </ShellSidebarHeader>
         <ShellSidebarBody>
@@ -180,7 +181,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
           <ShellMainHeader
             className={textSize}
             $show={visibilityValues[visibility]}
-            $height={height}
+            $p={space}
             $sticky={sticky}
             $border={5}
           >
@@ -361,6 +362,16 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
             <label>
               <input
                 type="checkbox"
+                checked={longFooterNote}
+                onChange={(event) =>
+                  setLongFooterNote(event.currentTarget.checked)
+                }
+              />{" "}
+              Long footer note
+            </label>
+            <label>
+              <input
+                type="checkbox"
                 checked={showGlobalHeader}
                 onChange={(event) =>
                   setShowGlobalHeader(event.currentTarget.checked)
@@ -517,7 +528,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
               className="[--nested-gutter:1rem] @5xl/shell:[--nested-gutter:2rem]"
             >
               {nestedHeaders && (
-                <ShellMainHeader $height={tallerNestedHeader ? "lg" : "sm"}>
+                <ShellMainHeader $p={tallerNestedHeader ? 4 : 2}>
                   <div>Nested actions</div>
                 </ShellMainHeader>
               )}
@@ -529,7 +540,7 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
                       <ShellStart>Inner header</ShellStart>
                     </ShellHeader>
                     <ShellMain>
-                      <ShellMainHeader $height="lg">
+                      <ShellMainHeader $p={4}>
                         <div>Inner actions</div>
                       </ShellMainHeader>
                       <ShellMainBody>
@@ -584,7 +595,11 @@ function PartsShell({ controls, sizePane, setSizePane }: PartsShellProps) {
       )}
       {stickyFooter && (
         <ShellFooter $sticky aria-label="Part footer">
-          <ShellStart>Part footer</ShellStart>
+          <ShellStart>
+            {longFooterNote
+              ? "Part footer with a note that is wider than half of the bar"
+              : "Part footer"}
+          </ShellStart>
         </ShellFooter>
       )}
     </Shell>

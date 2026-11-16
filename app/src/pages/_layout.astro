@@ -350,7 +350,7 @@ const drawerNavigation = navigation.map((group) => ({
         className="text-sm"
       >
         <PanelScript />
-        <ShellSidebarHeader $height="sm" className="justify-between">
+        <ShellSidebarHeader $p={2} $px={3} className="justify-between">
           <span class="font-medium">Theme</span>
           <Button
             tabIndex={0}
@@ -373,7 +373,7 @@ const drawerNavigation = navigation.map((group) => ({
           instead of moving down when the intro arrives. */}
       <Shell className="[&>.shell-sidebar-end:not(:has(~.shell-main>.shell-main-body))]:invisible">
         <ShellHeader
-          $height="sm"
+          $p={2}
           $blur
           className="text-sm [&>astro-island]:col-2 [&>astro-island]:self-stretch @max-2xl/shell:[&>astro-island]:hidden!"
         >
@@ -497,7 +497,7 @@ const drawerNavigation = navigation.map((group) => ({
           data-shell-transient
           className="text-sm"
         >
-          <ShellSidebarHeader $height="sm" className="justify-between">
+          <ShellSidebarHeader $p={2} $px={3} className="justify-between">
             <span class="font-medium">Menu</span>
             <TooltipButton
               client:load

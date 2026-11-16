@@ -812,6 +812,41 @@ body > * {
   initial-value: 4px;
 }
 
+/* The height of a default control and the default space of a bar round to
+   whole pixels. Bar heights add them up, so they resolve here too: Chrome can
+   round a half pixel differently under browser zoom when no registered
+   property resolves it first, and a bar would drift from its own padding. The
+   bar heights don't include the facing edge of the bar. */
+@property --shell-control-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 40px;
+}
+
+@property --shell-bar-space {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 12px;
+}
+
+@property --shell-header-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-footer-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-main-header-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 64px;
+}
+
 @property --shell-local-header-height {
   syntax: "<length>";
   inherits: true;
@@ -1987,8 +2022,8 @@ body > * {
       clamp(0, var(--shell-main-header-show-below) - var(--shell-breakpoint), 1)
   );
   --shell-main-head: calc(
-    var(--shell-main-header-height) * var(--shell-main-header-sticky) *
-      var(--shell-main-header-visible)
+    (var(--shell-main-header-height) + var(--shell-main-header-border)) *
+      var(--shell-main-header-sticky) * var(--shell-main-header-visible)
   );
   --shell-start-1-fit: calc(
     clamp(0, var(--shell-breakpoint) - var(--shell-start-1-show-from) + 1, 1) *

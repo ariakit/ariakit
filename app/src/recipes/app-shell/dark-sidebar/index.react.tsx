@@ -36,6 +36,11 @@ import {
   ShellSidebarHeader,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import {
+  SlotFrame,
+  SlotFrameSlot,
+  SlotFrameText,
+} from "@ariakit/ui/components/slot-frame.ariakit.react";
+import {
   Table,
   TableCell,
   TableRow,
@@ -270,13 +275,15 @@ export default function Example() {
         aria-label="Workspace"
         landmark="nav"
       >
-        <ShellSidebarHeader $height="sm" $p={4}>
-          <div className="flex items-center gap-2 font-semibold">
-            <Hexagon strokeWidth={1.5} className="size-5" />
-            Acme Studio
-          </div>
+        <ShellSidebarHeader $p={2}>
+          <SlotFrame $p={2} className="font-semibold">
+            <SlotFrameSlot $size="lg" aria-hidden>
+              <Hexagon strokeWidth={1.5} />
+            </SlotFrameSlot>
+            <SlotFrameText>Acme Studio</SlotFrameText>
+          </SlotFrame>
         </ShellSidebarHeader>
-        <ShellSidebarBody>
+        <ShellSidebarBody $p={2}>
           <Nav $cover list={false} bar={{ $offset: "halfway" }}>
             <NavGroup>
               <NavList>
@@ -358,7 +365,7 @@ export default function Example() {
       </ShellSidebar>
 
       <Shell>
-        <ShellHeader $height="sm" $blur>
+        <ShellHeader $p={2} $blur>
           <ShellStart $shrink className="gap-2">
             <Button
               aria-label="Toggle sidebar"

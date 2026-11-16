@@ -188,7 +188,7 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
       {innerHeader && (
         <ShellHeader
           $sticky={false}
-          $p={headerPadding}
+          $px={headerPadding}
           aria-label="Inner header"
         >
           <ShellStart role="group" aria-label="Inner start">
@@ -230,7 +230,7 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
   return (
     // 320 quarters of the shell's 14px text are 1120px.
     <Shell $maxWidth={maxWidth ? (numberWidth ? 320 : "80rem") : undefined}>
-      <ShellHeader $stackCenter={stackCenter} $p={headerPadding}>
+      <ShellHeader $stackCenter={stackCenter} $px={headerPadding}>
         {edgeParts && (
           <ShellStart role="group" aria-label="Edge start">
             Menu

@@ -199,12 +199,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     }
   });
 
-  for (const height of ["sm", "lg"] as const) {
-    test(`matches main on big pages and uses the bar inset on small pages at ${height} height`, async ({
+  for (const space of ["2", "4"] as const) {
+    test(`matches main on big pages and uses the bar inset on small pages at a bar space of ${space}`, async ({
       q,
       page,
     }) => {
-      await q.combobox("Bar height").selectOption(height);
+      await q.combobox("Bar space").selectOption(space);
       await q.checkbox("Bar side parts").uncheck();
       await q.checkbox("Main header side parts").uncheck();
       const column = q.group("Body column");
@@ -214,7 +214,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expectAligned(mainArea, column);
       await q.checkbox("Start sidebar").uncheck();
       await page.setViewportSize({ width: 500, height: 900 });
-      const inset = height === "sm" ? 8 : 15;
+      // Two and four spacing steps of the 14px shell text.
+      const inset = space === "2" ? 7 : 14;
       await expect.poll(async () => (await getBox(mainArea)).x).toBe(inset);
       await expect.poll(async () => (await getBox(headerArea)).x).toBe(inset);
       await expect(mainArea).toHaveCSS("width", `${500 - inset * 2}px`);
@@ -258,14 +259,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expectAligned(q.group("Header area"), q.group("Body column"));
   });
 
-  for (const height of ["sm", "md", "lg"]) {
-    test(`keeps a cover child on the main header's edges at ${height} height`, async ({
+  for (const space of ["2", "3", "4"]) {
+    test(`keeps a cover child on the main header's edges at a bar space of ${space}`, async ({
       q,
       page,
     }) => {
       await page.setViewportSize({ width: 500, height: 900 });
       await q.checkbox("Start sidebar").uncheck();
-      await q.combobox("Bar height").selectOption(height);
+      await q.combobox("Bar space").selectOption(space);
       await q.checkbox("Main header side parts").uncheck();
       await q.checkbox("Cover child in the main header").check();
       await expect
@@ -279,13 +280,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
         .toBe(500);
     });
 
-    test(`removes the main header's space with no gutter at ${height} height`, async ({
+    test(`removes the main header's space with no gutter at a bar space of ${space}`, async ({
       q,
       page,
     }) => {
       await page.setViewportSize({ width: 500, height: 900 });
       await q.checkbox("Start sidebar").uncheck();
-      await q.combobox("Bar height").selectOption(height);
+      await q.combobox("Bar space").selectOption(space);
       await q.checkbox("Main header side parts").uncheck();
       await q.checkbox("No main header gutter").check();
       await expect

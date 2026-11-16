@@ -33,9 +33,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const introBox = await getBox(intro);
     expect(introBox.x + introBox.width).toBeCloseTo(1440, 0);
     await page.evaluate(() => window.scrollTo(0, 500));
+    // The header's 2px border adds to its 64px.
     await expect
       .poll(async () => (await getBox(q.navigation("Layout contents"))).y)
-      .toBeCloseTo(64, 0);
+      .toBeCloseTo(66, 0);
     await expect(page.locator(".shell")).toHaveCSS("overflow-x", "visible");
     await expect(q.main()).toHaveCSS("overflow-x", "visible");
     await expect(q.main().locator(":scope > .shell-main-body")).toHaveCSS(

@@ -15,11 +15,12 @@ import {
   selectScenario,
 } from "./test-helpers.ts";
 
-// The default header contains its facing border within its 64px outer height.
+// The default header adds its facing border to the 64px of its control and the
+// space above and below it.
 const CONTROL_HEIGHT = 40;
 const PART_PADDING = 12;
 const HEADER_BORDER = 1;
-const HEADER_HEIGHT = CONTROL_HEIGHT + PART_PADDING * 2;
+const HEADER_HEIGHT = CONTROL_HEIGHT + PART_PADDING * 2 + HEADER_BORDER;
 const CONTENT_WIDTH = 672;
 // The shell's motion duration.
 const DURATION = 300;
@@ -53,13 +54,10 @@ withDeferredVisualLoad(import.meta.dirname, async ({ test, query }) => {
     expect(button.height).toBeCloseTo(CONTROL_HEIGHT, 0);
     expect(header.height).toBeCloseTo(HEADER_HEIGHT, 0);
     expect(button.x - header.x).toBeCloseTo(PART_PADDING, 0);
-    expect(button.y - header.y).toBeCloseTo(
-      PART_PADDING - HEADER_BORDER / 2,
-      0,
-    );
+    expect(button.y - header.y).toBeCloseTo(PART_PADDING, 0);
     expect(
       header.y + header.height - button.y - button.height - HEADER_BORDER,
-    ).toBeCloseTo(PART_PADDING - HEADER_BORDER / 2, 0);
+    ).toBeCloseTo(PART_PADDING, 0);
   });
 
   test("shrinks breakouts before content and keeps only the main gutter on mobile", async ({
