@@ -149,7 +149,7 @@ for (const name of ["Search", "Rename", "Nested search", "Search blocks"]) {
       await click(q.menuitem(menuName));
       const popup =
         name === "Search blocks" ? q.dialog(menuName) : q.menu(menuName);
-      const input = q.labeled(name) as HTMLInputElement;
+      const input = q.labeled<HTMLInputElement>(name);
       await click(input);
       input.setSelectionRange(1, 1);
       expect(input).toHaveFocus();
