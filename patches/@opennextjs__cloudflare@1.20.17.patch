@@ -1,5 +1,5 @@
 diff --git a/dist/cli/build/bundle-server.js b/dist/cli/build/bundle-server.js
-index 7420316008e9651c5a1e41d2edcc3d00b8d023f8..45fd0cc4a4592a4577248cbffc6f59cc32119661 100644
+index 9d0375ab175ff83d0476fc52be6f69e9fd06e9a4..4e856986c09823ec98c28b6892d77f7a3b7af2e6 100644
 --- a/dist/cli/build/bundle-server.js
 +++ b/dist/cli/build/bundle-server.js
 @@ -11,6 +11,7 @@ import { getOpenNextConfig } from "../../api/config.js";
@@ -10,9 +10,9 @@ index 7420316008e9651c5a1e41d2edcc3d00b8d023f8..45fd0cc4a4592a4577248cbffc6f59cc
  import { inlineDynamicRequires } from "./patches/plugins/dynamic-requires.js";
  import { inlineFindDir } from "./patches/plugins/find-dir.js";
  import { patchInstrumentation } from "./patches/plugins/instrumentation.js";
-@@ -75,7 +76,16 @@ export async function bundleServer(buildOpts, projectOpts) {
-     const openNextServerBundle = path.join(outputPath, packagePath, `handler.mjs`);
+@@ -85,7 +86,16 @@ export async function bundleServer(buildOpts, projectOpts) {
      const updater = new ContentUpdater(buildOpts);
+     const useWorkerdCondition = getOpenNextConfig(buildOpts).cloudflare?.useWorkerdCondition !== false;
      const result = await build({
 -        entryPoints: [openNextServer],
 +        // The scheduler wraps `setImmediate`, so it must load before the Next.js server captures it.
@@ -28,7 +28,7 @@ index 7420316008e9651c5a1e41d2edcc3d00b8d023f8..45fd0cc4a4592a4577248cbffc6f59cc
          bundle: true,
          outfile: openNextServerBundle,
          format: "esm",
-@@ -104,6 +114,7 @@ export async function bundleServer(buildOpts, projectOpts) {
+@@ -114,6 +124,7 @@ export async function bundleServer(buildOpts, projectOpts) {
              fixRequire(updater),
              handleOptionalDependencies(optionalDependencies),
              patchInstrumentation(updater, buildOpts),
@@ -37,7 +37,7 @@ index 7420316008e9651c5a1e41d2edcc3d00b8d023f8..45fd0cc4a4592a4577248cbffc6f59cc
              inlineFindDir(updater, buildOpts),
              inlineLoadManifest(updater, buildOpts),
 diff --git a/dist/cli/build/open-next/createServerBundle.js b/dist/cli/build/open-next/createServerBundle.js
-index 5119462944183d6addcb9306ccb49972e1b21e4d..dbbabc0719e99670c1c3934d12036b200ab22fcc 100644
+index fb7815dd3cc702cef976ad720e0cfa8ba1b5d06a..4e969f95023a92ca73e73e6dfdc8b914810fb50a 100644
 --- a/dist/cli/build/open-next/createServerBundle.js
 +++ b/dist/cli/build/open-next/createServerBundle.js
 @@ -2,7 +2,7 @@
@@ -49,7 +49,7 @@ index 5119462944183d6addcb9306ccb49972e1b21e4d..dbbabc0719e99670c1c3934d12036b20
  import { bundleNextServer } from "@opennextjs/aws/build/bundleNextServer.js";
  import { compileCache } from "@opennextjs/aws/build/compileCache.js";
  import { copyTracedFiles } from "@opennextjs/aws/build/copyTracedFiles.js";
-@@ -142,7 +142,7 @@ async function generateBundle(name, options, fnOptions, codeCustomization) {
+@@ -135,7 +135,7 @@ async function generateBundle(name, options, fnOptions, codeCustomization) {
          awsPatches.patchBackgroundRevalidation,
          awsPatches.patchNodeEnvironment,
          // Cloudflare specific patches
