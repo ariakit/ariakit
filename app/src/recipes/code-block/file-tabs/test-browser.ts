@@ -33,6 +33,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBe(80);
     await q.tab("use-toggle.ts").click();
     await test.expect(q.tabpanel("use-toggle.ts")).toBeVisible();
+    // https://github.com/ariakit/ariakit/issues/8470
+    // The toggle.tsx panel stays in the layout until its leave transition ends.
+    // Then the block gets shorter, and the preview centers it again, so the
+    // tabs move. A click before that could press a tab and release it outside.
+    await test.expect(panel).toBeHidden();
     await q.tab("toggle.tsx").click();
     await test.expect(panel).toBeVisible();
     await test.expect
