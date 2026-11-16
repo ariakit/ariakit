@@ -512,6 +512,51 @@ export default function DisclosureExamples() {
       </Example>
 
       <Example
+        title="Smaller button text"
+        description="The button text is smaller than the text of the disclosure, with the same line height. The button and the open content read the icon size and the indentation of the disclosure, so the content starts under the label after an icon, and where the button content starts with an indentation."
+        stretch
+        code={`
+          <Disclosure $iconSize={8} $border $rounded="xl" $p={3} defaultOpen button={<DisclosureButton icon={<Users />} className="text-xs/[1.5rem]">Members</DisclosureButton>}>
+            …
+          </Disclosure>
+          <Disclosure $indent={6} $border $rounded="xl" $p={3} defaultOpen button={<DisclosureButton className="text-xs/[1.5rem]">Invoices</DisclosureButton>}>
+            …
+          </Disclosure>
+        `}
+      >
+        <div className="grid gap-3">
+          <Disclosure
+            $iconSize={8}
+            $border
+            $rounded="xl"
+            $p={3}
+            defaultOpen
+            button={
+              <DisclosureButton icon={<Users />} className="text-xs/[1.5rem]">
+                Members
+              </DisclosureButton>
+            }
+          >
+            <p>Four people have access to this workspace.</p>
+          </Disclosure>
+          <Disclosure
+            $indent={6}
+            $border
+            $rounded="xl"
+            $p={3}
+            defaultOpen
+            button={
+              <DisclosureButton className="text-xs/[1.5rem]">
+                Invoices
+              </DisclosureButton>
+            }
+          >
+            <p>The last invoice was paid on the first of the month.</p>
+          </Disclosure>
+        </div>
+      </Example>
+
+      <Example
         title="Split"
         description="A line separates the button from the open content, and the bottom corners of the button become square."
         stretch
