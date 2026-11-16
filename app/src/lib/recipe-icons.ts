@@ -9,6 +9,7 @@
  */
 import type { LucideIcon } from "lucide-react";
 import {
+  AppWindow,
   ChevronsRight,
   CircleDot,
   CircleUser,
@@ -33,6 +34,7 @@ import {
  * name. The site navigation shows the icon before the recipe link label.
  */
 export const recipeIcons = {
+  "app-window": AppWindow,
   "chevrons-right": ChevronsRight,
   "circle-dot": CircleDot,
   "circle-user": CircleUser,

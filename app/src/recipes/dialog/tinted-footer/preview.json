@@ -1,0 +1,5 @@
+{
+  "title": "Tinted Footer",
+  "description": "An invite dialog whose actions sit in a tinted footer that reaches the side and bottom edges of the dialog. The footer is a Frame with $cover, so it takes the padding and the bottom corners of the dialog, and $divide=\"inherit\" draws only its top edge, with the width and color of the dialog edge. Use it when the actions need their own bar, with Cancel at the start and the main action at the end.",
+  "open": true
+}

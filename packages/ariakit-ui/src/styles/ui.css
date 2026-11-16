@@ -7,7 +7,10 @@
   --color-secondary: oklch(65.59% 0.2118 354.31);
   --color-success: var(--color-green-700);
   --color-warning: var(--color-yellow-500);
-  --color-danger: var(--color-red-600);
+  /* Red near the lightness and chroma of the brand color, so a danger button
+     weighs the same as a brand button. Like the brand color, it keeps one
+     value in both color schemes. */
+  --color-danger: oklch(58% 0.16 25);
 
   --font-sans:
     "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
@@ -95,7 +98,6 @@
     --color-canvas: oklch(19.34% 0.0091 264.28);
     --color-success: var(--color-green-700);
     --color-warning: var(--color-yellow-400);
-    --color-danger: var(--color-red-400);
   }
 }
 

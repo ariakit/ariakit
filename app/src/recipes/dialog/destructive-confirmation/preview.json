@@ -1,0 +1,5 @@
+{
+  "title": "Destructive Confirmation",
+  "description": "A centered alert dialog that asks before an action that can't be undone, with a round danger Badge, the title and message on the center axis, and Cancel and Delete buttons that share the width. It sets role=\"alertdialog\", hideOnInteractOutside={false}, and initialFocus on Cancel, and the Delete DialogDismiss updates the page in its onClick before the dialog closes. Use it for a short, destructive question; use the Confirmation with Media Tile when the action can be reverted.",
+  "open": true
+}

@@ -65,18 +65,11 @@ export default function Example() {
         <DialogDisclosure>Read the terms</DialogDisclosure>
         {/* A shell fills the dialog with a sticky header and a sticky table
             of contents. The viewport scrolls the terms, so the table of
-            contents watches it. The dialog takes its full height, and the
-            viewport is a size container, so the sidebar fits the viewport
+            contents watches it. The dialog takes its full height, so the
+            viewport is a size container, and the sidebar fits the viewport
             instead of the window. The viewport scrolls smoothly with CSS. */}
-        <Dialog
-          $p="none"
-          className="flex flex-col [--dialog-max-width:52rem]"
-          style={{ height: "var(--dialog-max-height)" }}
-        >
-          {/* In a frame, Chrome can paint the blurred header outside the
-              rounded corners of the scrolling viewport, so the viewport also
-              clips its corners. */}
-          <DialogScroll className="grow @container-size [clip-path:inset(0_round_var(--ak-frame-radius))] motion-safe:scroll-smooth">
+        <Dialog $p="none" $maxWidth="52rem" $height="var(--dialog-max-height)">
+          <DialogScroll className="motion-safe:scroll-smooth">
             <Shell>
               {/* The dismiss button keeps the inset of the header, which keeps
                   it concentric with the corner of the dialog. The title lines

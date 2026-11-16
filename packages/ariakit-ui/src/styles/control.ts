@@ -7,6 +7,7 @@ import { segmentGroup } from "./segment.ts";
 import {
   hasSlotSurface,
   slotFrame,
+  slotFrameContent,
   slotFrameSlot,
   slotFrameText,
 } from "./slot-frame.ts";
@@ -141,26 +142,13 @@ export const controlSlot = cv({
   },
 });
 
-/** A flexible wrapper for a control's label and description. */
+/**
+ * A flexible wrapper for a control's label and description. It starts its text,
+ * also in a control that centers its content, such as a button.
+ */
 export const controlContent = cv({
-  class: [
-    "control-content group/control-content",
-    "flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
-  ],
-  variants: {
-    /**
-     * Arranges the label and description in a row or column. `unset` omits
-     * layout styles.
-     */
-    $orientation: {
-      unset: "",
-      horizontal: "flex flex-wrap items-baseline",
-      vertical: "flex flex-col",
-    },
-  },
-  defaultVariants: {
-    $orientation: "vertical",
-  },
+  extend: [slotFrameContent],
+  class: "control-content group/control-content text-start",
 });
 
 /**

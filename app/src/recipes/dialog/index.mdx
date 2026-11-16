@@ -1,0 +1,63 @@
+---
+title: Dialog
+category: overlays
+icon: app-window
+---
+
+## Overview
+
+These examples build dialogs with the Ariakit UI `Dialog` components. A dialog is a window that shows over the page. A modal dialog stops the use of the page until it closes: it shows a backdrop over the page, it keeps focus inside, and it closes on Escape or on a click outside.
+
+The gallery starts with a dialog that invites a person by email, with a title, a short form, and a close button in the corner. The next two examples change its header and its footer. Then two alert dialogs ask before an action. The last examples fill a dialog with a `Shell`: a side sheet at the edge of the window, and a settings dialog with its own navigation.
+
+## Components
+
+`DialogProvider` shares the open state between a `DialogDisclosure` and a `Dialog`. `DialogDisclosure` is the button that opens the dialog. The provider keeps the state by default. The invite examples set `open` and `setOpen` to control it, so the form closes the dialog when it is sent.
+
+`Dialog` is a modal dialog in the center of the viewport, with a backdrop behind it. It renders in a portal at the end of the page. It stretches between the insets of the viewport up to a maximum width, and its maximum height follows the visual viewport, so a virtual keyboard does not cover it. A dialog that fits its content has no layout of its own, so those examples set `flex flex-col` and a gap on it, and they keep its default padding.
+
+`$maxWidth` sets the maximum width, such as `$maxWidth={88}` in the Destructive Confirmation example. `$height` gives the dialog a height that does not follow its content. The Settings with Section Navigation example sets it, so the dialog keeps its size when the section changes. Numbers in both props count steps of the spacing token, like `$p`. The `$placement` prop puts a dialog at an edge or in a corner of the viewport. With `start` or `end`, the dialog is a side sheet: it fills the height of the window at that side, 8px from the edges, and it slides in from that side. The Side Sheet example sets `end`.
+
+`DialogHeader` is a row at the top of the dialog. `DialogHeaderContent` holds the title and the description, and fills the free space in the row. It spaces them with the vertical gap of the header, which `$gapY` on `DialogHeader` sets. By default, that gap is half the gap of the header, so a large title stays apart from the smaller description. The Destructive Confirmation example puts only the content in its header, so its centered title and description get the same gap. `DialogHeading` names the dialog, and `DialogDescription` describes it. `$size` sets the size of each one: the heading is `lg` by default, such as `md` in the Header with Icon example, and the description is `0.875` of the dialog text.
+
+```tsx
+<DialogHeader>
+  <DialogHeaderContent>
+    <DialogHeading>Invite to Acme</DialogHeading>
+    <DialogDescription>
+      People you invite can see every project.
+    </DialogDescription>
+  </DialogHeaderContent>
+  <DialogClose />
+</DialogHeader>
+```
+
+`DialogClose` is an icon button that closes the dialog, with the name "Dismiss popup". It has no surface, so it takes a negative margin as large as its padding on its top and end sides: the icon lines up with the content of the dialog, and the hover surface takes the room around it. In the corner of the dialog, the hover surface is as far from the top edge as from the end edge. The start side keeps its margin, so the hover surface stays off the title. At the end of the header, the button sits at the top of the row, centered on the first line of a title at the default size. A larger title has a taller first line, so the icon sits above its center. In a shell bar, the button also takes the negative margin on its bottom side, so it stays centered in the bar. A close button with a fill, a border, or a bevel keeps its margin.
+
+`DialogDismiss` is a button that closes the dialog, such as Cancel. It takes the props of a `Button`. Its `onClick` runs before the dialog closes, so the alert dialogs update the page from it.
+
+The Tinted Footer example puts its actions in a `Frame` with `$cover`. A cover frame takes the padding of the dialog and reaches its side and bottom edges, with the same corners. With `$divide="inherit"`, it draws a border only on its top side, which faces the field, with the width and color of the dialog edge. The other sides stay on the edge of the dialog.
+
+`DialogHeader` lays out its parts like a slot frame. A `DialogHeaderSlot` before the content holds an icon or a picture, as in the Header with Icon and Confirmation with Media Tile examples. With `$rowSpan={2}`, the slot is two text rows tall, so it spans the title and the first line of the description at any text size. The header doesn't open a frame of its own, so its parts take their corners from the dialog.
+
+A `Shell` can fill a dialog. Set `$p="none"` and a height on the dialog, and put the shell in a `DialogScroll`. A dialog with `$height` or a side sheet placement is a flex column, so the scroll area can fill it. The scroll area covers the dialog padding with the same corners, and it fills the height of the dialog, so the shell fills it too. It is the scroll container of the shell, so the sticky header, footer, and sidebars of the shell stick to the dialog, not to the window. In a dialog with a set height, such as a side sheet or a dialog with `$height`, it is also a size container. So a sticky sidebar fits the height of the dialog, not the height of the window, and stays in place when main scrolls.
+
+The Settings with Section Navigation example sets `$size="md"` on the `Shell`, so its text has the size of the dialog text. The Side Sheet example keeps the smaller text of a default shell in its bars and its filters. Both set `$p={4}` on `ShellMain`. On a bar, `$p` sets the space at the sides and above and below a default control, and `$px` sets only the space at the sides. The close button in a header takes a negative margin, so its layout box is one text row. The headers set `$p={2}`, so the hover surface of the button is as far from the top edge as from the end edge, and `$px={4}`, so the titles line up with the content of main. The footer of the Side Sheet example sets `$p={2}`, so it is as tall as the header, and its buttons are as far from the side edges as from the top and bottom edges. The footer of the Settings with Section Navigation example sets `$p={4}`, so its buttons are as far from the bottom edge as from the side edges. In the Settings with Section Navigation example, the sidebar header and the sidebar body set `$p={2}`, so the title lines up with the links. A second `Shell` in main holds main and the footer, so the footer spans main and not the sidebar.
+
+When the dialog opens, focus moves to the first element in it that takes focus. In the invite examples, the close button comes first in the DOM, so the email field sets `autoFocus` to take focus first. Set `initialFocus` to start on another element, such as Cancel in the Destructive Confirmation example. When the dialog closes, focus goes back to the disclosure button. If the action disables that button, set `accessibleWhenDisabled` on it, so it can still take focus.
+
+Set `role="alertdialog"` on a dialog that needs an answer, and set `hideOnInteractOutside={false}`, so a click outside does not close it. Escape still closes it, the same as Cancel.
+
+## Accessibility
+
+A modal dialog follows the [dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialogmodal/) of the ARIA Authoring Practices Guide. While it is open, the page outside is inert, so Tab moves only through the dialog and screen readers read only the dialog. Escape closes the dialog, and focus goes back to the button that opened it, so the person continues from the same place ([Focus Order](https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html)).
+
+The heading is the accessible name of the dialog, and the description is its accessible description. A screen reader reads both when the dialog opens. Keep the description short, because a screen reader reads all of it at once. In the settings dialog, the "Settings" title at the top of the sidebar is the `DialogHeading`. The heading of main is a level below it and changes with the section, and the name of the dialog stays the same.
+
+The close button shows only an icon, so it has a name for screen readers. In the invite examples, focus starts on the email field, and Tab moves through the actions and then wraps to the close button.
+
+An [alert dialog](https://www.w3.org/WAI/ARIA/apg/patterns/alertdialog/) tells screen readers that the dialog needs an answer. Use it for a message that interrupts the work of the person, such as the Destructive Confirmation and the Confirmation with Media Tile examples. When the action cannot be undone, focus starts on the choice that changes nothing, so Enter by accident does not delete data. A confirmation helps people prevent an error that they cannot undo ([Error Prevention](https://www.w3.org/WAI/WCAG22/Understanding/error-prevention-legal-financial-data.html)). The text tells what the action does, and the name of the action button repeats the action, such as Delete, in place of OK. The result of the action shows in a live region on the page ([Status Messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html)).
+
+The sidebar of the settings dialog is a navigation landmark. Its links are in named groups, and the link of the current section has `aria-current="page"`. The filters of the side sheet are in groups, and each group has its name in a legend.
+
+The dialog and its backdrop open and close with a short transition. Reduced motion turns it off.

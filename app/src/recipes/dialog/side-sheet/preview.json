@@ -1,0 +1,6 @@
+{
+  "title": "Side Sheet",
+  "description": "A full-height side sheet at the end edge of the window that a Shell fills, with a header, filters in CheckboxGroup fieldsets that scroll, and a sticky footer with Reset and the apply action. It sets $placement=\"end\", so the dialog fills the height 8px from the edges and slides in from the end. Use it for filters, details, or settings that people change next to the page.",
+  "open": true,
+  "minHeight": "34rem"
+}
