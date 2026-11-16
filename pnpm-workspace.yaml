@@ -55,7 +55,7 @@ patchedDependencies:
   # applies that PR's compiled output to the published dist. Remove it once a
   # released @opennextjs/cloudflare version includes the PR. Until then, port
   # the patch to each new adapter version.
-  "@opennextjs/cloudflare@1.20.16": patches/@opennextjs__cloudflare@1.20.16.patch
+  "@opennextjs/cloudflare@1.20.17": patches/@opennextjs__cloudflare@1.20.17.patch
 
 peerDependencyRules:
   allowedVersions:
