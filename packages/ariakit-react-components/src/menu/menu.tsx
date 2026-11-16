@@ -196,7 +196,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
         prevInitialFocusRef.current = initialFocusElement;
         return prevInitialFocusRef;
       }
-      const ref = createRef() as MutableRefObject<HTMLElement | null>;
+      const ref = createRef<HTMLElement>();
       ref.current = initialFocusElement;
       return ref;
     });
