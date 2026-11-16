@@ -1722,6 +1722,57 @@
   }
 }
 
+@utility ak-frame-divide {
+  --_ak-frame-divide: 1px;
+  &:first-child {
+    --_ak-frame-start: 1;
+  }
+  &:not(:has(~ *:not([hidden],template))) {
+    --_ak-frame-end: 1;
+  }
+  border-block-width: calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-start))) calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-end)));
+  @container style(--_ak-frame-row: 1) {
+    border-block-width: 0px;
+    border-inline-width: calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-start))) calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-end)));
+  }
+}
+
+@utility ak-frame-divide-* {
+  --_ak-frame-divide: --value([*]);
+  --_ak-frame-divide: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
+  &:first-child {
+    --_ak-frame-start: 1;
+  }
+  &:not(:has(~ *:not([hidden],template))) {
+    --_ak-frame-end: 1;
+  }
+  border-block-width: calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-start))) calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-end)));
+  @container style(--_ak-frame-row: 1) {
+    border-block-width: 0px;
+    border-inline-width: calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-start))) calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-end)));
+  }
+}
+
+@utility ak-frame-divide-inherit {
+  @container (style(--_context-2: even)) or (not style(--_context-2)) {
+    --_ak-frame-divide: max(var(--_ak-fpbbc-even, 0px), var(--_ak-fpbgc-even, 0px));
+  }
+  @container style(--_context-2: odd) {
+    --_ak-frame-divide: max(var(--_ak-fpbbc-odd, 0px), var(--_ak-fpbgc-odd, 0px));
+  }
+  &:first-child {
+    --_ak-frame-start: 1;
+  }
+  &:not(:has(~ *:not([hidden],template))) {
+    --_ak-frame-end: 1;
+  }
+  border-block-width: calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-start))) calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-end)));
+  @container style(--_ak-frame-row: 1) {
+    border-block-width: 0px;
+    border-inline-width: calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-start))) calc(var(--_ak-frame-divide) * (1 - var(--_ak-frame-end)));
+  }
+}
+
 @utility ak-frame-row {
   --_ak-frame-row: 1;
 }
@@ -2991,6 +3042,12 @@
   syntax: "<number>";
   inherits: false;
   initial-value: 0;
+}
+
+@property --_ak-frame-divide {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
 }
 
 @property --_ak-frame-join-active {

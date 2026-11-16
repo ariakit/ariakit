@@ -172,6 +172,35 @@ export const frameBase = cv({
       }
       return { style: { "--border-width": `${value}px` } };
     },
+    /**
+     * Draws a border only on the sides that face a sibling in the parent's
+     * flow, which the parent's `$orientation` sets. The first frame omits its
+     * start side and the last frame omits its end side, so a `$cover` frame
+     * leaves the parent edge as it is. `true` uses `1px`; a number sets the
+     * width in pixels; `inherit` uses the parent frame's width and color. Use
+     * it in place of `$border`, not with it.
+     */
+    $divide(value?: "inherit" | boolean | number) {
+      if (value == null) return;
+      if (value === false) return;
+      if (value === "inherit") {
+        return "ak-frame-divide-inherit ak-edge-inherit";
+      }
+      if (value === true) return "ak-frame-divide";
+      return {
+        class: "ak-frame-divide-(--divide-width)",
+        style: { "--divide-width": `${value}px` },
+      };
+    },
+    /**
+     * Sets the line style of the `$divide` border. `$borderType` does not apply
+     * to it.
+     */
+    $divideType: {
+      solid: "",
+      dashed: "border-dashed",
+      dotted: "border-dotted",
+    },
   },
   defaultVariants: {
     $frame: true,
@@ -204,6 +233,11 @@ export const frameBase = cv({
   },
 });
 
+/** Checks whether the edge color comes from the parent frame. */
+function inheritsEdge(variants: { $border?: unknown; $divide?: unknown }) {
+  return variants.$border === "inherit" || variants.$divide === "inherit";
+}
+
 /** Frame geometry with a layer and adaptive edge colors. */
 export const frame = cv({
   extend: [edge, frameBase],
@@ -214,19 +248,19 @@ export const frame = cv({
     // These defaults must live here: edge's computed defaults cannot read
     // frame's $border variant.
     $edge(defaultValue, variants) {
-      if (variants.$border === "inherit") {
+      if (inheritsEdge(variants)) {
         return "unset";
       }
       return defaultValue;
     },
     $edgeWeight(defaultValue, variants) {
-      if (variants.$border === "inherit") {
+      if (inheritsEdge(variants)) {
         return "unset";
       }
       return defaultValue;
     },
     $darkEdgeWeight(defaultValue, variants) {
-      if (variants.$border === "inherit") {
+      if (inheritsEdge(variants)) {
         return "unset";
       }
       return defaultValue;
@@ -234,7 +268,7 @@ export const frame = cv({
     // The contrast floor would make an inherited edge solid, and an element
     // without a border has no boundary to keep at 3:1.
     $edgeContrast(defaultValue, variants) {
-      if (variants.$border === "inherit") return false;
+      if (inheritsEdge(variants)) return false;
       if (variants.$border === false) return false;
       return defaultValue;
     },
