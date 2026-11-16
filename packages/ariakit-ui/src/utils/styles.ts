@@ -67,6 +67,20 @@ export function getPaddingValue(value: string | number) {
 
 /**
  * Converts a spacing prop value to CSS, like `getSpacingValue`, but numbers
+ * scale the resolved step of the nearest spacing context. Use it on a spacing
+ * context for a length that its parts share, such as the indentation of the
+ * button and the body of a disclosure. On the context itself, `--spacing` stays
+ * in em, so a length from `getSpacingValue` would resolve against the text size
+ * of each part. Use it only on a spacing context: outside one, the step is 0.
+ */
+export function getContextSpacingValue(value: string | number) {
+  return typeof value === "string"
+    ? value
+    : `calc(var(--spacing-context) * (${value}))`;
+}
+
+/**
+ * Converts a spacing prop value to CSS, like `getSpacingValue`, but numbers
  * scale the `--spacing-em` step. The value stays in em, so each element that
  * reads it resolves it against its own text size. Use it for a length that a
  * component gives to its controls, such as the gap between the slots of the

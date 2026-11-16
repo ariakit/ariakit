@@ -1,5 +1,9 @@
 import { cv, cx } from "clava";
-import { getEmPaddingValue, getEmSpacingValue } from "../utils/styles.ts";
+import {
+  getEmPaddingValue,
+  getContextSpacingValue,
+  getEmSpacingValue,
+} from "../utils/styles.ts";
 import {
   button,
   buttonContent,
@@ -867,9 +871,14 @@ export const navDisclosure = cv({
      */
     $slotSize(value?: string | number) {
       if (value == null) return;
-      const size = getEmSpacingValue(value);
+      // The button and the body indent read the icon size of this section, so
+      // it resolves on the root. Nested rows read the slot size against their
+      // own text size.
       return {
-        style: { "--disclosure-icon-size": size, "--nav-slot-size": size },
+        style: {
+          "--disclosure-icon-size": getContextSpacingValue(value),
+          "--nav-slot-size": getEmSpacingValue(value),
+        },
       };
     },
   },

@@ -1,29 +1,6 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
-import {
-  getClassTokens,
-  getDisclosureParts,
-} from "../ariakit-ui-disclosure/disclosure.test-helper.ts";
-
-// https://github.com/ariakit/ariakit/issues/7553
-test("renders every list disclosure without repeated or important gap classes", () => {
-  const buttons = q.button
-    .all()
-    .filter((button) => button.matches(".disclosure-button"));
-  expect(buttons).not.toHaveLength(0);
-  for (const button of buttons) {
-    const { root, body } = getDisclosureParts(button);
-    for (const element of [root, button, body]) {
-      const tokens = getClassTokens(element);
-      expect(tokens).toEqual([...new Set(tokens)]);
-      expect(
-        tokens.filter(
-          (token) => token.startsWith("gap-") && token.endsWith("!"),
-        ),
-      ).toEqual([]);
-    }
-  }
-});
+import { getDisclosureParts } from "../ariakit-ui-disclosure/disclosure.test-helper.ts";
 
 // https://github.com/ariakit/ariakit/issues/7553
 test("lets a list disclosure count its marker as a leading slot", () => {

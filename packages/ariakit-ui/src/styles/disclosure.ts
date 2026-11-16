@@ -1,5 +1,5 @@
 import { cv } from "clava";
-import { getEmSpacingValue } from "../utils/styles.ts";
+import { getContextSpacingValue, getSpacingValue } from "../utils/styles.ts";
 import {
   button,
   buttonContent,
@@ -67,7 +67,9 @@ export const disclosureGroup = cv({
 export const disclosure = cv({
   extend: [frame],
   class: [
-    // The padding and the gaps of the parts follow the text size.
+    // The padding and the gaps of the parts follow the text size of the root.
+    // The parts read lengths that resolve on the root, so a button with smaller
+    // text keeps the icon size and the `$indent` of the body.
     "ui-spacing-em",
     // Descendants use the frame padding; the empty root must not apply it
     // again, including through caller utilities.
@@ -94,7 +96,7 @@ export const disclosure = cv({
     // offset.
     "[--disclosure-body-offset:0px]",
     // Share the slot gap with the body to align it under the label.
-    "[--disclosure-gap:max(calc(var(--spacing-em)*2),var(--disclosure-padding)/2)]",
+    "[--disclosure-gap:max(--spacing(2),var(--disclosure-padding)/2)]",
     // Include oversized leading-icon overflow. Registered lengths preserve
     // root-font measurements in descendants; the button must keep the root line
     // height.
@@ -132,7 +134,7 @@ export const disclosure = cv({
     $iconSize(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-icon-size": getEmSpacingValue(value) },
+        style: { "--disclosure-icon-size": getContextSpacingValue(value) },
       };
     },
     /**
@@ -143,7 +145,7 @@ export const disclosure = cv({
     $slotGap(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-gap": getEmSpacingValue(value) },
+        style: { "--disclosure-gap": getSpacingValue(value) },
       };
     },
     /**
@@ -153,7 +155,7 @@ export const disclosure = cv({
     $bodyOffset(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-body-offset": getEmSpacingValue(value) },
+        style: { "--disclosure-body-offset": getSpacingValue(value) },
       };
     },
     /**
@@ -163,7 +165,7 @@ export const disclosure = cv({
     $indent(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-ps": getEmSpacingValue(value) },
+        style: { "--disclosure-ps": getContextSpacingValue(value) },
       };
     },
     /**
