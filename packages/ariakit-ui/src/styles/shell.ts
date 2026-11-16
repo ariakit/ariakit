@@ -15,6 +15,9 @@ export const shell = cv({
     // WebKit. The main intro and body own the horizontal clip instead.
     // https://bugs.webkit.org/show_bug.cgi?id=320439
     "shell shell-state isolate grid @container/shell rounded-none!",
+    // The spacing of every part follows the text size of the shell, so parts
+    // with different text sizes keep the same gutters.
+    "ui-spacing-em",
     "min-h-[100cqb]",
     // A page shell keeps its radius for the frames inside it but paints square
     // corners, and fills the viewport or a size container. Inside another
@@ -859,6 +862,8 @@ const contentVariants = {
 // the same column. An unregistered 1em follows the parent where Prose reads it.
 const sizedMain = cx(
   "shell-main-sized [--prose-size:1em] [--shell-main-max-width:42em]",
+  // The spacing inside a sized main follows its text size, not the shell's.
+  "ui-spacing-em",
 );
 
 /**
@@ -997,6 +1002,10 @@ export const shellMainHeader = cv({
     content,
     "shell-main-header col-start-1 col-end-[calc(2+var(--shell-header-free-1)+var(--shell-header-free-1)*var(--shell-header-free-2))] row-[main-header]",
     "box-border min-h-(--shell-main-header-height) content-center py-0! z-3",
+    // The spacing inside the bar follows its own text size, like the shell
+    // header. Without this, the bar takes the step of a sized main, which has
+    // larger text.
+    "ui-spacing-em",
     // A bar keeps the shell's text inside a sized main. Zero specificity lets
     // caller text-* classes win.
     "[.shell-main-sized>&]:ui-base:text-[calc(var(--shell-header-step)*4)]",

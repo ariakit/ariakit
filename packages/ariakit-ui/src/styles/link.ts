@@ -12,8 +12,8 @@ export const link = cv({
   extend: [text, focus],
   class: [
     // Expand the hit target and focus ring without shifting flex or grid
-    // layout.
-    "-mt-1 -mb-1.5 pt-1 pb-1.5 rounded-sm",
+    // layout. The padding follows the text size of the link.
+    "ui-spacing-em -mt-1 -mb-1.5 pt-1 pb-1.5 rounded-sm",
     "font-medium underline decoration-1 underline-offset-[0.25em]",
     "ui-hover:decoration-[3px]",
     // Style queries read the ancestor layer, not the link itself.

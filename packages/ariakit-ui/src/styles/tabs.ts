@@ -51,6 +51,8 @@ export const tabs = cv({
   class: [
     // The panels follow a glider in the strip, so they are in its scope.
     "tabs glider-scope",
+    // The padding of the strip and the panels follows the text size.
+    "ui-spacing-em",
     // Keep one stack for the strip, panel (1), and tabs (6), so selected tabs
     // cover the panel seam.
     "isolate",

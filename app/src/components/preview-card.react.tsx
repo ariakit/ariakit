@@ -161,8 +161,11 @@ export function PreviewCard({
     // not to the code below it. The em-based corners of the card stay the same
     // at any page text size with a fixed size. Firefox resolves the radius and
     // padding of an element against its parent font size, so a wrapper sets it.
+    // The wrapper is also a spacing context, so an inline example gets the
+    // same spacing as in its own page, whatever the text size of the page
+    // around the card.
     <div
-      className="grid grid-cols-1 grid-rows-[1fr_auto] gap-2 text-base"
+      className="ui-spacing-em grid grid-cols-1 grid-rows-[1fr_auto] gap-2 text-base"
       style={
         minHeight
           ? ({ "--preview-card-min-height": minHeight } as CSSProperties)

@@ -21,9 +21,10 @@ import { cx } from "clava";
 import type { ComponentProps } from "react";
 
 // MDX renders plain elements. These map them to Ariakit UI components so page
-// content matches the site shell. Headings clear the sticky header when a
-// fragment link scrolls to them.
-const headingClass = "mt-6 scroll-mt-24";
+// content matches the site shell. The space above a heading follows its text
+// size, so a larger heading gets more space. Headings clear the sticky header
+// when a fragment link scrolls to them.
+const headingClass = "mt-[1.5em] scroll-mt-24";
 
 function H2(props: ComponentProps<"h2">) {
   return <Heading render={<h2 />} className={headingClass} {...props} />;

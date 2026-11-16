@@ -135,13 +135,15 @@ const files = Object.entries(source.files);
       <div slot="code" class="grid grid-cols-1 gap-2">
         {
           files.map(([name, file]) => (
+            // The code padding follows the small text, like the padding of
+            // the file name, so the two start on the same line.
             <Frame
               $rounded="xl"
               $forceRounded
               $border
               $darken={0.5}
               $p="none"
-              className="overflow-clip text-xs"
+              className="ui-spacing-em overflow-clip text-xs"
             >
               <TextFrame
                 $p={3}

@@ -5,7 +5,10 @@ import { getSpacingValue } from "../utils/styles.ts";
  * A column with text-relative vertical spacing. Nested columns reset the gap.
  */
 export const proseColumn = cv({
-  class: "flex flex-col gap-(--prose-gap) [--prose-gap:--spacing(5)]",
+  class: [
+    // The gaps of the column follow its text size.
+    "ui-spacing-em flex flex-col gap-(--prose-gap) [--prose-gap:--spacing(5)]",
+  ],
   variants: {
     /**
      * Sets the vertical gap between children. Numbers scale the spacing token.
@@ -39,12 +42,13 @@ export const prose = cv({
     "[&_strong]:ui-base:ak-ink-100 [&_strong]:ui-base:font-medium",
     // A heading starts a new part of the column, so it adds space above the gap.
     // Adjacent headings stay closer. Zero specificity lets caller mt-* classes
-    // win, and em values follow the size of each heading.
-    "[&>:not(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6)]:ui-base:mt-4",
+    // win, and em values follow the size of each heading. A spacing step would
+    // follow the text size of the column instead.
+    "[&>:not(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6)]:ui-base:mt-[1em]",
     // A column after a popout, feature, or full band between two columns, such
     // as a code block, a figure, or a callout in an article, continues the same
     // text, so its first heading starts a new part too.
-    "[:is(.shell-popout,.shell-feature,.shell-full)+&>:is(h1,h2,h3,h4,h5,h6):first-child]:ui-base:mt-4",
+    "[:is(.shell-popout,.shell-feature,.shell-full)+&>:is(h1,h2,h3,h4,h5,h6):first-child]:ui-base:mt-[1em]",
     "[&>:is(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6)]:ui-base:mt-[0.35em]",
     // Tighten only the space after a heading, so later children keep the gap.
     // The margin is negative while the gap is larger than this space.

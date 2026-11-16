@@ -1,5 +1,5 @@
 import { cv } from "clava";
-import { getSpacingValue } from "../utils/styles.ts";
+import { getContextSpacingValue, getSpacingValue } from "../utils/styles.ts";
 import {
   button,
   buttonContent,
@@ -67,6 +67,10 @@ export const disclosureGroup = cv({
 export const disclosure = cv({
   extend: [frame],
   class: [
+    // The padding and the gaps of the parts follow the text size of the root.
+    // The parts read lengths that resolve on the root, so a button with smaller
+    // text keeps the icon size and the `$indent` of the body.
+    "ui-spacing-em",
     // Descendants use the frame padding; the empty root must not apply it
     // again, including through caller utilities.
     "p-0!",
@@ -130,7 +134,7 @@ export const disclosure = cv({
     $iconSize(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-icon-size": getSpacingValue(value) },
+        style: { "--disclosure-icon-size": getContextSpacingValue(value) },
       };
     },
     /**
@@ -161,7 +165,7 @@ export const disclosure = cv({
     $indent(value?: string | number) {
       if (value == null) return;
       return {
-        style: { "--disclosure-ps": getSpacingValue(value) },
+        style: { "--disclosure-ps": getContextSpacingValue(value) },
       };
     },
     /**

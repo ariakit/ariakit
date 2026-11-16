@@ -77,7 +77,9 @@ function Thumbnail({ title, children }: ThumbnailProps) {
         $border
         $p={3}
         aria-hidden
-        className="grid content-center text-[0.625rem]"
+        // The small text scales the thumbnail. The spacing inside follows this
+        // text size, so the paddings, gaps, and sizes shrink with it.
+        className="ui-spacing-em grid content-center text-[0.625rem]"
       >
         <Frame $lighten $rounded="lg" $border $p={3} className="shadow-xs">
           {children}

@@ -15,7 +15,8 @@ export const breadcrumb = cv({
     "breadcrumb min-w-0",
     // Zero specificity lets caller text-* classes win.
     "ui-base:text-sm",
-    "[--breadcrumb-gap:--spacing(1)]",
+    // The gap between the steps follows the text size of the trail.
+    "ui-spacing-em [--breadcrumb-gap:--spacing(1)]",
   ],
   variants: {
     /**

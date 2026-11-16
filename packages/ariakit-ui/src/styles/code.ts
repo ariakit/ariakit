@@ -7,7 +7,8 @@ import { text } from "./text.ts";
 export const code = cv({
   extend: [edge, text],
   class: [
-    "px-1 py-[0.18em] rounded ring",
+    // The side padding follows the text size of the chip.
+    "ui-spacing-em px-1 py-[0.18em] rounded ring",
     // A layer supplies the edge channel; raw edges keep their full opacity.
     "ring-(--ak-edge)",
     // Break overflowing tokens without reducing min-content width. Preserve

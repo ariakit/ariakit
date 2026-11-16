@@ -24,6 +24,8 @@ function getAvatarSizeStyle(value?: number | (string & {})) {
 export const avatar = cv({
   extend: [frame, focus],
   class: [
+    // A number size follows the text size.
+    "ui-spacing-em",
     "relative inline-grid flex-none place-items-center",
     "font-medium whitespace-nowrap",
     // In running text, an avatar of one line fills the line box from its top,
@@ -104,7 +106,8 @@ export const avatarImage = cv({
  */
 export const avatarGroup = cv({
   class: [
-    "avatar-group flex",
+    // A number size follows the text size of the group.
+    "avatar-group ui-spacing-em flex",
     // The same default as the avatar. The overlap below needs the size here,
     // and the avatars inherit it.
     "[--avatar-size:2lh]",
