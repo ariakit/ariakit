@@ -55,9 +55,23 @@ export default function Example() {
           aria-label="Explicit width"
           className={`${cover} ak-frame-divide-4`}
         />
-        {/*
-         * A hidden sibling does not make the frame above lose its end flag.
-         */}
+      </section>
+      {/* Hidden siblings do not count as the previous or next frame. */}
+      <section aria-label="Hidden siblings" className={panel}>
+        <div hidden />
+        <template />
+        <div
+          role="group"
+          aria-label="First visible"
+          className={`${cover} ak-frame-divide`}
+        />
+        <div className="grow" />
+        <div
+          role="group"
+          aria-label="Last visible"
+          className={`${cover} ak-frame-divide`}
+        />
+        <template />
         <div hidden />
       </section>
       <section

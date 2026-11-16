@@ -1028,7 +1028,7 @@ The backdrop is a background layer, and a background layer in the element's own 
 
 The parent orientation sets the axis. In a parent with `ak-frame-row`, the frame draws its inline start and end sides, which follow the text direction. Otherwise, it draws its block start and end sides. A margin does not add sides.
 
-The utility does not need `ak-frame-cover`. It sets the same start and end flags as `ak-frame-cover`, and siblings with the `hidden` attribute after the frame do not count. Without a cover, the frame keeps its own radius, so the lines curve at rounded corners.
+The utility does not need `ak-frame-cover`. It sets the same start and end flags as `ak-frame-cover`. Siblings with the `hidden` attribute and `template` elements do not count on either side. Without a cover, the frame keeps its own radius, so the lines curve at rounded corners.
 
 The border does not count as the frame border, so the cover stretch and the radius of nested frames stay the same. The border takes the frame edge color. Add `ak-edge-inherit` for the parent edge color, and use `border-dashed` or `border-dotted` for the line style. Do not put `ak-frame-divide` on the same element as `ak-frame-border`, `ak-frame-ring`, or `ak-frame-bordering`. Two frames with `ak-frame-divide` next to each other draw two lines between them, so put it on one of them.
 

@@ -2959,6 +2959,7 @@ function getLayerEdgeContextDeclarations() {
   ]);
 }
 
+const FIRST_VISIBLE_SELECTOR = "&:nth-child(1 of :not([hidden],template))";
 const LAST_VISIBLE_SELECTOR = "&:not(:has(~ *:not([hidden],template)))";
 
 /**
@@ -3256,8 +3257,9 @@ function getFrameDivideDeclarations() {
     " ",
   );
   return [
-    // The same flags as ak-frame-cover, so the utility also works without it.
-    rule("&:first-child", set(inputs.frameStart, 1)),
+    // Flags like those of ak-frame-cover, so the utility also works without it.
+    // Hidden siblings do not count on either side.
+    rule(FIRST_VISIBLE_SELECTOR, set(inputs.frameStart, 1)),
     rule(LAST_VISIBLE_SELECTOR, set(inputs.frameEnd, 1)),
     set.borderBlockWidth(widths),
     // The query reads the orientation that the element inherits from its
@@ -3320,10 +3322,7 @@ utility(
     rule(
       "&:not([hidden])",
       set.position("relative"),
-      rule(
-        "&:nth-child(1 of :not([hidden],template))",
-        set(inputs.frameStart, 1),
-      ),
+      rule(FIRST_VISIBLE_SELECTOR, set(inputs.frameStart, 1)),
       rule(LAST_VISIBLE_SELECTOR, set(inputs.frameEnd, 1)),
       // The owner's surface covers the old edge before its translucent edge
       // paints. The flag also works when layer-transparent comes from @apply.
