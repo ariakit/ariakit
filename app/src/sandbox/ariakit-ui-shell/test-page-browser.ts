@@ -299,6 +299,32 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     expect(center.x + center.width).toBeLessThanOrEqual(end.x + 0.5);
   });
 
+  // https://github.com/ariakit/ariakit/issues/8474
+  test("lets a side part of an area take the room that the other side part leaves before its text wraps", async ({
+    q,
+    page,
+  }) => {
+    // The end text is wider than half of the area and fits beside the start.
+    await page.setViewportSize({ width: 600, height: 900 });
+    await q.checkbox("Long footer end").check();
+    const area = q.group("Footer area");
+    const start = area.locator(":scope > .shell-bar-start");
+    const end = area.locator(":scope > .shell-bar-end");
+    await expect(end).toHaveText(/Discard or save/);
+    const lineHeight = await end.evaluate((node) =>
+      Number.parseFloat(getComputedStyle(node).lineHeight),
+    );
+    const areaBox = await getBox(area);
+    const startBox = await getBox(start);
+    const endBox = await getBox(end);
+    expect(endBox.width).toBeGreaterThan(areaBox.width / 2);
+    expect(endBox.height).toBeCloseTo(lineHeight, 0);
+    // The parts stay at the edges of the area and apart.
+    expect(startBox.x).toBeCloseTo(areaBox.x, 0);
+    expect(endBox.x + endBox.width).toBeCloseTo(areaBox.x + areaBox.width, 0);
+    expect(startBox.x + startBox.width).toBeLessThan(endBox.x);
+  });
+
   test("stacks the center part of an area on narrow headers", async ({
     q,
     page,

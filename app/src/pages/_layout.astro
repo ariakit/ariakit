@@ -372,10 +372,12 @@ const drawerNavigation = navigation.map((group) => ({
           below the intro. It shows once the main body starts, after the intro,
           instead of moving down when the intro arrives. */}
       <Shell className="[&>.shell-sidebar-end:not(:has(~.shell-main>.shell-main-body))]:invisible">
+        {/* The navigation island takes the place of the center part, so the
+            header keeps the tracks that center it. */}
         <ShellHeader
           $p={2}
           $blur
-          className="text-sm [&>astro-island]:col-2 [&>astro-island]:self-stretch @max-2xl/shell:[&>astro-island]:hidden!"
+          className="text-sm grid-cols-[1fr_auto_1fr]! [&>astro-island]:col-2 [&>astro-island]:self-stretch @max-2xl/shell:[&>astro-island]:hidden!"
         >
           {/* The global styles give islands the display of their parent, so a
               hidden button would leave an empty flex item and its gap. */}

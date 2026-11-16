@@ -92,6 +92,7 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
   const [stackCenter, setStackCenter] = useState(false);
   const [areaNav, setAreaNav] = useState(false);
   const [barPadding, setBarPadding] = useState(false);
+  const [longFooterEnd, setLongFooterEnd] = useState(false);
   // A custom padding on the outer header and the inner shell's header.
   const headerPadding = barPadding ? "16px" : undefined;
   const options = (
@@ -154,6 +155,11 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
         label="Bar padding"
         checked={barPadding}
         onChange={setBarPadding}
+      />
+      <Checkbox
+        label="Long footer end"
+        checked={longFooterEnd}
+        onChange={setLongFooterEnd}
       />
     </div>
   );
@@ -282,7 +288,11 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
       <ShellFooter>
         <ShellContent role="group" aria-label="Footer area">
           <ShellStart>Ariakit</ShellStart>
-          <ShellEnd>Help</ShellEnd>
+          <ShellEnd>
+            {longFooterEnd
+              ? "Discard or save all of the changes that you made to this page"
+              : "Help"}
+          </ShellEnd>
         </ShellContent>
       </ShellFooter>
     </Shell>
