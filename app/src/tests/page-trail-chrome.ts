@@ -48,6 +48,12 @@ const pages: Array<{
     current: "Separator",
   },
   {
+    name: "Styles",
+    path: "/tailwind/styles/ak-layer/",
+    steps: [["Home", "/"], ["Styles"]],
+    current: "ak-layer",
+  },
+  {
     name: "guide",
     path: "/react/components/getting-started/",
     steps: [["Home", "/"], ["Components"]],

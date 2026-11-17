@@ -1,0 +1,53 @@
+---
+title: ak-outline
+description: Outline colors that follow the current layer.
+order: 7
+---
+
+`ak-outline` sets an `outline-color` that pushes away from the parent layer's lightness. Pair it with Tailwind's `outline-<width>` and `outline-offset-*` utilities for focus styles.
+
+```html preview
+<button
+  class="ak-layer ak-frame ak-frame-field/field ak-outline ak-outline-primary outline-2 focus-visible:outline"
+>
+  Outlined button
+</button>
+```
+
+## Setting the outline color
+
+| Utility                    | Description                                                                                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-outline`               | Required base class.                                                                                                                                          |
+| `ak-outline-<color>`       | Applies a specific outline color.                                                                                                                             |
+| `ak-outline-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-outline-color-(--outline-color)`).                                                               |
+| `ak-outline-<number>`      | Pushes outline lightness away from the parent layer (`0`–`100`).                                                                                              |
+| `ak-outline-push-<value>`  | Explicit lightness-push alias for `ak-outline-<number>`. Useful for custom properties (`ak-outline-push-(--push)`). Arbitrary/custom-property values are raw. |
+| `ak-outline-<chroma>`      | Sets chroma from a named preset.                                                                                                                              |
+| `ak-outline-<hue>`         | Sets hue from a named preset.                                                                                                                                 |
+
+## Adjustments
+
+| Utility                          | Description                     |
+| -------------------------------- | ------------------------------- |
+| `ak-outline-lighten-<number>`    | Lightens the outline.           |
+| `ak-outline-darken-<number>`     | Darkens the outline.            |
+| `ak-outline-saturate-<number>`   | Increases chroma.               |
+| `ak-outline-desaturate-<number>` | Decreases chroma.               |
+| `ak-outline-warm-<number>`       | Shifts hue toward `--hue-warm`. |
+| `ak-outline-cool-<number>`       | Shifts hue toward `--hue-cool`. |
+
+## Channels and bounds
+
+| Utility                        | Description                                                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `ak-outline-l-<value>`         | Absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                    |
+| `ak-outline-c-<value>`         | Absolute chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset. |
+| `ak-outline-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                                             |
+| `ak-outline-h-rotate-<number>` | Rotates hue by degrees.                                                                                               |
+| `ak-outline-max-<value>`       | Caps lightness or chroma.                                                                                             |
+| `ak-outline-min-<value>`       | Floors lightness or chroma.                                                                                           |
+| `ak-outline-max-l-<value>`     | Caps lightness specifically. Arbitrary/custom-property values are raw.                                                |
+| `ak-outline-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                              |
+| `ak-outline-max-c-<value>`     | Caps chroma specifically. Arbitrary/custom-property values are raw.                                                   |
+| `ak-outline-min-c-<value>`     | Floors chroma specifically. Arbitrary/custom-property values are raw.                                                 |

@@ -11,6 +11,7 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { getGuideDetail } from "#app/lib/content.ts";
 import { getOGImageItemKey, getOGImagePath } from "#app/lib/og-image.ts";
+import { getStylePages } from "#app/lib/styles.ts";
 
 const types = ["pages", "recipes", "components", "styles"] as const;
 
@@ -87,6 +88,17 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
     } as const;
   });
 
+  const styles = await getCollection("styles");
+  const stylePages = getStylePages(styles).map(({ entry, path }) => {
+    return {
+      path,
+      type: "styles",
+      imagePath: getOGImagePath(path),
+      title: entry.data.title,
+      id: entry.id,
+    } as const;
+  });
+
   const genericPages = [
     {
       path: "/",
@@ -101,7 +113,7 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
     },
   ] satisfies OGImageItem[];
 
-  return [...items, ...guidePages, ...genericPages];
+  return [...items, ...guidePages, ...stylePages, ...genericPages];
 }
 
 export function getOGImageItems(): Promise<OGImageItem[]> {

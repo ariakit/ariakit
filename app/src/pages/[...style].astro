@@ -1,0 +1,52 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import Meta from "#app/components/meta.astro";
+import PageIntro from "#app/components/page-intro.astro";
+import { mdxComponents } from "#app/components/mdx-components.react.tsx";
+import { getStylePages } from "#app/lib/styles.ts";
+import { getCollectionTrail } from "#app/lib/trail.ts";
+import { HeadingDescription } from "@ariakit/ui/components/heading.ariakit.react";
+import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
+import Layout from "#app/pages/_layout.astro";
+import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
+
+// The Styles section documents @ariakit/tailwind, which works with any
+// framework, so its pages live under /tailwind/styles/ with no framework.
+export const getStaticPaths = (async () => {
+  const pages = getStylePages(await getCollection("styles"));
+  return pages.map(({ entry, path }) => ({
+    params: { style: path.slice(1, -1) },
+    props: { entry, path },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry, path } = Astro.props;
+const { Content, headings } = await render(entry);
+const { title, description } = entry.data;
+const trail = getCollectionTrail("styles", title);
+---
+
+<Layout {title} {headings} section="styles">
+  <Meta
+    slot="meta"
+    id={entry.id}
+    type="styles"
+    {title}
+    pagePath={path}
+    {description}
+    {trail}
+  />
+  <PageIntro slot="intro" {title} {trail}>
+    <HeadingDescription>{description}</HeadingDescription>
+  </PageIntro>
+  <Prose><Content components={mdxComponents} /></Prose>
+</Layout>

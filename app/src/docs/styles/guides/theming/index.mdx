@@ -1,0 +1,72 @@
+---
+title: Theming
+description: Connect the color, radius, and spacing tokens of your Tailwind theme to Ariakit utilities.
+order: 2
+---
+
+Ariakit Tailwind integrates directly with Tailwind's theming system. Every `--color-*`, `--radius-*`, and `--spacing-*` token in your `@theme` block becomes available to the matching Ariakit utilities.
+
+```css
+@theme {
+  --spacing-px: 1px;
+
+  --color-canvas: #f5f8f7;
+  --color-primary: #2563eb;
+  --color-warning: #d97706;
+
+  --radius-card: var(--radius-2xl);
+  --spacing-card: --spacing(4);
+
+  --radius-field: var(--radius-xl);
+  --spacing-field: --spacing(2);
+
+  --radius-dialog: var(--radius-3xl);
+  --spacing-dialog: --spacing(6);
+
+  --radius-badge: calc(infinity * 1px);
+  --spacing-badge: --spacing(1.5);
+}
+
+:root {
+  color-scheme: light;
+
+  @variant dark {
+    --color-canvas: #0b1110;
+    color-scheme: dark;
+  }
+}
+```
+
+Matching radius and spacing names produce semantic frame shortcuts. For example, `ak-frame-card/card` uses `--radius-card` and `--spacing-card`. The `--spacing-px` token enables compact frame padding such as `ak-frame-field/px`.
+
+This setup follows Tailwind's `dark` variant. For a manual theme toggle, configure that variant to match your root selector or override `--color-canvas` and `color-scheme` on the selector directly.
+
+Use the custom canvas instead of repeating absolute colors:
+
+{/* prettier-ignore */}
+```diff
+- <body class="ak-layer ak-layer-white dark:ak-layer-gray-950">
++ <body class="ak-layer ak-layer-canvas">
+```
+
+## Advanced theme tokens
+
+Ariakit Tailwind exposes additional tokens beyond `--color-*`, `--radius-*`, and `--spacing-*`:
+
+| Token family | Purpose                                                                                                                                                                                                                              | Defaults                                                                                                                                                                                                                                                                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--contrast` | Global contrast preference (`0`–`100`). Utilities like `ak-text` push lightness farther from the layer as `--contrast` grows. Automatically set to `100` by the [`contrast-more`](/tailwind/styles/variants/#accessibility) variant. | `0`                                                                                                                                                                                                                                                                                                                                                 |
+| `--chroma-*` | Named chroma presets for `ak-layer-*`, `ak-text-*`, `ak-edge-*`, `ak-outline-*`, and all `-c-*` / `-max-c-*` / `-min-c-*` utilities.                                                                                                 | `grayscale` (0), `muted` (0.05), `balanced` (0.15), `vivid` (0.22), `neon` (0.32)                                                                                                                                                                                                                                                                   |
+| `--hue-*`    | Named hue presets (OKLCH degrees) for `-<hue>` / `-h-*` utilities.                                                                                                                                                                   | Absolute: `red`, `orange`, `yellow`, `green`, `cyan`, `blue`, `magenta`. Relational (relative to current hue): `complementary`, `split1`/`split2`, `analogous1`/`analogous2`, `triadic1`/`triadic2`, `tetradic1`/`tetradic2`/`tetradic3`, `square1`/`square2`/`square3`. `--hue-warm` and `--hue-cool` are used by `-warm-*` / `-cool-*` utilities. |
+| `--mix-*`    | Named `color-mix()` interpolation methods used by `ak-layer-mix-*`.                                                                                                                                                                  | Every CSS color-mix method, e.g. `oklab`, `oklch`, `lab`, `lch`, `hsl`, `hwb`, `srgb`, `srgb-linear`, `display-p3`, `rec2020`, etc. Hyphen-separated forms like `oklch-shorter-hue` are available via `ak-layer-mix-oklch-shorter-hue`.                                                                                                             |
+
+Override any of these in your own `@theme` block:
+
+```css
+@theme {
+  --contrast: 50;
+  --chroma-balanced: 0.18;
+  --hue-brand: 250;
+  --hue-warm: var(--hue-orange);
+}
+```

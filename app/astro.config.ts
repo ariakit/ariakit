@@ -22,6 +22,7 @@ import { resolvePreviewRoots } from "./src/lib/preview-discovery.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
 import { rehypeHtmlComponents } from "./src/lib/rehype.ts";
 import { remarkGalleryExamples } from "./src/lib/remark-gallery.ts";
+import { remarkPreviewFences } from "./src/lib/remark-preview-fence.ts";
 import { sourcePlugin } from "./src/lib/source.ts";
 
 const port = Number(process.env.APP_PORT) || 4321;
@@ -96,7 +97,10 @@ export default defineConfig({
   markdown: {
     syntaxHighlight: false,
     processor: unified({
-      remarkPlugins: [[remarkGalleryExamples, { roots: previewRoots, srcDir }]],
+      remarkPlugins: [
+        [remarkGalleryExamples, { roots: previewRoots, srcDir }],
+        remarkPreviewFences,
+      ],
       rehypePlugins: [
         rehypeHtmlComponents,
         rehypeHeadingIds,

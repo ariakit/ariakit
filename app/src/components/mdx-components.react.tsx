@@ -19,6 +19,7 @@ import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react";
 import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
 import { cx } from "clava";
 import type { ComponentProps } from "react";
+import { ExampleCard } from "#app/components/example-card.react.tsx";
 
 // MDX renders plain elements. These map them to Ariakit UI components so page
 // content matches the site shell. The space above a heading follows its text
@@ -89,6 +90,8 @@ export const mdxComponents = {
   li: ListItem,
   hr: Separator,
   pre: Pre,
+  // The remarkPreviewFences plugin renders html preview fences with this card.
+  ExampleCard,
 };
 
 // A page description renders its own paragraphs, so each one is the description

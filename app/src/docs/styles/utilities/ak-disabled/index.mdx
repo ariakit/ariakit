@@ -1,0 +1,18 @@
+---
+title: ak-disabled
+description: Disabled contrast for custom control surfaces.
+order: 3
+---
+
+Applies the same reduced contrast as `:disabled`, `[disabled]`, and `[aria-disabled="true"]`. Use it on a custom control surface, such as a label whose input is disabled. Descendant layers and text inherit the contrast settings.
+
+Enabled descendants also inherit these settings. For example, a control in the first legend of a disabled fieldset remains operable, but inherits reduced contrast, including under `prefers-contrast: more`. There is no public utility to reset that inherited contrast.
+
+```html preview
+<label class="ak-layer ak-disabled ak-ink-0">
+  <input type="file" disabled class="sr-only" />
+  Upload attachment
+</label>
+```
+
+The utility changes contrast settings only. Use `ak-ink-0` to dim text to the disabled contrast floor. Keep the disabled attribute on the input to prevent interaction.

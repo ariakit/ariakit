@@ -1,0 +1,61 @@
+---
+title: Variants
+description: Apply utilities based on the appearance of the parent layer or on user preferences.
+order: 10
+---
+
+Variants apply utilities conditionally based on the parent layer or user preference. Use them like any Tailwind variant: `ak-dark:ak-ink-80`.
+
+## Layer appearance
+
+These variants are scoped to an `ak-layer` container and match based on the layer's computed lightness.
+
+| Variant         | Matches when the parent layer is…    |
+| --------------- | ------------------------------------ |
+| `ak-dark`       | Dark (would render white-ish text).  |
+| `ak-light`      | Light (would render black-ish text). |
+| `ak-dark-high`  | The darkest tier.                    |
+| `ak-dark-low`   | A dark mid-tier.                     |
+| `ak-light-low`  | A light mid-tier.                    |
+| `ak-light-high` | The lightest tier.                   |
+
+Each layer appearance variant also has a `not-*` counterpart, such as
+`not-ak-dark`, `not-ak-light`, and `not-ak-dark-high`.
+
+```html preview
+<div class="ak-layer ak-layer-canvas">
+  <p class="ak-dark:ak-ink-80 ak-light:ak-ink-70">
+    Appearance-adjusted secondary text.
+  </p>
+
+  <div
+    class="ak-layer ak-frame ak-frame-field/field ak-frame-border ak-dark-high:ak-edge-20 ak-light-high:ak-edge-10"
+  >
+    Stronger edges on the darkest surfaces.
+  </div>
+
+  <p class="not-ak-dark:ak-ink-60">
+    Subdued when the current layer is not dark.
+  </p>
+</div>
+```
+
+> `ak-dark` / `ak-light` and their band variants require a parent `ak-layer`. They're implemented as `@container` style queries, so they silently fail to match outside a layer rather than falling back to a default. Negated variants match whenever the queried layer value is absent or different, so wrap them in an `ak-layer` when relying on layer appearance.
+
+For `::before` and `::after`, the originating element can be the query container. For example, `ak-light:before:border-t` on an `ak-layer` element draws a top border on its pseudo-element when that element's own layer is light. This also works when its layer is inverted relative to the parent.
+
+## Accessibility
+
+| Variant         | Matches when…                                                                                                                                                                                           |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `contrast-more` | The user has requested higher contrast (`@media (prefers-contrast: more)`). Automatically sets `--contrast: 100`, which pushes `ak-text`, `ak-edge`, and `ak-outline` lightness farther from the layer. |
+
+You can opt extra utilities into high-contrast mode with `contrast-more:`:
+
+```html preview
+<button
+  class="ak-layer ak-frame ak-frame-field/field ak-frame-ring contrast-more:ak-frame-border-2"
+>
+  Extra border weight in high-contrast mode.
+</button>
+```

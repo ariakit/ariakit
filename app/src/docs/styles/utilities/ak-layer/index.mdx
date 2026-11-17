@@ -1,0 +1,148 @@
+---
+title: ak-layer
+description: Background, text, and border colors for a surface.
+order: 1
+---
+
+Layers are the foundation of Ariakit Styles. Every element with `ak-layer` is a surface with its own background, text, and edge colors, so only use it when the element represents an intentional material. Use `ak-layer-lighten-*` for raised surfaces, `ak-layer-darken-*` for recessed surfaces, and numeric `ak-layer-*` modifiers for appearance-aware separation that does not imply a fixed depth direction.
+
+```html
+<body class="ak-layer ak-layer-canvas">
+  <article class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card">
+    Raised card
+  </article>
+  <div class="ak-layer ak-layer-darken-3 ak-frame ak-frame-field/field">
+    Recessed well
+  </div>
+  <button class="ak-layer ak-layer-6 ak-frame ak-frame-field/field">
+    Appearance-aware control
+  </button>
+</body>
+```
+
+A layer automatically sets border and ring colors through the shared `--ak-edge` color. Use [`ak-frame-border`](/tailwind/styles/ak-frame/) or [`ak-frame-ring`](/tailwind/styles/ak-frame/) to display them:
+
+```html preview
+<div class="ak-layer ak-frame ak-frame-border">Border from ak-layer</div>
+<div class="ak-layer ak-frame ak-frame-ring">Ring from ak-layer</div>
+```
+
+Use [`ak-edge`](/tailwind/styles/ak-edge/) to fine-tune border and ring colors without touching the layer background.
+
+Some controls open a layer only to give their descendants a color context, not to paint a new surface. `ak-layer` still paints the resolved color, which is invisible against the parent but opaque, so it covers anything drawn behind the control. Add `ak-layer-transparent` when the element must stay see-through until something moves its color:
+
+```html preview
+<div class="ak-layer relative isolate">
+  <div class="ak-layer ak-layer-10 absolute -z-1 inset-0"></div>
+  <button
+    class="ak-layer ak-layer-transparent hover:ak-state-10 ak-frame ak-frame-field/field"
+  >
+    Lets the surface behind it show through, and paints on hover
+  </button>
+</div>
+```
+
+What makes the element paint is the presence of another utility, not the resolved color. Nearly every other `ak-layer-*` and `ak-state-*` utility counts, including under a variant such as `hover:` or `aria-selected:`, and including the ones that only constrain the result. So `ak-layer-transparent ak-layer-max-l-100` paints even though that bound never changes anything.
+
+The exception to that paint rule is the longhands that need a partner utility. `ak-layer-mix-color-*`, `ak-layer-mix-amount-*` and `ak-layer-mix-method-*` only fill in values that the mixing utilities read, and `ak-layer-contrast-*` only fills in the amount that `ak-layer-contrast` reads. Without that partner on the same element, the color never moves and the element stays see-through.
+
+Only the background is suppressed: the element still resolves `--ak-text` and `--ak-edge`, so `ak-frame-border` on the same element still draws its edge. Those colors come from the layer the element would have painted, not from whatever now shows through it, so keep the two close in lightness, or set the color context on the element that does the painting.
+
+Do not declare a `--color-transparent` theme key. `ak-layer-*` resolves colors through `--value(--color-*, [color])`, so the key would make `ak-layer-transparent` compile as `ak-layer-<color>` too. The layer would resolve from `transparent`, and because the pipeline keeps the source alpha, the element and every descendant that inherits `--ak-layer` and `--ak-text` would render fully transparent, text included. Tailwind's default theme does not declare it.
+
+Custom backgrounds can read the resolved `--ak-layer` color and `var(--ak-layer-parent, canvas)`. See [Treat color as a material finish](/tailwind/styles/mental-model/#treat-color-as-a-material-finish) for patterns that stay related to their contrast context.
+
+## Setting the layer color
+
+| Utility                   | Description                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer`                | Required base class. Sets background, text, border, and ring colors.                                                                                                                                                                                                                                                                                                |
+| `ak-layer-<color>`        | Sets the layer to a specific color. Accepts any theme color (e.g. `ak-layer-primary`, `ak-layer-blue-500`) or arbitrary value (`ak-layer-[#131418]`).                                                                                                                                                                                                               |
+| `ak-layer-color-<color>`  | Explicit color-only alias. Useful for custom properties without a typed arbitrary value hint (`ak-layer-color-(--surface)`).                                                                                                                                                                                                                                        |
+| `ak-layer-transparent`    | Paints only while another `ak-layer-*` or `ak-state-*` utility applies, including under a variant. Longhands that need a partner utility, such as `ak-layer-mix-color-*` and `ak-layer-contrast-*`, do not count on their own. At rest the element keeps its color context for descendants without painting a background, so whatever sits behind it stays visible. |
+| `ak-layer-<number>`       | Applies an appearance-aware lightness offset relative to the selected source, which defaults to the parent layer (`0`–`100`). This provides separation rather than fixed elevation. Bare `ak-layer` doesn't shift lightness on its own. Arbitrary values are raw, e.g. `ak-layer-[calc(l+0.1)]`.                                                                    |
+| `ak-layer-offset-<value>` | Explicit lightness-offset alias for `ak-layer-<number>`. Useful for custom properties without a typed arbitrary value hint (`ak-layer-offset-(--depth)`). Arbitrary/custom-property values are raw.                                                                                                                                                                 |
+| `ak-layer-<chroma>`       | Sets chroma from a named preset, e.g. `ak-layer-vivid`, `ak-layer-muted`. See `--chroma-*` tokens.                                                                                                                                                                                                                                                                  |
+| `ak-layer-<hue>`          | Sets hue from a named preset, e.g. `ak-layer-red`, `ak-layer-blue`. See `--hue-*` tokens.                                                                                                                                                                                                                                                                           |
+
+## Lightness adjustments
+
+| Utility                      | Description                                                                                                                                                                                                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%, useful for intentionally raised or exposed surfaces. Arbitrary values are raw (`ak-layer-lighten-[0.05]`).                                                                                                                 |
+| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%, useful for intentionally recessed or pressed surfaces. Arbitrary values are raw (`ak-layer-darken-[0.05]`).                                                                                                                 |
+| `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                                                                                                                    |
+| `ak-layer-contrast`          | Applies a parent-directed tonal target (preset `30`), preserving hue and chroma, then keeps at least 3:1 against the parent layer. Lightness stays unchanged when it is already farther in that direction. See [Layer contrast floor](#layer-contrast-floor). |
+| `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `30`). `30` keeps 3:1, and each further `30` multiplies the ratio by 3, so lower amounts don't guarantee 3:1. Sets the amount only. Pair it with `ak-layer-contrast`, which is what reads the amount.              |
+| `ak-layer-l-<value>`         | Sets absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                                                                                                                                                       |
+| `ak-layer-max-<value>`       | Caps lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values) or caps chroma with a named chroma preset (`ak-layer-max-muted`).                                                                                               |
+| `ak-layer-min-<value>`       | Floors lightness or chroma, same form as `max-*`.                                                                                                                                                                                                             |
+| `ak-layer-max-l-<value>`     | Caps lightness specifically. Useful for custom properties without a typed arbitrary value hint (`ak-layer-max-l-(--max-l)`). Arbitrary/custom-property values are raw.                                                                                        |
+| `ak-layer-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                                                                                                                                                                      |
+
+## Layer contrast floor
+
+`ak-layer-contrast` keeps the layer at 3:1 or more against the parent layer, which is the contrast that [WCAG 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) asks for a fill that identifies a control or its state, such as a checked checkbox. It first moves the lightness by the contrast amount, then moves only a color that is still short of the ratio, like the [edge contrast floor](/tailwind/styles/ak-edge/#contrast-floor). The floor aims 2.5% over the ratio, and a color that already reaches that keeps its color.
+
+```html
+<div class="ak-layer ak-layer-primary">
+  <input
+    type="checkbox"
+    class="ak-layer ak-layer-primary ak-layer-contrast ak-frame ak-frame-field/field"
+  />
+</div>
+```
+
+- The amount sets the ratio. The default, `30`, keeps 3:1, and each further `30` multiplies the ratio by 3, so `41` keeps about 4.5:1 and `53` about 7:1. Lower amounts, such as `ak-layer-contrast-10` at about 1.44:1, separate a surface without the 3:1 guarantee.
+- The [`contrast-more`](/tailwind/styles/variants/#accessibility) variant raises the ratio by half, so the default keeps 4.5:1. [`ak-disabled`](/tailwind/styles/ak-disabled/) lowers it with `--ak-disabled-contrast-scale`, to 1.5:1 by default.
+- The floor moves the color in the same direction as the lightness shift, away from the parent layer, and it follows [`ak-outset`](/tailwind/styles/ak-outset/). A ratio that this direction can't reach, such as 7:1 against a mid-tone parent layer, ends at black or white.
+- A layer stays out of the forbidden mid-lightness range, so a color that the floor moves into that range continues to its far side and can land well over the ratio.
+- A color that moves keeps its chroma and hue where the sRGB gamut allows, and it is clipped to sRGB. A color that passes keeps its color, even outside sRGB. The result is opaque, so a translucent layer becomes opaque.
+- The floor applies to the resting color. State utilities, such as `hover:ak-state-6`, apply on top of it and can move it under the ratio.
+- Like the edge floor, it measures colors clipped to the sRGB gamut, and in Firefox it can land slightly under the ratio on a few parent layers. A layer without a parent layer keeps its color.
+
+## Hue adjustments
+
+| Utility                      | Description                                                                                                                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-warm-<number>`     | Shifts hue toward `--hue-warm` by `<number>`%, along the shortest arc.                                                                                                        |
+| `ak-layer-cool-<number>`     | Shifts hue toward `--hue-cool` by `<number>`%, along the shortest arc.                                                                                                        |
+| `ak-layer-h-<value>`         | Sets hue from degrees or a named token. Relational presets such as `ak-layer-h-complementary`, `ak-layer-h-analogous1`, and `ak-layer-h-triadic1` derive from the source hue. |
+| `ak-layer-h-rotate-<number>` | Rotates the source hue by numeric degrees, for example `ak-layer-h-rotate-30`.                                                                                                |
+
+## Chroma (saturation) adjustments
+
+| Utility                        | Description                                                                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-saturate-<number>`   | Increases chroma by `<number>`%.                                                                                                                        |
+| `ak-layer-desaturate-<number>` | Decreases chroma by `<number>`%.                                                                                                                        |
+| `ak-layer-c-<value>`           | Sets absolute chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset.                              |
+| `ak-layer-max-c-<value>`       | Caps chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset.                                       |
+| `ak-layer-min-c-<value>`       | Floors chroma, same form.                                                                                                                               |
+| `ak-layer-max-c-auto`          | Automatically caps chroma based on layer lightness. Peaks at the mid-luminance threshold and tapers toward extremes so colors stay within the P3 gamut. |
+
+## Mixing with another color
+
+| Utility                        | Description                                                                                                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ak-layer-mix`                 | Enables mixing. By default, mixes with the parent layer at `50%` using the `oklab` interpolation method.                                                           |
+| `ak-layer-mix-<color>`         | Enables mixing with a color, e.g. `ak-layer-mix-primary` or `ak-layer-mix-[#000]`.                                                                                 |
+| `ak-layer-mix-color-<color>`   | Sets the mix color for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-color-(--mix-color)`).                                                          |
+| `ak-layer-mix-<number>`        | Enables mixing and sets the mix amount (`0`–`100`).                                                                                                                |
+| `ak-layer-mix-amount-<value>`  | Sets the amount for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-amount-(--mix-amount)`). Arbitrary/custom-property values are raw CSS percentages. |
+| `ak-layer-mix-<method>`        | Sets the interpolation method, e.g. `ak-layer-mix-oklch`, `ak-layer-mix-oklch-shorter-hue`, `ak-layer-mix-srgb`. See the `--mix-*` tokens.                         |
+| `ak-layer-mix-method-<method>` | Sets the interpolation method for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-method-(--mix-method)`).                                             |
+
+Combine freely: `ak-layer ak-layer-primary ak-layer-mix-30 ak-layer-mix-oklch` mixes the primary color 30% into the parent layer using OKLCH.
+
+The explicit `ak-layer-mix-color-*`, `ak-layer-mix-amount-*`, and `ak-layer-mix-method-*` longhands configure the mix color, amount, and method, but don't enable mixing by themselves. Pair them with `ak-layer-mix` when setting any of these values independently. Because they leave the color where it was, they also don't count as a color change for `ak-layer-transparent`. The same applies to `ak-layer-contrast-*`, which needs `ak-layer-contrast`.
+
+## Fading toward the parent layer
+
+| Utility                  | Description                                                                                                                                                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-fade-<number>` | Fades the layer toward the parent layer by `<number>` (`0`–`100`) after the lightness offset, push, and bounds. Arbitrary and custom-property values are raw CSS percentages (`ak-layer-fade-[35%]`, `ak-layer-fade-(--fade)`). |
+
+`ak-layer-mix-*` applies before the lightness offset, push, and bounds, so it can't fade a surface whose push always reaches its bound, such as an inverted surface. `ak-layer-fade-*` fades the color that they produce. For example, `ak-layer ak-layer-push-100 ak-layer-min-l-23 ak-layer-max-l-96 ak-layer-fade-80` keeps 20% of the pushed surface over the parent layer. `ak-layer-contrast` and the `ak-state-*` utilities apply after the fade.
+
+When a layer with a lightness offset or push fades into the forbidden mid-lightness range, it stays on the far side of the range from the parent layer, like `ak-layer-push-*`. Otherwise, a fade on a mid-tone parent layer could end at the lightness of the parent layer and disappear. Other faded colors move to the nearest side of the range.

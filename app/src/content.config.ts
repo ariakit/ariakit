@@ -44,6 +44,22 @@ const guides = defineCollection({
   }),
 });
 
+// The pages of the Styles section. Guides and utilities share one URL
+// namespace, so the id keeps the group folder only for the navigation.
+const styles = defineCollection({
+  loader: glob({
+    pattern: "{guides,utilities}/*/index.mdx",
+    base: join(import.meta.dirname, "docs/styles"),
+    generateId: ({ entry }) => entry.replace(/\/index\.mdx$/, ""),
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    // The place of the page in its group, so folder names stay plain slugs.
+    order: z.number(),
+  }),
+});
+
 const components = defineCollection({
   loader: componentLoader({
     base: join(import.meta.dirname, "component-docs"),
@@ -117,6 +133,7 @@ const references = defineCollection({
 
 export const collections = {
   guides,
+  styles,
   components,
   recipes,
   descriptions,
