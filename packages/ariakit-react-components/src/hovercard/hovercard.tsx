@@ -166,6 +166,11 @@ interface DisableEventOnTransitParams {
   refreshEnterPoint?: boolean;
 }
 
+// The mouse isn't moving toward the hovercard (null), or it is, and the safe
+// area stopped the event from reaching the elements under the mouse (blocked)
+// or let it through (passed).
+type TransitState = "blocked" | "passed" | null;
+
 // These events can trigger focus on other elements and close the hovercard
 // while the mouse is still moving toward it.
 function disableEventOnTransit({
@@ -174,24 +179,22 @@ function disableEventOnTransit({
   enterPointRef,
   disablePointerEvents,
   refreshEnterPoint = false,
-}: DisableEventOnTransitParams) {
+}: DisableEventOnTransitParams): TransitState {
   const enterPoint = enterPointRef.current;
-  if (!enterPoint) return false;
+  if (!enterPoint) return null;
 
   const currentPoint = getEventPoint(event);
   const polygon = getElementPolygon(element, enterPoint);
-  if (!isPointInPolygon(currentPoint, polygon)) return false;
+  if (!isPointInPolygon(currentPoint, polygon)) return null;
 
   if (refreshEnterPoint) {
     enterPointRef.current = currentPoint;
   }
 
-  if (disablePointerEvents(event)) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-
-  return true;
+  if (!disablePointerEvents(event)) return "passed";
+  event.preventDefault();
+  event.stopPropagation();
+  return "blocked";
 }
 
 // When the hovercard element has focus, we should move focus back to the anchor
@@ -326,7 +329,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       let restFrame = 0;
       let lastTransitTime = 0;
       let lastTransitEvent: MouseEvent | null = null;
-      let lastTransitTarget: Element | null = null;
+      let lastTransitPath: EventTarget[] = [];
       let lastTransitBlocked = false;
       const stopRestCheck = () => {
         cardWindow.cancelAnimationFrame(restFrame);
@@ -372,6 +375,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           shiftKey: event.shiftKey,
         });
         target.dispatchEvent(move);
+        return move;
       };
       // When the mouse stops on its way to the hovercard, the safe area ends,
       // and the hovercard hides as when the mouse leaves the safe area: after
@@ -390,29 +394,47 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         restFrame = 0;
         enterPointRef.current = null;
         const event = lastTransitEvent;
-        const target = lastTransitTarget;
+        const path = lastTransitPath;
         lastTransitEvent = null;
-        lastTransitTarget = null;
+        lastTransitPath = [];
         if (!event) return;
+        if (!store) return;
         // The safe area stopped the last move from reaching the elements under
         // the mouse, such as another anchor on the way to the hovercard. They
         // get it now as an ordinary move, which also runs the hide check in
         // onMouseMove.
-        if (lastTransitBlocked && target?.isConnected) {
-          replayMove(event, target);
+        const target = path[0];
+        let move: MouseEvent | null = null;
+        if (lastTransitBlocked && isElement(target) && target.isConnected) {
+          move = replayMove(event, target);
+        }
+        // onMouseMove ignores moves while the mouse doesn't count as moving,
+        // such as after a key press, so the hide check runs here then.
+        if (move && isMouseMoving()) return;
+        if (hideTimeoutRef.current) return;
+        const { anchorElement, disclosureElement } = store.getState();
+        if (
+          isMovingOnHovercard({
+            target: { path, view: event.view },
+            card: element,
+            hoverElements: [anchorElement, disclosureElement],
+            nested: nestedHovercardsRef.current,
+          })
+        ) {
           return;
         }
-        if (hideTimeoutRef.current) return;
-        if (!hideOnHoverOutsideProp(event)) return;
+        if (!hideOnHoverOutsideProp(move ?? event)) return;
         scheduleHide();
       };
-      const trackTransit = (event: MouseEvent, target: EventTarget | null) => {
+      const trackTransit = (
+        event: MouseEvent,
+        path: EventTarget[],
+        blocked: boolean,
+      ) => {
         lastTransitTime = cardWindow.performance.now();
         lastTransitEvent = event;
-        lastTransitTarget = isElement(target) ? target : null;
-        // Read during the dispatch, before later listeners can prevent it. The
-        // safe area prevents the moves that it stops.
-        lastTransitBlocked = event.defaultPrevented;
+        lastTransitPath = path;
+        lastTransitBlocked = blocked;
         if (restFrame) return;
         restFrame = cardWindow.requestAnimationFrame(checkTransitRest);
       };
@@ -458,15 +480,15 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         // Enter point will be null when the user hovers over the hovercard
         // element. Skip the hide timeout while the mouse is moving toward the
         // hovercard, even when disabling pointer events isn't allowed.
-        const movingTowardElement = disableEventOnTransit({
+        const transit = disableEventOnTransit({
           event,
           element,
           enterPointRef,
           disablePointerEvents: disablePointerEventsProp,
           refreshEnterPoint: true,
         });
-        if (movingTowardElement) {
-          trackTransit(event, path[0] ?? null);
+        if (transit) {
+          trackTransit(event, path, transit === "blocked");
           return;
         }
         stopRestCheck();

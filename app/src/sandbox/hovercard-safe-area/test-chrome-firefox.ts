@@ -49,6 +49,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(secondCard).toHaveAttribute("data-open");
   });
 
+  // https://github.com/ariakit/ariakit/pull/8488#discussion_r4606594227
+  test("a key press while the mouse stops on the way to the hovercard still hides it", async ({
+    page,
+    q,
+  }) => {
+    const firstLink = q.link("First article");
+    const firstCard = q.dialog("First article");
+    const secondLink = q.link("Second article");
+    await openHovercard(firstLink, firstCard);
+    await moveDownTo(page, firstLink, secondLink);
+    // The key press usually lands before the stop ends the safe area. After it,
+    // the mouse no longer counts as moving.
+    await page.keyboard.press("Shift");
+    await test.expect(firstCard).toBeHidden();
+  });
+
   test("a short stop on the way to the hovercard keeps it open when the mouse reaches it", async ({
     page,
     q,
