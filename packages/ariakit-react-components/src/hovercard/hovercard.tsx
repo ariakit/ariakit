@@ -21,6 +21,7 @@ import {
   getDocument,
   getWindow,
   hasFocusWithin,
+  isElement,
   chain,
   invariant,
 } from "@ariakit/utils";
@@ -59,6 +60,11 @@ import {
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+// The safe area between the anchor and the hovercard is valid only while the
+// mouse moves through it. A mouse that moves fires mousemove about once per
+// frame, so a gap of three frames at 60Hz means that the mouse stopped.
+const TRANSIT_REST_DELAY = 50;
 
 // Whether the window is the one of a frame inside the element, or of a frame
 // nested in one. A page can hide its own frameElement, so this finds the frame
@@ -316,9 +322,21 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         const cards = [element, ...nestedHovercardsRef.current];
         pressedOnHovercard = cards.some((card) => isOnHovercard(card, target));
       };
-      // Hides the hovercard after a short delay (hideTimeout).
+      const cardWindow = getWindow(element);
+      let restFrame = 0;
+      let lastTransitTime = 0;
+      let lastTransitEvent: MouseEvent | null = null;
+      let lastTransitTarget: Element | null = null;
+      let lastTransitBlocked = false;
+      const stopRestCheck = () => {
+        cardWindow.cancelAnimationFrame(restFrame);
+        restFrame = 0;
+      };
+      // Hides the hovercard after a short delay (hideTimeout). A pending hide
+      // ends the transit, so later moves don't count as a stop in it.
       const scheduleHide = () => {
         if (!store) return;
+        stopRestCheck();
         const { hideTimeout, timeout } = store.getState();
         hideTimeoutRef.current = window.setTimeout(() => {
           hideTimeoutRef.current = 0;
@@ -335,6 +353,69 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           store.hide();
         }, hideTimeout ?? timeout);
       };
+      // Dispatches the mouse move again at the same position.
+      const replayMove = (event: MouseEvent, target: Element) => {
+        const view = getWindow(target);
+        const move = new view.MouseEvent("mousemove", {
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+          view,
+          clientX: event.clientX,
+          clientY: event.clientY,
+          screenX: event.screenX,
+          screenY: event.screenY,
+          buttons: event.buttons,
+          altKey: event.altKey,
+          ctrlKey: event.ctrlKey,
+          metaKey: event.metaKey,
+          shiftKey: event.shiftKey,
+        });
+        target.dispatchEvent(move);
+      };
+      // When the mouse stops on its way to the hovercard, the safe area ends,
+      // and the hovercard hides as when the mouse leaves the safe area: after
+      // the hide timeout, unless the mouse reaches it or its anchor first. The
+      // check runs in a frame. Browsers that align mouse moves with frames,
+      // such as Chrome and Firefox, dispatch pending moves before it, so a busy
+      // main thread doesn't look like a stop there.
+      const checkTransitRest = () => {
+        if (
+          cardWindow.performance.now() - lastTransitTime <
+          TRANSIT_REST_DELAY
+        ) {
+          restFrame = cardWindow.requestAnimationFrame(checkTransitRest);
+          return;
+        }
+        restFrame = 0;
+        enterPointRef.current = null;
+        const event = lastTransitEvent;
+        const target = lastTransitTarget;
+        lastTransitEvent = null;
+        lastTransitTarget = null;
+        if (!event) return;
+        // The safe area stopped the last move from reaching the elements under
+        // the mouse, such as another anchor on the way to the hovercard. They
+        // get it now as an ordinary move, which also runs the hide check in
+        // onMouseMove.
+        if (lastTransitBlocked && target?.isConnected) {
+          replayMove(event, target);
+          return;
+        }
+        if (hideTimeoutRef.current) return;
+        if (!hideOnHoverOutsideProp(event)) return;
+        scheduleHide();
+      };
+      const trackTransit = (event: MouseEvent, target: EventTarget | null) => {
+        lastTransitTime = cardWindow.performance.now();
+        lastTransitEvent = event;
+        lastTransitTarget = isElement(target) ? target : null;
+        // Read during the dispatch, before later listeners can prevent it. The
+        // safe area prevents the moves that it stops.
+        lastTransitBlocked = event.defaultPrevented;
+        if (restFrame) return;
+        restFrame = cardWindow.requestAnimationFrame(checkTransitRest);
+      };
       const onMouseMove = (event: MouseEvent) => {
         if (!store) return;
         const path = event.composedPath();
@@ -344,6 +425,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         // press doesn't move focus, such as a drag on a resize grip that goes
         // past the hovercard's edge.
         if (pressedOnHovercard && event.buttons) {
+          stopRestCheck();
           clearHideTimeout();
           return;
         }
@@ -366,6 +448,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           // hovercard is open, keep track of the mouse position so we can use
           // the last point before the mouse leaves it.
           enterPointRef.current = hoveredElement ? getEventPoint(event) : null;
+          stopRestCheck();
           clearHideTimeout();
           return;
         }
@@ -382,7 +465,11 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           disablePointerEvents: disablePointerEventsProp,
           refreshEnterPoint: true,
         });
-        if (movingTowardElement) return;
+        if (movingTowardElement) {
+          trackTransit(event, path[0] ?? null);
+          return;
+        }
+        stopRestCheck();
         if (!hideOnHoverOutsideProp(event)) return;
         scheduleHide();
       };
@@ -416,6 +503,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
             (element) => element && path.includes(element),
           );
           enterPointRef.current = onHoverElement ? [point.x, point.y] : null;
+          stopRestCheck();
           clearHideTimeout();
           return;
         }
@@ -433,6 +521,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         addGlobalEventListener("pointerdown", onPointerDown, true),
         addGlobalEventListener("mousemove", onMouseMove, true),
         addScrollHoverListener(onScrollHover),
+        stopRestCheck,
         clearHideTimeout,
       );
     }, [
