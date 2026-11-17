@@ -154,15 +154,52 @@ function getItems(group: HTMLElement, root: HTMLElement) {
   });
 }
 
-/** The box of an element from the start of the group's scrollable content. */
-function getRect(group: HTMLElement, element: HTMLElement): ItemRect {
+/**
+ * The size of the border box of an element in its own CSS pixels, with no CSS
+ * zoom or transform of its ancestors.
+ */
+function getLayoutSize(element: HTMLElement) {
+  const style = getWindow(element).getComputedStyle(element);
+  // The offset size is rounded to whole pixels, which moves a box that is far
+  // from the start of a scaled group. The computed size keeps the fractions.
+  if (style.boxSizing === "border-box") {
+    const width = Number.parseFloat(style.width);
+    const height = Number.parseFloat(style.height);
+    if (width && height) return { width, height };
+  }
+  return { width: element.offsetWidth, height: element.offsetHeight };
+}
+
+/** How many screen pixels a CSS pixel takes, from a size of both kinds. */
+function getScale(size: number, layoutSize: number) {
+  if (!size) return 1;
+  if (!layoutSize) return 1;
+  return size / layoutSize;
+}
+
+/**
+ * The box of an element from the start of the group's scrollable content, in
+ * CSS pixels of the group. The root of the glider sits at that start, so it
+ * scrolls with the items.
+ */
+function getRect(
+  group: HTMLElement,
+  root: HTMLElement,
+  element: HTMLElement,
+): ItemRect {
   const groupRect = group.getBoundingClientRect();
+  const rootRect = root.getBoundingClientRect();
   const rect = element.getBoundingClientRect();
+  // The boxes from getBoundingClientRect() include the scale of the group from
+  // CSS zoom or a transform, but the CSS lengths that the glider writes do not.
+  const layoutSize = getLayoutSize(group);
+  const scaleX = getScale(groupRect.width, layoutSize.width);
+  const scaleY = getScale(groupRect.height, layoutSize.height);
   return {
-    x: rect.left - groupRect.left - group.clientLeft + group.scrollLeft,
-    y: rect.top - groupRect.top - group.clientTop + group.scrollTop,
-    width: rect.width,
-    height: rect.height,
+    x: (rect.left - rootRect.left) / scaleX,
+    y: (rect.top - rootRect.top) / scaleY,
+    width: rect.width / scaleX,
+    height: rect.height / scaleY,
   };
 }
 
@@ -584,7 +621,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     if (!hasOpaqueSurface(selectedTrack.box)) return;
     const path = new Map<HTMLElement, ItemRect>();
     for (const element of getItems(group, root)) {
-      const rect = getRect(group, element);
+      const rect = getRect(group, root, element);
       if (!isOnPath(from, to, rect)) continue;
       path.set(element, rect);
     }
@@ -609,7 +646,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     for (const [element, rect] of path) {
       if (element === target) continue;
       // Items keep their places, because other items look selected too.
-      const { width, height } = element.getBoundingClientRect();
+      const { width, height } = getRect(group, root, element);
       const copyRect = { ...rect, width, height };
       selectedCopies.push(
         createCopy({
@@ -621,7 +658,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       );
     }
     const idleState = target.matches(":hover") ? "hover" : "idle";
-    const idleRect = getRect(group, target);
+    const idleRect = getRect(group, root, target);
     const idleCopy = createCopy({
       element: target,
       rect: idleRect,
@@ -681,7 +718,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       hideTrack(hoverTrack);
       return;
     }
-    const rect = getRect(group, hoveredItem);
+    const rect = getRect(group, root, hoveredItem);
     moveTrack({ track: hoverTrack, target: hoveredItem, rect, animated });
   };
 
@@ -712,8 +749,8 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     if (selectedItem) {
       // The box can be between two items when the selection changes again.
       const from =
-        travels || refreshes ? getRect(group, selectedTrack.box) : null;
-      const to = getRect(group, selectedItem);
+        travels || refreshes ? getRect(group, root, selectedTrack.box) : null;
+      const to = getRect(group, root, selectedItem);
       const offsets = getInlineOffsets(group, to);
       findFollowers();
       moveTrack({

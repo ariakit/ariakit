@@ -1,25 +1,6 @@
 import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-
-// The glider is presentation with aria-hidden, so it has no accessible name.
-// These probes read its selected box from the DOM and compare it with the box
-// of the item that the user selected.
-function getBoxOffset(item: Locator) {
-  return item.evaluate((element) => {
-    const control = element.closest(".control");
-    const group = control?.closest(".glider-group");
-    const box = group?.querySelector('.glider-box[data-selected="true"]');
-    if (!control || !box) return Number.POSITIVE_INFINITY;
-    const itemRect = control.getBoundingClientRect();
-    const boxRect = box.getBoundingClientRect();
-    return Math.max(
-      Math.abs(itemRect.left - boxRect.left),
-      Math.abs(itemRect.top - boxRect.top),
-      Math.abs(itemRect.width - boxRect.width),
-      Math.abs(itemRect.height - boxRect.height),
-    );
-  });
-}
+import { getBoxOffset, getItemsToScale } from "./test-helpers.ts";
 
 function countBoxes(article: Locator) {
   return article.evaluate(
@@ -51,6 +32,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     for (const item of items) {
       await item.click();
       await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(0.5);
+    }
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8489
+  test("rests the selected box on the selected item under a scale transform", async ({
+    page,
+    q,
+  }) => {
+    await page.addStyleTag({
+      content: "body { transform-origin: 0 0; transform: scale(2); }",
+    });
+    for (const item of getItemsToScale(q)) {
+      await item.click();
+      // The boxes are measured in screen pixels, which are twice the CSS pixels
+      // here, so the tolerance doubles too.
+      await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(1);
     }
   });
 
