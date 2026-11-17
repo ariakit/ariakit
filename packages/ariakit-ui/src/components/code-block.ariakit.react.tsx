@@ -951,6 +951,11 @@ function getCodeTabIndex(
   return;
 }
 
+// The scroll area of a code panel is the pre element in it.
+function getCodeScrollElement(panel: HTMLElement) {
+  return panel.querySelector<HTMLElement>(":scope > pre");
+}
+
 function renderPlainLines(children: React.ReactNode) {
   if (typeof children !== "string") return children;
   // The same markup as highlighted lines, so the padding, the line numbers, and
@@ -1155,10 +1160,20 @@ export interface CodeBlockPanelProps
  * @example
  * <CodeBlockPanel single html={selected.html} copy={selected.text} $prompt />
  */
-export function CodeBlockPanel(props: CodeBlockPanelProps) {
+export function CodeBlockPanel({
+  scrollElement = getCodeScrollElement,
+  ...props
+}: CodeBlockPanelProps) {
   // The tab panel passes its own props and the props of the code, such as html,
-  // copy, and $lineNumbers, to the code it renders.
-  return <TabPanel {...props} render={<CodeBlockCode />} />;
+  // copy, and $lineNumbers, to the code it renders. The code scrolls, not the
+  // panel around it, so scroll restoration follows the code.
+  return (
+    <TabPanel
+      scrollElement={scrollElement}
+      {...props}
+      render={<CodeBlockCode />}
+    />
+  );
 }
 
 type CodeBlockSkeletonTokenKind = NonNullable<
