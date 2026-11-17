@@ -61,6 +61,22 @@ async function reduceMotion(page: Page) {
   await page.emulateMedia({ reducedMotion: "reduce" });
 }
 
+/**
+ * Clicks a row button with a still pointer until the row reaches its end, and
+ * returns the pointer position.
+ */
+async function clickToEnd(page: Page, button: Locator) {
+  const box = await button.boundingBox();
+  if (!box) throw new Error("The button has no layout");
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  for (let i = 0; i < 12; i++) {
+    if ((await button.getAttribute("aria-disabled")) === "true") break;
+    await page.mouse.click(x, y);
+  }
+  return { x, y };
+}
+
 withCaptures(import.meta.dirname, async ({ test, query }) => {
   test("page @visual", async ({ page, visual }) => {
     await forEachColorScheme(page, async (colorScheme) => {
@@ -159,14 +175,7 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await reduceMotion(page);
     const box = query(q.article("Filter row"));
     const next = box.button("Scroll forward", { includeHidden: true });
-    const buttonBox = await next.boundingBox();
-    if (!buttonBox) throw new Error("The button has no layout");
-    const x = buttonBox.x + buttonBox.width / 2;
-    const y = buttonBox.y + buttonBox.height / 2;
-    for (let i = 0; i < 12; i++) {
-      if ((await next.getAttribute("aria-disabled")) === "true") break;
-      await page.mouse.click(x, y);
-    }
+    const { x, y } = await clickToEnd(page, next);
     await test.expect(next).toHaveAttribute("aria-disabled", "true");
     // Quick clicks run past the end. They stay on the disabled button and don't
     // reach the last chip under it.
@@ -176,6 +185,71 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await test.expect(box.button("Tooling")).not.toBeFocused();
     await page.mouse.move(x, y + 200);
     await test.expect(next).toBeHidden();
+  });
+
+  test("hides a hovered row button after a pause past the end of the row", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    await reduceMotion(page);
+    const box = query(q.article("Filter row"));
+    const next = box.button("Scroll forward", { includeHidden: true });
+    const tooling = box.button("Tooling");
+    const { x, y } = await clickToEnd(page, next);
+    await test.expect(next).toHaveAttribute("aria-disabled", "true");
+    // The pointer stays still. After the pause, the button hides, and the chip
+    // under it takes the hover state, which also sets the cursor.
+    await test.expect(next).toBeHidden();
+    await test.expect
+      .poll(() => tooling.evaluate((node) => node.matches(":hover")))
+      .toBe(true);
+    await page.mouse.click(x, y);
+    await test.expect(tooling).toBeFocused();
+  });
+
+  test("restarts the pause of a hovered row button with each press", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    await reduceMotion(page);
+    const box = query(q.article("Filter row"));
+    const next = box.button("Scroll forward", { includeHidden: true });
+    const tooling = box.button("Tooling");
+    const { x, y } = await clickToEnd(page, next);
+    await test.expect(next).toHaveAttribute("aria-disabled", "true");
+    for (let i = 0; i < 4; i++) {
+      // Each wait is shorter than the 500ms pause of the button, while the
+      // series lasts longer than it, so only a pause that restarts with each
+      // press keeps the button under the clicks.
+      await page.waitForTimeout(200);
+      await page.mouse.click(x, y, { delay: 50 });
+    }
+    await test.expect(next).toBeVisible();
+    await test.expect(tooling).not.toBeFocused();
+  });
+
+  test("keeps a focused row button past the end of the row", async ({
+    page,
+    q,
+  }) => {
+    await skipWithoutScrollAnimations(page);
+    await reduceMotion(page);
+    const box = query(q.article("Filter row"));
+    const next = box.button("Scroll forward", { includeHidden: true });
+    await clickToEnd(page, next);
+    await test.expect(next).toHaveAttribute("aria-disabled", "true");
+    // With the pointer still over the disabled button, the keyboard moves focus
+    // from the last chip to the button.
+    await box.button("Tooling").focus();
+    await page.keyboard.press("Tab");
+    await test.expect(next).toBeFocused();
+    // The button must stay after the 500ms pause that hides a hovered button,
+    // so the wait crosses it.
+    await page.waitForTimeout(600);
+    await test.expect(next).toBeVisible();
+    await test.expect(next).toBeFocused();
   });
 
   test("keeps focus on an item when a button is pressed", async ({
