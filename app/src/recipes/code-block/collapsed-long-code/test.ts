@@ -29,12 +29,14 @@ test("moves the focus to the code that the buttons control", async () => {
   );
 });
 
-test("puts the collapse button right after the expanded code", async () => {
+test("puts the collapse button after the code and its copy button", async () => {
   await click(q.button("Show all 36 lines"));
-  await press.Tab();
-  expect(q.button("Show fewer lines")).toHaveFocus();
+  // The copy button is in the panel of the code, and the collapse button is in
+  // a row under it.
   await press.Tab();
   expect(q.button("Copy use-users.ts")).toHaveFocus();
+  await press.Tab();
+  expect(q.button("Show fewer lines")).toHaveFocus();
 });
 
 test("collapses with the button below the code", async () => {

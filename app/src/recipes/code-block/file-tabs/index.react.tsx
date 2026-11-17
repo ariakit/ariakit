@@ -22,8 +22,9 @@ export default function Example({ files }: ReturnType<typeof load>) {
           </CodeBlockTab>
         ))}
       </CodeBlockTabList>
-      {/* Each panel is the scroll area of its file. It takes the tab stop and
-          the name of its tab, and its copy button names the tab too. */}
+      {/* The code in each panel is the scroll area of its file. It takes the
+          tab stop and the name of its tab, and the copy button names the tab
+          too. */}
       {files.map((file) => (
         <CodeBlockPanel
           key={file.name}

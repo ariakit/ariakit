@@ -86,7 +86,7 @@ test("combobox preview cards work in their iframes", async ({ page, q }) => {
   const getCode = card.button("Get code");
   await getCode.click();
   await expect(getCode).toHaveAttribute("aria-expanded", "true");
-  await expect(q.region("Combobox Group code")).toContainText(
+  await expect(q.dialog("Combobox Group")).toContainText(
     "export default function Example",
   );
 });
@@ -464,6 +464,10 @@ test("preview cards show the popup of their example open", async ({
   // expanded button above does not wait for. The popup stays visible while it
   // animates out, so the combobox state tells whether it closed.
   await flushFrames(page);
+  expect(await combobox.getAttribute("aria-expanded")).toBe("true");
+  // The code opens in a modal dialog, which covers the frame until it closes.
+  await page.keyboard.press("Escape");
+  await expect(q.dialog("Combobox Group")).not.toBeVisible();
   expect(await combobox.getAttribute("aria-expanded")).toBe("true");
 
   // A click in the frame below the example is outside the popup and closes it.

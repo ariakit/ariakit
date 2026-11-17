@@ -10,12 +10,16 @@
  */
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { ShellWide } from "@ariakit/ui/components/shell.ariakit.react";
-import { TextFrame } from "@ariakit/ui/components/text-frame.ariakit.react";
 import { PreviewCard } from "#app/components/preview-card.react.tsx";
 import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
+import {
+  getPreviewCodeFileUrl,
+  getPreviewCodeLines,
+} from "#app/lib/preview-code.ts";
 import { PREVIEW_FRAME_MARGIN } from "#app/lib/preview-frames.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
+import { getFileIcon } from "#app/recipes/code-block/file-icons.ts";
 import { invariant } from "@ariakit/utils";
 import { getEntry } from "astro:content";
 import { createElement } from "react";
@@ -66,7 +70,18 @@ const headingId = id + "-title";
 const inline = Astro.slots.has("default");
 const browser =
   !inline && (Astro.props.browser ?? isNextjsPreviewId(source.name));
-const files = Object.entries(source.files);
+// The code dialog of the card loads each file from its partial page.
+const files = Object.entries(source.files).map(([name, file]) => ({
+  name,
+  url: getPreviewCodeFileUrl({
+    framework,
+    sourceName: source.name,
+    fileName: name,
+  }),
+  lines: getPreviewCodeLines(file.content),
+  // The page gets only the icons of its files.
+  icon: getFileIcon(name),
+}));
 ---
 
 {
@@ -112,11 +127,12 @@ const files = Object.entries(source.files);
     className="grid grid-cols-1 py-0! [.prose>.shell-wide>&]:px-0! [.preview-grid>.shell-wide>&]:px-0!"
   >
     {
-      /* The code renders on the server and reaches the island as a static
-        slot. A card hydrates as it comes near the viewport, so an inline
-        example, which hydrates after its card, starts as the person reaches
-        it. Hydrating a little early lets a frame that loaded before its card
-        hydrated show as the card scrolls into view, not after a loader. */
+      /* The island gets only the names of the files, and its code dialog
+        loads their highlighted lines when they show. A card hydrates as it
+        comes near the viewport, so an inline example, which hydrates after its
+        card, starts as the person reaches it. Hydrating a little early lets a
+        frame that loaded before its card hydrated show as the card scrolls
+        into view, not after a loader. */
     }
     <PreviewCard
       client:visible={{ rootMargin: PREVIEW_FRAME_MARGIN }}
@@ -130,34 +146,9 @@ const files = Object.entries(source.files);
       {browser}
       fullscreen={preview?.data.fullscreen}
       minHeight={preview?.data.minHeight}
+      {files}
     >
       {inline && <slot />}
-      <div slot="code" class="grid grid-cols-1 gap-2">
-        {
-          files.map(([name, file]) => (
-            // The code padding follows the small text, like the padding of
-            // the file name, so the two start on the same line.
-            <Frame
-              $rounded="xl"
-              $forceRounded
-              $border
-              $darken={0.5}
-              $p="none"
-              className="ui-spacing-em overflow-clip text-xs"
-            >
-              <TextFrame
-                $p={3}
-                $layer="transparent"
-                $ink={80}
-                className="font-medium"
-              >
-                {name}
-              </TextFrame>
-              <pre class="max-h-96 overflow-auto px-4 pb-4 leading-relaxed"><code>{file.content}</code></pre>
-            </Frame>
-          ))
-        }
-      </div>
     </PreviewCard>
   </Frame>
 </ShellWide>

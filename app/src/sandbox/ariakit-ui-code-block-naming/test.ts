@@ -18,3 +18,13 @@ test("doesn't name the code with another element as the title", () => {
   }
   expect(q.button("Copy store.json")).toBeInTheDocument();
 });
+
+test("names a wrapped file tab panel, not its code, which has no role", () => {
+  const panel = q.tabpanel("notes.md");
+  expect(panel).toBeInTheDocument();
+  // A name on an element without a role would be ignored.
+  const code = panel.querySelector("pre");
+  expect(code).not.toHaveAttribute("role");
+  expect(code).not.toHaveAttribute("aria-labelledby");
+  expect(code).not.toHaveAttribute("aria-label");
+});

@@ -1,0 +1,89 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { highlight } from "@ariakit/ui/utils/highlight.server";
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import { getFrameworkByFilename } from "#app/lib/framework.ts";
+import { SANDBOX_PREVIEW_KIND } from "#app/lib/preview-config.ts";
+import {
+  getPreviewCode,
+  getPreviewCodeFileUrl,
+  getPreviewCodeLanguage,
+} from "#app/lib/preview-code.ts";
+import type { Framework } from "#app/lib/schemas.ts";
+import type { Source, SourceFile } from "#app/lib/source.ts";
+
+export const partial = true;
+
+interface Props {
+  name: string;
+  file: SourceFile;
+}
+
+// Writes the highlighted lines of each file that a preview card shows, so the
+// code dialog of the card loads them when their tabs show, without Shiki in the
+// browser or in the Worker.
+export const getStaticPaths = (async () => {
+  // The sources that preview cards show, which the source plugin builds like
+  // the `?source` imports of the cards. Astro hoists this function out of the
+  // page, so it can't read the module scope. A Next.js page is a react source,
+  // and only the pages of recipe examples have cards.
+  const entrySources = import.meta.glob<Source>(
+    "/src/{recipes,component-docs}/**/index.{react,solid}.tsx",
+    { query: "?source", import: "default" },
+  );
+  const nextjsSources = import.meta.glob<Source>(
+    "../../../../nextjs/app/**/page.tsx",
+    { query: "?source", import: "default" },
+  );
+  const getNextjsSourceName = (path: string) => {
+    return path.replace(/^.*\/nextjs\/app\//, "").replace(/\/page\.tsx$/, "");
+  };
+  const previews = await getCollection("previews");
+  const cardPreviews = new Set(
+    previews
+      .filter((entry) => entry.data.source !== SANDBOX_PREVIEW_KIND)
+      .map((entry) => entry.id),
+  );
+  const loaders: Array<[Framework, () => Promise<Source>]> = [];
+  for (const [path, load] of Object.entries(entrySources)) {
+    const framework = getFrameworkByFilename(path);
+    if (framework !== "react" && framework !== "solid") continue;
+    loaders.push([framework, load]);
+  }
+  for (const [path, load] of Object.entries(nextjsSources)) {
+    if (!cardPreviews.has(getNextjsSourceName(path))) continue;
+    loaders.push(["react", load]);
+  }
+  const paths = await Promise.all(
+    loaders.map(async ([framework, load]) => {
+      const source = await load();
+      return Object.entries(source.files).map(([name, file]) => {
+        const url = getPreviewCodeFileUrl({
+          framework,
+          sourceName: source.name,
+          fileName: name,
+        });
+        // The folder of this route is the partials path.
+        const params = { source: url.replace(/^\/partials\//, "") };
+        return { params, props: { name, file } };
+      });
+    }),
+  );
+  return paths.flat();
+}) satisfies GetStaticPaths;
+
+const { name, file } = Astro.props;
+const code = getPreviewCode(file.content);
+const { html } = highlight(code, getPreviewCodeLanguage(name));
+---
+
+<Fragment set:html={html} />

@@ -148,8 +148,6 @@ for (const framework of ["react", "solid"]) {
       `/${framework}/previews/components/separator/`,
     );
     await card.button("Get code").click();
-    await expect(q.region("Separator code")).toContainText(
-      `@ariakit/${framework}`,
-    );
+    await expect(q.dialog("Separator")).toContainText(`@ariakit/${framework}`);
   });
 }
