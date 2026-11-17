@@ -203,8 +203,13 @@ export function PreviewCardCode({ title, files }: PreviewCardCodeProps) {
                   separator={!!index}
                   {...codeLayer}
                   // A pointer over the tab is a sign of intent, so the file can
-                  // start to load before the click.
-                  onPointerEnter={() => prefetchPreviewCodeFile(file)}
+                  // start to load before the click. The panel of the selected
+                  // tab already reads its file, and a prefetch of a failed file
+                  // would replace its "Try again" button.
+                  onPointerEnter={() => {
+                    if (getTabId(file) === selectedId) return;
+                    prefetchPreviewCodeFile(file);
+                  }}
                 >
                   {file.name}
                 </CodeBlockTab>

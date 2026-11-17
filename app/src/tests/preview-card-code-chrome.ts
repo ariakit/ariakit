@@ -42,6 +42,11 @@ test("preview card code opens in a dialog with a tab for each file", async ({
   );
   await expect(dialog.button("Copy index.tsx")).toBeVisible();
 
+  // A pointer over another tab starts to load its file before the click.
+  await dialog.tab("index.server.ts").hover();
+  await expect
+    .poll(() => requests.some((url) => url.includes("/index.server.ts/")))
+    .toBe(true);
   // Another file loads from its partial page when its tab is selected.
   await dialog.tab("index.server.ts").click();
   await expect(dialog.tabpanel("index.server.ts")).toContainText(
@@ -210,6 +215,8 @@ test("preview card code doesn't load a failed file again on its own", async ({
   // The network goes away and comes back.
   await context.setOffline(true);
   await context.setOffline(false);
+  // The pointer moves over the tab of the file, which would prefetch it.
+  await dialog.tab("index.tsx").hover();
   // No state shows a request that didn't start. A refetch would start its
   // request right after the event, and TanStack Query would replace the button
   // on a zero-delay timer. The frames let both happen, and let the route
