@@ -78,6 +78,38 @@ test("preview card code shows the files of a Next.js example", async ({
   );
 });
 
+test("preview card code keeps the focus in the code when the file arrives", async ({
+  page,
+  q,
+}) => {
+  // The requests wait until the test lets them go, so the code can take the
+  // focus while the file loads.
+  let release = () => {};
+  const released = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route(
+    "**/partials/react/previews/code-block/files/**",
+    async (route) => {
+      await released;
+      return route.fallback();
+    },
+  );
+  await gotoAndSettle(page, "/react/recipes/code-block/");
+  const card = q.region("Code Block");
+  await waitForCardHydration(card);
+  await query(card).button("Get code").click();
+  const dialog = query(q.dialog("Code Block"));
+  const panel = dialog.tabpanel("index.tsx");
+  await expect(panel).toHaveAttribute("aria-busy", "true");
+  const code = dialog.region("index.tsx");
+  await code.focus();
+  release();
+  await expect(panel).not.toHaveAttribute("aria-busy");
+  await expect(code).toContainText("export default function Example");
+  await expect(code).toBeFocused();
+});
+
 test("preview card code tries a file again after a failed request", async ({
   page,
   q,
@@ -99,12 +131,15 @@ test("preview card code tries a file again after a failed request", async ({
   await waitForCardHydration(card);
   await query(card).button("Get code").click();
   const dialog = query(q.dialog("Code Block"));
-  await expect(dialog.text("Couldn't load index.tsx.")).toBeVisible();
+  // An alert takes no name from its content.
+  await expect(dialog.alert()).toHaveText("Couldn't load index.tsx.");
   failing = false;
   await dialog.button("Try again").click();
   await expect(dialog.tabpanel("index.tsx")).toContainText(
     "export default function Example",
   );
+  // The button leaves with the failure, and the focus stays in the dialog.
+  await expect(dialog.tab("index.tsx")).toBeFocused();
 });
 
 test("preview card code keeps the card when the dialog fails to load", async ({
@@ -136,4 +171,50 @@ test("preview card code keeps the card when the dialog fails to load", async ({
   failing = false;
   await getCode.click();
   await expect(q.dialog("Code Block")).toBeVisible();
+});
+
+test("preview card code doesn't load a failed file again on its own", async ({
+  context,
+  page,
+  q,
+}) => {
+  let requests = 0;
+  await page.route(
+    "**/partials/react/previews/code-block/files/**",
+    (route) => {
+      requests++;
+      return route.fulfill({ status: 500 });
+    },
+  );
+  await gotoAndSettle(page, "/react/recipes/code-block/");
+  const card = q.region("Code Block");
+  await waitForCardHydration(card);
+  await query(card).button("Get code").click();
+  const dialog = query(q.dialog("Code Block"));
+  const tryAgain = dialog.button("Try again");
+  await tryAgain.focus();
+  const failedRequests = requests;
+  // The visitor leaves the browser tab and comes back to it. A headless browser
+  // fires no visibilitychange event, so the page fakes one.
+  await page.evaluate(() => {
+    const setVisibility = (visibility: DocumentVisibilityState) => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        get: () => visibility,
+      });
+      window.dispatchEvent(new Event("visibilitychange"));
+    };
+    setVisibility("hidden");
+    setVisibility("visible");
+  });
+  // The network goes away and comes back.
+  await context.setOffline(true);
+  await context.setOffline(false);
+  // No state shows a request that didn't start. A refetch would start its
+  // request right after the event, and TanStack Query would replace the button
+  // on a zero-delay timer. The frames let both happen, and let the route
+  // handler count the request.
+  await flushFrames(page);
+  expect(requests).toBe(failedRequests);
+  await expect(tryAgain).toBeFocused();
 });

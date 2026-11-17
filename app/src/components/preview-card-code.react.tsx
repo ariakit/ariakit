@@ -28,12 +28,10 @@ import { TabPanel, TabPanels } from "@ariakit/ui/components/tabs.ariakit.react";
 import {
   QueryClient,
   QueryClientProvider,
-  QueryErrorResetBoundary,
   queryOptions,
-  useSuspenseQuery,
+  useQuery,
 } from "@tanstack/react-query";
-import { Component, Suspense, useId, useState } from "react";
-import type { ReactNode } from "react";
+import { useId, useState } from "react";
 import type { PreviewCodeFile } from "#app/lib/preview-code.ts";
 import { FileIcon } from "#app/recipes/code-block/file-icon.react.tsx";
 
@@ -68,8 +66,12 @@ function codeFileQuery(url: string) {
     // and a panel that hides and shows again doesn't load it again.
     staleTime: Infinity,
     gcTime: Infinity,
-    // A failed request shows a button that tries again.
+    // A failed request shows a button that tries again. It doesn't try again on
+    // its own, such as when the window takes the focus, which would take the
+    // focus from that button.
     retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
 
@@ -86,68 +88,6 @@ interface CodePanelProps {
   file: PreviewCodeFile;
 }
 
-interface FileErrorBoundaryProps extends CodePanelProps {
-  /** Lets the failed query start a new request when it renders again. */
-  onReset: () => void;
-  children: ReactNode;
-}
-
-// Only a class component can catch an error in rendering, such as a failed
-// request that useSuspenseQuery throws. A retry resets the query and renders
-// the children again, which start a new request.
-class FileErrorBoundary extends Component<
-  FileErrorBoundaryProps,
-  { failed: boolean }
-> {
-  state = { failed: false };
-
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-
-  retry = () => {
-    this.props.onReset();
-    this.setState({ failed: false });
-  };
-
-  render() {
-    const { tabId, file, children } = this.props;
-    if (!this.state.failed) return children;
-    return <FailedPanel tabId={tabId} file={file} onRetry={this.retry} />;
-  }
-}
-
-// Skeleton lines take the final height of the file, so nothing moves when it
-// arrives. The copy button waits for the file, because Safari rejects a copy
-// that waits for a request.
-function PlaceholderPanel({ tabId, file }: CodePanelProps) {
-  return (
-    <CodeBlockPanel
-      tabId={tabId}
-      aria-busy
-      copy={{ value: "", disabled: true }}
-      $lineNumbers
-      {...codeLayer}
-    >
-      <CodeBlockSkeleton lines={file.lines} delay={150} />
-    </CodeBlockPanel>
-  );
-}
-
-function FilePanel({ tabId, file }: CodePanelProps) {
-  // Suspends until the file arrives, or throws the error of the request.
-  const { data: code } = useSuspenseQuery(codeFileQuery(file.url));
-  return (
-    <CodeBlockPanel
-      tabId={tabId}
-      html={code.html}
-      copy={code.text}
-      $lineNumbers
-      {...codeLayer}
-    />
-  );
-}
-
 interface FailedPanelProps extends CodePanelProps {
   onRetry: () => void;
 }
@@ -160,7 +100,8 @@ function FailedPanel({ tabId, file, onRetry }: FailedPanelProps) {
       render={<TabPanels {...codeLayer} $frameEnd />}
       className="flex flex-wrap items-center gap-3 text-sm"
     >
-      <span>Couldn't load {file.name}.</span>
+      {/* An alert, so screen readers announce the failure when it shows. */}
+      <span role="alert">Couldn't load {file.name}.</span>
       <Button $size="sm" onClick={onRetry}>
         Try again
       </Button>
@@ -170,30 +111,43 @@ function FailedPanel({ tabId, file, onRetry }: FailedPanelProps) {
 
 // A panel loads its file when its tab is selected. A hidden panel doesn't read
 // its file, and it renders no skeleton either, because it doesn't show.
-function CodePanel(props: CodePanelProps) {
-  const { tabId, file } = props;
+function CodePanel({ tabId, file }: CodePanelProps) {
   const tab = useTabContext();
   const selected = useStoreState(tab, "selectedId") === tabId;
+  const query = useQuery({ ...codeFileQuery(file.url), enabled: selected });
   if (!selected) return <CodeBlockPanel tabId={tabId} />;
+  if (query.isError) {
+    // The loading panel replaces the failure and its button, so the focus moves
+    // to the tab of the file first.
+    const retry = () => {
+      tab?.move(tabId);
+      void query.refetch();
+    };
+    return <FailedPanel tabId={tabId} file={file} onRetry={retry} />;
+  }
+  const code = query.data;
+  // The same panel shows the skeleton and then the code, so the focus stays in
+  // the code when the file arrives. Skeleton lines take the final height of the
+  // file, so nothing moves either. The copy button waits for the file, because
+  // Safari rejects a copy that waits for a request.
   return (
-    <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <FileErrorBoundary {...props} onReset={reset}>
-          <Suspense
-            fallback={
-              <>
-                <span role="status" className="sr-only">
-                  {`Loading ${file.name}`}
-                </span>
-                <PlaceholderPanel {...props} />
-              </>
-            }
-          >
-            <FilePanel {...props} />
-          </Suspense>
-        </FileErrorBoundary>
+    <>
+      {!code && (
+        <span role="status" className="sr-only">
+          {`Loading ${file.name}`}
+        </span>
       )}
-    </QueryErrorResetBoundary>
+      <CodeBlockPanel
+        tabId={tabId}
+        aria-busy={!code || undefined}
+        html={code?.html}
+        copy={code ? code.text : { value: "", disabled: true }}
+        $lineNumbers
+        {...codeLayer}
+      >
+        {!code && <CodeBlockSkeleton lines={file.lines} delay={150} />}
+      </CodeBlockPanel>
+    </>
   );
 }
 
