@@ -137,7 +137,9 @@ export const skeletonCircle = cv({
 export const skeletonLine = cv({
   extend: [skeletonBase],
   class: [
-    "block h-lh relative bg-transparent!",
+    // Zero specificity lets an extending recipe or a class set another
+    // display, such as inline-block for a bar in a line of text.
+    "ui-base:block h-lh relative bg-transparent!",
     // The space above and below the bar. Capital letters plus a fifth of the
     // font size is close to the height from ascenders to descenders.
     "[--skeleton-bar-inset:calc((1lh-1cap-0.2em)/2)]",

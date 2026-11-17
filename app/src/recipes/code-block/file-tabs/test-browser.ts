@@ -27,9 +27,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // A narrow viewport makes the long lines of toggle.tsx overflow.
     await page.setViewportSize({ width: 320, height: 600 });
     const panel = q.tabpanel("toggle.tsx");
-    await panel.evaluate((element) => element.scrollTo({ left: 80 }));
+    // The scroll area of the file in the panel.
+    const code = q.region("toggle.tsx");
+    await code.evaluate((element) => element.scrollTo({ left: 80 }));
     await test.expect
-      .poll(() => panel.evaluate((element) => element.scrollLeft))
+      .poll(() => code.evaluate((element) => element.scrollLeft))
       .toBe(80);
     await q.tab("use-toggle.ts").click();
     await test.expect(q.tabpanel("use-toggle.ts")).toBeVisible();
@@ -41,7 +43,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.tab("toggle.tsx").click();
     await test.expect(panel).toBeVisible();
     await test.expect
-      .poll(() => panel.evaluate((element) => element.scrollLeft))
+      .poll(() => code.evaluate((element) => element.scrollLeft))
       .toBe(80);
   });
 });

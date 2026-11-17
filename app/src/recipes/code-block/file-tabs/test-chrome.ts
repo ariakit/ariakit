@@ -17,10 +17,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.tab("use-toggle.ts")).toBeFocused();
     await test.expect(q.tabpanel("use-toggle.ts")).toBeVisible();
     await test.expect(q.tabpanel("toggle.tsx")).toBeHidden();
-    // The panel is the scroll area of its file, so it is the next tab stop. The
-    // copy button shows over the code, so it comes after it.
+    // The scroll area of the file in the panel is the next tab stop. The copy
+    // button shows over the code, so it comes after it.
     await page.keyboard.press("Tab");
-    await test.expect(q.tabpanel("use-toggle.ts")).toBeFocused();
+    await test.expect(q.region("use-toggle.ts")).toBeFocused();
     await page.keyboard.press("Tab");
     await test.expect(q.button("Copy use-toggle.ts")).toBeFocused();
   });

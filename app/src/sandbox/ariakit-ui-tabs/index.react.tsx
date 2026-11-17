@@ -1416,6 +1416,51 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Darkened tabs and panel"
+        description="A layer modifier on the tabs and the panel replaces their default lighten, so the selected tab and the panel are darker than the layer around the tabs, not lighter."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>
+              <Tab $darken={0.5}>
+                <TabLabel>Preview</TabLabel>
+              </Tab>
+              <Tab $darken={0.5}>
+                <TabLabel>Code</TabLabel>
+              </Tab>
+              <Tab $darken={0.5}>
+                <TabLabel>Usage</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels $darken={0.5}>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="darkened-code">
+          <TabList aria-label="Darkened tabs and panel">
+            <Tab id="darkened-preview" $darken={0.5}>
+              <TabLabel>Preview</TabLabel>
+            </Tab>
+            <Tab id="darkened-code" $darken={0.5}>
+              <TabLabel>Code</TabLabel>
+            </Tab>
+            <Tab id="darkened-usage" $darken={0.5}>
+              <TabLabel>Usage</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels $darken={0.5}>
+            <TabPanel single>
+              <p className="text-sm">The panel is darker than the page.</p>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Adaptive root edge with padding"
         description="The root, the selected tab, and the panel show their edges only in high-contrast mode. Hidden, the panel border leaves no strip-colored line around the panel."
         stretch

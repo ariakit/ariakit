@@ -30,16 +30,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.button("Copy use-users.ts")).toBeFocused();
   });
 
-  test("puts the collapse button right after the expanded code in the tab order", async ({
+  test("puts the collapse button after the code and its copy button in the tab order", async ({
     page,
     q,
   }) => {
     await q.button("Show all 36 lines").click();
     await test.expect(q.region("use-users.ts")).toBeFocused();
-    await page.keyboard.press("Tab");
-    await test.expect(q.button("Show fewer lines")).toBeFocused();
+    // The copy button is in the panel of the code, and the collapse button is
+    // in a row under it.
     await page.keyboard.press("Tab");
     await test.expect(q.button("Copy use-users.ts")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await test.expect(q.button("Show fewer lines")).toBeFocused();
   });
 
   test("fits the expanded block on the screen", async ({ q }) => {

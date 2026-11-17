@@ -28,7 +28,8 @@ export const getStaticPaths = (async () => {
         path,
         `Reference path not found for ${item} in ${reference.id}`,
       );
-      return referenceURLToPartialPath(path);
+      // The folder of this route is the partials path.
+      return referenceURLToPartialPath(path).replace(/^\/partials\//, "");
     };
 
     const data = reference.data;
@@ -36,11 +37,11 @@ export const getStaticPaths = (async () => {
 
     return [
       {
-        params: { partials: getPath() },
+        params: { reference: getPath() },
         props: { framework, reference },
       },
       ...items.map((item) => ({
-        params: { partials: getPath(item.id) },
+        params: { reference: getPath(item.id) },
         props: { framework, reference, item },
       })),
     ];

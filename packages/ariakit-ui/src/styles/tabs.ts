@@ -15,6 +15,7 @@ import {
 } from "./carousel.ts";
 import { frame } from "./frame.ts";
 import { gliderFollower } from "./glider.ts";
+import { hasLayerBackground } from "./layer.ts";
 import {
   isSegmentedKind,
   segmentGroupClass,
@@ -265,6 +266,26 @@ const tabBox = cx(
   "not-ui-selected:ui-focus-visible:bg-(--ak-layer)",
 );
 
+// The layer around the root, which selected folders and panels take by default.
+const TABS_LAYER = "var(--tabs-layer)";
+
+/**
+ * Checks whether a selected folder or a panel keeps the layer around the tabs,
+ * or the layer of its parent with `true` or `transparent`, which it lightens by
+ * default. A color of its own, such as `brand`, or another modifier, such as
+ * `$darken`, replaces the lighten.
+ */
+function keepsTabsLayer(variants: Parameters<typeof hasLayerBackground>[0]) {
+  const { $layer } = variants;
+  const parentLayer =
+    $layer === TABS_LAYER || $layer === true || $layer === "transparent";
+  if (!parentLayer) return false;
+  // With a transparent layer, only a modifier paints. The lighten is left out,
+  // as it holds the default of the recipe that this extends.
+  const others = { ...variants, $layer: "transparent", $lighten: false };
+  return !hasLayerBackground(others);
+}
+
 // The root edge color, and its width for an explicit $borderType and forced
 // colors.
 const tabsBorder = cx(
@@ -388,7 +409,7 @@ export const tab = cv({
   },
   defaultVariants: {
     $kind: "folder",
-    $layer: "var(--tabs-layer)",
+    $layer: TABS_LAYER,
     // Flat and bevel tabs lift 1.5 steps, above the one-step hover state.
     // Folders use the same lightening as the panel.
     $selectedOffset(defaultValue, variants) {
@@ -412,8 +433,10 @@ export const tab = cv({
     $selectedInk: 100,
     $lighten(defaultValue, variants) {
       if (isSegmentedKind(variants.$kind)) return defaultValue;
-      if (variants.$kind === "folder") return defaultValue ?? true;
-      return false;
+      if (variants.$kind !== "folder") return false;
+      // A default of an extending recipe wins over the layer check.
+      if (defaultValue != null) return defaultValue;
+      return keepsTabsLayer(variants);
     },
     $rounded: "unset",
     // Disable the button ring but keep its color for the folder focus edge.
@@ -722,9 +745,14 @@ export const tabPanels = cv({
   ],
   defaultVariants: {
     // Lighten from the layer around the root, like selected tabs, not from the
-    // root layer, which is the strip color.
-    $layer: "var(--tabs-layer)",
-    $lighten: true,
+    // root layer, which is the strip color. A color or another modifier
+    // replaces the lighten.
+    $layer: TABS_LAYER,
+    $lighten(defaultValue, variants) {
+      // A default of an extending recipe wins over the layer check.
+      if (defaultValue != null) return defaultValue;
+      return keepsTabsLayer(variants);
+    },
     $p: 3,
     $cover: true,
     // A width from $border would otherwise draw a ring on light surfaces.

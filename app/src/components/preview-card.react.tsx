@@ -7,13 +7,16 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import * as ak from "@ariakit/react";
 import {
   Button,
   ButtonGroup,
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
+import {
+  DialogDisclosure,
+  DialogProvider,
+} from "@ariakit/ui/components/dialog.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import {
   Input,
@@ -44,6 +47,7 @@ import {
   usePreviewLoading,
 } from "#app/components/preview-loader.react.tsx";
 import { subscribeAppTheme } from "#app/lib/app-theme.ts";
+import type { PreviewCodeFile } from "#app/lib/preview-code.ts";
 import type {
   PreviewCommandMessage,
   PreviewScrollMessage,
@@ -68,6 +72,14 @@ const MIN_VIEWPORT_WIDTH = 320;
 // Arrow keys resize the viewport by this many pixels, or ten times as many with
 // Shift.
 const RESIZE_STEP = 16;
+
+// The code dialog brings TanStack Query and the code block, which a page with
+// cards needs only when someone wants the code, so its module loads then.
+function loadPreviewCardCode() {
+  return import("#app/components/preview-card-code.react.tsx");
+}
+
+type PreviewCardCodeModule = Awaited<ReturnType<typeof loadPreviewCardCode>>;
 
 export interface PreviewCardProps {
   /**
@@ -117,16 +129,16 @@ export interface PreviewCardProps {
    */
   children?: ReactNode;
   /**
-   * The source files that the "Get code" button reveals.
+   * The source files that the "Get code" button shows in a dialog.
    */
-  code?: ReactNode;
+  files: PreviewCodeFile[];
 }
 
 /**
  * A card that renders a preview in a window-like chrome. The top bar shows the
  * title, or browser controls for previews that navigate between routes, and
- * buttons to reveal the code, to reload the preview, and to open the preview
- * page in a new tab.
+ * buttons to open the code in a dialog, to reload the preview, and to open the
+ * preview page in a new tab.
  */
 export function PreviewCard({
   sectionId,
@@ -140,13 +152,29 @@ export function PreviewCard({
   minHeight,
   browser,
   children,
-  code,
+  files,
 }: PreviewCardProps) {
   // Whether the preview scrolls with the wheel and touches instead of the page.
   const [active, setActive] = useState(false);
   // An app shell fills its frame, so a fullscreen frame keeps its height.
   const fitContent = !fullscreen;
   const frame = usePreviewFrame(href, setActive, fitContent);
+  const [codeOpen, setCodeOpen] = useState(false);
+  // The code dialog renders once its module loads, and it stays, so it keeps
+  // its selected tab and can animate out when it closes.
+  const [codeModule, setCodeModule] = useState<PreviewCardCodeModule>();
+  const loadCode = async () => {
+    try {
+      const code = await loadPreviewCardCode();
+      setCodeModule(code);
+      return code;
+    } catch {
+      // A failed request, such as offline, closes the dialog and keeps the
+      // card. The next open tries again.
+      setCodeOpen(false);
+      return null;
+    }
+  };
   // An inline example renders again from its initial state, and a frame loads
   // its current page again.
   const reload = () => {
@@ -157,22 +185,28 @@ export function PreviewCard({
     frame.send("reload");
   };
   return (
-    // A card that grows to its grid row gives the extra height to the window,
-    // not to the code below it. The em-based corners of the card stay the same
-    // at any page text size with a fixed size. Firefox resolves the radius and
-    // padding of an element against its parent font size, so a wrapper sets it.
-    // The wrapper is also a spacing context, so an inline example gets the
-    // same spacing as in its own page, whatever the text size of the page
-    // around the card.
+    // A card that grows to its grid row gives the extra height to the window.
+    // The em-based corners of the card stay the same at any page text size
+    // with a fixed size. Firefox resolves the radius and padding of an element
+    // against its parent font size, so a wrapper sets it. The wrapper is also a
+    // spacing context, so an inline example gets the same spacing as in its
+    // own page, whatever the text size of the page around the card.
     <div
-      className="ui-spacing-em grid grid-cols-1 grid-rows-[1fr_auto] gap-2 text-base"
+      className="ui-spacing-em grid grid-cols-1 text-base"
       style={
         minHeight
           ? ({ "--preview-card-min-height": minHeight } as CSSProperties)
           : undefined
       }
     >
-      <ak.DisclosureProvider>
+      <DialogProvider
+        open={codeOpen}
+        setOpen={(open) => {
+          setCodeOpen(open);
+          if (!open) return;
+          void loadCode();
+        }}
+      >
         <Frame
           // An interaction anywhere in the window, such as a click on its top
           // bar, lets the preview scroll. A click on the window moves focus to
@@ -246,7 +280,17 @@ export function PreviewCard({
               $gap="xs"
               $layer="transparent"
             >
-              <ak.Disclosure render={<Button $ink={80} />}>
+              <DialogDisclosure
+                $ink={80}
+                // A pointer over the button is a sign of intent, so the dialog
+                // and the first file can start to load before the click.
+                onPointerEnter={async () => {
+                  const code = await loadCode();
+                  if (!code) return;
+                  if (!files[0]) return;
+                  code.prefetchPreviewCodeFile(files[0]);
+                }}
+              >
                 <ButtonSlot>
                   <CodeIcon />
                 </ButtonSlot>
@@ -262,7 +306,7 @@ export function PreviewCard({
                 >
                   Get code
                 </ButtonLabel>
-              </ak.Disclosure>
+              </DialogDisclosure>
               {/* Browser chrome has its own reload button. */}
               {!browser && (
                 <Tooltip text="Reload preview">
@@ -307,10 +351,10 @@ export function PreviewCard({
             />
           )}
         </Frame>
-        <ak.DisclosureContent role="region" aria-label={`${title} code`}>
-          {code}
-        </ak.DisclosureContent>
-      </ak.DisclosureProvider>
+        {codeModule && (
+          <codeModule.PreviewCardCode title={title} files={files} />
+        )}
+      </DialogProvider>
     </div>
   );
 }

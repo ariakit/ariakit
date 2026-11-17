@@ -3,7 +3,10 @@ import { expect, test } from "vitest";
 
 test("keeps the expanded state across file tabs", async () => {
   await click(q.button("Mostrar as 36 linhas"));
-  expect(q.tabpanel("use-users.ts")).toHaveFocus();
+  // The block with the title names its code use-users.ts too.
+  expect(
+    q.within(q.tabpanel("use-users.ts")).region("use-users.ts"),
+  ).toHaveFocus();
   // The style sheet is shorter than the lines that the block shows.
   await click(q.tab("users.css"));
   expect(q.button.maybe(/Mostrar/)).not.toBeInTheDocument();

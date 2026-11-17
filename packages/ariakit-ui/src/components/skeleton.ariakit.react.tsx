@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
 import { useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
 import { getWindow } from "@ariakit/utils";
-import type { VariantProps } from "clava";
+import type { RecipeLike, VariantProps, VariantPropsWithRecipe } from "clava";
 import { cx, splitProps } from "clava";
 import * as React from "react";
 import { usePerceptibleValue } from "../react-utils/use-perceptible-value.react.ts";
@@ -424,8 +424,16 @@ export function SkeletonCircle({
   );
 }
 
-export interface SkeletonLineProps
-  extends ak.RoleProps<"span">, VariantProps<typeof skeletonLine> {}
+export type SkeletonLineProps<
+  R extends RecipeLike<typeof skeletonLine, R> = typeof skeletonLine,
+> = ak.RoleProps<"span"> &
+  VariantPropsWithRecipe<typeof skeletonLine, R> & {
+    /**
+     * The recipe applied in place of `skeletonLine`, such as one that extends
+     * it. It must supply every `skeletonLine` variant.
+     */
+    recipe?: R;
+  };
 
 /**
  * Renders a placeholder for one line of text, or its children when the content
@@ -436,9 +444,12 @@ export interface SkeletonLineProps
  *   <SkeletonLine className="w-48">{post?.title}</SkeletonLine>
  * </Heading>
  */
-export function SkeletonLine({ children, ref, ...props }: SkeletonLineProps) {
+export function SkeletonLine<
+  R extends RecipeLike<typeof skeletonLine, R> = typeof skeletonLine,
+>({ recipe, children, ref, ...props }: SkeletonLineProps<R>) {
+  const styles = recipe ?? skeletonLine;
   const part = useSkeletonPart();
-  const [variantProps, rest] = splitProps(props, skeletonLine);
+  const [variantProps, rest] = splitProps(props, styles);
   const mergedRef = useMergeRefs(ref, part.ref);
   const content = useRevealContent(part.reveal, children, true);
   if (part.content) {
@@ -448,7 +459,7 @@ export function SkeletonLine({ children, ref, ...props }: SkeletonLineProps) {
     <ak.Role.span
       aria-hidden
       data-pending={part.pending || undefined}
-      {...skeletonLine.jsx(variantProps)}
+      {...styles.jsx(variantProps)}
       {...rest}
       ref={mergedRef}
     />

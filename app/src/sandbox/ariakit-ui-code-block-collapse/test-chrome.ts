@@ -75,7 +75,10 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
   test("keeps the expanded state across file tabs", async ({ q }) => {
     await q.button("Mostrar as 36 linhas").click();
-    await test.expect(q.tabpanel("use-users.ts")).toBeFocused();
+    // The block with a title of the same name has a region too.
+    await test
+      .expect(query(q.tabpanel("use-users.ts")).region("use-users.ts"))
+      .toBeFocused();
     // The style sheet is shorter than the lines that the block shows.
     await q.tab("users.css").click();
     await test.expect(q.tabpanel("users.css")).toBeVisible();
@@ -183,6 +186,10 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // A state from outside that doesn't take the focus, such as a timer.
     await q.button("Show all lines of use-users.ts").dispatchEvent("click");
     await test.expect(q.button("Show fewer lines")).toBeVisible();
-    await test.expect(q.region("use-users.ts")).not.toBeFocused();
+    // Neither the code of this block nor the code of the file tabs, which has
+    // the same name, takes the focus.
+    await test
+      .expect(q.region("use-users.ts").and(page.locator(":focus")))
+      .toHaveCount(0);
   });
 });

@@ -23,7 +23,7 @@ import {
   codeBlockCopy,
   codeBlockExpand,
   codeBlockHeader,
-  codeBlockSkeleton,
+  codeBlockScroll,
   codeBlockSkeletonToken,
   codeBlockTab,
   codeBlockTabSeparator,
@@ -79,9 +79,6 @@ interface CodeBlockContextValue {
   toggleExpanded: (expanded: boolean) => void;
   expandElement: React.ReactNode;
   collapseElement: React.ReactNode;
-  /** The code that shows, for buttons written as children of the block. */
-  code?: CodeBlockCodeInfo;
-  setCode: (code?: CodeBlockCodeInfo) => void;
   codeRef: React.RefObject<HTMLElement | null>;
   expandRef: React.RefObject<HTMLElement | null>;
   collapseRef: React.RefObject<HTMLElement | null>;
@@ -144,25 +141,22 @@ export interface CodeBlockProps
    */
   setExpanded?: (expanded: boolean) => void;
   /**
-   * The button over collapsed code that shows all lines, as a label, an
-   * element, or `CodeBlockExpand` props. `false` omits it, so a
-   * `CodeBlockExpand` can be a child of the block instead.
+   * The button over collapsed code that shows all lines, as a label, a
+   * `CodeBlockExpand` element, or `CodeBlockExpand` props.
    */
-  expand?: boolean | string | React.ReactElement | CodeBlockExpandProps;
+  expand?: string | React.ReactElement | CodeBlockExpandProps;
   /**
-   * The button under expanded code that shows fewer lines, as a label, an
-   * element, or `CodeBlockCollapse` props. `false` omits it, so a
-   * `CodeBlockCollapse` can be a child of the block instead.
+   * The button under expanded code that shows fewer lines, as a label, a
+   * `CodeBlockCollapse` element, or `CodeBlockCollapse` props.
    */
-  collapse?: boolean | string | React.ReactElement | CodeBlockCollapseProps;
+  collapse?: string | React.ReactElement | CodeBlockCollapseProps;
 }
 
-// A string is the label of the button, and true is the default button.
+// A string is the label of the button.
 function getButtonShorthand<P extends { label?: unknown }>(
-  value?: boolean | string | React.ReactElement | P,
+  value?: string | React.ReactElement | P,
 ) {
   if (value == null) return {};
-  if (value === true) return {};
   if (typeof value === "string") return { label: value };
   return value;
 }
@@ -301,7 +295,6 @@ export function CodeBlock(props: CodeBlockProps) {
   const [registeredLabels, setLabels] = React.useState<
     ReadonlyMap<string, string>
   >(() => new Map());
-  const [code, setCode] = React.useState<CodeBlockCodeInfo>();
   const [uncontrolledExpanded, setUncontrolledExpanded] =
     React.useState(defaultExpanded);
   const expanded = expandedProp ?? uncontrolledExpanded;
@@ -314,19 +307,11 @@ export function CodeBlock(props: CodeBlockProps) {
   const titleElement = createOptionalRender(CodeBlockTitle, title);
   // The buttons go in the context, so they change only with their props.
   const expandElement = React.useMemo(
-    () =>
-      createOptionalRender(
-        CodeBlockExpand,
-        expand === false ? false : getButtonShorthand(expand),
-      ),
+    () => createOptionalRender(CodeBlockExpand, getButtonShorthand(expand)),
     [expand],
   );
   const collapseElement = React.useMemo(
-    () =>
-      createOptionalRender(
-        CodeBlockCollapse,
-        collapse === false ? false : getButtonShorthand(collapse),
-      ),
+    () => createOptionalRender(CodeBlockCollapse, getButtonShorthand(collapse)),
     [collapse],
   );
 
@@ -424,8 +409,6 @@ export function CodeBlock(props: CodeBlockProps) {
       toggleExpanded,
       expandElement,
       collapseElement,
-      code,
-      setCode,
       codeRef,
       expandRef,
       collapseRef,
@@ -440,7 +423,6 @@ export function CodeBlock(props: CodeBlockProps) {
       toggleExpanded,
       expandElement,
       collapseElement,
-      code,
     ],
   );
   const block = (
@@ -726,11 +708,11 @@ function getCopyLabel(name?: string) {
 
 /**
  * Renders a small `CopyButton` in a frame in the top end corner of the code.
- * The `copy` prop of `CodeBlockCode` and `CodeBlockPanel` renders it after the
- * code, so it follows the code in the tab order, and only the code that shows
- * has one. Its label names the title or the tab, such as "Copy counter.tsx".
- * Write it as a child of the block only to place it after other content. Its
- * frame covers the corner of the code.
+ * The `copy` prop of `CodeBlockCode` and `CodeBlockPanel` renders it in the
+ * panel of the code, after the scroll area, so it follows the code in the tab
+ * order, and only the code that shows has one. Its label names the title or the
+ * tab, such as "Copy counter.tsx". Its frame covers the corner of the code, and
+ * it takes the layer of the code.
  * @example
  * <CodeBlockPanel
  *   tabId="toggle.css"
@@ -745,11 +727,7 @@ export function CodeBlockCopy({
   label = getCopyLabel,
   ...props
 }: CodeBlockCopyProps) {
-  const context = React.useContext(CodeBlockContext);
-  const codeName = React.useContext(CodeBlockCopyNameContext);
-  // A button written as a child of the block names the title.
-  const titleId = context?.titleId;
-  const name = codeName ?? (titleId ? context?.labels.get(titleId) : undefined);
+  const name = React.useContext(CodeBlockCopyNameContext);
   const text = typeof label === "function" ? label(name) : label;
   return (
     <div {...codeBlockCopy.jsx()}>
@@ -781,13 +759,6 @@ function renderButtonContent(
   );
 }
 
-// The code that renders the button passes its id and line count. A button
-// written as a child of the block gets them from the code that shows.
-function useCodeInfo(context: CodeBlockContextValue | null) {
-  const codeInfo = React.useContext(CodeBlockCodeContext);
-  return codeInfo ?? context?.code;
-}
-
 function getExpandLabel(lineCount: number) {
   return `Show all ${lineCount} lines`;
 }
@@ -804,12 +775,16 @@ export interface CodeBlockExpandProps extends Omit<ButtonProps, "recipe"> {
 /**
  * Renders the button that shows all lines of collapsed code, over the clear
  * part at the bottom of the fade. A click anywhere on the collapsed code
- * presses it too. The block renders it for `maxLines`, so write it only with
- * `expand={false}`, as a child of the block after the code.
+ * presses it too. The code renders it in its panel when the block has
+ * `maxLines`. Pass it, or its props, to the `expand` prop of the block to
+ * change it.
  * @example
- * <CodeBlock title="use-users.ts" maxLines={12} expand={false}>
+ * <CodeBlock
+ *   title="use-users.ts"
+ *   maxLines={12}
+ *   expand={<CodeBlockExpand>Show the whole file</CodeBlockExpand>}
+ * >
  *   <CodeBlockCode html={code.html} />
- *   <CodeBlockExpand>Show the whole file</CodeBlockExpand>
  * </CodeBlock>
  */
 export function CodeBlockExpand({
@@ -819,7 +794,8 @@ export function CodeBlockExpand({
   ...props
 }: CodeBlockExpandProps) {
   const context = React.useContext(CodeBlockContext);
-  const codeInfo = useCodeInfo(context);
+  // The code that renders the button passes its id and line count.
+  const codeInfo = React.useContext(CodeBlockCodeContext);
   const mergedRef = useMergeRefs(context?.expandRef, ref);
   if (!context) return null;
   if (!codeInfo) return null;
@@ -861,13 +837,16 @@ export interface CodeBlockCollapseProps extends Omit<ButtonProps, "recipe"> {
 
 /**
  * Renders the button that collapses expanded code, under the code. It's half a
- * step lighter than the page, like the code, with an edge. The block renders it
- * for `maxLines`, so write it only with `collapse={false}`, as a child of the
- * block after the code.
+ * step lighter than the page, like the code, with an edge. The code renders it
+ * in a row under its panel when the block has `maxLines`. Pass it, or its
+ * props, to the `collapse` prop of the block to change it.
  * @example
- * <CodeBlock title="use-users.ts" maxLines={12} collapse={false}>
+ * <CodeBlock
+ *   title="use-users.ts"
+ *   maxLines={12}
+ *   collapse={<CodeBlockCollapse>Show the first lines</CodeBlockCollapse>}
+ * >
  *   <CodeBlockCode html={code.html} />
- *   <CodeBlockCollapse>Show the first lines</CodeBlockCollapse>
  * </CodeBlock>
  */
 export function CodeBlockCollapse({
@@ -878,7 +857,8 @@ export function CodeBlockCollapse({
   ...props
 }: CodeBlockCollapseProps) {
   const context = React.useContext(CodeBlockContext);
-  const codeInfo = useCodeInfo(context);
+  // The code that renders the button passes its id and line count.
+  const codeInfo = React.useContext(CodeBlockCodeContext);
   const mergedRef = useMergeRefs(context?.collapseRef, ref);
   if (!context) return null;
   if (!codeInfo) return null;
@@ -909,7 +889,10 @@ export function CodeBlockCollapse({
 }
 
 export interface CodeBlockCodeProps
-  extends ak.RoleProps<"pre">, VariantProps<typeof codeBlockCode> {
+  extends
+    ak.RoleProps<"div">,
+    VariantProps<typeof codeBlockCode>,
+    VariantProps<typeof codeBlockScroll> {
   /**
    * The HTML of the lines, such as the `html` of `highlight`. It renders as is,
    * so it must come from a trusted highlighter that escapes the code, as Shiki
@@ -922,7 +905,8 @@ export interface CodeBlockCodeProps
    * element, or `CodeBlockCopy` props. The text is the `value` of the button,
    * such as the `text` of `highlight`. The default label names the title of the
    * block or the tab of the panel, such as "Copy counter.tsx", or is "Copy
-   * code" without one. Only the code that shows renders it.
+   * code" without one. Only the code that shows renders it, inside its panel,
+   * so the frame of the button takes the layer of the code.
    */
   copy?: string | React.ReactElement | CodeBlockCopyProps;
 }
@@ -967,6 +951,11 @@ function getCodeTabIndex(
   return;
 }
 
+// The scroll area of a code panel is the pre element in it.
+function getCodeScrollElement(panel: HTMLElement) {
+  return panel.querySelector<HTMLElement>(":scope > pre");
+}
+
 function renderPlainLines(children: React.ReactNode) {
   if (typeof children !== "string") return children;
   // The same markup as highlighted lines, so the padding, the line numbers, and
@@ -980,26 +969,27 @@ function renderPlainLines(children: React.ReactNode) {
 }
 
 /**
- * Renders the code in a scroll area. A scroll area is a tab stop, so keyboard
- * users can scroll long lines, and the title of the block names it. With
- * `$wrap`, lines wrap instead, and the area is not a tab stop. For file tabs,
- * use `CodeBlockPanel`, which renders it as a tab panel. `copy` renders a copy
- * button after the code. When the block has `maxLines`, the code collapses and
- * renders the expand and collapse buttons after itself, before the copy button.
+ * Renders the code in a panel with a scroll area. The scroll area is a tab
+ * stop, so keyboard users can scroll long lines, and the title of the block
+ * names it. With `$wrap`, lines wrap instead, and the area is not a tab stop.
+ * For file tabs, use `CodeBlockPanel`, which renders the panel as a tab panel.
+ * `copy` renders a copy button in the panel, over the code. When the block has
+ * `maxLines`, the code collapses and renders the expand button over itself and
+ * the collapse button after the panel.
  * @example
  * <CodeBlockCode html={code.html} copy={code.text} $lineNumbers />
  */
 export function CodeBlockCode({
   ref,
-  id: idProp,
   html,
   copy,
   children,
   ...props
 }: CodeBlockCodeProps) {
   const context = React.useContext(CodeBlockContext);
-  const [variantProps, rest] = splitProps(props, codeBlockCode);
-  const scrollable = !variantProps.$wrap;
+  const [variantProps, scrollAndRest] = splitProps(props, codeBlockCode);
+  const [scrollProps, rest] = splitProps(scrollAndRest, codeBlockScroll);
+  const scrollable = !scrollProps.$wrap;
   const lineCount = getLineCount(html, children);
   const blockMaxLines = context?.maxLines;
   // A file in tabs with fewer lines than the block shows has no buttons.
@@ -1010,58 +1000,58 @@ export function CodeBlockCode({
   const shows = !rest.hidden;
   const showsButtons = collapsible && shows;
   const generatedId = React.useId();
-  const id = idProp ?? (collapsible ? generatedId : undefined);
+  // The expand and collapse buttons control the scroll area.
+  const codeId = collapsible ? generatedId : undefined;
   const codeInfo = React.useMemo(
-    () => (id && lineCount != null ? { id, lineCount } : null),
-    [id, lineCount],
+    () => (codeId && lineCount != null ? { id: codeId, lineCount } : null),
+    [codeId, lineCount],
   );
-  const elementRef = React.useRef<HTMLPreElement>(null);
-  const mergedRef = useMergeRefs(
-    elementRef,
-    ref,
+  const scrollRef = React.useRef<HTMLPreElement>(null);
+  const mergedScrollRef = useMergeRefs(
+    scrollRef,
     showsButtons ? context?.codeRef : undefined,
   );
-  const maxLines = variantProps.$maxLines ?? (collapsed ? blockMaxLines : null);
+  const maxLines = scrollProps.$maxLines ?? (collapsed ? blockMaxLines : null);
   // $maxLines shows the first lines, and the fade follows them. Code that
   // scrolled down while all lines showed would keep its scroll position, with
   // other lines in view and the fade out of place.
   useSafeLayoutEffect(() => {
     if (maxLines == null) return;
-    const element = elementRef.current;
+    const element = scrollRef.current;
     if (!element) return;
     element.scrollTop = 0;
   }, [maxLines]);
   // Collapsed code is inert, so the tab order and screen readers skip it. The
-  // expand button is the way in. The property works in React 18 too, which has
-  // no inert prop.
+  // expand button, which is in the panel but not in the scroll area, is the way
+  // in. The property works in React 18 too, which has no inert prop.
   useSafeLayoutEffect(() => {
     if (!collapsed) return;
-    const element = elementRef.current;
+    const element = scrollRef.current;
     if (!element) return;
     element.inert = true;
     return () => {
       element.inert = false;
     };
   }, [collapsed]);
-  const setCode = context?.setCode;
-  // Buttons written as children of the block need the id and the line count of
-  // the code that shows.
-  useSafeLayoutEffect(() => {
-    if (!showsButtons) return;
-    if (!codeInfo) return;
-    if (!setCode) return;
-    setCode(codeInfo);
-    return () => setCode(undefined);
-  }, [showsButtons, codeInfo, setCode]);
+  // The scroll area takes the focus, so it takes the name of the code. The
+  // panel takes the other props.
+  const {
+    role,
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabelledBy,
+    "aria-describedby": ariaDescribedBy,
+    "aria-busy": ariaBusy,
+    ...panelProps
+  } = rest;
   const titleId = context?.titleId;
   // A region needs a name: the title of the block, or a label of its own.
-  const named = !!(titleId || rest["aria-label"] || rest["aria-labelledby"]);
+  const named = !!(titleId || ariaLabel || ariaLabelledBy);
   // The copy button names the tab of a panel or the title of the block, even
   // when a label of its own names the code. Text is the value to copy, not the
   // content of the button. The title names the code only without such a label.
   const labelledByTitle =
-    !!titleId && rest["aria-label"] == null && rest["aria-labelledby"] == null;
-  const nameId = rest["aria-labelledby"] ?? titleId;
+    !!titleId && ariaLabel == null && ariaLabelledBy == null;
+  const nameId = ariaLabelledBy ?? titleId;
   const name = nameId ? context?.labels.get(nameId) : undefined;
   const copyElement =
     shows &&
@@ -1071,47 +1061,82 @@ export function CodeBlockCode({
     );
   // Line numbers take the width of the largest number, which is the line count.
   const lineNumbers =
-    variantProps.$lineNumbers === true && lineCount != null
+    scrollProps.$lineNumbers === true && lineCount != null
       ? lineCount
-      : variantProps.$lineNumbers;
-  const codeElement = (
-    <ak.Role.pre
-      dir="ltr"
-      tabIndex={getCodeTabIndex(scrollable, collapsible, collapsed)}
-      {...(scrollable && named && { role: "region" })}
-      {...(scrollable && labelledByTitle && { "aria-labelledby": titleId })}
-      {...codeBlockCode.jsx({
-        ...variantProps,
-        $lineNumbers: lineNumbers,
-        $maxLines: maxLines ?? undefined,
-      })}
-      {...rest}
-      id={id}
-      ref={mergedRef}
-    >
-      {html != null ? (
-        <code dangerouslySetInnerHTML={{ __html: html }} />
-      ) : (
-        <code>{renderPlainLines(children)}</code>
-      )}
-    </ak.Role.pre>
-  );
+      : scrollProps.$lineNumbers;
+  // A panel with a role, such as a tab panel, keeps its name, its description,
+  // and its busy state. The scroll area takes the name too, as it takes the
+  // focus. Other code has only the scroll area to name and describe.
+  const description = {
+    "aria-describedby": ariaDescribedBy,
+    "aria-busy": ariaBusy,
+  };
+  const panelName = role
+    ? {
+        role,
+        "aria-label": ariaLabel,
+        "aria-labelledby": ariaLabelledBy,
+        ...description,
+      }
+    : null;
+  // A name needs a role, so code that isn't a region, such as wrapped code,
+  // leaves the name to the role of its panel.
+  const region = scrollable && named;
+  const codeName =
+    role && !region
+      ? null
+      : {
+          "aria-label": ariaLabel,
+          "aria-labelledby":
+            scrollable && labelledByTitle ? titleId : ariaLabelledBy,
+        };
   // The same shape in every state, so the code keeps its element, its scroll
   // position, and the focus when the buttons come and go. The copy button shows
-  // over the code, but it comes last in the tab order.
+  // over the code, and it comes after the expand button in the tab order. The
+  // collapse button goes in a row under the panel.
   return (
     <>
-      {codeElement}
+      <ak.Role.div
+        {...codeBlockCode.jsx(variantProps)}
+        {...panelName}
+        {...panelProps}
+        ref={ref}
+      >
+        <pre
+          dir="ltr"
+          id={codeId}
+          tabIndex={getCodeTabIndex(scrollable, collapsible, collapsed)}
+          {...(region && { role: "region" })}
+          {...codeName}
+          {...(!role && description)}
+          {...codeBlockScroll.jsx({
+            ...scrollProps,
+            $lineNumbers: lineNumbers,
+            $maxLines: maxLines ?? undefined,
+          })}
+          ref={mergedScrollRef}
+        >
+          {html != null ? (
+            <code dangerouslySetInnerHTML={{ __html: html }} />
+          ) : (
+            <code>{renderPlainLines(children)}</code>
+          )}
+        </pre>
+        {showsButtons && codeInfo && (
+          <CodeBlockCodeContext.Provider value={codeInfo}>
+            {context?.expandElement}
+          </CodeBlockCodeContext.Provider>
+        )}
+        {copyElement && (
+          <CodeBlockCopyNameContext.Provider value={name}>
+            {copyElement}
+          </CodeBlockCopyNameContext.Provider>
+        )}
+      </ak.Role.div>
       {showsButtons && codeInfo && (
         <CodeBlockCodeContext.Provider value={codeInfo}>
-          {context?.expandElement}
           {context?.collapseElement}
         </CodeBlockCodeContext.Provider>
-      )}
-      {copyElement && (
-        <CodeBlockCopyNameContext.Provider value={name}>
-          {copyElement}
-        </CodeBlockCopyNameContext.Provider>
       )}
     </>
   );
@@ -1121,24 +1146,34 @@ export interface CodeBlockPanelProps
   extends
     Omit<TabPanelProps, "render">,
     Pick<CodeBlockCodeProps, "html" | "copy">,
-    VariantProps<typeof codeBlockCode> {}
+    VariantProps<typeof codeBlockCode>,
+    VariantProps<typeof codeBlockScroll> {}
 
 /**
- * Renders the code of a file tab as a `CodeBlockCode`, which is the panel of
- * the tab. The panel is the scroll area of the file, and it takes the tab stop
- * and the name of its tab. `copy` renders a copy button that names the tab,
- * such as "Copy toggle.tsx", while the panel shows. Set `single` for one panel
- * that follows the selected tab, such as when the tabs are views of the same
- * code.
+ * Renders the code of a file tab as a `CodeBlockCode`, whose panel is the panel
+ * of the tab. The scroll area of the file in the panel takes the tab stop and
+ * the name of its tab. `copy` renders a copy button that names the tab, such as
+ * "Copy toggle.tsx", while the panel shows. Set `single` for one panel that
+ * follows the selected tab, such as when the tabs are views of the same code.
  * @example
  * <CodeBlockPanel tabId="toggle.tsx" html={tsx.html} copy={tsx.text} />
  * @example
  * <CodeBlockPanel single html={selected.html} copy={selected.text} $prompt />
  */
-export function CodeBlockPanel(props: CodeBlockPanelProps) {
+export function CodeBlockPanel({
+  scrollElement = getCodeScrollElement,
+  ...props
+}: CodeBlockPanelProps) {
   // The tab panel passes its own props and the props of the code, such as html,
-  // copy, and $lineNumbers, to the code it renders.
-  return <TabPanel {...props} render={<CodeBlockCode />} />;
+  // copy, and $lineNumbers, to the code it renders. The code scrolls, not the
+  // panel around it, so scroll restoration follows the code.
+  return (
+    <TabPanel
+      scrollElement={scrollElement}
+      {...props}
+      render={<CodeBlockCode />}
+    />
+  );
 }
 
 type CodeBlockSkeletonTokenKind = NonNullable<
@@ -1187,23 +1222,32 @@ const SKELETON_LINES = [
   "",
 ].map(parseSkeletonLine);
 
+// The tokens of a line, after a placeholder of its number, which shows only in
+// code with line numbers.
 function renderSkeletonLine(index: number) {
   const line = SKELETON_LINES[index % SKELETON_LINES.length];
-  if (!line?.tokens.length) return null;
+  const number = (
+    <SkeletonLine
+      recipe={codeBlockSkeletonToken}
+      $token="number"
+      $length={`${index + 1}`.length}
+    />
+  );
+  if (!line?.tokens.length) return number;
   return (
     <>
+      {number}
       {" ".repeat(line.indent)}
-      <span>
-        {line.tokens.map((token, tokenIndex) => (
+      {line.tokens.map((token, tokenIndex) => (
+        <React.Fragment key={tokenIndex}>
+          {tokenIndex > 0 && " "}
           <SkeletonLine
-            key={tokenIndex}
-            {...codeBlockSkeletonToken.jsx({
-              $token: token.kind,
-              $length: token.length,
-            })}
+            recipe={codeBlockSkeletonToken}
+            $token={token.kind}
+            $length={token.length}
           />
-        ))}
-      </span>
+        </React.Fragment>
+      ))}
     </>
   );
 }
@@ -1222,8 +1266,9 @@ export interface CodeBlockSkeletonProps extends Omit<
 /**
  * Renders placeholder lines in the shapes and the colors of highlighted code,
  * as the children of a `CodeBlockCode` or a `CodeBlockPanel` whose code loads.
- * The code then keeps its line numbers and its buttons. Add `aria-busy` to the
- * code, and a status message, while it loads.
+ * The code then keeps its buttons, and the gutter of line numbers shows
+ * placeholder numbers. Add `aria-busy` to the code, and a status message, while
+ * it loads.
  * @example
  * <CodeBlockPanel tabId="toggle.css" aria-busy>
  *   <CodeBlockSkeleton lines={file.lines} />
@@ -1231,7 +1276,7 @@ export interface CodeBlockSkeletonProps extends Omit<
  */
 export function CodeBlockSkeleton({ lines, ...props }: CodeBlockSkeletonProps) {
   return (
-    <Skeleton {...props} render={<span {...codeBlockSkeleton.jsx()} />}>
+    <Skeleton {...props} render={<span />}>
       {Array.from({ length: lines }, (_, index) => (
         <React.Fragment key={index}>
           {index > 0 && "\n"}
