@@ -516,9 +516,10 @@ body > * {
  * pointer, it sets the animations that show the button only while the row can
  * scroll toward its side. The button grows in over the first stretch of the
  * scroll, as long as the button. A hovered button stays, disabled at the end
- * of the row, so quick clicks past the end don't reach the content under it. A
- * focused button stays until script moves focus to the other button. Without
- * scroll-driven animations, row buttons stay hidden.
+ * of the row, so quick clicks past the end don't reach the content under it.
+ * After a pause in the clicks, it hides, so the next click reaches that
+ * content. A focused button stays until script moves focus to the other
+ * button. Without scroll-driven animations, row buttons stay hidden.
  */
 @utility ui-carousel-button-start {
   visibility: var(--carousel-button-visibility, visible);
@@ -533,8 +534,22 @@ body > * {
   }
   /* Without the animations, the disabled styles still apply. */
   &:is(:hover, :focus) {
-    visibility: visible !important;
-    animation-name: none !important;
+    visibility: visible;
+    animation-name: none;
+  }
+  /* A hovered button at its end takes its resting visibility after a pause,
+     as long as the default double-click interval on Windows. Each press
+     restarts the pause, and a focused button stays. Buttons that show on
+     every device rest visible, so they stay. A change in visibility alone
+     doesn't update the cursor and the hover state until the pointer moves, so
+     the minimum width changes at the same time. That changes the layout but
+     not the size of the button. */
+  &:hover:is(:disabled, [aria-disabled="true"]):not(:active, :focus) {
+    visibility: var(--carousel-button-visibility, visible);
+    min-width: 1px;
+    transition:
+      visibility 0s 500ms,
+      min-width 0s 500ms allow-discrete;
   }
 }
 
@@ -551,8 +566,16 @@ body > * {
   }
   /* Without the animations, the disabled styles still apply. */
   &:is(:hover, :focus) {
-    visibility: visible !important;
-    animation-name: none !important;
+    visibility: visible;
+    animation-name: none;
+  }
+  /* See ui-carousel-button-start. */
+  &:hover:is(:disabled, [aria-disabled="true"]):not(:active, :focus) {
+    visibility: var(--carousel-button-visibility, visible);
+    min-width: 1px;
+    transition:
+      visibility 0s 500ms,
+      min-width 0s 500ms allow-discrete;
   }
 }
 
