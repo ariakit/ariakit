@@ -243,10 +243,11 @@ export default function SliderExamples() {
 
       <Example
         title="Custom parts"
-        description="The track, fill, and thumb take props or elements, such as a thicker track with a success fill and thumb."
+        description="The track, fill, and thumb take props or elements, such as a thicker track with a success fill and thumb. A larger thumb size also sizes the thumb of the input."
         stretch
         code={`
           <Slider
+            $thumbSize={8}
             track={{ $thickness: 3 }}
             fill={{ $layer: "success" }}
             thumb={<SliderThumb $layer="success" />}
@@ -256,6 +257,7 @@ export default function SliderExamples() {
         <Slider
           aria-label="Progress goal"
           defaultValue={70}
+          $thumbSize={8}
           track={{ $thickness: 3 }}
           fill={{ $layer: "success" }}
           thumb={<SliderThumb $layer="success" />}

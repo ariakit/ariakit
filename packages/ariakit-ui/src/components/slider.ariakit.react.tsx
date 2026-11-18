@@ -187,9 +187,11 @@ export interface SliderThumbProps
 
 /**
  * Renders the thumb of a slider at the value of its input. The pointer goes
- * through it to the input.
+ * through it to the input. Set its size with `$thumbSize` on `Slider`, which
+ * also sizes the thumb of the input, so the pointer sets the value under the
+ * drawn thumb.
  * @example
- * <Slider aria-label="Volume" thumb={{ $layer: "brand" }} />
+ * <Slider aria-label="Volume" $thumbSize={6} thumb={{ $layer: "brand" }} />
  */
 export function SliderThumb(props: SliderThumbProps) {
   const [variantProps, rest] = splitProps(props, sliderThumb);

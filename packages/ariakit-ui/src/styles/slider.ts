@@ -1,4 +1,5 @@
 import { cv, cx } from "clava";
+import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
 import { progress } from "./progress.ts";
 
@@ -8,10 +9,7 @@ import { progress } from "./progress.ts";
  * pointer, the keyboard, and forms use the native control.
  */
 export const slider = cv({
-  class: [
-    "slider grid w-full items-center",
-    "[--slider-thumb-size:--spacing(5)]",
-  ],
+  class: "slider grid w-full items-center",
   variants: {
     /**
      * Sets the position of the value from `0`, at the minimum, to `1`, at the
@@ -21,6 +19,18 @@ export const slider = cv({
       if (value == null) return;
       return { style: { "--slider-value": `${value}` } };
     },
+    /**
+     * Sets the size of the thumb. The drawn thumb and the thumb of the native
+     * input take it, so the pointer sets the value that the drawn thumb shows.
+     * Numbers scale the spacing token.
+     */
+    $thumbSize(value?: string | number) {
+      if (value == null) return;
+      return { style: { "--slider-thumb-size": getSpacingValue(value) } };
+    },
+  },
+  defaultVariants: {
+    $thumbSize: 5,
   },
 });
 

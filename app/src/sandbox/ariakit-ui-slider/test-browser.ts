@@ -32,13 +32,16 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 
   // Each engine maps the pointer to a value over the width of the input less
   // the width of its own thumb. When the drawn thumb has another size or
-  // position, a press on it moves the value.
+  // position, a press on it moves the value. The custom parts have a thumb
+  // large enough that a native thumb of the default size moves the value by a
+  // whole step near the ends.
   test("puts the drawn thumb under the pointer that sets the value", async ({
     q,
   }) => {
     for (const { box, name, values } of [
       { box: "Default", name: "Volume", values: [10, 50, 90] },
       { box: "Right to left", name: "Balance", values: [90, 50, 10] },
+      { box: "Custom parts", name: "Progress goal", values: [10, 50, 90] },
     ]) {
       const slider = query(q.article(box)).slider(name);
       const thumb = getThumb(slider);
