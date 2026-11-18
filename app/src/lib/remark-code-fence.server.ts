@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { highlight } from "@ariakit/ui/utils/highlight.server";
+import { isObject } from "@ariakit/utils";
 import type {
   CodeFenceFile,
   CodeFenceProps,
@@ -25,6 +26,7 @@ interface MdastNode {
   position?: { start: { line: number } };
   name?: string;
   attributes?: object[];
+  data?: { estree?: unknown };
 }
 
 interface FenceFile {
@@ -47,13 +49,102 @@ interface ParsedFence {
   options: CodeFenceOptions;
 }
 
-const componentName = "CodeFence";
 const componentModule = "#app/components/code-fence.react.tsx";
-// The local names of the body parts can't clash with an import of the file.
-const proseName = "CodeFenceProse";
 const proseModule = "@ariakit/ui/components/prose.ariakit.react";
-const popoutName = "CodeFencePopout";
 const popoutModule = "@ariakit/ui/components/shell.ariakit.react";
+
+// The local names that the plugin imports its components as.
+interface ComponentNames {
+  fence: string;
+  prose: string;
+  popout: string;
+}
+
+// Adds the names that a binding pattern declares, such as `{ a, b: [c] }`.
+function addPatternNames(pattern: unknown, names: Set<string>) {
+  if (!isObject(pattern)) return;
+  if (pattern.type === "Identifier") {
+    if (typeof pattern.name !== "string") return;
+    names.add(pattern.name);
+    return;
+  }
+  if (pattern.type === "AssignmentPattern") {
+    addPatternNames(pattern.left, names);
+    return;
+  }
+  if (pattern.type === "RestElement") {
+    addPatternNames(pattern.argument, names);
+    return;
+  }
+  if (pattern.type === "ArrayPattern" && Array.isArray(pattern.elements)) {
+    for (const element of pattern.elements) {
+      addPatternNames(element, names);
+    }
+    return;
+  }
+  if (pattern.type !== "ObjectPattern") return;
+  if (!Array.isArray(pattern.properties)) return;
+  for (const property of pattern.properties) {
+    if (!isObject(property)) continue;
+    // A rest property is the pattern itself, and other properties hold theirs
+    // in the value, such as `b` in `{ a: b }`.
+    addPatternNames(
+      property.type === "RestElement" ? property : property.value,
+      names,
+    );
+  }
+}
+
+// Adds the names of an ESM declaration, such as the locals of an import or the
+// bindings of an exported variable, function, or class.
+function addDeclaredNames(statement: unknown, names: Set<string>) {
+  if (!isObject(statement)) return;
+  if (statement.type === "ImportDeclaration") {
+    if (!Array.isArray(statement.specifiers)) return;
+    for (const specifier of statement.specifiers) {
+      if (!isObject(specifier)) continue;
+      addPatternNames(specifier.local, names);
+    }
+    return;
+  }
+  if (statement.type !== "ExportNamedDeclaration") return;
+  const { declaration } = statement;
+  if (!isObject(declaration)) return;
+  const declarators = Array.isArray(declaration.declarations)
+    ? declaration.declarations
+    : [declaration];
+  for (const declarator of declarators) {
+    if (!isObject(declarator)) continue;
+    addPatternNames(declarator.id, names);
+  }
+}
+
+// Picks local names that the imports and exports of the file don't declare, so
+// the generated imports can't declare a binding twice.
+function getComponentNames(tree: MdastNode): ComponentNames {
+  const declared = new Set<string>();
+  for (const node of tree.children ?? []) {
+    if (node.type !== "mdxjsEsm") continue;
+    const program = node.data?.estree;
+    if (!isObject(program)) continue;
+    if (!Array.isArray(program.body)) continue;
+    for (const statement of program.body) {
+      addDeclaredNames(statement, declared);
+    }
+  }
+  const getName = (base: string) => {
+    let name = base;
+    for (let suffix = 2; declared.has(name); suffix++) {
+      name = `${base}${suffix}`;
+    }
+    return name;
+  };
+  return {
+    fence: getName("CodeFence"),
+    prose: getName("CodeFenceProse"),
+    popout: getName("CodeFencePopout"),
+  };
+}
 
 // The estree that MDX needs for `import { Name as Local } from "…"`. Astro
 // finds the module of an island in this tree, so the import can't be a string
@@ -104,13 +195,19 @@ function isModuleNode(node: MdastNode) {
 // ShellPopout, like the Code Blocks in Prose example. A popout band around them
 // spaces them with the gap of a Prose, so the text keeps the rhythm of one
 // Prose column. It is the first of the two band levels that a shell allows.
-function splitBodyContent(tree: MdastNode, fences: Set<MdastNode>) {
+function splitBodyContent(
+  tree: MdastNode,
+  fences: Set<MdastNode>,
+  names: ComponentNames,
+) {
   const moduleNodes: MdastNode[] = [];
   const parts: MdastNode[] = [];
   let run: MdastNode[] = [];
   const flush = () => {
     if (!run.length) return;
-    parts.push(createWrapper(proseName, "[.shell-band>&]:col-[content]", run));
+    parts.push(
+      createWrapper(names.prose, "[.shell-band>&]:col-[content]", run),
+    );
     run = [];
   };
   for (const child of tree.children ?? []) {
@@ -118,17 +215,17 @@ function splitBodyContent(tree: MdastNode, fences: Set<MdastNode>) {
       moduleNodes.push(child);
     } else if (fences.has(child)) {
       flush();
-      parts.push(createWrapper(popoutName, "", [child]));
+      parts.push(createWrapper(names.popout, "", [child]));
     } else {
       run.push(child);
     }
   }
   flush();
-  const body = createWrapper(popoutName, "ui-spacing-em gap-y-5", parts);
+  const body = createWrapper(names.popout, "ui-spacing-em gap-y-5", parts);
   tree.children = [...moduleNodes, body];
   tree.children.unshift(
-    createImport("Prose", proseName, proseModule),
-    createImport("ShellPopout", popoutName, popoutModule),
+    createImport("Prose", names.prose, proseModule),
+    createImport("ShellPopout", names.popout, popoutModule),
   );
 }
 
@@ -181,14 +278,14 @@ function createAttribute(name: string, value: unknown) {
 // The code fence hydrates when it scrolls into view, so its copy button, tabs,
 // and expand button work. A page can have dozens of blocks, and most of them
 // start out of view.
-function createElement(props: CodeFenceProps): MdastNode {
+function createElement(props: CodeFenceProps, name: string): MdastNode {
   const attributes = Object.entries(props).flatMap(([name, value]) => {
     if (value === undefined) return [];
     return createAttribute(name, value);
   });
   return {
     type: "mdxJsxFlowElement",
-    name: componentName,
+    name,
     attributes: [
       { type: "mdxJsxAttribute", name: "client:visible", value: null },
       ...attributes,
@@ -231,7 +328,7 @@ function createInstallProps(code: string): CodeFenceProps {
  * mistake in an info string stops the build with its file and line.
  *
  * ````md
- * ```counter.tsx {3} "count" lineNumbers
+ * ```counter.tsx {1} "count" lineNumbers
  * const [count, setCount] = useState(0);
  * ```
  * ````
@@ -245,6 +342,7 @@ export function remarkCodeFences({
     if (!filePath?.endsWith(".mdx")) return;
     const errors: string[] = [];
     const fences = new Set<MdastNode>();
+    const names = getComponentNames(tree);
 
     const report = (node: MdastNode, messages: string[]) => {
       const line = node.position?.start.line ?? 0;
@@ -339,7 +437,7 @@ export function remarkCodeFences({
         }
         const result = transform(children, index);
         if (!result) continue;
-        const element = createElement(result.props);
+        const element = createElement(result.props, names.fence);
         fences.add(element);
         children.splice(index, result.count, element);
       }
@@ -350,11 +448,11 @@ export function remarkCodeFences({
       throw new Error(`Fix these code fences:\n${errors.join("\n")}`);
     }
     if (isBodyContent?.(filePath)) {
-      splitBodyContent(tree, fences);
+      splitBodyContent(tree, fences, names);
     }
     if (!fences.size) return;
     tree.children?.unshift(
-      createImport(componentName, componentName, componentModule),
+      createImport("CodeFence", names.fence, componentModule),
     );
   };
 }

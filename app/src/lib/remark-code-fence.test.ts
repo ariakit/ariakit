@@ -203,3 +203,40 @@ test("puts body content without fences in one Prose", async () => {
   expect(parts).toEqual(["_jsx(CodeFencePopout", "_jsxs(CodeFenceProse"]);
   expect(code).not.toContain("code-fence.react.tsx");
 });
+
+test("imports its components under names that the file doesn't declare", async () => {
+  const code = await compile(
+    `
+import { CodeFence } from "./code-fence.tsx";
+import CodeFenceProse from "./prose.tsx";
+export const { popout: [CodeFencePopout] } = { popout: ["popout"] };
+
+Text
+
+\`\`\`tsx
+const a = 1;
+\`\`\`
+`,
+    "/app/guide.mdx",
+    { isBodyContent: () => true },
+  );
+  expect(code).toContain(
+    'import {CodeFence as CodeFence2} from "#app/components/code-fence.react.tsx";',
+  );
+  expect(code).toContain(
+    'import {Prose as CodeFenceProse2} from "@ariakit/ui/components/prose.ariakit.react";',
+  );
+  expect(code).toContain(
+    'import {ShellPopout as CodeFencePopout2} from "@ariakit/ui/components/shell.ariakit.react";',
+  );
+  // The island and both wrappers render the imported components, not the
+  // bindings of the file.
+  const parts = code.match(/_jsxs?\((CodeFence\w*)\b/g);
+  expect(parts).toEqual([
+    "_jsxs(CodeFencePopout2",
+    "_jsx(CodeFenceProse2",
+    "_jsx(CodeFencePopout2",
+    "_jsx(CodeFence2",
+  ]);
+  expect(code).toContain('"client:component-export": "CodeFence"');
+});
