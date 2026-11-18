@@ -22,12 +22,13 @@ const RADII = [
   { name: "3xl", className: "ak-frame-rounded-3xl" },
 ];
 
+// From 1rem of padding, a nested frame no longer derives its radius from its
+// parent, so the paddings stay below it.
 const PADDINGS = [
   "ak-frame-p-0",
   "ak-frame-p-1",
   "ak-frame-p-2",
   "ak-frame-p-3",
-  "ak-frame-p-4",
 ];
 
 export default function ConcentricRadius() {
@@ -56,7 +57,7 @@ export default function ConcentricRadius() {
           />
         </>
       }
-      caption="The outer frame sets its radius and its padding. The inner frame has no radius of its own: it takes the outer radius less the padding, so the two corners share one center."
+      caption="The outer frame sets its radius and its padding. The inner frame has no radius of its own: it takes the outer radius less the padding, so the two corners share one center. When the padding is equal to or larger than the outer radius, the inner corner is square."
     >
       <Zoom level={2}>
         <div

@@ -37,7 +37,7 @@ withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
     for (const [radius, padding] of [
       [2, 2],
       [0, 0],
-      [3, 4],
+      [3, 3],
       [1, 1],
     ] as const) {
       await setSlider(page, q.slider("Outer radius"), radius);
@@ -55,6 +55,37 @@ withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
       await expectMeasure(figure, "Outer radius", outerRadius);
       await expectMeasure(figure, "Inner radius", innerRadius);
       await expectMeasure(figure, "Outer padding", outerPadding);
+    }
+  });
+
+  // The caption says that the inner frame takes the outer radius less the
+  // padding at every value of the sliders, and that its corner is square when
+  // the padding is equal to or larger than the outer radius.
+  test("keeps the inner radius at the outer radius less the padding", async ({
+    page,
+    q,
+  }) => {
+    const inner = q.text("Inner frame");
+    const outer = inner.locator("xpath=..");
+    const radiusSlider = q.slider("Outer radius");
+    const paddingSlider = q.slider("Outer padding");
+    const maxRadius = Number(await radiusSlider.getAttribute("max"));
+    const maxPadding = Number(await paddingSlider.getAttribute("max"));
+    for (let radius = 0; radius <= maxRadius; radius++) {
+      await setSlider(page, radiusSlider, radius);
+      await test.expect(radiusSlider).toHaveValue(`${radius}`);
+      for (let padding = 0; padding <= maxPadding; padding++) {
+        await setSlider(page, paddingSlider, padding);
+        await test.expect(paddingSlider).toHaveValue(`${padding}`);
+        const outerRadius = await getComputedLength(
+          outer,
+          "border-top-left-radius",
+        );
+        const outerPadding = await getComputedLength(outer, "padding-top");
+        await test.expect
+          .poll(() => getComputedLength(inner, "border-top-left-radius"))
+          .toBeCloseTo(Math.max(0, outerRadius - outerPadding), 1);
+      }
     }
   });
 
