@@ -5,7 +5,10 @@ import {
   getComputedLength,
   getRadiusCenter,
 } from "#app/test-utils/measure.ts";
-import { withDeferredVisualLoad } from "#app/test-utils/preview.ts";
+import {
+  flushFrames,
+  withDeferredVisualLoad,
+} from "#app/test-utils/preview.ts";
 
 // The figure shows the tabs at 1.5×.
 const ZOOM = 1.5;
@@ -221,6 +224,32 @@ withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
       .poll(() => getBoxOffset(q.figure(), q.tab("Members")), { timeout: 500 })
       .toBeCloseTo(0, 0);
   });
+
+  // The glider removes the elements that travel when reduced motion or forced
+  // colors turn on, so the transitions of the last change can't run again.
+  for (const { name, media } of [
+    { name: "reduced motion", media: { reducedMotion: "reduce" } },
+    { name: "forced colors mode", media: { forcedColors: "active" } },
+  ] as const) {
+    test(`turns the playback off when ${name} turns on`, async ({
+      page,
+      q,
+    }) => {
+      await q.tab("Members").click();
+      await test.expect(q.button("Replay")).toBeEnabled();
+      await test.expect(q.slider("Time")).toBeEnabled();
+      await page.emulateMedia(media);
+      await test.expect(q.button("Replay")).toBeDisabled();
+      await test.expect(q.slider("Time")).toBeDisabled();
+      // The controls wait for the next transition after the motion turns on
+      // again. The glider sets up again on the next frames, which start none.
+      await page.emulateMedia({ reducedMotion: null, forcedColors: null });
+      await flushFrames(page);
+      await test.expect(q.button("Replay")).toBeDisabled();
+      await q.tab("Overview").click();
+      await test.expect(q.button("Replay")).toBeEnabled();
+    });
+  }
 
   // With reduced motion, the glider stays off, and the tab paints its own box.
   // The page loads with it, as it does for a reader who turned it on.

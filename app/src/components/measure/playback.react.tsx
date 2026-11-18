@@ -20,6 +20,11 @@ import { FigureSlider } from "./figure.react.tsx";
 
 const SPEEDS = [1, 0.25, 0.1];
 
+// Parts such as a glider turn off their motion in these modes and remove the
+// elements that move, so the transitions of the last change can't run again.
+const NO_MOTION_QUERY =
+  "(prefers-reduced-motion: reduce), (forced-colors: active)";
+
 // The scrubber goes from 0 to this value.
 const SCRUB_STEPS = 100;
 
@@ -156,10 +161,10 @@ function includeAll() {
  * API: a speed that slows them, a button that replays the last ones, and a
  * scrubber that moves them to a point in time. The controls wait for the first
  * transition. A part that turns off its motion with reduced motion, such as a
- * glider, leaves them off. A replay starts the transitions of one change
- * together, so it doesn't keep a stagger between them. A press or a key in the
- * target ends a scrub or a replay, and the target shows the end of its last
- * change.
+ * glider, leaves them off, also when reduced motion or forced colors turn on
+ * after a transition. A replay starts the transitions of one change together,
+ * so it doesn't keep a stagger between them. A press or a key in the target
+ * ends a scrub or a replay, and the target shows the end of its last change.
  * @example
  * <Figure controls={<Playback target={subjectRef} />}>...</Figure>
  */
@@ -262,6 +267,17 @@ export function Playback({ target, include = includeAll }: PlaybackProps) {
     setProgress(1);
   });
 
+  // When the motion turns off, the recordings point to elements that the
+  // subject removed, so the controls turn off until the next transition.
+  const onMotionChange = useEffectEvent((query: MediaQueryList) => {
+    if (!query.matches) return;
+    cancelReplays();
+    animationsRef.current = [];
+    recordingsRef.current = [];
+    setReady(false);
+    setProgress(1);
+  });
+
   const onUnmount = useEffectEvent(() => {
     cancelAnimationFrame(frameRef.current);
     cancelReplays();
@@ -272,13 +288,17 @@ export function Playback({ target, include = includeAll }: PlaybackProps) {
     if (!element) return;
     const listener = (event: Event) => onTransitionRun(element, event);
     const interact = () => onInteract(element);
+    const query = getWindow(element).matchMedia(NO_MOTION_QUERY);
+    const motionChange = () => onMotionChange(query);
     element.addEventListener("transitionrun", listener);
     element.addEventListener("pointerdown", interact, true);
     element.addEventListener("keydown", interact, true);
+    query.addEventListener("change", motionChange);
     return () => {
       element.removeEventListener("transitionrun", listener);
       element.removeEventListener("pointerdown", interact, true);
       element.removeEventListener("keydown", interact, true);
+      query.removeEventListener("change", motionChange);
       onUnmount();
     };
   }, [target]);
