@@ -120,7 +120,12 @@ export default defineConfig({
         // The preview plugin removes its word from the info string, which the
         // code fence plugin would report as an unknown option.
         remarkPreviewFences,
-        [remarkCodeFences, { isBodyContent, features: ["ExampleCard"] }],
+        // A page names each figure that it imports with a Figure suffix, such
+        // as ConcentricRadiusFigure, so the figure gets a feature band too.
+        [
+          remarkCodeFences,
+          { isBodyContent, features: ["ExampleCard", /Figure$/] },
+        ],
       ],
       rehypePlugins: [
         rehypeHtmlComponents,

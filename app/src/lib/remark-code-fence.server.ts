@@ -49,9 +49,10 @@ export interface RemarkCodeFencesOptions {
    * The MDX components that go in a `ShellFeature` of their own at the top
    * level of body content, wider than the popout of a fence. Another plugin can
    * render a fence in one of these, such as the example card of a preview
-   * fence.
+   * fence. A pattern matches the names of components that a page imports, such
+   * as its figures.
    */
-  features?: string[];
+  features?: (string | RegExp)[];
 }
 
 interface ParsedFence {
@@ -488,7 +489,12 @@ export function remarkCodeFences({
     if (isBodyContent?.(filePath)) {
       const isFeature = (node: MdastNode) => {
         if (node.type !== "mdxJsxFlowElement") return false;
-        return !!node.name && features.includes(node.name);
+        const { name } = node;
+        if (!name) return false;
+        return features.some((feature) => {
+          if (typeof feature === "string") return feature === name;
+          return feature.test(name);
+        });
       };
       splitBodyContent(tree, fences, isFeature, names);
     }
