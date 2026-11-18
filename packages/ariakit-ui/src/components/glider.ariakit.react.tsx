@@ -11,6 +11,8 @@ import {
   gliderGroup,
   gliderLayer,
   gliderMover,
+  gliderScale,
+  gliderScaleProbe,
   gliderTrack,
   gliderWindow,
 } from "../styles/glider.ts";
@@ -98,6 +100,8 @@ const contentProperties = [
   "flex-basis",
 ];
 
+const gliderScaleClass = gliderScale.htmlObj().class;
+const gliderScaleProbeClass = gliderScaleProbe.htmlObj().class;
 const gliderTrackClass = gliderTrack.htmlObj().class;
 const gliderMoverClass = gliderMover.htmlObj().class;
 const gliderBoxClass = gliderBox.htmlObj().class;
@@ -154,81 +158,32 @@ function getItems(group: HTMLElement, root: HTMLElement) {
   });
 }
 
-interface LayoutSize {
-  width: number;
-  height: number;
-  /** Whether the size is rounded to whole pixels. */
-  rounded: boolean;
-}
-
 /**
- * The size of the border box of an element in its own CSS pixels, with no CSS
- * zoom or transform of its ancestors.
+ * How many screen pixels a CSS pixel takes in the glider, from CSS zoom or a
+ * transform on the group or its ancestors. The probe has a fixed CSS size, so
+ * its box on the screen gives the scale.
  */
-function getLayoutSize(element: HTMLElement): LayoutSize {
-  const style = getWindow(element).getComputedStyle(element);
-  // The offset size is rounded to whole pixels, which moves a box that is far
-  // from the start of a scaled group. The computed size keeps the fractions.
-  if (style.boxSizing === "border-box") {
-    const width = Number.parseFloat(style.width);
-    const height = Number.parseFloat(style.height);
-    if (width && height) return { width, height, rounded: false };
-  }
-  // The computed size of a content box can leave out a scrollbar, so it can't
-  // give the border box of a group that scrolls.
+function getScale(probe: HTMLElement, rect: DOMRect) {
   return {
-    width: element.offsetWidth,
-    height: element.offsetHeight,
-    rounded: true,
-  };
-}
-
-/** How many screen pixels a CSS pixel takes, from a size of both kinds. */
-function getScale(size: number, layoutSize: number) {
-  if (!size) return 1;
-  if (!layoutSize) return 1;
-  return size / layoutSize;
-}
-
-/**
- * How many screen pixels a CSS pixel of the group takes along each axis, from
- * CSS zoom or a transform on an ancestor.
- */
-function getGroupScale(group: HTMLElement, groupRect: DOMRect) {
-  const { width, height, rounded } = getLayoutSize(group);
-  // A rounded size is up to half a pixel off from the box of a group with no
-  // scale. A slight scale can change the short side of the group by less than a
-  // pixel too, so only two sides this close mean no scale.
-  const unscaled =
-    rounded &&
-    Math.abs(groupRect.width - width) < 1 &&
-    Math.abs(groupRect.height - height) < 1;
-  if (unscaled) return { x: 1, y: 1 };
-  return {
-    x: getScale(groupRect.width, width),
-    y: getScale(groupRect.height, height),
+    x: rect.width / probe.offsetWidth || 1,
+    y: rect.height / probe.offsetHeight || 1,
   };
 }
 
 /**
  * The box of an element from the start of the group's scrollable content, in
- * CSS pixels of the group. The root of the glider sits at that start, so it
- * scrolls with the items.
+ * CSS pixels of the glider. The scale probe sits at that start, so it scrolls
+ * with the items.
  */
-function getRect(
-  group: HTMLElement,
-  root: HTMLElement,
-  element: HTMLElement,
-): ItemRect {
-  const groupRect = group.getBoundingClientRect();
-  const rootRect = root.getBoundingClientRect();
+function getRect(probe: HTMLElement, element: HTMLElement): ItemRect {
+  const probeRect = probe.getBoundingClientRect();
   const rect = element.getBoundingClientRect();
-  // The boxes from getBoundingClientRect() include the scale of the group from
-  // CSS zoom or a transform, but the CSS lengths that the glider writes do not.
-  const scale = getGroupScale(group, groupRect);
+  // The boxes from getBoundingClientRect() include CSS zoom and transforms, but
+  // the CSS lengths that the glider writes do not.
+  const scale = getScale(probe, probeRect);
   return {
-    x: (rect.left - rootRect.left) / scale.x,
-    y: (rect.top - rootRect.top) / scale.y,
+    x: (rect.left - probeRect.left) / scale.x,
+    y: (rect.top - probeRect.top) / scale.y,
     width: rect.width / scale.x,
     height: rect.height / scale.y,
   };
@@ -576,6 +531,10 @@ interface GliderOptions extends Pick<GliderGroupVariants, "$hover"> {
 function createGlider({ root, group, ...variants }: GliderOptions) {
   const view = getWindow(group);
   const hover = !!variants.$hover;
+  const scaleProbe = createElement(
+    createElement(root, gliderScaleClass),
+    gliderScaleProbeClass,
+  );
   // Paint order: the hover box, the idle copy of the item that the selected box
   // travels to, then the selected box and its window.
   const hoverTrack = hover ? createTrack(root, "hover") : null;
@@ -652,7 +611,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     if (!hasOpaqueSurface(selectedTrack.box)) return;
     const path = new Map<HTMLElement, ItemRect>();
     for (const element of getItems(group, root)) {
-      const rect = getRect(group, root, element);
+      const rect = getRect(scaleProbe, element);
       if (!isOnPath(from, to, rect)) continue;
       path.set(element, rect);
     }
@@ -677,7 +636,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     for (const [element, rect] of path) {
       if (element === target) continue;
       // Items keep their places, because other items look selected too.
-      const { width, height } = getRect(group, root, element);
+      const { width, height } = getRect(scaleProbe, element);
       const copyRect = { ...rect, width, height };
       selectedCopies.push(
         createCopy({
@@ -689,7 +648,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       );
     }
     const idleState = target.matches(":hover") ? "hover" : "idle";
-    const idleRect = getRect(group, root, target);
+    const idleRect = getRect(scaleProbe, target);
     const idleCopy = createCopy({
       element: target,
       rect: idleRect,
@@ -749,7 +708,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       hideTrack(hoverTrack);
       return;
     }
-    const rect = getRect(group, root, hoveredItem);
+    const rect = getRect(scaleProbe, hoveredItem);
     moveTrack({ track: hoverTrack, target: hoveredItem, rect, animated });
   };
 
@@ -780,8 +739,8 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     if (selectedItem) {
       // The box can be between two items when the selection changes again.
       const from =
-        travels || refreshes ? getRect(group, root, selectedTrack.box) : null;
-      const to = getRect(group, root, selectedItem);
+        travels || refreshes ? getRect(scaleProbe, selectedTrack.box) : null;
+      const to = getRect(scaleProbe, selectedItem);
       const offsets = getInlineOffsets(group, to);
       findFollowers();
       moveTrack({

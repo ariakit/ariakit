@@ -1,10 +1,6 @@
 import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import {
-  getBoxOffset,
-  getBoxOffsets,
-  getItemsToScale,
-} from "./test-helpers.ts";
+import { getBoxOffset, getItemsToScale } from "./test-helpers.ts";
 
 function countBoxes(article: Locator) {
   return article.evaluate(
@@ -55,40 +51,46 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     }
   });
 
-  // https://github.com/ariakit/ariakit/pull/8491#discussion_r4607211345
-  test("rests the selected box on the selected item in a content box group", async ({
-    page,
-    q,
-  }) => {
-    // The offset size of a group is rounded, so with a fractional content box
-    // it differs from the box of the group on a page with no scale.
-    await page.addStyleTag({
-      content: `[aria-label="Scrolling"] { box-sizing: content-box; width: 120.5px; }`,
+  // The size of a group can't tell these scales apart from rounding: a
+  // content-box group has only a rounded offset size, and a slight scale moves
+  // its sides by about a pixel.
+  const slightScales = [
+    // https://github.com/ariakit/ariakit/pull/8491#discussion_r4607211345
+    { name: "no scale", width: "120.5px", scale: "none" },
+    // The height of the group changes by less than a pixel here.
+    { name: "scale(1.02)", width: "120.5px", scale: "scale(1.02)" },
+    // https://github.com/ariakit/ariakit/pull/8491#discussion_r4607564015
+    { name: "scale(0.995)", width: "120px", scale: "scale(0.995)" },
+  ];
+
+  for (const { name, width, scale } of slightScales) {
+    test(`rests the selected box on the selected item in a content box group with ${name}`, async ({
+      page,
+      q,
+    }) => {
+      await page.addStyleTag({
+        content: `
+          [aria-label="Scrolling"] { box-sizing: content-box; width: ${width}; }
+          body { transform-origin: 0 0; transform: ${scale}; }
+        `,
+      });
+      const item = query(q.article("Scrolling")).radio("Board");
+      await item.click();
+      await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(0.5);
     });
-    const item = query(q.article("Scrolling")).radio("Board");
+  }
+
+  test("adds nothing to the scrollable content of the group", async ({ q }) => {
+    const group = query(q.article("Scrolling")).radiogroup("Scrolling");
+    const item = query(group).radio("Board");
     await item.click();
     await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(0.5);
-  });
-
-  // https://github.com/ariakit/ariakit/pull/8491#discussion_r4607211345
-  test("keeps the selected box as tall as the item in a content box group under a slight scale", async ({
-    page,
-    q,
-  }) => {
-    // The group is much shorter than it is wide. A slight scale changes its
-    // width by more than a pixel and its height by less than one, which a
-    // rounded height alone can't tell from no scale.
-    await page.addStyleTag({
-      content: `
-        [aria-label="Scrolling"] { box-sizing: content-box; width: 120.5px; }
-        body { transform-origin: 0 0; transform: scale(1.02); }
-      `,
-    });
-    const item = query(q.article("Scrolling")).radio("Board");
-    await item.click();
-    await test.expect
-      .poll(async () => (await getBoxOffsets(item))?.height)
-      .toBeLessThan(0.5);
+    // The scale probe of the glider is taller than the group. Unless it is
+    // clipped, it adds to the scrollable height of the group.
+    const overflow = await group.evaluate(
+      (node) => node.scrollHeight - node.clientHeight,
+    );
+    test.expect(overflow).toBe(0);
   });
 
   test("shows the item in the idle state until the box reaches it", async ({
