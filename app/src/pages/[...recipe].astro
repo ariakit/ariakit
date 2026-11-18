@@ -17,7 +17,6 @@ import {
   descriptionComponents,
   mdxComponents,
 } from "#app/components/mdx-components.react.tsx";
-import { Prose } from "@ariakit/ui/components/prose.ariakit.react";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
@@ -68,5 +67,7 @@ const trail = getCollectionTrail("recipes", title);
     }
   </PageIntro>
   {Gallery && <Gallery slot="gallery" {framework} />}
-  <Prose><Content {framework} components={mdxComponents} /></Prose>
+  {/* The content renders in the grid of the body: its text in Prose columns,
+      and its code fences in popouts, wider than the text. */}
+  <Content {framework} components={mdxComponents} />
 </Layout>

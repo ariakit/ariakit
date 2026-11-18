@@ -424,25 +424,25 @@ export function GeometryScenario({ controls }: ScenarioProps) {
           <ShellContent aria-label="Content band">
             <p>Content text</p>
           </ShellContent>
-          <ShellPopout $p={4} aria-label="Popout band">
+          <ShellPopout $py={4} aria-label="Popout band">
             <p>Popout text</p>
             <ShellContent>
               <p>Content inside popout</p>
             </ShellContent>
           </ShellPopout>
-          <ShellFeature $p={4} aria-label="Feature band">
+          <ShellFeature $py={4} aria-label="Feature band">
             <p>Feature text</p>
             <ShellContent>
               <p>Content inside feature</p>
             </ShellContent>
           </ShellFeature>
-          <ShellWide $p={4} aria-label="Wide band">
+          <ShellWide $py={4} aria-label="Wide band">
             <p>Wide text</p>
             <ShellContent>
               <p>Content inside wide</p>
             </ShellContent>
           </ShellWide>
-          <ShellFull $p={4} aria-label="Full band">
+          <ShellFull $py={4} aria-label="Full band">
             <p>Full text</p>
             <ShellContent>
               <p>Content inside full</p>
@@ -468,7 +468,7 @@ export function GeometryScenario({ controls }: ScenarioProps) {
           <div className="h-[1000px]">
             <p>Scroll to see the contents below the introduction.</p>
           </div>
-          <ShellFull $p={0} aria-label="Flush band">
+          <ShellFull aria-label="Flush band">
             <Frame
               $rounded="8px"
               $p={6}

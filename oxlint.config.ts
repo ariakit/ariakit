@@ -152,9 +152,11 @@ export default defineConfig({
     },
     {
       // These modules never reach the browser, so they can use .server values:
-      // other .server modules, tests and their helpers, and the app pages.
+      // other .server modules, tests and their helpers, the app pages, and the
+      // app config, whose Markdown plugins run at build time.
       files: [
         "**/*.server.{ts,tsx}",
+        "app/astro.config.ts",
         "**/*.test*.{ts,tsx}",
         "**/test.{ts,tsx}",
         "**/test-*.{ts,tsx}",
