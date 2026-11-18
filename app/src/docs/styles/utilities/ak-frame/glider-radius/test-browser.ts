@@ -23,6 +23,11 @@ async function getBoxOffset(figure: Locator, tab: Locator) {
   return center.x - (box.x + radius * ZOOM);
 }
 
+// The value of the Time scrubber, from 0 to 100.
+async function getTimeValue(time: Locator) {
+  return Number(await time.inputValue());
+}
+
 withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
   test("figure @visual", async ({ page, q, visual }) => {
     await forEachColorScheme(page, async (colorScheme) => {
@@ -70,12 +75,12 @@ withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
     await test.expect(q.radio("0.1×", { exact: true })).toBeChecked();
     await q.tab("Members").click();
     await test.expect(q.button("Replay")).toBeEnabled();
-    // The box travels for 200ms at 1×. Past that time, a box at 0.1× is still
-    // on its way.
-    await page.waitForTimeout(400);
-    const offset = await getBoxOffset(figure, q.tab("Members"));
-    test.expect(offset).toBeLessThan(-10);
-    await test.expect(time).not.toHaveAttribute("aria-valuetext", "100%");
+    // The travel takes 200ms at 1× and 2s at 0.1×, and the scrubber shows its
+    // time. The wait crosses the 200ms of a travel at 1×, where the scrubber
+    // reads the end. At 0.1×, it reaches the end only after 2s, a margin for a
+    // slow runner, where reading the box takes about 0.8s.
+    await page.waitForTimeout(300);
+    test.expect(await getTimeValue(time)).toBeLessThan(100);
     await test
       .expect(time)
       .toHaveAttribute("aria-valuetext", "100%", { timeout: 5000 });
@@ -84,8 +89,11 @@ withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
       .toBeCloseTo(0, 0);
 
     await q.button("Replay").click();
-    await test.expect(time).not.toHaveAttribute("aria-valuetext", "100%");
-    test.expect(await getBoxOffset(figure, q.tab("Members"))).toBeLessThan(-10);
+    // The replay runs at the speed too. The wait crosses the 200ms of a replay
+    // at 1×, where the scrubber reads the end, while at 0.1× it reaches the end
+    // only after 2s.
+    await page.waitForTimeout(300);
+    test.expect(await getTimeValue(time)).toBeLessThan(100);
     await test
       .expect(time)
       .toHaveAttribute("aria-valuetext", "100%", { timeout: 5000 });
@@ -243,7 +251,12 @@ withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
       await test.expect(q.slider("Time")).toBeDisabled();
       // The controls wait for the next transition after the motion turns on
       // again. The glider sets up again on the next frames, which start none.
-      await page.emulateMedia({ reducedMotion: null, forcedColors: null });
+      // Explicit values, because null falls back to the setting of the system,
+      // which can reduce motion on a CI runner.
+      await page.emulateMedia({
+        reducedMotion: "no-preference",
+        forcedColors: "none",
+      });
       await flushFrames(page);
       await test.expect(q.button("Replay")).toBeDisabled();
       await q.tab("Overview").click();
