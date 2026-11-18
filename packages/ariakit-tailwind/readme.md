@@ -794,7 +794,7 @@ Use it for edges that identify a control. Decorative seams, such as card borders
 
 ```html
 <button
-  class="ak-layer ak-frame ak-frame-field/field ak-outline ak-outline-primary outline-2 focus-visible:outline"
+  class="ak-layer ak-frame ak-frame-field/field ak-outline ak-outline-primary focus-visible:outline-2"
 >
   Outlined button
 </button>
