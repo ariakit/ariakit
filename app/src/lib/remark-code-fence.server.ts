@@ -216,6 +216,7 @@ function splitBodyContent(
   isFeature: (node: MdastNode) => boolean,
   names: ComponentNames,
 ) {
+  let hasPopout = false;
   let hasFeature = false;
   const moduleNodes: MdastNode[] = [];
   const parts: MdastNode[] = [];
@@ -232,6 +233,7 @@ function splitBodyContent(
       moduleNodes.push(child);
     } else if (fences.has(child)) {
       flush();
+      hasPopout = true;
       parts.push(createWrapper(names.popout, "", [child]));
     } else if (isFeature(child)) {
       flush();
@@ -245,14 +247,19 @@ function splitBodyContent(
   const band = hasFeature ? names.feature : names.popout;
   const body = createWrapper(band, "ui-spacing-em gap-y-5", parts);
   tree.children = [...moduleNodes, body];
-  tree.children.unshift(
-    createImport("Prose", names.prose, proseModule),
-    createImport("ShellPopout", names.popout, shellModule),
-  );
-  if (!hasFeature) return;
-  tree.children.unshift(
-    createImport("ShellFeature", names.feature, shellModule),
-  );
+  tree.children.unshift(createImport("Prose", names.prose, proseModule));
+  // Each band is imported only when the content uses it, as a part or around
+  // the parts.
+  if (hasPopout || !hasFeature) {
+    tree.children.unshift(
+      createImport("ShellPopout", names.popout, shellModule),
+    );
+  }
+  if (hasFeature) {
+    tree.children.unshift(
+      createImport("ShellFeature", names.feature, shellModule),
+    );
+  }
 }
 
 // Converts JSON data into an estree expression. Object properties with

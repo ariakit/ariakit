@@ -39,7 +39,7 @@ test("renders an html preview fence as an example card with its code", async () 
   // wraps, and long code collapses.
   expect(code).toContain('class: "language-html"');
   expect(code).toContain('metastring: "wrap maxLines=12"');
-  expect(code).not.toContain("preview");
+  expect(code).not.toMatch(/metastring: "[^"]*\bpreview\b/);
 });
 
 test("keeps the wrap word and maxLines of the fence", async () => {

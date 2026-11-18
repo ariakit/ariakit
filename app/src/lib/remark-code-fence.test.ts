@@ -217,6 +217,8 @@ Text
   expect(code).toContain(
     'import {ShellFeature as CodeFenceFeature} from "@ariakit/ui/components/shell.ariakit.react";',
   );
+  // The content has no top-level fence, so it doesn't use a popout.
+  expect(code).not.toContain("ShellPopout");
   const parts = code.match(
     /_jsxs?\((CodeFenceProse|CodeFencePopout|CodeFenceFeature|CodeFence|ExampleCard|Callout)\b/g,
   );
