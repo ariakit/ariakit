@@ -234,6 +234,34 @@ Text
   ]);
 });
 
+test("puts the components that a feature pattern matches in a ShellFeature", async () => {
+  const code = await compile(
+    `
+import RadiusFigure from "./radius/index.react.tsx";
+
+Text
+
+<RadiusFigure client:visible />
+
+<Callout>Note</Callout>
+`,
+    "/app/guide.mdx",
+    { isBodyContent: () => true, features: [/Figure$/] },
+  );
+  const parts = code.match(
+    /_jsxs?\((CodeFenceProse|CodeFenceFeature|RadiusFigure|Callout)\b/g,
+  );
+  // The figure gets a band of its own, and the callout stays in the text.
+  expect(parts).toEqual([
+    "_jsxs(CodeFenceFeature",
+    "_jsx(CodeFenceProse",
+    "_jsx(CodeFenceFeature",
+    "_jsx(RadiusFigure",
+    "_jsx(CodeFenceProse",
+    "_jsx(Callout",
+  ]);
+});
+
 test("puts body content without fences in one Prose", async () => {
   const code = await compile("## Usage\n\nText", "/app/guide.mdx", {
     isBodyContent: () => true,

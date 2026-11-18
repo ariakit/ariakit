@@ -4,6 +4,9 @@ description: Radius, padding, margin, borders, and layout for nested surfaces.
 order: 9
 ---
 
+import ConcentricRadiusFigure from "./concentric-radius/index.react.tsx";
+import GliderRadiusFigure from "./glider-radius/index.react.tsx";
+
 `ak-frame` defines border radius, padding, margin, borders, and layout flow **relative to the parent frame**. Nested frames automatically compute concentric radii that look correct regardless of the outermost container's size. When no parent frame exists, values are treated as absolute.
 
 See [Give isolated components their own shape](/tailwind/styles/mental-model/#give-isolated-components-their-own-shape) for choosing semantic radii, preserving default roundness, and implementing a square theme.
@@ -17,6 +20,14 @@ Use `ak-frame-p-*` or the combined `ak-frame-<radius>/<padding>` form when paddi
   <div class="ak-frame ak-frame-2xl/4"></div>
 </div>
 ```
+
+Move the sliders to change the outer frame. The inner frame keeps a radius concentric with it. The figure shows the frames at 2×, and the values at 1×.
+
+<ConcentricRadiusFigure client:visible />
+
+The same geometry holds while a part moves. A segmented tab list is a frame, and the box of its selected tab is a frame inside it. The Ariakit UI glider moves that box to the next tab, and the box keeps its concentric radius on the way.
+
+<GliderRadiusFigure client:visible />
 
 > [!WARNING]
 > Border widths affect radius math. When a border defines the frame's rounded silhouette, always use `ak-frame-border` instead of Tailwind's `border` utility so concentric radii stay correct:

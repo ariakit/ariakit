@@ -16,11 +16,13 @@ import type {
 export const RECIPES_PREVIEW_KIND = "recipes";
 export const COMPONENTS_PREVIEW_KIND = "components";
 export const SANDBOX_PREVIEW_KIND = "sandbox";
+export const STYLES_PREVIEW_KIND = "styles";
 
 export const PREVIEW_KINDS = [
   RECIPES_PREVIEW_KIND,
   COMPONENTS_PREVIEW_KIND,
   SANDBOX_PREVIEW_KIND,
+  STYLES_PREVIEW_KIND,
 ] as const;
 
 export const PreviewKindSchema = z.enum(PREVIEW_KINDS);
@@ -55,6 +57,13 @@ export const previewConfig = {
       kind: SANDBOX_PREVIEW_KIND,
       dir: "sandbox",
       metadataRequired: false,
+    },
+    {
+      // The figures of the Styles pages, in the folders of their pages.
+      kind: STYLES_PREVIEW_KIND,
+      dir: "docs/styles",
+      metadataRequired: false,
+      idPrefix: "styles",
     },
   ],
 } satisfies PreviewConfig;
