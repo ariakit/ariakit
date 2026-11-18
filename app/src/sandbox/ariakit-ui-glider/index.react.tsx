@@ -566,6 +566,21 @@ export default function GliderExamples() {
         </Example>
 
         <Example
+          title="Scrolling right to left"
+          description="A right-to-left group scrolls to the left. The glider scrolls with the items."
+          code={`<RadioGroup dir="rtl"><Glider $hover /></RadioGroup>`}
+        >
+          <div className="w-52">
+            <Segments
+              name="Scrolling right to left"
+              dir="rtl"
+              icons
+              glider={hoverGlider}
+            />
+          </div>
+        </Example>
+
+        <Example
           title="Stretched"
           description="The glider follows items that share the width of the group when the group resizes."
           code={`<RadioGroup $layout="stretch"><Glider $hover /></RadioGroup>`}
