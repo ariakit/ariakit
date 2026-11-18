@@ -2,6 +2,7 @@ import { cv, cx } from "clava";
 import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
 import { frame, frameBase, getFramePaddingClass } from "./frame.ts";
 import type { FramePaddingValue } from "./frame.ts";
+import { layer } from "./layer.ts";
 
 export type ShellWidth = string | number;
 
@@ -1372,11 +1373,16 @@ export const shellMainBody = cv({
  * so it can't hold other bands. Its width doesn't depend on its content, so a
  * side part can take room from it. A `min-w-*` class stops it.
  * https://bugs.webkit.org/show_bug.cgi?id=268595
+ *
+ * A band is a layer, not a frame. Its children sit in grid columns, not inside
+ * frame padding, so a frame in a band takes its corners from the frame around
+ * the band, such as the main body. A `$cover` frame would cover that frame too,
+ * past the columns of the band, so put it in a frame inside the band.
  */
 const mainBand = cv({
-  extend: [frame],
+  extend: [layer],
   class: [
-    "shell-band grid grid-cols-subgrid min-w-0 rounded-none! px-0!",
+    "shell-band grid grid-cols-subgrid min-w-0",
     "[.shell-content-grid>&]:contain-inline-size [.shell-band>&]:contain-inline-size",
     "[:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:col-2 [:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:row-start-1",
     "[:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:contain-inline-size [:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:grid-cols-1",
@@ -1390,7 +1396,23 @@ const mainBand = cv({
     // Parts keep their content minimum unless they set `$shrink`.
     "*:col-span-full *:not-[:where(.shell-bar-part)]:min-w-0",
   ],
-  defaultVariants: { $p: "none" },
+  variants: {
+    /**
+     * Sets the padding above and below the band. Numbers scale the spacing
+     * token and round to a whole pixel; strings pass through as raw lengths or
+     * expressions. The band has no inline padding, which would move its
+     * columns.
+     */
+    $py(value?: string | number) {
+      if (value == null) return;
+      return {
+        class: "py-(--shell-band-py)",
+        style: { "--shell-band-py": getPaddingValue(value) },
+      };
+    },
+  },
+  // Open a color context without painting over the parent surface.
+  defaultVariants: { $layer: "transparent" },
 });
 
 /** The centered content column, including inside a wider main band. */

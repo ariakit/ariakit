@@ -275,7 +275,7 @@ export default function Example() {
             </HeadingLevel>
             {renderChecklist(tasks)}
           </Prose>
-          <ShellFull $layer="brand" $p={6}>
+          <ShellFull $layer="brand" $py={6}>
             <ShellContent>
               <p className="font-medium">
                 Decision: ship onboarding on Friday. Dark mode moves to the next
