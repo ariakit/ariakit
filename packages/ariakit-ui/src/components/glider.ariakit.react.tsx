@@ -154,20 +154,33 @@ function getItems(group: HTMLElement, root: HTMLElement) {
   });
 }
 
+interface LayoutSize {
+  width: number;
+  height: number;
+  /** Whether the size is rounded to whole pixels. */
+  rounded: boolean;
+}
+
 /**
  * The size of the border box of an element in its own CSS pixels, with no CSS
  * zoom or transform of its ancestors.
  */
-function getLayoutSize(element: HTMLElement) {
+function getLayoutSize(element: HTMLElement): LayoutSize {
   const style = getWindow(element).getComputedStyle(element);
   // The offset size is rounded to whole pixels, which moves a box that is far
   // from the start of a scaled group. The computed size keeps the fractions.
   if (style.boxSizing === "border-box") {
     const width = Number.parseFloat(style.width);
     const height = Number.parseFloat(style.height);
-    if (width && height) return { width, height };
+    if (width && height) return { width, height, rounded: false };
   }
-  return { width: element.offsetWidth, height: element.offsetHeight };
+  // The computed size of a content box can leave out a scrollbar, so it can't
+  // give the border box of a group that scrolls.
+  return {
+    width: element.offsetWidth,
+    height: element.offsetHeight,
+    rounded: true,
+  };
 }
 
 /** How many screen pixels a CSS pixel takes, from a size of both kinds. */
@@ -175,6 +188,26 @@ function getScale(size: number, layoutSize: number) {
   if (!size) return 1;
   if (!layoutSize) return 1;
   return size / layoutSize;
+}
+
+/**
+ * How many screen pixels a CSS pixel of the group takes along each axis, from
+ * CSS zoom or a transform on an ancestor.
+ */
+function getGroupScale(group: HTMLElement, groupRect: DOMRect) {
+  const { width, height, rounded } = getLayoutSize(group);
+  // A rounded size is up to half a pixel off from the box of a group with no
+  // scale. A slight scale can change the short side of the group by less than a
+  // pixel too, so only two sides this close mean no scale.
+  const unscaled =
+    rounded &&
+    Math.abs(groupRect.width - width) < 1 &&
+    Math.abs(groupRect.height - height) < 1;
+  if (unscaled) return { x: 1, y: 1 };
+  return {
+    x: getScale(groupRect.width, width),
+    y: getScale(groupRect.height, height),
+  };
 }
 
 /**
@@ -192,14 +225,12 @@ function getRect(
   const rect = element.getBoundingClientRect();
   // The boxes from getBoundingClientRect() include the scale of the group from
   // CSS zoom or a transform, but the CSS lengths that the glider writes do not.
-  const layoutSize = getLayoutSize(group);
-  const scaleX = getScale(groupRect.width, layoutSize.width);
-  const scaleY = getScale(groupRect.height, layoutSize.height);
+  const scale = getGroupScale(group, groupRect);
   return {
-    x: (rect.left - rootRect.left) / scaleX,
-    y: (rect.top - rootRect.top) / scaleY,
-    width: rect.width / scaleX,
-    height: rect.height / scaleY,
+    x: (rect.left - rootRect.left) / scale.x,
+    y: (rect.top - rootRect.top) / scale.y,
+    width: rect.width / scale.x,
+    height: rect.height / scale.y,
   };
 }
 

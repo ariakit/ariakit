@@ -1,6 +1,10 @@
 import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { getBoxOffset, getItemsToScale } from "./test-helpers.ts";
+import {
+  getBoxOffset,
+  getBoxOffsets,
+  getItemsToScale,
+} from "./test-helpers.ts";
 
 function countBoxes(article: Locator) {
   return article.evaluate(
@@ -49,6 +53,42 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       // here, so the tolerance doubles too.
       await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(1);
     }
+  });
+
+  // https://github.com/ariakit/ariakit/pull/8491#discussion_r4607211345
+  test("rests the selected box on the selected item in a content box group", async ({
+    page,
+    q,
+  }) => {
+    // The offset size of a group is rounded, so with a fractional content box
+    // it differs from the box of the group on a page with no scale.
+    await page.addStyleTag({
+      content: `[aria-label="Scrolling"] { box-sizing: content-box; width: 120.5px; }`,
+    });
+    const item = query(q.article("Scrolling")).radio("Board");
+    await item.click();
+    await test.expect.poll(() => getBoxOffset(item)).toBeLessThan(0.5);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/8491#discussion_r4607211345
+  test("keeps the selected box as tall as the item in a content box group under a slight scale", async ({
+    page,
+    q,
+  }) => {
+    // The group is much shorter than it is wide. A slight scale changes its
+    // width by more than a pixel and its height by less than one, which a
+    // rounded height alone can't tell from no scale.
+    await page.addStyleTag({
+      content: `
+        [aria-label="Scrolling"] { box-sizing: content-box; width: 120.5px; }
+        body { transform-origin: 0 0; transform: scale(1.02); }
+      `,
+    });
+    const item = query(q.article("Scrolling")).radio("Board");
+    await item.click();
+    await test.expect
+      .poll(async () => (await getBoxOffsets(item))?.height)
+      .toBeLessThan(0.5);
   });
 
   test("shows the item in the idle state until the box reaches it", async ({

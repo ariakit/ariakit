@@ -6,21 +6,28 @@ type Query = ReturnType<typeof query>;
 // The glider is presentation with aria-hidden, so it has no accessible name.
 // These probes read its selected box from the DOM and compare it with the box
 // of the item that the user selected.
-export function getBoxOffset(item: Locator) {
+export function getBoxOffsets(item: Locator) {
   return item.evaluate((element) => {
     const control = element.closest(".control");
     const group = control?.closest(".glider-group");
     const box = group?.querySelector('.glider-box[data-selected="true"]');
-    if (!control || !box) return Number.POSITIVE_INFINITY;
+    if (!control || !box) return null;
     const itemRect = control.getBoundingClientRect();
     const boxRect = box.getBoundingClientRect();
-    return Math.max(
-      Math.abs(itemRect.left - boxRect.left),
-      Math.abs(itemRect.top - boxRect.top),
-      Math.abs(itemRect.width - boxRect.width),
-      Math.abs(itemRect.height - boxRect.height),
-    );
+    return {
+      left: Math.abs(itemRect.left - boxRect.left),
+      top: Math.abs(itemRect.top - boxRect.top),
+      width: Math.abs(itemRect.width - boxRect.width),
+      height: Math.abs(itemRect.height - boxRect.height),
+    };
   });
+}
+
+/** The largest offset of the selected box from the item on any side. */
+export async function getBoxOffset(item: Locator) {
+  const offsets = await getBoxOffsets(item);
+  if (!offsets) return Number.POSITIVE_INFINITY;
+  return Math.max(offsets.left, offsets.top, offsets.width, offsets.height);
 }
 
 /**
