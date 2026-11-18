@@ -45,6 +45,13 @@ export interface RemarkCodeFencesOptions {
    * fence goes in a `ShellPopout`, so the code is wider than the text.
    */
   isBodyContent?: (filePath: string) => boolean;
+  /**
+   * The MDX components that go in a `ShellFeature` of their own at the top
+   * level of body content, wider than the popout of a fence. Another plugin can
+   * render a fence in one of these, such as the example card of a preview
+   * fence.
+   */
+  features?: string[];
 }
 
 interface ParsedFence {
@@ -55,13 +62,14 @@ interface ParsedFence {
 
 const componentModule = "#app/components/code-fence.react.tsx";
 const proseModule = "@ariakit/ui/components/prose.ariakit.react";
-const popoutModule = "@ariakit/ui/components/shell.ariakit.react";
+const shellModule = "@ariakit/ui/components/shell.ariakit.react";
 
 // The local names that the plugin imports its components as.
 interface ComponentNames {
   fence: string;
   prose: string;
   popout: string;
+  feature: string;
 }
 
 // Adds the names that a binding pattern declares, such as `{ a, b: [c] }`.
@@ -147,6 +155,7 @@ function getComponentNames(tree: MdastNode): ComponentNames {
     fence: getName("CodeFence"),
     prose: getName("CodeFenceProse"),
     popout: getName("CodeFencePopout"),
+    feature: getName("CodeFenceFeature"),
   };
 }
 
@@ -195,15 +204,20 @@ function isModuleNode(node: MdastNode) {
   return node.type === "mdxjsEsm" || node.type === "yaml";
 }
 
-// Puts each run of text in a Prose in the content column and each fence in a
-// ShellPopout, like the Code Blocks in Prose example. A popout band around them
-// spaces them with the gap of a Prose, so the text keeps the rhythm of one
-// Prose column. It is the first of the two band levels that a shell allows.
+// Puts each run of text in a Prose in the content column, each fence in a
+// ShellPopout, like the Code Blocks in Prose example, and each feature in a
+// ShellFeature. A band around them spaces them with the gap of a Prose, so the
+// text keeps the rhythm of one Prose column. It is the first of the two band
+// levels that a shell allows, and it spans the widest part, because the parts
+// can only use the column lines inside it.
 function splitBodyContent(
   tree: MdastNode,
   fences: Set<MdastNode>,
+  isFeature: (node: MdastNode) => boolean,
   names: ComponentNames,
 ) {
+  let hasPopout = false;
+  let hasFeature = false;
   const moduleNodes: MdastNode[] = [];
   const parts: MdastNode[] = [];
   let run: MdastNode[] = [];
@@ -219,18 +233,33 @@ function splitBodyContent(
       moduleNodes.push(child);
     } else if (fences.has(child)) {
       flush();
+      hasPopout = true;
       parts.push(createWrapper(names.popout, "", [child]));
+    } else if (isFeature(child)) {
+      flush();
+      hasFeature = true;
+      parts.push(createWrapper(names.feature, "", [child]));
     } else {
       run.push(child);
     }
   }
   flush();
-  const body = createWrapper(names.popout, "ui-spacing-em gap-y-5", parts);
+  const band = hasFeature ? names.feature : names.popout;
+  const body = createWrapper(band, "ui-spacing-em gap-y-5", parts);
   tree.children = [...moduleNodes, body];
-  tree.children.unshift(
-    createImport("Prose", names.prose, proseModule),
-    createImport("ShellPopout", names.popout, popoutModule),
-  );
+  tree.children.unshift(createImport("Prose", names.prose, proseModule));
+  // Each band is imported only when the content uses it, as a part or around
+  // the parts.
+  if (hasPopout || !hasFeature) {
+    tree.children.unshift(
+      createImport("ShellPopout", names.popout, shellModule),
+    );
+  }
+  if (hasFeature) {
+    tree.children.unshift(
+      createImport("ShellFeature", names.feature, shellModule),
+    );
+  }
 }
 
 // Converts JSON data into an estree expression. Object properties with
@@ -343,6 +372,7 @@ function createInstallProps(code: string): CodeFenceProps {
  */
 export function remarkCodeFences({
   isBodyContent,
+  features = [],
 }: RemarkCodeFencesOptions = {}) {
   return (tree: MdastNode, file: FenceFile) => {
     // Plain Markdown has no components, so only MDX files get the blocks.
@@ -456,7 +486,11 @@ export function remarkCodeFences({
       throw new Error(`Fix these code fences:\n${errors.join("\n")}`);
     }
     if (isBodyContent?.(filePath)) {
-      splitBodyContent(tree, fences, names);
+      const isFeature = (node: MdastNode) => {
+        if (node.type !== "mdxJsxFlowElement") return false;
+        return !!node.name && features.includes(node.name);
+      };
+      splitBodyContent(tree, fences, isFeature, names);
     }
     if (!fences.size) return;
     tree.children?.unshift(

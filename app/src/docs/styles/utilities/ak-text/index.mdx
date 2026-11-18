@@ -1,0 +1,56 @@
+---
+title: ak-text
+description: Colored text with automatic contrast against the current layer.
+order: 5
+---
+
+`ak-text` colors inline text with automatic contrast against the parent layer.
+
+> **Apply `ak-text` to a descendant, not to the layer element itself.** It forces `background-color: transparent` to let the layer show through, which would erase the surface if placed on the `ak-layer` element. For styling the layer's own text color, use [`ak-ink`](/tailwind/styles/ak-ink/) instead.
+
+Normal text should inherit the layer's text color without an extra utility. Use `ak-ink-*` for secondary or translucent text. Use `ak-text` on a descendant when the text needs its own adaptive color or additional contrast, and add `ak-text-<color>` when it needs a specific hue.
+
+```html preview
+<div class="ak-layer ak-layer-canvas">
+  <span class="ak-text ak-text-primary">Primary text</span>
+  <span class="ak-text ak-text-blue ak-text-vivid">Vivid blue text</span>
+</div>
+```
+
+## Setting the text color
+
+| Utility                 | Description                                                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-text`               | Required base class for colored text.                                                                                                                   |
+| `ak-text-<color>`       | Applies a color with automatic contrast, e.g. `ak-text-primary`, `ak-text-[#c33]`.                                                                      |
+| `ak-text-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-text-color-(--text-color)`).                                                               |
+| `ak-text-<number>`      | Pushes lightness away from the parent layer beyond the automatic readable floor.                                                                        |
+| `ak-text-push-<value>`  | Explicit lightness-push alias for `ak-text-<number>`. Useful for custom properties (`ak-text-push-(--push)`). Arbitrary/custom-property values are raw. |
+| `ak-text-<chroma>`      | Sets chroma from a named preset (`ak-text-vivid`).                                                                                                      |
+| `ak-text-<hue>`         | Sets hue from a named preset (`ak-text-blue`).                                                                                                          |
+
+## Adjustments
+
+| Utility                       | Description                     |
+| ----------------------------- | ------------------------------- |
+| `ak-text-lighten-<number>`    | Lightens the text color.        |
+| `ak-text-darken-<number>`     | Darkens the text color.         |
+| `ak-text-saturate-<number>`   | Increases chroma.               |
+| `ak-text-desaturate-<number>` | Decreases chroma.               |
+| `ak-text-warm-<number>`       | Shifts hue toward `--hue-warm`. |
+| `ak-text-cool-<number>`       | Shifts hue toward `--hue-cool`. |
+
+## Channels and bounds
+
+| Utility                     | Description                                                                                                                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-text-l-<value>`         | Sets the candidate absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values). Automatic contrast may adjust the rendered lightness. |
+| `ak-text-c-<value>`         | Absolute chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset.                                                       |
+| `ak-text-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                                                                                                   |
+| `ak-text-h-rotate-<number>` | Rotates hue by degrees.                                                                                                                                                     |
+| `ak-text-max-<value>`       | Caps lightness, or caps chroma when given a named chroma preset.                                                                                                            |
+| `ak-text-min-<value>`       | Floors lightness or chroma, same form.                                                                                                                                      |
+| `ak-text-max-l-<value>`     | Caps lightness specifically. Arbitrary/custom-property values are raw.                                                                                                      |
+| `ak-text-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                                                                                    |
+| `ak-text-max-c-<value>`     | Caps chroma specifically. Arbitrary/custom-property values are raw.                                                                                                         |
+| `ak-text-min-c-<value>`     | Floors chroma specifically. Arbitrary/custom-property values are raw.                                                                                                       |

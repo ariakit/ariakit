@@ -195,6 +195,45 @@ const a = 1;
   ]);
 });
 
+test("puts the feature components of body content in feature bands", async () => {
+  // The fence in the card renders as a code fence and stays in the card.
+  const code = await compile(
+    `
+Text
+
+<ExampleCard html="<p>Hi</p>">
+
+\`\`\`html
+<p>Hi</p>
+\`\`\`
+
+</ExampleCard>
+
+<Callout>Note</Callout>
+`,
+    "/app/guide.mdx",
+    { isBodyContent: () => true, features: ["ExampleCard"] },
+  );
+  expect(code).toContain(
+    'import {ShellFeature as CodeFenceFeature} from "@ariakit/ui/components/shell.ariakit.react";',
+  );
+  // The content has no top-level fence, so it doesn't use a popout.
+  expect(code).not.toContain("ShellPopout");
+  const parts = code.match(
+    /_jsxs?\((CodeFenceProse|CodeFencePopout|CodeFenceFeature|CodeFence|ExampleCard|Callout)\b/g,
+  );
+  // The band spans the feature column, so the card can use its lines.
+  expect(parts).toEqual([
+    "_jsxs(CodeFenceFeature",
+    "_jsx(CodeFenceProse",
+    "_jsx(CodeFenceFeature",
+    "_jsx(ExampleCard",
+    "_jsx(CodeFence",
+    "_jsx(CodeFenceProse",
+    "_jsx(Callout",
+  ]);
+});
+
 test("puts body content without fences in one Prose", async () => {
   const code = await compile("## Usage\n\nText", "/app/guide.mdx", {
     isBodyContent: () => true,

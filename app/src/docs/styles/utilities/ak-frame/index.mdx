@@ -1,0 +1,220 @@
+---
+title: ak-frame
+description: Radius, padding, margin, borders, and layout for nested surfaces.
+order: 9
+---
+
+`ak-frame` defines border radius, padding, margin, borders, and layout flow **relative to the parent frame**. Nested frames automatically compute concentric radii that look correct regardless of the outermost container's size. When no parent frame exists, values are treated as absolute.
+
+See [Give isolated components their own shape](/tailwind/styles/mental-model/#give-isolated-components-their-own-shape) for choosing semantic radii, preserving default roundness, and implementing a square theme.
+
+Use `ak-frame-p-*` or the combined `ak-frame-<radius>/<padding>` form when padding belongs to component chrome. This keeps padding, borders, and nested radii in the same geometry model.
+
+```html
+<!-- radius 2xl, padding 1 -->
+<div class="ak-frame ak-frame-2xl/1">
+  <!-- nested child, radius adjusted to be concentric with the parent, padding 4 -->
+  <div class="ak-frame ak-frame-2xl/4"></div>
+</div>
+```
+
+> [!WARNING]
+> Border widths affect radius math. When a border defines the frame's rounded silhouette, always use `ak-frame-border` instead of Tailwind's `border` utility so concentric radii stay correct:
+>
+> ```html
+> <!-- ❌: Tailwind border isn't factored into the radius calculation -->
+> <div class="ak-frame ak-frame-xl/1 border">Border</div>
+>
+> <!-- ✅ -->
+> <div class="ak-frame ak-frame-xl/1 ak-frame-border">Border</div>
+> ```
+>
+> Side-specific borders used as a seam rather than the frame's silhouette, such as a `border-b` separator, are fine as plain Tailwind utilities. They intentionally stay out of the concentric radius math. See [Give isolated components their own shape](/tailwind/styles/mental-model/#give-isolated-components-their-own-shape).
+
+## Setup
+
+| Utility          | Description                                                                                                                                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ak-frame`       | Required base class. Sets up the frame context for radius and padding inheritance. An isolated frame declares zero radius until a radius modifier is applied, while a nested frame may derive a concentric radius. |
+| `ak-frame-force` | Uses the declared radius exactly, ignoring parent-frame context.                                                                                                                                                   |
+
+## Radius and padding
+
+The shortcut form `ak-frame-<radius>/<padding>` sets both values at once. The part before `/` is a radius token (`--radius-*` or an arbitrary length), and the part after is a spacing token (`--spacing-*` or a number).
+
+```html
+<div class="ak-frame ak-frame-xl/4"></div>
+<!-- rounded-xl, p-4 -->
+<div class="ak-frame ak-frame-[1rem]/2"></div>
+<!-- r 1rem, p-2 -->
+<div class="ak-frame ak-frame-card/card"></div>
+<!-- --radius-card, --spacing-card -->
+```
+
+Sharing a name between radius and spacing tokens lets one modifier set both values.
+
+| Utility                       | Description                                                                                                                                                                |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-frame-<radius>`           | Sets border radius only. Accepts any defined `--radius-*` token (e.g. `ak-frame-xl`, `ak-frame-2xl`, or a custom `ak-frame-badge`) or arbitrary value (`ak-frame-[1rem]`). |
+| `ak-frame-<radius>/<padding>` | Sets radius **and** padding. Padding accepts `--spacing-*` tokens or numeric values (`/4`).                                                                                |
+| `ak-frame-rounded-<radius>`   | Alias for radius-only.                                                                                                                                                     |
+| `ak-frame-rounded-none`       | Sets the declared radius to `0px`. Add `ak-frame-force` when a nested frame must remain exactly square.                                                                    |
+| `ak-frame-p-<spacing>`        | Padding only. Accepts `--spacing-*` tokens, numeric values, or arbitrary values.                                                                                           |
+
+## Margin
+
+| Utility                 | Description                                                                                           |
+| ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| `ak-frame-m-<spacing>`  | Frame margin. Affects concentric radius math so nested frames stay correctly rounded after an offset. |
+| `-ak-frame-m-<spacing>` | Negative frame margin (e.g. `-ak-frame-m-2`).                                                         |
+
+## Borders and rings
+
+The first three utilities accept no argument (defaults to `1px`), named widths (`0`, `1`, `2`, `4`, `8`), or arbitrary values (`[3px]`).
+
+| Utility                                             | Description                                                                                                                                                                                    |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-frame-border` / `ak-frame-border-<width>`       | Applies a border whose width is factored into nested-frame radius calculations.                                                                                                                |
+| `ak-frame-ring` / `ak-frame-ring-<width>`           | Applies a ring with the same treatment. Rings draw outside the border-box without shifting layout.                                                                                             |
+| `ak-frame-bordering` / `ak-frame-bordering-<width>` | Adaptive edge: chooses a border or ring based on parent layer appearance and the layer's explicit lighten or darken relationship, keeping surfaces visually separated across modes.            |
+| `ak-frame-bordering-inherit`                        | Inherits the nearest ancestor frame border, ring, or bordering width, skipping intermediate frames that do not explicitly set one; falls back to `0px`.                                        |
+| `ak-frame-backdrop` / `ak-frame-backdrop-<color>`   | Makes `ak-frame-bordering-inherit` a border. On a parent ring, it paints a backdrop under that border, so it looks like the ring over that surface. The backdrop defaults to the parent layer. |
+
+### Inherited borders on a parent ring
+
+A cover frame stretches past the parent padding by its own border width, so its edge lies on the parent edge. An inherited ring there paints on the same pixels as the parent ring, which doubles the translucent edge. A border covers the parent edge instead, but it paints over the element's own surface, while a ring paints over the surface behind it.
+
+Add `ak-frame-backdrop` beside `ak-frame-bordering-inherit` for this case. The inherited edge becomes a border, and on a parent ring it paints the parent layer under that border. The parent ring paints over the surface around the parent, so the border looks like the ring when the parent layer matches that surface, as with a parent whose `ak-layer` has no modifier or color. On a parent border, such as on dark surfaces, it is a plain border. Add `ak-edge-inherit` for the parent edge color.
+
+```html preview
+<div class="ak-layer ak-frame ak-frame-xl/2 ak-frame-bordering">
+  <p>Ring on light surfaces, border on dark ones</p>
+  <!-- Its sides look like the parent ring, even on a lighter surface -->
+  <div
+    class="ak-layer ak-layer-lighten-2 ak-frame ak-frame-cover ak-frame-bordering-inherit ak-frame-backdrop ak-edge-inherit"
+  ></div>
+</div>
+```
+
+`ak-frame-backdrop-<color>` does the same with another backdrop. It accepts theme colors, arbitrary values, and custom properties. On a parent whose layer differs from the surface around it, such as a lightened, darkened, numeric, or color layer, pass that surface, so the border still looks like the ring:
+
+```html
+<div
+  class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-xl/2 ak-frame-bordering [--card-surface:var(--ak-layer-parent)]"
+>
+  <div
+    class="ak-layer ak-frame ak-frame-cover ak-frame-bordering-inherit ak-frame-backdrop-(--card-surface) ak-edge-inherit"
+  ></div>
+</div>
+```
+
+Several frames that form one shape can share a backdrop the same way, through a custom property from a common ancestor.
+
+The backdrop is a background layer, and a background layer in the element's own color covers it inside the border. So `ak-frame-backdrop` sets `background-image` and `background-clip`, and a background image on the same element is not supported. On a parent ring, an `ak-layer-transparent` element paints its resolved layer, as joined frames do. Without `ak-frame-bordering-inherit`, the background layers stay transparent. Forced colors remove the background layers and the ring, and the border keeps the parent edge width.
+
+`--ak-frame-backdrop` holds the surface under the frame edge: the parent layer under a ring, the backdrop under an inherited border on a parent ring, and the element's own layer under any other border. Paint it under custom edge drawings, such as curved corners, so they match the frame edge.
+
+## Cover and flow
+
+`ak-frame-cover` stretches an element past the parent's content box so the child's own content-box aligns with its parent. Useful for full-bleed images, toolbars, and embedded panels.
+
+```html
+<div class="ak-frame ak-frame-xl/4">
+  <img src="hero.jpg" class="ak-frame ak-frame-cover ak-frame-start" />
+  <p class="pt-4">Body that sits below the full-bleed hero.</p>
+</div>
+```
+
+| Utility          | Description                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------- |
+| `ak-frame-cover` | Stretches the element to fill the parent content box, collapsing shared borders.            |
+| `ak-frame-start` | Marks the element as the first child so `frame-cover` applies top/leading-edge rounding.    |
+| `ak-frame-end`   | Marks the element as the last child so `frame-cover` applies bottom/trailing-edge rounding. |
+| `ak-frame-row`   | Flags the frame as a horizontal flow (affects how `cover` / `start` / `end` compute edges). |
+| `ak-frame-col`   | Flags the frame as a vertical flow.                                                         |
+
+`ak-frame-cover` uses logical margin and radius properties so row covers follow the frame direction. When overriding its stretch margin on the same element, prefer axis or side utilities such as `mx-*`, `my-*`, `ms-*`, `me-*`, `mt-*`, `mr-*`, `mb-*`, or `ml-*`; Tailwind sorts the bare `m-*` shorthand before the cover declarations, so it will not reset the logical stretch. Covers should also share the frame's `dir` and `writing-mode`; apply direction changes inside the cover when the content needs a different flow.
+
+## Dividers
+
+`ak-frame-divide` draws a border only on the sides of a frame that face a sibling in the parent flow. The first frame omits its start side, and the last frame omits its end side. On a cover frame, the parent edge stays as it is on the other sides, so a dialog footer or a header band shows one line.
+
+```html preview
+<div class="ak-layer ak-frame ak-frame-2xl/4 ak-frame-border flex flex-col">
+  <div
+    class="ak-layer ak-layer-darken-3 ak-frame ak-frame-cover ak-frame-divide"
+  >
+    Header
+  </div>
+  <p>Body</p>
+  <!-- Only the top border draws -->
+  <div
+    class="ak-layer ak-layer-darken-3 ak-frame ak-frame-cover ak-frame-divide"
+  >
+    Footer
+  </div>
+</div>
+```
+
+| Utility                                       | Description                                                                                                                                |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ak-frame-divide` / `ak-frame-divide-<width>` | Draws a border on the sides that face a sibling. Accepts no argument (`1px`), named widths (`0`, `1`, `2`, `4`, `8`), or arbitrary values. |
+| `ak-frame-divide-inherit`                     | Takes the width of the nearest ancestor frame border, ring, or bordering, as `ak-frame-bordering-inherit` does. Falls back to `0px`.       |
+
+The parent orientation sets the axis. In a parent with `ak-frame-row`, the frame draws its inline start and end sides, which follow the text direction. Otherwise, it draws its block start and end sides. A margin does not add sides.
+
+The utility does not need `ak-frame-cover`. It sets the same start and end flags as `ak-frame-cover`. Siblings with the `hidden` attribute and `template` elements do not count on either side. Without a cover, the frame keeps its own radius, so the lines curve at rounded corners.
+
+The border does not count as the frame border, so the cover stretch and the radius of nested frames stay the same. The border takes the frame edge color. Add `ak-edge-inherit` for the parent edge color, and use `border-dashed` or `border-dotted` for the line style. Do not put `ak-frame-divide` on the same element as `ak-frame-border`, `ak-frame-ring`, or `ak-frame-bordering`. Two frames with `ak-frame-divide` next to each other draw two lines between them, so put it on one of them.
+
+## Joined surfaces
+
+Use `ak-frame-join` on a frame and `ak-frame-join-item` on each participating child. The group must be a single row or column with no gap, in DOM order. Set `ak-frame-row` or `ak-frame-col` to match its layout. Each item needs `ak-frame` and `ak-layer` and the same declared edge width. Borders, outside rings, and adaptive bordering can participate.
+
+Joining uses declared edge widths for overlap. Native border joins require the browser's rendered border width to match the declared width. Pixel rounding can break that alignment for fractional widths and at some zoom levels; those combinations are not supported. Use outside frame rings for fractional edges, such as `ak-frame-ring-[0.5px]`. Their shadow spread uses the declared length.
+
+```html preview
+<div class="ak-frame ak-frame-row ak-frame-xl/0 ak-frame-join flex">
+  <button
+    class="ak-layer ak-frame ak-frame-lg/2 ak-frame-border-2 ak-frame-join-item hover:ak-layer-5 hover:ak-frame-join-active"
+  >
+    Day
+  </button>
+  <button
+    class="ak-layer ak-frame ak-frame-lg/2 ak-frame-border-2 ak-frame-join-item hover:ak-layer-5 hover:ak-frame-join-active"
+  >
+    Week
+  </button>
+  <button
+    class="ak-layer ak-frame ak-frame-lg/2 ak-frame-border-2 ak-frame-join-item hover:ak-layer-5 hover:ak-frame-join-active"
+  >
+    Month
+  </button>
+</div>
+```
+
+The group overlaps each edge once and paints the owner's surface beneath it. This prevents translucent borders from darkening at shared boundaries. Use opaque layer colors for joined surfaces. A bordered `ak-layer-transparent` item paints its resolved layer while joined; an item with no edge keeps its normal transparency. Background images extend beneath the border. Tailwind shadows, inset shadows, and outlines remain in place.
+
+`ak-frame-join-active` gives an item ownership of both neighboring edges without changing layout. Apply it through hover, selection, or other variants. Active items paint above inactive items. When two neighbors have the same state, the later item in DOM order owns their boundary, including in RTL. Keep edge widths stable across states. A focus outline remains separate from the edge; use an explicit higher `z-index` when focus must take precedence over another active item.
+
+Joining keeps the child padding and frame radius. Inner corners become square only when the group padding resolves to zero. A padded group with a zero gap therefore keeps its inner corner radii. Add `ak-frame-join-auto` beside `ak-frame-join` when the group gap follows `--ak-frame-padding`; it disables joining when that padding is nonzero. Equivalent zero lengths and expressions have the same result.
+
+Joining also composes with `ak-frame-cover`. Cover stretches the outer and cross-axis edges toward the parent, while joining overlaps only the internal edges. Squared corners propagate to nested covers. The start and end flags also define the outside edges for cover.
+
+The item utility carries its own declarations, so both group and item utilities work through `@apply` in custom CSS classes:
+
+```css
+.segmented-control {
+  @apply ak-frame ak-frame-row ak-frame-join flex;
+}
+
+.segment {
+  @apply ak-layer ak-frame ak-frame-lg/2 ak-frame-border-2 ak-frame-join-item;
+}
+
+.segment:hover {
+  @apply ak-layer-5 ak-frame-join-active;
+}
+```
+
+Items with `[hidden]` do not participate. The first and last visible DOM children get the start and end flags automatically; `[hidden]` siblings and `template` elements are skipped. If the group has decoration siblings or other nonparticipating children, apply `ak-frame-start` and `ak-frame-end` to the first and last joined items. Keep nonparticipating children out of layout flow. The control-group recipe sets these flags for its controls, so a separator does not change the outer corners. For CSS-hidden items, use `[hidden]` or set the boundary flags explicitly. Do not apply joining to wrapped or reordered layouts, unequal edge widths, or items separated by in-flow content. Omit the group utility for independent surfaces or nonzero gaps that do not follow frame padding.

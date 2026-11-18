@@ -655,9 +655,9 @@ The requested opacity inherits. A nested `ak-layer` keeps the ink of the element
 </div>
 ```
 
-| Utility           | Description                                                                                                                                                                                                                               |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-ink-<number>` | Requests a text alpha (`0`–`100`). The rendered alpha is the larger of the requested value and the minimum that still meets WCAG AA contrast against the current layer, so values below that floor are clamped up; `100` is fully opaque. |
+| Utility           | Description                                                                                                                                                                                                                                                                                                                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ak-ink-<number>` | Requests a text alpha (`0`–`100`). The rendered alpha is the larger of the requested value and the minimum that still meets WCAG AA contrast against the current layer, so values below that floor are clamped up; `100` is fully opaque. When the element or an ancestor is disabled or uses [`ak-disabled`](#ak-disabled), the floor is lower. |
 
 ## `ak-text`
 
@@ -794,7 +794,7 @@ Use it for edges that identify a control. Decorative seams, such as card borders
 
 ```html
 <button
-  class="ak-layer ak-frame ak-frame-field/field ak-outline ak-outline-primary outline-2 focus-visible:outline"
+  class="ak-layer ak-frame ak-frame-field/field ak-outline ak-outline-primary focus-visible:outline-2"
 >
   Outlined button
 </button>

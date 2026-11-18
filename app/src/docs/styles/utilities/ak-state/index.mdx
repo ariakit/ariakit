@@ -1,0 +1,30 @@
+---
+title: ak-state
+description: Interactive state adjustments, such as hover and press, relative to the current layer.
+order: 2
+---
+
+`ak-state-*` utilities are companions to `ak-layer-*` that target interactive states (hover, active, focus). They shift the state layer's lightness, chroma, and hue separately from the idle layer setup. Descendant text and edges still respond to the resulting layer color.
+
+For routine hover feedback, prefer appearance-aware numeric `ak-state-*`. It chooses a useful lightness direction from the current material, so the response remains perceptible across light and dark scenes. Use `ak-state-lighten-*` or `ak-state-darken-*` when the direction itself is intentional.
+
+The static `ak-layer` class must be applied to the same element as `ak-state-*`. Keep `ak-layer` unprefixed, then add state utilities with variants such as `hover:` or `active:`.
+
+```html preview
+<button
+  class="ak-layer ak-layer-primary hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-xl/2"
+>
+  Primary action
+</button>
+```
+
+| Utility                        | Description                                                                                                                                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-state-<value>`             | Applies an appearance-aware lightness offset for interactive state (`0`–`100` for bare numbers), parallel to `ak-layer-<number>`. Custom properties can use `ak-state-(--depth)` with raw values. |
+| `ak-state-offset-<value>`      | Explicit lightness-offset alias for `ak-state-<value>`. Useful for custom properties (`ak-state-offset-(--depth)`). Arbitrary/custom-property values are raw.                                     |
+| `ak-state-lighten-<number>`    | Lightens in state context when that fixed direction is intentional.                                                                                                                               |
+| `ak-state-darken-<number>`     | Darkens in state context when that fixed direction is intentional.                                                                                                                                |
+| `ak-state-saturate-<number>`   | Increases chroma in state context.                                                                                                                                                                |
+| `ak-state-desaturate-<number>` | Decreases chroma in state context.                                                                                                                                                                |
+| `ak-state-push-<number>`       | Minimum lightness shift in state context.                                                                                                                                                         |
+| `ak-state-h-rotate-<number>`   | Rotates hue in state context.                                                                                                                                                                     |

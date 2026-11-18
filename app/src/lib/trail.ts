@@ -34,16 +34,21 @@ export interface AppTrail {
   current: string;
 }
 
+const collectionLabels = {
+  components: "Components",
+  recipes: "Recipes",
+  styles: "Styles",
+};
+
 /**
  * Returns the trail of a page under a collection, such as Recipes. The
  * collection has no page, so its step has no link.
  */
 export function getCollectionTrail(
-  type: "components" | "recipes",
+  type: keyof typeof collectionLabels,
   current: string,
 ): AppTrail {
-  const label = type === "components" ? "Components" : "Recipes";
-  return { steps: [{ label }], current };
+  return { steps: [{ label: collectionLabels[type] }], current };
 }
 
 function hasHref(step: AppTrailStep): step is AppTrailLinkStep {

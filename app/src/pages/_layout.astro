@@ -54,6 +54,7 @@ import type {
 import { getCachedCollection } from "#app/lib/collection-cache.ts";
 import { compareNavigationOrder, getGuideDetail } from "#app/lib/content.ts";
 import { getEntryExamples } from "#app/lib/gallery.ts";
+import { STYLE_GROUPS, STYLES_PATH, getStylePages } from "#app/lib/styles.ts";
 import { serializeStructuredData } from "#app/lib/trail.ts";
 import {
   APP_DRAWER_ID,
@@ -69,7 +70,9 @@ import { getCollection } from "astro:content";
 import { ClientRouter } from "astro:transitions";
 import { Menu, PanelLeft, SwatchBook, X } from "lucide-react";
 
-type Section = "components" | "recipes";
+type Section = "components" | "recipes" | "styles";
+// The sections whose pages come from a collection with frameworks.
+type EntrySection = Exclude<Section, "styles">;
 
 export interface Props {
   title?: string;
@@ -136,6 +139,7 @@ const navigationFramework = "react";
 
 const sectionTypes = [
   { type: "components", label: "Components" },
+  { type: "styles", label: "Styles" },
   { type: "recipes", label: "Recipes" },
 ] as const;
 
@@ -145,29 +149,44 @@ const getLink = (href: string, label: string): AppLink => ({
   current: isCurrentLink({ href }, pathname),
 });
 
-const getEntryHref = (type: Section, id: string) =>
+const getEntryHref = (type: EntrySection, id: string) =>
   `/${navigationFramework}/${type}/${id}/`;
 
 // Links of the same category stay together, so the navigation shows them under
 // one heading, in the order of the categories.
-const getSortedEntries = async (type: Section) => {
+const getSortedEntries = async (type: EntrySection) => {
   const entries = await getCollection(type, (entry) =>
     entry.data.frameworks.includes(navigationFramework),
   );
   return entries.toSorted((a, b) => compareNavigationOrder(a.data, b.data));
 };
 
-// A section has no page of its own, so it links to its first entry. It is
+// The Styles section documents @ariakit/tailwind, which has no framework, so
+// its pages sit under one path for all frameworks.
+const getSortedStylePages = async () =>
+  getStylePages(await getCollection("styles"));
+
+// A section has no page of its own, so it links to its first page. It is
 // current on every page under its path.
+const getSectionStart = async (type: Section) => {
+  if (type === "styles") {
+    const [first] = await getSortedStylePages();
+    if (!first) return;
+    return { href: first.path, currentPath: STYLES_PATH };
+  }
+  const [first] = await getSortedEntries(type);
+  if (!first) return;
+  const href = getEntryHref(type, first.id);
+  return { href, currentPath: `/${navigationFramework}/${type}/` };
+};
+
 const sections = (
   await Promise.all(
     sectionTypes.map(async ({ type, label }): Promise<AppLink[]> => {
-      const [first] = await getSortedEntries(type);
-      if (!first) return [];
-      const href = getEntryHref(type, first.id);
-      const currentPath = `/${navigationFramework}/${type}/`;
-      const current = isCurrentLink({ href, currentPath }, pathname);
-      return [{ href, label, current, currentPath }];
+      const start = await getSectionStart(type);
+      if (!start) return [];
+      const current = isCurrentLink(start, pathname);
+      return [{ ...start, label, current }];
     }),
   )
 ).flat();
@@ -176,7 +195,7 @@ const sections = (
 // the page, so only one link in the menu is the page.
 const drawerSections = sections.map((link) => ({ ...link, current: false }));
 
-const getEntryLinks = async (type: Section) => {
+const getEntryLinks = async (type: EntrySection) => {
   const recipes = await getCachedCollection("recipes");
   const sortedEntries = await getSortedEntries(type);
   return Promise.all(
@@ -204,7 +223,7 @@ const getEntryLinks = async (type: Section) => {
   );
 };
 
-const getGuideLinks = async (type: Section) => {
+const getGuideLinks = async (type: EntrySection) => {
   const entries = await getCollection("guides");
   return entries.map(getGuideDetail).flatMap((guide) => {
     if (guide.type !== type) return [];
@@ -213,10 +232,27 @@ const getGuideLinks = async (type: Section) => {
   });
 };
 
+// The Styles navigation lists its groups in order, guides first.
+const getStyleNavigation = async () => {
+  const pages = await getSortedStylePages();
+  return STYLE_GROUPS.map(({ id, label }): AppNavigationGroup => {
+    const links = pages.flatMap((page) => {
+      if (page.group !== id) return [];
+      return getLink(page.path, page.entry.data.title);
+    });
+    return { label, links };
+  });
+};
+
 // The site navigation lists the pages of the current section and its guides.
 const getNavigation = async () => {
+  if (section === "styles") {
+    const groups = await getStyleNavigation();
+    return groups.filter((group) => group.links.length > 0);
+  }
   const sectionType = sectionTypes.find(({ type }) => type === section);
   if (!sectionType) return [];
+  if (sectionType.type === "styles") return [];
   const [entryLinks, guideLinks] = await Promise.all([
     getEntryLinks(sectionType.type),
     getGuideLinks(sectionType.type),

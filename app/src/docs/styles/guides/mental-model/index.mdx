@@ -1,0 +1,330 @@
+---
+title: Mental model
+description: Think in materials, not elements, when you compose surfaces, content, boundaries, and shapes.
+order: 3
+---
+
+Think in materials, not elements. Ariakit Tailwind models a small tree of intentional surfaces and the content, boundaries, and shapes that belong to them. This material tree is usually much smaller than the DOM tree.
+
+This does not imply skeuomorphic decoration. A flat interface still needs a coherent answer to what lies on the same plane, what sits above it, what is recessed into it, and what has a different material or semantic finish. Tone, containment, edges, and shape communicate those relationships even when there are no realistic textures or shadows.
+
+## Think about the whole scene
+
+Start with one canvas for the application. Then add a layer only when an element represents a visible surface with a purpose. Layout containers, headers, rows, text wrappers, and spacing elements should usually inherit the nearest surface.
+
+Every `ak-layer` paints a background and establishes the text, edge, and contrast context inherited by its descendants. Adding one at every level turns DOM nesting into a tonal staircase:
+
+```html
+<!-- Avoid: none of these nested layers has a distinct material purpose. -->
+<article class="ak-layer ak-layer-3">
+  <header class="ak-layer ak-layer-3">
+    <h2 class="ak-layer ak-layer-3">Deployment</h2>
+  </header>
+</article>
+```
+
+A more intentional scene uses one raised card, keeps its ordinary content on the card, and creates a new layer only for the recessed well:
+
+```html
+<body class="ak-layer ak-layer-canvas">
+  <main class="p-6">
+    <article
+      class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card ak-frame-bordering grid gap-4"
+    >
+      <header class="grid gap-1">
+        <h2>Deployment</h2>
+        <p class="ak-ink-70">Updated two minutes ago</p>
+      </header>
+
+      <section
+        class="ak-layer ak-layer-darken-3 ak-frame ak-frame-field/field ak-frame-bordering"
+      >
+        Recessed deployment details
+      </section>
+    </article>
+  </main>
+</body>
+```
+
+The `body`, card, and well are materials. The `main`, `header`, heading, and paragraph are structure or content on those materials, so they do not need layers.
+
+## Give every surface a spatial role
+
+In ordinary lighting, an exposed surface catches more light while a cutout or well receives less. Ariakit expresses that directional relationship directly, and the same intent holds on light and dark canvases:
+
+| Intent                      | Visual role                                                                                                   | Utilities                                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Same plane                  | Content or layout that belongs to the current material                                                        | No new `ak-layer`                                                                         |
+| Raised or exposed           | Card, popover, floating toolbar, or control above its support                                                 | `ak-layer ak-layer-lighten-*`                                                             |
+| Recessed                    | Well, track, code area, media bed, or pressed region                                                          | `ak-layer ak-layer-darken-*`                                                              |
+| Appearance-aware separation | Selected row, adjacent pane, or neutral standalone button that should remain visibly separate in either theme | `ak-layer ak-layer-*`                                                                     |
+| New material or pigment     | Canvas, primary action, warning, brand region, or another intentional color boundary                          | `ak-layer ak-layer-<color>`, optionally with `ak-layer-mix-*`                             |
+| Interactive response        | The same material responding to hover, press, focus, selection, or disabled state                             | Variant-prefixed `ak-state-*`, `ak-ink-*`, `ak-outline-*`, and other contextual modifiers |
+| Parent-directed contrast    | A neutral or pigmented surface whose lightness must move against its supporting layer                         | `ak-layer ak-layer-contrast`, optionally with `ak-layer-<color>`                          |
+| Self-relative tonal push    | A surface that needs a minimum tonal move and must skip the ambiguous midrange                                | `ak-layer-push-*`                                                                         |
+
+Numeric `ak-layer-<number>` modifiers are not elevation values. They request appearance-aware separation from the selected source, which defaults to the parent layer. They normally move light sources darker and dark sources lighter, but the contrast-safe lightness pipeline may clamp the target or move it past an ambiguous midrange. Use them to separate a surface without declaring that it is above or below, and use `ak-layer-lighten-*` or `ak-layer-darken-*` when spatial direction matters.
+
+Form fields can be raised material too. For example, `ak-layer ak-layer-lighten-6` keeps a white writing surface on light layers and lifts it on dark layers, where a darker well would look like a hole. The fill alone rarely reaches 3:1 contrast, so pair it with an edge that marks the field boundary, keep that edge at 3:1 with [`ak-edge-contrast`](/tailwind/styles/ak-edge/#contrast-floor), and use an appearance-aware hover state.
+
+A neutral standalone button can use appearance-aware separation when its affordance should remain visible at rest. Use it selectively: buttons inside a toolbar or another shared surface can stay on that plane and rely on state or ink changes for interaction.
+
+Relative adjustments accumulate. Repeating them through wrappers creates competing boxes and can exhaust the useful tonal range. A practical test for every layer is: "Why is this a different material?" If the answer is only "because this element is nested," remove it.
+
+Interactive states usually change the existing material instead of creating another nested surface. For routine hover feedback, prefer an appearance-aware tonal response so it remains perceptible when the component moves between light and dark scenes. Use a fixed lighten or darken direction only when that direction carries meaning, such as a pressed surface moving inward:
+
+```html preview
+<button
+  class="ak-layer ak-layer-6 hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-xl/2 focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
+>
+  Save
+</button>
+```
+
+The button has its own neutral material because it needs to stand out from nearby content. Hover moves its tone in the useful direction for the current theme, while pressing intentionally darkens it. Its focus outline is an external signal, not another material.
+
+## Treat color as a material finish
+
+Lightness usually communicates spatial relationship. Hue, chroma, warmth, and mixing describe the material's pigment, atmosphere, or semantic identity. Changing hue at every nesting level does not create meaningful depth, but keeping every material neutral can hide meaning that should be recognizable at a glance.
+
+Treat hue as information. Keep most of the scene in one family, then spend stronger colors where identity, status, or priority should survive scanning before someone reads the label. A primary action can carry a concentrated brand color, while a status badge can use a lighter tint of its semantic color so it still belongs to the surrounding scene:
+
+```html preview
+<div class="flex items-center gap-2">
+  <button
+    class="ak-layer ak-layer-primary ak-layer-contrast hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-xl/2 focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
+  >
+    Deploy now
+  </button>
+
+  <span
+    class="ak-layer ak-layer-warning ak-layer-mix-15 ak-frame ak-frame-4xl/1.5"
+  >
+    <span class="ak-text ak-text-warning ak-text-25">Needs review</span>
+  </span>
+</div>
+```
+
+A finish can be fixed or contextual. The primary action keeps one recognizable pigment but lets its tone move away from its support when needed. The default parent-directed contrast amount also keeps it at 3:1 or more against its support, as the [layer contrast floor](/tailwind/styles/ak-layer/#layer-contrast-floor) describes. The badge softens its warning pigment into the surrounding material.
+
+When belonging to the local material matters more than preserving one global swatch, derive the finish from the parent:
+
+```html preview
+<div class="ak-layer ak-layer-primary ak-frame ak-frame-2xl/4">
+  <span
+    class="ak-layer ak-layer-6 ak-layer-h-analogous1 ak-layer-c-muted ak-frame ak-frame-4xl/1.5"
+  >
+    Related material
+  </span>
+</div>
+```
+
+The child selects an analogous hue, a quieter chroma, and appearance-aware tonal separation from its parent. Complementary, analogous, and triadic hue tokens express other color relationships. Hue changes the pigment family, chroma changes its intensity, and lightness changes its tonal plane. A hue difference can be meaningful without implying depth, but it does not replace tonal separation or an edge when the boundary itself must remain perceivable.
+
+These materials do not need borders when pigment, tone, and shape already separate them from the canvas. Mixing creates a contextual solid color, not transparency and not another depth level.
+
+Custom gradients, patterns, and textures are also surface paint. Derive them from the resolved layer variables so the visible pixels stay related to the contrast context. Define repeated paint as a reusable Tailwind utility:
+
+```html
+<div
+  class="surface-pattern ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card"
+>
+  ...
+</div>
+```
+
+```css
+@utility surface-pattern {
+  --surface-pattern-color: color-mix(
+    in oklab,
+    var(--ak-layer),
+    var(--ak-layer-parent, canvas) 35%
+  );
+  background-image: linear-gradient(
+    135deg,
+    var(--surface-pattern-color) 1px,
+    transparent 1px
+  );
+  background-size: 0.75rem 0.75rem;
+}
+```
+
+A top-level layer has no resolved parent custom property, so the `canvas` fallback keeps its pattern valid. Nested layers still mix with their actual parent.
+
+A custom image or multistop gradient can still vary independently across the surface, so inspect text contrast against its actual pixels.
+
+## Put content and boundaries on the material
+
+The other utility families describe what belongs to a surface rather than creating more surfaces:
+
+| Feature                                        | Material role                                                                       |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Normal text                                    | Inherits the layer's default ink                                                    |
+| [`ak-ink-*`](/tailwind/styles/ak-ink/)         | Changes the strength of neutral writing while preserving a readable contrast floor  |
+| [`ak-text-*`](/tailwind/styles/ak-text/)       | Applies adaptive colored pigment to a descendant inside a layer                     |
+| [`ak-edge-*`](/tailwind/styles/ak-edge/)       | Configures the seam between the current material and its surroundings               |
+| [`ak-outline-*`](/tailwind/styles/ak-outline/) | Draws an external focus or attention signal                                         |
+| [`ak-frame-*`](/tailwind/styles/ak-frame/)     | Defines the material's silhouette, inset, border thickness, and concentric geometry |
+| [`ak-state-*`](/tailwind/styles/ak-state/)     | Changes the current material temporarily in response to interaction                 |
+
+Static utilities activate their context, while modifiers configure it. Pair `ak-layer-*`, `ak-state-*`, and `ak-edge-*` with `ak-layer` on the same element; pair `ak-text-*` with `ak-text` on the same descendant; pair `ak-frame-*` with `ak-frame`; and pair `ak-outline-*` with `ak-outline`. `ak-ink-*` is self-contained.
+
+Color channel utilities are authored in [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues. Text contrast is converted to LCH at the final contrast step, and layer mixing can use any supported CSS `color-mix()` interpolation method. Because values are computed relatively, changing one theme token ripples through every material role that depends on it.
+
+Normal text needs no utility. Use `ak-ink-*` for hierarchy and `ak-text` on a descendant when text needs its own adaptive color:
+
+```html
+<article class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card">
+  <h2>Build complete</h2>
+  <p class="ak-ink-70">Finished three minutes ago</p>
+  <a class="ak-text ak-text-primary" href="/builds/1284">View build 1284</a>
+</article>
+```
+
+Do not put `ak-text` on the `ak-layer` element itself. It makes its own background transparent so the ancestor layer can show through.
+
+## Let groups share a material
+
+An edge is a seam between materials, not decoration for every control. Add one when an isolated control needs a clearer affordance or two neighboring materials would otherwise merge. When a toolbar reads as one instrument, let the group own the surface and seam while its buttons share that material:
+
+```html preview
+<div
+  role="toolbar"
+  aria-label="Formatting"
+  class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-xl/0.5 ak-frame-bordering inline-flex gap-0.5"
+>
+  <button
+    type="button"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
+  >
+    <span class="block px-3 py-1.5">Bold</span>
+  </button>
+  <button
+    type="button"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
+  >
+    <span class="block px-3 py-1.5">Italic</span>
+  </button>
+  <button
+    type="button"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
+  >
+    <span class="block px-3 py-1.5">Link</span>
+  </button>
+</div>
+```
+
+Repeating a border or ring on every button would fragment the toolbar into unrelated boxes. `ak-frame-bordering` works on the group because its surface has an explicit lighten relationship. With an appearance-aware numeric `ak-layer-*`, choose a fixed `ak-frame-border` or `ak-frame-ring` instead.
+
+Frame padding describes the thickness between a material's silhouette and its contents or a nested surface. A generous inset makes one surface feel contained inside another. A hairline or half-step inset makes adjacent pieces feel cut from the same control, which can make a selected segment sit precisely inside a recessed track:
+
+```html preview
+<div
+  role="group"
+  aria-label="Period"
+  class="ak-layer ak-layer-darken-3 ak-frame ak-frame-xl/[1px] inline-flex"
+>
+  <button
+    type="button"
+    aria-pressed="false"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent"
+  >
+    <span class="block px-3 py-1.5">Day</span>
+  </button>
+  <button
+    type="button"
+    aria-pressed="true"
+    class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-xl/0.5 border-0"
+  >
+    <span class="block px-3 py-1.5">Week</span>
+  </button>
+  <button
+    type="button"
+    aria-pressed="false"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent"
+  >
+    <span class="block px-3 py-1.5">Month</span>
+  </button>
+</div>
+```
+
+The one-pixel track inset and half-step child insets create a crisp nested silhouette, while the inner spans preserve comfortable hit areas. The track and selected segment are the only distinct materials.
+
+## Give isolated components their own shape
+
+Every isolated card, control, popover, dialog, and badge should declare a non-zero radius by default. An isolated `ak-frame` has a zero declared radius until a radius modifier is applied, while a nested frame may derive an effective concentric radius from its parent. Define semantic radius and padding pairs in the [theme](/tailwind/styles/theming/), then select them in component recipes:
+
+```html
+<article class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card">
+  ...
+</article>
+<button class="ak-layer ak-layer-primary ak-frame ak-frame-field/field">
+  Primary action
+</button>
+<div class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-dialog/dialog">
+  Dialog
+</div>
+<span
+  class="ak-layer ak-layer-warning ak-layer-mix-15 ak-frame ak-frame-badge/badge"
+>
+  Badge
+</span>
+```
+
+These recipes own their shapes even when rendered without a parent frame. When frames are nested, Ariakit reconciles their effective radii with the parent's radius, padding, and border plus the child's frame margin so nearby corners remain concentric.
+
+A square visual language is a theme decision. Override the shared radius tokens once instead of putting `ak-frame-rounded-none` in every component recipe:
+
+```css
+:root[data-shape="square"] {
+  --radius-card: 0px;
+  --radius-field: 0px;
+  --radius-dialog: 0px;
+  --radius-badge: 0px;
+}
+```
+
+Local square corners are still appropriate when geometry is intentionally attached or flush, such as a viewport sidebar or an internal segment of a composite control. Use `ak-frame ak-frame-force ak-frame-rounded-none` when that local shape must be exactly square. Let `ak-frame-cover`, `ak-frame-start`, and `ak-frame-end` compute any corners that meet the parent's outer silhouette.
+
+Frame padding and borders participate in concentric geometry. Use `ak-frame-p-*`, the combined `ak-frame-<radius>/<padding>` form, and `ak-frame-border`, `ak-frame-ring`, or `ak-frame-bordering` for the symmetric chrome that shapes a component and stays concentric with its nested frames. Do not replace that chrome wholesale with a full `p-*` override or Tailwind's full `border`, and put large asymmetric layout spacing on an inner wrapper instead.
+
+Axis-specific spacing and seams are a different case, and Tailwind's built-in utilities are the right tool for them. A button commonly needs more horizontal than vertical padding, and a raised header bar commonly uses a bottom border as its seam to the content below. Reach for `px-*` or `py-*` (not the full `p-*`) and side-specific borders such as `border-b`, `border-t`, or `border-x` (not the full `border`) in those cases:
+
+```html
+<!-- More horizontal than vertical padding on a control -->
+<button class="ak-layer ak-layer-primary ak-frame ak-frame-field/field px-6">
+  Wide button
+</button>
+
+<!-- A raised header bar whose seam to the content below is a bottom edge -->
+<header class="ak-layer ak-layer-lighten-6 border-b px-6 py-4">
+  Page header
+</header>
+```
+
+These axis values are not folded into the concentric radius math, and that is exactly what you want here: the extra horizontal padding and the single-side seam do not describe a rounded corner that a nested frame must stay concentric with, so leaving them out keeps the silhouette correct while still giving you the spacing or separator you asked for. Each example still earns its `ak-layer` as a real material, the raised bar rather than a wrapper added only to color a border, and that layer is what lets the `border-b` pick up the adaptive edge color.
+
+## Read utility values
+
+Bare numeric modifiers use Ariakit's documented authoring scales. For example, lightness and alpha values use `0`–`100`, chroma values use `0`–`40`, and mix amounts use `0`–`100`.
+
+Arbitrary values and custom properties are raw CSS values. Percent-style modifiers use normalized `0`–`1` values in arbitrary or custom-property form, even when their bare numeric forms use Ariakit's `0`–`100` or `0`–`40` authoring scales. Use normalized OKLCH channel values like `ak-layer-l-[0.8]`, normalized percent-style values like `ak-layer-warm-[0.4]` or `ak-text-saturate-[0.25]`, raw deltas like `ak-layer-[calc(l+0.1)]`, percentages where CSS expects them like `ak-layer-mix-amount-[35%]`, and custom properties that already contain those raw values.
+
+## Judge the whole scene
+
+Accessibility math protects contrast, not taste. Before shipping, inspect the complete scene and ask:
+
+- Can every layer be described as the canvas, raised, recessed, appearance-aware separation, semantic material, or interactive material?
+- Does removing any layer make the hierarchy clearer?
+- Do raised and recessed relationships remain coherent when only the canvas changes between light and dark?
+- Do hue choices make identity, status, and priority easier to scan without turning every surface into an accent?
+- Do hover, active, selected, focus, and disabled states change the existing material with a clear purpose?
+- Can a group own one surface and seam instead of bordering every control?
+- Would a hairline or half-step frame inset describe a nested relationship better than another roomy box?
+- Do isolated component recipes remain intentionally rounded, and can a square theme be achieved by changing shared tokens only?
+- Do nested corners and adaptive edges describe the intended material boundaries?
+- Does the composition remain coherent in [`contrast-more`](/tailwind/styles/variants/#accessibility), inside another semantic layer, and across supported browsers?
+
+Package contributors should use the existing light, dark, and high-contrast computed-style snapshot matrix. That sandbox deliberately exercises many utilities at once and is a behavior test, not an aesthetic example.
+
+---

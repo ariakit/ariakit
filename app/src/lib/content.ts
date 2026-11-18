@@ -20,7 +20,7 @@ import { RECIPE_CATEGORIES } from "./schemas.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
-  type: "recipes" | "components" | "styles";
+  type: "recipes" | "components";
   label: string;
   path: string | ((framework: Framework) => string);
 }
@@ -35,11 +35,6 @@ const contentGroups: Record<string, ContentGroup> = {
     type: "components",
     label: "Components",
     path: (framework) => `${framework}/components`,
-  },
-  "ariakit-tailwind": {
-    type: "styles",
-    label: "Styles",
-    path: "styles",
   },
   recipes: {
     type: "recipes",

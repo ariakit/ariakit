@@ -1,0 +1,66 @@
+---
+title: Getting started
+description: Install Ariakit Tailwind and set up the base layer of your app.
+order: 1
+---
+
+**Important:** This package is experimental and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
+
+Ariakit Tailwind is a Tailwind CSS v4 plugin that brings Ariakit Styles to your projects. It enables developers to build accessible design systems with **relative colors and radii** instead of fixed values, giving end users full freedom to customize the theme without sacrificing visual consistency. Swap a brand color, radius, or spacing scale, and every derived surface, text, and border rebalances itself automatically.
+
+Ariakit Tailwind is framework and library agnostic. It works with any frontend framework (React, Vue, Svelte, Astro, …) and any component library (Ariakit React, Radix UI, React Aria, …).
+
+## Set up with your agent
+
+Copy this prompt into your coding agent:
+
+````md title="Prompt for your agent" wrap
+Set up Ariakit Tailwind in this project.
+
+1. Check that the project uses Tailwind CSS v4. If it doesn't, stop and ask me before you install or upgrade Tailwind.
+2. Install `@ariakit/tailwind` with the package manager of the project.
+3. In the main CSS file, import it right after Tailwind:
+   ```css
+   @import "tailwindcss";
+   @import "@ariakit/tailwind";
+   ```
+4. Apply the base layer to the root container of the app, not to `html` or `:root`:
+   ```
+   ak-layer ak-layer-white dark:ak-layer-gray-950
+   ```
+5. Before you style any surface, read the Mental model section of `node_modules/@ariakit/tailwind/readme.md`, and follow its rules.
+````
+
+## Set up by hand
+
+1. [Install Tailwind v4](https://tailwindcss.com/docs/installation/using-vite).
+
+2. Install Ariakit Tailwind:
+
+   ```sh
+   npm i @ariakit/tailwind
+   ```
+
+3. Import it alongside Tailwind in your CSS file:
+
+   ```css
+   @import "tailwindcss";
+   @import "@ariakit/tailwind";
+   ```
+
+4. Apply the base layer to a container element (must **not** be `html` or `:root`):
+
+   {/* prettier-ignore */}
+   ```html
+   <body class="ak-layer ak-layer-white dark:ak-layer-gray-950">
+   ```
+
+   Or via `@apply`:
+
+   ```css
+   body {
+     @apply ak-layer ak-layer-white dark:ak-layer-gray-950;
+   }
+   ```
+
+   These root colors establish one application canvas. The [Theming](/tailwind/styles/theming/) guide replaces them with a semantic canvas token, and the [Mental model](/tailwind/styles/mental-model/) guide explains how to choose descendant surfaces.
