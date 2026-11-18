@@ -73,6 +73,26 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect.poll(() => getCenterX(thumb)).toBeCloseTo(initial, 0);
   });
 
+  test("moves the thumb back when a form that owns it after render resets", async ({
+    page,
+    q,
+  }) => {
+    const scope = query(q.article("Form attribute"));
+    const slider = scope.slider("Contrast");
+    const thumb = getThumb(slider);
+    const initial = await getCenterX(thumb);
+    await scope.button("Link the slider").click();
+    await test.expect(scope.button("Unlink the slider")).toBeVisible();
+    await slider.focus();
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("ArrowRight");
+    await test.expect(slider).toHaveValue("32");
+    test.expect(await getCenterX(thumb)).toBeGreaterThan(initial);
+    await scope.button("Reset").click();
+    await test.expect(slider).toHaveValue("30");
+    await test.expect.poll(() => getCenterX(thumb)).toBeCloseTo(initial, 0);
+  });
+
   test("shows the native input in forced colors", async ({ page, q }) => {
     const slider = query(q.article("Default")).slider("Volume");
     const track = slider.locator("xpath=following-sibling::*[1]");

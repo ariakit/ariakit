@@ -13,6 +13,7 @@ import {
   sliderThumb,
   sliderTrack,
 } from "../styles/slider.ts";
+import { isDocumentOrShadowRoot } from "../utils/is-document-or-shadow-root.ts";
 
 type InputValue = React.ComponentProps<"input">["value"];
 
@@ -94,22 +95,32 @@ export function Slider({
   }, [value, defaultValue, min, max, step]);
 
   // A form reset changes the value with no input event. The new value is set
-  // after the reset event, so read it on the next task.
+  // after the reset event, so read it on the next task. The root of the input,
+  // a document or a shadow root, catches the reset of the form that owns the
+  // input when it happens, also after the form attribute changes. The reset
+  // event doesn't leave a shadow root. A detached element tree can join a form
+  // in the document later, so an element root uses the document instead.
   useEffect(() => {
-    const form = inputRef.current?.form;
-    if (!form) return;
-    const win = getWindow(form);
+    const input = inputRef.current;
+    if (!input) return;
+    const rootNode = input.getRootNode();
+    const root = isDocumentOrShadowRoot(rootNode)
+      ? rootNode
+      : input.ownerDocument;
+    const win = getWindow(input);
     let timeout = 0;
-    const onReset = () => {
+    const onReset = (event: Event) => {
+      if (event.target !== inputRef.current?.form) return;
+      win.clearTimeout(timeout);
       timeout = win.setTimeout(() => {
         const input = inputRef.current;
         if (!input) return;
         setRatio(getInputRatio(input));
       });
     };
-    form.addEventListener("reset", onReset);
+    root.addEventListener("reset", onReset, true);
     return () => {
-      form.removeEventListener("reset", onReset);
+      root.removeEventListener("reset", onReset, true);
       win.clearTimeout(timeout);
     };
   }, []);

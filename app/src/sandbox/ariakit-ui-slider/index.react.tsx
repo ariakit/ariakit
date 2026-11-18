@@ -107,6 +107,30 @@ function SliderForm() {
   );
 }
 
+// The slider is outside the form, and the form attribute links it only after a
+// button press, so the form that owns it changes after it mounts.
+function SliderFormOwner() {
+  const formId = useId();
+  const [linked, setLinked] = useState(false);
+  return (
+    <div className="grid gap-3">
+      <Slider
+        aria-label="Contrast"
+        defaultValue={30}
+        form={linked ? formId : undefined}
+      />
+      <form id={formId} className="flex items-center gap-3">
+        <Button type="button" onClick={() => setLinked(!linked)}>
+          {linked ? "Unlink the slider" : "Link the slider"}
+        </Button>
+        <Button type="reset" $kind="flat">
+          Reset
+        </Button>
+      </form>
+    </div>
+  );
+}
+
 export default function SliderExamples() {
   return (
     <ExampleGrid>
@@ -164,6 +188,18 @@ export default function SliderExamples() {
         `}
       >
         <SliderForm />
+      </Example>
+
+      <Example
+        title="Form attribute"
+        description="The form attribute links a slider outside the form. A reset moves the thumb back to the default value, also when the link changes after render."
+        stretch
+        code={`
+          <Slider defaultValue={30} form={linked ? formId : undefined} />
+          <form id={formId}>...</form>
+        `}
+      >
+        <SliderFormOwner />
       </Example>
 
       <Example

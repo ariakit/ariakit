@@ -124,6 +124,7 @@
     "./utils/highlight.server": "./src/utils/highlight.server.ts",
     "./utils/includes": "./src/utils/includes.ts",
     "./utils/is-current-page": "./src/utils/is-current-page.ts",
+    "./utils/is-document-or-shadow-root": "./src/utils/is-document-or-shadow-root.ts",
     "./utils/keys": "./src/utils/keys.ts",
     "./utils/styles": "./src/utils/styles.ts",
     "./package.json": "./package.json"

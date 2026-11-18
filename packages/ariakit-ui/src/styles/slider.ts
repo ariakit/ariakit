@@ -58,13 +58,14 @@ export const sliderTrack = cv({
   ],
 });
 
-// The fill and the thumb are children of the track, which follows the input.
-// Child combinators keep a disabled or focused element before the slider from
-// matching them.
+// The slider root reads the state of its own input with :has(). A sibling
+// combinator from the input would make Chrome restyle later siblings across the
+// page when the DOM changes. Child combinators keep the match to the input and
+// the parts of this slider.
 const sliderDisabledPart = cx(
-  "[.slider>input:disabled~*>&]:ak-disabled",
-  "[.slider>input:disabled~*>&]:ak-layer-fade-80",
-  "[.slider>input:disabled~*>&]:ak-layer-contrast-0",
+  "[.slider:has(>input:disabled)>*>&]:ak-disabled",
+  "[.slider:has(>input:disabled)>*>&]:ak-layer-fade-80",
+  "[.slider:has(>input:disabled)>*>&]:ak-layer-contrast-0",
 );
 
 /** The filled part of a slider track, from its start to the thumb center. */
@@ -91,9 +92,9 @@ export const sliderThumb = cv({
     // the input.
     "inset-s-[calc(var(--slider-value,0)*(100%-var(--slider-thumb-size)))]",
     "ak-outline ak-outline-brand outline-offset-2",
-    "[.slider>input:focus-visible~*>&]:outline-2",
+    "[.slider:has(>input:focus-visible)>*>&]:outline-2",
     sliderDisabledPart,
-    "[.slider>input:disabled~*>&]:shadow-none",
+    "[.slider:has(>input:disabled)>*>&]:shadow-none",
   ],
   defaultVariants: {
     // The thumb takes the color of the fill, so the two read as one shape.
