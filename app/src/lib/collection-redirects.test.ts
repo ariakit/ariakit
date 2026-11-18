@@ -24,7 +24,7 @@ const appDir = join(import.meta.dirname, "../..");
 
 const collections = [
   { type: "recipes", dir: "src/recipes" },
-  { type: "components", dir: "src/component-docs" },
+  { type: "components", dir: "src/docs/components" },
 ] as const;
 
 interface Redirect {

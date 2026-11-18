@@ -29,7 +29,7 @@ interface Props {
 // Writes one JSON file for each lazy file of a preview at build time, so an
 // example can load it on demand without Shiki in the browser or in the Worker.
 const serverModules = import.meta.glob<ServerModule>(
-  "/src/{recipes,component-docs,sandbox}/**/index.server.ts",
+  "/src/{recipes,docs/components,sandbox}/**/index.server.ts",
   { eager: true },
 );
 
