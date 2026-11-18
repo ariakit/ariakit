@@ -240,3 +240,39 @@ const a = 1;
   ]);
   expect(code).toContain('"client:component-export": "CodeFence"');
 });
+
+test("names untitled code that scrolls", async () => {
+  const code = await compile(`
+\`\`\`css
+.a {}
+\`\`\`
+
+\`\`\`text wrap
+A long prompt
+\`\`\`
+
+\`\`\`a.css
+.b {}
+\`\`\`
+`);
+  // Only the first block has a scroll area that no title names.
+  expect(code.match(/"label": "[^"]*"/g)).toEqual(['"label": "CSS code"']);
+});
+
+test("keeps the import name beside a named default export", async () => {
+  // MDX compiles the default export to a function expression, whose name binds
+  // only inside the function, so the import name stays free.
+  const code = await compile(`
+export default function CodeFence({ children }) {
+  return children;
+}
+
+\`\`\`tsx
+const a = 1;
+\`\`\`
+`);
+  expect(code).toContain(
+    'import {CodeFence} from "#app/components/code-fence.react.tsx";',
+  );
+  expect(code).toContain("const MDXLayout = function CodeFence(");
+});

@@ -28,6 +28,8 @@ export interface CodeFenceFile {
   html: string;
   /** The `text` of `highlight`, which the copy button copies. */
   text: string;
+  /** The name of the code when the block has no title to name it. */
+  label?: string;
   lineNumbers?: boolean;
   wrap?: boolean;
   prompt?: boolean;
@@ -50,6 +52,7 @@ function getCodeProps(file: CodeFenceFile) {
   return {
     html: file.html,
     copy: file.text,
+    "aria-label": file.label,
     $lineNumbers: file.lineNumbers,
     $wrap: file.wrap,
     $prompt: file.prompt,

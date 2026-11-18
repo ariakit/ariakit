@@ -441,6 +441,33 @@ export function parseCodeFence({
   return { options, errors };
 }
 
+const languageNames = {
+  bash: "Shell",
+  css: "CSS",
+  diff: "Diff",
+  html: "HTML",
+  javascript: "JavaScript",
+  js: "JavaScript",
+  json: "JSON",
+  jsx: "JSX",
+  markdown: "Markdown",
+  md: "Markdown",
+  sh: "Shell",
+  text: "",
+  ts: "TypeScript",
+  tsx: "TSX",
+  typescript: "TypeScript",
+} satisfies Record<HighlightLanguage, string>;
+
+/**
+ * Returns the accessible name of the code of an untitled block, such as "CSS
+ * code". Its scroll area is a tab stop, and a block title would name it.
+ */
+export function getCodeLabel(language: HighlightLanguage) {
+  const name = languageNames[language];
+  return name ? `${name} code` : "Code";
+}
+
 export interface InstallCommand {
   packageManager: "npm" | "pnpm" | "yarn" | "bun";
   command: string;

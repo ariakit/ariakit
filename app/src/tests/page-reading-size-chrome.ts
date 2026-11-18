@@ -37,6 +37,16 @@ test("reading pages pop code fences out of the 42em column", async ({
   );
 });
 
+test("reading pages name the scroll area of untitled code", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/components/styling/");
+  // The first fence of the guide is an untitled jsx fence. Its scroll area is a
+  // tab stop, so its language names it.
+  await expect(q.region("JSX code")).toHaveAttribute("tabindex", "0");
+});
+
 test("reading pages space gallery cards like the gutter around them", async ({
   page,
 }) => {

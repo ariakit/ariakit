@@ -8,7 +8,11 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { expect, test } from "vitest";
-import { getInstallCommands, parseCodeFence } from "./code-fence.ts";
+import {
+  getCodeLabel,
+  getInstallCommands,
+  parseCodeFence,
+} from "./code-fence.ts";
 
 const code = `const [open, setOpen] = useState(false);
 const store = useDisclosureStore({ open, setOpen });
@@ -196,4 +200,11 @@ test("converts one npm install command for each package manager", () => {
   expect(getInstallCommands("npm install a && npm test")).toBeNull();
   expect(getInstallCommands("npm install a\nnpm install b")).toBeNull();
   expect(getInstallCommands("pnpm add a")).toBeNull();
+});
+
+test("names the code of untitled blocks by its language", () => {
+  expect(getCodeLabel("css")).toBe("CSS code");
+  expect(getCodeLabel("sh")).toBe("Shell code");
+  expect(getCodeLabel("md")).toBe("Markdown code");
+  expect(getCodeLabel("text")).toBe("Code");
 });

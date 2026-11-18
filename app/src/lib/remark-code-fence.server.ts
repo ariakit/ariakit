@@ -15,7 +15,11 @@ import type {
 } from "#app/components/code-fence.react.tsx";
 import { getFileIcon } from "../recipes/code-block/file-icons.ts";
 import type { CodeFenceOptions } from "./code-fence.ts";
-import { getInstallCommands, parseCodeFence } from "./code-fence.ts";
+import {
+  getCodeLabel,
+  getInstallCommands,
+  parseCodeFence,
+} from "./code-fence.ts";
 
 interface MdastNode {
   type: string;
@@ -297,9 +301,13 @@ function createElement(props: CodeFenceProps, name: string): MdastNode {
 function createFile({ code, options }: ParsedFence): CodeFenceFile {
   const { title, language, lines, words } = options;
   const { html, text } = highlight(code, language, { lines, words });
+  // The scroll area of the code is a tab stop that needs a name, which the
+  // title gives. Wrapped code doesn't scroll, so it isn't one.
+  const needsLabel = !title && !options.wrap;
   return {
     title,
     icon: title ? getFileIcon(title) : undefined,
+    label: needsLabel ? getCodeLabel(language) : undefined,
     html,
     text,
     lineNumbers: options.lineNumbers || undefined,
