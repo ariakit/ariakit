@@ -9,12 +9,32 @@ test("reading pages set large text in a 42em column beside smaller bars", async 
   q,
 }) => {
   await gotoAndSettle(page, "/react/recipes/text-field/");
-  const prose = q.main().locator(":scope > .shell-main-body > .prose");
+  const prose = q
+    .main()
+    .locator(":scope > .shell-main-body > .shell-popout > .prose");
   await expect(prose).toHaveCSS("font-size", "18px");
   await expect(prose).toHaveCSS("row-gap", "22.5px");
   await expect(prose).toHaveCSS("width", "756px");
   await expect(q.navigation("Site")).toHaveCSS("font-size", "14px");
   await expect(q.banner()).toHaveCSS("font-size", "14px");
+});
+
+test("reading pages pop code fences out of the 42em column", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, "/react/components/styling/");
+  const content = q.main().locator(":scope > .shell-main-body > .shell-popout");
+  const prose = content.locator(":scope > .prose").first();
+  const fence = content.locator(":scope > .shell-popout").first();
+  await expect(prose).toHaveCSS("width", "756px");
+  // The popout tracks add 1rem on each side of the text column.
+  await expect(fence).toHaveCSS("width", "788px");
+  // The popout band has square corners, and the block keeps its own radius.
+  await expect(fence.locator(".code-block")).toHaveCSS(
+    "border-radius",
+    "13.5px",
+  );
 });
 
 test("reading pages space gallery cards like the gutter around them", async ({
@@ -36,7 +56,9 @@ test("reading pages use base text and the gutter of the shell's text on a phone"
 }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await gotoAndSettle(page, "/react/recipes/text-field/");
-  const prose = q.main().locator(":scope > .shell-main-body > .prose");
+  const prose = q
+    .main()
+    .locator(":scope > .shell-main-body > .shell-popout > .prose");
   await expect(prose).toHaveCSS("font-size", "16px");
   const box = await prose.boundingBox();
   expect(box?.x).toBeCloseTo(14, 0);
@@ -47,7 +69,7 @@ for (const { name, path } of [
   { name: "guide code", path: "/react/components/styling/" },
   { name: "API reference types", path: "/react/components/separator/" },
 ]) {
-  test(`${name} wraps inside the 42em column`, async ({ page, q }) => {
+  test(`${name} stays inside the body`, async ({ page, q }) => {
     await gotoAndSettle(page, path);
     const body = q.main().locator(":scope > .shell-main-body");
     // The body clips its overflow, so a long line that leaves its block shows

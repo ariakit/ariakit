@@ -1,8 +1,10 @@
 import css from "@shikijs/langs/css";
+import diff from "@shikijs/langs/diff";
 import html from "@shikijs/langs/html";
 import javascript from "@shikijs/langs/javascript";
 import json from "@shikijs/langs/json";
 import jsx from "@shikijs/langs/jsx";
+import markdown from "@shikijs/langs/markdown";
 import shellscript from "@shikijs/langs/shellscript";
 import tsx from "@shikijs/langs/tsx";
 import typescript from "@shikijs/langs/typescript";
@@ -26,7 +28,18 @@ import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 // bundlers and runtimes that can't load the Oniguruma WASM file.
 const highlighter = createHighlighterCoreSync({
   themes: [githubLight, githubDark],
-  langs: [css, html, javascript, json, jsx, shellscript, tsx, typescript],
+  langs: [
+    css,
+    diff,
+    html,
+    javascript,
+    json,
+    jsx,
+    markdown,
+    shellscript,
+    tsx,
+    typescript,
+  ],
   engine: createJavaScriptRegexEngine(),
 });
 
@@ -37,11 +50,14 @@ const highlighter = createHighlighterCoreSync({
 export type HighlightLanguage =
   | "bash"
   | "css"
+  | "diff"
   | "html"
   | "javascript"
   | "js"
   | "json"
   | "jsx"
+  | "markdown"
+  | "md"
   | "sh"
   | "text"
   | "ts"

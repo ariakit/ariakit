@@ -12,11 +12,18 @@ import type { FileIconData } from "#app/recipes/code-block/file-icons.ts";
 import type { Framework } from "./schemas.ts";
 
 const languagesByExtension: Record<string, HighlightLanguage> = {
+  cjs: "js",
   css: "css",
+  cts: "ts",
+  diff: "diff",
   html: "html",
   js: "js",
   json: "json",
   jsx: "jsx",
+  md: "md",
+  mjs: "js",
+  mts: "ts",
+  sh: "sh",
   ts: "ts",
   tsx: "tsx",
 };
