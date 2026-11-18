@@ -12,20 +12,6 @@
 @source "../../../packages/ariakit-ui/src/**";
 @source not "../sandbox/ariakit-tailwind*";
 
-/* The semantic radius and spacing tokens that the @ariakit/tailwind docs set up
-   in their Theming guide, so the live examples of the Styles section render as
-   the guides describe them, such as ak-frame-card/card. */
-@theme {
-  --radius-card: var(--radius-2xl);
-  --spacing-card: --spacing(4);
-  --radius-field: var(--radius-xl);
-  --spacing-field: --spacing(2);
-  --radius-dialog: var(--radius-3xl);
-  --spacing-dialog: --spacing(6);
-  --radius-badge: calc(infinity * 1px);
-  --spacing-badge: --spacing(1.5);
-}
-
 /* The site's Theme panel sets data-theme on the root element. Without it, the
    dark variant follows the system color scheme. */
 @custom-variant dark {

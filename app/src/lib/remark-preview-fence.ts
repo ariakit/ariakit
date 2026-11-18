@@ -48,7 +48,7 @@ function getMetaWithoutPreview(meta?: string | null) {
  *
  * ````md
  * ```html preview
- * <div class="ak-layer ak-frame-card/card">Card</div>
+ * <div class="ak-layer ak-frame ak-frame-2xl/4">Card</div>
  * ```
  * ````
  */

@@ -75,7 +75,7 @@ Interactive states usually change the existing material instead of creating anot
 
 ```html preview
 <button
-  class="ak-layer ak-layer-6 hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
+  class="ak-layer ak-layer-6 hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-xl/2 focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
 >
   Save
 </button>
@@ -92,13 +92,13 @@ Treat hue as information. Keep most of the scene in one family, then spend stron
 ```html preview
 <div class="flex items-center gap-2">
   <button
-    class="ak-layer ak-layer-primary ak-layer-contrast hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
+    class="ak-layer ak-layer-primary ak-layer-contrast hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-xl/2 focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
   >
     Deploy now
   </button>
 
   <span
-    class="ak-layer ak-layer-warning ak-layer-mix-15 ak-frame ak-frame-badge/badge"
+    class="ak-layer ak-layer-warning ak-layer-mix-15 ak-frame ak-frame-4xl/1.5"
   >
     <span class="ak-text ak-text-warning ak-text-25">Needs review</span>
   </span>
@@ -110,9 +110,9 @@ A finish can be fixed or contextual. The primary action keeps one recognizable p
 When belonging to the local material matters more than preserving one global swatch, derive the finish from the parent:
 
 ```html preview
-<div class="ak-layer ak-layer-primary ak-frame ak-frame-card/card">
+<div class="ak-layer ak-layer-primary ak-frame ak-frame-2xl/4">
   <span
-    class="ak-layer ak-layer-6 ak-layer-h-analogous1 ak-layer-c-muted ak-frame ak-frame-badge/badge"
+    class="ak-layer ak-layer-6 ak-layer-h-analogous1 ak-layer-c-muted ak-frame ak-frame-4xl/1.5"
   >
     Related material
   </span>
@@ -191,23 +191,23 @@ An edge is a seam between materials, not decoration for every control. Add one w
 <div
   role="toolbar"
   aria-label="Formatting"
-  class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-field/0.5 ak-frame-bordering inline-flex gap-0.5"
+  class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-xl/0.5 ak-frame-bordering inline-flex gap-0.5"
 >
   <button
     type="button"
-    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
   >
     <span class="block px-3 py-1.5">Bold</span>
   </button>
   <button
     type="button"
-    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
   >
     <span class="block px-3 py-1.5">Italic</span>
   </button>
   <button
     type="button"
-    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
   >
     <span class="block px-3 py-1.5">Link</span>
   </button>
@@ -222,26 +222,26 @@ Frame padding describes the thickness between a material's silhouette and its co
 <div
   role="group"
   aria-label="Period"
-  class="ak-layer ak-layer-darken-3 ak-frame ak-frame-field/px inline-flex"
+  class="ak-layer ak-layer-darken-3 ak-frame ak-frame-xl/[1px] inline-flex"
 >
   <button
     type="button"
     aria-pressed="false"
-    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent"
   >
     <span class="block px-3 py-1.5">Day</span>
   </button>
   <button
     type="button"
     aria-pressed="true"
-    class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-field/0.5 border-0"
+    class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-xl/0.5 border-0"
   >
     <span class="block px-3 py-1.5">Week</span>
   </button>
   <button
     type="button"
     aria-pressed="false"
-    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent"
+    class="ak-frame ak-frame-xl/0.5 border-0 bg-transparent"
   >
     <span class="block px-3 py-1.5">Month</span>
   </button>

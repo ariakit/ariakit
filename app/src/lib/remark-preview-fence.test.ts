@@ -25,7 +25,7 @@ async function compile(content: string, filePath = mdxPath) {
 
 const fence = [
   "```html preview",
-  '<div class="ak-layer ak-frame-card/card">Card</div>',
+  '<div class="ak-layer ak-frame ak-frame-2xl/4">Card</div>',
   "```",
 ].join("\n");
 
@@ -33,7 +33,7 @@ test("renders an html preview fence as an example card with its code", async () 
   const code = await compile(fence);
   expect(code).toContain("_jsx(ExampleCard, {");
   expect(code).toContain(
-    'html: "<div class=\\"ak-layer ak-frame-card/card\\">Card</div>"',
+    'html: "<div class=\\"ak-layer ak-frame ak-frame-2xl/4\\">Card</div>"',
   );
   // The code of the fence stays in the card, without the preview word.
   expect(code).toContain('class: "language-html"');
