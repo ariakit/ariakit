@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { visit } from "unist-util-visit";
+import { tokenizeCodeFenceMeta } from "./code-fence.ts";
 
 interface CodeNode {
   type: "code";
@@ -28,23 +29,43 @@ interface FenceFile {
 /** The info string word that turns an HTML code fence into a live example. */
 const PREVIEW_WORD = "preview";
 
-function isPreviewFence(node: CodeNode) {
-  if (node.lang !== "html") return false;
-  const words = node.meta?.split(/\s+/) ?? [];
-  return words.includes(PREVIEW_WORD);
-}
+/** The lines that the code of a card shows before its expand button. */
+const MAX_LINES = 12;
 
-function getMetaWithoutPreview(meta?: string | null) {
-  const words = meta?.split(/\s+/).filter((word) => {
-    return word && word !== PREVIEW_WORD;
-  });
-  return words?.length ? words.join(" ") : null;
+// Returns the meta of an html preview fence without the preview word, or
+// undefined for any other fence. The code fence tokenizer keeps quoted text
+// whole, so a title such as "A preview card" keeps its word. The code column of
+// the card is narrow, so its code wraps, and long code collapses unless the
+// fence sets its own maxLines.
+function getPreviewMeta(node: CodeNode) {
+  if (node.lang !== "html") return;
+  const tokens = tokenizeCodeFenceMeta(node.meta ?? "");
+  const isName = (token: (typeof tokens)[number], name: string) =>
+    token.type === "name" && token.raw === name;
+  if (!tokens.some((token) => isName(token, PREVIEW_WORD))) return;
+  const words = tokens
+    .filter((token) => !isName(token, PREVIEW_WORD))
+    .map((token) => token.raw);
+  if (!tokens.some((token) => isName(token, "wrap"))) {
+    words.push("wrap");
+  }
+  const hasMaxLines = tokens.some(
+    (token) => token.type === "pair" && token.key === "maxLines",
+  );
+  if (!hasMaxLines) {
+    words.push(`maxLines=${MAX_LINES}`);
+  }
+  return words.join(" ");
 }
 
 /**
  * Renders each `html preview` code fence in an MDX file as an `ExampleCard`,
  * which shows the markup live next to its code. The fence keeps its code, so
- * readers and agents see the same markup that the page renders.
+ * readers and agents see the same markup that the page renders. Its code wraps,
+ * because the card puts it in a narrow column, and code longer than 12 lines
+ * collapses. This plugin runs before `remarkCodeFences`, which renders the
+ * fence in the card as a code block and would report the preview word as an
+ * unknown option.
  *
  * ````md
  * ```html preview
@@ -58,8 +79,9 @@ export function remarkPreviewFences() {
     if (!file.path?.endsWith(".mdx")) return;
     visit(tree, "code", (node: CodeNode, index, parent?: ParentNode) => {
       if (!parent || index == null) return;
-      if (!isPreviewFence(node)) return;
-      const code = { ...node, meta: getMetaWithoutPreview(node.meta) };
+      const meta = getPreviewMeta(node);
+      if (meta === undefined) return;
+      const code = { ...node, meta };
       parent.children[index] = {
         type: "mdxJsxFlowElement",
         name: "ExampleCard",

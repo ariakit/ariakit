@@ -17,7 +17,12 @@ import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
 import { Link } from "@ariakit/ui/components/link.ariakit.react";
 import { List, ListItem } from "@ariakit/ui/components/list.ariakit.react";
 import { Separator } from "@ariakit/ui/components/separator.ariakit.react";
-import { cx } from "clava";
+import {
+  Table,
+  TableCell,
+  TableRow,
+  TableRowGroup,
+} from "@ariakit/ui/components/table.ariakit.react";
 import type { ComponentProps } from "react";
 import { ExampleCard } from "#app/components/example-card.react.tsx";
 
@@ -65,15 +70,26 @@ function Ol(props: ComponentProps<"ol">) {
   return <List ordered {...props} />;
 }
 
-// The main body clips its overflow, so a long line must wrap inside its block.
-// Scrolling would need a tab stop on every block for keyboard users in Safari.
-function Pre({ className, ...props }: ComponentProps<"pre">) {
-  return (
-    <pre
-      {...props}
-      className={cx("whitespace-pre-wrap wrap-anywhere", className)}
-    />
-  );
+// The main body clips its overflow, so a wide table scrolls inside the scroller
+// of the Ariakit UI table instead of losing its last columns.
+function MdxTable(props: ComponentProps<"table">) {
+  return <Table {...props} />;
+}
+
+function Thead(props: ComponentProps<"thead">) {
+  return <TableRowGroup group="head" {...props} />;
+}
+
+// Astro renders each MDX component on its own and passes its children as HTML,
+// so the row group of a head row doesn't reach its rows and cells. Header cells
+// set their kind, and rows leave out the hover of body rows, which a head row
+// can't tell apart from its own.
+function Tr(props: ComponentProps<"tr">) {
+  return <TableRow $hover={false} {...props} />;
+}
+
+function Th(props: ComponentProps<"th">) {
+  return <TableCell header="column" {...props} />;
 }
 
 // The rehypeHtmlComponents plugin also applies these to HTML written as JSX,
@@ -89,7 +105,12 @@ export const mdxComponents = {
   ol: Ol,
   li: ListItem,
   hr: Separator,
-  pre: Pre,
+  table: MdxTable,
+  thead: Thead,
+  tbody: TableRowGroup,
+  tr: Tr,
+  th: Th,
+  td: TableCell,
   // The remarkPreviewFences plugin renders html preview fences with this card.
   ExampleCard,
 };

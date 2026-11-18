@@ -24,7 +24,7 @@ const steps = [
   { id: "disabled", link: "Disabled Action" },
   { id: "sidebar", link: "Collapsed Sidebar" },
   { id: "copy", link: "Copy Feedback" },
-  { id: "time", link: "Exact Timestamp" },
+  { id: "exact-timestamp", link: "Exact Timestamp" },
   { id: "appearance", link: "Colors and Shapes" },
   { id: "overview", link: "Overview" },
 ];

@@ -1,9 +1,16 @@
 import { isPreviewHydrated } from "#app/lib/preview-hydration.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
-// The previews that load data. Animations never finishes loading, and
-// Thumbnails has no loading state.
-const previews = ["", "article", "feed", "settings", "table", "timing"];
+// The previews that load data. Animations never finishes loading, and Static
+// Shapes has no loading state.
+const previews = [
+  "",
+  "paragraph-lines",
+  "load-more",
+  "form-controls",
+  "reload-on-filter",
+  "timing",
+];
 
 // The Timing preview shows its placeholders 150 ms after loading starts. The
 // other previews show them right away.

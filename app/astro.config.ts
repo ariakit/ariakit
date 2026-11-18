@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { join } from "node:path";
+import { join, posix, relative, sep } from "node:path";
 import cloudflare from "@astrojs/cloudflare";
 import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
@@ -21,6 +21,7 @@ import { previewConfig } from "./src/lib/preview-config.ts";
 import { resolvePreviewRoots } from "./src/lib/preview-discovery.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
 import { rehypeHtmlComponents } from "./src/lib/rehype.ts";
+import { remarkCodeFences } from "./src/lib/remark-code-fence.server.ts";
 import { remarkGalleryExamples } from "./src/lib/remark-gallery.ts";
 import { remarkPreviewFences } from "./src/lib/remark-preview-fence.ts";
 import { sourcePlugin } from "./src/lib/source.ts";
@@ -30,6 +31,23 @@ const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || 0;
 const viteCacheDir = process.env.APP_VITE_CACHE_DIR;
 const srcDir = join(import.meta.dirname, "src");
 const previewRoots = resolvePreviewRoots({ ...previewConfig, srcDir });
+
+// The MDX of guides, recipes, component pages, and Styles pages renders in the
+// main body. Descriptions, galleries, and previews render elsewhere. These
+// patterns follow the loaders in content.config.ts.
+const bodyContentPatterns = [
+  "guides/*/*.mdx",
+  "recipes/*/index.mdx",
+  "component-docs/*/index.mdx",
+  "docs/styles/{guides,utilities}/*/index.mdx",
+];
+
+function isBodyContent(filePath: string) {
+  const path = relative(srcDir, filePath).split(sep).join("/");
+  return bodyContentPatterns.some((pattern) =>
+    posix.matchesGlob(path, pattern),
+  );
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -99,7 +117,10 @@ export default defineConfig({
     processor: unified({
       remarkPlugins: [
         [remarkGalleryExamples, { roots: previewRoots, srcDir }],
+        // The preview plugin removes its word from the info string, which the
+        // code fence plugin would report as an unknown option.
         remarkPreviewFences,
+        [remarkCodeFences, { isBodyContent, features: ["ExampleCard"] }],
       ],
       rehypePlugins: [
         rehypeHtmlComponents,

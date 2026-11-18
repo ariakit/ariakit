@@ -75,24 +75,94 @@ test("an html preview fence renders its markup next to its code", async ({
   // Preflight gives every element a solid zero-width border, so only the width
   // shows that Tailwind generated the ak-frame-border class of the fence.
   await expect(live).toHaveCSS("border-top-width", "1px");
+  // The fence keeps its code, which renders as a code block in the card.
   await expect(card.locator("pre")).toContainText(
     '<div class="ak-layer ak-frame ak-frame-border">Border from ak-layer</div>',
   );
+  await expect(query(card).button("Copy code")).toBeVisible();
+});
+
+test("an example card puts its code on the left, or under the example", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await gotoAndSettle(page, "/tailwind/styles/ak-layer/");
+  const card = page.locator("[data-example-card]").first();
+  const getBoxes = async () => {
+    const stage = await card.locator("[data-example-stage]").boundingBox();
+    const code = await card.locator("pre").boundingBox();
+    if (!stage || !code) throw new Error("The card has no stage or code");
+    return { stage, code };
+  };
+  const wide = await getBoxes();
+  expect(wide.code.x + wide.code.width).toBeLessThanOrEqual(wide.stage.x);
+  // The card goes in a feature band, wider than the popout of a code fence.
+  const fence = page.locator("pre:not([data-example-card] pre)").first();
+  const cardBox = await card.boundingBox();
+  const fenceBox = await fence.boundingBox();
+  expect(cardBox?.width).toBeGreaterThan(fenceBox?.width ?? Infinity);
+  await page.setViewportSize({ width: 375, height: 812 });
+  await expect
+    .poll(async () => {
+      const narrow = await getBoxes();
+      return narrow.stage.y + narrow.stage.height <= narrow.code.y;
+    })
+    .toBe(true);
+});
+
+test("a wide table scrolls inside its own scroller with its column headers", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await gotoAndSettle(page, "/tailwind/styles/theming/");
+  const table = q.table().filter({ has: q.columnheader("Token family") });
+  await expect(table).toBeVisible();
+  await expect(query(table).columnheader()).toHaveText([
+    "Token family",
+    "Purpose",
+    "Defaults",
+  ]);
+  // The main body clips its overflow, so the table must scroll on its own.
+  const scroller = table.locator("..");
+  const [scrollWidth, clientWidth] = await scroller.evaluate((element) => [
+    element.scrollWidth,
+    element.clientWidth,
+  ]);
+  expect(scrollWidth).toBeGreaterThan(clientWidth);
+  await expect(scroller).toHaveCSS("overflow-x", "auto");
+  // Docs tables are static, so the head row doesn't tint like a data row on
+  // hover. The tint has no transition, and reading the computed style applies
+  // the hover state, so no wait is needed.
+  const header = query(table).columnheader("Token family");
+  const getBackground = () =>
+    header.evaluate((element) => {
+      const row = element.closest("tr");
+      if (!row) throw new Error("The header has no row");
+      return [element, row].map((item) => getComputedStyle(item).background);
+    });
+  const before = await getBackground();
+  await header.hover();
+  expect(await getBackground()).toEqual(before);
 });
 
 test("the setup prompt copies its text", async ({ context, page, q }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await gotoAndSettle(page, "/tailwind/styles/getting-started/");
-  // Astro removes the ssr attribute of an island once it hydrates. The page
-  // shows no other sign that the button can copy.
+  const prompt = "Set up Ariakit Tailwind in this project.";
+  const copy = q.button("Copy Prompt for your agent");
+  await expect(q.text("Prompt for your agent", { exact: true })).toBeVisible();
+  // The code block hydrates when it scrolls into view, and Astro removes the
+  // ssr attribute of its island then. The page shows no other sign that the
+  // button can copy.
+  await copy.scrollIntoViewIfNeeded();
   await expect(
-    page.locator("astro-island:not([ssr]) [data-agent-prompt]"),
+    page.locator("astro-island:not([ssr])").filter({ hasText: prompt }),
   ).toHaveCount(1);
-  const prompt = query(q.region("Prompt for your agent"));
-  await prompt.button("Copy prompt").click();
-  await expect(prompt.button("Copied")).toBeVisible();
+  await copy.click();
+  await expect(q.button("Copied")).toBeVisible();
   const copied = await page.evaluate(() => navigator.clipboard.readText());
-  expect(copied).toMatch(/^Set up Ariakit Tailwind in this project\./);
+  expect(copied.startsWith(`${prompt}\n`)).toBe(true);
   // The copied text keeps the indentation of the prompt source.
   expect(copied).toContain(
     '\n   @import "tailwindcss";\n   @import "@ariakit/tailwind";\n',

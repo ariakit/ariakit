@@ -170,7 +170,7 @@ export default function Example() {
 
         <ShellMain>
           <ShellMainIntro>
-            <ShellFull $hue="cyan" $chroma="vivid" $contrast $p={8}>
+            <ShellFull $hue="cyan" $chroma="vivid" $contrast $py={8}>
               <ShellContent>
                 <div className="@container/album">
                   <div className="flex flex-col items-start gap-6 @md/album:flex-row @md/album:items-end">

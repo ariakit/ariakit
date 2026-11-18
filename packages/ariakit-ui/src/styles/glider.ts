@@ -9,6 +9,24 @@ export const glider = cv({
 });
 
 /**
+ * Holds the scale probe of a glider. It has no size and clips the probe, so the
+ * probe adds nothing to the scrollable content of the group.
+ */
+export const gliderScale = cv({
+  class: "glider-scale absolute top-0 left-0 size-0 overflow-clip",
+});
+
+/**
+ * An element with a fixed size at the start of the scrollable content of the
+ * group. The `Glider` style component compares its box on the screen with its
+ * size to find the scale of CSS zoom or a transform on the group or its
+ * ancestors, and measures the boxes of the items from it.
+ */
+export const gliderScaleProbe = cv({
+  class: "glider-scale-probe absolute top-0 left-0 size-[100px]",
+});
+
+/**
  * Holds one box and the window that travels with it. It sits behind the items,
  * so the text of the items shows over the box.
  */

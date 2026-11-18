@@ -329,7 +329,7 @@ function DocsScenario() {
             {"html { scroll-padding-block-start: calc(4rem + 1px); }"}
           </style>
           <DocsArticle />
-          <ShellFull $layer="brand" $p={6} className="text-center font-medium">
+          <ShellFull $layer="brand" $py={6} className="text-center font-medium">
             <ShellContent>
               <p>A full-width band inside the centered main</p>
             </ShellContent>
@@ -798,7 +798,7 @@ function MarketingScenario() {
               </Heading>
               <p>{paragraphs[0]}</p>
             </Prose>
-            <ShellFull $layer="brand" $p={12} className="text-center">
+            <ShellFull $layer="brand" $py={12} className="text-center">
               <Prose>
                 <HeadingLevel>
                   <Heading id="features">Features</Heading>

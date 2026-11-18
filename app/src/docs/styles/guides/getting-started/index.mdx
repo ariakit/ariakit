@@ -4,19 +4,6 @@ description: Install Ariakit Tailwind and set up the base layer of your app.
 order: 1
 ---
 
-import { AgentPrompt } from "#app/components/agent-prompt.react.tsx";
-
-export const setupPrompt = `Set up Ariakit Tailwind in this project.
-
-1. Check that the project uses Tailwind CSS v4. If it doesn't, stop and ask me before you install or upgrade Tailwind.
-2. Install @ariakit/tailwind with the package manager of the project.
-3. In the main CSS file, import it right after Tailwind:
-   @import "tailwindcss";
-   @import "@ariakit/tailwind";
-4. Apply the base layer to the root container of the app, not to html or :root:
-   ak-layer ak-layer-white dark:ak-layer-gray-950
-5. Before you style any surface, read the Mental model section of node_modules/@ariakit/tailwind/readme.md, and follow its rules.`;
-
 **Important:** This package is experimental and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
 
 Ariakit Tailwind is a Tailwind CSS v4 plugin that brings Ariakit Styles to your projects. It enables developers to build accessible design systems with **relative colors and radii** instead of fixed values, giving end users full freedom to customize the theme without sacrificing visual consistency. Swap a brand color, radius, or spacing scale, and every derived surface, text, and border rebalances itself automatically.
@@ -27,7 +14,22 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 
 Copy this prompt into your coding agent:
 
-<AgentPrompt client:load prompt={setupPrompt} />
+````md title="Prompt for your agent" wrap
+Set up Ariakit Tailwind in this project.
+
+1. Check that the project uses Tailwind CSS v4. If it doesn't, stop and ask me before you install or upgrade Tailwind.
+2. Install `@ariakit/tailwind` with the package manager of the project.
+3. In the main CSS file, import it right after Tailwind:
+   ```css
+   @import "tailwindcss";
+   @import "@ariakit/tailwind";
+   ```
+4. Apply the base layer to the root container of the app, not to `html` or `:root`:
+   ```
+   ak-layer ak-layer-white dark:ak-layer-gray-950
+   ```
+5. Before you style any surface, read the Mental model section of `node_modules/@ariakit/tailwind/readme.md`, and follow its rules.
+````
 
 ## Set up by hand
 

@@ -898,7 +898,7 @@ test("inline previews scroll after a click on their card", async ({
   // the card, so the URL points to the card after the click.
   const titleLink = query(article).link("Paragraph Lines");
   await titleLink.click();
-  await expect(page).toHaveURL(/#article$/);
+  await expect(page).toHaveURL(/#paragraph-lines$/);
   await expect(card).toBeFocused();
   await expect.poll(() => hasBrandViewportEdge(viewport)).toBe(true);
   // The click scrolls the title into view, which can leave the example below

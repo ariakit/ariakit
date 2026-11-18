@@ -35,17 +35,36 @@ test("renders an html preview fence as an example card with its code", async () 
   expect(code).toContain(
     'html: "<div class=\\"ak-layer ak-frame ak-frame-2xl/4\\">Card</div>"',
   );
-  // The code of the fence stays in the card, without the preview word.
+  // The code of the fence stays in the card, without the preview word. It
+  // wraps, and long code collapses.
   expect(code).toContain('class: "language-html"');
+  expect(code).toContain('metastring: "wrap maxLines=12"');
   expect(code).not.toContain("preview");
+});
+
+test("keeps the wrap word and maxLines of the fence", async () => {
+  const code = await compile(
+    fence.replace("html preview", "html wrap preview maxLines=4"),
+  );
+  expect(code).toContain('metastring: "wrap maxLines=4"');
 });
 
 test("keeps the other words of the info string", async () => {
   const code = await compile(
-    fence.replace("html preview", "html preview title"),
+    fence.replace("html preview", 'html preview title="A preview card" {1}'),
   );
   expect(code).toContain("_jsx(ExampleCard, {");
-  expect(code).toContain('metastring: "title"');
+  // Quoted text is one token, so its preview word stays.
+  expect(code).toContain(
+    'metastring: "title=\\"A preview card\\" {1} wrap maxLines=12"',
+  );
+});
+
+test("leaves an html fence with preview only in quoted text as code", async () => {
+  const code = await compile(
+    fence.replace("html preview", 'html title="A preview card"'),
+  );
+  expect(code).not.toContain("ExampleCard");
 });
 
 test("leaves other fences as code", async () => {

@@ -11,6 +11,8 @@ import {
   gliderGroup,
   gliderLayer,
   gliderMover,
+  gliderScale,
+  gliderScaleProbe,
   gliderTrack,
   gliderWindow,
 } from "../styles/glider.ts";
@@ -98,6 +100,8 @@ const contentProperties = [
   "flex-basis",
 ];
 
+const gliderScaleClass = gliderScale.htmlObj().class;
+const gliderScaleProbeClass = gliderScaleProbe.htmlObj().class;
 const gliderTrackClass = gliderTrack.htmlObj().class;
 const gliderMoverClass = gliderMover.htmlObj().class;
 const gliderBoxClass = gliderBox.htmlObj().class;
@@ -154,15 +158,34 @@ function getItems(group: HTMLElement, root: HTMLElement) {
   });
 }
 
-/** The box of an element from the start of the group's scrollable content. */
-function getRect(group: HTMLElement, element: HTMLElement): ItemRect {
-  const groupRect = group.getBoundingClientRect();
-  const rect = element.getBoundingClientRect();
+/**
+ * How many screen pixels a CSS pixel takes in the glider, from CSS zoom or a
+ * transform on the group or its ancestors. The probe has a fixed CSS size, so
+ * its box on the screen gives the scale.
+ */
+function getScale(probe: HTMLElement, rect: DOMRect) {
   return {
-    x: rect.left - groupRect.left - group.clientLeft + group.scrollLeft,
-    y: rect.top - groupRect.top - group.clientTop + group.scrollTop,
-    width: rect.width,
-    height: rect.height,
+    x: rect.width / probe.offsetWidth || 1,
+    y: rect.height / probe.offsetHeight || 1,
+  };
+}
+
+/**
+ * The box of an element from the start of the group's scrollable content, in
+ * CSS pixels of the glider. The scale probe sits at that start, so it scrolls
+ * with the items.
+ */
+function getRect(probe: HTMLElement, element: HTMLElement): ItemRect {
+  const probeRect = probe.getBoundingClientRect();
+  const rect = element.getBoundingClientRect();
+  // The boxes from getBoundingClientRect() include CSS zoom and transforms, but
+  // the CSS lengths that the glider writes do not.
+  const scale = getScale(probe, probeRect);
+  return {
+    x: (rect.left - probeRect.left) / scale.x,
+    y: (rect.top - probeRect.top) / scale.y,
+    width: rect.width / scale.x,
+    height: rect.height / scale.y,
   };
 }
 
@@ -508,6 +531,10 @@ interface GliderOptions extends Pick<GliderGroupVariants, "$hover"> {
 function createGlider({ root, group, ...variants }: GliderOptions) {
   const view = getWindow(group);
   const hover = !!variants.$hover;
+  const scaleProbe = createElement(
+    createElement(root, gliderScaleClass),
+    gliderScaleProbeClass,
+  );
   // Paint order: the hover box, the idle copy of the item that the selected box
   // travels to, then the selected box and its window.
   const hoverTrack = hover ? createTrack(root, "hover") : null;
@@ -584,7 +611,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     if (!hasOpaqueSurface(selectedTrack.box)) return;
     const path = new Map<HTMLElement, ItemRect>();
     for (const element of getItems(group, root)) {
-      const rect = getRect(group, element);
+      const rect = getRect(scaleProbe, element);
       if (!isOnPath(from, to, rect)) continue;
       path.set(element, rect);
     }
@@ -609,7 +636,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     for (const [element, rect] of path) {
       if (element === target) continue;
       // Items keep their places, because other items look selected too.
-      const { width, height } = element.getBoundingClientRect();
+      const { width, height } = getRect(scaleProbe, element);
       const copyRect = { ...rect, width, height };
       selectedCopies.push(
         createCopy({
@@ -621,7 +648,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       );
     }
     const idleState = target.matches(":hover") ? "hover" : "idle";
-    const idleRect = getRect(group, target);
+    const idleRect = getRect(scaleProbe, target);
     const idleCopy = createCopy({
       element: target,
       rect: idleRect,
@@ -681,7 +708,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       hideTrack(hoverTrack);
       return;
     }
-    const rect = getRect(group, hoveredItem);
+    const rect = getRect(scaleProbe, hoveredItem);
     moveTrack({ track: hoverTrack, target: hoveredItem, rect, animated });
   };
 
@@ -712,8 +739,8 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     if (selectedItem) {
       // The box can be between two items when the selection changes again.
       const from =
-        travels || refreshes ? getRect(group, selectedTrack.box) : null;
-      const to = getRect(group, selectedItem);
+        travels || refreshes ? getRect(scaleProbe, selectedTrack.box) : null;
+      const to = getRect(scaleProbe, selectedItem);
       const offsets = getInlineOffsets(group, to);
       findFollowers();
       moveTrack({
