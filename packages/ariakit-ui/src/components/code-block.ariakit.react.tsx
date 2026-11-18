@@ -30,6 +30,7 @@ import {
   codeBlockTitle,
 } from "../styles/code-block.ts";
 import { tabLabel, tabListCarousel } from "../styles/tabs.ts";
+import { isDocumentOrShadowRoot } from "../utils/is-document-or-shadow-root.ts";
 import type { ButtonProps } from "./button.ariakit.react.tsx";
 import { Button, ButtonLabel, ButtonSlot } from "./button.ariakit.react.tsx";
 import type { CarouselButtonRender } from "./carousel.ariakit.react.tsx";
@@ -174,10 +175,6 @@ const TAB_PROVIDER_KEYS = [
 // block creates no tab store.
 function hasTabProviderProps(props: CodeBlockProps) {
   return TAB_PROVIDER_KEYS.some((key) => Object.hasOwn(props, key));
-}
-
-function isDocumentOrShadowRoot(node: Node): node is Document | ShadowRoot {
-  return "activeElement" in node;
 }
 
 // The focused element in the document or the shadow root of the node.

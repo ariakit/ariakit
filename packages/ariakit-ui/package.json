@@ -55,6 +55,7 @@
     "./components/separator.ariakit.react": "./src/components/separator.ariakit.react.tsx",
     "./components/shell.ariakit.react": "./src/components/shell.ariakit.react.tsx",
     "./components/skeleton.ariakit.react": "./src/components/skeleton.ariakit.react.tsx",
+    "./components/slider.ariakit.react": "./src/components/slider.ariakit.react.tsx",
     "./components/slot-frame.ariakit.react": "./src/components/slot-frame.ariakit.react.tsx",
     "./components/table.ariakit.react": "./src/components/table.ariakit.react.tsx",
     "./components/tabs.ariakit.react": "./src/components/tabs.ariakit.react.tsx",
@@ -110,6 +111,7 @@
     "./styles/separator": "./src/styles/separator.ts",
     "./styles/shell": "./src/styles/shell.ts",
     "./styles/skeleton": "./src/styles/skeleton.ts",
+    "./styles/slider": "./src/styles/slider.ts",
     "./styles/slot-frame": "./src/styles/slot-frame.ts",
     "./styles/table": "./src/styles/table.ts",
     "./styles/tabs": "./src/styles/tabs.ts",
@@ -122,6 +124,7 @@
     "./utils/highlight.server": "./src/utils/highlight.server.ts",
     "./utils/includes": "./src/utils/includes.ts",
     "./utils/is-current-page": "./src/utils/is-current-page.ts",
+    "./utils/is-document-or-shadow-root": "./src/utils/is-document-or-shadow-root.ts",
     "./utils/keys": "./src/utils/keys.ts",
     "./utils/styles": "./src/utils/styles.ts",
     "./package.json": "./package.json"
