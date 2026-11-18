@@ -20,8 +20,8 @@ import { previewLoader } from "./lib/preview-discovery.ts";
 import { recipeIcons } from "./lib/recipe-icons.ts";
 import { RECIPE_CATEGORIES } from "./lib/schemas.ts";
 
-// Recipes and component docs share these collections, so the id keeps the
-// content directory, as in recipes/navigation or component-docs/separator.
+// Recipes and component pages share these collections, so the id keeps the
+// content directory, as in recipes/navigation or docs/components/separator.
 function generateContentId(options: { entry: string }) {
   return options.entry.replace(/\/[^/]+\.mdx?$/, "");
 }
@@ -62,7 +62,7 @@ const styles = defineCollection({
 
 const components = defineCollection({
   loader: componentLoader({
-    base: join(import.meta.dirname, "component-docs"),
+    base: join(import.meta.dirname, "docs/components"),
   }),
   schema: componentLoader.schema(
     z.object({
@@ -89,7 +89,7 @@ const recipes = defineCollection({
 
 const descriptions = defineCollection({
   loader: glob({
-    pattern: "{recipes,component-docs}/*/description.mdx",
+    pattern: "{recipes,docs/components}/*/description.mdx",
     base: import.meta.dirname,
     generateId: generateContentId,
   }),
@@ -97,7 +97,7 @@ const descriptions = defineCollection({
 
 const galleries = defineCollection({
   loader: glob({
-    pattern: "{recipes,component-docs}/*/gallery.mdx",
+    pattern: "{recipes,docs/components}/*/gallery.mdx",
     base: import.meta.dirname,
     generateId: generateContentId,
   }),

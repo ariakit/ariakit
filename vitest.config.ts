@@ -24,7 +24,7 @@ const nonDomPackages = [
 
 function getFrameworkTestIncludes(framework: Framework) {
   const entryFiles = globSync(
-    `app/src/{recipes,component-docs,sandbox}/**/index.${framework}.tsx`,
+    `app/src/{recipes,docs/components,sandbox}/**/index.${framework}.tsx`,
     { cwd: rootDir },
   );
   const previewTests = entryFiles.flatMap((file) => {

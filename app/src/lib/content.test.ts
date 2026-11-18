@@ -52,7 +52,7 @@ Second paragraph.
 });
 
 test("descriptionToText handles real descriptions", async () => {
-  const files = ["../recipes", "../component-docs"].flatMap((dir) =>
+  const files = ["../recipes", "../docs/components"].flatMap((dir) =>
     getDescriptionFiles(join(import.meta.dirname, dir)),
   );
   expect(files.length).toBeGreaterThan(0);

@@ -363,7 +363,7 @@ test("rejects unknown preview metadata keys", async () => {
 
 test("prefixes preview ids so roots can share folder names", async () => {
   const dir = await createDir();
-  for (const root of ["recipes", "component-docs"]) {
+  for (const root of ["recipes", "docs/components"]) {
     await writeFile(join(dir, root, "skeleton/index.react.tsx"));
     await writeFile(
       join(dir, root, "skeleton/preview.json"),
@@ -372,7 +372,7 @@ test("prefixes preview ids so roots can share folder names", async () => {
   }
   const componentsRoot = {
     kind: "components",
-    dir: join(dir, "component-docs"),
+    dir: join(dir, "docs/components"),
     metadataRequired: true,
     idPrefix: "components",
   };
@@ -386,10 +386,10 @@ test("prefixes preview ids so roots can share folder names", async () => {
   ]);
   const resolvedRoots = resolvePreviewRoots({ roots });
   expect(
-    getPreviewIdFromDir(resolvedRoots, join(dir, "component-docs/skeleton")),
+    getPreviewIdFromDir(resolvedRoots, join(dir, "docs/components/skeleton")),
   ).toBe("components/skeleton");
   expect(
-    getPreviewIdFromDir(resolvedRoots, join(dir, "component-docs")),
+    getPreviewIdFromDir(resolvedRoots, join(dir, "docs/components")),
   ).toBeUndefined();
 });
 

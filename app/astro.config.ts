@@ -38,7 +38,7 @@ const previewRoots = resolvePreviewRoots({ ...previewConfig, srcDir });
 const bodyContentPatterns = [
   "guides/*/*.mdx",
   "recipes/*/index.mdx",
-  "component-docs/*/index.mdx",
+  "docs/components/*/index.mdx",
   "docs/styles/{guides,utilities}/*/index.mdx",
 ];
 

@@ -67,7 +67,7 @@ function getEntryGalleryExamples(
   entry: PreviewOwnerEntry,
   framework: Framework,
 ) {
-  const root = entry.collection === "recipes" ? "recipes" : "component-docs";
+  const root = entry.collection === "recipes" ? "recipes" : "docs/components";
   const galleryId = `${root}/${entry.id}`;
   const cacheKey = `${framework}:${galleryId}`;
   const cached = import.meta.env.PROD && entryGalleryCache.get(cacheKey);

@@ -50,7 +50,7 @@
 | :------------------------------ | :----------------------------------------------------------- | :------------------------------------------------------------------------- |
 | `packages`                      | [**MIT License**](packages/ariakit-react/license)            | Permissive open-source.                                                    |
 | `app/src/recipes` (except Plus) | [**MIT License**](app/src/recipes/license.md)                | Permissive open-source.                                                    |
-| `app/src/component-docs`        | [**MIT License**](app/src/component-docs/license.md)         | Permissive open-source.                                                    |
+| `app/src/docs/components`       | [**MIT License**](app/src/docs/components/license.md)        | Permissive open-source.                                                    |
 | `app/src/recipes` (Plus)        | [**Ariakit Plus License**](https://ariakit.com/plus/license) | License granted to [**Ariakit Plus**](https://ariakit.com/plus) customers. |
 | `app`                           | [**Proprietary**](app/license.md)                            | No license granted.                                                        |
 

@@ -48,7 +48,7 @@ export const previewConfig = {
     },
     {
       kind: COMPONENTS_PREVIEW_KIND,
-      dir: "component-docs",
+      dir: "docs/components",
       metadataRequired: true,
       // Component pages and recipes can share a slug, such as skeleton.
       idPrefix: "components",

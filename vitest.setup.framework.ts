@@ -97,7 +97,7 @@ const LOADERS = {
 function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
-    /^(?<dir>(?:.*\/)?(?:recipes|component-docs|sandbox)\/.+?)\/((?<framework>react|solid)\.)?test\.ts$/,
+    /^(?<dir>(?:.*\/)?(?:recipes|docs\/components|sandbox)\/.+?)\/((?<framework>react|solid)\.)?test\.ts$/,
   );
   if (!match?.groups) return false;
   const { dir, framework } = match.groups;

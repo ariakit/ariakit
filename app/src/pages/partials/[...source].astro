@@ -37,7 +37,7 @@ export const getStaticPaths = (async () => {
   // page, so it can't read the module scope. A Next.js page is a react source,
   // and only the pages of recipe examples have cards.
   const entrySources = import.meta.glob<Source>(
-    "/src/{recipes,component-docs}/**/index.{react,solid}.tsx",
+    "/src/{recipes,docs/components}/**/index.{react,solid}.tsx",
     { query: "?source", import: "default" },
   );
   const nextjsSources = import.meta.glob<Source>(

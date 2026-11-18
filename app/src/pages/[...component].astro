@@ -31,7 +31,7 @@ export const getStaticPaths = (async () => {
   const recipes = await getCollection("recipes");
   const references = await getCollection("references");
   return entries.flatMap((entry) => {
-    const id = `component-docs/${entry.id}`;
+    const id = `docs/components/${entry.id}`;
     const gallery = galleries.find((gallery) => gallery.id === id);
     const description = descriptions.find((header) => header.id === id);
     const componentRecipes = recipes.filter((recipe) =>
