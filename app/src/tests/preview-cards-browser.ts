@@ -466,8 +466,13 @@ test("preview cards show the popup of their example open", async ({
   await flushFrames(page);
   expect(await combobox.getAttribute("aria-expanded")).toBe("true");
   // The code opens in a modal dialog, which covers the frame until it closes.
+  // The dialog mounts when its module loads, after the button expands. It
+  // listens for Escape from an effect that runs before it moves focus to its
+  // dismiss button, so an Escape key press after that focus closes it.
+  const dialog = q.dialog("Combobox Group");
+  await expect(query(dialog).button("Dismiss popup")).toBeFocused();
   await page.keyboard.press("Escape");
-  await expect(q.dialog("Combobox Group")).not.toBeVisible();
+  await expect(dialog).not.toBeVisible();
   expect(await combobox.getAttribute("aria-expanded")).toBe("true");
 
   // A click in the frame below the example is outside the popup and closes it.
