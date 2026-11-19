@@ -506,9 +506,9 @@ function useTocSpy({ rootRef, barRange, onCurrentChange }: UseTocSpyParams) {
       const label = index === 0 ? root.firstElementChild : null;
       const labelTop = label?.getBoundingClientRect().top ?? linkRect.top;
       // The rows start at the previous row, or the label, and slide to the
-      // current row as the line passes through the current section. So the rows
-      // move with the page instead of a row at a time, and they still start at
-      // the previous row when the current one changes.
+      // current row until the next section becomes current. So the rows move
+      // with the page instead of a row at a time, and they still start at the
+      // previous row when the current one changes.
       let top = Math.min(labelTop, linkRect.top);
       const current = sections[spy.current];
       if (current) {
@@ -518,8 +518,14 @@ function useTocSpy({ rootRef, barRange, onCurrentChange }: UseTocSpyParams) {
         const previous = getRowCurrent(sections, previousIndex);
         const next = sections[getAdjacentSection(sections, spy.current, 1)];
         const from = getRowRect(previous)?.top ?? top;
-        const length = (next?.top ?? contentEnd) - current.top;
-        const progress = getProgress(current.line - current.top, length);
+        // The rows reach the current row when the next heading passes its own
+        // activation line, with the 1px tolerance of `getSpyState`. A different
+        // scroll margin can move that line away from the line of this heading.
+        const travel = current.line + 1 - current.top;
+        const remaining = next
+          ? next.top - next.line - 1
+          : contentEnd - current.line - 1;
+        const progress = getProgress(travel, travel + remaining);
         top = interpolate(from, linkRect.top, progress);
       }
       // The rows end at the last section on screen, and slide to the row of the

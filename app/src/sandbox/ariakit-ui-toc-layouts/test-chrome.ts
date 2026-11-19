@@ -407,6 +407,25 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     test.expect(result.jumps).toEqual([]);
   });
 
+  test("follows headings with uneven scroll margins without jumping", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Uneven margins");
+    await page.evaluate(() => {
+      document.getElementById("margins-1")?.scrollIntoView({ block: "start" });
+    });
+    await test
+      .expect(query(nav).link("Topic 1"))
+      .toHaveAttribute("aria-current", "location");
+    const result = await followArticle(nav, "margins-1", "margins-8");
+    test.expect(result.steps).toBeGreaterThan(10);
+    test.expect(result.distance).toBeGreaterThan(0);
+    test.expect(result.drifts).toEqual([]);
+    test.expect(result.backs).toEqual([]);
+    test.expect(result.jumps).toEqual([]);
+  });
+
   test("keeps a long list where it was scrolled by hand", async ({
     page,
     q,
