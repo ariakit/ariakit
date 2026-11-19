@@ -27,7 +27,7 @@ import type {
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
 } from "react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import useLocalStorageState from "use-local-storage-state";
 import {
   PreviewLoader,
@@ -126,6 +126,15 @@ export function AppNavigationCard({ links }: AppNavigationCardProps) {
   }
   const recentHrefs = [...recentLinks.keys()];
 
+  // The links sit the navigation padding inside the sidebar edge, so twice that
+  // padding puts the card as far outside it. The card renders again on each
+  // page swap, when reading a style would lay out the whole new page at once,
+  // so it reads the padding only when the anchor changes.
+  const gutter = useMemo(() => {
+    if (!anchor) return;
+    return getNavigationPadding(anchor) * 2;
+  }, [anchor]);
+
   // The client router replaces the body, which holds the portal of the card,
   // while the navigation stays. The card renders in a new portal on each page.
   const [page, setPage] = useState(0);
@@ -161,16 +170,7 @@ export function AppNavigationCard({ links }: AppNavigationCardProps) {
   };
 
   return (
-    <Hovercard
-      key={page}
-      portal
-      fixed
-      $slide
-      $p={1}
-      // The links sit the navigation padding inside the sidebar edge, so twice
-      // that padding puts the card as far outside it.
-      gutter={anchor ? getNavigationPadding(anchor) * 2 : undefined}
-    >
+    <Hovercard key={page} portal fixed $slide $p={1} gutter={gutter}>
       {/* The person can resize the card with the grip at the corner of this
           box. A resizable box clips its content, so the box has no rounded
           corners: inside another rounded clip, Chrome can skip the rounded
