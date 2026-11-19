@@ -95,8 +95,8 @@ export interface Props {
    */
   sidebar?: boolean;
   /**
-   * The text size of the main content. The column follows it.
-   * @default "lg"
+   * The text size of the main content. The column follows it. When omitted,
+   * `ShellMain` uses its default, `md`.
    */
   size?: "auto" | "lg";
   /**
@@ -112,7 +112,7 @@ const {
   examples = [],
   section,
   sidebar = true,
-  size = "lg",
+  size,
   maxWidth,
 } = Astro.props;
 const pathname = getLinkPathname(Astro.url.pathname);
@@ -685,8 +685,10 @@ const drawerNavigation = navigation.map((group) => ({
             }
           } catch {}
         };
+        // The worker Element type adds an append, so HTMLElement is not a
+        // ParentNode. Document and HTMLElement both have querySelectorAll.
         /**
-         * @param {ParentNode} parent
+         * @param {Document | HTMLElement} parent
          * @param {string} selector
          */
         const queryAll = (parent, selector) =>
