@@ -265,6 +265,43 @@ test("site navigation card lays out its previews beside the link", async ({
     .toBe(innerRadius);
 });
 
+test("site navigation card keeps its gap from the link after a page swap", async ({
+  page,
+}) => {
+  const navigation = await gotoPage(page);
+  const link = navigation.link("Breadcrumb");
+  await link.hover();
+  const card = getCard(page, "Breadcrumb");
+  await expect(card).toHaveAttribute("data-open");
+  await link.click();
+  // The client router changes the URL after it fetches the next page and swaps
+  // it in, which can take as long as a page load.
+  await expect(page).toHaveURL(/\/react\/recipes\/breadcrumb\/$/, {
+    timeout: 0,
+  });
+  // The link stays the anchor across the swap, so the card of the new page
+  // keeps the gap that it read before. The pointer leaves the link that it
+  // clicked, so the link opens the card again.
+  await page.locator("main h1").hover();
+  await link.hover();
+  await expect(card).toHaveAttribute("data-open");
+  const anchor = await link.elementHandle();
+  await expect
+    .poll(() =>
+      card.evaluate((element, anchor) => {
+        const style = getComputedStyle(anchor);
+        const padding = Number.parseFloat(style.getPropertyValue("--nav-py"));
+        const gap =
+          element.getBoundingClientRect().left -
+          anchor.getBoundingClientRect().right;
+        return Math.abs(gap - padding * 2);
+      }, anchor),
+    )
+    // The popover rounds its position to whole pixels, and the link can sit on
+    // a half pixel.
+    .toBeLessThanOrEqual(1);
+});
+
 test("site navigation card clips its previews only at the corners of their frame", async ({
   page,
 }) => {
