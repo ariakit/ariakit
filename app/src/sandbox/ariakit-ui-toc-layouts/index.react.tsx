@@ -358,6 +358,13 @@ function SideBySide() {
         <p className="h-64">The article ends below the rows.</p>
       </Frame>
       <Contents label="Side by side" entries={sideBySide} />
+      {/* The same rows scroll in a box shorter than the list, so it follows
+          the rows of headings as the article scrolls. */}
+      <Contents
+        label="Scrolling cards"
+        entries={sideBySide}
+        className="max-h-32 w-40 overflow-y-auto"
+      />
     </div>
   );
 }

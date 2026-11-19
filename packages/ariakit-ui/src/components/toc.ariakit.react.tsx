@@ -158,7 +158,11 @@ interface GetSectionsParams {
 
 // Measures the headings of the links relative to the top of the scroll
 // container. Missing, hidden, and repeated targets have no section.
-function getSections({ doc, entries, container }: GetSectionsParams) {
+function getSections({
+  doc,
+  entries,
+  container,
+}: GetSectionsParams): TocSectionsResult {
   const win = getWindow(doc);
   const scroller = container ?? doc.scrollingElement ?? doc.documentElement;
   // Rects are in viewport pixels, like the scroll lengths of the page. An
@@ -209,13 +213,15 @@ function getSections({ doc, entries, container }: GetSectionsParams) {
   return { sections, contentEnd, height };
 }
 
-interface GetSpyStateParams {
+// The sections of the links, measured relative to the top of the scroll
+// container.
+interface TocSectionsResult {
   sections: (TocSection | null)[];
   contentEnd: number;
   height: number;
 }
 
-function getSpyState({ sections, contentEnd, height }: GetSpyStateParams) {
+function getSpyState({ sections, contentEnd, height }: TocSectionsResult) {
   const state: TocSpyState = { current: -1, first: -1, last: -1 };
   let passed = false;
   for (let i = 0; i < sections.length; i++) {
@@ -278,22 +284,83 @@ function getOwnScrollBox(element: HTMLElement, headings: Element | null) {
   return null;
 }
 
+// Returns the index of the nearest section before or after the one at the
+// index, skipping the sections beside it in the same row, or -1.
+function getAdjacentSection(
+  sections: (TocSection | null)[],
+  index: number,
+  step: 1 | -1,
+) {
+  const section = sections[index];
+  if (!section) return -1;
+  for (let i = index + step; i >= 0 && i < sections.length; i += step) {
+    const other = sections[i];
+    if (!other) continue;
+    if (Math.abs(other.top - section.top) <= 1) continue;
+    return i;
+  }
+  return -1;
+}
+
+// Returns the index of the last section in the direction of the step that sits
+// in the same row as the one at the index, such as the first heading of a row
+// of cards going back.
+function getRowEdge(
+  sections: (TocSection | null)[],
+  index: number,
+  step: 1 | -1,
+) {
+  const section = sections[index];
+  if (!section) return index;
+  let edge = index;
+  for (let i = index + step; i >= 0 && i < sections.length; i += step) {
+    const other = sections[i];
+    if (!other) continue;
+    if (Math.abs(other.top - section.top) > 1) break;
+    edge = i;
+  }
+  return edge;
+}
+
+// Returns the index of the section that is current in the row of the one at the
+// index, as `getSpyState` picks it: the heading that the URL hash points to, or
+// else the first heading of the row.
+function getRowCurrent(sections: (TocSection | null)[], index: number) {
+  const first = getRowEdge(sections, index, -1);
+  const last = getRowEdge(sections, index, 1);
+  for (let i = first; i <= last; i++) {
+    if (sections[i]?.hashed) return i;
+  }
+  return first;
+}
+
+// Returns how far the travel is along the length, from 0 to 1. With no length
+// to travel, the travel is complete.
+function getProgress(travel: number, length: number) {
+  if (length <= 0) return 1;
+  return Math.min(1, Math.max(0, travel / length));
+}
+
+function interpolate(from: number, to: number, progress: number) {
+  return from + (to - from) * progress;
+}
+
 interface KeepInViewParams {
   box: HTMLElement;
   /** The current link, which stays in view. */
   link: HTMLElement;
-  /** The element whose top comes into view, such as the label. */
-  start: Element;
-  /** The last row to bring into view, such as the last section on screen. */
-  end: Element;
+  /** Where the rows to bring into view start, in viewport pixels. */
+  top: number;
+  /** Where the rows to bring into view end, in viewport pixels. */
+  bottom: number;
 }
 
-// Scrolls only the box of a long list so the rows from the start element to the
-// end element stay in view. When they don't fit, the current link wins.
-// Scrolling the link into view could also scroll the page and cancel its smooth
-// scrolling. The scroll padding of the box, such as room for a sticky label,
-// widens the space kept around the rows.
-function keepInView({ box, link, start, end }: KeepInViewParams) {
+// Scrolls only the box of a long list so the rows from the top to the bottom
+// stay in view. When they don't fit, the current link wins. Scrolling the link
+// into view could also scroll the page and cancel its smooth scrolling. The
+// scroll padding of the box, such as room for a sticky label, widens the space
+// kept around the rows.
+function keepInView({ box, link, top, bottom }: KeepInViewParams) {
   if (!isVisible(link)) return;
   const win = getWindow(box);
   const style = win.getComputedStyle(box);
@@ -311,28 +378,27 @@ function keepInView({ box, link, start, end }: KeepInViewParams) {
   const zoom = box.currentCSSZoom || 1;
   const boxTop = box.getBoundingClientRect().top + box.clientTop * zoom;
   const linkRect = link.getBoundingClientRect();
-  // A sticky start element stays at the top of the box, so the link can be
-  // above it.
-  const startTop = Math.min(start.getBoundingClientRect().top, linkRect.top);
-  const endBottom = Math.max(
-    end.getBoundingClientRect().bottom,
-    linkRect.bottom,
-  );
-  const top = (startTop - boxTop) / zoom;
-  const bottom = (endBottom - boxTop) / zoom;
+  const linkTop = (linkRect.top - boxTop) / zoom;
+  const linkBottom = (linkRect.bottom - boxTop) / zoom;
+  const rowsTop = Math.min((top - boxTop) / zoom, linkTop);
+  const rowsBottom = Math.max((bottom - boxTop) / zoom, linkBottom);
   let delta = 0;
-  if (top < marginTop) {
-    delta = top - marginTop;
-  } else if (bottom > height - marginBottom) {
+  if (rowsTop < marginTop) {
+    delta = rowsTop - marginTop;
+  } else if (rowsBottom > height - marginBottom) {
     // The end comes into view only as far as the start stays in view.
-    delta = Math.min(top - marginTop, bottom - height + marginBottom);
+    delta = Math.min(rowsTop - marginTop, rowsBottom - height + marginBottom);
   }
+  // The rows can start above the current link, so the link stays in view on its
+  // own, and its top wins when it doesn't fit.
+  delta = Math.max(delta, linkBottom - height + marginBottom);
+  delta = Math.min(delta, linkTop - marginTop);
   if (!delta) return;
-  const reduced = win.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  box.scrollTo({
-    top: box.scrollTop + delta,
-    behavior: reduced ? "instant" : "smooth",
-  });
+  // The box follows the headings on every frame, which already moves it
+  // smoothly. A smooth scroll would run ahead of the main thread while the page
+  // scrolls fast, and restarting it from the older scroll position of the main
+  // thread would jump the rows back.
+  box.scrollTo({ top: box.scrollTop + delta, behavior: "instant" });
 }
 
 function sortEntries(entries: Map<string, TocEntry>) {
@@ -418,10 +484,14 @@ function useTocSpy({ rootRef, barRange, onCurrentChange }: UseTocSpyParams) {
       barRange.setRange({ first, last });
     };
 
+    const getRowRect = (index: number) => {
+      return entries[index]?.link.current?.getBoundingClientRect();
+    };
+
     // Keeps the rows of the sections on screen in view in a list that scrolls
     // by itself. Before the first section, the list shows its start, as at the
     // first link, which also brings the label above it into view.
-    const keepRangeInView = (spy: TocSpyState) => {
+    const keepRangeInView = (spy: TocSpyState, result: TocSectionsResult) => {
       // Without headings, no box is known to leave the page alone.
       if (!headings) return;
       const index = Math.max(spy.current, 0);
@@ -431,18 +501,62 @@ function useTocSpy({ rootRef, barRange, onCurrentChange }: UseTocSpyParams) {
       // the root.
       const box = getOwnScrollBox(link, headings);
       if (!box) return;
-      const start = index === 0 ? root.firstElementChild : null;
-      const end = entries[spy.last]?.link.current;
-      keepInView({ box, link, start: start ?? link, end: end ?? link });
+      const { sections, contentEnd, height } = result;
+      const linkRect = link.getBoundingClientRect();
+      const label = index === 0 ? root.firstElementChild : null;
+      const labelTop = label?.getBoundingClientRect().top ?? linkRect.top;
+      // The rows start at the previous row, or the label, and slide to the
+      // current row as the line passes through the current section. So the rows
+      // move with the page instead of a row at a time, and they still start at
+      // the previous row when the current one changes.
+      let top = Math.min(labelTop, linkRect.top);
+      const current = sections[spy.current];
+      if (current) {
+        // The rows start where they ended in the previous row, at the heading
+        // that was current there.
+        const previousIndex = getAdjacentSection(sections, spy.current, -1);
+        const previous = getRowCurrent(sections, previousIndex);
+        const next = sections[getAdjacentSection(sections, spy.current, 1)];
+        const from = getRowRect(previous)?.top ?? top;
+        const length = (next?.top ?? contentEnd) - current.top;
+        const progress = getProgress(current.line - current.top, length);
+        top = interpolate(from, linkRect.top, progress);
+      }
+      // The rows end at the last section on screen, and slide to the row of the
+      // next section as it comes from the bottom.
+      let bottom = linkRect.bottom;
+      const last = sections[spy.last];
+      const lastRect = getRowRect(spy.last);
+      if (last && lastRect) {
+        // The headings of the next row come on screen together, so the rows
+        // slide to the last one.
+        const afterIndex = getAdjacentSection(sections, spy.last, 1);
+        const after = sections[afterIndex];
+        const afterRect = getRowRect(getRowEdge(sections, afterIndex, 1));
+        bottom = lastRect.bottom;
+        if (after && afterRect) {
+          const length = after.top - last.top;
+          const progress = getProgress(height - last.top, length);
+          bottom = interpolate(lastRect.bottom, afterRect.bottom, progress);
+        }
+      }
+      keepInView({ box, link, top, bottom });
     };
 
-    const update = () => {
+    // With `follow`, the list follows the headings even when the state stays
+    // the same, which keeps it moving with the page.
+    const update = (follow: boolean) => {
       const result = getSections({ doc, entries, container });
       const next = getSpyState(result);
-      if (state && isSameSpyState(state, next)) return;
-      state = next;
-      applyRange(next);
-      keepRangeInView(next);
+      const changed = !state || !isSameSpyState(state, next);
+      if (changed) {
+        state = next;
+        applyRange(next);
+      }
+      if (changed || follow) {
+        keepRangeInView(next, result);
+      }
+      if (!changed) return;
       const id = ids[next.current] ?? null;
       if (id === currentIdRef.current) return;
       currentIdRef.current = id;
@@ -450,13 +564,33 @@ function useTocSpy({ rootRef, barRange, onCurrentChange }: UseTocSpyParams) {
       onChange(entries[next.current]?.href ?? null);
     };
 
+    let follow = false;
+
     const scheduleUpdate = () => {
       if (frame) return;
       frame = win.requestAnimationFrame(() => {
         frame = 0;
+        const shouldFollow = follow;
+        follow = false;
         observeContent();
-        update();
+        update(shouldFollow);
       });
+    };
+
+    const scheduleFollow = () => {
+      follow = true;
+      scheduleUpdate();
+    };
+
+    // Only scrolling that moves the headings moves the list, so a long list
+    // still scrolls by hand.
+    const onScroll = (event: Event) => {
+      const { target } = event;
+      // Event targets can come from another realm, which this check allows.
+      if (isNode(target) && headings && target.contains(headings)) {
+        follow = true;
+      }
+      scheduleUpdate();
     };
 
     // Content that loads or wraps moves the headings without a scroll. It can
@@ -501,7 +635,7 @@ function useTocSpy({ rootRef, barRange, onCurrentChange }: UseTocSpyParams) {
     const refresh = () => {
       updateContainer();
       state = null;
-      update();
+      update(true);
       scheduleUpdate();
     };
 
@@ -538,23 +672,23 @@ function useTocSpy({ rootRef, barRange, onCurrentChange }: UseTocSpyParams) {
 
     // Scroll events don't bubble, so a capturing listener on the document hears
     // the page and any scroll container.
-    doc.addEventListener("scroll", scheduleUpdate, {
+    doc.addEventListener("scroll", onScroll, {
       capture: true,
       passive: true,
     });
     doc.addEventListener("transitionend", onAnimationEnd, true);
     doc.addEventListener("animationend", onAnimationEnd, true);
-    win.addEventListener("resize", scheduleUpdate);
+    win.addEventListener("resize", scheduleFollow);
     win.addEventListener("hashchange", scheduleUpdate);
 
     return () => {
       win.cancelAnimationFrame(frame);
       observer.disconnect();
       contentObserver.disconnect();
-      doc.removeEventListener("scroll", scheduleUpdate, { capture: true });
+      doc.removeEventListener("scroll", onScroll, { capture: true });
       doc.removeEventListener("transitionend", onAnimationEnd, true);
       doc.removeEventListener("animationend", onAnimationEnd, true);
-      win.removeEventListener("resize", scheduleUpdate);
+      win.removeEventListener("resize", scheduleFollow);
       win.removeEventListener("hashchange", scheduleUpdate);
     };
   }, [rootRef, barRange, version, onChange]);

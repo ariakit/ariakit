@@ -76,6 +76,62 @@ function isInList(link: Locator) {
   });
 }
 
+// Scrolls the article from one heading to another in small steps, as a wheel
+// would, and reads the scroll position of the list after each step. The list
+// must move in the frame that updates it and hold still in the next frames,
+// because an animation of the list runs ahead of the main thread while the page
+// scrolls fast, and restarting it jumps the rows back. It must also never move
+// back or jump half a row at once.
+function followArticle(nav: Locator, from: string, to: string) {
+  return nav.evaluate(
+    async (element, { from, to }) => {
+      const drifts: string[] = [];
+      const backs: string[] = [];
+      const jumps: string[] = [];
+      const result = { steps: 0, distance: 0, drifts, backs, jumps };
+      const article = document.getElementById(from)?.closest("article");
+      const end = document.getElementById(to);
+      const row = element.querySelector("a")?.offsetHeight ?? 0;
+      if (!article) return result;
+      if (!end) return result;
+      const frame = () => new Promise(requestAnimationFrame);
+      // The scroll position that puts the last heading at the top.
+      const last =
+        article.scrollTop +
+        end.getBoundingClientRect().top -
+        article.getBoundingClientRect().top;
+      const start = element.scrollTop;
+      let previous = start;
+      for (let top = article.scrollTop; top <= last; top += 16) {
+        article.scrollTop = top;
+        // The scroll event schedules the update for the next frame.
+        await frame();
+        await frame();
+        const moved = element.scrollTop;
+        // A smooth scroll of the list would still move in these frames.
+        await frame();
+        await frame();
+        const settled = element.scrollTop;
+        const step = `${previous} -> ${moved} -> ${settled} at ${top}`;
+        if (moved !== settled) {
+          drifts.push(step);
+        }
+        if (settled < previous - 0.5) {
+          backs.push(step);
+        }
+        if (settled - previous > row / 2) {
+          jumps.push(step);
+        }
+        previous = settled;
+        result.steps++;
+      }
+      result.distance = previous - start;
+      return result;
+    },
+    { from, to },
+  );
+}
+
 withFramework(import.meta.dirname, async ({ test, query }) => {
   test("glides the bar as one bar through every piece", async ({ page, q }) => {
     // Jump from the top to the end, so the range moves far, then read the
@@ -287,6 +343,97 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         }),
       )
       .toBe(true);
+  });
+
+  test("moves a long list with the headings, not on its own", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Sticky label");
+    await page.evaluate(() => {
+      document.getElementById("chapter-1")?.scrollIntoView({ block: "start" });
+    });
+    await test
+      .expect(query(nav).link("Chapter 1"))
+      .toHaveAttribute("aria-current", "location");
+    const result = await followArticle(nav, "chapter-1", "chapter-8");
+    test.expect(result.steps).toBeGreaterThan(10);
+    test.expect(result.distance).toBeGreaterThan(0);
+    test.expect(result.drifts).toEqual([]);
+    test.expect(result.backs).toEqual([]);
+    test.expect(result.jumps).toEqual([]);
+  });
+
+  test("follows headings side by side without jumping a row", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Scrolling cards");
+    await page.evaluate(() => {
+      document
+        .getElementById("side-apples")
+        ?.scrollIntoView({ block: "start" });
+    });
+    await test
+      .expect(query(nav).link("Apples"))
+      .toHaveAttribute("aria-current", "location");
+    const result = await followArticle(nav, "side-apples", "side-grapes");
+    test.expect(result.steps).toBeGreaterThan(10);
+    test.expect(result.distance).toBeGreaterThan(0);
+    test.expect(result.drifts).toEqual([]);
+    test.expect(result.backs).toEqual([]);
+    test.expect(result.jumps).toEqual([]);
+  });
+
+  test("follows a linked heading side by side without jumping a row", async ({
+    q,
+  }) => {
+    // The linked heading is the second one of its row, which stays current
+    // until the next row passes.
+    const nav = query(q.navigation("Scrolling cards"));
+    await nav.link("Bananas").click();
+    await test
+      .expect(nav.link("Bananas"))
+      .toHaveAttribute("aria-current", "location");
+    const result = await followArticle(
+      q.navigation("Scrolling cards"),
+      "side-bananas",
+      "side-grapes",
+    );
+    test.expect(result.steps).toBeGreaterThan(10);
+    test.expect(result.distance).toBeGreaterThan(0);
+    test.expect(result.drifts).toEqual([]);
+    test.expect(result.backs).toEqual([]);
+    test.expect(result.jumps).toEqual([]);
+  });
+
+  test("keeps a long list where it was scrolled by hand", async ({
+    page,
+    q,
+  }) => {
+    const nav = q.navigation("Sticky label");
+    const getScrollTop = () => nav.evaluate((element) => element.scrollTop);
+    await page.evaluate(() => {
+      document.getElementById("chapter-10")?.scrollIntoView({ block: "start" });
+    });
+    await test
+      .expect(query(nav).link("Chapter 10"))
+      .toHaveAttribute("aria-current", "location");
+    await test.expect.poll(getScrollTop).toBeGreaterThan(0);
+    await nav.hover();
+    await page.mouse.wheel(0, -(await getScrollTop()));
+    await test.expect.poll(getScrollTop).toBe(0);
+    // The list would move back in the update frame after its own scroll event,
+    // which no state marks.
+    await flushFrames(page);
+    test.expect(await getScrollTop()).toBe(0);
+    // Scrolling the article brings the rows on screen back. A hover over the
+    // article would scroll the page first, which also moves the headings, so
+    // only the article scrolls here, as a wheel over it would.
+    await q.article("Article").evaluate((element) => {
+      element.scrollTop += 8;
+    });
+    await test.expect.poll(getScrollTop).toBeGreaterThan(0);
   });
 
   test("leaves a box alone when no link has a heading", async ({ page, q }) => {
