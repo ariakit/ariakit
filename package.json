@@ -73,7 +73,7 @@
     "oxlint-plugin-comment-reflow": "0.2.1",
     "oxlint-tailwindcss": "1.17.2",
     "oxlint-tsgolint": "7.0.2007",
-    "pkg-pr-new": "0.0.93",
+    "pkg-pr-new": "0.0.94",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "rimraf": "6.1.4",
