@@ -26,22 +26,16 @@ import {
 import type { ComponentProps } from "react";
 import { ExampleCard } from "#app/components/example-card.react.tsx";
 
-// MDX renders plain elements. These map them to Ariakit UI components so page
-// content matches the site shell. The space above a heading follows its text
-// size, so a larger heading gets more space. Headings clear the sticky header
-// when a fragment link scrolls to them.
-const headingClass = "mt-[1.5em] scroll-mt-24";
-
 function H2(props: ComponentProps<"h2">) {
-  return <Heading render={<h2 />} className={headingClass} {...props} />;
+  return <Heading render={<h2 />} {...props} />;
 }
 
 function H3(props: ComponentProps<"h3">) {
-  return <Heading render={<h3 />} className={headingClass} {...props} />;
+  return <Heading render={<h3 />} {...props} />;
 }
 
 function H4(props: ComponentProps<"h4">) {
-  return <Heading render={<h4 />} className={headingClass} {...props} />;
+  return <Heading render={<h4 />} {...props} />;
 }
 
 // Absolute and protocol-relative URLs leave the site. Relative paths,
