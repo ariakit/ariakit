@@ -121,6 +121,12 @@ const sideBySide: Entry[] = [
   { slug: "side-grapes", text: "Grapes" },
 ];
 
+// Topics of an article with uneven scroll margins.
+const margins: Entry[] = Array.from({ length: 8 }, (_, index) => ({
+  slug: `margins-${index + 1}`,
+  text: `Topic ${index + 1}`,
+}));
+
 type LinkProps = Omit<TocLinkProps, "href">;
 
 function Entries({ entries, link }: { entries: Entry[]; link?: LinkProps }) {
@@ -358,6 +364,41 @@ function SideBySide() {
         <p className="h-64">The article ends below the rows.</p>
       </Frame>
       <Contents label="Side by side" entries={sideBySide} />
+      {/* The same rows scroll in a box shorter than the list, so it follows
+          the rows of headings as the article scrolls. */}
+      <Contents
+        label="Scrolling cards"
+        entries={sideBySide}
+        className="max-h-32 w-40 overflow-y-auto"
+      />
+    </div>
+  );
+}
+
+// Every other heading has a large scroll margin, so it becomes current well
+// before it reaches the activation line of the heading above it. The list
+// scrolls in a box shorter than its rows.
+function UnevenMargins() {
+  return (
+    <div className="flex flex-wrap items-start gap-6">
+      <Frame
+        render={<article aria-label="Article with uneven scroll margins" />}
+        $layer
+        $border
+        $rounded="xl"
+        $p={5}
+        className="h-48 w-80 overflow-auto scroll-pt-5"
+      >
+        <Prose className="[&>h2:nth-of-type(even)]:scroll-mt-20">
+          <Sections entries={margins} />
+          <p className="h-64">The article ends below the topics.</p>
+        </Prose>
+      </Frame>
+      <Contents
+        label="Uneven margins"
+        entries={margins}
+        className="max-h-32 w-40 overflow-y-auto"
+      />
     </div>
   );
 }
@@ -458,6 +499,7 @@ export default function Example() {
       <Zoomed />
       <CollapsedSection />
       <SideBySide />
+      <UnevenMargins />
     </div>
   );
 }
