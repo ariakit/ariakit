@@ -1,4 +1,4 @@
-import "./style.css";
+import "#app/styles/ariakit-tailwind-sandbox.css";
 
 // Each longhand set does nothing on its own: the mix values need `ak-layer-mix`
 // on the same element, and the contrast amount needs `ak-layer-contrast`. Reuse

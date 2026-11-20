@@ -1,4 +1,4 @@
-import "./style.css";
+import "#app/styles/ariakit-tailwind-sandbox.css";
 
 const panel =
   "ak-layer ak-frame ak-frame-2xl/4 ak-frame-border flex h-48 w-64 flex-col";

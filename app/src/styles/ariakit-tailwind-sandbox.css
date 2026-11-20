@@ -1,0 +1,45 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+
+/* The shared CSS entry point of the focused ariakit-tailwind-* sandboxes. It
+   compiles the utilities of all these sandboxes, so each one imports this file
+   instead of a local style.css. A sandbox that needs its own build, such as
+   one with a custom theme, keeps a local style.css with the same setup and
+   only @source "./index.react.tsx", and gets an @source not line below. The
+   main ariakit-tailwind sandbox keeps its own build too, so its performance
+   tests don't measure the utilities of the focused sandboxes.
+
+   Keep this setup in this file. The source plugin follows local CSS imports,
+   and Astro would then load an imported local CSS file again in development as
+   a separate stylesheet. */
+@import "tailwindcss" source(none);
+@import "@ariakit/tailwind";
+
+@theme {
+  --spacing: 0.25rem;
+  --spacing-px: 1px;
+  --radius: 0.25rem;
+}
+
+@theme inline {
+  --radius-none: 0;
+  --radius-xs: calc(var(--radius) * 0.5);
+  --radius-sm: calc(var(--radius) * 1);
+  --radius-md: calc(var(--radius) * 1.5);
+  --radius-lg: calc(var(--radius) * 2);
+  --radius-xl: calc(var(--radius) * 3);
+  --radius-2xl: calc(var(--radius) * 4);
+  --radius-3xl: calc(var(--radius) * 6);
+  --radius-4xl: calc(var(--radius) * 8);
+  --radius-full: calc(var(--radius) * infinity);
+}
+
+@source "../sandbox/ariakit-tailwind-*/*.tsx";
+@source not "../sandbox/ariakit-tailwind-7466";
+@source not "../sandbox/ariakit-tailwind-frame-bordering";

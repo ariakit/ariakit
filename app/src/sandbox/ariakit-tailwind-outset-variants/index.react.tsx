@@ -1,4 +1,4 @@
-import "./style.css";
+import "#app/styles/ariakit-tailwind-sandbox.css";
 
 // The bottom border shows which ak-outset-* appearance variant matched: 3px for
 // light and 2px for dark, like a bar that is thicker on a light surface. The

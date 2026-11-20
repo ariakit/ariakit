@@ -1,4 +1,4 @@
-import "./style.css";
+import "#app/styles/ariakit-tailwind-sandbox.css";
 
 interface FrameCoverCardProps {
   coverPosition: "start" | "end";

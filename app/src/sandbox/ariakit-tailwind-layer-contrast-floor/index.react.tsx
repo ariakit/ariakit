@@ -1,4 +1,4 @@
-import "./style.css";
+import "#app/styles/ariakit-tailwind-sandbox.css";
 
 const FILL = "ak-layer h-6 w-32";
 const BRAND = "ak-layer-[oklch(56.7%_0.1546_248.5156)]";
