@@ -8,7 +8,7 @@ import { button } from "@ariakit/ui/styles/button";
 import { link } from "@ariakit/ui/styles/link";
 import { popover } from "@ariakit/ui/styles/popover";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
-import type { ReactNode, Ref } from "react";
+import type { ComponentPropsWithoutRef, ReactNode, Ref } from "react";
 import { useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -320,6 +320,75 @@ function ShadowOverlayNav() {
   );
 }
 
+interface EmbeddedFrameProps extends ComponentPropsWithoutRef<"iframe"> {
+  children: ReactNode;
+}
+
+/** A same-origin frame with content from this React tree. */
+function EmbeddedFrame({ children, ...props }: EmbeddedFrameProps) {
+  const [body, setBody] = useState<HTMLElement | null>(null);
+  const ref = useCallback((element: HTMLIFrameElement | null) => {
+    setBody(element?.contentDocument?.body ?? null);
+  }, []);
+  return (
+    <>
+      <iframe ref={ref} {...props} />
+      {body && createPortal(children, body)}
+    </>
+  );
+}
+
+const pages = ["Home", "Docs", "Blog", "About"];
+
+interface FrameNeighborNavProps {
+  label: string;
+  frame: ReactNode;
+}
+
+/** A list that touches a frame that can't scroll. */
+function FrameNeighborNav({ label, frame }: FrameNeighborNavProps) {
+  return (
+    <div className="flex items-start">
+      <ak.HovercardProvider placement="bottom">
+        <nav aria-label={label} className="w-64">
+          <ul className="flex flex-col gap-8">
+            {pages.map((page) => (
+              <li key={page}>
+                <ak.HovercardAnchor
+                  href={`#${page.toLowerCase()}`}
+                  hoverOnScroll
+                  {...link.jsx({ className: "block" })}
+                >
+                  {page}
+                </ak.HovercardAnchor>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <SharedHovercard />
+      </ak.HovercardProvider>
+      {frame}
+    </div>
+  );
+}
+
+/** A hovercard that previews a page in a frame. */
+function FramePreviewLink() {
+  return (
+    <ak.HovercardProvider placement="bottom-start">
+      <ak.HovercardAnchor href="#embed" hoverOnScroll {...link.jsx()}>
+        Embed
+      </ak.HovercardAnchor>
+      <ak.Hovercard {...popover.jsx({ className: "gap-2" })}>
+        <ak.HovercardHeading>Embed</ak.HovercardHeading>
+        <EmbeddedFrame title="Embed preview" className="h-40 w-64 border">
+          <p>Embed preview</p>
+        </EmbeddedFrame>
+      </ak.Hovercard>
+    </ak.HovercardProvider>
+  );
+}
+
 interface SectionProps {
   title: string;
   children: ReactNode;
@@ -356,6 +425,41 @@ export default function Example() {
         </Section>
         <Section title="Hovercard in a shadow root">
           <ShadowOverlayNav />
+        </Section>
+        <Section title="Anchors next to a frame">
+          <FrameNeighborNav
+            label="Pages"
+            frame={
+              <EmbeddedFrame
+                title="Embedded page"
+                className="h-80 w-96 border-0"
+              >
+                <p>Embedded page</p>
+              </EmbeddedFrame>
+            }
+          />
+        </Section>
+        <Section title="Anchors next to a cross-origin frame">
+          <FrameNeighborNav
+            label="Sites"
+            frame={
+              // A sandboxed frame without allow-same-origin has an opaque
+              // origin, like a frame from another site.
+              <iframe
+                title="External page"
+                sandbox=""
+                srcDoc="<p>External page</p>"
+                className="h-80 w-96 border-0"
+              />
+            }
+          />
+        </Section>
+        <Section title="Hovercard with a frame">
+          {/* The room under the link holds the hovercard, so a small page
+              scroll doesn't move another anchor under its edge. */}
+          <div className="h-72">
+            <FramePreviewLink />
+          </div>
         </Section>
         <Section title="Anchors inside anchors">
           <Inbox />
