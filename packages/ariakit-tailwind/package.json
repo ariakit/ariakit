@@ -36,7 +36,7 @@
     "build": "node src/build.ts"
   },
   "devDependencies": {
-    "csstype": "3.2.3",
+    "csstype": "3.2.4",
     "tailwindcss": "4.3.5"
   },
   "peerDependencies": {
