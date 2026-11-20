@@ -63,6 +63,7 @@ import {
   GeometryScenario,
   NestedScenario,
   ReadingScenario,
+  TransparentScenario,
 } from "./scenarios.react.tsx";
 
 /**
@@ -86,6 +87,7 @@ const scenarios = {
   reading: "Reading size",
   areas: "Content areas",
   page: "Page box",
+  transparent: "Transparent sidebar",
 } as const;
 
 type ScenarioId = keyof typeof scenarios;
@@ -948,6 +950,7 @@ const scenarioComponents = {
   reading: () => <ReadingScenario controls={<ScenarioControls />} />,
   areas: () => <AreasScenario controls={<ScenarioControls />} />,
   page: () => <PageScenario controls={<ScenarioControls />} />,
+  transparent: () => <TransparentScenario controls={<ScenarioControls />} />,
 } satisfies Record<ScenarioId, () => ReactNode>;
 
 export default function ShellExamples() {

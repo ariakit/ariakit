@@ -27,6 +27,8 @@ import {
   ShellMainBody,
   ShellSidebar,
   ShellSidebarBody,
+  ShellSidebarFooter,
+  ShellSidebarHeader,
 } from "@ariakit/ui/components/shell.ariakit.react";
 import { useId, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
@@ -629,5 +631,81 @@ export function NestedScenario({ controls }: ScenarioProps) {
           document.body,
         )}
     </>
+  );
+}
+
+/**
+ * An app window over a wallpaper. The start sidebar is transparent, so the
+ * wallpaper shows through all of its parts. The end sidebar paints a lighter
+ * layer, and its header and footer show that same surface. Both sidebars stack
+ * above main: the ring of the panel in main reaches into the start sidebar
+ * column, and main runs under the end sidebar.
+ */
+export function TransparentScenario({ controls }: ScenarioProps) {
+  return (
+    // No layer paints the gradient, so a part that paints its own layer shows
+    // as a solid block over it.
+    <div className="min-h-dvh bg-linear-to-b from-orange-200 to-sky-200 dark:from-orange-900 dark:to-sky-900">
+      <Shell $size="md">
+        <ShellHeader>
+          <ShellStart>Transparent sidebar</ShellStart>
+          <ShellEnd>{controls}</ShellEnd>
+        </ShellHeader>
+        <ShellSidebar
+          $width="xs"
+          $show
+          $layer="transparent"
+          $border={false}
+          aria-label="Workspace"
+          landmark="nav"
+        >
+          <ShellSidebarHeader $border={false}>Workspace</ShellSidebarHeader>
+          <ShellSidebarBody>
+            <ul className="grid gap-2">
+              <li>
+                <a href="#transparent-panel" tabIndex={0}>
+                  Home
+                </a>
+              </li>
+              <li>
+                <a href="#transparent-panel" tabIndex={0}>
+                  Projects
+                </a>
+              </li>
+            </ul>
+          </ShellSidebarBody>
+          <ShellSidebarFooter>Workspace footer</ShellSidebarFooter>
+        </ShellSidebar>
+        <ShellMain $size="auto">
+          {/* A direct child of main, unlike the main body, doesn't clip its
+              ring at the edges of main. */}
+          <Frame
+            id="transparent-panel"
+            $lighten
+            $border={3}
+            $borderType="ring"
+            $edge="brand"
+            $edgeRaw
+            $rounded="xl"
+            $p={3}
+            className="col-span-full row-span-full h-[60rem]"
+          >
+            A panel whose ring reaches into the start sidebar column
+          </Frame>
+        </ShellMain>
+        <ShellSidebar
+          $side="end"
+          $width="xs"
+          $show
+          $lighten
+          aria-label="Details"
+          landmark="aside"
+        >
+          <ShellSidebarHeader>Details</ShellSidebarHeader>
+          <ShellSidebarBody>Painted sidebar body</ShellSidebarBody>
+          <ShellSidebarFooter>Details footer</ShellSidebarFooter>
+        </ShellSidebar>
+      </Shell>
+    </div>
   );
 }

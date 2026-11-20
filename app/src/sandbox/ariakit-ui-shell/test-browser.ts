@@ -458,8 +458,11 @@ withDeferredVisualLoad(import.meta.dirname, async ({ test, query }) => {
       });
     });
 
-    // "at wide and narrow widths" above already captures the dashboard.
-    for (const scenario of ["chat", "marketing", "settings", "bar"]) {
+    // "at wide and narrow widths" above already captures the dashboard. The
+    // transparent scenario shows whether the header and footer of a transparent
+    // sidebar paint over the gradient and the ring of the panel in main.
+    const scenarios = ["chat", "marketing", "settings", "bar", "transparent"];
+    for (const scenario of scenarios) {
       test(`${scenario} @visual`, async ({ page, q, visual }) => {
         await page.setViewportSize({ width: 1280, height: 800 });
         await forEachColorScheme(page, async (colorScheme) => {
