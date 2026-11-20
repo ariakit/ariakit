@@ -265,6 +265,8 @@ const getNavigation = async () => {
 };
 
 const navigation = await getNavigation();
+// The Styles navigation is short, so it shows all its groups at once.
+const collapsibleNavigation = section !== "styles";
 const hasSidebar = sidebar && navigation.length > 0;
 // Only the sidebar shows the example card, so the drawer links leave out the
 // examples, which would only add to the page size.
@@ -508,18 +510,26 @@ const drawerNavigation = navigation.map((group) => ({
               className="text-sm"
             >
               <PanelScript />
-              {/* The navigation fills the body through its island wrapper,
-                  which takes the display of its parent. The wrapper must not
-                  grow past the body, so the open group scrolls its links. */}
-              <ShellSidebarBody className="flex flex-col [&>astro-island]:min-h-0 [&>astro-island]:flex-1">
+              {/* Collapsible navigation fills the body through its island
+                  wrapper, which takes the display of its parent. The wrapper
+                  must not grow past the body, so the open group scrolls its
+                  links. Other navigation lets the body scroll its links. */}
+              <ShellSidebarBody
+                className={
+                  collapsibleNavigation
+                    ? "flex flex-col [&>astro-island]:min-h-0 [&>astro-island]:flex-1"
+                    : undefined
+                }
+              >
                 {/* The navigation stays across the pages of a section, which
                     list the same links. */}
                 <AppNavigation
                   client:load
                   transition:persist={`site-navigation-${section}`}
                   groups={navigation}
+                  collapsible={collapsibleNavigation}
                   {pathname}
-                  fill
+                  fill={collapsibleNavigation}
                 />
               </ShellSidebarBody>
             </ShellSidebar>
@@ -553,6 +563,7 @@ const drawerNavigation = navigation.map((group) => ({
               transition:persist={`drawer-navigation-${section ?? "site"}`}
               links={drawerSections}
               groups={drawerNavigation}
+              collapsible={collapsibleNavigation}
               {pathname}
             />
             <div class="grid gap-6 px-3 pt-6 pb-3">

@@ -65,25 +65,31 @@ export interface AppNavigationProps {
    */
   links?: AppLink[];
   /**
+   * Whether each group shows in a disclosure. When `false`, all groups show
+   * their links under their labels. Defaults to `true`.
+   */
+  collapsible?: boolean;
+  /**
    * Whether the navigation fills the height of its flex column container. The
    * open group then takes the space that the closed groups leave, and scrolls
-   * its links when they need more space.
+   * its links when they need more space. Use it only with collapsible groups.
    */
   fill?: boolean;
 }
 
 /**
- * The site's navigation links, with each group in a disclosure. Only one group
- * opens at a time, starting with the group of the current page. Render it
- * inside a labelled navigation landmark, such as a `ShellSidebar` rendered as
- * `nav`. When the mouse pointer rests on a link with `examples`, a card next to
- * it shows them. The links share the card, which slides from one link to the
- * next.
+ * The site's navigation links, with each group in a disclosure by default. Only
+ * one group opens at a time, starting with the group of the current page.
+ * Render it inside a labelled navigation landmark, such as a `ShellSidebar`
+ * rendered as `nav`. When the mouse pointer rests on a link with `examples`, a
+ * card next to it shows them. The links share the card, which slides from one
+ * link to the next.
  */
 export function AppNavigation({
   groups: groupsProp,
   pathname,
   links,
+  collapsible = true,
   fill,
 }: AppNavigationProps) {
   const nextPathname = useNextPathname(pathname);
@@ -123,7 +129,14 @@ export function AppNavigation({
           ))}
         </NavList>
       )}
-      {groups.length > 0 && (
+      {!collapsible &&
+        groups.map((group) => (
+          <NavGroup key={group.label}>
+            <NavGroupLabel>{group.label}</NavGroupLabel>
+            <AppNavigationLinks links={group.links} />
+          </NavGroup>
+        ))}
+      {collapsible && groups.length > 0 && (
         <NavDisclosureGroup $fill={fill}>
           {groups.map((group) => (
             <NavDisclosure

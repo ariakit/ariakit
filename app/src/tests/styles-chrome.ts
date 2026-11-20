@@ -32,33 +32,56 @@ test("the main navigation lists Styles after Components", async ({
   await expect(main.link("Styles")).toHaveAttribute("aria-current", "page");
 });
 
-test("the site navigation opens the group of the Styles page", async ({
+test("the site navigation shows the Styles groups without disclosures", async ({
   page,
   q,
 }) => {
   await gotoAndSettle(page, "/tailwind/styles/getting-started/");
   const navigation = query(q.navigation("Site"));
-  await expect(navigation.button("Guides")).toHaveAttribute(
-    "aria-expanded",
-    "true",
-  );
-  await expect(navigation.button("Utilities")).toHaveAttribute(
-    "aria-expanded",
-    "false",
-  );
-  await expect(navigation.link("Getting started")).toHaveAttribute(
+  await expect(navigation.button()).toHaveCount(0);
+  const guides = query(navigation.group("Guides"));
+  const utilities = query(navigation.group("Utilities"));
+  await expect(guides.link("Getting started")).toHaveAttribute(
     "aria-current",
     "page",
   );
-  await navigation.button("Utilities").click();
-  await navigation.link("ak-layer").click();
+  await expect(utilities.link("ak-layer")).toBeVisible();
+  const sidebar = await q.navigation("Site").boundingBox();
+  const link = await utilities.link("ak-layer").boundingBox();
+  expect(sidebar).not.toBeNull();
+  expect(link).not.toBeNull();
+  if (!sidebar || !link) return;
+  // The links span the sidebar, so the space on each side of a link is the
+  // padding of the sidebar body.
+  const startSpace = link.x - sidebar.x;
+  const endSpace = sidebar.x + sidebar.width - (link.x + link.width);
+  expect(endSpace).toBeCloseTo(startSpace, -1);
+  await utilities.link("ak-layer").click();
   await expect(page).toHaveURL(/\/tailwind\/styles\/ak-layer\/$/);
-  const utilities = query(q.navigation("Site"));
-  await expect(utilities.button("Utilities")).toHaveAttribute(
-    "aria-expanded",
-    "true",
-  );
   await expect(utilities.link("ak-layer")).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  await expect(guides.link("Getting started")).not.toHaveAttribute(
+    "aria-current",
+  );
+});
+
+test("the phone menu shows the Styles groups without disclosures", async ({
+  page,
+  q,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await gotoAndSettle(page, "/tailwind/styles/ak-layer/");
+  await q.button("Open menu").click();
+  const menu = query(q.navigation("Menu"));
+  // The only button in the menu closes it.
+  await expect(menu.button()).toHaveCount(1);
+  await expect(menu.button("Close menu")).toBeVisible();
+  await expect(
+    query(menu.group("Guides")).link("Getting started"),
+  ).toBeInViewport();
+  await expect(query(menu.group("Utilities")).link("ak-layer")).toHaveAttribute(
     "aria-current",
     "page",
   );
