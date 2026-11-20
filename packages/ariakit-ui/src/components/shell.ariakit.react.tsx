@@ -39,7 +39,9 @@ export interface ShellProps
  * themselves by kind and side, so DOM order is free for reading order. A nested
  * shell takes the main cell of the shell around it. `$maxWidth` holds the
  * sidebars and main of a directly nested shell in a centered box, while the
- * bars keep the full width and line up their content areas with the box.
+ * bars keep the full width and line up their content areas with the box. A
+ * nested shell with `$center="outer"` keeps its content on the center of the
+ * outer shell, also when it's in a panel inside the outer `ShellMain`.
  * @example
  * <Shell>
  *   <ShellHeader>

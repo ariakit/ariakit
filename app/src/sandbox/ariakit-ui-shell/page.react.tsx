@@ -39,7 +39,7 @@ interface CheckboxProps {
   onChange: (checked: boolean) => void;
 }
 
-function Checkbox({ label, checked, onChange }: CheckboxProps) {
+export function Checkbox({ label, checked, onChange }: CheckboxProps) {
   return (
     <label>
       <input

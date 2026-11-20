@@ -138,6 +138,25 @@ export const shell = cv({
       ],
     },
     /**
+     * Sets what the content of this shell is centered on while main has free
+     * space. `shell` counts the sidebars of this shell. `outer` also counts the
+     * open sidebars of the outer shell, so a shell in a panel of the outer
+     * main, such as a chat with its own settings sidebar in a tab panel, keeps
+     * its content on the center of the outer shell. The outer shell is the
+     * shell around this one when this shell is directly inside it, or else the
+     * shell whose `ShellMain` holds it, through any wrappers. A shell with
+     * `outer` centers on that shell only, not on shells further out. Keep the
+     * same space between that main and this shell at both sides. The content
+     * column of `ShellMainBody` is already centered on the outer shell, so use
+     * `outer` for a shell that spans main, such as one in a panel or in
+     * `ShellFull`. In that main, the folds of this shell take the timing of the
+     * outer shell unless `$duration` sets its own. Defaults to `shell`.
+     */
+    $center: {
+      shell: "",
+      outer: "shell-center-outer",
+    },
+    /**
      * Sets the duration of sidebar folds and content compensation. Numbers are
      * milliseconds. Zero and reduced motion disable these animations.
      */
@@ -177,6 +196,7 @@ export const shell = cv({
   },
   defaultVariants: {
     $size: "auto",
+    $center: "shell",
     $layer: "transparent",
     $rounded: "var(--shell-radius)",
     $p: "none",
@@ -920,23 +940,26 @@ export const shellSidebarFooter = cv({
  * column reaches zero width. Each content grid animates its own lengths, and
  * the values derived from them do not inherit, so each animation frame restyles
  * the grids but not the content inside them. A `transition` utility on a main
- * header, intro, or body replaces this transition, so keep the slot spaces in
- * its transition properties.
+ * header, intro, or body replaces this transition, so keep the slot spaces and
+ * the outer spaces in its transition properties.
  */
 const slotSpaces = cx(
   "[--shell-start-1-space:calc(var(--shell-start-1-width)*var(--shell-start-1-open)*var(--shell-start-1-fit))]",
   "[--shell-start-2-space:calc(var(--shell-start-2-width)*var(--shell-start-2-open)*var(--shell-start-2-fit))]",
   "[--shell-end-1-space:calc(var(--shell-end-1-width)*var(--shell-end-1-open)*var(--shell-end-1-fit))]",
   "[--shell-end-2-space:calc(var(--shell-end-2-width)*var(--shell-end-2-open)*var(--shell-end-2-fit))]",
-  "transition-[--shell-start-1-space,--shell-start-2-space,--shell-end-1-space,--shell-end-2-space]",
+  // The open sidebars of the outer shell in a shell with `$center="outer"`.
+  // Other shells have none.
+  "[--shell-outer-start-space:var(--shell-outer-start,0px)] [--shell-outer-end-space:var(--shell-outer-end,0px)]",
+  "transition-[--shell-start-1-space,--shell-start-2-space,--shell-end-1-space,--shell-end-2-space,--shell-outer-start-space,--shell-outer-end-space]",
   "duration-(--shell-time) ease-(--shell-ease)",
   "[--shell-start-total:calc(max(0px,var(--shell-start-1-space))+max(0px,var(--shell-start-2-space)))]",
   "[--shell-end-total:calc(max(0px,var(--shell-end-1-space))+max(0px,var(--shell-end-2-space)))]",
 );
 
 const compensation = cx(
-  "[--shell-comp-end:max(0px,calc(var(--shell-start-total)-var(--shell-end-total)))]",
-  "[--shell-comp-start:max(0px,calc(var(--shell-end-total)-var(--shell-start-total)))]",
+  "[--shell-comp-end:max(0px,calc(var(--shell-start-total)+max(0px,var(--shell-outer-start-space))-var(--shell-end-total)-max(0px,var(--shell-outer-end-space))))]",
+  "[--shell-comp-start:max(0px,calc(var(--shell-end-total)+max(0px,var(--shell-outer-end-space))-var(--shell-start-total)-max(0px,var(--shell-outer-start-space))))]",
 );
 
 // Limit sidebar compensation to free space, but keep the minimum gutter. The
@@ -1036,6 +1059,9 @@ const sizedMain = cx(
 
 /**
  * The main landmark, sharing the shell columns and rows without containment.
+ * It's a style container named `shell-main`, which a shell inside it with
+ * `$center="outer"` queries. A container name of your own replaces that name,
+ * so keep `shell-main` in the list, such as `[container-name:shell-main_list]`.
  */
 export const shellMain = cv({
   class: [
@@ -1054,6 +1080,15 @@ export const shellMain = cv({
     "[.shell:not(.shell_*)>&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
     "[.shell_.shell:not(.shell_.shell_.shell)>&]:[--shell-below-b:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
     "[--scrollport-start:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
+    // A shell inside main with `$center="outer"` queries the nearest main for
+    // the open sidebars and reads their widths here. The widths don't change
+    // when a sidebar opens or closes, so they don't restyle main.
+    // Zero specificity lets a container name of the caller win.
+    "ui-base:[container-name:shell-main]",
+    "[--shell-outer-start-1-width:calc(var(--shell-start-1-width)*var(--shell-start-1-fit))]",
+    "[--shell-outer-start-2-width:calc(var(--shell-start-2-width)*var(--shell-start-2-fit))]",
+    "[--shell-outer-end-1-width:calc(var(--shell-end-1-width)*var(--shell-end-1-fit))]",
+    "[--shell-outer-end-2-width:calc(var(--shell-end-2-width)*var(--shell-end-2-fit))]",
   ],
   variants: {
     /**
