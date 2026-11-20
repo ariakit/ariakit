@@ -353,6 +353,12 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           const { anchorElement, disclosureElement } = store.getState();
           if (anchorElement && lastPath.includes(anchorElement)) return;
           if (disclosureElement && lastPath.includes(disclosureElement)) return;
+          // The hide was scheduled while focus was outside the hovercard. If
+          // focus entered it or a nested hovercard since then, it stays open,
+          // and a mouse move outside after focus leaves schedules a new hide.
+          // https://github.com/ariakit/ariakit/issues/8490
+          if (hasFocusInHovercard(element)) return;
+          if (nestedHovercardsRef.current.some(hasFocusInHovercard)) return;
           store.hide();
         }, hideTimeout ?? timeout);
       };

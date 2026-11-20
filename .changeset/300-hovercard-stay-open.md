@@ -11,7 +11,8 @@
 - **Focus in a frame.** The mouse leaves the hovercard while focus is inside a same-origin `iframe` in it.
 - **Press on the hovercard.** A press that started on the hovercard lasts, such as a drag on a resize grip inside it that goes past its edge.
 - **Focus in a shadow root.** The mouse leaves a hovercard that renders in a shadow root while focus is inside it or inside a nested hovercard.
+- **Focus during a pending hide.** Focus moves into the hovercard or a nested hovercard after the mouse leaves and before the hide timeout ends, such as with <kbd>Tab</kbd> from the focused anchor.
 
 These fixes apply to all components built on [`Hovercard`](https://ariakit.com/reference/hovercard), such as [`Menu`](https://ariakit.com/reference/menu) and [`Tooltip`](https://ariakit.com/reference/tooltip).
 
-Thanks to [@krishbuilds01](https://github.com/krishbuilds01) for proposing a fix and a reproduction for focus inside a shadow root.
+Thanks to [@krishbuilds01](https://github.com/krishbuilds01) for proposing a fix and a reproduction for focus inside a shadow root, and [@shubham-bodiwal](https://github.com/shubham-bodiwal) for proposing a fix and a reproduction for focus during a pending hide.
