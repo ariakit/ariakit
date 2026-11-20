@@ -437,4 +437,79 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       test.expect(edge).toBeGreaterThanOrEqual(side - 3);
     }
   });
+
+  test("fits stretched tabs before a button in a row", async ({ q }) => {
+    const box = q.article("Tab row");
+    const list = query(box).tablist("Tab row stretch");
+    const tab = query(list).tab("Support");
+    await test.expect(tab).toHaveAttribute("aria-selected", "true");
+    // The selected last tab keeps its curve in the strip, so the strip has
+    // nothing to scroll, and no tab lies under the button.
+    await test.expect
+      .poll(() => list.evaluate((node) => node.scrollWidth - node.clientWidth))
+      .toBe(0);
+    const tabBox = await tab.boundingBox();
+    const buttonBox = await query(box)
+      .button("Tab row stretch settings")
+      .boundingBox();
+    if (!tabBox || !buttonBox) throw new Error("A box is missing.");
+    test.expect(tabBox.x + tabBox.width).toBeLessThanOrEqual(buttonBox.x + 0.5);
+  });
+
+  test("moves between the tabs of a right-to-left row in visual order", async ({
+    page,
+    q,
+  }) => {
+    const list = query(q.article("Tab row")).tablist("Tab row right to left");
+    await query(list).tab("Quotes").click();
+    await page.keyboard.press("ArrowLeft");
+    await test.expect(query(list).tab("Billing")).toBeFocused();
+  });
+
+  test("keeps a closable tab with aria-disabled", async ({ page, q }) => {
+    const list = query(q.article("Tab row")).tablist("Tab row closable");
+    await query(list).tab("Billing").click();
+    await page.keyboard.press("ArrowRight");
+    const support = query(list).tab("Support");
+    await test.expect(support).toBeFocused();
+    await page.keyboard.press("Delete");
+    // A tab that closes would move the focus to the tab before it at once and
+    // leave after its transition, so the tab must keep the focus and stay.
+    await test.expect(support).toBeFocused();
+    await test.expect(query(list).tab()).toHaveCount(3);
+  });
+
+  // The row shows scroll buttons always, so the buttons of a hidden list would
+  // be focusable stops between the row buttons.
+  test("skips a hidden tab list in a row with the Tab key", async ({
+    page,
+    q,
+  }) => {
+    const box = query(q.article("Tab row"));
+    await box.button("Tab row hidden list sidebar").focus();
+    await page.keyboard.press("Tab");
+    await test.expect(box.button("Tab row hidden list new tab")).toBeFocused();
+  });
+
+  // The popover renders in a portal, but it is a child of the tab in the React
+  // tree, so its key presses reach the tab.
+  test("edits a rename field in a closable tab with Backspace", async ({
+    page,
+    q,
+  }) => {
+    const list = query(q.article("Tab row")).tablist("Tab row rename");
+    await query(list).tab("Billing").dblclick();
+    const field = query(q.dialog("Rename Billing")).textbox("Name");
+    await test.expect(field).toBeFocused();
+    // The portal keeps the field out of the tab and its scroll container, so a
+    // person can see it and click it.
+    await field.click();
+    await page.keyboard.press("End");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Delete");
+    await test.expect(field).toHaveValue("Billin");
+    await page.keyboard.press("Enter");
+    await test.expect(query(list).tab("Billin")).toBeFocused();
+    await test.expect(query(list).tab()).toHaveCount(3);
+  });
 });

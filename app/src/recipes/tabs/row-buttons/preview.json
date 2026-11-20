@@ -1,0 +1,4 @@
+{
+  "title": "Buttons Beside the Tabs",
+  "description": "Buttons on the row of the tabs: TabRow holds the TabList and the TabRowButton elements beside it, which look like tabs that are not selected but are real buttons outside the tab list. A button before the list shows an outline with aria-expanded, an element with the grow class moves two text size buttons to the end of the row, and the selected first tab keeps its full curve beside the button before it. Use it when controls for the tabs or their panel belong on the tab row, such as a sidebar button or a settings button."
+}

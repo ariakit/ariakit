@@ -1,0 +1,4 @@
+{
+  "title": "Tabs That Open and Close",
+  "description": "A window-like tab bar of notes: each Tab has onRemove, which shows a close mark and closes the tab with a press on the mark or with the Delete and Backspace keys. The tab beside a closed tab takes its selection and its focus, the closed tab leaves with a width transition, and a TabRowButton after the TabList in a TabRow opens a tab, which grows in. Use it for documents or sessions that people open and close, and use Buttons Beside the Tabs when the tabs stay the same."
+}
