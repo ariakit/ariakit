@@ -261,6 +261,11 @@ interface TabRowTabsProps {
   /** The index of the selected tab. */
   selected?: number;
   kind?: "folder" | "flat";
+  /**
+   * The padding of the tabs, which the buttons of the row take too, like they
+   * take the kind.
+   */
+  padding?: number;
   /** Gives each tab a close mark that removes it. */
   closable?: boolean;
   /**
@@ -299,6 +304,7 @@ function TabRowTabs({
   name,
   selected = 0,
   kind,
+  padding,
   closable,
   stretch,
   panel = true,
@@ -315,7 +321,7 @@ function TabRowTabs({
   return (
     <Tabs defaultSelectedId={`${id}-${tabRowLabels[selected]}`} {...tabsProps}>
       <TabRow {...rowProps}>
-        <TabRowButton aria-label={`${name} sidebar`} $kind={kind}>
+        <TabRowButton aria-label={`${name} sidebar`} $kind={kind} $p={padding}>
           <TabSlot>
             <PanelLeftIcon />
           </TabSlot>
@@ -331,6 +337,7 @@ function TabRowTabs({
               aria-disabled={label === disabledLabel || undefined}
               id={`${id}-${label}`}
               $kind={kind}
+              $p={padding}
               separator
               onRemove={
                 closable || renamable
@@ -384,14 +391,19 @@ function TabRowTabs({
           ))}
         </TabList>
         {!stretch && (
-          <TabRowButton aria-label={`${name} new tab`} $kind={kind} separator>
+          <TabRowButton
+            aria-label={`${name} new tab`}
+            $kind={kind}
+            $p={padding}
+            separator
+          >
             <TabSlot>
               <PlusIcon />
             </TabSlot>
           </TabRowButton>
         )}
         {!stretch && <div className="grow" />}
-        <TabRowButton aria-label={`${name} settings`} $kind={kind}>
+        <TabRowButton aria-label={`${name} settings`} $kind={kind} $p={padding}>
           <TabSlot>
             <SettingsIcon />
           </TabSlot>
@@ -3486,6 +3498,7 @@ export default function TabsExamples() {
             tabsProps={{ $outerEdge: false, $darken: false }}
           />
           <TabRowTabs name="Tab row flat" kind="flat" tabsProps={{ $p: 1 }} />
+          <TabRowTabs name="Tab row compact" padding={0} />
           <div dir="rtl">
             <TabRowTabs
               name="Tab row right to left"
