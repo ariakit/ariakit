@@ -4,7 +4,7 @@ import { gotoAndSettle } from "#app/test-utils/preview.ts";
 
 test.use({ viewport: { width: 1440, height: 900 } });
 
-test("reading pages set large text in a 42em column beside smaller bars", async ({
+test("reading pages set the default text in a 42em column beside smaller bars", async ({
   page,
   q,
 }) => {
@@ -12,9 +12,9 @@ test("reading pages set large text in a 42em column beside smaller bars", async 
   const prose = q
     .main()
     .locator(":scope > .shell-main-body > .shell-popout > .prose");
-  await expect(prose).toHaveCSS("font-size", "18px");
-  await expect(prose).toHaveCSS("row-gap", "22.5px");
-  await expect(prose).toHaveCSS("width", "756px");
+  await expect(prose).toHaveCSS("font-size", "16px");
+  await expect(prose).toHaveCSS("row-gap", "20px");
+  await expect(prose).toHaveCSS("width", "672px");
   await expect(q.navigation("Site")).toHaveCSS("font-size", "14px");
   await expect(q.banner()).toHaveCSS("font-size", "14px");
 });
@@ -27,14 +27,11 @@ test("reading pages pop code fences out of the 42em column", async ({
   const content = q.main().locator(":scope > .shell-main-body > .shell-popout");
   const prose = content.locator(":scope > .prose").first();
   const fence = content.locator(":scope > .shell-popout").first();
-  await expect(prose).toHaveCSS("width", "756px");
+  await expect(prose).toHaveCSS("width", "672px");
   // The popout tracks add 1rem on each side of the text column.
-  await expect(fence).toHaveCSS("width", "788px");
+  await expect(fence).toHaveCSS("width", "704px");
   // The popout band has square corners, and the block keeps its own radius.
-  await expect(fence.locator(".code-block")).toHaveCSS(
-    "border-radius",
-    "13.5px",
-  );
+  await expect(fence.locator(".code-block")).toHaveCSS("border-radius", "12px");
 });
 
 test("reading pages name the scroll area of untitled code", async ({
