@@ -865,6 +865,8 @@ Put `ak-outset` on a direct child of an `ak-layer` element. The parent layer kee
 
 The values do not inherit. Descendants of an `ak-outset` element measure from their own parent layer as usual. Layer appearance variants such as `ak-dark` also keep matching the parent layer. So does the direction in which `ak-layer` moves its edge color away from the layer color, so a border on an `ak-outset` element can have less contrast with the surface behind it. `ak-edge-contrast` measures against the outer layer but keeps this direction, so it can miss its floor when one of the two layers is light and the other is dark.
 
+To match the appearance of the outer layer on the element itself, use the [outset layer appearance variants](#outset-layer-appearance), such as `ak-outset-dark`. For example, `ak-outset-light:h-[3px] ak-outset-dark:h-[2px]` makes a bar thicker on a light surface, also when its parent layer is dark.
+
 When the element paints over its parent instead, such as a bar with a negative offset, leave `ak-outset` out so it keeps reading the parent layer.
 
 ## `ak-frame`
@@ -1125,6 +1127,38 @@ Each layer appearance variant also has a `not-*` counterpart, such as
 > `ak-dark` / `ak-light` and their band variants require a parent `ak-layer`. They're implemented as `@container` style queries, so they silently fail to match outside a layer rather than falling back to a default. Negated variants match whenever the queried layer value is absent or different, so wrap them in an `ak-layer` when relying on layer appearance.
 
 For `::before` and `::after`, the originating element can be the query container. For example, `ak-light:before:border-t` on an `ak-layer` element draws a top border on its pseudo-element when that element's own layer is light. This also works when its layer is inverted relative to the parent.
+
+### Outset layer appearance
+
+These variants are for an element with [`ak-outset`](#ak-outset). They match the layer around the parent layer, in the same way as the layer appearance variants match on a direct child of that layer.
+
+| Variant                | Matches when the layer around the parent layer is… |
+| ---------------------- | -------------------------------------------------- |
+| `ak-outset-dark`       | Dark.                                              |
+| `ak-outset-light`      | Light.                                             |
+| `ak-outset-dark-high`  | The darkest tier.                                  |
+| `ak-outset-dark-low`   | A dark mid-tier.                                   |
+| `ak-outset-light-low`  | A light mid-tier.                                  |
+| `ak-outset-light-high` | The lightest tier.                                 |
+
+Each of these variants also has a `not-*` counterpart, such as `not-ak-outset-dark`.
+
+```html
+<div class="ak-layer ak-layer-canvas">
+  <button class="ak-layer ak-layer-primary relative ak-frame ak-frame-xl/2">
+    Selected tab
+    <span
+      class="ak-layer ak-layer-contrast ak-outset ak-outset-light:h-[3px] ak-outset-dark:h-[2px] absolute inset-x-0 -bottom-2"
+    ></span>
+  </button>
+</div>
+```
+
+The bar is 3px thick on a light canvas and 2px thick on a dark canvas, whatever the color of the tab.
+
+On a direct child of a layer, these variants match the outer layer whether or not `ak-outset` applies to the element. For example, `[.ak-layer>&:not(.over)]:ak-outset` does not apply to an element with the `over` class, but these variants on it still match the outer layer. To match its parent layer instead, add the regular variants for that case, such as `[&.over]:ak-light:h-[3px] [&.over]:ak-dark:h-[2px]`.
+
+When the parent of the element is not a layer, these variants match the nearest layer like the layer appearance variants.
 
 ### Accessibility
 
