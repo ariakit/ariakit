@@ -185,6 +185,76 @@ withDeferredVisualLoad(import.meta.dirname, async ({ test, query }) => {
   test.describe("desktop", () => {
     test.use({ viewport: { width: 1280, height: 800 } });
 
+    for (const rtl of [false, true]) {
+      for (const inset of ["none", "body margin", "panel padding"]) {
+        test(`covers the seams of the sidebars with the bars of their current sections${inset === "none" ? "" : ` unless a ${inset} keeps the bodies off them`}${rtl ? " in RTL" : ""}`, async ({
+          q,
+        }) => {
+          if (rtl) {
+            await q.checkbox("Right to left").check();
+          }
+          await q.combobox("Sidebar inset").selectOption(inset);
+          await q.button("Toggle table of contents").click();
+          // The end bar of the documentation and the start bar of the table of
+          // contents face the seams. The seam of a start sidebar is on the
+          // inline end, where overflow can scroll.
+          for (const [name, seamOnRight] of [
+            ["Documentation", !rtl],
+            ["On this page", rtl],
+          ] as const) {
+            // The panel draws the seam, and its body scrolls the covering nav.
+            const panel = q.navigation(name);
+            const body = panel.locator(".shell-sidebar-body");
+            const nav = body.locator(".nav");
+            const bar = nav.locator(".control-bar:visible");
+            await expect(panel).toHaveCSS(
+              `border-${seamOnRight ? "right" : "left"}-width`,
+              "1px",
+            );
+            // The body scrolls, so it clips at its padding box, which reaches
+            // over the seam too, and so does the bar. The nav stays inside the
+            // seam. A body margin or panel padding keeps the body, the nav, and
+            // the bar that far inside the seam.
+            await expect
+              .poll(async () => {
+                // The reach changes only the inline margin and padding of the
+                // body, so the top sides show the inset.
+                const [boxes, margin, padding] = await Promise.all([
+                  Promise.all([bar, nav, body].map(getBox)),
+                  body.evaluate((node) =>
+                    Number.parseFloat(getComputedStyle(node).marginTop),
+                  ),
+                  panel.evaluate((node) =>
+                    Number.parseFloat(getComputedStyle(node).paddingTop),
+                  ),
+                ]);
+                const frame = await getBox(panel);
+                const end = frame.x + frame.width;
+                const offsets = boxes.map((box) =>
+                  Math.round(
+                    seamOnRight ? end - box.x - box.width : box.x - frame.x,
+                  ),
+                );
+                return offsets.map((offset) => offset - margin - padding);
+              })
+              .toEqual(inset === "none" ? [0, 1, 0] : [1, 1, 1]);
+            if (inset === "body margin") {
+              await expect(body).not.toHaveCSS("margin-top", "0px");
+            }
+            if (inset === "panel padding") {
+              await expect(panel).not.toHaveCSS("padding-top", "0px");
+            }
+            // Reaching over the seam doesn't widen what the body scrolls.
+            await expect
+              .poll(() =>
+                body.evaluate((node) => node.scrollWidth - node.clientWidth),
+              )
+              .toBe(0);
+          }
+        });
+      }
+    }
+
     test("lands a fragment link below the sticky header", async ({
       page,
       q,
