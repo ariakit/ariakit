@@ -91,6 +91,8 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
   const [longParts, setLongParts] = useState(false);
   const [stackCenter, setStackCenter] = useState(false);
   const [areaNav, setAreaNav] = useState(false);
+  const [areaNavBorder, setAreaNavBorder] = useState(false);
+  const [noHeaderSpace, setNoHeaderSpace] = useState(false);
   const [barPadding, setBarPadding] = useState(false);
   const [longFooterEnd, setLongFooterEnd] = useState(false);
   // A custom padding on the outer header and the inner shell's header.
@@ -150,6 +152,16 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
         label="Navigation in the area"
         checked={areaNav}
         onChange={setAreaNav}
+      />
+      <Checkbox
+        label="Border on the area navigation"
+        checked={areaNavBorder}
+        onChange={setAreaNavBorder}
+      />
+      <Checkbox
+        label="No header space"
+        checked={noHeaderSpace}
+        onChange={setNoHeaderSpace}
       />
       <Checkbox
         label="Bar padding"
@@ -236,7 +248,11 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
   return (
     // 320 quarters of the shell's 14px text are 1120px.
     <Shell $maxWidth={maxWidth ? (numberWidth ? 320 : "80rem") : undefined}>
-      <ShellHeader $stackCenter={stackCenter} $px={headerPadding}>
+      <ShellHeader
+        $stackCenter={stackCenter}
+        $px={headerPadding}
+        $p={noHeaderSpace ? 0 : undefined}
+      >
         {edgeParts && (
           <ShellStart role="group" aria-label="Edge start">
             Menu
@@ -254,7 +270,14 @@ export function PageScenario({ controls }: { controls: ReactNode }) {
           </ShellStart>
           <ShellCenter role="group" aria-label="Area center">
             {areaNav ? (
-              <Nav aria-label="Header links" $layout="horizontal" $p="none" bar>
+              <Nav
+                aria-label="Header links"
+                $layout="horizontal"
+                $p="none"
+                $border={areaNavBorder || undefined}
+                $borderType={areaNavBorder ? "border" : undefined}
+                bar
+              >
                 <NavLink
                   href="#guides"
                   text="Guides"

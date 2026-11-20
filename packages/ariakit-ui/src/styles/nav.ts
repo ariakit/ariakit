@@ -210,6 +210,12 @@ export const nav = cv({
         "horizontal flex items-start overflow-x-auto overscroll-x-none [&>.control,&>.nav-list>li>.control]:shrink-0 [&>.control,&>.nav-list>li>.control]:whitespace-nowrap",
         // A bar outside the padding must not let the row scroll vertically.
         "overflow-y-hidden",
+        // The scroll box clips at its padding box, so the region reaches over
+        // the border of its carousel root above and below, with the same
+        // padding. Then edge bars can cover that border.
+        "[.carousel>&]:[--nav-edge-start:var(--carousel-border,0px)] [.carousel>&]:[--nav-edge-end:var(--carousel-border,0px)]",
+        "[.carousel>&]:mt-[calc(var(--ak-frame-margin)-var(--nav-edge-start))]! [.carousel>&]:mb-[calc(var(--ak-frame-margin)-var(--nav-edge-end))]!",
+        "[.carousel>&]:pt-[calc(var(--ak-frame-padding)+var(--nav-edge-start))] [.carousel>&]:pb-[calc(var(--ak-frame-padding)+var(--nav-edge-end))]",
         // The wider row gap lines up labels in a column, which a row lacks, so
         // rows use the button gap.
         "[&>.control,&>.nav-list>li>.control]:gap-[calc(var(--px)-var(--sidebearing))]",
@@ -305,6 +311,11 @@ export const nav = cv({
     },
   },
   refine({ variants, addClass }) {
+    // Segments rarely draw bars, and a selected segment's shadow would paint
+    // over an edge that the navigation reached over, so it stays inside.
+    if (variants.$kind === "segmented") {
+      addClass("[--nav-edge-start:0px]! [--nav-edge-end:0px]!");
+    }
     const numbered = variants.$marker === "counter";
     if (variants.$guide === false && !numbered) {
       // Always set both, so a navigation in another one starts without a
@@ -761,6 +772,10 @@ export const navLinkBar = cv({
     // the nav padding set the minimum. Percentages resolve against the row's
     // height.
     "[.nav.horizontal_&]:[--bar-gap:calc(max(var(--nav-block-size,0px),100%+var(--control-border,0px)*2+var(--nav-bar-gap,0px)*2)/2-50%-var(--control-border,0px))]",
+    // The region reaches over an edge around it, so an `edge` bar covers that
+    // edge. Other offsets keep measuring to the inner side of the edge.
+    "[.nav.horizontal_&]:[--bar-edge:var(--nav-edge-end,0px)]",
+    "[.nav.horizontal_&]:[&.nav-bar-start]:[--bar-edge:var(--nav-edge-start,0px)]",
     "[.nav.horizontal_&]:top-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
     "[.nav.horizontal_&]:[&.nav-bar-start]:top-auto",
     "[.nav.horizontal_&]:[&.nav-bar-start]:bottom-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
@@ -796,8 +811,12 @@ export const navLinkBar = cv({
      * guide line, named offsets at the start side put the bar on the guide.
      * This includes the guide of a list along its markers, in list disclosure
      * content. A horizontal navigation scrolls, so it clips a bar outside its
-     * padding. Its rows measure from their own height, so an `edge` bar under a
-     * row shorter than the others stops short of the edge.
+     * padding. It reaches over the border of its carousel root, and over the
+     * facing edge of a shell header around it, so `edge` bars cover those
+     * edges, and `halfway` bars stay centered inside them. A ring lies outside
+     * the root, so `edge` bars stop inside it. Its rows measure from their own
+     * height, so an `edge` bar under a row shorter than the others stops short
+     * of the edge.
      */
     $offset(value?: BarOffset) {
       if (!isNamedBarOffset(value)) return getBarOffset(value);

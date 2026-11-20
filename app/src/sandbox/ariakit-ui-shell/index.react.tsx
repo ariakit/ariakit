@@ -846,6 +846,7 @@ type BarPolicy = keyof typeof barPolicies;
  */
 function BarScenario() {
   const [policy, setPolicy] = useState<BarPolicy>("default");
+  const [footerNavBorder, setFooterNavBorder] = useState(false);
   const shrinkSides = policy === "shrink";
   return (
     <Shell $size="md">
@@ -882,6 +883,14 @@ function BarScenario() {
               </label>
             ))}
           </fieldset>
+          <label className="mt-6 flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={footerNavBorder}
+              onChange={(event) => setFooterNavBorder(event.target.checked)}
+            />
+            Border on the footer navigation
+          </label>
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <ScenarioControls />
           </div>
@@ -891,7 +900,14 @@ function BarScenario() {
           to the footer. */}
       <ShellFooter>
         <ShellCenter>
-          <Nav $layout="horizontal" aria-label="Footer pages" $p="none" bar>
+          <Nav
+            $layout="horizontal"
+            aria-label="Footer pages"
+            $p="none"
+            $border={footerNavBorder || undefined}
+            $borderType={footerNavBorder ? "border" : undefined}
+            bar
+          >
             <NavLink href="#home" aria-current="page" text="Home" />
             <NavLink href="#search" text="Search" />
             <NavLink href="#profile" text="Profile" />

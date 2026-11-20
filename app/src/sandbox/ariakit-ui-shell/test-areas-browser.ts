@@ -8,7 +8,7 @@ import {
   selectScenario,
 } from "./test-helpers.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ test, query }) => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
   test.beforeEach(async ({ q }) => {
@@ -446,6 +446,27 @@ withFramework(import.meta.dirname, async ({ test }) => {
     expect((await getBox(nav)).height).toBeGreaterThan(
       (await getBox(header)).height - 2,
     );
+    // The navigation reaches over the facing edge, so the current link's bar
+    // covers it.
+    await expect(header).toHaveCSS("border-bottom-width", "1px");
+    const bar = query(nav).link("One").locator(".control-bar");
+    await expect
+      .poll(async () => {
+        const [barBox, navBox, headerBox] = await Promise.all([
+          getBox(bar),
+          getBox(nav),
+          getBox(header),
+        ]);
+        const headerEnd = headerBox.y + headerBox.height;
+        return [
+          Math.round(barBox.y + barBox.height - headerEnd),
+          Math.round(navBox.y + navBox.height - headerEnd),
+        ];
+      })
+      .toEqual([0, 0]);
+    await expect
+      .poll(() => nav.evaluate((node) => node.scrollHeight - node.clientHeight))
+      .toBe(0);
   });
 
   test("aligns areas with the body of their own shell", async ({ q }) => {
