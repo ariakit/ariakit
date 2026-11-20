@@ -182,6 +182,12 @@ const HUE_TOKEN_OPTIONS = { max: 360, step: 15 };
 const QUANTIZED_LIGHTNESS_STEPS = 8;
 const QUANTIZED_LIGHTNESS_INTERVAL = 1 / QUANTIZED_LIGHTNESS_STEPS;
 const FRAME_PADDING_CAP = "1rem";
+// A nested frame this far from the parent edge starts to leave the concentric
+// radius for its declared radius, which it reaches at FRAME_PADDING_CAP.
+const FRAME_RADIUS_BLEND_START = "0.5rem";
+// FRAME_PADDING_CAP less FRAME_RADIUS_BLEND_START, so the browser does not
+// compute it for each frame.
+const FRAME_RADIUS_BLEND_RANGE = "0.5rem";
 
 const utilities = new Set<ReturnType<typeof ak.utility>>();
 
@@ -791,8 +797,6 @@ const frameVars = {
   frameParentCornerStartEndContext: _ak.var("fpcse"),
   frameParentCornerEndStartContext: _ak.var("fpces"),
   frameParentCornerEndEndContext: _ak.var("fpcee"),
-  frameAutoRadius: _ak.var("far"),
-  frameInflatedExcess: _ak.var("fie"),
   frameBorderingDarkening: _ak.var("fbd"),
 };
 
@@ -3228,37 +3232,71 @@ utility(
       "0px",
     );
     const parentPaddingAndMargin = fn.add(parentPadding, vars.frameMargin);
-    const nestedRadius = fn.sub(
-      parentRadius,
-      fn.add(parentPadding, parentBorder, vars.frameMargin),
+    const parentDistance = fn.add(
+      parentPadding,
+      parentBorder,
+      vars.frameMargin,
     );
-    // The floor follows the frame's own font size, like em-based radius and
-    // spacing tokens, so frames scaled down by font size stay concentric.
-    const minimumRadius = fn.min("0.125em", inputs.frameRadius);
-    const autoRadius = fn.max(minimumRadius, fn.max(nestedRadius, "0px"));
+    // The concentric radius falls to the floor before the declared radius takes
+    // over at FRAME_PADDING_CAP. From FRAME_RADIUS_BLEND_START, the radius is
+    // at least a line that ends at the declared radius at the cap, so it has no
+    // jump. The line starts at the concentric radius at the start, or at the
+    // declared radius if that is smaller. It only raises the radius, so a frame
+    // inside a pill stays a pill.
+    //
+    // Before the start, the line stays at its start radius, so the radius is
+    // never below the floor: min(0.125em, declared). The floor follows the
+    // frame's own font size, like em-based radius and spacing tokens, so frames
+    // scaled down by font size stay concentric.
+    const blendStartRadius = fn.max(
+      "0.125em",
+      fn.sub(parentRadius, FRAME_RADIUS_BLEND_START),
+    );
+    // tan(atan2(a, b)) divides lengths where Firefox calc() cannot.
+    const blendProgress = fn.clamp01(
+      fn.exp`tan(atan2(${fn.sub(
+        parentDistance,
+        FRAME_RADIUS_BLEND_START,
+      )}, ${FRAME_RADIUS_BLEND_RANGE}))`,
+    );
+    // min() + max() * progress is exact at progress 0, also when the declared
+    // radius is the largest length of the browser (rounded-full).
+    const blendRadius = fn.add(
+      fn.min(blendStartRadius, inputs.frameRadius),
+      fn.mul(
+        fn.max(fn.sub(inputs.frameRadius, blendStartRadius), "0px"),
+        blendProgress,
+      ),
+    );
+    // The line is never negative, so it also clamps the concentric radius.
+    const autoRadius = fn.max(
+      fn.sub(parentRadius, parentDistance),
+      blendRadius,
+    );
     // When parent padding + margin >= 1rem, the child is far enough from the
     // parent edge that concentric radius is not meaningful — use the child's
-    // own declared radius instead.
+    // own declared radius instead. The line above already reaches the declared
+    // radius there, so the cap only lowers a larger concentric radius.
     //
-    // Formula: max(auto - inflated, min(declared, auto + inflated))
-    //   No cap (excess=0): max(auto, min(declared, auto)) = auto Cap
-    //   (excess>0): max(auto - huge, min(declared, auto + huge))
-    //                      = max(negative, declared) = declared
+    // Formula: min(auto, declared + shortfall)
+    // - Below the cap, shortfall is huge. The result is auto.
+    // - From the cap, shortfall is 0px. The result is min(auto, declared).
     //
-    // Subtract 0.5px so that exactly 1rem triggers the cap (>= not >).
-    const excess = fn.max(
-      fn.sub(parentPaddingAndMargin, fn.sub(FRAME_PADDING_CAP, "0.5px")),
+    // The cap starts 0.5px before 1rem, so a distance that is a fraction of a
+    // pixel short of 1rem also takes the declared radius. In that 0.5px, a
+    // frame on the line keeps the line, which is almost the declared radius.
+    const shortfall = fn.max(
+      fn.sub(fn.sub(FRAME_PADDING_CAP, "0.5px"), parentPaddingAndMargin),
       "0px",
     );
-    // Must exceed the browser's max representable length (~3.35e7px for
-    // infinity-based radii like rounded-full). 0.5px * 1e9 = 5e8 >> 3.35e7.
-    const inflatedExcess = fn.mul(excess, 1e9);
-    const cappedRadius = fn.max(
-      fn.sub(vars.frameAutoRadius, vars.frameInflatedExcess),
-      fn.min(
-        inputs.frameRadius,
-        fn.add(vars.frameAutoRadius, vars.frameInflatedExcess),
-      ),
+    // The inflated shortfall must exceed each finite radius. A parent radius
+    // can be the largest length of the browser (rounded-full), which no length
+    // exceeds. That frame stays a pill, because declared + inflated is also far
+    // larger than its box.
+    const inflatedShortfall = fn.mul(shortfall, 1e9);
+    const cappedRadius = fn.min(
+      autoRadius,
+      fn.add(inputs.frameRadius, inflatedShortfall),
     );
     // When forced, use the declared radius directly.
     const frameRadius = fn.add(
@@ -3267,8 +3305,6 @@ utility(
     );
     const inheritedBorderingContext = fn.invert(inputs.frameBorderingContext);
     return [
-      set(vars.frameAutoRadius, autoRadius),
-      set(vars.frameInflatedExcess, inflatedExcess),
       set(vars.frameRadius, frameRadius),
       set(provide(vars.frameParentRadiusContext), vars.frameRadius),
       set(provide(vars.frameParentPaddingContext), vars.framePadding),

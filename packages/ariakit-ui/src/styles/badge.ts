@@ -61,7 +61,7 @@ export const badge = cv({
       return variants.$kind === "solid" ? "brand" : true;
     },
     // Concentric rounding would collapse the pill in a parent frame with
-    // padding below 1rem, such as a control with default padding.
+    // padding up to 0.5rem, such as a control with default padding.
     $forceRounded: true,
     $rounded(defaultValue, variants) {
       if (defaultValue != null) return defaultValue;

@@ -950,9 +950,9 @@ export const navDisclosureContentBody = cv({
   class: [
     "nav-disclosure-content-body",
     navRowsClass,
-    // Compensate for body padding so nested row corners match the disclosure
-    // radius below the frame 1rem cutoff. A split body sets a smaller row
-    // radius for its inset rows.
+    // Compensate for body padding so the concentric radius of nested rows
+    // matches the disclosure radius. A split body sets a smaller row radius for
+    // its inset rows.
     "[--nav-body-radius:calc(var(--nav-body-row-radius,var(--disclosure-radius))+var(--ak-frame-padding))]",
     // A split body meets its button with a straight edge.
     "[@container_style(--disclosure-split:_1)]:rounded-t-none",

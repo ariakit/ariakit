@@ -108,8 +108,9 @@ export const frameBase = cv({
     $frameEnd: "ak-frame-end",
     /**
      * Sets the radius from a named step, CSS length, or expression. Nested
-     * frames stay concentric unless `$forceRounded` is set or parent padding
-     * plus child margin reaches `1rem`.
+     * frames stay concentric unless `$forceRounded` is set. A nested frame that
+     * is more than `0.5rem` from the parent edge moves to this radius, which it
+     * reaches when parent padding plus child margin is `1rem`.
      */
     $rounded(value?: FrameRoundedValue | (string & {})) {
       return getFrameRoundedClass(value);
