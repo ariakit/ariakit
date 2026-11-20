@@ -220,6 +220,72 @@ export function HorizontalNavigation() {
   );
 }
 
+const columnPages = ["Overview", "Installation"];
+const columnSectionPages = ["Themes", "Tokens"];
+
+/**
+ * A vertical navigation with a border, whose current link moves on click. The
+ * selects use their own names so they don't match the horizontal ones.
+ */
+export function BorderedColumn() {
+  const [current, setCurrent] = useState("Overview");
+  const [side, setSide] = useState<"start" | "end">("start");
+  const [gap, setGap] = useState<"edge" | "halfway">("edge");
+  const link = (page: string) => (
+    <NavLink
+      key={page}
+      href={`#column-${page.toLowerCase()}`}
+      aria-current={current === page ? "page" : undefined}
+      onClick={(event) => {
+        event.preventDefault();
+        setCurrent(page);
+      }}
+      text={page}
+    />
+  );
+  return (
+    <section aria-label="Bordered column example" className="grid gap-4">
+      <label>
+        Column bar side{" "}
+        <select
+          value={side}
+          onChange={(event) =>
+            setSide(event.target.value === "end" ? "end" : "start")
+          }
+        >
+          <option value="start">Start</option>
+          <option value="end">End</option>
+        </select>
+      </label>
+      <label>
+        Column bar distance{" "}
+        <select
+          value={gap}
+          onChange={(event) =>
+            setGap(event.target.value === "halfway" ? "halfway" : "edge")
+          }
+        >
+          <option value="edge">Edge</option>
+          <option value="halfway">Halfway</option>
+        </select>
+      </label>
+      <Nav
+        aria-label="Bordered pages"
+        $p={2}
+        $border
+        $borderType="border"
+        bar={{ $side: side, $offset: gap }}
+        className="w-64"
+      >
+        {columnPages.map(link)}
+        <NavDisclosure defaultOpen button="Styling">
+          <NavList>{columnSectionPages.map(link)}</NavList>
+        </NavDisclosure>
+      </Nav>
+    </section>
+  );
+}
+
 export function LinkItems() {
   const link = useRef<HTMLAnchorElement>(null);
   const [visited, setVisited] = useState("None");

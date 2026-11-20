@@ -168,12 +168,19 @@ interface SectionLinksProps {
   sections: readonly { id: string; title: string }[];
   current?: string;
   onSelect?: (id: string) => void;
+  /** Marks the current link with a bar on this side. */
+  barSide?: "start" | "end";
 }
 
 /** The rows of a sidebar: links to the page's sections, in a Nav list. */
-function SectionLinks({ sections, current, onSelect }: SectionLinksProps) {
+function SectionLinks({
+  sections,
+  current,
+  onSelect,
+  barSide,
+}: SectionLinksProps) {
   return (
-    <Nav $cover>
+    <Nav $cover bar={barSide && { $side: barSide }}>
       {sections.map((section) => (
         <NavLink
           key={section.id}
@@ -187,6 +194,13 @@ function SectionLinks({ sections, current, onSelect }: SectionLinksProps) {
       ))}
     </Nav>
   );
+}
+
+const sidebarInsets = ["none", "body margin", "panel padding"] as const;
+type SidebarInset = (typeof sidebarInsets)[number];
+
+function isSidebarInset(value: string): value is SidebarInset {
+  return sidebarInsets.some((inset) => inset === value);
 }
 
 const docsSections = [
@@ -262,6 +276,10 @@ function DocsScenario() {
   const navigationId = useId();
   const contentsId = useId();
   const [current, setCurrent] = useState<string>(docsSections[0].id);
+  const [sidebarInset, setSidebarInset] = useState<SidebarInset>("none");
+  // Either keeps the sidebar body off the seam.
+  const bodyMargin = sidebarInset === "body margin" ? 2 : undefined;
+  const panelPadding = sidebarInset === "panel padding" ? 3 : undefined;
   return (
     <Shell $size="md" style={{ color: "inherit" }}>
       <ShellHeader $blur>
@@ -308,12 +326,15 @@ function DocsScenario() {
         open={navigationOpen}
         aria-label="Documentation"
         landmark="nav"
+        $p={panelPadding}
       >
-        <ShellSidebarBody>
+        <ShellSidebarBody $m={bodyMargin}>
+          {/* The end bar of the current section faces the seam. */}
           <SectionLinks
             sections={docsSections}
             current={current}
             onSelect={setCurrent}
+            barSide="end"
           />
         </ShellSidebarBody>
       </ShellSidebar>
@@ -352,9 +373,16 @@ function DocsScenario() {
         $from="body"
         aria-label="On this page"
         landmark="nav"
+        $p={panelPadding}
       >
-        <ShellSidebarBody>
-          <SectionLinks sections={docsSections} />
+        <ShellSidebarBody $m={bodyMargin}>
+          {/* The start bar of the current section faces the seam. */}
+          <SectionLinks
+            sections={docsSections}
+            current={current}
+            onSelect={setCurrent}
+            barSide="start"
+          />
         </ShellSidebarBody>
       </ShellSidebar>
       <ShellFooter>
@@ -364,6 +392,26 @@ function DocsScenario() {
             <p>Copyright 2026 Ariakit FZ-LLC</p>
             <p>All rights reserved</p>
             <p>Made with the Shell component</p>
+            {/* Last in the page, so a tab through the sections skips it. */}
+            <label className="flex items-center gap-2">
+              Sidebar inset
+              <select
+                tabIndex={0}
+                value={sidebarInset}
+                onChange={(event) => {
+                  const { value } = event.currentTarget;
+                  if (isSidebarInset(value)) {
+                    setSidebarInset(value);
+                  }
+                }}
+              >
+                {sidebarInsets.map((inset) => (
+                  <option key={inset} value={inset}>
+                    {inset}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
         </ShellStart>
         <ShellEnd>

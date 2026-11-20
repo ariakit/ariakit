@@ -68,6 +68,43 @@ withFramework(import.meta.dirname, async ({ test }) => {
     }
   });
 
+  test("keeps sidebar bodies without a covering navigation inside the seam", async ({
+    q,
+  }) => {
+    for (const rtl of [false, true]) {
+      await q.checkbox("Right to left").setChecked(rtl);
+      for (const [name, seamOnRight] of [
+        ["Layout navigation", !rtl],
+        ["Layout contents", rtl],
+      ] as const) {
+        // Only a body that holds a covering navigation reaches over the seam,
+        // so this body stays on the padding box of its panel.
+        const panel = q.navigation(name);
+        const body = panel.locator(".shell-sidebar-body");
+        await expect
+          .poll(async () => {
+            const [box, frame, inset] = await Promise.all([
+              getBox(body),
+              getBox(panel),
+              panel.evaluate((node, right) => {
+                const style = getComputedStyle(node);
+                const side = right ? "Right" : "Left";
+                return (
+                  Number.parseFloat(style[`border${side}Width`]) +
+                  Number.parseFloat(style[`padding${side}`])
+                );
+              }, seamOnRight),
+            ]);
+            const offset = seamOnRight
+              ? frame.x + frame.width - box.x - box.width
+              : box.x - frame.x;
+            return Math.round(offset - inset);
+          })
+          .toBe(0);
+      }
+    }
+  });
+
   test("places sticky sidebars below the header and the width of its seam", async ({
     page,
     q,

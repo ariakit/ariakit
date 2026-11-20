@@ -54,6 +54,7 @@ import {
 } from "#app/components/ariakit-ui-example.react.tsx";
 import {
   BarForms,
+  BorderedColumn,
   HorizontalNavigation,
   LinkItems,
 } from "./api-examples.react.tsx";
@@ -1943,6 +1944,13 @@ export default function NavExamples() {
         code={`<Nav $layout="horizontal" $p={3} bar><NavLink href="#overview" text="Overview" /></Nav>`}
       >
         <HorizontalNavigation />
+      </Example>
+      <Example
+        title="Bordered column"
+        description="Edge bars at either side cover the border of a vertical navigation. Halfway bars stay centered inside it."
+        code={`<Nav $p={2} $border $borderType="border" bar><NavLink href="#overview" text="Overview" /></Nav>`}
+      >
+        <BorderedColumn />
       </Example>
       <Example
         title="Link item ownership"

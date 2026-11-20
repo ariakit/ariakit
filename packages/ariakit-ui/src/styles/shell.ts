@@ -813,6 +813,9 @@ export const shellSidebarPanel = cv({
   extend: [seam],
   class: [
     "shell-sidebar-panel box-border w-(--shell-slot-width) min-h-0 flex-auto flex flex-col",
+    // A body reaches over the facing edge only while this padding plus the
+    // body's margin is zero.
+    "[--shell-panel-padding:var(--ak-frame-padding)]",
     // The panel keeps its width while the column folds, so its queries hold
     // their results. WebKit restyles everything inside query containers that
     // change size, and lays out the page again, on each step of the fold.
@@ -867,9 +870,10 @@ export const shellSidebarHeader = cv({
 });
 
 /**
- * The scrollable center of a sidebar panel. A `Nav` with `$cover` spans the
- * body's padding, so edge bars meet the sidebar edge, and a direct `Nav` with
- * `$fill` takes the body's height.
+ * The scrollable center of a sidebar panel. A direct vertical `Nav` with
+ * `$cover` spans the body's padding, so edge bars cover the facing edge of the
+ * sidebar while the body touches it, and a direct `Nav` with `$fill` takes the
+ * body's height.
  */
 export const shellSidebarBody = cv({
   extend: [frameBase],
@@ -877,6 +881,27 @@ export const shellSidebarBody = cv({
     "shell-sidebar-body min-h-0 flex-auto overflow-y-auto rounded-none!",
     // A flex column fits a filling navigation to the body's height.
     "[&:has(>.nav-fill)]:flex [&:has(>.nav-fill)]:flex-col",
+    // The scroll box clips at its padding box, so a body that holds a covering
+    // column reaches over the facing edge of its panel, with the same padding.
+    // Then edge bars of the column can cover that edge. A scrollbar that
+    // always shows also covers it. The edge is physical, and the body can have
+    // its own dir. A body that its margin or the padding of the panel moves
+    // off the edge doesn't reach, whichever way it moves. A nested shell resets
+    // the sides that its own sidebar doesn't set.
+    "[--shell-seam-left:0px] [--shell-seam-right:0px]",
+    "[.shell-sidebar-start:dir(ltr)>.shell-sidebar-panel>&]:[--shell-seam-right:calc(var(--shell-facing-border,0px)*(1-abs(sign(var(--shell-panel-padding,0px)_+_var(--ak-frame-margin)))))]",
+    "[.shell-sidebar-start:dir(rtl)>.shell-sidebar-panel>&]:[--shell-seam-left:calc(var(--shell-facing-border,0px)*(1-abs(sign(var(--shell-panel-padding,0px)_+_var(--ak-frame-margin)))))]",
+    "[.shell-sidebar-end:dir(ltr)>.shell-sidebar-panel>&]:[--shell-seam-left:calc(var(--shell-facing-border,0px)*(1-abs(sign(var(--shell-panel-padding,0px)_+_var(--ak-frame-margin)))))]",
+    "[.shell-sidebar-end:dir(rtl)>.shell-sidebar-panel>&]:[--shell-seam-right:calc(var(--shell-facing-border,0px)*(1-abs(sign(var(--shell-panel-padding,0px)_+_var(--ak-frame-margin)))))]",
+    // The panel selector outranks the margin and padding of the frame.
+    "[.shell-sidebar-panel>&:has(>.nav.vertical.ak-frame-cover)]:ml-[calc(var(--ak-frame-margin)-var(--shell-seam-left))] [.shell-sidebar-panel>&:has(>.nav.vertical.ak-frame-cover)]:mr-[calc(var(--ak-frame-margin)-var(--shell-seam-right))]",
+    "[.shell-sidebar-panel>&:has(>.nav.vertical.ak-frame-cover)]:pl-[calc(var(--ak-frame-padding)+var(--shell-seam-left))] [.shell-sidebar-panel>&:has(>.nav.vertical.ak-frame-cover)]:pr-[calc(var(--ak-frame-padding)+var(--shell-seam-right))]",
+    // A covering column meets the inner side of the edge, so its edge bars add
+    // the reach to its own border.
+    "[&>.nav.vertical.ak-frame-cover:dir(ltr)]:[--nav-edge-start:calc(var(--ak-frame-border)+var(--shell-seam-left))]",
+    "[&>.nav.vertical.ak-frame-cover:dir(ltr)]:[--nav-edge-end:calc(var(--ak-frame-border)+var(--shell-seam-right))]",
+    "[&>.nav.vertical.ak-frame-cover:dir(rtl)]:[--nav-edge-start:calc(var(--ak-frame-border)+var(--shell-seam-right))]",
+    "[&>.nav.vertical.ak-frame-cover:dir(rtl)]:[--nav-edge-end:calc(var(--ak-frame-border)+var(--shell-seam-left))]",
   ],
   defaultVariants: { $p: 3 },
 });
