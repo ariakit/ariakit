@@ -11,6 +11,12 @@ import * as ak from "@ariakit/react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { CarouselButton } from "@ariakit/ui/components/carousel.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Input } from "@ariakit/ui/components/input.ariakit.react";
+import {
+  Popover,
+  PopoverProvider,
+} from "@ariakit/ui/components/popover.ariakit.react";
+import type { TabsProps } from "@ariakit/ui/components/tabs.ariakit.react";
 import {
   Tab,
   TabLabel,
@@ -18,6 +24,8 @@ import {
   TabPanel,
   TabPanels,
   TabProvider,
+  TabRow,
+  TabRowButton,
   TabSeparator,
   TabSlot,
   Tabs,
@@ -29,6 +37,9 @@ import {
   BookOpenIcon,
   BracesIcon,
   EyeIcon,
+  PanelLeftIcon,
+  PlusIcon,
+  SettingsIcon,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -237,6 +248,143 @@ function BrandButtonsTabs({ nextLabel }: BrandButtonsTabsProps) {
           <p className="text-sm">The buttons take the brand color.</p>
         </TabPanel>
       </TabPanels>
+    </Tabs>
+  );
+}
+
+interface TabRowTabsProps {
+  /** The prefix of the tab ids and the name of the tab list. */
+  name: string;
+  /** The index of the selected tab. */
+  selected?: number;
+  kind?: "folder" | "flat";
+  /** Gives each tab a close mark that removes it. */
+  closable?: boolean;
+  /** Stretches the tabs, with only the settings button after them. */
+  stretch?: boolean;
+  /** Renders the panel below the row. Defaults to `true`. */
+  panel?: boolean;
+  /**
+   * Renames a tab on double-click, in a modal popover that is a child of the
+   * tab. The popover renders in a portal, outside the tab element, but the key
+   * presses in its field still reach the tab through the React tree.
+   */
+  renamable?: boolean;
+  tabsProps?: TabsProps;
+}
+
+interface TabRowRenaming {
+  label: string;
+  anchor: HTMLElement;
+}
+
+const tabRowLabels = ["Quotes", "Billing", "Support"];
+
+/**
+ * Tabs in a row with a button before the tab list, a button after it, and a
+ * button at the end of the row.
+ */
+function TabRowTabs({
+  name,
+  selected = 0,
+  kind,
+  closable,
+  stretch,
+  panel = true,
+  renamable,
+  tabsProps,
+}: TabRowTabsProps) {
+  const id = name.toLowerCase().replaceAll(" ", "-");
+  const [labels, setLabels] = useState(tabRowLabels);
+  const [names, setNames] = useState(() => new Map<string, string>());
+  const [renaming, setRenaming] = useState<TabRowRenaming>();
+  return (
+    <Tabs defaultSelectedId={`${id}-${tabRowLabels[selected]}`} {...tabsProps}>
+      <TabRow>
+        <TabRowButton aria-label={`${name} sidebar`} $kind={kind}>
+          <TabSlot>
+            <PanelLeftIcon />
+          </TabSlot>
+        </TabRowButton>
+        <TabList aria-label={name} $layout={stretch ? "stretch" : undefined}>
+          {labels.map((label) => (
+            <Tab
+              key={label}
+              id={`${id}-${label}`}
+              $kind={kind}
+              separator
+              onRemove={
+                closable || renamable
+                  ? () => setLabels(labels.filter((item) => item !== label))
+                  : undefined
+              }
+              onDoubleClick={
+                renamable
+                  ? (event) =>
+                      setRenaming({ label, anchor: event.currentTarget })
+                  : undefined
+              }
+            >
+              <TabLabel text={names.get(label) ?? label} />
+              {renaming?.label === label && (
+                <PopoverProvider
+                  open
+                  setOpen={(open) => {
+                    if (!open) setRenaming(undefined);
+                  }}
+                >
+                  <Popover
+                    modal
+                    aria-label={`Rename ${names.get(label) ?? label}`}
+                    getAnchorRect={() =>
+                      renaming.anchor.getBoundingClientRect()
+                    }
+                    finalFocus={renaming.anchor}
+                  >
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        const data = new FormData(event.currentTarget);
+                        const value = data.get("name");
+                        if (typeof value === "string" && value) {
+                          setNames(new Map(names).set(label, value));
+                        }
+                        setRenaming(undefined);
+                      }}
+                    >
+                      <Input
+                        aria-label="Name"
+                        name="name"
+                        defaultValue={names.get(label) ?? label}
+                      />
+                    </form>
+                  </Popover>
+                </PopoverProvider>
+              )}
+            </Tab>
+          ))}
+        </TabList>
+        {!stretch && (
+          <TabRowButton aria-label={`${name} new tab`} $kind={kind} separator>
+            <TabSlot>
+              <PlusIcon />
+            </TabSlot>
+          </TabRowButton>
+        )}
+        {!stretch && <div className="grow" />}
+        <TabRowButton aria-label={`${name} settings`} $kind={kind}>
+          <TabSlot>
+            <SettingsIcon />
+          </TabSlot>
+        </TabRowButton>
+      </TabRow>
+      {panel && (
+        <TabPanels>
+          <TabPanel single>
+            <p className="text-sm">The panel of the selected tab.</p>
+          </TabPanel>
+        </TabPanels>
+      )}
     </Tabs>
   );
 }
@@ -3255,6 +3403,78 @@ export default function TabsExamples() {
             </Tab>
           </TabList>
         </Tabs>
+      </Example>
+      <Example
+        title="Tab row"
+        description="Buttons on the row of the tabs look like tabs that are not selected, and the strip color fills the row behind them. Beside a button, the outer tab is not at the corner of the root, so its selected folder keeps its full curve, under the button, and the panel keeps its round corner. The separator between a selected tab and a button hides. The boxes show the first, the last, and the middle tab selected, the last two without the outer edge, then flat tabs with padding, a right-to-left row, tabs with a close mark, stretched tabs with a button after them, a row with no panel below it, and closable tabs that rename on double-click."
+        wide
+        code={`
+          <Tabs>
+            <TabRow>
+              <TabRowButton aria-label="Sidebar">
+                …
+              </TabRowButton>
+              <TabList>
+                <Tab separator>Quotes</Tab>
+                <Tab separator>Billing</Tab>
+                <Tab separator>Support</Tab>
+              </TabList>
+              <TabRowButton aria-label="New tab" separator>
+                …
+              </TabRowButton>
+              <div className="grow" />
+              <TabRowButton aria-label="Settings">
+                …
+              </TabRowButton>
+            </TabRow>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+
+          <Tabs $outerEdge={false} $darken={false}>
+            …
+          </Tabs>
+
+          <Tabs $p={1}>
+            <TabRow>
+              <TabRowButton $kind="flat">
+                …
+              </TabRowButton>
+              <TabList>
+                <Tab $kind="flat">Quotes</Tab>
+                …
+              </TabList>
+            </TabRow>
+          </Tabs>
+
+          <Tab onRemove={removeQuotes}>Quotes</Tab>
+        `}
+      >
+        <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(min(26rem,100%),1fr))] gap-4">
+          <TabRowTabs name="Tab row" />
+          <TabRowTabs name="Tab row last" selected={2} />
+          <TabRowTabs
+            name="Tab row no edge"
+            selected={1}
+            tabsProps={{ $outerEdge: false, $darken: false }}
+          />
+          <TabRowTabs
+            name="Tab row no edge last"
+            selected={2}
+            tabsProps={{ $outerEdge: false, $darken: false }}
+          />
+          <TabRowTabs name="Tab row flat" kind="flat" tabsProps={{ $p: 1 }} />
+          <div dir="rtl">
+            <TabRowTabs name="Tab row right to left" />
+          </div>
+          <TabRowTabs name="Tab row closable" closable />
+          <TabRowTabs name="Tab row stretch" selected={2} stretch />
+          <TabRowTabs name="Tab row without a panel" panel={false} />
+          <TabRowTabs name="Tab row rename" renamable />
+        </div>
       </Example>
     </ExampleGrid>
   );

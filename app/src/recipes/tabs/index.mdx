@@ -8,7 +8,7 @@ icon: folder-closed
 
 These examples build tabs with the Ariakit UI `Tabs` components. Tabs show one panel of related content at a time, in the same place on the page. The arrow keys move between tabs, and the selected tab shows its panel.
 
-The gallery starts with folder tabs, where the selected tab joins its panel. Then it shows tabs that filter one list, underlined tabs, a segmented control, and equal-width tabs around forms. The other examples show a strip that scrolls, manual selection for slow panels, and a disabled tab with a reason. The last two examples keep the selected tab in the URL, with React Router and with the Next.js App Router.
+The gallery starts with folder tabs, where the selected tab joins its panel. Then it shows tabs that filter one list, underlined tabs, a segmented control, and equal-width tabs around forms. The other examples show a strip that scrolls, buttons beside the tabs, tabs that open and close, manual selection for slow panels, and a disabled tab with a reason. The last two examples keep the selected tab in the URL, with React Router and with the Next.js App Router.
 
 ## Components
 
@@ -26,6 +26,14 @@ A strip that overflows scrolls sideways, as in the Scrolling Tab Strip example. 
 
 A segmented `TabList` with padding scrolls in the same way when it doesn't fit, with the same buttons and props. Its wrapper paints the surface of the list behind the faded tabs and takes `className` and `style`.
 
+`TabRow` puts controls on the row of the tabs, as in the Buttons Beside the Tabs example. It takes the place of the wrapper that `TabList` renders, so it holds the tab list, the scroll buttons, and the controls, and it paints the strip color behind all of them. The tab list takes the width of its tabs and scrolls when the row is full, so a control after it stays next to the last tab. An element with the `grow` class takes the free space, so the controls after it sit at the end of the row.
+
+`TabRowButton` is a button in a `TabRow` that looks like a tab that is not selected. It has the height, the hover surface, and the corners of the tabs, so give it the same `$kind`. Its `separator` prop draws a pipe before it, like the `separator` prop of `Tab`. Beside a control, the outer tab is not at the corner of the frame. A selected folder then keeps its full curve, and the panel keeps its round corner.
+
+`onRemove` makes a `Tab` one that can close, as in the Tabs That Open and Close example. The tab shows a `TabRemove` mark, and it closes with a press on the mark and with the Delete and Backspace keys. First, the next tab takes the selection and the focus of the closed tab, or the previous tab when the last tab closes. Then the tab leaves, and `onRemove` runs, so your function only removes the tab and its panel. Without another tab, nothing takes the selection, so leave out `onRemove` for the last tab, or move the selection and the focus yourself. The `remove` prop takes `TabRemove` props, such as a class that shows the mark only on hover, and `false` hides the mark. A disabled tab doesn't close.
+
+A tab that you add to a `TabList` grows in, and a tab that closes shrinks before `onRemove` runs. Browsers that can't animate a width to `auto` and people who prefer reduced motion get the change at once.
+
 `TabSlot` puts an icon or a badge next to a label in a `TabLabel`. Set `separator` on a `Tab` to draw a pipe before it, or pass `TabSeparator` props, such as `$kind="chevron"`, to change the mark. Pass `separator={!!index}` when you map tabs, so each tab after the first gets one. A pipe hides beside the selected, hovered, or focused tab.
 
 In the React Router example, each `Tab` renders a `Link` through the `render` prop, and `Tabs` reads the selected tab from `useLocation`. Only the links navigate, because a `setSelectedId` that also navigates adds a second history entry for each click. `selectOnMove={false}` keeps the arrow keys from adding history entries, so Enter or a click follows the focused link. The example uses a memory router, so the route stays in the preview and a link opened in a new tab has no page. An app can use `BrowserRouter` or `HashRouter` instead.
@@ -35,6 +43,10 @@ The Next.js example works in the same way, with a Next.js `Link` and `usePathnam
 ## Accessibility
 
 `TabList` needs a name, such as `aria-label`. A tab list can hold only tabs and separators hidden from screen readers. The `separator` prop hides its `TabSeparator` for you, so add `aria-hidden` only to a `TabSeparator` that you render yourself. A tab also can't hold another control, so put other controls outside the list. The scroll buttons sit before and after the element with the `tablist` role, so they are not tabs.
+
+A control beside the tabs is not a tab. `TabRow` keeps each `TabRowButton` outside the element with the `tablist` role, so the Tab key reaches it, and the arrow keys move only between tabs. A button that opens a tab is such a button, after the tab list.
+
+The close mark of a tab is hidden from screen readers, because a tab can't hold a button. The tab closes from the keyboard instead, with the Delete and Backspace keys, and nothing on the tab tells a screen reader about them, so name the keys in the help of your app. After a close, focus is on the tab that took the place of the closed tab. A touch screen reader has no such keys, so give people another way to close a tab there, such as a menu or a button in the panel.
 
 By default, moving to a tab with the arrow keys selects it. Set `selectOnMove` to `false` when a selection starts slow work, so a person who presses an arrow key three times does not start three requests.
 

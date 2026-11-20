@@ -930,6 +930,16 @@ export type CarouselViewportProps<
      * the `Carousel` sets only the defaults of `carouselViewport`.
      */
     recipe?: R;
+    /**
+     * Replaces the `buttons` prop of the `Carousel`, for a viewport that knows
+     * its buttons better than the root around it, such as a tab list in a row
+     * of other controls.
+     */
+    buttons?: boolean;
+    /** Replaces the `previousButton` prop of the `Carousel`. */
+    previousButton?: CarouselButtonRender;
+    /** Replaces the `nextButton` prop of the `Carousel`. */
+    nextButton?: CarouselButtonRender;
   };
 
 /**
@@ -947,8 +957,18 @@ export type CarouselViewportProps<
 export function CarouselViewport<
   R extends RecipeLike<typeof carouselViewportBase, R> =
     typeof carouselViewport,
->({ recipe, ref, ...props }: CarouselViewportProps<R>) {
+>({
+  recipe,
+  ref,
+  buttons,
+  previousButton,
+  nextButton,
+  ...props
+}: CarouselViewportProps<R>) {
   const context = useCarouselContext("CarouselViewport");
+  const showButtons = buttons ?? context.showButtons;
+  const previousRender = previousButton ?? context.previousButton;
+  const nextRender = nextButton ?? context.nextButton;
   const styles = recipe ?? carouselViewport;
   const [variantProps, rest] = splitProps(props, styles);
   const defaultId = useId();
@@ -963,17 +983,17 @@ export function CarouselViewport<
       controls: slides ? id : undefined,
     });
   const previous =
-    context.showButtons &&
+    showButtons &&
     createOptionalRender(
       CarouselButton,
-      context.previousButton === true ? {} : context.previousButton,
+      previousRender === true ? {} : previousRender,
       getButtonProps("start"),
     );
   const next =
-    context.showButtons &&
+    showButtons &&
     createOptionalRender(
       CarouselButton,
-      context.nextButton === true ? {} : context.nextButton,
+      nextRender === true ? {} : nextRender,
       getButtonProps("end"),
     );
   return (

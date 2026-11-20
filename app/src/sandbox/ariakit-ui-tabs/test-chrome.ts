@@ -437,4 +437,44 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       test.expect(edge).toBeGreaterThanOrEqual(side - 3);
     }
   });
+
+  test("fits stretched tabs before a button in a row", async ({ q }) => {
+    const box = q.article("Tab row");
+    const list = query(box).tablist("Tab row stretch");
+    const tab = query(list).tab("Support");
+    await test.expect(tab).toHaveAttribute("aria-selected", "true");
+    // The selected last tab keeps its curve in the strip, so the strip has
+    // nothing to scroll, and no tab lies under the button.
+    await test.expect
+      .poll(() => list.evaluate((node) => node.scrollWidth - node.clientWidth))
+      .toBe(0);
+    const tabBox = await tab.boundingBox();
+    const buttonBox = await query(box)
+      .button("Tab row stretch settings")
+      .boundingBox();
+    if (!tabBox || !buttonBox) throw new Error("A box is missing.");
+    test.expect(tabBox.x + tabBox.width).toBeLessThanOrEqual(buttonBox.x + 0.5);
+  });
+
+  // The popover renders in a portal, but it is a child of the tab in the React
+  // tree, so its key presses reach the tab.
+  test("edits a rename field in a closable tab with Backspace", async ({
+    page,
+    q,
+  }) => {
+    const list = query(q.article("Tab row")).tablist("Tab row rename");
+    await query(list).tab("Billing").dblclick();
+    const field = query(q.dialog("Rename Billing")).textbox("Name");
+    await test.expect(field).toBeFocused();
+    // The portal keeps the field out of the tab and its scroll container, so a
+    // person can see it and click it.
+    await field.click();
+    await page.keyboard.press("End");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Delete");
+    await test.expect(field).toHaveValue("Billin");
+    await page.keyboard.press("Enter");
+    await test.expect(query(list).tab("Billin")).toBeFocused();
+    await test.expect(query(list).tab()).toHaveCount(3);
+  });
 });

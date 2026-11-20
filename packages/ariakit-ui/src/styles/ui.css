@@ -488,15 +488,24 @@ body > * {
       var(--carousel-overhang, 0px) +
         max(var(--carousel-button-space), var(--carousel-clear))
     );
-    --carousel-mask-fade: calc(
-      var(--carousel-mask-inset) + var(--carousel-fade-size)
-    );
+    /* A viewport can cover another length at one end, such as a tab strip
+       beside a control. */
+    --carousel-mask-start: var(--carousel-cover-start, var(--carousel-mask-inset));
+    --carousel-mask-end: var(--carousel-cover-end, var(--carousel-mask-inset));
     mask-image: linear-gradient(
       var(--carousel-mask-direction, to right),
-      transparent calc(var(--carousel-mask-inset) * var(--carousel-start)),
-      #000 calc(var(--carousel-mask-fade) * var(--carousel-start)),
-      #000 calc(100% - var(--carousel-mask-fade) * var(--carousel-end)),
-      transparent calc(100% - var(--carousel-mask-inset) * var(--carousel-end))
+      transparent calc(var(--carousel-mask-start) * var(--carousel-start)),
+      #000
+        calc(
+          (var(--carousel-mask-start) + var(--carousel-fade-size)) *
+            var(--carousel-start)
+        ),
+      #000
+        calc(
+          100% - (var(--carousel-mask-end) + var(--carousel-fade-size)) *
+            var(--carousel-end)
+        ),
+      transparent calc(100% - var(--carousel-mask-end) * var(--carousel-end))
     );
     animation-name: ui-carousel-start, ui-carousel-end;
     animation-timing-function: linear;

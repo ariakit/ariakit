@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { click, dispatch, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("keeps the names of custom strip scroll buttons", () => {
@@ -128,4 +128,34 @@ test("omits null and undefined tabs record entries from keyboard navigation", as
   expect(tabs.tab("Settings")).toHaveFocus();
   await press.ArrowRight();
   expect(tabs.tab("Activity")).toHaveFocus();
+});
+
+test("names the scroll buttons of a tab list in a row", () => {
+  const box = q.within(q.article("Tab row"));
+  const lists = box.tablist.all();
+  expect(lists.length).toBeGreaterThan(0);
+  // The row holds the buttons of each tab list, outside the list, with the
+  // names that a tab list gives them.
+  expect(box.button.all("Previous tabs")).toHaveLength(lists.length);
+  expect(box.button.all("Next tabs")).toHaveLength(lists.length);
+  expect(box.button.maybe("Scroll forward")).not.toBeInTheDocument();
+  for (const list of lists) {
+    expect(q.within(list).button.all()).toHaveLength(0);
+  }
+});
+
+// The popover renders in a portal, but it is a child of the tab in the React
+// tree, so its key presses reach the tab.
+test("edits a rename field in a closable tab with Backspace", async () => {
+  const tablist = q.tablist("Tab row rename");
+  const list = q.within(tablist);
+  await click(list.tab("Billing"));
+  await dispatch.dblClick(list.tab("Billing"));
+  await expect.poll(() => q.textbox.maybe("Name")).toHaveFocus();
+  expect(tablist).not.toContainElement(q.textbox("Name"));
+  await type("\b");
+  expect(q.textbox("Name")).toHaveValue("Billin");
+  await press.Enter();
+  expect(list.tab("Billin")).toHaveFocus();
+  expect(list.tab.all()).toHaveLength(3);
 });
