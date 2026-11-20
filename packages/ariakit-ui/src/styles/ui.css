@@ -959,6 +959,98 @@ body > * {
   initial-value: 0px;
 }
 
+/* Each main publishes the width that each sidebar of its shell takes when it
+   opens, for a shell inside it with `$center="outer"`. The values follow
+   `$width` and `$show`, not a toggle, so a toggle doesn't restyle main. */
+@property --shell-outer-start-1-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-outer-start-2-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-outer-end-1-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-outer-end-2-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* A shell with `$center="outer"` reads whether each sidebar of the outer shell
+   is open. These flags don't inherit, so a toggle restyles that shell, not the
+   content inside it. */
+@property --shell-outer-start-1-open {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --shell-outer-start-2-open {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --shell-outer-end-1-open {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --shell-outer-end-2-open {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* The space of the open sidebars of the outer shell, which a shell with
+   `$center="outer"` passes to its parts. As lengths, they change only when the
+   space does, not when a value that they're computed from does. */
+@property --shell-outer-start {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-outer-end {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* A shell with `$center="outer"` directly inside a shell counts the container
+   sizes that the outer shell reaches, like a part does. It reads the count on
+   the same element, so the count doesn't inherit. */
+@property --shell-parent-breakpoint {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* The same space in content grids and bars, which animate it like their own
+   sidebar lengths. */
+@property --shell-outer-start-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-outer-end-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* Content grids read these values from the animated lengths on the same
    element. Disable inheritance so an animation frame does not restyle the
    content inside them. */
@@ -1220,7 +1312,7 @@ body > * {
      Explicit inheritance would skip the content too, but WebKit doesn't
      update values derived from it. */
   :where(
-      & > :not(.shell-slot-state),
+      & > :not(.shell-slot-state, .shell-center-outer),
       & > .shell-slot-state > :not(.shell-content-grid),
       & > .shell-slot-state > .shell-content-grid > *
     ) {
@@ -1232,6 +1324,34 @@ body > * {
     --shell-header-free-2: initial;
     --shell-intro-free-1: initial;
     --shell-intro-free-2: initial;
+    --shell-outer-start: initial;
+    --shell-outer-end: initial;
+    --shell-parent-start-1-open: initial;
+    --shell-parent-start-2-open: initial;
+    --shell-parent-end-1-open: initial;
+    --shell-parent-end-2-open: initial;
+  }
+
+  /* A shell directly inside this one with `$center="outer"` gets the state
+     like a part does, under names that its own state doesn't replace. The
+     stop rule above lets that shell through, and it computes the space. */
+  &:has(> .shell-center-outer) {
+    --shell-parent-start-1-open: var(--shell-start-1-open);
+    --shell-parent-start-2-open: var(--shell-start-2-open);
+    --shell-parent-end-1-open: var(--shell-end-1-open);
+    --shell-parent-end-2-open: var(--shell-end-2-open);
+    --shell-parent-start-1-width: var(--shell-start-1-width);
+    --shell-parent-start-2-width: var(--shell-start-2-width);
+    --shell-parent-end-1-width: var(--shell-end-1-width);
+    --shell-parent-end-2-width: var(--shell-end-2-width);
+    --shell-parent-start-1-show-from: var(--shell-start-1-show-from);
+    --shell-parent-start-1-show-below: var(--shell-start-1-show-below);
+    --shell-parent-start-2-show-from: var(--shell-start-2-show-from);
+    --shell-parent-start-2-show-below: var(--shell-start-2-show-below);
+    --shell-parent-end-1-show-from: var(--shell-end-1-show-from);
+    --shell-parent-end-1-show-below: var(--shell-end-1-show-below);
+    --shell-parent-end-2-show-from: var(--shell-end-2-show-from);
+    --shell-parent-end-2-show-below: var(--shell-end-2-show-below);
   }
 
   /* Every :has() here styles the shell itself. With a :has() before a
@@ -1862,6 +1982,150 @@ body > * {
   }
 }
 
+/* Centers the content of a shell on the outer shell: content grids and bars
+   add the space of its open sidebars to their own. Inside the main of the outer
+   shell, behind any wrappers, the shell asks the nearest main, a named
+   container, whether each sidebar is open. A value that inherits through main
+   would restyle all of main on each toggle. A style query restyles the shell
+   and, in Chrome, every element in that main that uses a style query. */
+@utility shell-center-outer {
+  &:not(.shell > *) {
+    @container shell-main style(--shell-start-1-open: 1) {
+      --shell-outer-start-1-open: 1;
+    }
+    @container shell-main style(--shell-start-2-open: 1) {
+      --shell-outer-start-2-open: 1;
+    }
+    @container shell-main style(--shell-end-1-open: 1) {
+      --shell-outer-end-1-open: 1;
+    }
+    @container shell-main style(--shell-end-2-open: 1) {
+      --shell-outer-end-2-open: 1;
+    }
+  }
+  --shell-outer-start: calc(
+    var(--shell-outer-start-1-width) * var(--shell-outer-start-1-open) +
+      var(--shell-outer-start-2-width) * var(--shell-outer-start-2-open)
+  );
+  --shell-outer-end: calc(
+    var(--shell-outer-end-1-width) * var(--shell-outer-end-1-open) +
+      var(--shell-outer-end-2-width) * var(--shell-outer-end-2-open)
+  );
+
+  /* In the main of the outer shell, the folds of this shell take the timing
+     of the outer shell, like a shell directly inside it does, so the content
+     moves with the outer sidebars. `$duration` on this shell still sets its
+     own. */
+  .shell &:not(.shell > *) {
+    --shell-duration: inherit;
+    --shell-motion: inherit;
+    --shell-ease: inherit;
+  }
+
+  /* Directly inside a shell, the outer shell passes its state on, and this
+     shell applies the `$show` of the outer sidebars like a part does: its
+     container queries measure the outer shell. Keep the sums in one value: a
+     value per sidebar wouldn't stop at the parts. */
+  .shell > & {
+    --shell-parent-breakpoint: 0;
+    @variant @3xs/shell {
+      --shell-parent-breakpoint: 1;
+    }
+    @variant @2xs/shell {
+      --shell-parent-breakpoint: 2;
+    }
+    @variant @xs/shell {
+      --shell-parent-breakpoint: 3;
+    }
+    @variant @sm/shell {
+      --shell-parent-breakpoint: 4;
+    }
+    @variant @md/shell {
+      --shell-parent-breakpoint: 5;
+    }
+    @variant @lg/shell {
+      --shell-parent-breakpoint: 6;
+    }
+    @variant @xl/shell {
+      --shell-parent-breakpoint: 7;
+    }
+    @variant @2xl/shell {
+      --shell-parent-breakpoint: 8;
+    }
+    @variant @3xl/shell {
+      --shell-parent-breakpoint: 9;
+    }
+    @variant @4xl/shell {
+      --shell-parent-breakpoint: 10;
+    }
+    @variant @5xl/shell {
+      --shell-parent-breakpoint: 11;
+    }
+    @variant @6xl/shell {
+      --shell-parent-breakpoint: 12;
+    }
+    @variant @7xl/shell {
+      --shell-parent-breakpoint: 13;
+    }
+    --shell-outer-start: calc(
+      var(--shell-parent-start-1-width, 0px) * var(--shell-parent-start-1-open, 0) *
+        clamp(
+          0,
+          var(--shell-parent-breakpoint) -
+            var(--shell-parent-start-1-show-from, 0) + 1,
+          1
+        ) *
+        clamp(
+          0,
+          var(--shell-parent-start-1-show-below, 14) -
+            var(--shell-parent-breakpoint),
+          1
+        ) +
+        var(--shell-parent-start-2-width, 0px) * var(--shell-parent-start-2-open, 0) *
+        clamp(
+          0,
+          var(--shell-parent-breakpoint) -
+            var(--shell-parent-start-2-show-from, 0) + 1,
+          1
+        ) *
+        clamp(
+          0,
+          var(--shell-parent-start-2-show-below, 14) -
+            var(--shell-parent-breakpoint),
+          1
+        )
+    );
+    --shell-outer-end: calc(
+      var(--shell-parent-end-1-width, 0px) * var(--shell-parent-end-1-open, 0) *
+        clamp(
+          0,
+          var(--shell-parent-breakpoint) -
+            var(--shell-parent-end-1-show-from, 0) + 1,
+          1
+        ) *
+        clamp(
+          0,
+          var(--shell-parent-end-1-show-below, 14) -
+            var(--shell-parent-breakpoint),
+          1
+        ) +
+        var(--shell-parent-end-2-width, 0px) * var(--shell-parent-end-2-open, 0) *
+        clamp(
+          0,
+          var(--shell-parent-breakpoint) -
+            var(--shell-parent-end-2-show-from, 0) + 1,
+          1
+        ) *
+        clamp(
+          0,
+          var(--shell-parent-end-2-show-below, 14) -
+            var(--shell-parent-breakpoint),
+          1
+        )
+    );
+  }
+}
+
 /* The sidebar lengths of a bar: the same lengths that a content grid reads.
    Every bar resolves them so an area that renders later doesn't animate them
    from zero. They don't inherit, so a toggle doesn't restyle what the bar holds. */
@@ -1880,6 +2144,8 @@ body > * {
   --shell-end-2-space: calc(
     var(--shell-end-2-width) * var(--shell-end-2-open) * var(--shell-end-2-fit)
   );
+  --shell-outer-start-space: var(--shell-outer-start, 0px);
+  --shell-outer-end-space: var(--shell-outer-end, 0px);
 }
 
 /* What a bar with a content area adds: it animates its sidebar lengths, like a
@@ -1887,7 +2153,7 @@ body > * {
 @utility shell-bar-fold {
   transition-property:
     --shell-start-1-space, --shell-start-2-space, --shell-end-1-space,
-    --shell-end-2-space;
+    --shell-end-2-space, --shell-outer-start-space, --shell-outer-end-space;
   transition-duration: var(--shell-time);
   transition-timing-function: var(--shell-ease);
   --shell-start-total: calc(
@@ -1898,11 +2164,17 @@ body > * {
   );
   --shell-comp-end: max(
     0px,
-    calc(var(--shell-start-total) - var(--shell-end-total))
+    calc(
+      var(--shell-start-total) + max(0px, var(--shell-outer-start-space)) -
+        var(--shell-end-total) - max(0px, var(--shell-outer-end-space))
+    )
   );
   --shell-comp-start: max(
     0px,
-    calc(var(--shell-end-total) - var(--shell-start-total))
+    calc(
+      var(--shell-end-total) + max(0px, var(--shell-outer-end-space)) -
+        var(--shell-start-total) - max(0px, var(--shell-outer-start-space))
+    )
   );
   --shell-popout: 1rem;
   --shell-feature: 3.5rem;

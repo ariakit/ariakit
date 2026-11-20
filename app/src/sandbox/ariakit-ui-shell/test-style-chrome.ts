@@ -160,6 +160,39 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(opening).toBeLessThan(limit);
   });
 
+  for (const direct of [false, true]) {
+    const place = direct ? "directly inside the outer shell" : "in a panel";
+    test(`keeps the chat styles cached when a window sidebar closes and opens with the chat ${place}`, async ({
+      page,
+    }) => {
+      const { closing, opening, limit } = await measureOnPageLoads(
+        page,
+        async ({ page, q }) => {
+          await q.combobox("Scenario").selectOption("center");
+          if (direct) {
+            await q.checkbox("Directly inside").check();
+          }
+          const toggle = q.checkbox("Start sidebar");
+          const sidebar = q.navigation("Start sidebar");
+          // The chat follows the window sidebars, so its shell and parts
+          // restyle, but not the messages.
+          const limit = await q.group("Conversation").locator("*").count();
+          const closing = await largestStyleRecalculation(page, () =>
+            toggle.uncheck(),
+          );
+          await test.expect(sidebar).toBeHidden();
+          const opening = await largestStyleRecalculation(page, () =>
+            toggle.check(),
+          );
+          await test.expect(sidebar).toBeVisible();
+          return { closing, opening, limit };
+        },
+      );
+      test.expect(closing).toBeLessThan(limit);
+      test.expect(opening).toBeLessThan(limit);
+    });
+  }
+
   test("keeps the header area styles cached when a sidebar in the page box closes and opens", async ({
     page,
   }) => {
