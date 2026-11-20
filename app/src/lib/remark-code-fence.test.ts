@@ -195,13 +195,17 @@ const a = 1;
   ]);
 });
 
-test("puts the feature components of body content in feature bands", async () => {
-  // The fence in the card renders as a code fence and stays in the card.
+test("puts the popout components of body content in popouts", async () => {
+  // A written card keeps its other children, such as a real example, and the
+  // fence in the card renders as a code fence and stays in the card.
   const code = await compile(
     `
+import RealExample from "./real/index.react.tsx";
+
 Text
 
-<ExampleCard html="<p>Hi</p>">
+<ExampleCard>
+  <RealExample slot="preview" />
 
 \`\`\`html
 <p>Hi</p>
@@ -212,22 +216,24 @@ Text
 <Callout>Note</Callout>
 `,
     "/app/guide.mdx",
-    { isBodyContent: () => true, features: ["ExampleCard"] },
+    { isBodyContent: () => true, popouts: ["ExampleCard"] },
   );
   expect(code).toContain(
-    'import {ShellFeature as CodeFenceFeature} from "@ariakit/ui/components/shell.ariakit.react";',
+    'import {ShellPopout as CodeFencePopout} from "@ariakit/ui/components/shell.ariakit.react";',
   );
-  // The content has no top-level fence, so it doesn't use a popout.
-  expect(code).not.toContain("ShellPopout");
+  // The content has no feature, so it doesn't use a feature band.
+  expect(code).not.toContain("ShellFeature");
+  expect(code).toContain('slot: "preview"');
   const parts = code.match(
-    /_jsxs?\((CodeFenceProse|CodeFencePopout|CodeFenceFeature|CodeFence|ExampleCard|Callout)\b/g,
+    /_jsxs?\((CodeFenceProse|CodeFencePopout|CodeFenceFeature|CodeFence|ExampleCard|RealExample|Callout)\b/g,
   );
-  // The band spans the feature column, so the card can use its lines.
+  // The card spans the popout column, like a fence.
   expect(parts).toEqual([
-    "_jsxs(CodeFenceFeature",
+    "_jsxs(CodeFencePopout",
     "_jsx(CodeFenceProse",
-    "_jsx(CodeFenceFeature",
-    "_jsx(ExampleCard",
+    "_jsx(CodeFencePopout",
+    "_jsxs(ExampleCard",
+    "_jsx(RealExample",
     "_jsx(CodeFence",
     "_jsx(CodeFenceProse",
     "_jsx(Callout",

@@ -46,11 +46,16 @@ export interface RemarkCodeFencesOptions {
    */
   isBodyContent?: (filePath: string) => boolean;
   /**
+   * The MDX components that go in a `ShellPopout` of their own at the top level
+   * of body content, like a fence. Another plugin can render a fence in one of
+   * these, such as the example card of a preview fence. A pattern matches the
+   * name of an MDX component element, such as `ExampleCard`.
+   */
+  popouts?: (string | RegExp)[];
+  /**
    * The MDX components that go in a `ShellFeature` of their own at the top
-   * level of body content, wider than the popout of a fence. Another plugin can
-   * render a fence in one of these, such as the example card of a preview
-   * fence. A pattern matches the names of components that a page imports, such
-   * as its figures.
+   * level of body content, wider than the popout of a fence. A pattern matches
+   * the name of an MDX component element, such as a name with a Figure suffix.
    */
   features?: (string | RegExp)[];
 }
@@ -205,18 +210,25 @@ function isModuleNode(node: MdastNode) {
   return node.type === "mdxjsEsm" || node.type === "yaml";
 }
 
-// Puts each run of text in a Prose in the content column, each fence in a
-// ShellPopout, like the Code Blocks in Prose example, and each feature in a
-// ShellFeature. A band around them spaces them with the gap of a Prose, so the
-// text keeps the rhythm of one Prose column. It is the first of the two band
-// levels that a shell allows, and it spans the widest part, because the parts
-// can only use the column lines inside it.
-function splitBodyContent(
-  tree: MdastNode,
-  fences: Set<MdastNode>,
-  isFeature: (node: MdastNode) => boolean,
-  names: ComponentNames,
-) {
+interface SplitBodyContentParams {
+  tree: MdastNode;
+  isPopout: (node: MdastNode) => boolean;
+  isFeature: (node: MdastNode) => boolean;
+  names: ComponentNames;
+}
+
+// Puts each run of text in a Prose in the content column, each fence and popout
+// component in a ShellPopout, like the Code Blocks in Prose example, and each
+// feature in a ShellFeature. A band around them spaces them with the gap of a
+// Prose, so the text keeps the rhythm of one Prose column. It is the first of
+// the two band levels that a shell allows, and it spans the widest part,
+// because the parts can only use the column lines inside it.
+function splitBodyContent({
+  tree,
+  isPopout,
+  isFeature,
+  names,
+}: SplitBodyContentParams) {
   let hasPopout = false;
   let hasFeature = false;
   const moduleNodes: MdastNode[] = [];
@@ -232,7 +244,7 @@ function splitBodyContent(
   for (const child of tree.children ?? []) {
     if (isModuleNode(child)) {
       moduleNodes.push(child);
-    } else if (fences.has(child)) {
+    } else if (isPopout(child)) {
       flush();
       hasPopout = true;
       parts.push(createWrapper(names.popout, "", [child]));
@@ -373,6 +385,7 @@ function createInstallProps(code: string): CodeFenceProps {
  */
 export function remarkCodeFences({
   isBodyContent,
+  popouts = [],
   features = [],
 }: RemarkCodeFencesOptions = {}) {
   return (tree: MdastNode, file: FenceFile) => {
@@ -487,16 +500,21 @@ export function remarkCodeFences({
       throw new Error(`Fix these code fences:\n${errors.join("\n")}`);
     }
     if (isBodyContent?.(filePath)) {
-      const isFeature = (node: MdastNode) => {
+      const matches = (node: MdastNode, patterns: (string | RegExp)[]) => {
         if (node.type !== "mdxJsxFlowElement") return false;
         const { name } = node;
         if (!name) return false;
-        return features.some((feature) => {
-          if (typeof feature === "string") return feature === name;
-          return feature.test(name);
+        return patterns.some((pattern) => {
+          if (typeof pattern === "string") return pattern === name;
+          return pattern.test(name);
         });
       };
-      splitBodyContent(tree, fences, isFeature, names);
+      splitBodyContent({
+        tree,
+        isPopout: (node) => fences.has(node) || matches(node, popouts),
+        isFeature: (node) => matches(node, features),
+        names,
+      });
     }
     if (!fences.size) return;
     tree.children?.unshift(

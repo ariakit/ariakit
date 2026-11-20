@@ -64,7 +64,7 @@ test("the site navigation opens the group of the Styles page", async ({
   );
 });
 
-test("an html preview fence renders its markup next to its code", async ({
+test("an html preview fence renders its markup with its code", async ({
   page,
 }) => {
   await gotoAndSettle(page, "/tailwind/styles/ak-layer/");
@@ -82,32 +82,29 @@ test("an html preview fence renders its markup next to its code", async ({
   await expect(query(card).button("Copy code")).toBeVisible();
 });
 
-test("an example card puts its code on the left, or under the example", async ({
+test("an example card puts its code under the example, as wide as a fence", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await gotoAndSettle(page, "/tailwind/styles/ak-layer/");
   const card = page.locator("[data-example-card]").first();
-  const getBoxes = async () => {
-    const stage = await card.locator("[data-example-stage]").boundingBox();
-    const code = await card.locator("pre").boundingBox();
-    if (!stage || !code) throw new Error("The card has no stage or code");
-    return { stage, code };
-  };
-  const wide = await getBoxes();
-  expect(wide.code.x + wide.code.width).toBeLessThanOrEqual(wide.stage.x);
-  // The card goes in a feature band, wider than the popout of a code fence.
-  const fence = page.locator("pre:not([data-example-card] pre)").first();
   const cardBox = await card.boundingBox();
+  const stage = await card.locator("[data-example-stage]").boundingBox();
+  const code = await card.locator("pre").boundingBox();
+  if (!cardBox || !stage || !code) {
+    throw new Error("The card has no stage or code");
+  }
+  // The stage fills the width of the card, above the code.
+  expect(stage.x).toBeCloseTo(cardBox.x, 0);
+  expect(stage.width).toBeCloseTo(cardBox.width, 0);
+  expect(stage.y + stage.height).toBeLessThanOrEqual(code.y);
+  // The card goes in a popout, like a code fence, so its code lines up with the
+  // code of a fence.
+  const fence = page.locator("pre:not([data-example-card] pre)").first();
   const fenceBox = await fence.boundingBox();
-  expect(cardBox?.width).toBeGreaterThan(fenceBox?.width ?? Infinity);
-  await page.setViewportSize({ width: 375, height: 812 });
-  await expect
-    .poll(async () => {
-      const narrow = await getBoxes();
-      return narrow.stage.y + narrow.stage.height <= narrow.code.y;
-    })
-    .toBe(true);
+  if (!fenceBox) throw new Error("The page has no code fence");
+  expect(code.x).toBeCloseTo(fenceBox.x, 0);
+  expect(code.width).toBeCloseTo(fenceBox.width, 0);
 });
 
 test("a wide table scrolls inside its own scroller with its column headers", async ({

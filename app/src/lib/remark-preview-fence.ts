@@ -34,9 +34,9 @@ const MAX_LINES = 12;
 
 // Returns the meta of an html preview fence without the preview word, or
 // undefined for any other fence. The code fence tokenizer keeps quoted text
-// whole, so a title such as "A preview card" keeps its word. The code column of
-// the card is narrow, so its code wraps, and long code collapses unless the
-// fence sets its own maxLines.
+// whole, so a title such as "A preview card" keeps its word. The code sits
+// under the example, so long code collapses unless the fence sets its own
+// maxLines, and the card stays short.
 function getPreviewMeta(node: CodeNode) {
   if (node.lang !== "html") return;
   const tokens = tokenizeCodeFenceMeta(node.meta ?? "");
@@ -46,9 +46,6 @@ function getPreviewMeta(node: CodeNode) {
   const words = tokens
     .filter((token) => !isName(token, PREVIEW_WORD))
     .map((token) => token.raw);
-  if (!tokens.some((token) => isName(token, "wrap"))) {
-    words.push("wrap");
-  }
   const hasMaxLines = tokens.some(
     (token) => token.type === "pair" && token.key === "maxLines",
   );
@@ -60,12 +57,11 @@ function getPreviewMeta(node: CodeNode) {
 
 /**
  * Renders each `html preview` code fence in an MDX file as an `ExampleCard`,
- * which shows the markup live next to its code. The fence keeps its code, so
- * readers and agents see the same markup that the page renders. Its code wraps,
- * because the card puts it in a narrow column, and code longer than 12 lines
- * collapses. This plugin runs before `remarkCodeFences`, which renders the
- * fence in the card as a code block and would report the preview word as an
- * unknown option.
+ * which shows the markup live above its code. The fence keeps its code, so
+ * readers and agents see the same markup that the page renders. Code longer
+ * than 12 lines collapses. This plugin runs before `remarkCodeFences`, which
+ * renders the fence in the card as a code block and would report the preview
+ * word as an unknown option.
  *
  * ````md
  * ```html preview
