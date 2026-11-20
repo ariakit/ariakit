@@ -899,8 +899,8 @@ importers:
   packages/ariakit-tailwind:
     devDependencies:
       csstype:
-        specifier: 3.2.3
-        version: 3.2.3
+        specifier: 3.2.4
+        version: 3.2.4
       tailwindcss:
         specifier: 4.3.5
         version: 4.3.5
@@ -6251,8 +6251,8 @@ packages:
   csstype@3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
 
-  csstype@3.2.3:
-    resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
+  csstype@3.2.4:
+    resolution: {integrity: sha512-PoKaoPzQapnEoqUSnHx1u6W6ku8CVEgKsnpmmzU3m1nwkidpPBQ8V/Zq2+bWNrsOKoKLwTGdbx6xF7BXP1zLVQ==}
 
   data-urls@8.0.0:
     resolution: {integrity: sha512-JQUCCK+/CAGbGGx618PlFZMXH81Jtj7t73CHv9dd/zVWvxgGT2zLFRjnKb+Ng46GIwcy+f7f88qd4duqllK+WQ==}
@@ -14139,11 +14139,11 @@ snapshots:
   '@types/react@18.3.28':
     dependencies:
       '@types/prop-types': 15.7.15
-      csstype: 3.2.3
+      csstype: 3.2.4
 
   '@types/react@19.3.0':
     dependencies:
-      csstype: 3.2.3
+      csstype: 3.2.4
 
   '@types/send@1.2.1':
     dependencies:
@@ -14498,7 +14498,7 @@ snapshots:
       change-case: 4.1.2
       clsx: 2.1.1
       colord: 2.10.0
-      csstype: 3.2.3
+      csstype: 3.2.4
       date-fns: 4.4.0
       deepmerge: 4.3.1
       fast-deep-equal: 3.1.3
@@ -15232,7 +15232,7 @@ snapshots:
   clava@0.7.3:
     dependencies:
       clsx: 2.1.1
-      csstype: 3.2.3
+      csstype: 3.2.4
 
   client-only@0.0.1: {}
 
@@ -15383,7 +15383,7 @@ snapshots:
 
   csstype@3.1.1: {}
 
-  csstype@3.2.3: {}
+  csstype@3.2.4: {}
 
   data-urls@8.0.0(@noble/hashes@1.8.0):
     dependencies:
@@ -18809,13 +18809,13 @@ snapshots:
 
   solid-js@1.9.12:
     dependencies:
-      csstype: 3.2.3
+      csstype: 3.2.4
       seroval: 1.5.6
       seroval-plugins: 1.5.6(seroval@1.5.6)
 
   solid-js@1.9.19:
     dependencies:
-      csstype: 3.2.3
+      csstype: 3.2.4
       seroval: 1.6.12
       seroval-plugins: 1.6.8(seroval@1.6.12)
 
