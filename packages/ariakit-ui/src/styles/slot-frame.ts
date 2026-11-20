@@ -102,6 +102,40 @@ export function hasSlotSurface(variants: VariantProps<typeof frame>) {
   return Boolean(variants.$border);
 }
 
+const floatingClass = [
+  "m-0! absolute border",
+  "in-[.control,.badge]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
+  // A floating slot hangs over the surface around its parent, so its border
+  // takes that color and reads as a cut-out.
+  "[.ak-layer>&]:ak-outset",
+  // What fills the slot sits inside this border, so a round count stays
+  // round. The selector wins over the base --slot-height.
+  "[&.slot-frame-slot]:[--slot-height:calc(var(--size)*var(--row-span)-2px)]",
+];
+
+// The slot moves out by half its size, not half its width, so the round end of
+// a long badge stays on the corner, and the badge grows into the parent. Each
+// physical translation reverses in RTL, where the logical inset is on the other
+// side.
+const floatingCornerClasses = {
+  "top-start": [
+    "top-0 inset-s-0 -translate-y-1/2",
+    "-translate-x-[calc(var(--size)/2)] rtl:translate-x-[calc(var(--size)/2)]",
+  ],
+  "top-end": [
+    "top-0 inset-e-0 -translate-y-1/2",
+    "translate-x-[calc(var(--size)/2)] rtl:-translate-x-[calc(var(--size)/2)]",
+  ],
+  "bottom-start": [
+    "bottom-0 inset-s-0 translate-y-1/2",
+    "-translate-x-[calc(var(--size)/2)] rtl:translate-x-[calc(var(--size)/2)]",
+  ],
+  "bottom-end": [
+    "bottom-0 inset-e-0 translate-y-1/2",
+    "translate-x-[calc(var(--size)/2)] rtl:-translate-x-[calc(var(--size)/2)]",
+  ],
+};
+
 /**
  * A text-aligned slot in a slot frame for an icon, avatar, badge, thumbnail,
  * keyboard key, or short text. Its margins follow the padding of the frame.
@@ -199,21 +233,19 @@ export const slotFrameSlot = cv({
     /** Sets the slot to be a square. */
     $square: "aspect-square",
     /**
-     * Renders the slot as a floating element on the top corner at the end of
-     * the row.
+     * Renders the slot as a floating element on a corner of its parent. It
+     * hangs over the corner by half its size, so a square slot is centered on
+     * the corner, and a wide badge grows into the parent. `true` is the top
+     * corner at the end of the row, the same as `top-end`. `start` and `end`
+     * follow the text direction.
      */
-    $floating: [
-      "m-0! absolute top-0 inset-e-0 -translate-y-1/2 border",
-      // Reverse the physical translation for the opposite RTL corner.
-      "translate-x-[calc(var(--size)/2)] rtl:-translate-x-[calc(var(--size)/2)]",
-      "in-[.control,.badge]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
-      // A floating slot hangs over the surface around its parent, so its border
-      // takes that color and reads as a cut-out.
-      "[.ak-layer>&]:ak-outset",
-      // What fills the slot sits inside this border, so a round count stays
-      // round. The selector wins over the base --slot-height.
-      "[&.slot-frame-slot]:[--slot-height:calc(var(--size)*var(--row-span)-2px)]",
-    ],
+    $floating: {
+      true: [floatingClass, floatingCornerClasses["top-end"]],
+      "top-start": [floatingClass, floatingCornerClasses["top-start"]],
+      "top-end": [floatingClass, floatingCornerClasses["top-end"]],
+      "bottom-start": [floatingClass, floatingCornerClasses["bottom-start"]],
+      "bottom-end": [floatingClass, floatingCornerClasses["bottom-end"]],
+    },
     /**
      * Scales the slot height by the number of text rows. Use `1` to align with
      * the first row.
@@ -277,7 +309,12 @@ export const slotFrameSlot = cv({
   },
   refine({ variants, addClass }) {
     if (variants.$kind !== "icon") return;
-    if (!isLayerColor(variants.$layer)) return;
+    // A floating slot paints its own surface by default, like a slot with a
+    // color.
+    const painted =
+      isLayerColor(variants.$layer) ||
+      (!!variants.$floating && hasLayerBackground(variants));
+    if (!painted) return;
     // Multi-row slots already have extra space.
     if (variants.$rowSpan !== 1) return;
     // Inset icons on painted tiles.
