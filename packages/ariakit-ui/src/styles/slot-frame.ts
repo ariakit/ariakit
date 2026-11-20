@@ -308,6 +308,20 @@ export const slotFrameSlot = cv({
     },
   },
   refine({ variants, addClass }) {
+    // A group of controls takes the slot height, like a single control. Its
+    // controls get the padding that makes them as tall as the slot, less the
+    // padding and border of the group and their own borders. Their side padding
+    // follows, so an icon-only control stays square. A control without padding,
+    // such as one that an avatar fills, gets none. An unset size leaves the
+    // slot height unknown, so the controls keep their size. Extenders add
+    // sizes, such as `auto` and numbers, so this tests for `unset` instead of
+    // adding the classes to each size.
+    if (variants.$size !== "unset") {
+      addClass([
+        "[&>.control-group]:[--slot-control-height:calc(var(--slot-height)-(var(--ak-frame-padding)+var(--ak-frame-border))*2)]",
+        "[&>.control-group>.control:not(.slot-frame-flush)]:ak-frame-p-[max(0px,calc((var(--slot-control-height)-1lh)/2-var(--ak-frame-border)))]",
+      ]);
+    }
     if (variants.$kind !== "icon") return;
     // A floating slot paints its own surface by default, like a slot with a
     // color.

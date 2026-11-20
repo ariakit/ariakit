@@ -14,6 +14,8 @@ import {
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import {
   Button,
+  ButtonGroup,
+  ButtonSeparator,
   ButtonSlot,
 } from "@ariakit/ui/components/button.ariakit.react";
 import {
@@ -49,7 +51,16 @@ import {
   inputErrorText,
   inputPlaceholder,
 } from "@ariakit/ui/styles/input";
-import { CircleAlert, ListFilter, Lock, Search } from "lucide-react";
+import {
+  ArrowUp,
+  CircleAlert,
+  ExternalLink,
+  ListFilter,
+  Lock,
+  Mic,
+  Search,
+  Share,
+} from "lucide-react";
 import { useState } from "react";
 import {
   Example,
@@ -133,6 +144,58 @@ function ErrorThatShowsOnBlur({ id, ...props }: ErrorThatShowsOnBlurProps) {
         {error}
       </InputError>
     </InputField>
+  );
+}
+
+interface MessageComposerLabels {
+  message: string;
+  placeholder: string;
+  actions: string;
+  dictate: string;
+  send: string;
+}
+
+const englishComposerLabels: MessageComposerLabels = {
+  message: "Message",
+  placeholder: "Write a message",
+  actions: "Message actions",
+  dictate: "Dictate",
+  send: "Send",
+};
+
+const arabicComposerLabels: MessageComposerLabels = {
+  message: "الرسالة",
+  placeholder: "اكتب رسالة",
+  actions: "إجراءات الرسالة",
+  dictate: "إملاء",
+  send: "إرسال",
+};
+
+interface MessageComposerProps {
+  labels?: MessageComposerLabels;
+}
+
+function MessageComposer({
+  labels = englishComposerLabels,
+}: MessageComposerProps) {
+  return (
+    <InputGroup $rounded="3xl" $p={3} className="text-sm">
+      <Input aria-label={labels.message} placeholder={labels.placeholder} />
+      <InputSlot $kind="box" $size="2xl">
+        <ButtonGroup aria-label={labels.actions} $p="none" $gap="md">
+          <Button type="button" aria-label={labels.dictate} $size="sm">
+            <ButtonSlot>
+              <Mic />
+            </ButtonSlot>
+          </Button>
+          <Button aria-label={labels.send} $size="sm" $layer="canvas" $invert>
+            <ButtonSlot>
+              <ArrowUp />
+            </ButtonSlot>
+          </Button>
+        </ButtonGroup>
+      </InputSlot>
+    </InputGroup>
   );
 }
 
@@ -663,6 +726,65 @@ export default function InputExamples() {
             <Button $size="sm">Copy</Button>
           </InputSlot>
         </InputGroup>
+      </Example>
+
+      <Example
+        title="Button groups in slots"
+        description="A button group in a box slot is as tall as the slot, like a single button, so its buttons are as far from the top as from the end of the field. Icon buttons stay square, also next to a button with text, and a joined group keeps its inner corners square. In a right-to-left field, the group moves to the left."
+        code={`
+          <InputGroup $rounded="3xl" $p={3}>
+            <Input aria-label="Message" />
+            <InputSlot $kind="box" $size="2xl">
+              <ButtonGroup aria-label="Message actions" $p="none" $gap="md">
+                <Button $size="sm" aria-label="Dictate">…</Button>
+                <Button $size="sm" aria-label="Send">…</Button>
+              </ButtonGroup>
+            </InputSlot>
+          </InputGroup>
+          <InputGroup>
+            <Input aria-label="Invite link" readOnly />
+            <InputSlot $kind="box" $size="2xl">
+              <ButtonGroup aria-label="Link" $p="none" $gap="none" $layer>
+                <Button $size="sm" aria-label="Open link">…</Button>
+                <ButtonSeparator />
+                <Button $size="sm">
+                  <ButtonSlot><Share /></ButtonSlot>
+                  Share
+                </Button>
+              </ButtonGroup>
+            </InputSlot>
+          </InputGroup>
+        `}
+      >
+        <div className="flex w-full flex-col gap-2">
+          <MessageComposer />
+          <InputGroup>
+            <Input
+              aria-label="Invite link"
+              defaultValue="ariakit.com/invite/7f3k2"
+              readOnly
+            />
+            <InputSlot $size="2xl" $kind="box">
+              <ButtonGroup aria-label="Link" $p="none" $gap="none" $layer>
+                <Button $size="sm" aria-label="Open link">
+                  <ButtonSlot>
+                    <ExternalLink />
+                  </ButtonSlot>
+                </Button>
+                <ButtonSeparator />
+                <Button $size="sm">
+                  <ButtonSlot>
+                    <Share />
+                  </ButtonSlot>
+                  Share
+                </Button>
+              </ButtonGroup>
+            </InputSlot>
+          </InputGroup>
+          <div dir="rtl" lang="ar">
+            <MessageComposer labels={arabicComposerLabels} />
+          </div>
+        </div>
       </Example>
 
       <Example
