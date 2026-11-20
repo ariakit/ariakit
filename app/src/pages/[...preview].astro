@@ -8,96 +8,24 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+// The recipe, component page, and Styles page previews. Sandbox previews
+// render in [...sandbox].astro, which loads sandbox.css.
 import "#app/styles/global.css";
-import "@fontsource-variable/inter";
-import ThemeScript from "#app/components/theme-script.astro";
-import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
-import { previewEmbedScript } from "#app/lib/preview-embed-script.ts";
+import PreviewPage from "#app/components/preview-page.astro";
+import { SANDBOX_PREVIEW_KIND } from "#app/lib/preview-config.ts";
+import { getPreviewPagePaths } from "#app/lib/preview-page.ts";
 import type { GetStaticPaths } from "astro";
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 
 export const getStaticPaths = (async () => {
-  const entries = await getCollection("previews");
-  return entries.flatMap((entry) => {
-    // Next.js previews are redirected by the Worker wrapper.
-    if (isNextjsPreviewId(entry.id)) return [];
-    return entry.data.frameworks.flatMap((framework) => {
-      const preview = `${framework}/previews/${entry.id}`;
-      const paths = [
-        { params: { preview }, props: { framework, entry, isolated: false } },
-      ];
-      // Capture tests load an Ariakit UI sandbox many times, and most of them
-      // need only a few of its cards. See forEachColorSchemeOf.
-      if (framework === "react" && entry.id.startsWith("ariakit-ui-")) {
-        paths.push({
-          params: { preview: `${preview}/isolated` },
-          props: { framework, entry, isolated: true },
-        });
-      }
-      return paths;
-    });
-  });
+  const entries = await getCollection(
+    "previews",
+    (entry) => entry.data.source !== SANDBOX_PREVIEW_KIND,
+  );
+  return getPreviewPagePaths("preview", entries);
 }) satisfies GetStaticPaths;
 
 const { framework, entry, isolated } = Astro.props;
-const { Content } = await render(entry);
-
-Astro.locals.framework = framework;
-Astro.locals.previewIsolated = isolated;
-
-const title = entry.data.title;
-const fullscreen = entry.data.fullscreen;
-// The embed script opens the popup of the preview when a card embeds it. An
-// empty value opens it with a click.
-const open = entry.data.open;
-const openMode = open === "hover" ? "hover" : open ? "" : undefined;
-// The embed script fits the frame to this element. An app shell fills the
-// frame, and an open popup needs room before the frame can measure it, so those
-// keep the fallback height of the card.
-const contentSized = !fullscreen && !open;
 ---
 
-<!doctype html>
-<html lang="en" data-preview-open={openMode}>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-    <title>Preview {title} - Ariakit</title>
-    <ThemeScript />
-    {/* Runs before the preview renders, so focus calls on mount already
-        respect an inactive preview card. */}
-    <script is:inline set:html={previewEmbedScript} />
-  </head>
-  {/* The page leaves room below a short example, so a popup can open below
-      its trigger. The body covers that room, so a click there is outside the
-      popup, not on the root element that contains it. A compact page, such as
-      in the navigation card, leaves no room, unless it opens a popup. See
-      preview-embed.ts. */}
-  <body
-    class:list={[
-      "flex",
-      !fullscreen && [
-        "flex-col",
-        "[:root:not([data-preview-compact])_&]:min-h-[200vh]!",
-        "[:root[data-preview-open]_&]:min-h-[200vh]!",
-      ],
-    ]}
-  >
-    {/* The framework island wraps the example and sizes to its content, so it
-        needs a width limit for the example's own max-w-full to resolve. The
-        example stays centered in the first viewport, with the same padding as
-        an inline preview card. In a preview card, the bottom padding also
-        leaves room for a horizontal scrollbar. See preview-embed.ts. */}
-    <div
-      data-preview-content={contentSized ? "" : undefined}
-      class:list={[
-        "@container size-full",
-        !fullscreen &&
-          "min-h-dvh p-8 pb-[calc(--spacing(8)+var(--preview-scrollbar-height,0px))] flex items-center-safe justify-center-safe *:max-w-full",
-      ]}
-    >
-      <Content {framework} />
-    </div>
-  </body>
-</html>
+<PreviewPage {framework} {entry} {isolated} />

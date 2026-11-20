@@ -1,4 +1,4 @@
-import "./style.css";
+import "#app/styles/ariakit-tailwind-sandbox.css";
 
 const FIELD = "ak-layer ak-frame ak-frame-lg/2 ak-frame-border w-64";
 const RING_FIELD = "ak-layer ak-frame ak-frame-lg/2 ak-frame-ring w-64";

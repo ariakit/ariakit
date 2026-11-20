@@ -1,4 +1,4 @@
-import "./style.css";
+import "#app/styles/ariakit-tailwind-sandbox.css";
 
 const DEFAULT_EDGE = "ak-frame-bordering-inherit ak-frame-backdrop";
 

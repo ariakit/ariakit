@@ -6,79 +6,12 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-@import "tailwindcss";
-@import "@ariakit/ui/styles/ui.css";
 
-@source "../../../packages/ariakit-ui/src/**";
-@source not "../sandbox/ariakit-tailwind*";
+/* The CSS entry point of the site pages and of the recipe, component page, and
+   Styles page previews. Astro sandbox previews load sandbox.css instead, so
+   the utilities that only sandboxes use stay out of the site CSS. The Next.js
+   app also imports this file in nextjs/app/globals.css, and it scans its own
+   sandbox pages. */
+@import "./base.css";
 
-/* The site's Theme panel sets data-theme on the root element. Without it, the
-   dark variant follows the system color scheme. */
-@custom-variant dark {
-  &:where([data-theme="dark"], [data-theme="dark"] *) {
-    @slot;
-  }
-  @media (prefers-color-scheme: dark) {
-    &:where(:not([data-theme="light"], [data-theme="light"] *)) {
-      @slot;
-    }
-  }
-}
-
-astro-island,
-astro-slot,
-astro-static-slot {
-  display: inherit !important;
-  :is(a, p, li, span, code) & {
-    display: inline !important;
-  }
-}
-
-/* Canvas options from the site's Theme panel, for each color mode. */
-:root[data-canvas="neutral"] {
-  --color-canvas: oklch(99.4% 0 0);
-  @variant dark {
-    --color-canvas: oklch(19.5% 0 0);
-  }
-}
-
-:root[data-canvas="warm"] {
-  --color-canvas: oklch(98.9% 0.008 80);
-  @variant dark {
-    --color-canvas: oklch(20% 0.009 60);
-  }
-}
-
-:root[data-canvas="cool"] {
-  --color-canvas: oklch(98.9% 0.008 250);
-  @variant dark {
-    --color-canvas: oklch(19.5% 0.018 262);
-  }
-}
-
-/* A preview page inside a preview card. See app/src/lib/preview-embed.ts. The
-   page scrolls vertically only after the person clicks or tabs into it, or
-   scrolls it horizontally. Until then, vertical wheel scrolling goes to the
-   docs page. A horizontal scroll does not move the docs page, so the page
-   keeps it. */
-:root[data-preview-embedded] {
-  scrollbar-gutter: stable;
-  &:not([data-preview-active]) {
-    overflow-y: hidden;
-  }
-}
-
-/* On a touch screen, inactive preview frames and inline previews stop the
-   vertical scrolling of their scroll containers, so a vertical touch over them
-   scrolls the docs page instead. Contained overscroll would still keep the
-   touch from the docs page. */
-[data-preview-scroll-lock] {
-  overflow-y: hidden !important;
-  overscroll-behavior-y: auto !important;
-}
-
-/* App shells round nested corners to the card viewport instead of a browser
-   window once the card sends its radius. */
-:root[data-preview-viewport-radius] .shell {
-  --shell-radius: var(--preview-viewport-radius);
-}
+@source not "../sandbox";

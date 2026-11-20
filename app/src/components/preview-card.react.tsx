@@ -1394,7 +1394,7 @@ function useInactiveScroll(
 
     // A touch cannot pass its scrolling to the page like the wheel. On a touch
     // screen, an inactive preview stops its scroll containers, so the browser
-    // scrolls the page. See global.css. The browser picks the scroller when a
+    // scrolls the page. See base.css. The browser picks the scroller when a
     // touch starts, and iOS Safari cancels the touch if that scroller stops
     // during it, so the containers stop before any touch. This includes
     // containers whose content fits, since it can overflow later without a DOM

@@ -1,0 +1,31 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+// The sandbox previews. This page loads sandbox.css instead of global.css, so
+// the utilities that only sandboxes use stay out of the site CSS.
+import "#app/styles/sandbox.css";
+import PreviewPage from "#app/components/preview-page.astro";
+import { SANDBOX_PREVIEW_KIND } from "#app/lib/preview-config.ts";
+import { getPreviewPagePaths } from "#app/lib/preview-page.ts";
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+
+export const getStaticPaths = (async () => {
+  const entries = await getCollection(
+    "previews",
+    (entry) => entry.data.source === SANDBOX_PREVIEW_KIND,
+  );
+  return getPreviewPagePaths("sandbox", entries);
+}) satisfies GetStaticPaths;
+
+const { framework, entry, isolated } = Astro.props;
+---
+
+<PreviewPage {framework} {entry} {isolated} />
