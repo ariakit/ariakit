@@ -1,7 +1,12 @@
 import { invariant } from "@ariakit/utils";
 import { countAnimations } from "#app/test-utils/ariakit-ui.ts";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
-import { getCenterY, hoverTimeout, wheelTo } from "./test-helpers.ts";
+import {
+  getCenterY,
+  hoverTimeout,
+  wheelInFrame,
+  wheelTo,
+} from "./test-helpers.ts";
 
 // After a scroll, Playwright WebKit sends a mousemove whose screen position
 // differs from its real moves, so the mouse hover moves, opens, and hides the
@@ -269,5 +274,28 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // timeout, which nothing shows while it's pending.
     await page.waitForTimeout(hoverTimeout);
     await test.expect(card).toHaveAttribute("data-open");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8383
+  test("count scrolls as hover again after the mouse moves from a frame back to the list", async ({
+    page,
+    q,
+  }) => {
+    const nav = query(q.navigation("Pages"));
+    await q.navigation("Pages").scrollIntoViewIfNeeded();
+    await wheelInFrame({
+      page,
+      above: nav.link("Home"),
+      below: nav.link("Docs"),
+      frame: page.locator("iframe[title='Embedded page']"),
+    });
+    const docs = await nav.link("Docs").boundingBox();
+    const blog = await nav.link("Blog").boundingBox();
+    invariant(docs && blog, "The links have no bounding box.");
+    // The gap between the links, away from the frame.
+    const gapY = (docs.y + docs.height + blog.y) / 2;
+    await page.mouse.move(docs.x + 4, gapY);
+    await page.mouse.wheel(0, (await getCenterY(nav.link("Blog"))) - gapY);
+    await test.expect(q.dialog("Blog")).toBeVisible();
   });
 });

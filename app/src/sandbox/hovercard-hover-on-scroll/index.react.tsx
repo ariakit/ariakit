@@ -9,7 +9,7 @@ import { link } from "@ariakit/ui/styles/link";
 import { popover } from "@ariakit/ui/styles/popover";
 import { tooltip } from "@ariakit/ui/styles/tooltip";
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 const sections = [
@@ -338,32 +338,6 @@ function EmbeddedFrame({ children, ...props }: EmbeddedFrameProps) {
   );
 }
 
-// TODO: Remove this workaround when this issue is fixed:
-// https://github.com/ariakit/ariakit/issues/8383
-// The page keeps the point where the mouse left it for a frame until the next
-// mouse move on the page, so page scrolls don't count as hover in the meantime.
-// A scroll that moves the frame away from the mouse sends the page a mouseover,
-// but no mouse move.
-function useHoverOnScrollOutsideFrames() {
-  const overFrameRef = useRef(false);
-  useEffect(() => {
-    const onMouseOver = (event: MouseEvent) => {
-      if (!(event.target instanceof HTMLIFrameElement)) return;
-      overFrameRef.current = true;
-    };
-    const onPointerMove = (event: PointerEvent) => {
-      overFrameRef.current = event.target instanceof HTMLIFrameElement;
-    };
-    document.addEventListener("mouseover", onMouseOver, true);
-    document.addEventListener("pointermove", onPointerMove, true);
-    return () => {
-      document.removeEventListener("mouseover", onMouseOver, true);
-      document.removeEventListener("pointermove", onPointerMove, true);
-    };
-  }, []);
-  return useCallback(() => !overFrameRef.current, []);
-}
-
 const pages = ["Home", "Docs", "Blog", "About"];
 
 interface FrameNeighborNavProps {
@@ -373,7 +347,6 @@ interface FrameNeighborNavProps {
 
 /** A list that touches a frame that can't scroll. */
 function FrameNeighborNav({ label, frame }: FrameNeighborNavProps) {
-  const hoverOnScroll = useHoverOnScrollOutsideFrames();
   return (
     <div className="flex items-start">
       <ak.HovercardProvider placement="bottom">
@@ -383,7 +356,7 @@ function FrameNeighborNav({ label, frame }: FrameNeighborNavProps) {
               <li key={page}>
                 <ak.HovercardAnchor
                   href={`#${page.toLowerCase()}`}
-                  hoverOnScroll={hoverOnScroll}
+                  hoverOnScroll
                   {...link.jsx({ className: "block" })}
                 >
                   {page}
@@ -401,14 +374,9 @@ function FrameNeighborNav({ label, frame }: FrameNeighborNavProps) {
 
 /** A hovercard that previews a page in a frame. */
 function FramePreviewLink() {
-  const hoverOnScroll = useHoverOnScrollOutsideFrames();
   return (
     <ak.HovercardProvider placement="bottom-start">
-      <ak.HovercardAnchor
-        href="#embed"
-        hoverOnScroll={hoverOnScroll}
-        {...link.jsx()}
-      >
+      <ak.HovercardAnchor href="#embed" hoverOnScroll {...link.jsx()}>
         Embed
       </ak.HovercardAnchor>
       <ak.Hovercard {...popover.jsx({ className: "gap-2" })}>
