@@ -287,7 +287,7 @@ Helpers for creating and composing Ariakit Solid components.
 function createInstance(
   Component: ValidComponent,
   props: Props<ValidComponent, Options>,
-): import("solid-js").JSX.Element;
+): any;
 ```
 
 Creates a Solid component instance that supports the `render` and `wrapInstance` props.
