@@ -12,7 +12,11 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
 import { flushFrames } from "#app/test-utils/preview.ts";
-import { HIDE_TIMEOUT, gotoPage } from "./app-navigation-card-helpers.ts";
+import {
+  HIDE_TIMEOUT,
+  expectShownFrame,
+  gotoPage,
+} from "./app-navigation-card-helpers.ts";
 
 // The show timeout of the card, half the default of a hovercard.
 const SHOW_TIMEOUT = 250;
@@ -150,13 +154,13 @@ test("site navigation card shows the examples of the hovered link", async ({
     "src",
     "/react/previews/breadcrumb/",
   );
-  await expect(frames.first()).toHaveCSS("opacity", "1");
+  await expectShownFrame(frames.first());
   await query(carousel).button("Next slide").click();
   await expect(card.getByText(`2/${count}`, { exact: true })).toBeVisible();
   // The next slide loads its page once it shows, and the first slide keeps its
   // page.
   await expect(frames).toHaveCount(2);
-  await expect(frames.nth(1)).toHaveCSS("opacity", "1");
+  await expectShownFrame(frames.nth(1));
   // The frame takes the title of its example, which now names the card.
   const title = await frames.nth(1).getAttribute("title");
   expect(title).toBeTruthy();
@@ -173,7 +177,7 @@ test("site navigation card lays out its previews beside the link", async ({
   await link.hover();
   const card = query(page).dialog("Radio");
   const frame = card.locator("iframe");
-  await expect(frame).toHaveCSS("opacity", "1");
+  await expectShownFrame(frame);
   // A preview draws at three quarters of the default font size, and leaves no
   // room to scroll below a short example.
   const html = frame.contentFrame().locator("html");
@@ -245,6 +249,7 @@ test("site navigation card lays out its previews beside the link", async ({
   // The card keeps the examples of the previous link, hidden.
   const shellCard = query(page).dialog("App Shell");
   const shell = shellCard.locator("iframe:visible");
+  await expectShownFrame(shell);
   const shellRoot = shell.contentFrame().locator("html");
   await expect(shellRoot).toHaveCSS("font-size", "10px");
   // An app shell rounds its corners to the inner corners of the frame around
@@ -308,7 +313,7 @@ test("site navigation card clips its previews only at the corners of their frame
   const navigation = await gotoPage(page);
   await navigation.link("Radio").hover();
   const frame = query(page).dialog("Radio").locator("iframe");
-  await expect(frame).toHaveCSS("opacity", "1");
+  await expectShownFrame(frame);
   // Inside another rounded clip, Chrome can skip the rounded clip of the frame
   // around a preview when it draws with the GPU, and the preview covers the
   // corners of the frame. Headless Chrome draws without the GPU and clips both,
@@ -382,7 +387,7 @@ test("site navigation card shows a loader until the preview loads", async ({
   );
   await expect(frame).toHaveCSS("opacity", "0");
   release();
-  await expect(frame).toHaveCSS("opacity", "1");
+  await expectShownFrame(frame);
   await expect(loader).toHaveCount(0);
 });
 
@@ -392,7 +397,7 @@ test("site navigation card shows a loader while a preview loads a new page", asy
   const navigation = await gotoPage(page);
   await navigation.link("Breadcrumb").hover();
   const frame = query(page).dialog("Breadcrumb").locator("iframe");
-  await expect(frame).toHaveCSS("opacity", "1");
+  await expectShownFrame(frame);
   // Holding the scripts and fonts of the next page delays its load event, so
   // the page stays in the state that its embed script reports while it parses.
   const { promise: released, resolve: release } = Promise.withResolvers<void>();
@@ -419,7 +424,7 @@ test("site navigation card shows a loader while a preview loads a new page", asy
   await expect(loader).toBeVisible();
   await expect(frame).toHaveCSS("opacity", "0");
   release();
-  await expect(frame).toHaveCSS("opacity", "1");
+  await expectShownFrame(frame);
   await expect(loader).toHaveCount(0);
 });
 
@@ -429,7 +434,7 @@ test("site navigation card keeps the room below a preview that opens a popup", a
   const navigation = await gotoPage(page);
   await navigation.link("Combobox Group").hover();
   const frame = query(page).dialog("Combobox Group").locator("iframe");
-  await expect(frame).toHaveCSS("opacity", "1");
+  await expectShownFrame(frame);
   // The page opens its popup below the trigger, in the room below the example.
   const html = frame.contentFrame().locator("html");
   await expect
@@ -444,7 +449,7 @@ test("site navigation card preview scrolls with the wheel after it loses focus",
   await navigation.link("Combobox Group").hover();
   const card = query(page).dialog("Combobox Group");
   const frame = card.locator("iframe");
-  await expect(frame).toHaveCSS("opacity", "1");
+  await expectShownFrame(frame);
   const html = frame.contentFrame().locator("html");
   await expect
     .poll(() => html.evaluate((root) => root.scrollHeight - root.clientHeight))
@@ -488,11 +493,11 @@ test("site navigation card keeps the previews of a link that shows again", async
   });
   await navigation.link("Breadcrumb").hover();
   const breadcrumb = query(page).dialog("Breadcrumb").locator("iframe");
-  await expect(breadcrumb).toHaveCSS("opacity", "1");
+  await expectShownFrame(breadcrumb);
   const frame = await breadcrumb.elementHandle();
   await navigation.link("Radio").hover();
   const radio = query(page).dialog("Radio").locator("iframe:visible");
-  await expect(radio).toHaveCSS("opacity", "1");
+  await expectShownFrame(radio);
   // The previous preview stays in the card without a layout, so its page
   // doesn't render in the background.
   expect(await frame?.isVisible()).toBe(false);
@@ -515,7 +520,7 @@ test("site navigation card stays open over a preview that it kept", async ({
   const link = navigation.link("Radio");
   await link.hover();
   const card = query(page).dialog("Radio");
-  await expect(card.locator("iframe")).toHaveCSS("opacity", "1");
+  await expectShownFrame(card.locator("iframe"));
   // The card hides, and shows again with the preview that it kept.
   await page.mouse.move(1200, 650);
   await expect(card).toBeHidden();
@@ -597,7 +602,9 @@ test("site navigation marks the link of the card while it shows", async ({
   const idle = await getLook(link);
   expect(await expectHoveredLook(link, "Breadcrumb")).not.toEqual(idle);
   // The link of the current page has its own surface, which a hover keeps.
-  await expectHoveredLook(navigation.link("Tabs"), "Tabs");
+  const current = navigation.link("Avatar");
+  await current.scrollIntoViewIfNeeded();
+  await expectHoveredLook(current, "Avatar");
 });
 
 test("site navigation card moves to another link while it shows", async ({

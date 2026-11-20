@@ -8,15 +8,28 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { query } from "@ariakit/test/playwright";
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { gotoAndSettle } from "#app/test-utils/preview.ts";
 
 // The hide timeout of the card, which the site navigation sets.
 export const HIDE_TIMEOUT = 300;
 
-/** Opens a page with the site navigation, and returns its queries. */
-export async function gotoPage(page: Page, path = "/react/recipes/tabs/") {
+/**
+ * Waits for a preview frame in the card to load and fade in. A preview frame
+ * loads a full page, which can outlast the default assertion timeout on a busy
+ * runner, so the wait uses the test budget.
+ */
+export function expectShownFrame(frame: Locator) {
+  return expect(frame).toHaveCSS("opacity", "1", { timeout: 0 });
+}
+
+/**
+ * Opens a page with the site navigation, and returns its queries. Defaults to a
+ * lightweight recipe page so the Recipes section opens without hydrating many
+ * heavy inline examples.
+ */
+export async function gotoPage(page: Page, path = "/react/recipes/avatar/") {
   await gotoAndSettle(page, path);
   // React drops a mouse move that arrives before it commits the hydration of
   // the island, so a hover then opens no card. Astro removes the ssr attribute
