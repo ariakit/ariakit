@@ -35,10 +35,10 @@ test("renders an html preview fence as an example card with its code", async () 
   expect(code).toContain(
     'html: "<div class=\\"ak-layer ak-frame ak-frame-2xl/4\\">Card</div>"',
   );
-  // The code of the fence stays in the card, without the preview word. It
-  // wraps, and long code collapses.
+  // The code of the fence stays in the card, without the preview word. Long
+  // code collapses.
   expect(code).toContain('class: "language-html"');
-  expect(code).toContain('metastring: "wrap maxLines=12"');
+  expect(code).toContain('metastring: "maxLines=12"');
   expect(code).not.toMatch(/metastring: "[^"]*\bpreview\b/);
 });
 
@@ -56,7 +56,7 @@ test("keeps the other words of the info string", async () => {
   expect(code).toContain("_jsx(ExampleCard, {");
   // Quoted text is one token, so its preview word stays.
   expect(code).toContain(
-    'metastring: "title=\\"A preview card\\" {1} wrap maxLines=12"',
+    'metastring: "title=\\"A preview card\\" {1} maxLines=12"',
   );
 });
 
