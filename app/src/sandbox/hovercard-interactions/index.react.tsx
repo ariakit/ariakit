@@ -2,6 +2,36 @@ import * as Ariakit from "@ariakit/react";
 import { button } from "@ariakit/ui/styles/button";
 import { hovercard, hovercardHeading } from "@ariakit/ui/styles/hovercard";
 import { link } from "@ariakit/ui/styles/link";
+import { useState } from "react";
+
+// TODO: Remove this workaround after the issue below is fixed. Turning
+// hideOnHoverOutside off while focus is inside also cancels a pending hide.
+// https://github.com/ariakit/ariakit/issues/8490
+function FocusAwareHovercard(props: Ariakit.HovercardProps) {
+  const context = Ariakit.useHovercardContext();
+  const mounted = Ariakit.useStoreState(props.store ?? context, "mounted");
+  const [hasFocus, setHasFocus] = useState(false);
+  // React doesn't fire blur when the card unmounts with focus inside it.
+  if (!mounted && hasFocus) {
+    setHasFocus(false);
+  }
+  return (
+    <Ariakit.Hovercard
+      // Keep the default, which follows the hideOnHoverOutside prop.
+      disablePointerEventsOnApproach={!!(props.hideOnHoverOutside ?? true)}
+      {...props}
+      hideOnHoverOutside={hasFocus ? false : props.hideOnHoverOutside}
+      onFocus={(event) => {
+        props.onFocus?.(event);
+        setHasFocus(true);
+      }}
+      onBlur={(event) => {
+        props.onBlur?.(event);
+        setHasFocus(false);
+      }}
+    />
+  );
+}
 
 // A hovercard with a nested hovercard in a portal, which isn't inside the
 // parent hovercard element.
@@ -11,7 +41,7 @@ function TeamHovercard() {
       <Ariakit.HovercardAnchor href="#team" {...link.jsx()}>
         Ariakit team
       </Ariakit.HovercardAnchor>
-      <Ariakit.Hovercard {...hovercard.jsx({ className: "gap-2" })}>
+      <FocusAwareHovercard {...hovercard.jsx({ className: "gap-2" })}>
         <Ariakit.HovercardHeading {...hovercardHeading.jsx()}>
           Team members
         </Ariakit.HovercardHeading>
@@ -19,14 +49,17 @@ function TeamHovercard() {
           <Ariakit.HovercardAnchor href="#member" {...link.jsx()}>
             @diegohaz
           </Ariakit.HovercardAnchor>
-          <Ariakit.Hovercard portal {...hovercard.jsx({ className: "gap-2" })}>
+          <FocusAwareHovercard
+            portal
+            {...hovercard.jsx({ className: "gap-2" })}
+          >
             <Ariakit.HovercardHeading {...hovercardHeading.jsx()}>
               Member profile
             </Ariakit.HovercardHeading>
             <Ariakit.Button {...button.jsx()}>Message</Ariakit.Button>
-          </Ariakit.Hovercard>
+          </FocusAwareHovercard>
         </Ariakit.HovercardProvider>
-      </Ariakit.Hovercard>
+      </FocusAwareHovercard>
     </Ariakit.HovercardProvider>
   );
 }
@@ -38,10 +71,10 @@ export default function Example() {
         <Ariakit.HovercardAnchor href="#profile">
           @ariakit.com
         </Ariakit.HovercardAnchor>
-        <Ariakit.Hovercard>
+        <FocusAwareHovercard>
           <Ariakit.HovercardHeading>Ariakit profile</Ariakit.HovercardHeading>
           <button>Follow</button>
-        </Ariakit.Hovercard>
+        </FocusAwareHovercard>
       </Ariakit.HovercardProvider>
       <button>After hovercard</button>
       <Ariakit.HovercardProvider hideTimeout={200} showTimeout={20}>
