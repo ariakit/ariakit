@@ -70,6 +70,7 @@ export function HorizontalNavigation() {
   const [length, setLength] = useState<"full" | "auto">("auto");
   const [padded, setPadded] = useState(true);
   const [ordered, setOrdered] = useState(false);
+  const [borderType, setBorderType] = useState<"auto" | "border">("auto");
   const [groupGap, setGroupGap] = useState(8);
   return (
     <section
@@ -133,10 +134,23 @@ export function HorizontalNavigation() {
           <option value="start">Top</option>
         </select>
       </label>
+      <label>
+        Border type{" "}
+        <select
+          value={borderType}
+          onChange={(event) =>
+            setBorderType(event.target.value === "border" ? "border" : "auto")
+          }
+        >
+          <option value="auto">Auto</option>
+          <option value="border">Border</option>
+        </select>
+      </label>
       <Nav
         $layout="horizontal"
         $p={padded ? 3 : "none"}
         $border
+        $borderType={borderType}
         $rounded="lg"
         dir={rtl ? "rtl" : "ltr"}
         aria-label="Project pages"

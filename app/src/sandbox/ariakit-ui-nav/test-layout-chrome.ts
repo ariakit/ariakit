@@ -459,6 +459,68 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
+  test("covers the border of the navigation with an edge bar but keeps a halfway bar inside it", async ({
+    q,
+  }) => {
+    await q.combobox("Border type").selectOption("border");
+    const nav = q.navigation("Project pages");
+    // The carousel root around the scrolling navigation draws the border.
+    const root = nav.locator("xpath=..");
+    const link = query(nav).link("Overview");
+    const bar = nav.locator(".control-bar:visible");
+    await nav.scrollIntoViewIfNeeded();
+    await expect(root).toHaveCSS("border-top-width", "1px");
+    // The scrolling navigation reaches over the border above and below, so it
+    // doesn't clip a bar there. Overflow above it can't scroll, so only its box
+    // shows the top side.
+    await expect
+      .poll(async () => {
+        const [box, frame] = await Promise.all([getBox(nav), getBox(root)]);
+        return [box.y - frame.y, box.height - frame.height];
+      })
+      .toEqual([0, 0]);
+    for (const side of ["end", "start"]) {
+      await q.combobox("Bar side").selectOption(side);
+      await expect
+        .poll(async () => {
+          const [box, frame] = await Promise.all([getBox(bar), getBox(root)]);
+          return side === "start"
+            ? box.y - frame.y
+            : frame.y + frame.height - box.y - box.height;
+        })
+        .toBeCloseTo(0, 0);
+      // The navigation reaches over the border, so the bar doesn't scroll it.
+      await expect
+        .poll(() =>
+          nav.evaluate((node) => node.scrollHeight - node.clientHeight),
+        )
+        .toBe(0);
+    }
+    await q.combobox("Bar distance").selectOption("halfway");
+    for (const side of ["end", "start"]) {
+      await q.combobox("Bar side").selectOption(side);
+      await expect
+        .poll(async () => {
+          const [box, item, frame] = await Promise.all([
+            getBox(bar),
+            getBox(link),
+            getBox(root),
+          ]);
+          const toItem =
+            side === "start"
+              ? item.y - box.y - box.height
+              : box.y - item.y - item.height;
+          // Measure to the inner side of the 1px border.
+          const toBorder =
+            side === "start"
+              ? box.y - frame.y - 1
+              : frame.y + frame.height - 1 - box.y - box.height;
+          return [Math.round(toItem), Math.round(toItem - toBorder)];
+        })
+        .toEqual([5, 0]);
+    }
+  });
+
   test("shortens a bar below a link by its corner radius unless the length is full", async ({
     q,
   }) => {

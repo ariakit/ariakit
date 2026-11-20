@@ -374,14 +374,32 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     expect((await getBox(nav)).height).toBeGreaterThan(
       (await getBox(header)).height - 2,
     );
-    // The current link's bar meets the header's inner edge.
+    // The current link's bar covers the header's facing edge.
+    await expect(header).toHaveCSS("border-bottom-width", "1px");
     const bar = query(nav).link("Guides").locator(".control-bar");
     await expect
       .poll(async () => {
-        const [barBox, navBox] = await Promise.all([getBox(bar), getBox(nav)]);
-        return barBox.y + barBox.height - (navBox.y + navBox.height);
+        const [barBox, headerBox] = await Promise.all([
+          getBox(bar),
+          getBox(header),
+        ]);
+        return barBox.y + barBox.height - (headerBox.y + headerBox.height);
       })
       .toBeCloseTo(0, 0);
+    // The navigation reaches over the edge, so it doesn't clip the bar there or
+    // scroll to it.
+    await expect
+      .poll(async () => {
+        const [navBox, headerBox] = await Promise.all([
+          getBox(nav),
+          getBox(header),
+        ]);
+        return navBox.y + navBox.height - (headerBox.y + headerBox.height);
+      })
+      .toBeCloseTo(0, 0);
+    await expect
+      .poll(() => nav.evaluate((node) => node.scrollHeight - node.clientHeight))
+      .toBe(0);
   });
 
   test("starts the header area where a custom bar padding puts the inner header's parts", async ({
