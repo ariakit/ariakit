@@ -51,6 +51,17 @@
       ]
     },
     {
+      "description": "TODO: Remove this rule when the Solid 2 migration (https://github.com/ariakit/ariakit/issues/7687) lands on main through https://github.com/ariakit/ariakit/pull/7688. Solid 2, and the @solid-primitives and vite-plugin-solid majors that require it, break the current Solid packages and their tooling.",
+      "matchPackageNames": [
+        "solid-js",
+        "vite-plugin-solid",
+        "/^@solidjs\\//",
+        "/^@solid-primitives\\//"
+      ],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
       "groupName": "changesets",
       "matchPackageNames": ["/^@changesets\\//"]
     },
