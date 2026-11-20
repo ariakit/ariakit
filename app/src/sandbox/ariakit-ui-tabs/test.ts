@@ -159,3 +159,13 @@ test("edits a rename field in a closable tab with Backspace", async () => {
   expect(list.tab("Billin")).toHaveFocus();
   expect(list.tab.all()).toHaveLength(3);
 });
+
+test("keeps a closable tab with aria-disabled", async () => {
+  const tabs = q.within(q.tablist("Tab row closable"));
+  await click(tabs.tab("Billing"));
+  await press.ArrowRight();
+  expect(tabs.tab("Support")).toHaveFocus();
+  await press.Delete();
+  expect(tabs.tab("Support")).toHaveFocus();
+  expect(tabs.tab.all()).toHaveLength(3);
+});

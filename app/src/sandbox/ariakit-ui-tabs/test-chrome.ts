@@ -456,6 +456,19 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     test.expect(tabBox.x + tabBox.width).toBeLessThanOrEqual(buttonBox.x + 0.5);
   });
 
+  test("keeps a closable tab with aria-disabled", async ({ page, q }) => {
+    const list = query(q.article("Tab row")).tablist("Tab row closable");
+    await query(list).tab("Billing").click();
+    await page.keyboard.press("ArrowRight");
+    const support = query(list).tab("Support");
+    await test.expect(support).toBeFocused();
+    await page.keyboard.press("Delete");
+    // A tab that closes would move the focus to the tab before it at once and
+    // leave after its transition, so the tab must keep the focus and stay.
+    await test.expect(support).toBeFocused();
+    await test.expect(query(list).tab()).toHaveCount(3);
+  });
+
   // The popover renders in a portal, but it is a child of the tab in the React
   // tree, so its key presses reach the tab.
   test("edits a rename field in a closable tab with Backspace", async ({

@@ -260,6 +260,11 @@ interface TabRowTabsProps {
   kind?: "folder" | "flat";
   /** Gives each tab a close mark that removes it. */
   closable?: boolean;
+  /**
+   * The label of a tab with aria-disabled. Like every tab, it stays focusable,
+   * but it shows no close mark and doesn't close.
+   */
+  disabledLabel?: string;
   /** Stretches the tabs, with only the settings button after them. */
   stretch?: boolean;
   /** Renders the panel below the row. Defaults to `true`. */
@@ -292,6 +297,7 @@ function TabRowTabs({
   stretch,
   panel = true,
   renamable,
+  disabledLabel,
   tabsProps,
 }: TabRowTabsProps) {
   const id = name.toLowerCase().replaceAll(" ", "-");
@@ -310,6 +316,7 @@ function TabRowTabs({
           {labels.map((label) => (
             <Tab
               key={label}
+              aria-disabled={label === disabledLabel || undefined}
               id={`${id}-${label}`}
               $kind={kind}
               separator
@@ -3406,7 +3413,7 @@ export default function TabsExamples() {
       </Example>
       <Example
         title="Tab row"
-        description="Buttons on the row of the tabs look like tabs that are not selected, and the strip color fills the row behind them. Beside a button, the outer tab is not at the corner of the root, so its selected folder keeps its full curve, under the button, and the panel keeps its round corner. The separator between a selected tab and a button hides. The boxes show the first, the last, and the middle tab selected, the last two without the outer edge, then flat tabs with padding, a right-to-left row, tabs with a close mark, stretched tabs with a button after them, a row with no panel below it, and closable tabs that rename on double-click."
+        description="Buttons on the row of the tabs look like tabs that are not selected, and the strip color fills the row behind them. Beside a button, the outer tab is not at the corner of the root, so its selected folder keeps its full curve, under the button, and the panel keeps its round corner. The separator between a selected tab and a button hides. The boxes show the first, the last, and the middle tab selected, the last two without the outer edge, then flat tabs with padding, a right-to-left row, tabs with a close mark (the last one disabled, without a mark), stretched tabs with a button after them, a row with no panel below it, and closable tabs that rename on double-click."
         wide
         code={`
           <Tabs>
@@ -3470,7 +3477,11 @@ export default function TabsExamples() {
           <div dir="rtl">
             <TabRowTabs name="Tab row right to left" />
           </div>
-          <TabRowTabs name="Tab row closable" closable />
+          <TabRowTabs
+            name="Tab row closable"
+            closable
+            disabledLabel="Support"
+          />
           <TabRowTabs name="Tab row stretch" selected={2} stretch />
           <TabRowTabs name="Tab row without a panel" panel={false} />
           <TabRowTabs name="Tab row rename" renamable />

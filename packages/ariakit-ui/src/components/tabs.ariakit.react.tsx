@@ -1,6 +1,11 @@
 import * as ak from "@ariakit/react";
 import { useEvent, useMergeRefs } from "@ariakit/react-utils";
-import { getActiveElement, getWindow, isSelfTarget } from "@ariakit/utils";
+import {
+  disabledFromProps,
+  getActiveElement,
+  getWindow,
+  isSelfTarget,
+} from "@ariakit/utils";
 import type { VariantProps } from "clava";
 import { cx, splitProps } from "clava";
 import { XIcon } from "lucide-react";
@@ -316,8 +321,8 @@ export function Tab({
   const ref = useMergeRefs(tabRemoval.ref, refProp);
   const barElement = createOptionalRender(TabBar, bar === true ? {} : bar);
   // A disabled tab takes no press, so it doesn't close from the keyboard
-  // either.
-  const removable = !!onRemove && !rest.disabled;
+  // either. Like Ariakit, aria-disabled="true" counts as disabled.
+  const removable = !!onRemove && !disabledFromProps(rest);
   const removeElement =
     removable &&
     createOptionalRender(TabRemove, remove === true ? {} : remove, {
