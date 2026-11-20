@@ -45,8 +45,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(nestedHovercard).toBeVisible();
     // The mouse moves away from both hovercards, which schedules their hides.
     await page.mouse.move(0, 0);
+    // Two Tab presses move focus through the nested anchor into the nested
+    // hovercard. A focus check between them could use up the hide timeout.
     await page.keyboard.press("Tab");
-    await test.expect(nestedAnchor).toBeFocused();
     await page.keyboard.press("Tab");
     await test.expect(message).toBeFocused();
     // The pending hides would run after the hide timeout, and no state shows

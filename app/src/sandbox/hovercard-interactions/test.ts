@@ -42,8 +42,9 @@ test("stays open when focus moves into it while a hide is pending", async () => 
   await hover(anchor);
   await expect.poll(hovercard).toBeVisible();
 
-  // The mouse moves away from the anchor, which schedules a hide.
-  await hoverOutside();
+  // The mouse moves away from the anchor, which schedules a hide. A direct
+  // dispatch leaves more of the 200ms hide timeout for the Tab press below.
+  await dispatch.mouseMove(document.body);
   await press.Tab();
   expect(q.button("Follow")).toHaveFocus();
   // The pending hide would run after the 200ms hide timeout, and no state shows
@@ -64,8 +65,9 @@ test("stays open when focus moves into a nested hovercard while a hide is pendin
   await hover(q.link("@diegohaz"));
   await expect.poll(nestedHovercard).toBeVisible();
 
-  // The mouse moves away from both hovercards, which schedules their hides.
-  await hoverOutside();
+  // The mouse moves away from both hovercards, which schedules their hides. A
+  // direct dispatch leaves more of the 200ms hide timeout for the Tab presses.
+  await dispatch.mouseMove(document.body);
   await press.Tab();
   expect(q.link("@diegohaz")).toHaveFocus();
   await press.Tab();
