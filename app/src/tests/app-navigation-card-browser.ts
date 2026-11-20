@@ -10,7 +10,11 @@
 import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { test } from "#app/test-utils/fixtures.ts";
-import { HIDE_TIMEOUT, gotoPage } from "./app-navigation-card-helpers.ts";
+import {
+  HIDE_TIMEOUT,
+  expectShownFrame,
+  gotoPage,
+} from "./app-navigation-card-helpers.ts";
 
 // Browsers implement the resize grip of the card themselves, so this test runs
 // in every desktop browser.
@@ -87,11 +91,15 @@ test("site navigation card keeps the size that the person gives it", async ({
 test("site navigation card keeps a size whose drag ends over a preview", async ({
   page,
 }) => {
+  // The test loads the page, waits for the navigation to hydrate, and loads a
+  // preview page in its frame, which can exceed the default budget in Firefox
+  // on CI.
+  test.setTimeout(test.info().timeout * 2);
   const navigation = await gotoPage(page);
   await navigation.link("Radio").hover();
   const card = query(page).dialog("Radio");
   const frame = card.locator("iframe");
-  await expect(frame).toHaveCSS("opacity", "1");
+  await expectShownFrame(frame);
   const box = card.locator(":scope > div");
   // The card scales in as it opens, so the grip is in place once the box has
   // the size of its layout.
