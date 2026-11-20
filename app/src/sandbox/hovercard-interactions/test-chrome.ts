@@ -1,9 +1,62 @@
 import { gotoAndHydrate, withFramework } from "#app/test-utils/preview.ts";
 
-// The hovercards of the sandbox show after 20ms.
+// The hovercards of the sandbox show after 20ms and hide after 200ms.
 const SHOW_TIMEOUT = 20;
+const HIDE_TIMEOUT = 200;
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  // https://github.com/ariakit/ariakit/issues/8490
+  test("stays open when focus moves into it while a hide is pending", async ({
+    page,
+    q,
+  }) => {
+    const anchor = q.link("@ariakit.com");
+    const hovercard = q.dialog("Ariakit profile");
+    const follow = q.button("Follow");
+    await anchor.focus();
+    await anchor.hover();
+    await test.expect(hovercard).toBeVisible();
+    // The mouse moves away from the anchor, not toward the hovercard, which
+    // schedules a hide.
+    await page.mouse.move(0, 0);
+    await page.keyboard.press("Tab");
+    await test.expect(follow).toBeFocused();
+    // The pending hide would run after the hide timeout, and no state shows
+    // that the timeout passed without it.
+    await page.waitForTimeout(HIDE_TIMEOUT + 100);
+    await test.expect(hovercard).toHaveAttribute("data-open");
+    await test.expect(follow).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8490
+  test("stays open when focus moves into a nested hovercard while a hide is pending", async ({
+    page,
+    q,
+  }) => {
+    const anchor = q.link("Ariakit team");
+    const nestedAnchor = q.link("@diegohaz");
+    const hovercard = q.dialog("Team members");
+    const nestedHovercard = q.dialog("Member profile");
+    const message = q.button("Message");
+    await anchor.focus();
+    await anchor.hover();
+    await test.expect(hovercard).toBeVisible();
+    await nestedAnchor.hover();
+    await test.expect(nestedHovercard).toBeVisible();
+    // The mouse moves away from both hovercards, which schedules their hides.
+    await page.mouse.move(0, 0);
+    await page.keyboard.press("Tab");
+    await test.expect(nestedAnchor).toBeFocused();
+    await page.keyboard.press("Tab");
+    await test.expect(message).toBeFocused();
+    // The pending hides would run after the hide timeout, and no state shows
+    // that the timeout passed without them.
+    await page.waitForTimeout(HIDE_TIMEOUT + 100);
+    await test.expect(hovercard).toHaveAttribute("data-open");
+    await test.expect(nestedHovercard).toHaveAttribute("data-open");
+    await test.expect(message).toBeFocused();
+  });
+
   test("Escape keeps the hovercard closed while the pointer rests on the anchor", async ({
     page,
     q,

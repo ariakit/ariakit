@@ -1,4 +1,4 @@
-import { click, dispatch, hover, press, q, sleep } from "@ariakit/test";
+import { click, dispatch, focus, hover, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const hovercard = () => q.dialog("Ariakit profile");
@@ -32,6 +32,50 @@ test("stays open while focused", async () => {
   await hoverOutside();
   await sleep(300);
   expect(hovercard()).toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/issues/8490
+test("stays open when focus moves into it while a hide is pending", async () => {
+  const anchor = q.link("@ariakit.com");
+  await press.Tab();
+  expect(anchor).toHaveFocus();
+  await hover(anchor);
+  await expect.poll(hovercard).toBeVisible();
+
+  // The mouse moves away from the anchor, which schedules a hide.
+  await hoverOutside();
+  await press.Tab();
+  expect(q.button("Follow")).toHaveFocus();
+  // The pending hide would run after the 200ms hide timeout, and no state shows
+  // that the timeout passed without it.
+  await sleep(300);
+  expect(hovercard()).toBeVisible();
+  expect(q.button("Follow")).toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/issues/8490
+test("stays open when focus moves into a nested hovercard while a hide is pending", async () => {
+  const anchor = q.link("Ariakit team");
+  const hovercard = () => q.dialog("Team members");
+  const nestedHovercard = () => q.dialog("Member profile");
+  await focus(anchor);
+  await hover(anchor);
+  await expect.poll(hovercard).toBeVisible();
+  await hover(q.link("@diegohaz"));
+  await expect.poll(nestedHovercard).toBeVisible();
+
+  // The mouse moves away from both hovercards, which schedules their hides.
+  await hoverOutside();
+  await press.Tab();
+  expect(q.link("@diegohaz")).toHaveFocus();
+  await press.Tab();
+  expect(q.button("Message")).toHaveFocus();
+  // The pending hides would run after the 200ms hide timeout, and no state
+  // shows that the timeout passed without them.
+  await sleep(300);
+  expect(hovercard()).toBeVisible();
+  expect(nestedHovercard()).toBeVisible();
+  expect(q.button("Message")).toHaveFocus();
 });
 
 test("stays open when the pointer quickly returns", async () => {
