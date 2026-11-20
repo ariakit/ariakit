@@ -620,6 +620,9 @@ const tabStripInRow = cx(
   "[.tab-row>&:has(~:not(.carousel-button-area))]:pe-0",
   "[.tab-row>&:has(~:not(.carousel-button-area))]:rounded-se-none!",
   "[.tab-row>&:has(~:not(.carousel-button-area))]:after:w-0",
+  // The spacer is a flex item, so the gap of the strip would add to the gap of
+  // the row between the last tab and the control.
+  "[.tab-row>&:has(~:not(.carousel-button-area))]:after:-ms-(--group-gap,0px)",
   "[.tab-row>&.carousel-fade:has(~:not(.carousel-button-area))]:-me-(--tabs-radius)",
   // No panel corner lies below this end, so the spacer only holds the curve.
   "[.tab-row>&.carousel-fade:has(~:not(.carousel-button-area))]:after:w-(--tabs-radius)",
@@ -855,12 +858,16 @@ export const tabRow = cv({
     // Like a strip with nothing after it, a row with nothing after it lies on
     // the bottom edge of the root.
     "[&:not(:has(~_*:not([hidden],template)))]:-mb-(--tabs-merge)",
-    // A scroll button area then ends at the bottom of the tabs, but it starts
-    // over the root padding and edge, above the tabs, unless the tabs lie on
-    // the edge. The button moves down by half of that difference, onto the
-    // middle of the tabs. The selector names the row, so this rule wins over
-    // the shift of tabListCarousel.
-    "[&.tab-row]:[--carousel-button-y:calc((var(--carousel-overhang)-var(--tabs-merge))/2)]",
+    // Like the strip, a scroll button area reaches below the tabs, down to the
+    // panel, so a scroll button taller than the tabs doesn't make the row
+    // taller. The selector names both classes of the row, so it outranks the
+    // bottom margin of tabListCarousel.
+    "[&.tab-row>.carousel-button-area]:-mb-(--tab-row-below)",
+    // The area starts over the root padding and edge, above the tabs, unless
+    // the tabs lie on the edge, and ends below them. The button moves by half
+    // of that difference, onto the middle of the tabs. The selector names the
+    // row, so this rule wins over the shift of tabListCarousel.
+    "[&.tab-row]:[--carousel-button-y:calc((var(--carousel-overhang)-var(--tabs-merge)-var(--tab-row-below))/2)]",
     // A separator centers on the tabs, which start on a root edge wider than
     // the space above them.
     "[&>.control-separator]:-mt-(--tabs-merge)",
