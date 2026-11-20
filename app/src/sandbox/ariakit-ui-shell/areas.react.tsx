@@ -216,7 +216,12 @@ export function AreasScenario({ controls }: { controls: ReactNode }) {
             >
               {navigation ? (
                 <Nav aria-label="Local" $layout="horizontal" $p="none" bar>
-                  <NavLink href="#one" text="One" tabIndex={0} />
+                  <NavLink
+                    href="#one"
+                    text="One"
+                    aria-current="page"
+                    tabIndex={0}
+                  />
                   <NavLink href="#two" text="Two" tabIndex={0} />
                 </Nav>
               ) : (
