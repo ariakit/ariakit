@@ -38,8 +38,10 @@ import {
   Command,
   FolderOpen,
   Plus,
+  Pencil,
   Settings,
   Share2,
+  ShoppingBag,
   Sparkles,
   Trash2,
 } from "lucide-react";
@@ -86,6 +88,34 @@ function AvatarShape() {
       <Button aria-pressed={round} onClick={() => setRound(!round)}>
         Round avatar
       </Button>
+    </div>
+  );
+}
+
+const floatingCorners = [
+  "top-start",
+  "top-end",
+  "bottom-start",
+  "bottom-end",
+] as const;
+
+/**
+ * One button for each corner of a floating badge, in the order of the corner
+ * names. The labels name the corners in the language of the surrounding text.
+ */
+function FloatingCorners({ labels }: { labels: readonly string[] }) {
+  return (
+    <div className="grid grid-cols-2 gap-6 p-3">
+      {floatingCorners.map((corner, index) => (
+        <Button key={corner} $kind="bevel">
+          <ButtonLabel>{labels[index]}</ButtonLabel>
+          <ButtonSlot $kind="box" $floating={corner}>
+            <Badge $kind="solid" $round>
+              {index + 1}
+            </Badge>
+          </ButtonSlot>
+        </Button>
+      ))}
     </div>
   );
 }
@@ -972,6 +1002,90 @@ export default function ButtonExamples() {
               <Badge $kind="solid" $layer="success">
                 جديد
               </Badge>
+            </ButtonSlot>
+          </Button>
+        </div>
+      </Example>
+
+      <Example
+        title="Floating corners"
+        description="A corner name places the floating badge on that corner of the button. The start and end follow the text direction."
+        code={`
+          <Button $kind="bevel">
+            <ButtonLabel>Top start</ButtonLabel>
+            <ButtonSlot $kind="box" $floating="top-start">
+              <Badge $kind="solid" $round>1</Badge>
+            </ButtonSlot>
+          </Button>
+          <Button $kind="bevel">
+            <ButtonLabel>Bottom end</ButtonLabel>
+            <ButtonSlot $kind="box" $floating="bottom-end">
+              <Badge $kind="solid" $round>4</Badge>
+            </ButtonSlot>
+          </Button>
+        `}
+      >
+        <FloatingCorners
+          labels={["Top start", "Top end", "Bottom start", "Bottom end"]}
+        />
+      </Example>
+
+      <Example
+        title="Floating corners right to left"
+        description="In right-to-left text, the start corners are on the right, and the end corners are on the left."
+        code={`
+          <div dir="rtl">
+            <Button $kind="bevel">
+              <ButtonLabel>أعلى البداية</ButtonLabel>
+              <ButtonSlot $kind="box" $floating="top-start">
+                <Badge $kind="solid" $round>1</Badge>
+              </ButtonSlot>
+            </Button>
+          </div>
+        `}
+      >
+        <div dir="rtl" lang="ar" className="w-full">
+          <FloatingCorners
+            labels={[
+              "أعلى البداية",
+              "أعلى النهاية",
+              "أسفل البداية",
+              "أسفل النهاية",
+            ]}
+          />
+        </div>
+      </Example>
+
+      <Example
+        title="Floating edit mark"
+        description="An icon tile that is a button, with a pencil mark on its bottom-end corner. The mark paints its own surface, so its icon sits inside it, and aria-label names the button."
+        code={`
+          <Button aria-label="Change the icon" $layer="brand" $hue="orange" $rounded="xl" $p={3.5}>
+            <ButtonSlot className="text-4xl"><ShoppingBag /></ButtonSlot>
+            <ButtonSlot $floating="bottom-end" $size="xl" aria-hidden className="text-sm">
+              <Pencil />
+            </ButtonSlot>
+          </Button>
+        `}
+      >
+        <div className="p-3">
+          <Button
+            aria-label="Change the icon"
+            $layer="brand"
+            $hue="orange"
+            $rounded="xl"
+            $p={3.5}
+          >
+            <ButtonSlot className="text-4xl">
+              <ShoppingBag />
+            </ButtonSlot>
+            <ButtonSlot
+              $floating="bottom-end"
+              $size="xl"
+              aria-hidden
+              className="text-sm"
+            >
+              <Pencil />
             </ButtonSlot>
           </Button>
         </div>
