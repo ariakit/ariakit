@@ -13,7 +13,7 @@ import {
 } from "./button.ts";
 import type { BarOffset } from "./control.ts";
 import {
-  barBase,
+  controlBarBase,
   getBarOffset,
   getNamedBarOffsetClass,
   isNamedBarOffset,
@@ -43,7 +43,7 @@ import { text } from "./text.ts";
 // The navigation resolves it for the rings of the markers, and each bar
 // resolves it again with its own `$width`.
 const navBarSizeClass = cx(
-  "[--nav-bar-size:round(calc(var(--bar-width,2px)*(1+0.2*var(--contrast,0)/100)),1px)]",
+  "[--nav-bar-size:round(calc(var(--bar-width,var(--bar-width-auto,2px))*(1+0.2*var(--contrast,0)/100)),1px)]",
 );
 
 // The gutter of a list with numbers, which holds half a number and the gap
@@ -132,6 +132,10 @@ export const nav = cv({
     // The indent of a nested list, which is also the width of a bend of the
     // guide. A list in a link row keeps the automatic indent of a list.
     "[--nav-indent:var(--list-indent,calc(var(--spacing-em)*3))]",
+    // Bars on the guide and rings around markers are wider on a light layer,
+    // like other bars. This reads the layer around the navigation, so it
+    // ignores a surface that `$layer` paints on the navigation itself.
+    "ak-light:[--bar-width-auto:3px] ak-dark:[--bar-width-auto:2px]",
     navBarSizeClass,
     // The guide and the bar stop this far from a marker, so the surface around
     // the navigation shows between them, whatever it paints. A ring around a
@@ -260,7 +264,8 @@ export const nav = cv({
      * Sets the thickness of the bars of the links, and of the rings that
      * `$markerHighlight` draws. Numbers are pixels; other values are CSS
      * lengths. High contrast adds 20%, and a bar on the guide rounds to whole
-     * pixels. The `$width` of a bar replaces it for that bar. Defaults to 2px.
+     * pixels. The `$width` of a bar replaces it for that bar. Defaults to 2px,
+     * or 3px on a light layer.
      */
     $barWidth(value?: number | (string & {})) {
       if (value == null) return;
@@ -748,7 +753,7 @@ export const navButtonContent = cv({
  * a guide, `navLinkGuideBar` draws the bar on the guide instead.
  */
 export const navLinkBar = cv({
-  extend: [barBase],
+  extend: [controlBarBase],
   class: [
     // Measure from the row to the edge of the region that holds it.
     "[--bar-gap:var(--nav-bar-gap,0px)]",

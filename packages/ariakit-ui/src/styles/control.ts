@@ -613,7 +613,7 @@ export function getBarOffset(value?: BarOffset) {
 }
 
 /** Shared painting and visibility for bars inside selected controls. */
-export const barBase = cv({
+export const controlBarBase = cv({
   extend: [layer],
   class: [
     "control-bar absolute pointer-events-none rounded-xs",
@@ -621,9 +621,14 @@ export const barBase = cv({
     "m-0!",
     // Show the bar only while its control is checked, selected, or current.
     "hidden group-ui-selected/control:block",
+    // A dark bar on a light layer looks thinner than a light bar on a dark
+    // one, so it is wider by default. The bar paints on the surface around
+    // its control, or on the control itself when it is over the control.
+    "ak-outset-light:[--bar-width-auto:3px] ak-outset-dark:[--bar-width-auto:2px]",
+    "[&.bar-over]:ak-light:[--bar-width-auto:3px] [&.bar-over]:ak-dark:[--bar-width-auto:2px]",
     // A fixed width keeps the bar the same at every text size. Normalize the
     // 0–100 contrast scale so high contrast adds only 20%.
-    "[--bar:calc(var(--bar-width,2px)*(1+0.2*var(--contrast,0)/100))]",
+    "[--bar:calc(var(--bar-width,var(--bar-width-auto,2px))*(1+0.2*var(--contrast,0)/100))]",
     // Forced colors would repaint the fill with the canvas color.
     "forced-colors:forced-color-adjust-none forced-colors:bg-[CanvasText]",
     // A bar outside a layered control paints on the surface around the
@@ -634,7 +639,7 @@ export const barBase = cv({
   variants: {
     /**
      * Sets the bar thickness. Numbers are pixels; other values are CSS lengths.
-     * High contrast adds 20%. Defaults to 2px.
+     * High contrast adds 20%. Defaults to 2px, or 3px on a light layer.
      */
     $width(value?: number | (string & {})) {
       if (value == null) return;
@@ -674,7 +679,7 @@ export const barBase = cv({
  * control; vertical groups draw it at the control's inline end or start.
  */
 export const controlBar = cv({
-  extend: [barBase],
+  extend: [controlBarBase],
   class: [
     "[--bar-gap:var(--control-bar-gap,0px)]",
     "inset-s-(--bar-inset) inset-e-(--bar-inset) h-(--bar)",
