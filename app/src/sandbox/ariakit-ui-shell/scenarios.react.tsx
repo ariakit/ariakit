@@ -644,8 +644,9 @@ export function NestedScenario({ controls }: ScenarioProps) {
 export function TransparentScenario({ controls }: ScenarioProps) {
   return (
     // No layer paints the gradient, so a part that paints its own layer shows
-    // as a solid block over it.
-    <div className="min-h-dvh bg-linear-to-b from-orange-200 to-sky-200 dark:from-orange-900 dark:to-sky-900">
+    // as a solid block over it. The sandbox styles are in the stylesheet of
+    // every app page, so the scenario reuses utilities from other sandboxes.
+    <div className="min-h-dvh bg-linear-to-b from-sky-500/40 to-rose-500/40">
       <Shell $size="md">
         <ShellHeader>
           <ShellStart>Transparent sidebar</ShellStart>
@@ -688,7 +689,7 @@ export function TransparentScenario({ controls }: ScenarioProps) {
             $edgeRaw
             $rounded="xl"
             $p={3}
-            className="col-span-full row-span-full h-[60rem]"
+            className="col-span-full h-[1000px]"
           >
             A panel whose ring reaches into the start sidebar column
           </Frame>
