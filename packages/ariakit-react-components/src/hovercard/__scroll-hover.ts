@@ -4,6 +4,7 @@ import {
   contains,
   getDocument,
   isElement,
+  isFrame,
   isNode,
 } from "@ariakit/utils";
 import type { HovercardStore } from "./hovercard-store.ts";
@@ -41,7 +42,8 @@ interface Mouse {
   // The innermost element under the mouse.
   target: Element | null;
   // Scrolls count as hover after a mouse move, until a press, a key press, a
-  // touch or pen input, or the mouse leaving the document.
+  // touch or pen input, or the mouse leaving the document or moving onto a
+  // frame.
   armed: boolean;
 }
 
@@ -110,25 +112,33 @@ function onPointerMove(event: PointerEvent) {
   const mouse = mice.get(document);
   // The listener is on the document, so the target is retargeted out of shadow
   // roots, like the element at a point that a scroll reads below.
-  const { target } = event;
+  const target = isElement(event.target) ? event.target : null;
   // Some browsers send a mousemove without movement after a scroll. It must not
   // count as a mouse move.
-  const armed =
+  const armedOrMoved =
     !mouse ||
     mouse.armed ||
     mouse.x !== event.clientX ||
     mouse.y !== event.clientY;
+  // This document doesn't get the mouse moves inside a frame, and the mouse can
+  // move from the frame's border into the frame without another event here. So
+  // scrolls don't count as hover while the mouse is on a frame.
+  const onFrame = !!target && isFrame(target);
   mice.set(document, {
     x: event.clientX,
     y: event.clientY,
-    target: isElement(target) ? target : null,
-    armed,
+    target,
+    armed: armedOrMoved && !onFrame,
   });
 }
 
 function onMouseOut(event: MouseEvent) {
-  // The mouse left the document.
-  if (event.relatedTarget) return;
+  const { relatedTarget } = event;
+  // The mouse left the document, or moved onto a frame, whose document gets the
+  // mouse moves inside it.
+  const leftDocument = !relatedTarget;
+  const enteredFrame = isElement(relatedTarget) && isFrame(relatedTarget);
+  if (!leftDocument && !enteredFrame) return;
   disarm(event);
 }
 

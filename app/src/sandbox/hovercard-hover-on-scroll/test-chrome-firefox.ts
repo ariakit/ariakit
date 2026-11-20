@@ -1,27 +1,17 @@
 import { invariant } from "@ariakit/utils";
-import type { Locator, Page } from "@playwright/test";
+import { countAnimations } from "#app/test-utils/ariakit-ui.ts";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import {
+  getCenterY,
+  hoverTimeout,
+  wheelInFrame,
+  wheelTo,
+} from "./test-helpers.ts";
 
 // After a scroll, Playwright WebKit sends a mousemove whose screen position
 // differs from its real moves, so the mouse hover moves, opens, and hides the
 // popups there whether a scroll counts as hover or not. Chrome and Firefox send
 // no mousemove after a scroll, so these tests run only there.
-
-// The default hide timeout. Nothing shows a pending hide.
-const hideTimeout = 500;
-
-async function getCenterY(locator: Locator) {
-  const box = await locator.boundingBox();
-  invariant(box, "The element has no bounding box.");
-  return box.y + box.height / 2;
-}
-
-// Turns the mouse wheel by the distance that moves `target` under the mouse,
-// which rests on `current`.
-async function wheelTo(page: Page, current: Locator, target: Locator) {
-  const distance = (await getCenterY(target)) - (await getCenterY(current));
-  await page.mouse.wheel(0, distance);
-}
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   test("move an open hovercard to the anchor that a scroll moves under the mouse", async ({
@@ -143,7 +133,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await flushFrames(page);
     // A scroll that counted as hover would move the hovercard at once, and hide
     // it after the hide timeout, which nothing shows while it's pending.
-    await page.waitForTimeout(hideTimeout);
+    await page.waitForTimeout(hoverTimeout);
     await test.expect(q.dialog("Button")).toHaveAttribute("data-open");
   });
 
@@ -163,7 +153,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await flushFrames(page);
     // A scroll that counted as hover would hide the hovercard after the hide
     // timeout, which nothing shows while it's pending.
-    await page.waitForTimeout(hideTimeout);
+    await page.waitForTimeout(hoverTimeout);
     await test.expect(q.dialog("Button")).toHaveAttribute("data-open");
   });
 
@@ -184,7 +174,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await flushFrames(page);
     // A scroll that counted as hover would hide the hovercard after the hide
     // timeout, which nothing shows while it's pending.
-    await page.waitForTimeout(hideTimeout);
+    await page.waitForTimeout(hoverTimeout);
     await test.expect(card).toHaveAttribute("data-open");
   });
 
@@ -203,7 +193,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await flushFrames(page);
     // A scroll that counted as hover would hide the hovercard after the hide
     // timeout, which nothing shows while it's pending.
-    await page.waitForTimeout(hideTimeout);
+    await page.waitForTimeout(hoverTimeout);
     await test.expect(q.dialog("Button")).toHaveAttribute("data-open");
     // A mouse move counts as hover again.
     await nav.link("Checkbox").hover({ position: { x: 4, y: 4 } });
@@ -242,10 +232,70 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await flushFrames(page);
     // A rejected hide would run only after the hide timeout, which nothing
     // shows while it's pending.
-    await page.waitForTimeout(hideTimeout);
+    await page.waitForTimeout(hoverTimeout);
     await test.expect(q.dialog("Button")).toHaveAttribute("data-open");
     // It accepts a scroll of the list.
     await wheelTo(page, nav.link("Checkbox"), nav.link("Select"));
     await test.expect(q.dialog("Select")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8383
+  test("keep the hovercard open when the page scrolls while the mouse rests in its frame", async ({
+    page,
+    q,
+  }) => {
+    const card = q.dialog("Embed");
+    const preview = page.locator("iframe[title='Embed preview']");
+    await q.link("Embed").scrollIntoViewIfNeeded();
+    await q.link("Embed").hover();
+    await test.expect(card).toBeVisible();
+    // The hovercard scales in when it opens, so the mouse moves on it after it
+    // settles.
+    await test.expect.poll(() => countAnimations(card)).toBe(0);
+    const cardBox = await card.boundingBox();
+    const previewBox = await preview.boundingBox();
+    invariant(cardBox && previewBox, "The elements have no bounding box.");
+    // The mouse enters the frame through its bottom border, which belongs to
+    // the page, and then moves up into the frame.
+    const borderY = previewBox.y + previewBox.height - 0.5;
+    await page.mouse.move(previewBox.x + 40, cardBox.y + cardBox.height - 2);
+    await page.mouse.move(previewBox.x + 40, borderY);
+    await page.mouse.move(previewBox.x + 40, previewBox.y + 40);
+    // The page scroll moves the hovercard with its anchor, so the mouse stays
+    // in the frame, while the point on the border moves out of the hovercard.
+    const distance = cardBox.y + cardBox.height - borderY + 8;
+    await page.evaluate((top) => window.scrollBy(0, top), distance);
+    await test.expect
+      .poll(async () => (await card.boundingBox())?.y)
+      .toBeLessThan(cardBox.y);
+    // The script scroll fires its scroll event in the next frame.
+    await flushFrames(page);
+    // A scroll that counted as hover would hide the hovercard after the hide
+    // timeout, which nothing shows while it's pending.
+    await page.waitForTimeout(hoverTimeout);
+    await test.expect(card).toHaveAttribute("data-open");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8383
+  test("count scrolls as hover again after the mouse moves from a frame back to the list", async ({
+    page,
+    q,
+  }) => {
+    const nav = query(q.navigation("Pages"));
+    await q.navigation("Pages").scrollIntoViewIfNeeded();
+    await wheelInFrame({
+      page,
+      above: nav.link("Home"),
+      below: nav.link("Docs"),
+      frame: page.locator("iframe[title='Embedded page']"),
+    });
+    const docs = await nav.link("Docs").boundingBox();
+    const blog = await nav.link("Blog").boundingBox();
+    invariant(docs && blog, "The links have no bounding box.");
+    // The gap between the links, away from the frame.
+    const gapY = (docs.y + docs.height + blog.y) / 2;
+    await page.mouse.move(docs.x + 4, gapY);
+    await page.mouse.wheel(0, (await getCenterY(nav.link("Blog"))) - gapY);
+    await test.expect(q.dialog("Blog")).toBeVisible();
   });
 });
