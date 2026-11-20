@@ -29,6 +29,35 @@ The same geometry holds while a part moves. A segmented tab list is a frame, and
 
 <GliderRadiusFigure client:visible />
 
+## Distance from the parent edge
+
+A nested frame is concentric with its parent only when it is near the parent edge. The distance is the parent padding, plus the parent border, plus the margin of the nested frame.
+
+| Distance           | Radius of the nested frame                                                                                                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Up to `0.5rem`     | The concentric radius: the parent radius less the distance.                                                                                                                                         |
+| `0.5rem` to `1rem` | The larger of the concentric radius and a straight line to the declared radius at `1rem`. The line starts at `0.5rem`, at the concentric radius there or at the declared radius if that is smaller. |
+| `1rem` or more     | The declared radius. A larger concentric radius stays until the parent padding plus the frame margin is `1rem`.                                                                                     |
+
+Thus, a frame whose radius is smaller than its declared radius moves to the declared radius without a jump. The line only raises the radius. A frame with a full declared radius, such as `ak-frame-rounded-full`, is a pill when it is more than `0.5rem` from the parent edge. A frame whose concentric radius is larger than its declared radius, such as a frame in a pill, keeps the concentric radius until the parent padding plus the frame margin is `1rem`.
+
+```html
+<div class="ak-frame ak-frame-xl/2">
+  <!-- 0.5rem from the edge: concentric, 0.25rem -->
+  <div class="ak-frame ak-frame-xl"></div>
+</div>
+<div class="ak-frame ak-frame-xl/3">
+  <!-- 0.75rem from the edge: halfway to the declared radius, 0.5rem -->
+  <div class="ak-frame ak-frame-xl"></div>
+</div>
+<div class="ak-frame ak-frame-xl/4">
+  <!-- 1rem from the edge: the declared radius, 0.75rem -->
+  <div class="ak-frame ak-frame-xl"></div>
+</div>
+```
+
+Add `ak-frame-force` to use the declared radius at each distance.
+
 > [!WARNING]
 > Border widths affect radius math. When a border defines the frame's rounded silhouette, always use `ak-frame-border` instead of Tailwind's `border` utility so concentric radii stay correct:
 >
