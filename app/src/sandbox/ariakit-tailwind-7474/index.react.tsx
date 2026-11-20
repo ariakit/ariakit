@@ -1,4 +1,4 @@
-import "./style.css";
+import "#app/styles/ariakit-tailwind-sandbox.css";
 
 const surface = "ak-layer ak-layer-3 ak-ink-0 ak-frame ak-frame-lg/3 border";
 

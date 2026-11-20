@@ -1,4 +1,4 @@
-import "./style.css";
+import "#app/styles/ariakit-tailwind-sandbox.css";
 import { useState } from "react";
 
 const VIEWS = ["Overview", "Activity", "Settings"];

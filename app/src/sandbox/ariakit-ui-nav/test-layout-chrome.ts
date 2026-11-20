@@ -521,6 +521,60 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     }
   });
 
+  test("covers the border of a vertical navigation with an edge bar but keeps a halfway bar inside it", async ({
+    q,
+  }) => {
+    const nav = q.navigation("Bordered pages");
+    await nav.scrollIntoViewIfNeeded();
+    await expect(nav).toHaveCSS("border-left-width", "1px");
+    await expect(nav).toHaveCSS("border-right-width", "1px");
+    const getBar = (name: string) =>
+      query(nav).link(name).locator(".control-bar");
+    for (const side of ["start", "end"]) {
+      await q.combobox("Column bar side").selectOption(side);
+      // A nested start bar sits on the guide of its section instead.
+      const names = side === "start" ? ["Overview"] : ["Overview", "Themes"];
+      for (const name of names) {
+        await query(nav).link(name).click();
+        await expect
+          .poll(async () => {
+            const [box, frame] = await Promise.all([
+              getBox(getBar(name)),
+              getBox(nav),
+            ]);
+            return side === "start"
+              ? box.x - frame.x
+              : frame.x + frame.width - box.x - box.width;
+          })
+          .toBeCloseTo(0, 0);
+      }
+    }
+    await query(nav).link("Overview").click();
+    await q.combobox("Column bar distance").selectOption("halfway");
+    for (const side of ["start", "end"]) {
+      await q.combobox("Column bar side").selectOption(side);
+      await expect
+        .poll(async () => {
+          const [box, item, frame] = await Promise.all([
+            getBox(getBar("Overview")),
+            getBox(query(nav).link("Overview")),
+            getBox(nav),
+          ]);
+          const toItem =
+            side === "start"
+              ? item.x - box.x - box.width
+              : box.x - item.x - item.width;
+          // Measure to the inner side of the 1px border.
+          const toBorder =
+            side === "start"
+              ? box.x - frame.x - 1
+              : frame.x + frame.width - 1 - box.x - box.width;
+          return [Math.round(toItem), Math.round(toItem - toBorder)];
+        })
+        .toEqual([3, 0]);
+    }
+  });
+
   test("shortens a bar below a link by its corner radius unless the length is full", async ({
     q,
   }) => {

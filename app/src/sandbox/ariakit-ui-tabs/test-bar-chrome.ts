@@ -68,15 +68,18 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.combobox("Tab bar distance").selectOption("halfway");
     for (const side of ["end", "start"]) {
       await q.combobox("Tab bar side").selectOption(side);
-      // Half of the 12px frame padding minus the 2px bar.
+      // The bar and equal gaps on both sides of it fill the 12px frame padding.
+      // The bar width depends on the lightness of the layer.
       await expect
         .poll(async () => {
           const [box, item] = await Promise.all([getBox(bar), getBox(tab)]);
-          return side === "start"
-            ? item.y - box.y - box.height
-            : box.y - item.y - item.height;
+          const gap =
+            side === "start"
+              ? item.y - box.y - box.height
+              : box.y - item.y - item.height;
+          return gap * 2 + box.height;
         })
-        .toBeCloseTo(5, 0);
+        .toBeCloseTo(12, 0);
     }
   });
 });

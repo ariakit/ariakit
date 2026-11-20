@@ -1,0 +1,15 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+
+/* The CSS entry point of the sandbox previews. It has all the site CSS and the
+   utilities that sandboxes use. The ariakit-tailwind sandboxes compile their
+   own utilities with @ariakit/tailwind. See ariakit-tailwind-sandbox.css. */
+@import "./base.css";
+
+@source not "../sandbox/ariakit-tailwind*";
