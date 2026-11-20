@@ -40,11 +40,11 @@
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
-    "solid-js": "1.9.19",
+    "solid-js": "2.0.0",
     "vitest": "5.1.0"
   },
   "peerDependencies": {
-    "solid-js": "^1.8"
+    "solid-js": "^1.8 || ^2.0.0"
   },
   "exports": {
     ".": "./src/index.ts",
