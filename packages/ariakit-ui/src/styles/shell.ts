@@ -857,7 +857,13 @@ export const shellSidebarHeader = cv({
       6: "[--shell-sidebar-header-space:6]",
     },
   },
-  defaultVariants: { $px: barInsetDefault },
+  defaultVariants: {
+    $px: barInsetDefault,
+    // The body scrolls between the header and the footer, not under them, so
+    // they show the surface of the sidebar instead of painting it again. A
+    // transparent sidebar then stays transparent. Set `$layer` to paint.
+    $layer: "transparent",
+  },
 });
 
 /**
@@ -879,7 +885,8 @@ export const shellSidebarBody = cv({
 export const shellSidebarFooter = cv({
   extend: [seam],
   class: "shell-sidebar-footer flex-none",
-  defaultVariants: { $p: 3 },
+  // Shows the surface of the sidebar, like the sidebar header.
+  defaultVariants: { $p: 3, $layer: "transparent" },
 });
 
 /**
