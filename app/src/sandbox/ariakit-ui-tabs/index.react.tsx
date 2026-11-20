@@ -16,7 +16,10 @@ import {
   Popover,
   PopoverProvider,
 } from "@ariakit/ui/components/popover.ariakit.react";
-import type { TabsProps } from "@ariakit/ui/components/tabs.ariakit.react";
+import type {
+  TabRowProps,
+  TabsProps,
+} from "@ariakit/ui/components/tabs.ariakit.react";
 import {
   Tab,
   TabLabel,
@@ -267,6 +270,8 @@ interface TabRowTabsProps {
   disabledLabel?: string;
   /** Stretches the tabs, with only the settings button after them. */
   stretch?: boolean;
+  /** Hides the tab list, while the buttons of the row stay. */
+  listHidden?: boolean;
   /** Renders the panel below the row. Defaults to `true`. */
   panel?: boolean;
   /**
@@ -276,6 +281,7 @@ interface TabRowTabsProps {
    */
   renamable?: boolean;
   tabsProps?: TabsProps;
+  rowProps?: TabRowProps;
 }
 
 interface TabRowRenaming {
@@ -298,7 +304,9 @@ function TabRowTabs({
   panel = true,
   renamable,
   disabledLabel,
+  listHidden,
   tabsProps,
+  rowProps,
 }: TabRowTabsProps) {
   const id = name.toLowerCase().replaceAll(" ", "-");
   const [labels, setLabels] = useState(tabRowLabels);
@@ -306,13 +314,17 @@ function TabRowTabs({
   const [renaming, setRenaming] = useState<TabRowRenaming>();
   return (
     <Tabs defaultSelectedId={`${id}-${tabRowLabels[selected]}`} {...tabsProps}>
-      <TabRow>
+      <TabRow {...rowProps}>
         <TabRowButton aria-label={`${name} sidebar`} $kind={kind}>
           <TabSlot>
             <PanelLeftIcon />
           </TabSlot>
         </TabRowButton>
-        <TabList aria-label={name} $layout={stretch ? "stretch" : undefined}>
+        <TabList
+          aria-label={name}
+          $layout={stretch ? "stretch" : undefined}
+          hidden={listHidden}
+        >
           {labels.map((label) => (
             <Tab
               key={label}
@@ -3413,7 +3425,7 @@ export default function TabsExamples() {
       </Example>
       <Example
         title="Tab row"
-        description="Buttons on the row of the tabs look like tabs that are not selected, and the strip color fills the row behind them. Beside a button, the outer tab is not at the corner of the root, so its selected folder keeps its full curve, under the button, and the panel keeps its round corner. The separator between a selected tab and a button hides. The boxes show the first, the last, and the middle tab selected, the last two without the outer edge, then flat tabs with padding, a right-to-left row, tabs with a close mark (the last one disabled, without a mark), stretched tabs with a button after them, a row with no panel below it, and closable tabs that rename on double-click."
+        description="Buttons on the row of the tabs look like tabs that are not selected, and the strip color fills the row behind them. Beside a button, the outer tab is not at the corner of the root, so its selected folder keeps its full curve, under the button, and the panel keeps its round corner. The separator between a selected tab and a button hides. The boxes show the first, the last, and the middle tab selected, the last two without the outer edge, then flat tabs with padding, a right-to-left row, tabs with a close mark (the last one disabled, without a mark), stretched tabs with a button after them, a row with no panel below it, closable tabs that rename on double-click, and a row with scroll buttons that always show, whose tab list is hidden."
         wide
         code={`
           <Tabs>
@@ -3488,6 +3500,11 @@ export default function TabsExamples() {
           <TabRowTabs name="Tab row stretch" selected={2} stretch />
           <TabRowTabs name="Tab row without a panel" panel={false} />
           <TabRowTabs name="Tab row rename" renamable />
+          <TabRowTabs
+            name="Tab row hidden list"
+            listHidden
+            rowProps={{ $buttons: "always" }}
+          />
         </div>
       </Example>
     </ExampleGrid>

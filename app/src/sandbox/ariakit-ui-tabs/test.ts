@@ -176,3 +176,11 @@ test("keeps a closable tab with aria-disabled", async () => {
   expect(tabs.tab("Support")).toHaveFocus();
   expect(tabs.tab.all()).toHaveLength(3);
 });
+
+test("leaves out the scroll buttons of a hidden tab list in a row", () => {
+  // The row button is a child of the row, beside the tab list.
+  const row = q.button("Tab row hidden list sidebar").parentElement;
+  if (!row) throw new Error("The row is missing.");
+  expect(q.within(row).button.all("Previous tabs")).toHaveLength(0);
+  expect(q.within(row).button.all("Next tabs")).toHaveLength(0);
+});

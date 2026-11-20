@@ -479,6 +479,18 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(query(list).tab()).toHaveCount(3);
   });
 
+  // The row shows scroll buttons always, so the buttons of a hidden list would
+  // be focusable stops between the row buttons.
+  test("skips a hidden tab list in a row with the Tab key", async ({
+    page,
+    q,
+  }) => {
+    const box = query(q.article("Tab row"));
+    await box.button("Tab row hidden list sidebar").focus();
+    await page.keyboard.press("Tab");
+    await test.expect(box.button("Tab row hidden list new tab")).toBeFocused();
+  });
+
   // The popover renders in a portal, but it is a child of the tab in the React
   // tree, so its key presses reach the tab.
   test("edits a rename field in a closable tab with Backspace", async ({

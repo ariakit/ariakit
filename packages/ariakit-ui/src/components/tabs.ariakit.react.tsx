@@ -577,13 +577,15 @@ export function TabList({
   }
   if (inRow) {
     // The row is the carousel root, so the strip and its buttons sit beside the
-    // other controls of the row.
+    // other controls of the row. The row stays when the list hides, so the
+    // buttons of the list leave with it.
     return (
       <CarouselViewport
         ref={listRef}
         recipe={tabList}
         {...variantProps}
         {...buttonProps}
+        buttons={rest.hidden ? false : buttons}
         render={<ak.TabList {...rest} />}
       >
         {items}
