@@ -44,6 +44,38 @@ Each layer appearance variant also has a `not-*` counterpart, such as
 
 For `::before` and `::after`, the originating element can be the query container. For example, `ak-light:before:border-t` on an `ak-layer` element draws a top border on its pseudo-element when that element's own layer is light. This also works when its layer is inverted relative to the parent.
 
+## Outset layer appearance
+
+These variants are for an element with [`ak-outset`](/tailwind/styles/ak-outset/). They match the layer around the parent layer, in the same way as the layer appearance variants match on a direct child of that layer.
+
+| Variant                | Matches when the layer around the parent layer is… |
+| ---------------------- | -------------------------------------------------- |
+| `ak-outset-dark`       | Dark.                                              |
+| `ak-outset-light`      | Light.                                             |
+| `ak-outset-dark-high`  | The darkest tier.                                  |
+| `ak-outset-dark-low`   | A dark mid-tier.                                   |
+| `ak-outset-light-low`  | A light mid-tier.                                  |
+| `ak-outset-light-high` | The lightest tier.                                 |
+
+Each of these variants also has a `not-*` counterpart, such as `not-ak-outset-dark`.
+
+```html preview
+<div class="ak-layer ak-layer-canvas">
+  <button class="ak-layer ak-layer-primary relative ak-frame ak-frame-xl/2">
+    Selected tab
+    <span
+      class="ak-layer ak-layer-contrast ak-outset ak-outset-light:h-[3px] ak-outset-dark:h-[2px] absolute inset-x-0 -bottom-2"
+    ></span>
+  </button>
+</div>
+```
+
+The bar is 3px thick on a light canvas and 2px thick on a dark canvas, whatever the color of the tab.
+
+On a direct child of a layer, these variants match the outer layer whether or not `ak-outset` applies to the element. For example, `[.ak-layer>&:not(.over)]:ak-outset` does not apply to an element with the `over` class, but these variants on it still match the outer layer. To match its parent layer instead, add the regular variants for that case, such as `[&.over]:ak-light:h-[3px] [&.over]:ak-dark:h-[2px]`.
+
+When the parent of the element is not a layer, these variants match the nearest layer like the layer appearance variants.
+
 ## Accessibility
 
 | Variant         | Matches when…                                                                                                                                                                                           |

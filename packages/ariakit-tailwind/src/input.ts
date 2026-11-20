@@ -50,6 +50,11 @@ const BAND_LEVEL_DARK_LOW = 0.25;
 const BAND_LEVEL_MID = 0.5;
 const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
+
+// The value of the outer layer's scheme and band while ak-outset hasn't written
+// them. No scheme or band has this color, since they are opaque.
+const OUTSET_LAYER_UNSET = "transparent";
+
 const LCH_LIGHTNESS_MAX = 100;
 const LCH_DARK_THRESHOLD_L = 56.27;
 const LCH_QUANTIZED_LIGHTNESS_STEPS = 32;
@@ -678,6 +683,13 @@ const layerColorVars = {
   outsetTextParentL: _ak.prop("ostpl"),
   outsetTextAccessibleL: _ak.prop("ostal"),
   outsetTextChromaCap: _ak.prop("ostcc"),
+  // The scheme and band of the outer layer. A layer with a child that has
+  // ak-outset in its class writes them, and the ak-outset-* variants on its
+  // children read them. The ak-outset-* classes match too, so a layer always
+  // writes them for these variants. They do not inherit, so deeper elements
+  // don't read them.
+  outsetLayerScheme: _ak.prop.color("osls", { initial: OUTSET_LAYER_UNSET }),
+  outsetLayerBand: _ak.prop.color("oslbd", { initial: OUTSET_LAYER_UNSET }),
   // This must not match the light/dark style queries until an ancestor layer
   // provides an actual scheme color.
   layerScheme: _ak.prop.color("ls", { inherits: true, initial: "transparent" }),
@@ -975,6 +987,84 @@ const lightHigh = createVariant(
     set("@slot"),
   ),
 );
+
+interface CreateOutsetVariantParams {
+  name: string;
+  property: VarProperty;
+  outsetProperty: VarProperty;
+  value: Value;
+}
+
+/**
+ * Creates the counterpart of a light, dark, or band variant for an element with
+ * ak-outset. It matches the outer layer's value, which a layer writes when one
+ * of its children has ak-outset in its class. Where the parent isn't a layer,
+ * nothing writes one, so it matches the nearest layer's value like the regular
+ * variant.
+ *
+ * The regular variants don't follow ak-outset themselves. A container query
+ * can't see the element it styles, so each of their rules would need a second
+ * rule with a selector for ak-outset, which costs every element that uses them.
+ */
+function createOutsetVariant({
+  name,
+  property,
+  outsetProperty,
+  value,
+}: CreateOutsetVariantParams) {
+  const outsetQuery = fn.style(outsetProperty, value);
+  // A style query without a value is always true for a registered property in
+  // Safari and Firefox, so this compares with the initial value instead.
+  const unsetQuery = fn.style(outsetProperty, OUTSET_LAYER_UNSET);
+  const parentQuery = `${unsetQuery} and ${fn.style(property, value)}`;
+  return createVariant(
+    name,
+    // The outer parentheses let Tailwind negate the whole query for not-*.
+    at.container(`(${outsetQuery} or (${parentQuery}))`, set("@slot")),
+  );
+}
+
+const outsetDark = createOutsetVariant({
+  name: "ak-outset-dark",
+  property: vars.layerScheme,
+  outsetProperty: vars.outsetLayerScheme,
+  value: "oklch(1 0 0)",
+});
+
+const outsetLight = createOutsetVariant({
+  name: "ak-outset-light",
+  property: vars.layerScheme,
+  outsetProperty: vars.outsetLayerScheme,
+  value: "oklch(0 0 0)",
+});
+
+const outsetDarkHigh = createOutsetVariant({
+  name: "ak-outset-dark-high",
+  property: vars.layerBand,
+  outsetProperty: vars.outsetLayerBand,
+  value: fn.oklch({ l: BAND_LEVEL_DARK_HIGH }),
+});
+
+const outsetDarkLow = createOutsetVariant({
+  name: "ak-outset-dark-low",
+  property: vars.layerBand,
+  outsetProperty: vars.outsetLayerBand,
+  value: fn.oklch({ l: BAND_LEVEL_DARK_LOW }),
+});
+
+const outsetLightLow = createOutsetVariant({
+  name: "ak-outset-light-low",
+  property: vars.layerBand,
+  outsetProperty: vars.outsetLayerBand,
+  value: fn.oklch({ l: BAND_LEVEL_LIGHT_LOW }),
+});
+
+const outsetLightHigh = createOutsetVariant({
+  name: "ak-outset-light-high",
+  property: vars.layerBand,
+  outsetProperty: vars.outsetLayerBand,
+  value: fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH }),
+});
 
 const root = rule(
   ":root",
@@ -1891,16 +1981,21 @@ const layerBandLightness = fn.add(
   fn.mul(vars.bandLightLow, BAND_LEVEL_LIGHT_LOW - BAND_LEVEL_MID),
   fn.mul(vars.bandLightHigh, BAND_LEVEL_LIGHT_HIGH - BAND_LEVEL_MID),
 );
-const layerBand = fn.oklch(vars.layer, {
-  l: layerBandLightness,
-  c: 0,
-  h: 0,
-});
-const layerScheme = fn.oklch(vars.layer, {
-  l: vars.textForegroundContrastL,
-  c: 0,
-  h: 0,
-});
+
+/**
+ * Returns the band that the band variants match for a layer color.
+ */
+function getLayerBand(layerColor: VarProperty) {
+  return fn.oklch(layerColor, { l: layerBandLightness, c: 0, h: 0 });
+}
+
+/**
+ * Returns the scheme that the light and dark variants match for a layer color:
+ * black for a light layer and white for a dark one.
+ */
+function getLayerScheme(layerColor: VarProperty) {
+  return fn.oklch(layerColor, { l: vars.textForegroundContrastL, c: 0, h: 0 });
+}
 
 // Min alpha adapts to layer lightness — higher for mid-lightness backgrounds.
 const textMinimumAlphaBase = fn.add(
@@ -1944,8 +2039,8 @@ utility(
   at.container.not(fn.style(inputs.textA, 1), set(vars.text, inkText)),
   // ak-edge-contrast sets the floor; other elements fall back to the edge.
   set(vars.edge, fn.var(vars.edgeFloor, edge)),
-  set(vars.layerBand, layerBand),
-  set(vars.layerScheme, layerScheme),
+  set(vars.layerBand, getLayerBand(vars.layer)),
+  set(vars.layerScheme, getLayerScheme(vars.layer)),
   getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,
@@ -1970,6 +2065,14 @@ utility(
     rule(
       '&:not(body):has(> [class*="ak-outset"])',
       set(provide(vars.layerParentParentContext), vars.layerParent),
+      // The scheme and band of the outer layer, which the ak-outset-* variants
+      // on the children read. They split the same way as the regular variants
+      // on a direct child of the outer layer. A rule on ak-outset itself could
+      // skip a child where a conditional ak-outset doesn't apply, but each
+      // compiled form of ak-outset would add a :has() rule that every element
+      // must test.
+      set(vars.outsetLayerScheme, getLayerScheme(vars.layerParent)),
+      set(vars.outsetLayerBand, getLayerBand(vars.layerParent)),
     ),
     set(provide(vars.layerTextLContext), vars.layerTextL),
     set(provide(vars.layerLContext), vars.layerL),
@@ -3566,6 +3669,12 @@ export const input = [
   darkLow,
   lightLow,
   lightHigh,
+  outsetDark,
+  outsetLight,
+  outsetDarkHigh,
+  outsetDarkLow,
+  outsetLightLow,
+  outsetLightHigh,
   ...utilities,
   ...Object.values(vars),
   ...Object.values(inputs),

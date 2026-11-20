@@ -110,6 +110,42 @@
   }
 }
 
+@custom-variant ak-outset-dark {
+  @container (style(--_ak-osls: oklch(1 0 0)) or (style(--_ak-osls: transparent) and style(--_ak-ls: oklch(1 0 0)))) {
+    @slot;
+  }
+}
+
+@custom-variant ak-outset-light {
+  @container (style(--_ak-osls: oklch(0 0 0)) or (style(--_ak-osls: transparent) and style(--_ak-ls: oklch(0 0 0)))) {
+    @slot;
+  }
+}
+
+@custom-variant ak-outset-dark-high {
+  @container (style(--_ak-oslbd: oklch(0 0 0)) or (style(--_ak-oslbd: transparent) and style(--_ak-lbd: oklch(0 0 0)))) {
+    @slot;
+  }
+}
+
+@custom-variant ak-outset-dark-low {
+  @container (style(--_ak-oslbd: oklch(0.25 0 0)) or (style(--_ak-oslbd: transparent) and style(--_ak-lbd: oklch(0.25 0 0)))) {
+    @slot;
+  }
+}
+
+@custom-variant ak-outset-light-low {
+  @container (style(--_ak-oslbd: oklch(0.75 0 0)) or (style(--_ak-oslbd: transparent) and style(--_ak-lbd: oklch(0.75 0 0)))) {
+    @slot;
+  }
+}
+
+@custom-variant ak-outset-light-high {
+  @container (style(--_ak-oslbd: oklch(1 0 0)) or (style(--_ak-oslbd: transparent) and style(--_ak-lbd: oklch(1 0 0)))) {
+    @slot;
+  }
+}
+
 @utility ak-disabled {
   --_ak-contrast-scale: var(--ak-disabled-contrast-scale);
   --_ak-text-contrast-scale: var(--ak-disabled-text-contrast-scale);
@@ -158,6 +194,8 @@
     --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-even));
     &:not(body):has(> [class*="ak-outset"]) {
       --_ak-lppc-odd: var(--ak-layer-parent, canvas);
+      --_ak-osls: oklch(from var(--ak-layer-parent, canvas) var(--_ak-tfcl) 0 0);
+      --_ak-oslbd: oklch(from var(--ak-layer-parent, canvas) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
     }
     --_ak-ltlc-odd: var(--_ak-ltl);
     --_ak-llc-odd: var(--_ak-ll);
@@ -170,6 +208,8 @@
     --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-odd));
     &:not(body):has(> [class*="ak-outset"]) {
       --_ak-lppc-even: var(--ak-layer-parent, canvas);
+      --_ak-osls: oklch(from var(--ak-layer-parent, canvas) var(--_ak-tfcl) 0 0);
+      --_ak-oslbd: oklch(from var(--ak-layer-parent, canvas) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
     }
     --_ak-ltlc-even: var(--_ak-ltl);
     --_ak-llc-even: var(--_ak-ll);
@@ -2352,6 +2392,18 @@
 @property --_ak-ostcc {
   syntax: "*";
   inherits: false;
+}
+
+@property --_ak-osls {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --_ak-oslbd {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
 }
 
 @property --_ak-ls {
