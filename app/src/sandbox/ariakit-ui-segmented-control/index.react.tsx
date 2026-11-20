@@ -555,6 +555,29 @@ export default function SegmentedControlExamples() {
       </Example>
 
       <Example
+        title="Bordered navigation"
+        description="A segmented navigation stays inside a border, so the shadow of its current segment doesn't paint over the border."
+        code={`<Nav $kind="segmented" $layout="horizontal" $border $borderType="border"><NavLink $kind="segmented-flat" text="Day" /></Nav>`}
+      >
+        <Nav
+          aria-label="Bordered range"
+          $kind="segmented"
+          $layout="horizontal"
+          $layer="transparent"
+          $border
+          $borderType="border"
+        >
+          <NavLink
+            $kind="segmented-flat"
+            href="#bordered-day"
+            aria-current="page"
+            text="Day"
+          />
+          <NavLink $kind="segmented-flat" href="#bordered-week" text="Week" />
+        </Nav>
+      </Example>
+
+      <Example
         title="Narrow navigation"
         description="A segmented navigation scrolls with its buttons outside the landmark, and the root keeps its surface whole under the fades."
         code={`<div className="w-40"><Nav $kind="segmented" $layout="horizontal" /></div>`}

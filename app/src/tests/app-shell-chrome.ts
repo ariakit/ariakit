@@ -280,6 +280,43 @@ test("site navigation centers the current page bar before its row", async ({
   await expect.poll(getOffsets).toBeLessThan(0.5);
 });
 
+test("top bar current section bar covers the header's bottom edge", async ({
+  page,
+  q,
+}) => {
+  await gotoAndSettle(page, recipePath);
+  const main = q.navigation("Main");
+  const header = page.locator(".shell-header", { has: main });
+  // The bar is a decorative, hidden element, so only its box can be queried.
+  const bar = query(main).link("Recipes").locator(".control-bar");
+  await expect(header).toHaveCSS("border-bottom-width", "1px");
+  await expect
+    .poll(async () => {
+      const [headerBox, barBox] = await Promise.all([
+        header.boundingBox(),
+        bar.boundingBox(),
+      ]);
+      if (!headerBox || !barBox) return null;
+      return barBox.y + barBox.height - headerBox.y - headerBox.height;
+    })
+    .toBeCloseTo(0, 0);
+  // The navigation reaches over the edge, so it doesn't clip the bar there or
+  // scroll to it.
+  await expect
+    .poll(async () => {
+      const [headerBox, mainBox] = await Promise.all([
+        header.boundingBox(),
+        main.boundingBox(),
+      ]);
+      if (!headerBox || !mainBox) return null;
+      return mainBox.y + mainBox.height - headerBox.y - headerBox.height;
+    })
+    .toBeCloseTo(0, 0);
+  await expect
+    .poll(() => main.evaluate((node) => node.scrollHeight - node.clientHeight))
+    .toBe(0);
+});
+
 test("home page renders without the site navigation", async ({ page, q }) => {
   await gotoAndSettle(page, "/");
   await expect(q.heading("Ariakit")).toBeVisible();

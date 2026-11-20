@@ -291,8 +291,12 @@ const bar = cx(
   "[&>.shell-bar-end:has(>.carousel>.nav.horizontal)]:self-stretch",
   "[&>*>.carousel:has(>.nav.horizontal)]:self-stretch [&>*>.carousel:has(>.nav.horizontal)]:my-0 [&>*>.carousel:has(>.nav.horizontal)]:py-0",
   // The navigation covers the root, so its block margins reach past the root
-  // unless they go too.
-  "[&>*>.carousel>.nav.horizontal]:items-center [&>*>.carousel>.nav.horizontal]:my-0! [&>*>.carousel>.nav.horizontal]:py-0",
+  // unless they go too. It reaches over the edges that `--nav-edge-start` and
+  // `--nav-edge-end` set, with the same padding, so its scroll box doesn't clip
+  // the edge bars that cover them.
+  "[&>*>.carousel>.nav.horizontal]:items-center",
+  "[&>*>.carousel>.nav.horizontal]:mt-[calc(-1*var(--nav-edge-start,0px))]! [&>*>.carousel>.nav.horizontal]:mb-[calc(-1*var(--nav-edge-end,0px))]!",
+  "[&>*>.carousel>.nav.horizontal]:pt-(--nav-edge-start,0px) [&>*>.carousel>.nav.horizontal]:pb-(--nav-edge-end,0px)",
   // Without block padding, edge bars measure from the region's height alone.
   "[&>*>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
   // The region scrolls, so rounded corners would clip a bar at its edge.
@@ -300,7 +304,9 @@ const bar = cx(
   // The same goes for a part in a content area, which stretches with its area.
   "[&>.shell-band:has(>.shell-bar-part>.carousel>.nav.horizontal)]:self-stretch [&>.shell-band>.shell-bar-part:has(>.carousel>.nav.horizontal)]:self-stretch",
   "[&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:self-stretch [&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:my-0 [&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:py-0",
-  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:items-center [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:my-0! [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:py-0",
+  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:items-center",
+  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:mt-[calc(-1*var(--nav-edge-start,0px))]! [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:mb-[calc(-1*var(--nav-edge-end,0px))]!",
+  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:pt-(--nav-edge-start,0px) [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:pb-(--nav-edge-end,0px)",
   "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
   "[&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:rounded-none! [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:rounded-none!",
   "col-[page] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
@@ -378,9 +384,13 @@ export const shellHeader = cv({
     "shell-header row-[header] box-border min-h-[calc(var(--shell-header-height)+var(--shell-facing-border,0px))] @container/shell-header",
     // Without a facing edge, the shell adds no edge width to its offsets.
     "[.shell:has(>&.shell-edge-none)]:[--shell-header-border:0px]",
-    // Let edge bars in a centered navigation row reach the inner edge.
-    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:var(--shell-header-height)]",
-    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:var(--shell-header-height)]",
+    // Edge bars in a centered navigation row reach the bottom of the header
+    // and cover its facing edge. The navigation measures the header without
+    // the border of its carousel root, and reaches over both edges.
+    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-2*var(--carousel-border,0px))]",
+    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-2*var(--carousel-border,0px))]",
+    "[&>*>.carousel>.nav.horizontal]:[--nav-edge-end:calc(var(--carousel-border,0px)+var(--shell-facing-border,0px))]",
+    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-edge-end:calc(var(--carousel-border,0px)+var(--shell-facing-border,0px))]",
     "z-6",
     "[--shell-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-header-space),1px))]",
     "[--shell-bar-inset:round(var(--shell-header-step)*var(--shell-header-space),1px)]",
@@ -557,9 +567,11 @@ export const shellFooter = cv({
     // Without a facing edge, the shell adds no edge width to its offsets.
     "[.shell:has(>&.shell-edge-none)]:[--shell-footer-border:0px]",
     // Let edge bars in a centered navigation row reach the inner edge.
-    // The bottom safe area pads the footer, so it doesn't hold the row.
-    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-env(safe-area-inset-bottom))]",
-    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-env(safe-area-inset-bottom))]",
+    // The bottom safe area pads the footer, so it doesn't hold the row. The
+    // navigation measures the footer without the border of its carousel root,
+    // which it reaches over.
+    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-env(safe-area-inset-bottom)-2*var(--carousel-border,0px))]",
+    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-env(safe-area-inset-bottom)-2*var(--carousel-border,0px))]",
     "z-5",
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
     "[--shell-footer-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-footer-space),1px))]",
@@ -1167,10 +1179,15 @@ export const shellMainHeader = cv({
     // A horizontal navigation region fills the header's height, like in a bar.
     "[&:has(>.shell-bar-part)>:has(>.carousel>.nav.horizontal)]:self-stretch",
     "[&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:self-stretch [&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:my-0 [&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:py-0",
-    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:items-center [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:my-0! [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:py-0",
+    // The navigation reaches over the edges that `--nav-edge-start` and
+    // `--nav-edge-end` set, so edge bars cover the facing edge, like in a bar.
+    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:items-center",
+    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:mt-[calc(-1*var(--nav-edge-start,0px))]! [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:mb-[calc(-1*var(--nav-edge-end,0px))]!",
+    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:pt-(--nav-edge-start,0px) [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:pb-(--nav-edge-end,0px)",
     "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
     "[&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:rounded-none! [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:rounded-none!",
-    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-block-size:var(--shell-main-header-height)]",
+    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-main-header-height)-2*var(--carousel-border,0px))]",
+    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-edge-end:calc(var(--carousel-border,0px)+var(--shell-facing-border,0px))]",
   ],
   variants: {
     ...contentVariants,

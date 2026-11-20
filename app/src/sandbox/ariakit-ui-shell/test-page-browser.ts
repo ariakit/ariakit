@@ -374,15 +374,77 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     expect((await getBox(nav)).height).toBeGreaterThan(
       (await getBox(header)).height - 2,
     );
-    // The current link's bar meets the header's inner edge.
+    // The current link's bar covers the header's facing edge.
+    await expect(header).toHaveCSS("border-bottom-width", "1px");
     const bar = query(nav).link("Guides").locator(".control-bar");
     await expect
       .poll(async () => {
-        const [barBox, navBox] = await Promise.all([getBox(bar), getBox(nav)]);
-        return barBox.y + barBox.height - (navBox.y + navBox.height);
+        const [barBox, headerBox] = await Promise.all([
+          getBox(bar),
+          getBox(header),
+        ]);
+        return barBox.y + barBox.height - (headerBox.y + headerBox.height);
       })
       .toBeCloseTo(0, 0);
+    // The navigation reaches over the edge, so it doesn't clip the bar there or
+    // scroll to it.
+    await expect
+      .poll(async () => {
+        const [navBox, headerBox] = await Promise.all([
+          getBox(nav),
+          getBox(header),
+        ]);
+        return navBox.y + navBox.height - (headerBox.y + headerBox.height);
+      })
+      .toBeCloseTo(0, 0);
+    await expect
+      .poll(() => nav.evaluate((node) => node.scrollHeight - node.clientHeight))
+      .toBe(0);
   });
+
+  // The navigation measures the header without the border of its carousel root,
+  // and reaches over that border and the facing edge. Without header space, the
+  // row grows the header past its own height.
+  for (const space of [true, false]) {
+    test(`covers the header's facing edge with the bar of a bordered navigation in an area${space ? "" : " without header space"}`, async ({
+      q,
+      page,
+    }) => {
+      await q.checkbox("Navigation in the area").check();
+      await q.checkbox("Border on the area navigation").check();
+      if (!space) {
+        await q.checkbox("No header space").check();
+      }
+      const header = page.locator(".shell-header").first();
+      const nav = q.navigation("Header links");
+      // The carousel root around the scrolling navigation draws the border.
+      const root = nav.locator("xpath=..");
+      const bar = query(nav).link("Guides").locator(".control-bar");
+      await expect(root).toHaveCSS("border-bottom-width", "1px");
+      await expect(header).toHaveCSS("border-bottom-width", "1px");
+      await expect
+        .poll(async () => {
+          const [barBox, navBox, rootBox, headerBox] = await Promise.all([
+            getBox(bar),
+            getBox(nav),
+            getBox(root),
+            getBox(header),
+          ]);
+          const headerEnd = headerBox.y + headerBox.height;
+          return [
+            Math.round(barBox.y + barBox.height - headerEnd),
+            Math.round(navBox.y + navBox.height - headerEnd),
+            Math.round(navBox.y - rootBox.y),
+          ];
+        })
+        .toEqual([0, 0, 0]);
+      await expect
+        .poll(() =>
+          nav.evaluate((node) => node.scrollHeight - node.clientHeight),
+        )
+        .toBe(0);
+    });
+  }
 
   test("starts the header area where a custom bar padding puts the inner header's parts", async ({
     q,

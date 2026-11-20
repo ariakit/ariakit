@@ -425,6 +425,27 @@ export const choiceCard = cv({
   },
 });
 
+// A floating check hides when its card is unchecked, and it grows and shrinks
+// the same way on every corner. The $floating keys below must follow the
+// corners of slotFrameSlot, or a check on a missing corner never hides.
+const floatingCheckClass = [
+  "not-ui-choice-on:scale-0",
+  // The whole check grows from its center. The scale property is separate
+  // from translate, so the check stays on the corner.
+  "motion-safe:ui-choice-on:transition-[scale]",
+  "motion-safe:ui-choice-on:duration-(--duration-overshoot)",
+  "motion-safe:ui-choice-on:ease-overshoot",
+  // While the check grows, the browser draws it on a layer of its own. If
+  // the layer went away when the check stopped, the check would move to
+  // the nearest pixel, so it keeps the layer while it shows.
+  "motion-safe:ui-choice-on:will-change-[scale]",
+  // The state changes the colors at once. Hold them until the check has
+  // shrunk.
+  "motion-safe:not-ui-choice-on:transition-[scale,background-color,color]",
+  "motion-safe:not-ui-choice-on:duration-150",
+  "motion-safe:not-ui-choice-on:ease-[var(--ease-in-out),step-end,step-end]",
+];
+
 /**
  * A card check indicator whose state follows the nested input. A child replaces
  * the drawn mark.
@@ -435,26 +456,17 @@ export const choiceCardCheck = cv({
   class: "choice-card-check",
   variants: {
     /**
-     * Places the check in the card's top-end corner and hides it when
-     * unchecked.
+     * Places the check on a corner of the card and hides it when unchecked.
+     * `true` is the top-end corner. `start` and `end` follow the text
+     * direction.
      */
-    $floating: [
-      "not-ui-choice-on:scale-0",
-      // The whole check grows from its center. The scale property is separate
-      // from translate, so the check stays on the corner.
-      "motion-safe:ui-choice-on:transition-[scale]",
-      "motion-safe:ui-choice-on:duration-(--duration-overshoot)",
-      "motion-safe:ui-choice-on:ease-overshoot",
-      // While the check grows, the browser draws it on a layer of its own. If
-      // the layer went away when the check stopped, the check would move to
-      // the nearest pixel, so it keeps the layer while it shows.
-      "motion-safe:ui-choice-on:will-change-[scale]",
-      // The state changes the colors at once. Hold them until the check has
-      // shrunk.
-      "motion-safe:not-ui-choice-on:transition-[scale,background-color,color]",
-      "motion-safe:not-ui-choice-on:duration-150",
-      "motion-safe:not-ui-choice-on:ease-[var(--ease-in-out),step-end,step-end]",
-    ],
+    $floating: {
+      true: floatingCheckClass,
+      "top-start": floatingCheckClass,
+      "top-end": floatingCheckClass,
+      "bottom-start": floatingCheckClass,
+      "bottom-end": floatingCheckClass,
+    },
   },
   defaultVariants: {
     $size: "lg",

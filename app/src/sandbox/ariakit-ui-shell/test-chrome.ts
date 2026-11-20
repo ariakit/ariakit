@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { getSidebar, selectScenario } from "./test-helpers.ts";
+import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   test("keeps a footer navigation bar on the navigation edge above a bottom safe area", async ({
@@ -31,6 +31,39 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         })
         .toBeCloseTo(0, 0);
     }
+  });
+
+  // The navigation measures the footer without the border of its carousel root
+  // and reaches over that border, so the bar covers it without making the
+  // navigation scroll.
+  test("covers the border of a bordered footer navigation with its bar", async ({
+    q,
+  }) => {
+    await selectScenario(q, "bar");
+    await q.checkbox("Border on the footer navigation").check();
+    const nav = q.navigation("Footer pages");
+    // The carousel root around the scrolling navigation draws the border.
+    const root = nav.locator("xpath=..");
+    const bar = query(nav).link("Home").locator(".control-bar");
+    await expect(root).toHaveCSS("border-bottom-width", "1px");
+    await expect
+      .poll(async () => {
+        const [barBox, navBox, rootBox] = await Promise.all([
+          getBox(bar),
+          getBox(nav),
+          getBox(root),
+        ]);
+        const rootEnd = rootBox.y + rootBox.height;
+        return [
+          Math.round(barBox.y + barBox.height - rootEnd),
+          Math.round(navBox.y + navBox.height - rootEnd),
+          Math.round(navBox.y - rootBox.y),
+        ];
+      })
+      .toEqual([0, 0, 0]);
+    await expect
+      .poll(() => nav.evaluate((node) => node.scrollHeight - node.clientHeight))
+      .toBe(0);
   });
 
   // https://github.com/ariakit/ariakit/pull/7533#discussion_r4019535774

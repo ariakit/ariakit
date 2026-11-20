@@ -2,10 +2,29 @@ import type { query as getQuery } from "@ariakit/test/playwright";
 import type { Locator } from "@playwright/test";
 import { getCoveredWidth } from "#app/test-utils/ariakit-ui.ts";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 
 type Query = ReturnType<typeof getQuery>;
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
+  // A horizontal navigation reaches over the border of its root so that edge
+  // bars can cover it, but a segmented one stays inside the border, where its
+  // scroll box clips the shadow of its current segment.
+  test("keeps a bordered segmented navigation inside its border", async ({
+    q,
+  }) => {
+    const nav = q.navigation("Bordered range");
+    // The carousel root around the scrolling navigation draws the border.
+    const root = nav.locator("xpath=..");
+    await test.expect(root).toHaveCSS("border-top-width", "1px");
+    await test.expect
+      .poll(async () => {
+        const [box, frame] = await Promise.all([getBox(nav), getBox(root)]);
+        return [box.y - frame.y, frame.height - box.height];
+      })
+      .toEqual([1, 2]);
+  });
+
   // A press can't change a selected segment, so the bevel stays the same. The
   // press state isn't in the page captures.
   test("keeps the surface of a selected segment while pressed", async ({

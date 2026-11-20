@@ -63,6 +63,10 @@ export const carousel = cv({
     // The space that a visible button takes at each end. It stays zero until
     // $buttons sets it.
     "[--carousel-button-space:0px]",
+    // The border width of the root, which a frame that covers the root can
+    // reach over. A ring lies outside the root, where a frame that reached it
+    // would add to the scrollable overflow of a scrolling ancestor.
+    "[--carousel-border:var(--ak-frame-border)]",
     // A row of controls, such as a segmented group, fits its buttons to the
     // line and the block padding of its controls, so the buttons keep the same
     // space from the edge of the row on every side. A border on the controls,

@@ -567,13 +567,14 @@ export const controlSeparator = cv({
 
 /**
  * The offset from a bar's control to the bar's near edge. Bars read the
- * distance from their control to the group's padding edge from `--bar-gap`.
+ * distance from their control to the group's padding edge from `--bar-gap`, and
+ * the width of an edge past it that an `edge` bar covers from `--bar-edge`.
  */
 export type BarOffset = "halfway" | "edge" | (string & {}) | number;
 
 const barOffsetClasses = {
   halfway: "[--bar-offset:calc((var(--bar-gap)-var(--bar))/2)]",
-  edge: "[--bar-offset:calc(var(--bar-gap)-var(--bar))]",
+  edge: "[--bar-offset:calc(var(--bar-gap)+var(--bar-edge,0px)-var(--bar))]",
 };
 
 /** Checks whether a bar offset is `halfway` or `edge`. */
