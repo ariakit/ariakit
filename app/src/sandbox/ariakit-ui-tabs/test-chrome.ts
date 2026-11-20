@@ -456,6 +456,16 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     test.expect(tabBox.x + tabBox.width).toBeLessThanOrEqual(buttonBox.x + 0.5);
   });
 
+  test("moves between the tabs of a right-to-left row in visual order", async ({
+    page,
+    q,
+  }) => {
+    const list = query(q.article("Tab row")).tablist("Tab row right to left");
+    await query(list).tab("Quotes").click();
+    await page.keyboard.press("ArrowLeft");
+    await test.expect(query(list).tab("Billing")).toBeFocused();
+  });
+
   test("keeps a closable tab with aria-disabled", async ({ page, q }) => {
     const list = query(q.article("Tab row")).tablist("Tab row closable");
     await query(list).tab("Billing").click();

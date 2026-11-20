@@ -160,6 +160,13 @@ test("edits a rename field in a closable tab with Backspace", async () => {
   expect(list.tab.all()).toHaveLength(3);
 });
 
+test("moves between the tabs of a right-to-left row in visual order", async () => {
+  const tabs = q.within(q.tablist("Tab row right to left"));
+  await click(tabs.tab("Quotes"));
+  await press.ArrowLeft();
+  expect(tabs.tab("Billing")).toHaveFocus();
+});
+
 test("keeps a closable tab with aria-disabled", async () => {
   const tabs = q.within(q.tablist("Tab row closable"));
   await click(tabs.tab("Billing"));

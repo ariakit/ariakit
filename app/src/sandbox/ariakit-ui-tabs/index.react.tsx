@@ -3475,7 +3475,10 @@ export default function TabsExamples() {
           />
           <TabRowTabs name="Tab row flat" kind="flat" tabsProps={{ $p: 1 }} />
           <div dir="rtl">
-            <TabRowTabs name="Tab row right to left" />
+            <TabRowTabs
+              name="Tab row right to left"
+              tabsProps={{ rtl: true }}
+            />
           </div>
           <TabRowTabs
             name="Tab row closable"
