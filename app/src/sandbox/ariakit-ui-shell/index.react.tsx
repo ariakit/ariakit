@@ -60,6 +60,7 @@ import { AreasScenario } from "./areas.react.tsx";
 import { CenterScenario } from "./center.react.tsx";
 import { PageScenario } from "./page.react.tsx";
 import { PartsScenario } from "./parts.react.tsx";
+import { RevealScenario } from "./reveal.react.tsx";
 import {
   GeometryScenario,
   NestedScenario,
@@ -90,6 +91,7 @@ const scenarios = {
   page: "Page box",
   transparent: "Transparent sidebar",
   center: "Outer center",
+  reveal: "Revealed sidebars",
 } as const;
 
 type ScenarioId = keyof typeof scenarios;
@@ -1018,6 +1020,7 @@ const scenarioComponents = {
   page: () => <PageScenario controls={<ScenarioControls />} />,
   transparent: () => <TransparentScenario controls={<ScenarioControls />} />,
   center: () => <CenterScenario controls={<ScenarioControls />} />,
+  reveal: () => <RevealScenario controls={<ScenarioControls />} />,
 } satisfies Record<ScenarioId, () => ReactNode>;
 
 export default function ShellExamples() {
