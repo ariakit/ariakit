@@ -356,18 +356,12 @@ export default function DisclosureExamples() {
         description="A lighter surface, not a border, separates the disclosure from the surface under it."
         stretch
         code={`
-          <Disclosure $lightnessOffset $rounded="lg" $p={2} button="Order summary" defaultOpen>
+          <Disclosure $lightnessOffset button="Order summary" defaultOpen>
             …
           </Disclosure>
         `}
       >
-        <Disclosure
-          $lightnessOffset
-          $rounded="lg"
-          $p={2}
-          button="Order summary"
-          defaultOpen
-        >
+        <Disclosure $lightnessOffset button="Order summary" defaultOpen>
           <p>Two items, shipped together in one package.</p>
         </Disclosure>
       </Example>
@@ -757,7 +751,7 @@ export default function DisclosureExamples() {
         code={`
           <Disclosure $border $rounded="xl" $p={4} defaultOpen button={<DisclosureButton icon={<Folder />}>Workspace</DisclosureButton>}>
             …
-            <Disclosure $border $rounded="lg" $p={2} button="Archived files" defaultOpen>
+            <Disclosure $border button="Archived files" defaultOpen>
               …
             </Disclosure>
           </Disclosure>
@@ -774,13 +768,7 @@ export default function DisclosureExamples() {
           content={{ body: { className: "grid gap-3" } }}
         >
           <p>Files shared with everyone in the workspace.</p>
-          <Disclosure
-            $border
-            $rounded="lg"
-            $p={2}
-            button="Archived files"
-            defaultOpen
-          >
+          <Disclosure $border button="Archived files" defaultOpen>
             <p>Files nobody opened in the last year.</p>
           </Disclosure>
         </Disclosure>

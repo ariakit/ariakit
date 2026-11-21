@@ -98,9 +98,7 @@ function SliderForm() {
       <Slider aria-label="Brightness" name="brightness" defaultValue={20} />
       <div className="flex items-center gap-3">
         <Button type="submit">Save</Button>
-        <Button type="reset" $kind="flat">
-          Reset
-        </Button>
+        <Button type="reset">Reset</Button>
         {submitted != null && <output>Saved {submitted}</output>}
       </div>
     </form>
@@ -123,9 +121,7 @@ function SliderFormOwner() {
         <Button type="button" onClick={() => setLinked(!linked)}>
           {linked ? "Unlink the slider" : "Link the slider"}
         </Button>
-        <Button type="reset" $kind="flat">
-          Reset
-        </Button>
+        <Button type="reset">Reset</Button>
       </form>
     </div>
   );

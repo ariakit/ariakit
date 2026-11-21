@@ -697,7 +697,7 @@ export default function ListExamples() {
               </List>
             </ListItem>
             <li>
-              <ListItem checked={false} render={<Button render={<a href="#announce" />} $p="var(--list-item-padding)" $rounded="xl" $lightnessOffset={false} />}>
+              <ListItem checked={false} render={<Button render={<a href="#announce" />} $rounded="xl" />}>
                 Announce the release
               </ListItem>
             </li>
@@ -724,9 +724,7 @@ export default function ListExamples() {
               render={
                 <Button
                   render={<a href="#announce" />}
-                  $p="var(--list-item-padding)"
                   $rounded="xl"
-                  $lightnessOffset={false}
                   className={linkRowClassName}
                 />
               }
@@ -783,15 +781,15 @@ export default function ListExamples() {
         stretch
         code={`
           <List ordered $gap={2.5}>
-            <ListItem $layer $border $rounded="xl" $p={3} checked>
+            <ListItem $layer $border $p={3} checked>
               Create an account
               Done on Monday.
             </ListItem>
-            <ListItem $layer $border $rounded="xl" $p={3} progress={0.75}>
+            <ListItem $layer $border $p={3} progress={0.75}>
               Verify the email address
               …
             </ListItem>
-            <ListItem $layer $border $rounded="xl" $p={3} checked={false}>
+            <ListItem $layer $border $p={3} checked={false}>
               Add a payment method
               Not started.
             </ListItem>
@@ -799,19 +797,19 @@ export default function ListExamples() {
         `}
       >
         <List ordered $gap={2.5}>
-          <ListItem $layer $border $rounded="xl" $p={3} checked>
+          <ListItem $layer $border $p={3} checked>
             <p>
               <strong>Create an account</strong>
             </p>
             <p>Done on Monday.</p>
           </ListItem>
-          <ListItem $layer $border $rounded="xl" $p={3} progress={0.75}>
+          <ListItem $layer $border $p={3} progress={0.75}>
             <p>
               <strong>Verify the email address</strong>
             </p>
             <p>Waiting for the confirmation link.</p>
           </ListItem>
-          <ListItem $layer $border $rounded="xl" $p={3} checked={false}>
+          <ListItem $layer $border $p={3} checked={false}>
             <p>
               <strong>Add a payment method</strong>
             </p>
@@ -826,9 +824,9 @@ export default function ListExamples() {
         stretch
         code={`
           <List $gap={0} $itemPadding={1}>
-            <ListItem checked render={<Button render={<a />} $p="var(--list-item-padding)" $rounded="xl" $lightnessOffset={false} />}>…</ListItem>
-            <ListItem progress={0.5} render={<Button render={<a />} $p="var(--list-item-padding)" $rounded="xl" $lightnessOffset={false} />}>…</ListItem>
-            <ListItem checked={false} render={<Button render={<a />} $p="var(--list-item-padding)" $rounded="xl" $lightnessOffset={false} />}>Lesson 3: Forms</ListItem>
+            <ListItem checked render={<Button render={<a />} $rounded="xl" />}>…</ListItem>
+            <ListItem progress={0.5} render={<Button render={<a />} $rounded="xl" />}>…</ListItem>
+            <ListItem checked={false} render={<Button render={<a />} $rounded="xl" />}>Lesson 3: Forms</ListItem>
           </List>
         `}
       >
@@ -839,9 +837,7 @@ export default function ListExamples() {
               render={
                 <Button
                   render={<a href="#lesson-1" />}
-                  $p="var(--list-item-padding)"
                   $rounded="xl"
-                  $lightnessOffset={false}
                   className={linkRowClassName}
                 />
               }
@@ -855,9 +851,7 @@ export default function ListExamples() {
               render={
                 <Button
                   render={<a href="#lesson-2" />}
-                  $p="var(--list-item-padding)"
                   $rounded="xl"
-                  $lightnessOffset={false}
                   className={linkRowClassName}
                 />
               }
@@ -871,9 +865,7 @@ export default function ListExamples() {
               render={
                 <Button
                   render={<a href="#lesson-3" />}
-                  $p="var(--list-item-padding)"
                   $rounded="xl"
-                  $lightnessOffset={false}
                   className={linkRowClassName}
                 />
               }

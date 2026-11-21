@@ -49,11 +49,7 @@ function ProgressValueChange() {
       <Progress value={value} $thickness={3} aria-label="Build bar" />
       <div className="flex items-center gap-3">
         <div className="size-14">
-          <ProgressCircular
-            value={value}
-            $thickness={2}
-            aria-label="Build ring"
-          />
+          <ProgressCircular value={value} aria-label="Build ring" />
         </div>
         <Button onClick={advance} $rounded="lg">
           {value >= 1 ? "Reset" : "Advance"}
@@ -349,7 +345,7 @@ export default function ProgressExamples() {
         description="Both kinds animate toward each new value."
         code={`
           <Progress value={0.2} $thickness={3} />
-          <ProgressCircular value={0.2} $thickness={2} />
+          <ProgressCircular value={0.2} />
           <Button $rounded="lg">Advance</Button>
         `}
       >
