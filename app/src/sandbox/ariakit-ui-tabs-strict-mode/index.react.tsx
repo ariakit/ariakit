@@ -35,8 +35,12 @@ function NewTabButton({ onAdd }: NewTabButtonProps) {
 
 function OpenTabs() {
   const [names, setNames] = useState(["Inbox", "Drafts", "Archive"]);
+  // The number only goes up, so a new tab doesn't take the name of an open tab
+  // after a tab closes.
+  const [count, setCount] = useState(4);
   const addTab = () => {
-    const name = `Tab ${names.length + 1}`;
+    const name = `Tab ${count}`;
+    setCount(count + 1);
     setNames([...names, name]);
     return `tab-${name}`;
   };

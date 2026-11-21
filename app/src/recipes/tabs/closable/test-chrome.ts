@@ -312,4 +312,62 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(Math.max(...grownFrames.map((frame) => frame.hidden)))
       .toBeLessThan(1);
   });
+
+  // An app can render a large panel as a tab opens. A new transition takes its
+  // start time on the next frame, so the note starts to grow after that long
+  // task.
+  test("brings a new note into view after a long task", async ({ page, q }) => {
+    await page.setViewportSize({ width: 900, height: 500 });
+    const newNote = q.button("New note");
+    for (let count = 1; count <= 4; count++) {
+      await newNote.click();
+    }
+    await test.expect(q.tab("Note 4")).toBeInViewport({ ratio: 1 });
+    await newNote.evaluate((button) => {
+      const strip = document.querySelector("[role='tablist']");
+      if (!strip || !(button instanceof HTMLElement)) return;
+      // The strip keeps the room of the new note in its end padding as the
+      // scroll starts, so the long task runs right after that, before the next
+      // frame.
+      const observer = new MutationObserver(() => {
+        observer.disconnect();
+        const end = performance.now() + 300;
+        while (performance.now() < end) {
+          // The long task keeps the page busy.
+        }
+      });
+      observer.observe(strip, { attributes: true, attributeFilter: ["style"] });
+      button.click();
+    });
+    await test.expect(q.tab("Note 5")).toHaveAttribute("aria-selected", "true");
+    await test.expect(q.tab("Note 5")).toBeInViewport({ ratio: 1 });
+  });
+
+  test("brings a new note into view when it gets the selection back as it grows in", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 900, height: 500 });
+    const newNote = q.button("New note");
+    for (let count = 1; count <= 4; count++) {
+      await newNote.click();
+    }
+    await test.expect(q.tab("Note 4")).toBeInViewport({ ratio: 1 });
+    // The selection moves while the new note still grows in, so this presses
+    // the tabs in the page. The note ends its enter on a timer with the growth
+    // time, so the presses on timers with no delay come before it.
+    await newNote.evaluate(async (button) => {
+      const strip = document.querySelector("[role='tablist']");
+      if (!strip || !(button instanceof HTMLElement)) return;
+      const nextTask = () => new Promise((resolve) => setTimeout(resolve));
+      button.click();
+      await nextTask();
+      const tabs = strip.querySelectorAll<HTMLElement>("[role='tab']");
+      tabs[tabs.length - 2]?.click();
+      await nextTask();
+      tabs[tabs.length - 1]?.click();
+    });
+    await test.expect(q.tab("Note 5")).toHaveAttribute("aria-selected", "true");
+    await test.expect(q.tab("Note 5")).toBeInViewport({ ratio: 1 });
+  });
 });

@@ -226,7 +226,7 @@ function getGrownStrip(element: HTMLElement, strip: HTMLElement) {
   for (const item of copies) {
     item.remove();
   }
-  return { offset, scrollWidth, clientWidth };
+  return { offset, scrollWidth, clientWidth, entering };
 }
 
 // The reveal that runs in each strip. Effects run in tree order, so a selected
@@ -301,6 +301,16 @@ function revealEnteringTab(element: HTMLElement) {
   // the tab fills it.
   const scrollTime = growTime / 2;
   const startTime = win.performance.now();
+  // A new transition takes its start time on the next frame, which a long task
+  // can delay, such as the render of a large panel, so a fixed time could end
+  // before the tabs grow. The strip keeps the room while the tabs that it
+  // measured still enter. A tab ends its enter on a timer, which the long task
+  // delays too, and the tab then shows whole, also if it hasn't grown yet.
+  const isGrowing = () =>
+    grown.entering.some((tab) => {
+      if (!tab.isConnected) return false;
+      return tab.hasAttribute("data-enter");
+    });
   let frame = 0;
   let stopped = false;
   const stop = () => {
@@ -320,8 +330,10 @@ function revealEnteringTab(element: HTMLElement) {
     const progress = Math.min(1, elapsed / scrollTime);
     // An ease out, like the growth of the tab.
     const eased = 1 - (1 - progress) ** 3;
-    strip.scrollLeft = from + (to - from) * eased;
-    if (elapsed < growTime) {
+    // A strip with smooth scroll behavior would start a new smooth scroll on
+    // each frame.
+    strip.scrollTo({ left: from + (to - from) * eased, behavior: "instant" });
+    if (progress < 1 || isGrowing()) {
       frame = win.requestAnimationFrame(step);
       return;
     }
@@ -368,6 +380,9 @@ function useTabEntering(
     if (!selected) {
       stopRevealRef.current?.();
       stopRevealRef.current = undefined;
+      // The tab can get the selection back while it still enters, such as after
+      // quick selections between new tabs, and it comes into view again.
+      revealedRef.current = false;
       return;
     }
     if (!entering) return;
