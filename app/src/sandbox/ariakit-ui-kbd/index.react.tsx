@@ -324,16 +324,16 @@ export default function KbdExamples() {
         description="The default plain key draws no surface or padding. Muted text in the UI font tells it apart from the sentence, and its capitals line up with the surrounding ones."
         code={`
           Press
-          <Kbd $kind="plain">⌘</Kbd>
-          <Kbd $kind="plain">K</Kbd>
+          <Kbd>⌘</Kbd>
+          <Kbd>K</Kbd>
           to search, or
-          <Kbd $kind="plain">Esc</Kbd>
+          <Kbd>Esc</Kbd>
           to close the list.
         `}
       >
         <p className="max-w-56 text-sm">
-          Press <Kbd $kind="plain">⌘</Kbd> <Kbd $kind="plain">K</Kbd> to search,
-          or <Kbd $kind="plain">Esc</Kbd> to close the list.
+          Press <Kbd>⌘</Kbd> <Kbd>K</Kbd> to search, or <Kbd>Esc</Kbd> to close
+          the list.
         </p>
       </Example>
 
@@ -443,16 +443,12 @@ export default function KbdExamples() {
         description="An ink of 100 removes the muting of a plain key."
         code={`
           Press
-          <Kbd $kind="plain" $ink={100}>Esc</Kbd>
+          <Kbd $ink={100}>Esc</Kbd>
           to close
         `}
       >
         <p className="text-sm">
-          Press{" "}
-          <Kbd $kind="plain" $ink={100}>
-            Esc
-          </Kbd>{" "}
-          to close
+          Press <Kbd $ink={100}>Esc</Kbd> to close
         </p>
       </Example>
 

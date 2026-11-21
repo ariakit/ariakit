@@ -199,7 +199,7 @@ export default function Example() {
           aria-label="Members"
           landmark="aside"
         >
-          <ShellSidebarBody $p={3}>
+          <ShellSidebarBody>
             <p className="font-semibold">Members</p>
             <p className="ak-ink-70 mt-1 text-xs">{onlineCount} online</p>
             <ul className="mt-3 grid gap-3">

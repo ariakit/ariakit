@@ -830,7 +830,7 @@ export default function ButtonExamples() {
           <Button>
             <ButtonLabel>Reviews</ButtonLabel>
             <ButtonSlot $kind="box">
-              <Badge $kind="solid" $round $layer="brand" $hue="green" $border>3</Badge>
+              <Badge $kind="solid" $round $hue="green" $border>3</Badge>
             </ButtonSlot>
           </Button>
         `}
@@ -838,7 +838,7 @@ export default function ButtonExamples() {
         <Button>
           <ButtonLabel>Reviews</ButtonLabel>
           <ButtonSlot $kind="box">
-            <Badge $kind="solid" $round $layer="brand" $hue="green" $border>
+            <Badge $kind="solid" $round $hue="green" $border>
               3
             </Badge>
           </ButtonSlot>

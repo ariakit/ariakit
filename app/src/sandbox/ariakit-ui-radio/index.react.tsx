@@ -768,7 +768,7 @@ export default function RadioExamples() {
         wide
         code={`
           <RadioGroup>
-            <RadioCardGrid $minItemSize="10rem">
+            <RadioCardGrid>
               <RadioCard value="named" $darkEdgeWeight="bold">
                 <RadioCardLabel>Dark bold</RadioCardLabel>
               </RadioCard>
@@ -783,7 +783,7 @@ export default function RadioExamples() {
         `}
       >
         <RadioGroup aria-label="Edge weight" className="w-full">
-          <RadioCardGrid $minItemSize="10rem">
+          <RadioCardGrid>
             <RadioCard value="named" $darkEdgeWeight="bold">
               <RadioCardLabel>Dark bold</RadioCardLabel>
             </RadioCard>
