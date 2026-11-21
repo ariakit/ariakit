@@ -309,6 +309,10 @@ function useCarousel({
   const [viewport, setViewport] = useState<HTMLElement | null>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+  // Whether the viewport has nothing to scroll. Its scroll timeline is then
+  // inactive, and browsers can keep the last progress of the animations on it,
+  // such as a button that stays after the content shrinks, so CSS stops them.
+  const [fits, setFits] = useState(false);
   const [rtl, setRtl] = useState(false);
   const [internalSelectedId, setInternalSelectedId] =
     useState(defaultSelectedId);
@@ -364,6 +368,9 @@ function useCarousel({
       const nextAtEnd = max - offset <= END_TOLERANCE;
       setAtStart(nextAtStart);
       setAtEnd(nextAtEnd);
+      // Firefox keeps the timeline inactive while the content overflows by less
+      // than a pixel, which the rounded sizes report as 1px.
+      setFits(max <= 1);
       setRtl(isRtl(viewport));
       // Row buttons hide at their end, so a focused one hands focus to the
       // other button first.
@@ -661,6 +668,7 @@ function useCarousel({
     setViewport,
     atStart,
     atEnd,
+    fits,
     rtl,
     selectedId,
     status,
@@ -907,6 +915,7 @@ export function Carousel<
         aria-roledescription={slides ? "carousel" : undefined}
         {...styles.jsx(variantProps)}
         {...rest}
+        data-carousel-fits={state.fits || undefined}
       >
         {children}
         {slides && (

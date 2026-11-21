@@ -263,6 +263,14 @@ body > * {
     animation-range:
       0 var(--ak-frame-radius),
       calc(100% - var(--ak-frame-radius)) 100%;
+    /* A strip with nothing to scroll has an inactive scroll timeline, where
+       browsers can keep the last progress of the corners. The panel follows
+       the root of the strip, which marks that state. Important wins over the
+       rules that keep the animation of one corner, such as beside a control
+       of a tab row. */
+    [data-carousel-fits] ~ & {
+      animation-name: none !important;
+    }
   }
 }
 
@@ -315,6 +323,10 @@ body > * {
     animation-fill-mode: both;
     animation-timeline: --tabs-scroll;
     animation-range: 2px calc(var(--spacing) * 8 + 2px);
+    /* See ui-tabs-round. */
+    [data-carousel-fits] ~ & {
+      animation-name: none !important;
+    }
   }
 }
 
@@ -337,6 +349,10 @@ body > * {
       calc(100% - var(--ak-frame-radius)) 100%,
       calc(100% - var(--spacing) * 8 - 2px)
         calc(100% - var(--ak-frame-radius));
+    /* See ui-tabs-round. */
+    [data-carousel-fits] ~ & {
+      animation-name: none !important;
+    }
   }
 }
 
@@ -517,6 +533,11 @@ body > * {
     &:dir(rtl) {
       --carousel-mask-direction: to left;
     }
+    /* A viewport with nothing to scroll has an inactive scroll timeline, where
+       browsers can keep the last progress of the fades. */
+    [data-carousel-fits] > & {
+      animation-name: none;
+    }
   }
 }
 
@@ -540,6 +561,13 @@ body > * {
     animation-range:
       0 4px,
       2px calc(2px + var(--carousel-button-size));
+    /* A viewport with nothing to scroll has an inactive scroll timeline, where
+       browsers can keep the last progress of the animations, so a button
+       could stay over the content. The button then takes its resting
+       visibility. */
+    [data-carousel-fits] > * > & {
+      animation-name: none;
+    }
   }
   /* Without the animations, the disabled styles still apply. */
   &:is(:hover, :focus) {
@@ -572,6 +600,10 @@ body > * {
     animation-range:
       calc(100% - 4px) 100%,
       calc(100% - 2px - var(--carousel-button-size)) calc(100% - 2px);
+    /* See ui-carousel-button-start. */
+    [data-carousel-fits] > * > & {
+      animation-name: none;
+    }
   }
   /* Without the animations, the disabled styles still apply. */
   &:is(:hover, :focus) {
