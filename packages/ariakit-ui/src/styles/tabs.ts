@@ -383,13 +383,21 @@ const tabFolder = cx(
 const tabMotion = cx(
   "[[data-enter],[data-leave]]:[interpolate-size:allow-keywords]",
   // This list replaces the press transition for that time.
-  "[[data-enter],[data-leave]]:transition-[width,flex-grow,padding,margin,border-width,opacity]",
+  "[[data-enter],[data-leave]]:transition-[width,min-width,flex-grow,padding,margin,border-width,opacity]",
   "[[data-enter],[data-leave]]:duration-0",
   "motion-safe:supports-[interpolate-size:allow-keywords]:[[data-enter],[data-leave]]:duration-200",
   "[[data-enter],[data-leave]]:ease-out",
   // The tab doesn't clip, so a selected folder keeps its curves. Its parts
   // shrink with it and clip their own content instead.
-  "[[data-enter],[data-leave]]:min-w-0",
+  "[&:is([data-enter],[data-leave]):not(:has(>.tab-remove))]:min-w-0",
+  // A tab that can close has a minimum width, so a press on a short tab
+  // doesn't land on the close mark by accident. That width enters and leaves
+  // with the tab.
+  // Zero specificity lets a min-width class on the tab win, and the tabs of a
+  // stretched strip still shrink to fit it.
+  "[:where(&:has(>.tab-remove))]:min-w-[8em]",
+  "[&:has(>.tab-remove)]:data-enter:starting:min-w-0",
+  "[&:has(>.tab-remove)]:data-leave:min-w-0",
   "[&:is([data-enter],[data-leave])>*]:min-w-0",
   "[&:is([data-enter],[data-leave])>*]:shrink",
   "[&:is([data-enter],[data-leave])>*]:overflow-clip",
@@ -540,6 +548,10 @@ export const tabRemove = cv({
     // and gives the pointer more room than the icon.
     $size: "xl",
     $square: true,
+    // A round hover surface sets the mark apart from the corners of the tab.
+    $rounded: "full",
+    // The mark has room around its icon, so it sits closer to the label.
+    $mx: "closeGap",
     $ink: 60,
     $hoverInk: 100,
     $hoverOffset: true,

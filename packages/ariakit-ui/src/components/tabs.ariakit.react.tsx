@@ -14,6 +14,7 @@ import {
   Fragment,
   useContext,
   useEffect,
+  useId,
   useRef,
   useState,
 } from "react";
@@ -41,6 +42,10 @@ import {
   tabs,
 } from "../styles/tabs.ts";
 import {
+  getViewportClearOffset,
+  scrollIntoClearRange,
+} from "../utils/carousel-clear.ts";
+import {
   Carousel,
   CarouselButton,
   CarouselViewport,
@@ -56,6 +61,11 @@ const TabRowContext = createContext(false);
 // Whether the tab list around a tab mounted before the tab did. Such a tab was
 // added to the list, so it enters with a transition.
 const TabListMountedContext = createContext(false);
+
+// Whether the tab around a label shows a close mark. Its label then takes the
+// free room by default, such as the room of the minimum width of the tab, so
+// the text starts at the start of the tab and the mark stays at its end.
+const TabMarkContext = createContext(false);
 
 /** The longest transition of an element, with its delay, in milliseconds. */
 function getTransitionTime(element: HTMLElement) {
@@ -145,13 +155,202 @@ function useTabRemove({ store, onRemove }: UseTabRemoveParams) {
   return { ref, leaving, remove };
 }
 
+/** The strip around a tab, which scrolls the tabs. */
+function getStrip(element: HTMLElement) {
+  return element.closest<HTMLElement>("[role='tablist']");
+}
+
+/** The selected tab of a strip, among its own tabs. */
+function getSelectedTab(strip: HTMLElement) {
+  for (const child of strip.children) {
+    if (child.getAttribute("role") !== "tab") continue;
+    if (child.getAttribute("aria-selected") !== "true") continue;
+    return child;
+  }
+  return null;
+}
+
+/**
+ * Puts a hidden copy of a tab that enters in its place, without its enter
+ * styles, so the copy takes the room of the grown tab.
+ */
+function placeGrownCopy(element: HTMLElement) {
+  // A deep copy of an element is an element of the same kind, which the DOM
+  // types don't express.
+  const copy = element.cloneNode(true) as HTMLElement;
+  copy.removeAttribute("id");
+  copy.removeAttribute("data-enter");
+  copy.setAttribute("aria-hidden", "true");
+  copy.inert = true;
+  copy.style.visibility = "hidden";
+  element.parentElement?.insertBefore(copy, element);
+  return copy;
+}
+
+/**
+ * Measures the strip of a tab that enters as it is when the tabs that enter
+ * have grown in: how far the strip scrolls to show the grown tab, and its
+ * scroll width and its width then. Other tabs can still grow, such as after
+ * quick presses on a button that opens tabs. Hidden copies take the room of the
+ * grown tabs, and the tabs leave the flow for the measure. Their place isn't in
+ * their transitions, so they keep growing. The copies leave, and the tabs come
+ * back, before the browser paints.
+ */
+function getGrownStrip(element: HTMLElement, strip: HTMLElement) {
+  const entering = Array.from(strip.children).filter(
+    (child): child is HTMLElement => {
+      if (child === element) return true;
+      if (child.getAttribute("role") !== "tab") return false;
+      return child.hasAttribute("data-enter");
+    },
+  );
+  const copies = entering.map(placeGrownCopy);
+  const inlineStyles = entering.map((tab) => ({
+    tab,
+    position: tab.style.position,
+    insetInlineStart: tab.style.insetInlineStart,
+  }));
+  for (const tab of entering) {
+    tab.style.position = "absolute";
+    tab.style.insetInlineStart = "0px";
+  }
+  const copy = copies[entering.indexOf(element)];
+  const offset = copy
+    ? getViewportClearOffset(strip, copy.getBoundingClientRect())
+    : 0;
+  const { scrollWidth, clientWidth } = strip;
+  for (const { tab, position, insetInlineStart } of inlineStyles) {
+    tab.style.position = position;
+    tab.style.insetInlineStart = insetInlineStart;
+  }
+  for (const item of copies) {
+    item.remove();
+  }
+  return { offset, scrollWidth, clientWidth };
+}
+
+// The reveal that runs in each strip. Effects run in tree order, so a selected
+// tab that enters earlier in the strip than a tab that still reveals starts its
+// reveal before that tab stops its own. The new reveal then stops the old one
+// first, which gives the strip back its own end padding.
+const stripReveals = new WeakMap<HTMLElement, () => void>();
+
+/**
+ * Brings a tab that enters into view of its strip while it grows in, so the
+ * strip scrolls first and the tab grows where it shows. The strip can't scroll
+ * past its content, and the tab starts with no width, so the strip keeps the
+ * room that the tab doesn't take yet at its end. The strip then ends its scroll
+ * range where the grown tab ends it, and the scroll button of that end hides as
+ * it does when the tab has grown. Returns a function that stops the scroll.
+ */
+function revealEnteringTab(element: HTMLElement) {
+  const strip = getStrip(element);
+  if (!strip) return;
+  stripReveals.get(strip)?.();
+  const win = getWindow(element);
+  // The scroll position of a right-to-left strip goes from 0 down.
+  const rtl = win.getComputedStyle(strip).direction === "rtl";
+  let grown = getGrownStrip(element, strip);
+  if (!grown.offset) return;
+  const reducedMotion = win.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  if (reducedMotion) {
+    scrollIntoClearRange(strip, element, "instant");
+    return;
+  }
+  // The strip goes as far as the grown tabs let it, so it doesn't move back
+  // when the room goes.
+  const getTarget = (offset: number) => {
+    const range = grown.scrollWidth - grown.clientWidth;
+    const target = strip.scrollLeft + offset;
+    if (rtl) return Math.min(0, Math.max(-range, target));
+    return Math.max(0, Math.min(range, target));
+  };
+  const from = strip.scrollLeft;
+  let to = getTarget(grown.offset);
+  // The room is what the strip lacks for the scroll width of the grown tab. The
+  // end padding of the strip counts in its scroll width.
+  const inlinePaddingEnd = strip.style.paddingInlineEnd;
+  const paddingEnd =
+    Number.parseFloat(win.getComputedStyle(strip).paddingInlineEnd) || 0;
+  let room = 0;
+  const keepRoom = () => {
+    const content = strip.scrollWidth - room;
+    const next = Math.max(0, grown.scrollWidth - content);
+    if (Math.abs(next - room) < 0.5) return;
+    room = next;
+    strip.style.paddingInlineEnd = `${paddingEnd + room}px`;
+  };
+  // A strip that changes its width while the tab grows, such as beside a
+  // sidebar that opens, measures the grown tab again, or the scroll would take
+  // the strip back to where the tab was before. The measure counts the room in
+  // the end padding as scroll width, so the room comes off.
+  let width = strip.clientWidth;
+  const followWidth = () => {
+    if (strip.clientWidth === width) return;
+    width = strip.clientWidth;
+    const next = getGrownStrip(element, strip);
+    grown = { ...next, scrollWidth: next.scrollWidth - room };
+    to = getTarget(next.offset);
+  };
+  // A browser that can't animate a width to auto shows the whole tab at once.
+  // The tab grows in the 200ms of tabMotion elsewhere.
+  const growTime = getTransitionTime(element) || 200;
+  // The strip gets there in half the time, so the room for the tab shows before
+  // the tab fills it.
+  const scrollTime = growTime / 2;
+  const startTime = win.performance.now();
+  let frame = 0;
+  let stopped = false;
+  const stop = () => {
+    if (stopped) return;
+    stopped = true;
+    win.cancelAnimationFrame(frame);
+    strip.style.paddingInlineEnd = inlinePaddingEnd;
+    if (stripReveals.get(strip) === stop) {
+      stripReveals.delete(strip);
+    }
+  };
+  stripReveals.set(strip, stop);
+  const step = () => {
+    const elapsed = win.performance.now() - startTime;
+    followWidth();
+    keepRoom();
+    const progress = Math.min(1, elapsed / scrollTime);
+    // An ease out, like the growth of the tab.
+    const eased = 1 - (1 - progress) ** 3;
+    strip.scrollLeft = from + (to - from) * eased;
+    if (elapsed < growTime) {
+      frame = win.requestAnimationFrame(step);
+      return;
+    }
+    stop();
+    // A tab before this one can still grow, such as after quick presses on a
+    // button that opens tabs, so the strip can end short of this tab.
+    scrollIntoClearRange(strip, element, "smooth");
+  };
+  step();
+  return stop;
+}
+
 /**
  * Whether a tab was added to a tab list that was already there, for the time of
- * its enter transition.
+ * its enter transition. A tab that is selected as it enters, such as a new tab
+ * that a button opens, comes into view of its strip while it grows in.
  */
-function useTabEntering(ref: React.RefObject<HTMLElement | null>) {
+function useTabEntering(
+  ref: React.RefObject<HTMLElement | null>,
+  store: ak.TabStore | undefined,
+  id: string,
+) {
   const listMounted = useContext(TabListMountedContext);
   const [entering, setEntering] = useState(listMounted);
+  const revealedRef = useRef(false);
+  const stopRevealRef = useRef<(() => void) | undefined>(undefined);
+  // Like Ariakit tabs, each tab follows only whether it is selected, so a new
+  // selection renders only the two tabs that it changes.
+  const selected = ak.useStoreState(store, (state) => state?.selectedId === id);
   useEffect(() => {
     if (!entering) return;
     const element = ref.current;
@@ -159,7 +358,91 @@ function useTabEntering(ref: React.RefObject<HTMLElement | null>) {
     const timer = setTimeout(() => setEntering(false), time);
     return () => clearTimeout(timer);
   }, [entering, ref]);
+  // A tab that a button opens can get the selection in a later update than the
+  // one that adds it, such as when the store takes a controlled selection, so
+  // this runs again with the selection. The end of the enter doesn't stop the
+  // scroll, which ends at the same time, but another selection does.
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    if (!selected) {
+      stopRevealRef.current?.();
+      stopRevealRef.current = undefined;
+      return;
+    }
+    if (!entering) return;
+    if (revealedRef.current) return;
+    revealedRef.current = true;
+    stopRevealRef.current = revealEnteringTab(element);
+  }, [entering, ref, selected]);
+  // StrictMode runs this cleanup and the effects above again as the tab mounts,
+  // so a tab that is selected as it mounts still comes into view.
+  useEffect(
+    () => () => {
+      stopRevealRef.current?.();
+      stopRevealRef.current = undefined;
+      revealedRef.current = false;
+    },
+    [],
+  );
   return entering;
+}
+
+/**
+ * Keeps the selected tab whole in view while its strip shrinks, such as beside
+ * a sidebar that opens, when it was whole in view before. A tab that the strip
+ * scrolled away from stays where it is.
+ */
+function useSelectedTabInView(strip: HTMLElement | null) {
+  useEffect(() => {
+    if (!strip) return;
+    const win = getWindow(strip);
+    // The selected tab when it last showed whole.
+    let clearTab: Element | null = null;
+    // A tab under a fade still shows whole. A shrink then scrolls it clear.
+    const showsWhole = (tab: Element) => {
+      const rect = tab.getBoundingClientRect();
+      const left = strip.getBoundingClientRect().left + strip.clientLeft;
+      const right = left + strip.clientWidth;
+      return rect.left >= left - 1 && rect.right <= right + 1;
+    };
+    // The width of the strip at the last resize callback.
+    let width = strip.offsetWidth;
+    const update = () => {
+      const tab = getSelectedTab(strip);
+      clearTab = tab && showsWhole(tab) ? tab : null;
+    };
+    // The browser sends scroll events before resize callbacks in a frame, so a
+    // scroll event can come after the strip shrinks and before its resize
+    // callback. The strip then cuts the tab, which the callback still has to
+    // scroll clear.
+    const updateAtSameWidth = () => {
+      if (strip.offsetWidth !== width) return;
+      update();
+    };
+    const resizeObserver = new win.ResizeObserver(() => {
+      width = strip.offsetWidth;
+      const tab = getSelectedTab(strip);
+      if (tab && tab === clearTab) {
+        scrollIntoClearRange(strip, tab, "instant");
+      }
+      update();
+    });
+    const mutationObserver = new win.MutationObserver(updateAtSameWidth);
+    resizeObserver.observe(strip, { box: "border-box" });
+    mutationObserver.observe(strip, {
+      attributes: true,
+      attributeFilter: ["aria-selected"],
+      subtree: true,
+    });
+    strip.addEventListener("scroll", updateAtSameWidth, { passive: true });
+    update();
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+      strip.removeEventListener("scroll", updateAtSameWidth);
+    };
+  }, [strip]);
 }
 
 export interface TabsProps
@@ -316,8 +599,10 @@ export function Tab({
 }: TabProps) {
   const [variantProps, rest] = splitProps(props, tab);
   const context = ak.useTabContext();
+  const defaultId = useId();
+  const id = rest.id ?? defaultId;
   const tabRemoval = useTabRemove({ store: rest.store ?? context, onRemove });
-  const entering = useTabEntering(tabRemoval.ref);
+  const entering = useTabEntering(tabRemoval.ref, rest.store ?? context, id);
   const ref = useMergeRefs(tabRemoval.ref, refProp);
   const barElement = createOptionalRender(TabBar, bar === true ? {} : bar);
   // A disabled tab takes no press, so it doesn't close from the keyboard
@@ -360,6 +645,7 @@ export function Tab({
       data-enter={entering || undefined}
       data-leave={tabRemoval.leaving || undefined}
       {...rest}
+      id={id}
       {...(removable ? removeProps : undefined)}
       // A tab that leaves takes no selection and no focus.
       disabled={tabRemoval.leaving || rest.disabled}
@@ -368,10 +654,12 @@ export function Tab({
       }
       ref={ref}
     >
-      {appendOptionalChild(
-        appendOptionalChild(label, barElement),
-        removeElement || null,
-      )}
+      <TabMarkContext.Provider value={!!removeElement}>
+        {appendOptionalChild(
+          appendOptionalChild(label, barElement),
+          removeElement || null,
+        )}
+      </TabMarkContext.Provider>
     </ak.Tab>,
   );
 }
@@ -504,6 +792,7 @@ export function TabList({
   // The tabs that render after the list has its element were added to it.
   const [list, setList] = useState<HTMLElement | null>(null);
   const listRef = useMergeRefs(ref, setList);
+  useSelectedTabInView(list);
   const segmented = variantProps.$kind === "segmented";
   // The tabs of the shorthand have no props of their own to set the kind.
   const kindProps: TabProps | undefined = segmented
@@ -727,7 +1016,9 @@ export interface TabLabelProps
 }
 
 /**
- * Renders tab label text with optional truncation.
+ * Renders tab label text with optional truncation. In a tab with a close mark,
+ * `$grow` defaults to `true`, so the text starts at the start of the tab and
+ * the mark stays at its end.
  * @example
  * <Tabs>
  *   <TabList aria-label="Project">
@@ -752,7 +1043,11 @@ export interface TabLabelProps
  * </Tabs>
  */
 export function TabLabel({ text, children = text, ...props }: TabLabelProps) {
-  const [variantProps, rest] = splitProps(props, tabLabel);
+  const mark = useContext(TabMarkContext);
+  const [variantProps, rest] = splitProps(
+    { $grow: mark || undefined, ...props },
+    tabLabel,
+  );
   return (
     <span
       data-text={text ?? getChildrenText(children)}
