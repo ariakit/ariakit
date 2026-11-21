@@ -2,7 +2,7 @@ import type { query } from "@ariakit/test/playwright";
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
-type Query = ReturnType<typeof query>;
+export type Query = ReturnType<typeof query>;
 
 /** Switches the sandbox to one of its scenarios through the header select. */
 export async function selectScenario(q: Query, scenario: string) {
@@ -14,14 +14,18 @@ export function getShell(page: Page) {
   return page.locator(".shell").first();
 }
 
-/** The column of the sidebar whose landmark has the given name. */
-export function getSidebar(q: Query, name: string) {
+/** The panel of a sidebar: the landmark with the sidebar's name. */
+export function getPanel(q: Query, name: string) {
   return q
     .navigation(name, { includeHidden: true })
-    .or(q.complementary(name, { includeHidden: true }))
-    .locator(
-      "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' shell-sidebar ')][1]",
-    );
+    .or(q.complementary(name, { includeHidden: true }));
+}
+
+/** The column of the sidebar whose landmark has the given name. */
+export function getSidebar(q: Query, name: string) {
+  return getPanel(q, name).locator(
+    "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' shell-sidebar ')][1]",
+  );
 }
 
 /** The first rendered child of main, which sits in the content column. */

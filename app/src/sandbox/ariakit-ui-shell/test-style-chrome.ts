@@ -193,6 +193,62 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   }
 
+  test("keeps the note styles cached when a window sidebar closes and opens with the body in a panel", async ({
+    page,
+  }) => {
+    const { closing, opening, limit } = await measureOnPageLoads(
+      page,
+      async ({ page, q }) => {
+        await q.combobox("Scenario").selectOption("reveal");
+        // The end sidebar has few links, so its own restyles stay below the
+        // limit.
+        const toggle = q.checkbox("End sidebar");
+        const sidebar = q.complementary("End sidebar");
+        // The body follows the window sidebars, so it restyles, but not the
+        // note.
+        const limit = await q.group("Note").locator("*").count();
+        const closing = await largestStyleRecalculation(page, () =>
+          toggle.uncheck(),
+        );
+        await test.expect(sidebar).toBeHidden();
+        const opening = await largestStyleRecalculation(page, () =>
+          toggle.check(),
+        );
+        await test.expect(sidebar).toBeVisible();
+        return { closing, opening, limit };
+      },
+    );
+    test.expect(closing).toBeLessThan(limit);
+    test.expect(opening).toBeLessThan(limit);
+  });
+
+  test("keeps the sidebar link styles cached while a zoom sidebar opens", async ({
+    page,
+  }) => {
+    const { opening, limit } = await measureOnPageLoads(
+      page,
+      async ({ page, q }) => {
+        await q.combobox("Scenario").selectOption("reveal");
+        const toggle = q.checkbox("Start sidebar");
+        const panel = q.navigation("Start sidebar", { includeHidden: true });
+        const getOpacity = () =>
+          panel.evaluate((element) => getComputedStyle(element).opacity);
+        // The panel fades on each frame of the fold, but the links don't
+        // restyle.
+        const limit = await panel.locator("*").count();
+        // The action waits for the end of the fold, so the trace has every
+        // frame of it. A sidebar that closes restyles its links once, also
+        // without `$reveal`, so only the opening is measured.
+        const opening = await largestStyleRecalculation(page, async () => {
+          await toggle.check();
+          await test.expect.poll(getOpacity).toBe("1");
+        });
+        return { closing: 0, opening, limit };
+      },
+    );
+    test.expect(opening).toBeLessThan(limit);
+  });
+
   test("keeps the header area styles cached when a sidebar in the page box closes and opens", async ({
     page,
   }) => {
