@@ -94,4 +94,96 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       )
       .toBe("Board2");
   });
+
+  // Chrome shrinks a closed tab to no width. A browser that can't animate a
+  // width from auto removes the tab at once, so the next tab doesn't move.
+  test("moves the selected box at once to the tab that takes the place of a closed tab", async ({
+    q,
+  }) => {
+    const box = query(q.article("Closable tabs"));
+    const week = box.tab("Week");
+    await test.expect(week).toHaveAttribute("aria-selected", "true");
+    await week.focus();
+    await test.expect(week).toBeFocused();
+    // The box is presentation, and the closed tab shrinks on each frame, so
+    // this probe reads the box and the selected tab after each frame of the
+    // shrink. The glider places the box after the frame callbacks, so each read
+    // waits for a task after the frame, when the frame shows.
+    const samples = await week.evaluate(async (tab) => {
+      const strip = tab.closest("[role='tablist']");
+      if (!strip) return [];
+      const samples: Array<{ left: number; offset: number }> = [];
+      tab.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
+      );
+      for (let frame = 0; frame < 20; frame++) {
+        await new Promise((resolve) => {
+          requestAnimationFrame(() => setTimeout(resolve));
+        });
+        const selected = strip.querySelector(
+          "[role='tab'][aria-selected='true']",
+        );
+        const glider = strip.querySelector('.glider-box[data-selected="true"]');
+        if (!selected || !glider) continue;
+        const { left } = selected.getBoundingClientRect();
+        const offset = Math.abs(glider.getBoundingClientRect().left - left);
+        samples.push({ left, offset });
+      }
+      return samples;
+    });
+    test.expect(samples.length).toBeGreaterThan(10);
+    // Month moves into the place of Week, so the box has a moving target.
+    const lefts = samples.map(({ left }) => left);
+    test.expect(Math.max(...lefts) - Math.min(...lefts)).toBeGreaterThan(10);
+    const offsets = samples.map(({ offset }) => offset);
+    test.expect(Math.max(...offsets)).toBeLessThan(1);
+    await test
+      .expect(box.tab("Month"))
+      .toHaveAttribute("aria-selected", "true");
+    await test.expect(box.tab("Week")).toHaveCount(0);
+  });
+
+  // Chrome shrinks a closed tab to no width, like in the test above.
+  test("moves the hover box at once with a tab that moves while a tab closes", async ({
+    q,
+  }) => {
+    const box = query(q.article("Closable tabs"));
+    const month = box.tab("Month");
+    const year = box.tab("Year");
+    await year.hover();
+    // The hover box is presentation with aria-hidden, so this probe reads it
+    // and Year after each frame of the shrink of Month. The close mark is
+    // aria-hidden too, so the probe presses it on the frame where the samples
+    // start. The pointer stays in the strip, so the hover box stays on Year
+    // while Year moves.
+    await using yearHandle = await year.elementHandle();
+    const samples = await month.evaluate(async (tab, hovered) => {
+      const strip = tab.closest("[role='tablist']");
+      const mark = tab.querySelector(":scope > [aria-hidden]:last-child");
+      if (!strip || !hovered || !(mark instanceof HTMLElement)) return [];
+      const samples: Array<{ place: number; offset: number }> = [];
+      mark.click();
+      for (let frame = 0; frame < 20; frame++) {
+        await new Promise((resolve) => {
+          requestAnimationFrame(() => setTimeout(resolve));
+        });
+        if (!tab.isConnected) break;
+        const glider = strip.querySelector(".glider-box.ui-hovered");
+        if (!glider) break;
+        const { left } = hovered.getBoundingClientRect();
+        const offset = Math.abs(glider.getBoundingClientRect().left - left);
+        // The strip can scroll back while Month shrinks, which keeps Year in
+        // place on the screen, so this reads its place in the strip.
+        samples.push({ place: left + strip.scrollLeft, offset });
+      }
+      return samples;
+    }, yearHandle);
+    test.expect(samples.length).toBeGreaterThan(5);
+    // Year moves in the strip, so the hover box has a moving target.
+    const places = samples.map(({ place }) => place);
+    test.expect(Math.max(...places) - Math.min(...places)).toBeGreaterThan(10);
+    const offsets = samples.map(({ offset }) => offset);
+    test.expect(Math.max(...offsets)).toBeLessThan(1);
+    await test.expect(box.tab("Month")).toHaveCount(0);
+  });
 });

@@ -282,6 +282,36 @@ function FolderTabs({
   );
 }
 
+// Each tab closes with its close mark, or with Delete when it has the focus.
+// The last tab stays, because nothing could take its selection.
+function ClosableTabs({ name, glider }: GliderExampleProps) {
+  const [tabs, setTabs] = useState(periods);
+  const closable = tabs.length > 1;
+  return (
+    <Tabs defaultSelectedId={getTabId(name, "Week")} className="w-full">
+      <TabList aria-label={name}>
+        {tabs.map((period) => (
+          <Tab
+            key={period}
+            id={getTabId(name, period)}
+            onRemove={
+              closable
+                ? () => setTabs((open) => open.filter((tab) => tab !== period))
+                : undefined
+            }
+          >
+            <TabLabel>{period}</TabLabel>
+          </Tab>
+        ))}
+        <Glider {...glider} />
+      </TabList>
+      <TabPanels>
+        <TabPanel single>The panel of the selected tab.</TabPanel>
+      </TabPanels>
+    </Tabs>
+  );
+}
+
 // The panels element changes on each selection, as with panels that each page
 // of a router renders.
 function KeyedPanelsTabs({ name, glider }: GliderExampleProps) {
@@ -628,6 +658,15 @@ export default function GliderExamples() {
             name="Panels that change with the selection"
             glider={glider}
           />
+        </Example>
+
+        <Example
+          title="Closable tabs"
+          description="Close Week. Month takes its selection at once and moves to its place while Week shrinks. The selected box goes to Month at once and moves with it, so it doesn't travel to a place that changes on each frame. The hover box also changes at once with the tab that shrinks under the pointer."
+          code={`<Tab onRemove={removeTab} /><Glider $hover />`}
+          stretch
+        >
+          <ClosableTabs name="Closable tabs" glider={hoverGlider} />
         </Example>
 
         <Example
