@@ -225,8 +225,10 @@ export function GeometryScenario({ controls }: ScenarioProps) {
   const startId = useId();
   const endId = useId();
   const gutter = flushGutter ? 0 : compactGutter ? 2 : undefined;
-  const border = !seams ? false : inheritSeams ? "inherit" : 2;
-  const borderType = seam === "border" ? undefined : seam;
+  // A seam of no type draws no edge, like seams that are off.
+  const border =
+    !seams || seam === "none" ? false : inheritSeams ? "inherit" : 2;
+  const borderType = seam === "dashed" ? "dashed" : undefined;
   return (
     <Shell
       $size="md"

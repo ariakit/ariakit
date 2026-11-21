@@ -231,8 +231,11 @@ const seam = cv({
       const width = typeof value === "boolean" ? Number(value) : value;
       return { style: { "--border-width": `${width}px` } };
     },
-    /** Draws one facing edge as a solid border, a dashed border, or no edge. */
-    $borderType(value?: "border" | "dashed" | "none") {
+    /**
+     * Draws the facing edge as a solid or a dashed border. To draw no edge, set
+     * `$border` to `false`, like on other frames.
+     */
+    $borderType(value?: "border" | "dashed") {
       if (value === "border") {
         return [facingBorder, "[--shell-facing-border:var(--border-width)]"];
       }
@@ -242,8 +245,8 @@ const seam = cv({
           "border-dashed [--shell-facing-border:var(--border-width)]",
         );
       }
-      // The marker lets a bar tell the shell that it has no facing edge.
-      return "[--shell-facing-border:0px] shell-edge-none";
+      // Another border type of a frame doesn't draw a one-sided edge.
+      return "[--shell-facing-border:0px]";
     },
   },
   defaultVariants: {
@@ -256,7 +259,6 @@ const seam = cv({
       switch (defaultValue) {
         case "border":
         case "dashed":
-        case "none":
           return defaultValue;
         default:
           return "border";
@@ -402,8 +404,6 @@ export const shellHeader = cv({
   class: [
     bar,
     "shell-header row-[header] box-border min-h-[calc(var(--shell-header-height)+var(--shell-facing-border,0px))] @container/shell-header",
-    // Without a facing edge, the shell adds no edge width to its offsets.
-    "[.shell:has(>&.shell-edge-none)]:[--shell-header-border:0px]",
     // Edge bars in a centered navigation row reach the bottom of the header
     // and cover its facing edge. The navigation measures the header without
     // the border of its carousel root, and reaches over both edges.
@@ -584,8 +584,6 @@ export const shellFooter = cv({
     // The footer ends the sidebar columns, pushing sticky sidebar bodies up
     // without a fixed footer height.
     "shell-footer row-[footer] box-border min-h-[calc(var(--shell-footer-height)+var(--shell-facing-border,0px))] @container/shell-footer",
-    // Without a facing edge, the shell adds no edge width to its offsets.
-    "[.shell:has(>&.shell-edge-none)]:[--shell-footer-border:0px]",
     // Let edge bars in a centered navigation row reach the inner edge.
     // The bottom safe area pads the footer, so it doesn't hold the row. The
     // navigation measures the footer without the border of its carousel root,
@@ -1206,8 +1204,6 @@ export const shellMainHeader = cv({
     "shell-main-header col-start-1 col-end-[calc(2+var(--shell-header-free-1)+var(--shell-header-free-1)*var(--shell-header-free-2))] row-[main-header]",
     "box-border min-h-[calc(var(--shell-main-header-height)+var(--shell-facing-border,0px))] content-center py-0! z-3",
     "[--shell-main-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-main-header-space),1px))]",
-    // Without a facing edge, the shell adds no edge width to its offsets.
-    "[.shell:has(>.shell-main>&.shell-edge-none)]:[--shell-main-header-border:0px]",
     // The spacing inside the bar follows its own text size, like the shell
     // header. Without this, the bar takes the step of a sized main, which has
     // larger text.
