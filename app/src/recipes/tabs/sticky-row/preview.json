@@ -1,0 +1,5 @@
+{
+  "title": "Sticky Tab Row Beside a Sidebar",
+  "description": "A window-like app screen of notes in a Shell: TabRow with $sticky keeps the tabs at the top while the page scrolls the note, a frame below the row keeps the edge and the round corners of the TabPanel in view, $m on Tabs keeps a space around them, and a scroll padding on the page keeps a focused link out from under the row. A TabRowButton that opens a ShellSidebar with $reveal=\"zoom\" and a TabRowFrame with the logo, in a second Tabs above the row, stay in place, while an invisible copy of them in the row folds as the sidebar opens, a Glider follows the selected tab, and a Tooltip names each icon button. Use it for a full-page app with document tabs that scrolls with the page, and use Tabs That Open and Close for tabs inside a page.",
+  "fullscreen": true
+}
