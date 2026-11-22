@@ -425,12 +425,21 @@ async function withDocumentViewport(page: Page, fn: () => Promise<void>) {
 declare global {
   interface Window {
     __releaseScrollAnimations?: () => void;
+    __scrollAnimationPositions?: {
+      elements: Element[];
+      positions: string;
+      read: () => string;
+    };
   }
 }
 
 // Bounds the wait for scroll timelines in frames that don't update their
 // rendering, such as offscreen iframes.
 const SCROLL_ANIMATIONS_TIMEOUT = 2000;
+
+// Bounds the waits again after a scroll between a wait and the hold. The last
+// attempt holds the animations as they are.
+const SCROLL_ANIMATIONS_HOLD_ATTEMPTS = 3;
 
 /**
  * Returns whether the scroll-driven animations of the document follow the
@@ -441,8 +450,11 @@ const SCROLL_ANIMATIONS_TIMEOUT = 2000;
  * progress. Their animations, like the ones that just started, read as those
  * values, such as a scroll button or a fade in the wrong state. Animations on a
  * scroll timeline whose source doesn't overflow can stay pending, which is the
- * right state for a strip that doesn't scroll. Playwright evaluates this in
- * each frame, so it must not use anything outside of its body.
+ * right state for a strip that doesn't scroll. It records the scroll positions
+ * of the timeline sources in `__scrollAnimationPositions` and passes only on a
+ * later check with the same positions, so `holdScrollAnimations` must run after
+ * the wait to read and clear them. Playwright evaluates this in each frame, so
+ * it must not use anything outside of its body.
  */
 function areScrollAnimationsCurrent() {
   if (typeof ScrollTimeline === "undefined") return true;
@@ -507,11 +519,51 @@ function areScrollAnimationsCurrent() {
     // Scroll offsets and sizes round to whole pixels.
     return Math.abs(progress * range.size - range.offset) > 1;
   };
-  return document.getAnimations().every((animation) => {
+  let current = true;
+  const sources = new Set<Element>();
+  for (const animation of document.getAnimations()) {
     const { timeline } = animation;
-    if (!(timeline instanceof ScrollTimeline)) return true;
-    return !isLagging(animation, timeline);
-  });
+    if (!(timeline instanceof ScrollTimeline)) continue;
+    if (timeline.source) {
+      sources.add(timeline.source);
+    }
+    if (isLagging(animation, timeline)) {
+      current = false;
+    }
+  }
+  // WebKit reads a scroll timeline from the scroll position at once, but its
+  // animations keep the values of the last rendering update, such as after a
+  // resize observer scrolls a selected tab clear of a fade. So the positions
+  // must match the previous check, with a rendering update between them, and
+  // the hold reads them again for a scroll after this check.
+  if (!sources.size) {
+    delete window.__scrollAnimationPositions;
+    return current;
+  }
+  const elements = [...sources];
+  const read = () =>
+    elements
+      .map((element) =>
+        [
+          element.scrollLeft,
+          element.scrollTop,
+          element.scrollWidth,
+          element.scrollHeight,
+          element.clientWidth,
+          element.clientHeight,
+        ].join(" "),
+      )
+      .join(";");
+  const positions = read();
+  const previous = window.__scrollAnimationPositions;
+  window.__scrollAnimationPositions = { elements, positions, read };
+  if (!previous) return false;
+  if (previous.positions !== positions) return false;
+  if (previous.elements.length !== elements.length) return false;
+  if (previous.elements.some((element, index) => element !== elements[index])) {
+    return false;
+  }
+  return current;
 }
 
 /**
@@ -548,10 +600,15 @@ async function waitForScrollAnimations(frame: Frame) {
  * Holds the scroll-driven animations of the document at their current values
  * until `__releaseScrollAnimations` runs. Playwright's `animations: "disabled"`
  * skips an animation with a zero playback rate, and important rules with the
- * current values keep it in place while the rate is zero. Playwright evaluates
- * this in each frame, so it must not use anything outside of its body.
+ * current values keep it in place while the rate is zero. Returns `false`
+ * without holding when a scroll position changed since the last wait, unless
+ * `force` is set. Playwright evaluates this in each frame, so it must not use
+ * anything outside of its body.
  */
-function holdScrollAnimations() {
+function holdScrollAnimations(force: boolean) {
+  const recorded = window.__scrollAnimationPositions;
+  delete window.__scrollAnimationPositions;
+  if (!force && recorded?.read() !== recorded?.positions) return false;
   const timingKeys = new Set([
     "offset",
     "computedOffset",
@@ -655,6 +712,7 @@ function holdScrollAnimations() {
     }
     delete window.__releaseScrollAnimations;
   };
+  return true;
 }
 
 /**
@@ -668,22 +726,32 @@ async function withScrollAnimationsHeld(page: Page, fn: () => Promise<void>) {
   // that don't scroll, and Chromium hid them on strips that do. Visonaut always
   // captures with that option.
   // https://github.com/microsoft/playwright/issues/43986
-  const waitedFrames = page.frames().filter((frame) => !frame.isDetached());
-  await Promise.all(waitedFrames.map(waitForScrollAnimations));
-  // A frame can detach during the wait.
-  const frames = waitedFrames.filter((frame) => !frame.isDetached());
-  await Promise.all(
-    frames.map((frame) => frame.evaluate(holdScrollAnimations)),
-  );
+  const release = (frames: Frame[]) =>
+    Promise.all(
+      frames
+        .filter((frame) => !frame.isDetached())
+        .map((frame) =>
+          frame.evaluate(() => window.__releaseScrollAnimations?.()),
+        ),
+    );
+  let frames: Frame[] = [];
+  for (let attempt = 1; ; attempt++) {
+    const waitedFrames = page.frames().filter((frame) => !frame.isDetached());
+    await Promise.all(waitedFrames.map(waitForScrollAnimations));
+    // A frame can detach during the wait.
+    frames = waitedFrames.filter((frame) => !frame.isDetached());
+    const force = attempt >= SCROLL_ANIMATIONS_HOLD_ATTEMPTS;
+    const held = await Promise.all(
+      frames.map((frame) => frame.evaluate(holdScrollAnimations, force)),
+    );
+    if (held.every(Boolean)) break;
+    // A frame that scrolled after its wait holds nothing, but the others hold,
+    // and the next wait would read their held animations.
+    await release(frames);
+  }
   await fn();
   // Skip the release when fn fails, as in withStyles.
-  await Promise.all(
-    frames
-      .filter((frame) => !frame.isDetached())
-      .map((frame) =>
-        frame.evaluate(() => window.__releaseScrollAnimations?.()),
-      ),
-  );
+  await release(frames);
 }
 
 /**
