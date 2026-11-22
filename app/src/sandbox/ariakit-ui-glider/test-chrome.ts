@@ -106,32 +106,46 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await week.focus();
     await test.expect(week).toBeFocused();
     // The box is presentation, and the closed tab shrinks on each frame, so
-    // this probe reads the box and the selected tab after each frame of the
-    // shrink. The glider places the box after the frame callbacks, so each read
-    // waits for a task after the frame, when the frame shows.
+    // this probe reads the box and the selected tab in each frame of the
+    // shrink. The glider observed the tab first, so it places the box before
+    // this observer reads it, in the frame that shows. A read in a later task
+    // can see the tabs at a later time than that frame on a busy machine.
     const samples = await week.evaluate(async (tab) => {
       const strip = tab.closest("[role='tablist']");
       if (!strip) return [];
       const samples: Array<{ left: number; offset: number }> = [];
-      tab.dispatchEvent(
-        new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
-      );
-      for (let frame = 0; frame < 20; frame++) {
-        await new Promise((resolve) => {
-          requestAnimationFrame(() => setTimeout(resolve));
-        });
+      const sample = () => {
         const selected = strip.querySelector(
           "[role='tab'][aria-selected='true']",
         );
         const glider = strip.querySelector('.glider-box[data-selected="true"]');
-        if (!selected || !glider) continue;
+        if (!selected || !glider) return;
         const { left } = selected.getBoundingClientRect();
         const offset = Math.abs(glider.getBoundingClientRect().left - left);
         samples.push({ left, offset });
+      };
+      const afterPaint = () =>
+        new Promise((resolve) => {
+          requestAnimationFrame(() => setTimeout(resolve));
+        });
+      const observer = new ResizeObserver(sample);
+      observer.observe(tab, { box: "border-box" });
+      tab.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
+      );
+      for (let frame = 0; frame < 30 && tab.isConnected; frame++) {
+        await afterPaint();
+      }
+      observer.disconnect();
+      // Month moves once more when Week leaves the DOM, and then the tabs stay
+      // in place, so a read after a frame sees the frame that shows.
+      for (let frame = 0; frame < 3; frame++) {
+        await afterPaint();
+        sample();
       }
       return samples;
     });
-    test.expect(samples.length).toBeGreaterThan(10);
+    test.expect(samples.length).toBeGreaterThan(5);
     // Month moves into the place of Week, so the box has a moving target.
     const lefts = samples.map(({ left }) => left);
     test.expect(Math.max(...lefts) - Math.min(...lefts)).toBeGreaterThan(10);
@@ -152,38 +166,103 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const year = box.tab("Year");
     await year.hover();
     // The hover box is presentation with aria-hidden, so this probe reads it
-    // and Year after each frame of the shrink of Month. The close mark is
-    // aria-hidden too, so the probe presses it on the frame where the samples
-    // start. The pointer stays in the strip, so the hover box stays on Year
-    // while Year moves.
+    // and Year in each frame of the shrink of Month, after the glider places
+    // the box, like in the test above. The close mark is aria-hidden too, so
+    // the probe presses it on the frame where the samples start. The pointer
+    // stays in the strip, so the hover box stays on Year while Year moves.
     await using yearHandle = await year.elementHandle();
     const samples = await month.evaluate(async (tab, hovered) => {
       const strip = tab.closest("[role='tablist']");
       const mark = tab.querySelector(":scope > [aria-hidden]:last-child");
       if (!strip || !hovered || !(mark instanceof HTMLElement)) return [];
       const samples: Array<{ place: number; offset: number }> = [];
-      mark.click();
-      for (let frame = 0; frame < 20; frame++) {
-        await new Promise((resolve) => {
-          requestAnimationFrame(() => setTimeout(resolve));
-        });
-        if (!tab.isConnected) break;
+      const observer = new ResizeObserver(() => {
         const glider = strip.querySelector(".glider-box.ui-hovered");
-        if (!glider) break;
+        if (!glider) return;
         const { left } = hovered.getBoundingClientRect();
         const offset = Math.abs(glider.getBoundingClientRect().left - left);
         // The strip can scroll back while Month shrinks, which keeps Year in
         // place on the screen, so this reads its place in the strip.
         samples.push({ place: left + strip.scrollLeft, offset });
+      });
+      observer.observe(tab, { box: "border-box" });
+      mark.click();
+      for (let frame = 0; frame < 30 && tab.isConnected; frame++) {
+        await new Promise((resolve) => {
+          requestAnimationFrame(() => setTimeout(resolve));
+        });
       }
+      observer.disconnect();
       return samples;
     }, yearHandle);
-    test.expect(samples.length).toBeGreaterThan(5);
+    test.expect(samples.length).toBeGreaterThan(3);
     // Year moves in the strip, so the hover box has a moving target.
     const places = samples.map(({ place }) => place);
     test.expect(Math.max(...places) - Math.min(...places)).toBeGreaterThan(10);
     const offsets = samples.map(({ offset }) => offset);
     test.expect(Math.max(...offsets)).toBeLessThan(1);
     await test.expect(box.tab("Month")).toHaveCount(0);
+  });
+
+  // Chrome shrinks a closed tab to no width, like in the tests above. Without
+  // Day, the strip doesn't overflow at this width, so Month keeps its place and
+  // its distance to the end of the strip while Year closes.
+  test("ends a travel at once when a tab after its target closes", async ({
+    page,
+    q,
+  }) => {
+    await page.setViewportSize({ width: 700, height: 800 });
+    const box = query(q.article("Closable tabs"));
+    // The close mark is presentation with aria-hidden, so this probe presses
+    // it.
+    await box.tab("Day").evaluate((tab) => {
+      const mark = tab.querySelector(":scope > [aria-hidden]:last-child");
+      if (mark instanceof HTMLElement) {
+        mark.click();
+      }
+    });
+    await test.expect(box.tab("Day")).toHaveCount(0);
+    await q.combobox(/^Travel time/).selectOption({ label: "Very slow (3s)" });
+    const month = box.tab("Month");
+    await month.click();
+    await test.expect(month).toHaveAttribute("aria-selected", "true");
+    // The box and the close mark are presentation with aria-hidden, so this
+    // probe presses the mark of Year and reads the box after Year leaves. The
+    // tabs then stay in place, so a read after a frame sees the frame that
+    // shows.
+    const result = await box.tab("Year").evaluate(async (tab) => {
+      const strip = tab.closest("[role='tablist']");
+      const mark = tab.querySelector(":scope > [aria-hidden]:last-child");
+      if (!strip || !(mark instanceof HTMLElement)) return null;
+      const overflow = strip.scrollWidth - strip.clientWidth;
+      const afterPaint = () =>
+        new Promise((resolve) => {
+          requestAnimationFrame(() => setTimeout(resolve));
+        });
+      mark.click();
+      for (let frame = 0; frame < 60 && tab.isConnected; frame++) {
+        await afterPaint();
+      }
+      for (let frame = 0; frame < 2; frame++) {
+        await afterPaint();
+      }
+      const selected = strip.querySelector(
+        "[role='tab'][aria-selected='true']",
+      );
+      const glider = strip.querySelector('.glider-box[data-selected="true"]');
+      if (!selected || !glider) return null;
+      const { left } = selected.getBoundingClientRect();
+      const offset = Math.abs(glider.getBoundingClientRect().left - left);
+      return { overflow, offset };
+    });
+    if (!result) {
+      throw new Error("The closable tabs have no strip or close mark");
+    }
+    // A strip that overflows would change the distance from Month to its end
+    // while Year closes, which would move the box at once anyway.
+    test.expect(result.overflow).toBe(0);
+    // The travel to Month takes 3 seconds, but the items settle in a fraction
+    // of that, and the box goes to Month at once with them.
+    test.expect(result.offset).toBeLessThan(1);
   });
 });

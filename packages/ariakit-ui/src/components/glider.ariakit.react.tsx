@@ -399,36 +399,47 @@ function hideTrack(track: GliderTrack) {
 const SETTLING_SELECTOR = "[data-enter], [data-leave]";
 
 /**
- * Brings the travel of the shift to the time since it started. The travel runs
- * on the compositor, which keeps moving the box while a long task, such as a
- * render, holds the page. Chrome and Firefox then compute the shift at the time
- * of the last frame, so a new travel that started from it would show the box go
- * back. All the movers catch up, so the box stays in its window. The size of
- * the box travels on the main thread, which shows the time of its last frame.
+ * Reads where the box of a track shows, such as its place or its rect. The
+ * travel of the shift runs on the compositor, which keeps moving the box while
+ * a long task, such as a render, holds the page. Chrome and Firefox then
+ * compute the shift at the time of the last frame, so a new travel that started
+ * from it would show the box go back. The travel of the mover catches up for
+ * the read. The size of the box travels on the main thread, which shows the
+ * time of its last frame.
  */
-function catchUpTravel(track: GliderTrack) {
+function readShown<T>(track: GliderTrack, read: () => T): T {
   // Safari computes the shift at the time of the compositor, but a new current
   // time would count the long task again and move the box too far.
-  if (isSafari()) return;
+  if (isSafari()) return read();
   const now = getWindow(track.element).performance.now();
-  for (const mover of track.movers) {
-    for (const animation of mover.getAnimations()) {
-      if (animation.playState !== "running") continue;
-      if (!("transitionProperty" in animation)) continue;
-      if (animation.transitionProperty !== "translate") continue;
-      const { startTime, currentTime } = animation;
-      if (typeof currentTime !== "number") continue;
-      // The travel starts on the screen with its first frame, but the browser
-      // can report its start time a frame or more later. The start time is on
-      // the timeline of the document, which shares its origin with
-      // performance.now().
-      const start = typeof startTime === "number" ? startTime : track.shownAt;
-      // A travel that waits for its first frame, such as after a long task,
-      // doesn't move on the screen either.
-      if (start == null) continue;
-      const elapsed = now - start;
-      if (currentTime >= elapsed) continue;
-      animation.currentTime = elapsed;
+  const caughtUp: Array<[animation: Animation, currentTime: number]> = [];
+  for (const animation of track.mover.getAnimations()) {
+    if (animation.playState !== "running") continue;
+    if (!("transitionProperty" in animation)) continue;
+    if (animation.transitionProperty !== "translate") continue;
+    const { startTime, currentTime } = animation;
+    if (typeof currentTime !== "number") continue;
+    // The travel starts on the screen with its first frame, but the browser can
+    // report its start time a frame or more later. The start time is on the
+    // timeline of the document, which shares its origin with performance.now().
+    const start = typeof startTime === "number" ? startTime : track.shownAt;
+    // A travel that waits for its first frame, such as after a long task,
+    // doesn't move on the screen either.
+    if (start == null) continue;
+    const elapsed = now - start;
+    if (currentTime >= elapsed) continue;
+    caughtUp.push([animation, currentTime]);
+    animation.currentTime = elapsed;
+  }
+  try {
+    return read();
+  } finally {
+    // A new current time also moves the start time of the travel in Chrome and
+    // Firefox, so a travel that goes on, such as when the box keeps its place,
+    // would then run ahead of the screen and of the window of the box. A new
+    // travel replaces it anyway.
+    for (const [animation, currentTime] of caughtUp) {
+      animation.currentTime = currentTime;
     }
   }
 }
@@ -505,17 +516,30 @@ function moveTrack({
   // A new follower, such as a panel that the framework replaced, needs the
   // place of the box even when the box stays where it is.
   const fresh = followers.filter((follower) => !placed.has(follower));
-  if (key === track.key && !fresh.length) return false;
+  if (key === track.key && !fresh.length) {
+    // A move at once also ends a travel to the same place, such as when items
+    // settle while the box travels, because the copies of the travel end too.
+    // The style is clean here, so reading the animations doesn't flush it.
+    if (!animated && track.mover.getAnimations().length) {
+      element.setAttribute("data-instant", "");
+      for (const follower of followers) {
+        follower.setAttribute("data-glider-instant", "");
+      }
+      if (!settling) {
+        endInstant(track);
+      }
+    }
+    return false;
+  }
   const wasHidden = track.key == null;
   track.key = key;
   // A track that was not shown has no place to travel from.
   const instant = wasHidden || !animated;
   // The box travels from the place where it shows now. This reads the style of
   // the mover before the box gets the style of its item, like the flush below.
-  if (!instant) {
-    catchUpTravel(track);
-  }
-  const from = instant ? null : getShownPlace(track.mover);
+  const from = instant
+    ? null
+    : readShown(track, () => getShownPlace(track.mover));
   const shift =
     from && (from.x !== x || from.y !== y)
       ? { x: from.shownX - x, y: from.shownY - y }
@@ -848,11 +872,12 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     }
     if (selectedItem) {
       // The box can be between two items when the selection changes again.
-      if (travels || refreshes) {
-        catchUpTravel(selectedTrack);
-      }
       const from =
-        travels || refreshes ? getRect(scaleProbe, selectedTrack.box) : null;
+        travels || refreshes
+          ? readShown(selectedTrack, () =>
+              getRect(scaleProbe, selectedTrack.box),
+            )
+          : null;
       const to = getRect(scaleProbe, selectedItem);
       const offsets = getInlineOffsets(group, to);
       findFollowers();
