@@ -46,6 +46,7 @@
       "groupName": "solid",
       "matchPackageNames": [
         "solid-js",
+        "vite-plugin-solid",
         "/^@solidjs\\//",
         "/^@solid-primitives\\//"
       ]
