@@ -50,7 +50,7 @@
     "@changesets/apply-release-plan": "8.1.1",
     "@changesets/cli": "3.0.3",
     "@changesets/types": "7.0.0",
-    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/jest-dom": "8.0.0",
     "@types/cross-spawn": "6.0.6",
     "@types/fs-extra": "11.0.4",
     "@types/node": "24.19.2",
