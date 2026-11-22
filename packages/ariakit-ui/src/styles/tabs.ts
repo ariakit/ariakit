@@ -1050,7 +1050,14 @@ export const tabRow = cv({
      * `--scrollport-start`, and `--scrollport-end`. To keep a space around the
      * row and the frame, set `$m` on `tabs`. That space takes presses above the
      * row and below the frame, so a press there doesn't reach the content that
-     * the strip color covers. Defaults to `false`.
+     * the strip color covers. The row covers the start of the scroll area, and
+     * CSS can't give its height to the panels, so a control that gets the focus
+     * can stay under the row. Give the scroll area a start scroll padding as
+     * tall as the row and the space above it, such as `scroll-pbs-*` on the
+     * page or on the size container, so the browser scrolls a focused control
+     * into the frame. With `$m`, also give it an end scroll padding as tall as
+     * that margin, such as `scroll-pbe-*`, because the margin below the frame
+     * covers the content too. Defaults to `false`.
      */
     $sticky: {
       true: tabRowSticky,
