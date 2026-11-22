@@ -21,7 +21,7 @@ import {
 
 function PlusSoonBadge() {
   return (
-    <span className="uppercase ms-2 text-xs px-1.5 py-1 rounded bg-black/60 dark:bg-white/60 text-white dark:text-black font-semibold">
+    <span className="uppercase text-xs px-1.5 py-1 rounded bg-black/60 dark:bg-white/60 text-white dark:text-black font-semibold">
       Soon
     </span>
   );
@@ -69,18 +69,20 @@ export function PlusScreen() {
                   <PlusFeature
                     feature="styled-recipes"
                     disabled
+                    badge={<PlusSoonBadge />}
                     className="aria-disabled:opacity-50"
                     render={<Focusable flat render={<li />} />}
                   >
-                    Styled recipes, ready to copy and paste <PlusSoonBadge />
+                    Styled recipes, ready to copy and paste
                   </PlusFeature>
                   <PlusFeature
                     feature="mcp-server"
                     disabled
+                    badge={<PlusSoonBadge />}
                     className="aria-disabled:opacity-50"
                     render={<Focusable flat render={<li />} />}
                   >
-                    MCP server for AI agents <PlusSoonBadge />
+                    MCP server for AI agents
                   </PlusFeature>
                   <PlusFeature
                     feature="support"
