@@ -104,10 +104,16 @@ export function PlusProvider(props: PlusProviderProps) {
 export interface PlusFeatureProps extends HovercardAnchorProps<"div"> {
   feature: string;
   icon?: "heart" | "check";
+  /**
+   * Content shown at the end of the item in place of the chevron. Keeping it
+   * out of the label lets the label use the full width without the badge
+   * wrapping to its own line.
+   */
+  badge?: React.ReactNode;
 }
 
 export const PlusFeature = forwardRef<HTMLDivElement, PlusFeatureProps>(
-  function PlusFeature({ icon = "check", feature, ...props }, ref) {
+  function PlusFeature({ icon = "check", feature, badge, ...props }, ref) {
     const store = useContext(PlusContext)!;
     const searchParams = useSearchParams();
     const priceId = searchParams.get("checkout");
@@ -147,7 +153,11 @@ export const PlusFeature = forwardRef<HTMLDivElement, PlusFeatureProps>(
           <Heart className="h-4 w-4 flex-none translate-y-1 fill-pink-600 dark:fill-pink-500" />
         ) : null}
         <p>{props.children}</p>
-        <ChevronRight className="ml-auto h-4 w-4 flex-none translate-y-1 opacity-0 transition-opacity group-data-[active]:opacity-60" />
+        {badge ? (
+          <div className="ml-auto flex flex-none items-start">{badge}</div>
+        ) : (
+          <ChevronRight className="ml-auto h-4 w-4 flex-none translate-y-1 opacity-0 transition-opacity group-data-[active]:opacity-60" />
+        )}
       </Role.div>
     );
   },
