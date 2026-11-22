@@ -86,9 +86,16 @@ test("combobox preview cards work in their iframes", async ({ page, q }) => {
   const getCode = card.button("Get code");
   await getCode.click();
   await expect(getCode).toHaveAttribute("aria-expanded", "true");
-  await expect(q.dialog("Combobox Group")).toContainText(
-    "export default function Example",
-  );
+  const dialog = q.dialog("Combobox Group");
+  // The panel is busy until its file shows. Before that, Firefox renders the
+  // dialog in a long task and the highlighted lines in another, which a slow
+  // runner can stretch past the assertion timeout, so the wait uses the test
+  // budget, like the frame waits in the helpers.
+  await query(dialog)
+    .tabpanel("index.tsx")
+    .and(page.locator(":not([aria-busy])"))
+    .waitFor();
+  await expect(dialog).toContainText("export default function Example");
 });
 
 test("preview card frames do not scroll or take focus until activated", async ({

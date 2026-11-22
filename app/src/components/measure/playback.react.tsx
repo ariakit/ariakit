@@ -232,26 +232,41 @@ export function Playback({ target, include = includeAll }: PlaybackProps) {
   // The transitions that run together are one change of the subject. A
   // transition that starts later belongs to a new change, which replaces the
   // transitions of the last one.
+  const record = (element: HTMLElement) => {
+    // While a replay holds the subject, only a press or a key ends it. A
+    // restyle under it, such as a hover, makes Firefox start the transitions
+    // again from the frame that the replay shows, which are no new change.
+    if (replaysRef.current.some((animation) => !isFinished(animation))) {
+      return;
+    }
+    const transitions = getTransitions(element, include);
+    // The transitions of the last change can be gone when their events come,
+    // and the controls keep their recordings.
+    if (!transitions.length) return;
+    const animations = transitions.map(({ animation }) => animation);
+    // The events of one change come after its transitions were recorded.
+    if (animations.every((item) => animationsRef.current.includes(item))) {
+      return;
+    }
+    cancelReplays();
+    setSpeed(animations, speedRef.current);
+    animationsRef.current = animations;
+    recordingsRef.current = transitions.map(({ recording }) => recording);
+    setReady(true);
+    follow();
+  };
+
   const onTransitionRun = useEffectEvent(
     (element: HTMLElement, event: Event) => {
       if (!(event.target instanceof getWindow(element).Element)) return;
       if (!include(event.target)) return;
-      // While a replay holds the subject, only a press or a key ends it. A
-      // restyle under it, such as a hover, makes Firefox start the transitions
-      // again from the frame that the replay shows, which are no new change.
-      if (replaysRef.current.some((animation) => !isFinished(animation))) {
-        return;
-      }
-      cancelReplays();
-      const transitions = getTransitions(element, include);
-      const animations = transitions.map(({ animation }) => animation);
-      setSpeed(animations, speedRef.current);
-      animationsRef.current = animations;
-      recordingsRef.current = transitions.map(({ recording }) => recording);
-      setReady(transitions.length > 0);
-      follow();
+      record(element);
     },
   );
+
+  const onMutation = useEffectEvent((element: HTMLElement) => {
+    record(element);
+  });
 
   // A replay holds the values of the subject, also when a scrub paused it, so a
   // change of the subject would start no transition. A press or a key in the
@@ -286,15 +301,27 @@ export function Playback({ target, include = includeAll }: PlaybackProps) {
   useEffect(() => {
     const element = target.current;
     if (!element) return;
+    const view = getWindow(element);
     const listener = (event: Event) => onTransitionRun(element, event);
     const interact = () => onInteract(element);
-    const query = getWindow(element).matchMedia(NO_MOTION_QUERY);
+    const query = view.matchMedia(NO_MOTION_QUERY);
     const motionChange = () => onMotionChange(query);
+    // On a device that draws a few frames a second, WebKit can end a transition
+    // on the first frame after it starts, and the transition is gone when its
+    // transitionrun event comes. So a change of the subject reads the
+    // transitions that it starts too.
+    const observer = new view.MutationObserver(() => onMutation(element));
+    observer.observe(element, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
     element.addEventListener("transitionrun", listener);
     element.addEventListener("pointerdown", interact, true);
     element.addEventListener("keydown", interact, true);
     query.addEventListener("change", motionChange);
     return () => {
+      observer.disconnect();
       element.removeEventListener("transitionrun", listener);
       element.removeEventListener("pointerdown", interact, true);
       element.removeEventListener("keydown", interact, true);

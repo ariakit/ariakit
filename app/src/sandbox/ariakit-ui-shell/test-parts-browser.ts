@@ -1,6 +1,7 @@
-import type { Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
+import type { Query } from "./test-helpers.ts";
 import { getBox, getSidebar, selectScenario } from "./test-helpers.ts";
 
 // Main's gutter is 1rem, or 2rem from a 64rem shell. Fragment targets in the
@@ -10,6 +11,17 @@ function getScrollGap(shellWidth: number) {
 }
 
 const mainHeaderSelector = ":scope > .shell-main > .shell-main-header";
+
+/**
+ * Narrows the page to 600px, where the end sidebar of the parts shell no longer
+ * fits. Its column folds with a width transition that moves the controls and
+ * the footer, so this waits for the column to reach zero width before the test
+ * clicks or measures them.
+ */
+async function narrowPartsShell(page: Page, q: Query) {
+  await page.setViewportSize({ width: 600, height: 900 });
+  await expect(getSidebar(q, "Part details")).toHaveCSS("width", "0px");
+}
 
 /**
  * Closes a sidebar column and reports what paints at its center, in line with a
@@ -108,7 +120,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     // The note is wider than half of this bar and narrower than all of it.
-    await page.setViewportSize({ width: 600, height: 900 });
+    await narrowPartsShell(page, q);
     await q.checkbox("Sticky footer").check();
     await q.checkbox("Long footer note").check();
     const footer = q.contentinfo("Part footer");
@@ -129,7 +141,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     // The actions are wider than half of this bar and fit beside the note.
-    await page.setViewportSize({ width: 600, height: 900 });
+    await narrowPartsShell(page, q);
     await q.checkbox("Sticky footer").check();
     await q.checkbox("Footer actions").check();
     const footer = q.contentinfo("Part footer");
@@ -157,7 +169,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     // The popover is in a portal, so it adds an anchor after its disclosure,
     // which is the end part.
-    await page.setViewportSize({ width: 600, height: 900 });
+    await narrowPartsShell(page, q);
     await q.checkbox("Sticky footer").check();
     await q.checkbox("Footer actions").check();
     const footer = q.contentinfo("Part footer");

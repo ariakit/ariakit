@@ -1,5 +1,18 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
+// Returns how many places are on the way between the first and the last place,
+// at least a pixel from each, such as those of a tab that moves while another
+// tab shrinks.
+function countBetween(places: number[]) {
+  const first = places[0];
+  const last = places.at(-1);
+  if (first == null) return 0;
+  if (last == null) return 0;
+  const low = Math.min(first, last) + 1;
+  const high = Math.max(first, last) - 1;
+  return places.filter((place) => place > low && place < high).length;
+}
+
 withFramework(import.meta.dirname, async ({ query, test }) => {
   test("names each tab panel after its selected tab", async ({ q }) => {
     for (const [name, tab] of [
@@ -145,10 +158,13 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       }
       return samples;
     });
-    test.expect(samples.length).toBeGreaterThan(5);
     // Month moves into the place of Week, so the box has a moving target.
     const lefts = samples.map(({ left }) => left);
     test.expect(Math.max(...lefts) - Math.min(...lefts)).toBeGreaterThan(10);
+    // The shrink takes a fixed 200ms, so a busy machine can draw only a few
+    // frames of it. One frame with Month on its way is enough to show the box
+    // with it there.
+    test.expect(countBetween(lefts)).toBeGreaterThan(0);
     const offsets = samples.map(({ offset }) => offset);
     test.expect(Math.max(...offsets)).toBeLessThan(1);
     await test
@@ -195,10 +211,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       observer.disconnect();
       return samples;
     }, yearHandle);
-    test.expect(samples.length).toBeGreaterThan(3);
     // Year moves in the strip, so the hover box has a moving target.
     const places = samples.map(({ place }) => place);
     test.expect(Math.max(...places) - Math.min(...places)).toBeGreaterThan(10);
+    // The shrink takes a fixed 200ms, like in the test above, so one frame with
+    // Year on its way is enough.
+    test.expect(countBetween(places)).toBeGreaterThan(0);
     const offsets = samples.map(({ offset }) => offset);
     test.expect(Math.max(...offsets)).toBeLessThan(1);
     await test.expect(box.tab("Month")).toHaveCount(0);

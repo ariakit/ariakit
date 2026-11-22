@@ -63,16 +63,22 @@ async function reduceMotion(page: Page) {
 
 /**
  * Clicks a row button with a still pointer until the row reaches its end, and
- * returns the pointer position.
+ * returns the pointer position. The last press stays down, and the test
+ * releases it with `page.mouse.up()`. A hovered button at its end hides after a
+ * 500ms pause that runs only while it isn't `:active`, so the pause starts at
+ * that release, not at a slow round trip after the row reached its end.
  */
-async function clickToEnd(page: Page, button: Locator) {
+async function pressToEnd(page: Page, button: Locator) {
   const box = await button.boundingBox();
   if (!box) throw new Error("The button has no layout");
   const x = box.x + box.width / 2;
   const y = box.y + box.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
   for (let i = 0; i < 12; i++) {
     if ((await button.getAttribute("aria-disabled")) === "true") break;
-    await page.mouse.click(x, y);
+    await page.mouse.up();
+    await page.mouse.down();
   }
   return { x, y };
 }
@@ -175,12 +181,12 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await reduceMotion(page);
     const box = query(q.article("Filter row"));
     const next = box.button("Scroll forward", { includeHidden: true });
-    const { x, y } = await clickToEnd(page, next);
+    const { x, y } = await pressToEnd(page, next);
     await test.expect(next).toHaveAttribute("aria-disabled", "true");
     // Quick clicks run past the end. They stay on the disabled button and don't
     // reach the last chip under it.
-    await page.mouse.click(x, y);
-    await page.mouse.click(x, y);
+    await page.mouse.up();
+    await page.mouse.click(x, y, { clickCount: 2 });
     await test.expect(next).toBeVisible();
     await test.expect(box.button("Tooling")).not.toBeFocused();
     await page.mouse.move(x, y + 200);
@@ -196,10 +202,11 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     const box = query(q.article("Filter row"));
     const next = box.button("Scroll forward", { includeHidden: true });
     const tooling = box.button("Tooling");
-    const { x, y } = await clickToEnd(page, next);
+    const { x, y } = await pressToEnd(page, next);
     await test.expect(next).toHaveAttribute("aria-disabled", "true");
     // The pointer stays still. After the pause, the button hides, and the chip
     // under it takes the hover state, which also sets the cursor.
+    await page.mouse.up();
     await test.expect(next).toBeHidden();
     await test.expect
       .poll(() => tooling.evaluate((node) => node.matches(":hover")))
@@ -217,15 +224,14 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     const box = query(q.article("Filter row"));
     const next = box.button("Scroll forward", { includeHidden: true });
     const tooling = box.button("Tooling");
-    const { x, y } = await clickToEnd(page, next);
+    const { x, y } = await pressToEnd(page, next);
     await test.expect(next).toHaveAttribute("aria-disabled", "true");
-    for (let i = 0; i < 4; i++) {
-      // Each wait is shorter than the 500ms pause of the button, while the
-      // series lasts longer than it, so only a pause that restarts with each
-      // press keeps the button under the clicks.
-      await page.waitForTimeout(200);
-      await page.mouse.click(x, y, { delay: 50 });
-    }
+    await page.mouse.up();
+    // Playwright waits the delay between the presses in its driver, with no
+    // round trip to the test. Each 200ms wait is shorter than the 500ms pause
+    // of the button, while the waits add up to longer than it, so only a pause
+    // that restarts with each press keeps the button under the clicks.
+    await page.mouse.click(x, y, { clickCount: 4, delay: 200 });
     await test.expect(next).toBeVisible();
     await test.expect(tooling).not.toBeFocused();
   });
@@ -238,15 +244,17 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     await reduceMotion(page);
     const box = query(q.article("Filter row"));
     const next = box.button("Scroll forward", { includeHidden: true });
-    await clickToEnd(page, next);
+    await pressToEnd(page, next);
     await test.expect(next).toHaveAttribute("aria-disabled", "true");
-    // With the pointer still over the disabled button, the keyboard moves focus
-    // from the last chip to the button.
+    // With the pointer still pressing the disabled button, the keyboard moves
+    // focus from the last chip to the button. The press keeps the button until
+    // Tab reaches it, however slow the round trips.
     await box.button("Tooling").focus();
     await page.keyboard.press("Tab");
     await test.expect(next).toBeFocused();
-    // The button must stay after the 500ms pause that hides a hovered button,
-    // so the wait crosses it.
+    // The release starts the 500ms pause that hides a hovered button. The
+    // focused button must stay after it, so the wait crosses it.
+    await page.mouse.up();
     await page.waitForTimeout(600);
     await test.expect(next).toBeVisible();
     await test.expect(next).toBeFocused();
@@ -479,7 +487,11 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     const viewport = box.toolbar("Framed filters");
     const next = box.button("Scroll forward", { includeHidden: true });
     const previous = box.button("Scroll backward", { includeHidden: true });
+    // The button shows through a scroll-driven animation, which the frame can
+    // apply after its content mounts, and a hidden button doesn't take focus.
+    await test.expect(next).toBeVisible();
     await next.focus();
+    await test.expect(next).toBeFocused();
     const end = await getScrollEnd(viewport);
     while ((await getScrollLeft(viewport)) < end - 2) {
       const left = await getScrollLeft(viewport);
@@ -621,37 +633,56 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
       `[id="${await next.getAttribute("aria-controls")}"]`,
     );
     const second = await getItemOffset(box.group("2 of 7"));
-    // Past the middle of the way, slide 2 is the closest slide. The page
-    // presses again right after the carousel updates there, on the same frame,
-    // so no round trip after the first press can let the scroll reach slide 2
-    // first. WebKit runs a smooth scroll off the main thread, so a slow frame
-    // on a busy machine can let the scroll end before a later frame.
-    await next.evaluate((button, offset) => {
-      const viewport = button.ownerDocument.getElementById(
-        button.getAttribute("aria-controls") ?? "",
-      );
-      if (!viewport) return;
-      if (!(button instanceof HTMLElement)) return;
-      const press = () => {
-        viewport.dataset.testScrollAtPress = `${Math.abs(viewport.scrollLeft)}`;
-        button.click();
-      };
-      // The carousel adds its scroll listener once on mount, before this one,
-      // so it requests its update first.
-      const onScroll = () => {
-        if (Math.abs(viewport.scrollLeft) <= offset / 2 + 2) return;
-        viewport.removeEventListener("scroll", onScroll);
-        requestAnimationFrame(press);
-      };
-      viewport.addEventListener("scroll", onScroll);
-    }, second);
-    await next.focus();
-    await page.keyboard.press("Enter");
-    await test.expect(viewport).toHaveAttribute("data-test-scroll-at-press");
-    const atPress = Number(
-      await viewport.getAttribute("data-test-scroll-at-press"),
-    );
-    test.expect(atPress).toBeLessThan(second - 2);
+    // WebKit runs a smooth scroll off the main thread, and a busy machine can
+    // render so few frames that none lands between the middle of the way and
+    // slide 2. The second press then comes after the scroll and doesn't cover
+    // the case, so the carousel goes back to slide 1 and tries again.
+    let attempts = 0;
+    await test
+      .expect(async () => {
+        if (attempts++) {
+          await box.tab("Slide 1").click();
+          await test
+            .expect(box.tab("Slide 1"))
+            .toHaveAttribute("aria-selected", "true");
+          await test.expect.poll(() => getScrollLeft(viewport)).toBe(0);
+        }
+        // Past the middle of the way, slide 2 is the closest slide. The page
+        // presses again right after the carousel updates there, on the same
+        // frame, so no round trip after the first press can let the scroll
+        // reach slide 2 first.
+        await next.evaluate((button, offset) => {
+          const viewport = button.ownerDocument.getElementById(
+            button.getAttribute("aria-controls") ?? "",
+          );
+          if (!viewport) return;
+          if (!(button instanceof HTMLElement)) return;
+          delete viewport.dataset.testScrollAtPress;
+          const press = () => {
+            const scrollLeft = Math.abs(viewport.scrollLeft);
+            viewport.dataset.testScrollAtPress = `${scrollLeft}`;
+            button.click();
+          };
+          // The carousel adds its scroll listener once on mount, before this
+          // one, so it requests its update first.
+          const onScroll = () => {
+            if (Math.abs(viewport.scrollLeft) <= offset / 2 + 2) return;
+            viewport.removeEventListener("scroll", onScroll);
+            requestAnimationFrame(press);
+          };
+          viewport.addEventListener("scroll", onScroll);
+        }, second);
+        await next.focus();
+        await page.keyboard.press("Enter");
+        await test
+          .expect(viewport)
+          .toHaveAttribute("data-test-scroll-at-press");
+        const atPress = Number(
+          await viewport.getAttribute("data-test-scroll-at-press"),
+        );
+        test.expect(atPress).toBeLessThan(second - 2);
+      })
+      .toPass();
     const third = await getItemOffset(box.group("3 of 7"));
     await test
       .expect(box.tab("Slide 3"))

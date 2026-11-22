@@ -591,7 +591,9 @@ interface TabRowStatusTabsProps {
  * Tabs with a glider in a row that ends with the item count of the selected
  * tab, right after the tab list. The count loads a moment after the selection,
  * so it changes its width while the box travels, but the strip stays in place.
- * The travel is slow, so each frame of it shows.
+ * The count loads from an effect after a paint and a 300ms timer, and both wait
+ * for the frames of a busy machine, so the count can load more than a second
+ * after the selection. The travel takes four seconds, so it still runs then.
  */
 function TabRowStatusTabs({ name }: TabRowStatusTabsProps) {
   const id = name.toLowerCase().replaceAll(" ", "-");
@@ -612,7 +614,7 @@ function TabRowStatusTabs({ name }: TabRowStatusTabsProps) {
     <Tabs
       selectedId={selectedId}
       setSelectedId={setSelectedId}
-      className="[--glider-duration:2000ms]"
+      className="[--glider-duration:4000ms]"
     >
       <TabRow>
         <TabRowButton aria-label={`${name} sidebar`}>
