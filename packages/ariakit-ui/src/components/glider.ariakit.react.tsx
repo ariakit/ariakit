@@ -1052,6 +1052,8 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     }
     for (const follower of scopeFollowers) {
       follower.removeAttribute("data-glider-following");
+      // A follower stays instant while the items settle.
+      follower.removeAttribute("data-glider-instant");
       follower.style.removeProperty("--glider-start");
       follower.style.removeProperty("--glider-end");
     }

@@ -265,4 +265,52 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // of that, and the box goes to Month at once with them.
     test.expect(result.offset).toBeLessThan(1);
   });
+
+  // Chrome shrinks a closed tab to no width, like in the tests above.
+  test("lets the panel transition again when the glider turns off while a tab closes", async ({
+    q,
+  }) => {
+    const box = query(q.article("Closable tabs"));
+    const week = box.tab("Week");
+    await week.focus();
+    await test.expect(week).toBeFocused();
+    const hydrated = q.checkbox(/^Hydrated/);
+    // The panel follows the box, which stays instant while Week shrinks. The
+    // glider turns off after it moved the box at once a few times, and before
+    // Week leaves, so this probe presses Delete and clears the checkbox two
+    // frames later. The panel is presentation for the transition, so the probe
+    // reads its computed style, which has no transition while it is instant.
+    await using checkboxHandle = await hydrated.elementHandle();
+    const before = await week.evaluate(async (tab, checkbox) => {
+      const follower = tab
+        .closest("article")
+        ?.querySelector(".glider-follower");
+      if (!follower || !(checkbox instanceof HTMLElement)) return null;
+      tab.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
+      );
+      for (let frame = 0; frame < 2; frame++) {
+        await new Promise((resolve) => {
+          requestAnimationFrame(() => setTimeout(resolve));
+        });
+      }
+      const { transitionProperty } = getComputedStyle(follower);
+      checkbox.click();
+      return transitionProperty;
+    }, checkboxHandle);
+    // The glider turned off while the panel was still instant.
+    test.expect(before).toBe("none");
+    await test.expect(hydrated).not.toBeChecked();
+    await test.expect(week).toHaveCount(0);
+    const panel = box.tabpanel("Month");
+    await test.expect
+      .poll(() =>
+        panel.evaluate((element) => {
+          const follower = element.closest(".glider-follower");
+          if (!follower) return null;
+          return getComputedStyle(follower).transitionProperty;
+        }),
+      )
+      .toBe("--glider-start, --glider-end");
+  });
 });
