@@ -156,6 +156,14 @@ export const gliderFollower = cx(
   "data-glider-instant:transition-none",
 );
 
+/**
+ * The classes of a follower that is the parent of the group of its glider, such
+ * as a sticky tab row around its strip. The glider of that group still finds
+ * the followers in the scope around the holder, unlike a group directly in
+ * another follower, such as a navigation in the panels, which has no followers.
+ */
+export const gliderHolder = cx(gliderFollower, "glider-holder");
+
 /** A copy of an item, which has the classes of the item too. */
 export const gliderCopy = cv({
   class: "glider-copy absolute! m-0! box-border! pointer-events-none!",

@@ -292,7 +292,9 @@ body > * {
 
 /**
  * Squares panel corners where tabs extend past the scroll viewport, for a strip
- * that doesn't fade. A strip that fades keeps its ends clear of the corners
+ * that doesn't fade. The ranges use the frame radius of the panel, or
+ * --tabs-panel-radius on an element that runs them for the panel, such as a
+ * sticky tab row. A strip that fades keeps its ends clear of the corners
  * instead, so its panel uses ui-tabs-open-start and ui-tabs-open-end. Keep
  * round corners when scrolling or scroll-driven animations are unavailable.
  * Use longhands because the animation shorthand resets the timeline and range.
@@ -304,8 +306,8 @@ body > * {
     animation-fill-mode: both;
     animation-timeline: --tabs-scroll, --tabs-scroll;
     animation-range:
-      0 var(--ak-frame-radius),
-      calc(100% - var(--ak-frame-radius)) 100%;
+      0 var(--tabs-panel-radius, var(--ak-frame-radius)),
+      calc(100% - var(--tabs-panel-radius, var(--ak-frame-radius))) 100%;
     /* A strip with nothing to scroll has an inactive scroll timeline, where
        browsers can keep the last progress of the corners. The panel follows
        the root of the strip, which marks that state. Important wins over the
@@ -389,9 +391,9 @@ body > * {
     animation-fill-mode: both;
     animation-timeline: --tabs-scroll, --tabs-scroll;
     animation-range:
-      calc(100% - var(--ak-frame-radius)) 100%,
+      calc(100% - var(--tabs-panel-radius, var(--ak-frame-radius))) 100%,
       calc(100% - var(--spacing) * 8 - 2px)
-        calc(100% - var(--ak-frame-radius));
+        calc(100% - var(--tabs-panel-radius, var(--ak-frame-radius)));
     /* See ui-tabs-round. */
     [data-carousel-fits] ~ & {
       animation-name: none !important;
@@ -2861,9 +2863,13 @@ body > * {
   }
 }
 
+/* Only a control beside the element counts, because a static part, such as a
+   logo in a tab row, has no hover surface for a separator to give way to. */
 @custom-variant ui-adjacent-hover {
-  :is(:hover, .ui-hovered):not(:disabled, [aria-disabled="true"]) + &,
-  &:has(+ :is(:hover, .ui-hovered):not(:disabled, [aria-disabled="true"])) {
+  .control:is(:hover, .ui-hovered):not(:disabled, [aria-disabled="true"]) + &,
+  &:has(
+      + .control:is(:hover, .ui-hovered):not(:disabled, [aria-disabled="true"])
+    ) {
     @slot;
   }
 }

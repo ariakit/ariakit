@@ -248,6 +248,8 @@ interface FolderTabsProps extends GliderExampleProps {
   layout?: TabListProps["$layout"];
   indent?: TabsProps["$indent"];
   panel?: ReactNode;
+  /** Content in the panels element, before the panel. */
+  beforePanel?: ReactNode;
 }
 
 function FolderTabs({
@@ -258,6 +260,7 @@ function FolderTabs({
   layout,
   indent,
   panel = "The panel of the selected tab.",
+  beforePanel,
 }: FolderTabsProps) {
   return (
     <Tabs
@@ -276,6 +279,7 @@ function FolderTabs({
         <Glider {...glider} />
       </TabList>
       <TabPanels>
+        {beforePanel}
         <TabPanel single>{panel}</TabPanel>
       </TabPanels>
     </Tabs>
@@ -679,6 +683,21 @@ export default function GliderExamples() {
             name="Glider in a tab panel"
             glider={glider}
             panel={<Segments name="View in a tab panel" glider={glider} />}
+          />
+        </Example>
+
+        <Example
+          title="Glider beside a tab panel"
+          description="A vertical navigation with its own glider directly in the panels element of folder tabs, before the panel. The panels element follows the glider of the tab strip, but it doesn't hold the navigation as a sticky tab row holds its strip, so only the glider of the tab strip shapes the corners of the panel."
+          code={`<TabPanels><Nav><Glider /></Nav><TabPanel /></TabPanels>`}
+          stretch
+        >
+          <FolderTabs
+            name="Glider beside a tab panel"
+            glider={glider}
+            beforePanel={
+              <VerticalNav name="Pages beside a tab panel" glider={glider} />
+            }
           />
         </Example>
 

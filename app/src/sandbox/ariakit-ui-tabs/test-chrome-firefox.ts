@@ -1,6 +1,7 @@
 import {
   captureInView,
   forEachColorSchemeOf,
+  getCapture,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
 
@@ -48,5 +49,37 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         });
       }
     });
+  });
+
+  // Forced colors drop the shadow that covers the content past the frame of a
+  // sticky row and behind its tabs, so the frame keeps that cover in the canvas
+  // color.
+  // https://github.com/ariakit/ariakit/pull/8553#discussion_r4656810061
+  test("keeps the cover of a sticky frame in forced colors @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await page.emulateMedia({ forcedColors: "active" });
+    await forEachColorSchemeOf(
+      page,
+      ["Sticky tab row"],
+      async (colorScheme) => {
+        const box = q.article("Sticky tab row");
+        const area = query(box).group("Sticky tab row scroll area");
+        await area.evaluate((node) => {
+          node.scrollTo({ top: 90, behavior: "instant" });
+        });
+        // The first line leaves the scroll area, so the scroll took effect.
+        await test
+          .expect(query(area).checkbox("Preview line 1"))
+          .not.toBeInViewport({ ratio: 1 });
+        await visual(
+          getCapture(box, colorScheme, {
+            item: "ariakit-ui-tabs/forced-colors/sticky-row-scrolled",
+          }),
+        );
+      },
+    );
   });
 });
