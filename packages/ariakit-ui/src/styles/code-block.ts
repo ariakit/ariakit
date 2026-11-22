@@ -24,10 +24,10 @@ const scrollportHeight = cx(
  * file tabs, or a `tabListCarousel` around file tabs that scroll, and then one
  * or more `codeBlockCode` parts. A static block, with a title or no header,
  * shows only the edges of the title and the code. Each `codeBlockCode` panel
- * holds a `codeBlockScroll` part with the code, and a `codeBlockCopy` after it
- * floats in the top end corner of the panel. A `codeBlockExpand` in the panel
- * covers collapsed code, and a `codeBlockCollapse` goes in a row under the
- * panel.
+ * holds a `codeBlockScroll` part with the code, and a `codeBlockCopy` after the
+ * code in it sticks to the top end corner of the panel. A `codeBlockExpand` in
+ * the panel covers collapsed code, and a `codeBlockCollapse` goes in a row
+ * under the panel.
  */
 export const codeBlock = cv({
   extend: [tabs],
@@ -161,18 +161,26 @@ export const codeBlockTitle = cv({
 });
 
 /**
- * The frame of the copy button in the top end corner of the code panel. It has
- * the text of the code, so the button lines up with the first line. It takes
- * the layer of the panel, so the code doesn't show around the button, and code
- * that scrolls under it fades out before the frame. Code is always left to
- * right, so the frame goes on its right, on a right-to-left page too.
+ * The frame of the copy button in the top end corner of a `codeBlockScroll`,
+ * after the code. It sticks there while the code scrolls, under the scrollbars
+ * of the scroll area. It inherits the text of the code, so the button lines up
+ * with the first line. It takes the layer of the panel, so the code doesn't
+ * show around the button, and code that scrolls under it fades out before the
+ * frame. Code is always left to right, so the frame goes on its right, on a
+ * right-to-left page too.
  */
 export const codeBlockCopy = cv({
   extend: [frame, text],
   class: [
     "code-block-copy flex",
-    // Over the scroll area, in the corner inside the edge of the panel.
+    // Over the code, in the corner inside the edge of the panel.
     "z-2 self-start [justify-self:right]",
+    // Sticky offsets start inside the padding of the scroll area, so the top
+    // one takes it back. The scroll area has no side padding to cover.
+    "sticky right-0 -top-(--code-block-padding) mx-0",
+    // Wrapped code isn't a scroll area, so the frame would stick to the scroll
+    // area around the block instead.
+    "[.code-block-wrap>&]:relative [.code-block-wrap>&]:inset-auto",
     // The button has the gap around it as the padding of the frame, and the
     // rest of the padding of the code as its own padding. With the text of the
     // code, the button is centered on the first line, and the icon lines up
@@ -183,18 +191,16 @@ export const codeBlockCopy = cv({
     // Code that scrolls under the frame fades into it, instead of ending at a
     // sharp edge. The fade goes before the frame and lets clicks through. The
     // left corners are square, so the fade meets a straight edge.
-    "relative rounded-l-none",
+    "rounded-l-none",
     "before:absolute before:inset-y-0 before:right-full before:w-[1lh]",
     "before:pointer-events-none",
     "before:bg-linear-to-r",
     "before:from-transparent before:to-(--ak-layer)",
   ],
   defaultVariants: {
-    // The text of the code.
-    $size: 0.9375,
-    $leading: 1.7,
     $p: "var(--code-block-copy-gap)",
-    // The frame goes over the padding of the panel, like the scroll area.
+    // The frame goes over the padding of the scroll area, like the code, and
+    // its corners follow the panel.
     $m: "calc(-1 * var(--code-block-padding))",
     // The layer of the panel, which paints over the code that scrolls under the
     // frame. A frame is transparent by default.
@@ -266,8 +272,9 @@ const lineNumbers = cx(
 
 /**
  * The panel of the code below the header, half a step lighter than the page. It
- * holds a `codeBlockScroll` with the lines, which covers its padding, and the
- * buttons over it, such as a `codeBlockCopy`, which inherit its layer.
+ * holds a `codeBlockScroll`, which covers its padding, with the lines and a
+ * `codeBlockCopy` in it, and the buttons over it, such as a `codeBlockExpand`.
+ * The buttons inherit its layer.
  */
 export const codeBlockCode = cv({
   extend: [tabPanels, focus],
@@ -319,18 +326,23 @@ export const codeBlockCode = cv({
 
 /**
  * The scroll area of the code in a `codeBlockCode` panel, rendered as a `pre`
- * element with the HTML of the lines in a `code` element. It reads the markup
- * of `highlight`: a `line` class on each line, `highlighted` on marked lines,
- * and `highlighted-word` on marked text. Token colors come from the
- * `--shiki-light` and `--shiki-dark` variables, and follow the layer of each
- * line.
+ * element with the HTML of the lines in a `code` element, and an optional
+ * `codeBlockCopy` after it. It reads the markup of `highlight`: a `line` class
+ * on each line, `highlighted` on marked lines, and `highlighted-word` on marked
+ * text. Token colors come from the `--shiki-light` and `--shiki-dark`
+ * variables, and follow the layer of each line.
  */
 export const codeBlockScroll = cv({
   extend: [frameBase, text],
   class: [
-    // Its own stacking context keeps the gutter of line numbers below the
-    // buttons over the code.
-    "code-block-scroll block min-h-0 min-w-0 isolate",
+    // One cell, where the copy button goes over the code. The cell is as wide
+    // as the code, so the button sticks to the corner when the code scrolls
+    // sideways too. It has no stacking context of its own, so the copy button
+    // stays above the expand button next to it.
+    "code-block-scroll grid min-h-0 min-w-0 *:[grid-area:1/1]",
+    // The copy button sticks to the corner, so a scroll padding would scroll
+    // the code each time the button takes the focus.
+    "scroll-p-0",
     "tab-2",
     // The panel shows the focus ring.
     "outline-none",
@@ -342,7 +354,7 @@ export const codeBlockScroll = cv({
     // start a bit inside their cell, so a sixth of a character comes off.
     "px-0",
     "[--code-block-px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*0.5-1ch/6)]",
-    "[&>code]:block [&>code]:min-w-full",
+    "[&>code]:min-w-full",
     // Lines are separated by line feeds, so they stay inline. An empty line
     // still needs the height of a line for its background.
     "[&_.line]:relative [&_.line]:inline-block [&_.line]:min-w-full",
@@ -352,7 +364,7 @@ export const codeBlockScroll = cv({
     "[&_.line]:ui-base:px-(--code-block-px)",
     // The first line leaves room for the frame of a copy button after the
     // code, which is as wide as the line is tall with its padding.
-    "[&:has(~.code-block-copy)_.line:first-child]:pe-[calc(var(--code-block-px)+1lh+2*var(--ak-frame-padding))]",
+    "[&:has(>.code-block-copy)_.line:first-child]:pe-[calc(var(--code-block-px)+1lh+2*var(--ak-frame-padding))]",
     // Adapt each theme color to the layer of its line, so tokens keep enough
     // contrast on any background. The layer decides which theme applies, not
     // the page color scheme, so a dark block on a light page gets dark colors.

@@ -706,7 +706,7 @@ function getCopyLabel(name?: string) {
 /**
  * Renders a small `CopyButton` in a frame in the top end corner of the code.
  * The `copy` prop of `CodeBlockCode` and `CodeBlockPanel` renders it in the
- * panel of the code, after the scroll area, so it follows the code in the tab
+ * scroll area of the code, after the lines, so it follows the code in the tab
  * order, and only the code that shows has one. Its label names the title or the
  * tab, such as "Copy counter.tsx". Its frame covers the corner of the code, and
  * it takes the layer of the code.
@@ -1004,6 +1004,7 @@ export function CodeBlockCode({
     [codeId, lineCount],
   );
   const scrollRef = React.useRef<HTMLPreElement>(null);
+  const linesRef = React.useRef<HTMLElement>(null);
   const mergedScrollRef = useMergeRefs(
     scrollRef,
     showsButtons ? context?.codeRef : undefined,
@@ -1020,10 +1021,11 @@ export function CodeBlockCode({
   }, [maxLines]);
   // Collapsed code is inert, so the tab order and screen readers skip it. The
   // expand button, which is in the panel but not in the scroll area, is the way
-  // in. The property works in React 18 too, which has no inert prop.
+  // in. The copy button in the scroll area stays out of it. The property works
+  // in React 18 too, which has no inert prop.
   useSafeLayoutEffect(() => {
     if (!collapsed) return;
-    const element = scrollRef.current;
+    const element = linesRef.current;
     if (!element) return;
     element.inert = true;
     return () => {
@@ -1088,9 +1090,10 @@ export function CodeBlockCode({
             scrollable && labelledByTitle ? titleId : ariaLabelledBy,
         };
   // The same shape in every state, so the code keeps its element, its scroll
-  // position, and the focus when the buttons come and go. The copy button shows
-  // over the code, and it comes after the expand button in the tab order. The
-  // collapse button goes in a row under the panel.
+  // position, and the focus when the buttons come and go. The copy button is in
+  // the scroll area, so its scrollbars paint over the button, and it comes
+  // before the expand button in the tab order. The collapse button goes in a
+  // row under the panel.
   return (
     <>
       <ak.Role.div
@@ -1114,20 +1117,20 @@ export function CodeBlockCode({
           ref={mergedScrollRef}
         >
           {html != null ? (
-            <code dangerouslySetInnerHTML={{ __html: html }} />
+            <code ref={linesRef} dangerouslySetInnerHTML={{ __html: html }} />
           ) : (
-            <code>{renderPlainLines(children)}</code>
+            <code ref={linesRef}>{renderPlainLines(children)}</code>
+          )}
+          {copyElement && (
+            <CodeBlockCopyNameContext.Provider value={name}>
+              {copyElement}
+            </CodeBlockCopyNameContext.Provider>
           )}
         </pre>
         {showsButtons && codeInfo && (
           <CodeBlockCodeContext.Provider value={codeInfo}>
             {context?.expandElement}
           </CodeBlockCodeContext.Provider>
-        )}
-        {copyElement && (
-          <CodeBlockCopyNameContext.Provider value={name}>
-            {copyElement}
-          </CodeBlockCopyNameContext.Provider>
         )}
       </ak.Role.div>
       {showsButtons && codeInfo && (
