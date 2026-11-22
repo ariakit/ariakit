@@ -278,7 +278,6 @@ export default function Example() {
                 logo ends. */}
             <span
               aria-hidden
-              inert
               className={`invisible -ms-(--tabs-merge) grid h-0 shrink-0 transition-[grid-template-columns] duration-(--shell-time) ease-(--shell-ease) ${
                 sidebarOpen ? "grid-cols-[0fr]" : "grid-cols-[1fr]"
               }`}
