@@ -399,7 +399,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
             node.querySelector<HTMLInputElement>(`input[value="${value}"]`);
           const box = node.querySelector('.glider-box[data-selected="true"]');
           const grid = getRadio("Grid")?.closest(".control");
-          if (!box || !grid) return null;
+          const board = getRadio("Board")?.closest(".control");
+          if (!box || !grid || !board) return null;
           const getLeft = (element: Element) =>
             element.getBoundingClientRect().left;
           // The glider moves the box in a microtask after a click, and a frame
@@ -429,6 +430,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           return {
             start,
             grid: getLeft(grid),
+            board: getLeft(board),
             next,
             times: { clickedAt, shownAt, changedAt, readAt },
           };
@@ -441,12 +443,27 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       // The new travel starts where the box shows after the long task, not
       // where the page last drew it, which would show the box go back. It
       // doesn't start where the box would show after twice the long task
-      // either, near Grid.
-      const progress =
-        (places.next - places.start) / (places.grid - places.start);
+      // either, near Grid. The upper bound is halfway between these two places
+      // at the click on Board, plus the move of the new travel to Board from
+      // there until the read. A slow frame before the read raises the bound
+      // with the box.
+      const { clickedAt, changedAt, readAt } = places.times;
+      const distance = places.grid - places.start;
+      const progress = (places.next - places.start) / distance;
       const range = getLongTaskRange(places.times, VERY_SLOW_TRAVEL);
+      const atChange =
+        (getTravelProgress(changedAt - clickedAt, VERY_SLOW_TRAVEL) +
+          getTravelProgress(
+            changedAt - clickedAt + LONG_TASK,
+            VERY_SLOW_TRAVEL,
+          )) /
+        2;
+      const toBoard = (places.board - places.start) / distance - atChange;
+      const max =
+        atChange +
+        getTravelProgress(readAt - changedAt, VERY_SLOW_TRAVEL) * toBoard;
       test.expect(progress).toBeGreaterThan(range.min);
-      test.expect(progress).toBeLessThan(range.max);
+      test.expect(progress).toBeLessThan(max);
     });
   }
 
