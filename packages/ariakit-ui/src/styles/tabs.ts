@@ -913,8 +913,12 @@ const tabRowSticky = cx(
   "after:inset-x-[calc(-1*var(--tab-row-inset))]",
   "after:top-[calc(100%-var(--tab-row-overlap))]",
   "after:h-[calc(var(--tabs-scroll-area)+var(--tabs-ring)-var(--tab-row-top)-100%+var(--tab-row-overlap))]",
-  // Forced colors drop shadows, so a border draws the edge there.
+  // Forced colors drop shadows, so a border draws the edge there, and the frame
+  // keeps its cover in the canvas color, which also covers the content behind
+  // the tabs and in the margin above the row.
   "forced-colors:after:border-(length:--tabs-bordering)",
+  "forced-colors:after:forced-color-adjust-none forced-colors:after:border-[CanvasText]",
+  "forced-colors:after:shadow-[0_0_0_100vmax_Canvas]",
   // The top corners follow those of the panels beside a selected outer
   // folder, which shrinks or cuts its curve.
   "[--tab-row-corner-s:min(var(--tabs-notch,0px),var(--tabs-meet,var(--tabs-notch,0px)))]",
