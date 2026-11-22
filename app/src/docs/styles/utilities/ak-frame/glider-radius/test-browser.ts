@@ -32,6 +32,42 @@ async function getEndOffset(page: Page, figure: Locator, tab: Locator) {
   return getBoxOffset(figure, tab);
 }
 
+// Records the time from the next press on the page to the change that makes the
+// Time scrubber read the end, both on the clock of the page. The time that
+// Playwright takes to send the press and to read the scrubber then doesn't
+// count. A scrubber that reads the end before the press must leave it first.
+function recordPlayback(time: Locator) {
+  return time.evaluateHandle((slider) => {
+    const isAtEnd = () => slider.getAttribute("aria-valuetext") === "100%";
+    const duration = new Promise<number>((resolve) => {
+      let start: number | null = null;
+      let left = !isAtEnd();
+      const onPress = (event: Event) => {
+        start = event.timeStamp;
+      };
+      slider.ownerDocument.addEventListener("pointerdown", onPress, {
+        capture: true,
+        once: true,
+      });
+      const observer = new MutationObserver(() => {
+        if (start == null) return;
+        if (!isAtEnd()) {
+          left = true;
+          return;
+        }
+        if (!left) return;
+        observer.disconnect();
+        resolve(performance.now() - start);
+      });
+      observer.observe(slider, {
+        attributes: true,
+        attributeFilter: ["aria-valuetext"],
+      });
+    });
+    return { duration };
+  });
+}
+
 withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
   test("figure @visual", async ({ page, q, visual }) => {
     await forEachColorScheme(page, async (colorScheme) => {
@@ -81,13 +117,15 @@ withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
     // subject, before the travel draws a frame, so at 0.1× it takes 2s. A slow
     // runner only makes it take longer. The bound is half of the 2s, like the
     // one of the replay below.
-    const travelStart = Date.now();
+    const travel = await recordPlayback(time);
     await q.tab("Members").click();
     await test.expect(q.button("Replay")).toBeEnabled();
     await test
       .expect(time)
       .toHaveAttribute("aria-valuetext", "100%", { timeout: 5000 });
-    test.expect(Date.now() - travelStart).toBeGreaterThan(1000);
+    test
+      .expect(await travel.evaluate((record) => record.duration))
+      .toBeGreaterThan(1000);
     await test.expect
       .poll(() => getBoxOffset(figure, q.tab("Members")))
       .toBeCloseTo(0, 0);
@@ -96,12 +134,14 @@ withDeferredVisualLoad(import.meta.dirname, async ({ id, test }) => {
     // at 0.1× and 200ms at 1×. A slow runner only makes it take longer. The
     // bound is half of the 2s, since WebKit can date an animation back to its
     // last frame, as it does for the transitions of a travel.
-    const replayStart = Date.now();
+    const replay = await recordPlayback(time);
     await q.button("Replay").click();
     await test
       .expect(time)
       .toHaveAttribute("aria-valuetext", "100%", { timeout: 5000 });
-    test.expect(Date.now() - replayStart).toBeGreaterThan(1000);
+    test
+      .expect(await replay.evaluate((record) => record.duration))
+      .toBeGreaterThan(1000);
 
     // WebKit starts new transitions when a finished transition plays again,
     // which a replay at full speed leaves on the path of the scrubber.

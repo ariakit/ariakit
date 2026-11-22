@@ -412,7 +412,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // the box start from the same place there.
     const firstDay = toDay[0]?.box ?? Number.NaN;
     const getTrail = (box: number) => {
-      const rest = (box - end) / (firstDay - end);
+      const span = firstDay - end;
+      // A machine that shows its first frame after the travel ends both travels
+      // on it, so the panels have no trail.
+      if (Math.abs(span) < 0.5) return 0;
+      const rest = (box - end) / span;
       return Math.abs(beforeDay - firstDay) * Math.max(0, rest);
     };
     // The corners change only while half of the place is below the corner

@@ -227,10 +227,12 @@ withCaptures(import.meta.dirname, async ({ test, query }) => {
     const { x, y } = await pressToEnd(page, next);
     await test.expect(next).toHaveAttribute("aria-disabled", "true");
     await page.mouse.up();
-    // Playwright waits the delay between the presses in its driver, with no
-    // round trip to the test. Each 200ms wait is shorter than the 500ms pause
-    // of the button, while the waits add up to longer than it, so only a pause
-    // that restarts with each press keeps the button under the clicks.
+    // Playwright holds each press for the delay and waits it again before the
+    // next press, in its driver, with no round trip to the test. The button is
+    // active while a press holds it, so the pause runs only in the 200ms waits
+    // between presses. Each wait is shorter than the 500ms pause, while the
+    // presses last longer than it, so only a pause that restarts with each
+    // press keeps the button under the clicks.
     await page.mouse.click(x, y, { clickCount: 4, delay: 200 });
     await test.expect(next).toBeVisible();
     await test.expect(tooling).not.toBeFocused();

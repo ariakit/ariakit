@@ -1023,22 +1023,27 @@ interface FoldStep {
 // and moves it to each step. The reads then don't depend on how many frames a
 // busy machine shows during the two seconds of the fold.
 async function stepFold(name: Locator, button: Locator) {
-  // A busy machine can take longer than the fold between the press and a read
-  // after it, so this pauses the transition when it runs.
+  // A busy machine can end the fold before a read after the press, or before
+  // its transitionrun event. The press changes the class of the columns, so a
+  // mutation observer reads the transition that it starts before a frame, and
+  // pauses it.
   const fold = await name.evaluateHandle((element) => {
     const columns = element.parentElement?.parentElement;
     if (!columns) {
       throw new Error("Missing fold");
     }
     const transition = new Promise<Animation>((resolve) => {
-      const onRun = () => {
+      const observer = new MutationObserver(() => {
         const [animation] = columns.getAnimations();
         if (!animation) return;
         animation.pause();
-        columns.removeEventListener("transitionrun", onRun);
+        observer.disconnect();
         resolve(animation);
-      };
-      columns.addEventListener("transitionrun", onRun);
+      });
+      observer.observe(columns, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
     });
     return { transition };
   });
