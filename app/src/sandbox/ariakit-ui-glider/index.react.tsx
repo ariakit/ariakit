@@ -688,7 +688,7 @@ export default function GliderExamples() {
 
         <Example
           title="Glider beside a tab panel"
-          description="A navigation with its own glider in the panels element of folder tabs, before the panel. The panels element follows the glider of the tab strip, but it doesn't hold the navigation, so only the glider of the tab strip shapes the corners of the panel."
+          description="A vertical navigation with its own glider directly in the panels element of folder tabs, before the panel. The panels element follows the glider of the tab strip, but it doesn't hold the navigation as a sticky tab row holds its strip, so only the glider of the tab strip shapes the corners of the panel."
           code={`<TabPanels><Nav><Glider /></Nav><TabPanel /></TabPanels>`}
           stretch
         >
@@ -696,7 +696,7 @@ export default function GliderExamples() {
             name="Glider beside a tab panel"
             glider={glider}
             beforePanel={
-              <HorizontalNav name="Pages beside a tab panel" glider={glider} />
+              <VerticalNav name="Pages beside a tab panel" glider={glider} />
             }
           />
         </Example>

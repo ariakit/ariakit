@@ -14,7 +14,7 @@ import {
   carouselStepClasses,
 } from "./carousel.ts";
 import { frame } from "./frame.ts";
-import { gliderFollower } from "./glider.ts";
+import { gliderFollower, gliderHolder } from "./glider.ts";
 import { hover } from "./hover.ts";
 import { hasLayerBackground } from "./layer.ts";
 import {
@@ -931,8 +931,9 @@ const tabRowSticky = cx(
   // row by inheritance. The parts of the row reset them, so a frame of the
   // travel restyles those parts but not the tabs inside them. Beside a control
   // of the row, the box is not at the end of the row, so the corners stay
-  // round there.
-  gliderFollower,
+  // round there. The row is the parent of the strip, so the glider of the
+  // strip still finds the followers of the tabs, the row included.
+  gliderHolder,
   "[.tabs:has(>*>.tabs-strip:nth-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-s:min(var(--tabs-notch,0px),var(--glider-start)/2)]",
   "[.tabs:has(>*>.tabs-strip.tabs-stretch:nth-last-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-e:min(var(--tabs-notch,0px),var(--glider-end)/2)]",
   "[.tabs.tabs-folder-cut:has(>*>.tabs-strip:nth-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-s:min(var(--tabs-notch,0px),max(0px,var(--glider-start)-var(--tabs-radius)))]",

@@ -140,14 +140,15 @@ function getGroup(root: HTMLElement | null) {
  * The element around the group whose followers follow the selected box of the
  * group. A group in a follower, such as a segmented control in the panel of
  * folder tabs, is not the strip of that scope, so it has no followers. A
- * follower that is the parent of the group holds the strip itself, such as a
- * sticky tab row that draws the frame of the panels, so it is not in the way.
+ * follower with the `glider-holder` class that is the parent of the group holds
+ * the strip itself, such as a sticky tab row that draws the frame of the
+ * panels, so it is not in the way.
  */
 function getScope(group: HTMLElement) {
   const scope = group.closest<HTMLElement>(".glider-scope");
   if (!scope) return group;
   const holder = group.parentElement;
-  const start = holder?.matches(".glider-follower")
+  const start = holder?.matches(".glider-holder")
     ? holder.parentElement
     : group;
   const follower = start?.closest(".glider-follower");
