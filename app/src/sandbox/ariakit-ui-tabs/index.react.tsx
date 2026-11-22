@@ -11,6 +11,7 @@ import * as ak from "@ariakit/react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { CarouselButton } from "@ariakit/ui/components/carousel.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Popover,
@@ -29,6 +30,7 @@ import {
   TabProvider,
   TabRow,
   TabRowButton,
+  TabRowFrame,
   TabSeparator,
   TabSlot,
   Tabs,
@@ -40,10 +42,12 @@ import {
   BookOpenIcon,
   BracesIcon,
   EyeIcon,
+  NotebookTextIcon,
   PanelLeftIcon,
   PlusIcon,
   SettingsIcon,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import {
   Example,
@@ -422,6 +426,147 @@ function TabRowTabs({
 
 // Every box passes an explicit defaultSelectedId with page-unique ids, so the
 // first render already marks the selected tab.
+
+interface TabRowFrameTabsProps {
+  /** The name of the frame, and the prefix of the names of the parts. */
+  name: string;
+  /** The padding of the buttons, the frame, and the tabs. */
+  padding?: number;
+  /**
+   * Whether the row has tabs and panels. Without them, the row holds only the
+   * sidebar button and the logo, like a row in a layer above other tabs.
+   */
+  tabs?: boolean;
+}
+
+/**
+ * Tabs in a row with a sidebar button, a static frame with a logo and a name,
+ * the tab list, and a button that opens a tab. The frame has a separator before
+ * it, between it and the sidebar button.
+ */
+function TabRowFrameTabs({ name, padding, tabs = true }: TabRowFrameTabsProps) {
+  const id = name.toLowerCase().replaceAll(" ", "-");
+  return (
+    <Tabs defaultSelectedId={`${id}-${tabRowLabels[1]}`}>
+      <TabRow>
+        <TabRowButton aria-label={`${name} sidebar`} $p={padding}>
+          <TabSlot>
+            <PanelLeftIcon />
+          </TabSlot>
+        </TabRowButton>
+        <TabRowFrame separator $p={padding} className="font-semibold">
+          <TabSlot>
+            <NotebookTextIcon />
+          </TabSlot>
+          <TabLabel>{name}</TabLabel>
+        </TabRowFrame>
+        {tabs && (
+          <TabList aria-label={name}>
+            {tabRowLabels.map((label) => (
+              <Tab key={label} id={`${id}-${label}`} $p={padding} separator>
+                <TabLabel>{label}</TabLabel>
+              </Tab>
+            ))}
+          </TabList>
+        )}
+        {tabs && (
+          <TabRowButton aria-label={`${name} new tab`} $p={padding} separator>
+            <TabSlot>
+              <PlusIcon />
+            </TabSlot>
+          </TabRowButton>
+        )}
+      </TabRow>
+      {tabs && (
+        <TabPanels>
+          <TabPanel single>
+            <p className="text-sm">The panel of the selected tab.</p>
+          </TabPanel>
+        </TabPanels>
+      )}
+    </Tabs>
+  );
+}
+
+const stickyOverflowLabels = [
+  "Overview",
+  "Getting started",
+  "Usage",
+  "API reference",
+  "Styling",
+  "Accessibility",
+  "Examples",
+  "Changelog",
+];
+
+interface StickyOverflowTabsProps {
+  /** The name of the tab list, and the prefix of the tab ids. */
+  name: string;
+  /** Whether the strip fades its ends. */
+  fade: boolean;
+}
+
+/**
+ * A sticky row with more tabs than its strip shows, in a scroll area of its
+ * own. The first tab is selected, so its folder meets the start corner of the
+ * panel until the strip scrolls it out.
+ */
+function StickyOverflowTabs({ name, fade }: StickyOverflowTabsProps) {
+  const id = name.toLowerCase().replaceAll(" ", "-");
+  return (
+    <StickyScrollArea label={`${name} scroll area`}>
+      <Tabs
+        defaultSelectedId={`${id}-0`}
+        $outerEdge={false}
+        $darken={false}
+        $p={2}
+        $m={2}
+      >
+        <TabRow $sticky>
+          <TabList
+            aria-label={name}
+            $fade={fade}
+            tabs={Object.fromEntries(
+              stickyOverflowLabels.map((label, index) => [
+                `${id}-${index}`,
+                label,
+              ]),
+            )}
+          />
+        </TabRow>
+        <TabPanels>
+          <TabPanel single>
+            <p className="text-sm">The page of the selected tab.</p>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </StickyScrollArea>
+  );
+}
+
+interface StickyScrollAreaProps {
+  /** The accessible name of the scroll area. */
+  label: string;
+  children: ReactNode;
+}
+
+/**
+ * A size container is a scroll area of its own, so a sticky tab row and its
+ * frame measure it and not the page. It starts and ends without sticky bars,
+ * whatever the page around it has.
+ */
+function StickyScrollArea({ label, children }: StickyScrollAreaProps) {
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      tabIndex={0}
+      className="@container-size h-64 w-full overflow-y-auto [--scrollport-end:0px] [--scrollport-start:0px]"
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function TabsExamples() {
   return (
@@ -3518,6 +3663,280 @@ export default function TabsExamples() {
             listHidden
             rowProps={{ $buttons: "always" }}
           />
+        </div>
+      </Example>
+      <Example
+        title="Sticky tab row"
+        description="The row stays at the top of a scroll area while the area scrolls the panel. A frame keeps the edge and the round corners of the panel in view, with the margin of the tabs around it, and the strip color covers the content that scrolls past the frame."
+        stretch
+        code={`
+          <Tabs $outerEdge={false} $darken={false} $p={2} $m={2}>
+            <TabRow $sticky>
+              <TabList>
+                <Tab>
+                  <TabLabel>Preview</TabLabel>
+                </Tab>
+                <Tab>
+                  <TabLabel>Code</TabLabel>
+                </Tab>
+              </TabList>
+              <TabRowButton />
+            </TabRow>
+            <TabPanels>
+              <TabPanel>
+                …
+              </TabPanel>
+              <TabPanel>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <StickyScrollArea label="Sticky tab row scroll area">
+          <Tabs
+            defaultSelectedId="sticky-preview"
+            $outerEdge={false}
+            $darken={false}
+            $p={2}
+            $m={2}
+          >
+            <TabRow $sticky>
+              <TabList aria-label="Sticky tab row">
+                <Tab id="sticky-preview">
+                  <TabLabel>Preview</TabLabel>
+                </Tab>
+                <Tab id="sticky-code" separator>
+                  <TabLabel>Code</TabLabel>
+                </Tab>
+              </TabList>
+              <TabRowButton aria-label="Sticky tab row new tab" separator>
+                <TabSlot>
+                  <PlusIcon />
+                </TabSlot>
+              </TabRowButton>
+            </TabRow>
+            <TabPanels $p="none">
+              <TabPanel tabId="sticky-preview">
+                {/* Bands that reach the edges show where the frame cuts the
+                    content. Each line takes a press, so a press shows which
+                    part of the row and the frame lets the content take it. */}
+                {Array.from({ length: 12 }, (_, index) => (
+                  <label
+                    key={index}
+                    className="flex items-center gap-2 px-3 py-2 text-sm even:bg-current/10"
+                  >
+                    <input type="checkbox" />
+                    Preview line {index + 1}
+                  </label>
+                ))}
+              </TabPanel>
+              <TabPanel tabId="sticky-code">
+                <p className="px-3 py-2 text-sm">A short panel.</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </StickyScrollArea>
+      </Example>
+      <Example
+        title="Sticky tab row with a glider"
+        description="A glider in the strip of a sticky row, with a travel of one second. The panel and the frame of the row follow the selected box, so the top corners of the frame change with those of the panel while the box travels."
+        stretch
+        code={`
+          <Tabs
+            $outerEdge={false}
+            $darken={false}
+            $p={2}
+            $m={2}
+            className="[--glider-duration:1s]"
+          >
+            <TabRow $sticky>
+              <TabList>
+                <Tab>Day</Tab>
+                <Tab separator>Week</Tab>
+                <Tab separator>Month</Tab>
+                <Glider />
+              </TabList>
+              <TabRowButton separator />
+            </TabRow>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <StickyScrollArea label="Sticky tab row with a glider scroll area">
+          {/* A slow travel shows the corners change over many frames. */}
+          <Tabs
+            defaultSelectedId="sticky-glider-day"
+            $outerEdge={false}
+            $darken={false}
+            $p={2}
+            $m={2}
+            className="[--glider-duration:1s]"
+          >
+            <TabRow $sticky>
+              <TabList aria-label="Sticky tab row with a glider">
+                {["Day", "Week", "Month"].map((period, index) => (
+                  <Tab
+                    key={period}
+                    id={`sticky-glider-${period.toLowerCase()}`}
+                    separator={!!index}
+                  >
+                    <TabLabel>{period}</TabLabel>
+                  </Tab>
+                ))}
+                <Glider />
+              </TabList>
+              <TabRowButton
+                aria-label="Sticky tab row with a glider new tab"
+                separator
+              >
+                <TabSlot>
+                  <PlusIcon />
+                </TabSlot>
+              </TabRowButton>
+            </TabRow>
+            <TabPanels>
+              <TabPanel single>
+                <p className="text-sm">The events of the selected period.</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </StickyScrollArea>
+      </Example>
+      <Example
+        title="Sticky tab row with an overflowing strip"
+        description="Sticky rows whose strips scroll, the first with fades and the second without. While the strip scrolls, the frame of the row squares and opens its top corners with those of the panel."
+        stretch
+        code={`
+          <Tabs $outerEdge={false} $darken={false} $p={2} $m={2}>
+            <TabRow $sticky>
+              <TabList tabs={…} />
+            </TabRow>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+
+          <TabList $fade={false} tabs={…} />
+        `}
+      >
+        <StickyOverflowTabs name="Sticky strip with fades" fade />
+        <StickyOverflowTabs name="Sticky strip without fades" fade={false} />
+      </Example>
+      <Example
+        title="Tab row frame"
+        description="A static part of a tab row, with a logo and a name, between a sidebar button and the tabs. It has the box of a tab that is not selected, so with the same padding, its icon and its name line up with those of the buttons and the tabs. It has no hover surface, so the separator before it stays while the pointer is on it. The second row has less padding, and the third row has only the sidebar button and the logo, like a row in a layer above other tabs."
+        stretch
+        code={`
+          <Tabs>
+            <TabRow>
+              <TabRowButton aria-label="Notes sidebar">
+                …
+              </TabRowButton>
+              <TabRowFrame separator className="font-semibold">
+                <TabSlot>
+                  <NotebookTextIcon />
+                </TabSlot>
+                <TabLabel>Notes</TabLabel>
+              </TabRowFrame>
+              <TabList>
+                <Tab separator>Quotes</Tab>
+                …
+              </TabList>
+              <TabRowButton aria-label="Notes new tab" separator>
+                …
+              </TabRowButton>
+            </TabRow>
+            …
+          </Tabs>
+
+          <TabRowFrame $p={1} separator>
+            …
+          </TabRowFrame>
+        `}
+      >
+        <TabRowFrameTabs name="Notes" />
+        <TabRowFrameTabs name="Compact notes" padding={1} />
+        <TabRowFrameTabs name="Logo" tabs={false} />
+      </Example>
+      <Example
+        title="Transparent tabs over a pattern"
+        description="Transparent roots on a striped surface. The strip of a tab list and the row of a tab row paint no strip color, so the stripes show under the tabs and the buttons. The panels keep their surface."
+        stretch
+        code={`
+          <div className="bg-[repeating-linear-gradient(…)]">
+            <Tabs $layer="transparent">
+              <TabList>
+                …
+              </TabList>
+              <TabPanels>
+                …
+              </TabPanels>
+            </Tabs>
+            <Tabs $layer="transparent">
+              <TabRow>
+                <TabRowButton />
+                <TabList>
+                  …
+                </TabList>
+              </TabRow>
+              <TabPanels>
+                …
+              </TabPanels>
+            </Tabs>
+          </div>
+        `}
+      >
+        {/* The stripes are under the tabs, so any strip color that the roots
+            paint covers them. */}
+        <div className="grid gap-4 rounded-xl bg-[repeating-linear-gradient(135deg,color-mix(in_oklab,currentColor_20%,transparent)_0_6px,transparent_6px_12px)] p-4">
+          <Tabs
+            $layer="transparent"
+            defaultSelectedId="transparent-pattern-list-Billing"
+          >
+            <TabList aria-label="Transparent tab list over a pattern">
+              {tabRowLabels.map((label) => (
+                <Tab key={label} id={`transparent-pattern-list-${label}`}>
+                  <TabLabel>{label}</TabLabel>
+                </Tab>
+              ))}
+            </TabList>
+            <TabPanels>
+              <TabPanel single>
+                <p className="text-sm">The strip shows the stripes.</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+          <Tabs
+            $layer="transparent"
+            defaultSelectedId="transparent-pattern-row-Billing"
+          >
+            <TabRow>
+              <TabRowButton aria-label="Transparent tab row over a pattern sidebar">
+                <TabSlot>
+                  <PanelLeftIcon />
+                </TabSlot>
+              </TabRowButton>
+              <TabList aria-label="Transparent tab row over a pattern">
+                {tabRowLabels.map((label) => (
+                  <Tab key={label} id={`transparent-pattern-row-${label}`}>
+                    <TabLabel>{label}</TabLabel>
+                  </Tab>
+                ))}
+              </TabList>
+            </TabRow>
+            <TabPanels>
+              <TabPanel single>
+                <p className="text-sm">The row shows the stripes.</p>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </div>
       </Example>
     </ExampleGrid>

@@ -23,6 +23,7 @@ import {
   segmentKindClasses,
 } from "./segment.ts";
 import { hasSelectedSurface, selectedHoverClass } from "./selected.ts";
+import { slotFrame } from "./slot-frame.ts";
 
 interface TabsEdgeVariants {
   $edgeWeight?: unknown;
@@ -43,6 +44,21 @@ function hidesTabsEdge(variants: TabsEdgeVariants) {
   if (variants.$edgeWeight === 0) return true;
   return false;
 }
+
+// Around a sticky tab row, the root is at least as tall as the scroll area: the
+// screen, or a size container, less the sticky bars that a shell publishes and
+// the margin of the root. Outside a size container, cqb is the small viewport,
+// so the dynamic viewport follows mobile browser bars instead. The panels take
+// the height that the row leaves, so short panels still fill the frame that the
+// row keeps in view.
+const tabsSticky = cx(
+  "has-[>.tab-row-sticky]:[--tabs-scrollport:var(--scrollport-height,100dvh)]",
+  "[@container_(min-height:0px)]:has-[>.tab-row-sticky]:[--tabs-scrollport:var(--scrollport-height,100cqb)]",
+  "has-[>.tab-row-sticky]:[--tabs-scroll-area:calc(var(--tabs-scrollport)-var(--scrollport-start,0px)-var(--scrollport-end,0px)-2*var(--tabs-margin))]",
+  "has-[>.tab-row-sticky]:min-h-(--tabs-scroll-area)",
+  "has-[>.tab-row-sticky]:grid has-[>.tab-row-sticky]:grid-cols-[minmax(0,1fr)]",
+  "has-[>.tab-row-sticky]:grid-rows-[auto_minmax(0,1fr)]",
+);
 
 /**
  * A tab container that shares its surface, edges, and geometry with the tab
@@ -72,6 +88,9 @@ export const tabs = cv({
     "[--tabs-border:var(--ak-frame-border)]",
     "[--tabs-ring:var(--ak-frame-ring)]",
     "[--tabs-bordering:calc(var(--tabs-border)+var(--tabs-ring))]",
+    // A sticky row keeps the root margin around it. The margin does not
+    // inherit either.
+    "[--tabs-margin:var(--ak-frame-margin)]",
     // The root layer is the strip color, so the strip inherits it and the
     // panel draws its border over it. Selected tabs and the panel lighten from
     // the layer around the root instead.
@@ -98,7 +117,10 @@ export const tabs = cv({
     // Scope the scroll timeline so the sibling panel can follow it.
     "[timeline-scope:--tabs-scroll]",
     // Only the tabs of this root's own strip count, not those of nested tabs.
-    "has-[>.tabs-strip>.ui-folder,>*>.tabs-strip>.ui-folder]:[--tabs-folder:1]",
+    // A folder button of a tab row counts too, so the button keeps its place
+    // and its hover surface in a row whose strip has no tabs.
+    "has-[>.tabs-strip>.ui-folder,>*>.tabs-strip>.ui-folder,>.tab-row>.ui-folder]:[--tabs-folder:1]",
+    tabsSticky,
   ],
   variants: {
     /**
@@ -211,6 +233,12 @@ export const tabs = cv({
       // The panel and folders paint another surface under their borders, where
       // the strip color would show as a line around the hidden edge.
       addClass("tabs-edge-hidden-at-rest");
+    }
+    if (variants.$layer === "transparent" && !hasLayerBackground(variants)) {
+      // A transparent root has no strip color of its own, so the strip paints
+      // nothing and shows what is under it, such as tabs that the root lies
+      // over.
+      addClass("tabs-strip-clear");
     }
     if (variants.$border !== false) return;
     // An explicit false must publish zero edge width instead of inheriting the
@@ -413,6 +441,12 @@ const tabMotion = cx(
   "data-leave:pointer-events-none",
 );
 
+// The strip padding shows above and below the tabs, so folders take it from
+// their own padding, and padding on Tabs makes the strip only a little taller.
+// They keep at least 1.5 spacing steps.
+const TAB_FOLDER_PADDING =
+  "round(max(var(--spacing) * 1.5, var(--spacing) * 2 - var(--tabs-float, 0px)), 1px)";
+
 /** A tab with flat, bevel, or folder styling and keyboard focus feedback. */
 export const tab = cv({
   extend: [button],
@@ -468,14 +502,11 @@ export const tab = cv({
       return 1.5;
     },
     $lightnessOffset: false,
-    // The strip padding shows above and below the tabs, so folders take it from
-    // their own padding, and padding on Tabs makes the strip only a little
-    // taller. They keep at least 1.5 spacing steps.
     $p(defaultValue, variants) {
       if (variants.$kind !== "folder") return defaultValue;
       // Replace only the control padding, so an extender's default stays.
       if (defaultValue !== 2) return defaultValue;
-      return "round(max(var(--spacing) * 1.5, var(--spacing) * 2 - var(--tabs-float, 0px)), 1px)";
+      return TAB_FOLDER_PADDING;
     },
     // Idle tabs dim their text, which inherits into slots, like navigation
     // links. Hover and selection restore full ink.
@@ -623,6 +654,12 @@ const tabStripInRow = cx(
   // names the strip and both classes of the row, so it outranks the bottom
   // margins of a strip in tabListCarousel.
   "[.tab-list-carousel.tab-row>&.tabs-strip]:-mb-(--tab-row-below)",
+  // Before panels, the strip color of the row fills the rounded panel corners.
+  // So the strip ends where the selected folder covers the seam, and doesn't
+  // take the pointer over the panel below it. Without panels, the strip keeps
+  // the whole strip color below the tabs, where it takes the pointer.
+  "[.tab-list-carousel.tab-row:has(~_*:not([hidden],template))>&.tabs-strip]:pb-(--tabs-dock)",
+  "[.tab-list-carousel.tab-row:has(~_*:not([hidden],template))>&.tabs-strip]:-mb-(--tabs-dock)",
   "[.tab-row>:not(.carousel-button-area)~&]:ms-0",
   "[.tab-row>:not(.carousel-button-area)~&]:ps-0",
   "[.tab-row>:not(.carousel-button-area)~&]:rounded-ss-none!",
@@ -682,7 +719,7 @@ const tabStrip = cx(
   // Paint within the root edge, though the scroll box extends beyond it. In
   // tabListCarousel, which paints the strip color behind the strip, the fade
   // mask fades only the tabs.
-  "ui-tabs-well [.tab-list-carousel>&]:bg-none!",
+  "ui-tabs-well [.tab-list-carousel>&]:bg-none! [.tabs-strip-clear>&]:bg-none!",
   // Frame rules give the strip a bottom margin when nothing follows it. In
   // tabListCarousel, the next button follows it, so the position of
   // tabListCarousel in the root decides instead.
@@ -832,7 +869,7 @@ export const tabListCarousel = cv({
     "before:row-start-1 before:col-start-1",
     "before:-mt-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
     "before:-mx-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
-    "before:ui-tabs-well",
+    "before:ui-tabs-well [.tabs-strip-clear>&]:before:bg-none!",
   ],
   defaultVariants: {
     $kind: "row",
@@ -841,6 +878,98 @@ export const tabListCarousel = cv({
     $bleed: "calc(var(--tabs-padding) + var(--tabs-bordering))",
   },
 });
+
+// A sticky box always makes a stacking context, so a sticky row can't share one
+// with the panels. It stacks above them, and the panels scroll under it. The
+// row then can't paint under the panels, so a frame in the row paints their
+// edge and corners over them instead.
+const tabRowSticky = cx(
+  "tab-row-sticky sticky z-3",
+  // The row starts inside the root margin, border, and padding, so it sticks
+  // there too. A root edge drawn as a ring takes no room, so the row starts on
+  // it, and only the frame and the clip reach over it.
+  "[--tab-row-top:calc(var(--tabs-padding)+var(--tabs-border))]",
+  "[--tab-row-inset:calc(var(--tabs-padding)+var(--tabs-bordering))]",
+  "inset-bs-[calc(var(--scrollport-start,0px)+var(--tabs-margin)+var(--tab-row-top))]",
+  // The row reaches below the top edge of the panels, by the notch and the
+  // root edge. The strip color stops at that edge, so the panels show in the
+  // frame.
+  "[--tab-row-overlap:calc(var(--tabs-notch,0px)+var(--tabs-bordering))]",
+  "before:bottom-(--tab-row-overlap)",
+  // The strip color also covers the root margin above the row, where the
+  // content scrolls under it, so it takes the pointer there too, and a press
+  // doesn't reach content that it can't see. The class outranks the margin of
+  // the strip color in tabListCarousel.
+  "[&.tab-row-sticky]:before:-mt-[calc(var(--tabs-padding)+var(--tabs-bordering)+var(--tabs-margin))]",
+  // Below that edge, the box of the row takes no pointer, so the content of
+  // the panels does. The strip color and the parts of the row still do. Zero
+  // specificity lets a part that hides keep its own value.
+  "pointer-events-none before:pointer-events-auto",
+  "[&>*]:ui-base:pointer-events-auto",
+  // The frame has the box of the panels, from their top edge down to the end
+  // of the scroll area, which the root measures. Its height takes the height
+  // of the row as 100%.
+  "after:absolute after:z-1 after:pointer-events-none",
+  "after:inset-x-[calc(-1*var(--tab-row-inset))]",
+  "after:top-[calc(100%-var(--tab-row-overlap))]",
+  "after:h-[calc(var(--tabs-scroll-area)+var(--tabs-ring)-var(--tab-row-top)-100%+var(--tab-row-overlap))]",
+  // Forced colors drop shadows, so a border draws the edge there.
+  "forced-colors:after:border-(length:--tabs-bordering)",
+  // The top corners follow those of the panels beside a selected outer
+  // folder, which shrinks or cuts its curve.
+  "[--tab-row-corner-s:min(var(--tabs-notch,0px),var(--tabs-meet,var(--tabs-notch,0px)))]",
+  "[--tab-row-corner-e:min(var(--tabs-notch,0px),var(--tabs-meet-end,var(--tabs-notch,0px)))]",
+  "[.tabs-folder-cut>&]:[--tab-row-corner-s:min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-radius)))]",
+  "[.tabs-folder-cut>&]:[--tab-row-corner-e:min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-radius)))]",
+  // With a glider in the strip, the row follows the selected box like the
+  // panels do, so the corners of the frame change with the box while it
+  // travels. The frame is a pseudo-element, so it takes the corners from the
+  // row by inheritance. The parts of the row reset them, so a frame of the
+  // travel restyles those parts but not the tabs inside them. Beside a control
+  // of the row, the box is not at the end of the row, so the corners stay
+  // round there.
+  gliderFollower,
+  "[.tabs:has(>*>.tabs-strip:nth-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-s:min(var(--tabs-notch,0px),var(--glider-start)/2)]",
+  "[.tabs:has(>*>.tabs-strip.tabs-stretch:nth-last-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-e:min(var(--tabs-notch,0px),var(--glider-end)/2)]",
+  "[.tabs.tabs-folder-cut:has(>*>.tabs-strip:nth-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-s:min(var(--tabs-notch,0px),max(0px,var(--glider-start)-var(--tabs-radius)))]",
+  "[.tabs.tabs-folder-cut:has(>*>.tabs-strip.tabs-stretch:nth-last-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-e:min(var(--tabs-notch,0px),max(0px,var(--glider-end)-var(--tabs-radius)))]",
+  // While the strip scrolls, the panels square a corner that tabs pass over,
+  // and open a corner that a faded outer folder no longer covers, with
+  // scroll-driven animations. Their values don't inherit, so the row runs the
+  // same animations on the same conditions, and folds them into the corners
+  // of the frame here. The ranges take the radius of the panels, which cover a
+  // root ring.
+  "[--tabs-panel-radius:calc(var(--tabs-radius)+var(--tabs-ring))]",
+  "ui-tabs-round",
+  "[&:has(>:not(.carousel-button-area)~.tabs-strip:not(.carousel-fade))]:[animation-name:none,ui-tabs-round-e]",
+  "[&:has(>.tabs-strip:not(.carousel-fade)~:not(.carousel-button-area))]:[animation-name:ui-tabs-round-s,none]",
+  "[&:has(>:not(.carousel-button-area)~.tabs-strip:not(.carousel-fade)):has(>.tabs-strip~:not(.carousel-button-area))]:[animation-name:none]",
+  "[&:has(>.carousel-fade)]:ui-tabs-open-start",
+  "[&:has(>.carousel-fade:nth-last-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-last-child(1_of_.control))]:ui-tabs-open-end",
+  // A strip with nothing to scroll has an inactive scroll timeline. The row
+  // itself marks that state, which the animations above read on a sibling.
+  "data-carousel-fits:[animation-name:none]!",
+  "[--tab-row-radius-s:calc(var(--tab-row-corner-s)*var(--tabs-round-s,1)+(var(--tabs-notch,0px)-var(--tab-row-corner-s)*var(--tabs-round-s,1))*var(--tabs-open-s,0))]",
+  "[--tab-row-radius-e:calc(var(--tab-row-corner-e)*var(--tabs-round-e,1)+(var(--tabs-notch,0px)-var(--tab-row-corner-e)*var(--tabs-round-e,1))*var(--tabs-open-e,0))]",
+  "[&>*]:[--tab-row-corner-s:initial] [&>*]:[--tab-row-corner-e:initial]",
+  "[&>*]:[--tab-row-radius-s:initial] [&>*]:[--tab-row-radius-e:initial]",
+  "after:rounded-(--tabs-radius)",
+  "after:rounded-ss-(--tab-row-radius-s) after:rounded-se-(--tab-row-radius-e)",
+  // A shadow follows the corners of its box, so it covers the content that
+  // scrolls outside the frame: past each corner, and below the frame. It also
+  // covers the row, under the tabs, and the root margin above the row, where
+  // the content also scrolls. The clip ends at the root margin on each side,
+  // so the shadow stays off what is above and beside that margin.
+  // Two inset shadows draw the edge of the frame: the edge color over the
+  // surface that the border of the panels is on. A root edge drawn as a ring is
+  // on the strip color, so the frame paints that color under its edge, on each
+  // side and over the content that scrolls under it. A root border is on the
+  // surface of the panels, like the border of a selected tab, so the frame
+  // paints nothing under its edge there.
+  "[--tab-row-backdrop:color-mix(in_oklab,var(--ak-layer)_calc(sign(var(--tabs-ring))*100%),transparent)]",
+  "after:shadow-[inset_0_0_0_var(--tabs-bordering)_var(--ak-edge),inset_0_0_0_var(--tabs-bordering)_var(--tab-row-backdrop),0_0_0_100vmax_var(--ak-layer)]",
+  "[clip-path:inset(calc(-1*(var(--tab-row-inset)+var(--tabs-margin)))_calc(-1*(var(--tab-row-inset)+var(--tabs-margin)))_-100vmax)]",
+);
 
 /**
  * A row that holds a tab strip and the controls beside it, such as a button
@@ -883,8 +1012,9 @@ export const tabRow = cv({
     // A separator centers on the tabs, which start on a root edge wider than
     // the space above them.
     "[&>.control-separator]:-mt-(--tabs-merge)",
-    // The strip color fills the row behind the parts.
-    "relative before:absolute before:inset-0",
+    // The strip color fills the row behind the parts. `$sticky` positions the
+    // row.
+    "before:absolute before:inset-0",
     // The strip reaches under the parts beside it, so they stack above it to
     // show and to take the pointer. Zero specificity lets a class on a part
     // win.
@@ -899,7 +1029,44 @@ export const tabRow = cv({
     // A stretched strip fills the row.
     "[&>.tabs-stretch]:grow",
   ],
+  variants: {
+    /**
+     * Keeps the row at the top of the scroll area while the page scrolls the
+     * panels under it. A frame below the row then keeps the edge and the
+     * corners of the panels in view, down to the end of the scroll area, and
+     * the strip color covers the content that scrolls past the frame. The tabs
+     * are at least as tall as the scroll area, so short panels fill the frame.
+     * Use it for tabs that fill a page down to its end, with
+     * `$outerEdge={false}` and `$darken={false}` on `tabs`, because the outer
+     * edge would scroll with the page, and the cover has the strip color. The
+     * scroll area is the screen, or a size container, between the sticky bars
+     * of a shell. Another scroll area can set `--scrollport-height`,
+     * `--scrollport-start`, and `--scrollport-end`. To keep a space around the
+     * row and the frame, set `$m` on `tabs`. That space takes presses above the
+     * row and below the frame, so a press there doesn't reach the content that
+     * the strip color covers. Defaults to `false`.
+     */
+    $sticky: {
+      true: tabRowSticky,
+      false: "relative",
+    },
+  },
+  defaultVariants: {
+    $sticky: false,
+  },
 });
+
+// Like the tabs, a part of a tab row moves onto a root edge wider than the
+// space above it, and keeps its corners concentric with the root there.
+const TAB_ROW_PART_MARGIN = "calc(-1 * var(--tabs-merge))";
+
+// A part of a tab row keeps its size. The frame margin of TAB_ROW_PART_MARGIN
+// moves the part onto the root edge only at the top, and at an end of the row.
+// The extra class outranks the frame margin.
+const tabRowPart = cx(
+  "flex-none",
+  "[&.ak-frame]:mb-0 [&.ak-frame]:not-first:ms-0 [&.ak-frame]:not-last:me-0",
+);
 
 /**
  * A button in a `tabRow`, beside the tab strip. It looks like a tab that is not
@@ -908,17 +1075,36 @@ export const tabRow = cv({
  */
 export const tabRowButton = cv({
   extend: [tab],
+  class: tabRowPart,
+  defaultVariants: {
+    $m: TAB_ROW_PART_MARGIN,
+  },
+});
+
+/**
+ * A static part of a `tabRow`, such as a logo or a title beside the tab strip.
+ * It has the box of a folder tab that is not selected: the same padding, and a
+ * clear border with the width of the root edge. Its slots and text then line up
+ * with those of the tabs and the buttons in the row when they have the same
+ * `$p`. It has no hover surface and no focus.
+ */
+export const tabRowFrame = cv({
+  extend: [slotFrame],
   class: [
-    "flex-none",
-    // The frame margin of the default moves the button onto the root edge only
-    // at the top, and at an end of the row. The extra class outranks the frame
-    // margin.
-    "[&.ak-frame]:mb-0 [&.ak-frame]:not-first:ms-0 [&.ak-frame]:not-last:me-0",
+    "tab-row-frame",
+    tabRowPart,
+    // The border of an unselected folder: as wide as the root edge, a border
+    // in each color scheme, and clear. Like an unselected folder, it paints
+    // nothing beneath itself, so a separator beside it shows.
+    "[--border-width:var(--tabs-bordering)]",
+    "ak-frame-bordering-inherit ak-frame-backdrop border-transparent bg-none",
+    // A folder has no bottom border, so the frame is as tall as the tabs, and
+    // it doesn't make the row taller than the selected folder reaches.
+    "border-b-0!",
   ],
   defaultVariants: {
-    // Like the tabs, the button moves onto a root edge wider than the space
-    // above it, and keeps its corners concentric with the root there.
-    $m: "calc(-1 * var(--tabs-merge))",
+    $p: TAB_FOLDER_PADDING,
+    $m: TAB_ROW_PART_MARGIN,
   },
 });
 
@@ -964,6 +1150,16 @@ export const tabPanels = cv({
     "[.tab-row:has(>:not(.carousel-button-area)~.tabs-strip:not(.carousel-fade))~&]:[animation-name:none,ui-tabs-round-e]",
     "[.tab-row:has(>.tabs-strip:not(.carousel-fade)~:not(.carousel-button-area))~&]:[animation-name:ui-tabs-round-s,none]",
     "[.tab-row:has(>:not(.carousel-button-area)~.tabs-strip:not(.carousel-fade)):has(>.tabs-strip~:not(.carousel-button-area))~&]:[animation-name:none]",
+    // The frame of a sticky row draws the edge over the panels, so the panels
+    // keep only the surface under it.
+    "[.tab-row-sticky~&]:border-transparent",
+    // Below the frame of a sticky row, the strip color covers the content in
+    // the root margin, so an invisible sticky box at the end of the panels
+    // takes the pointer there. Its negative margin adds no height. At the end
+    // of the page, it rests below the content of the panels.
+    "[.tab-row-sticky~&]:after:block [.tab-row-sticky~&]:after:sticky",
+    "[.tab-row-sticky~&]:after:z-10 [.tab-row-sticky~&]:after:bottom-(--scrollport-end,0px)",
+    "[.tab-row-sticky~&]:after:h-(--tabs-margin) [.tab-row-sticky~&]:after:-mb-(--tabs-margin)",
     "[.tab-list-carousel:has(>.carousel-fade)~&]:ui-tabs-open-start",
     "[.tab-list-carousel:has(>.carousel-fade:nth-last-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']):nth-last-child(1_of_.control))~&]:ui-tabs-open-end",
   ],

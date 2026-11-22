@@ -162,14 +162,15 @@ export const frameBase = cv({
       dotted: "ak-frame-border-(--border-width) border-dotted",
     },
     /**
-     * Sets the border width in pixels. `true` uses `1px`; `inherit` uses the
-     * parent frame's width and color. With `$cover`, `inherit` draws a border
-     * that covers a parent ring it lies on and paints the parent layer beneath
-     * it, so it looks like the ring when the parent layer matches the surface
-     * around the parent. `false` removes the border even with an inherited
-     * width or explicit `$borderType`.
+     * Sets the border width in pixels. `true` uses `1px`; a string is a CSS
+     * length or expression, such as a custom property that an ancestor sets;
+     * `inherit` uses the parent frame's width and color. With `$cover`,
+     * `inherit` draws a border that covers a parent ring it lies on and paints
+     * the parent layer beneath it, so it looks like the ring when the parent
+     * layer matches the surface around the parent. `false` removes the border
+     * even with an inherited width or explicit `$borderType`.
      */
-    $border(value?: "inherit" | boolean | number) {
+    $border(value?: "inherit" | boolean | (string & {}) | number) {
       if (value == null) return;
       // Reset inherited width so $borderType and descendants cannot restore an
       // ancestor's border.
@@ -181,6 +182,9 @@ export const frameBase = cv({
       }
       if (value === true) {
         value = 1;
+      }
+      if (typeof value === "string") {
+        return { style: { "--border-width": value } };
       }
       return { style: { "--border-width": `${value}px` } };
     },

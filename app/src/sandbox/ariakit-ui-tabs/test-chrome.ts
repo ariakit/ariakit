@@ -456,6 +456,24 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     test.expect(tabBox.x + tabBox.width).toBeLessThanOrEqual(buttonBox.x + 0.5);
   });
 
+  test("keeps the separator before a tab row frame while the pointer is on the frame", async ({
+    q,
+  }) => {
+    const box = query(q.article("Tab row frame"));
+    // The frame is the parent of its name.
+    const frame = box.text("Notes", { exact: true }).locator("..");
+    // The separator is hidden from screen readers, so it has no role or name.
+    const separator = frame.locator("xpath=preceding-sibling::*[1]");
+    await test.expect(separator).toHaveCSS("opacity", "1");
+    // The sidebar button has a hover surface, so the separator gives way to it.
+    await box.button("Notes sidebar").hover();
+    await test.expect(separator).toHaveCSS("opacity", "0");
+    // The frame is static, so the separator shows beside it again. Each step
+    // waits for a change, so the fade of the separator can't hide a failure.
+    await frame.hover();
+    await test.expect(separator).toHaveCSS("opacity", "1");
+  });
+
   test("moves between the tabs of a right-to-left row in visual order", async ({
     page,
     q,

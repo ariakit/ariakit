@@ -1,5 +1,5 @@
 import type { Locator } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import { getBoxOffset, getItemsToScale } from "./test-helpers.ts";
 
 function countBoxes(article: Locator) {
@@ -244,6 +244,34 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await list.click();
     await test.expect.poll(() => getBoxOffset(list)).toBeLessThan(0.5);
     await expectServerCorners(q.article(name), q.checkbox(/^Hydrated/), tab);
+  });
+
+  // The panels element follows the glider of the strip, so a navigation in it,
+  // outside the panel, must not take the panels as its own followers.
+  test("keeps the panel corners with a glider beside the panel", async ({
+    page,
+    q,
+  }) => {
+    const reference = query(q.article("Glider in a tab panel"));
+    const box = query(q.article("Glider beside a tab panel"));
+    for (const tab of [reference.tab("Month"), box.tab("Month")]) {
+      await tab.click();
+      await test.expect.poll(() => getBoxOffset(tab)).toBeLessThan(0.5);
+    }
+    // The box of the navigation moves back to the first link, at the start of
+    // its group, where it would square the panel corner that it took.
+    for (const name of ["Components", "Overview"]) {
+      const link = box.link(name);
+      await link.click();
+      await test.expect.poll(() => getBoxOffset(link)).toBeLessThan(0.5);
+    }
+    // A follower transitions to the place of the box over the same travel time,
+    // so the frames after the box arrives cover the end of that transition. The
+    // corners must not change there.
+    await flushFrames(page);
+    test
+      .expect(await getCorners(box.tabpanel()))
+      .toBe(await getCorners(reference.tabpanel()));
   });
 
   test("keeps a new panels element with the box", async ({ q }) => {

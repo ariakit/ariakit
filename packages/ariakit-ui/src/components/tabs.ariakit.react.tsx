@@ -37,6 +37,7 @@ import {
   tabPanels,
   tabRow,
   tabRowButton,
+  tabRowFrame,
   tabSeparator,
   tabSlot,
   tabs,
@@ -930,7 +931,9 @@ export interface TabRowProps extends Omit<
  * role, in the Tab order of the page. The tab list takes the width of its tabs
  * and scrolls when the row is full, so a control after it stays next to the
  * last tab. An element with a `grow` class takes the free space, so the
- * controls after it sit at the end of the row.
+ * controls after it sit at the end of the row. With `$sticky`, the row stays at
+ * the top of the page while the page scrolls the panels, and it keeps the edge
+ * and the corners of the panels in view.
  * @example
  * <Tabs>
  *   <TabRow>
@@ -987,6 +990,43 @@ export function TabRowButton({ separator, ...props }: TabRowButtonProps) {
     TabSeparator,
     separator,
     <ak.Button {...tabRowButton.jsx(variantProps)} {...rest} />,
+  );
+}
+
+export interface TabRowFrameProps
+  extends ak.RoleProps<"div">, VariantProps<typeof tabRowFrame> {
+  /**
+   * A separator before the frame, as `true`, an element, or `TabSeparator`
+   * props. It renders as a sibling of the frame, hidden from assistive
+   * technologies.
+   */
+  separator?: boolean | React.ReactElement | TabSeparatorProps;
+}
+
+/**
+ * Renders a static part of a `TabRow`, such as a logo or a title beside the
+ * tabs. It has the box of a folder tab that is not selected, so with the same
+ * `$p`, its icon and text line up with those of folder tabs and of each folder
+ * `TabRowButton`. An icon goes in a `TabSlot`, and the text in a `TabLabel`.
+ * Its `separator` prop draws a pipe before it, like the `separator` prop of
+ * `TabRowButton`.
+ * @example
+ * <TabRow>
+ *   <TabRowFrame className="font-semibold">
+ *     <TabSlot><NotebookIcon /></TabSlot>
+ *     <TabLabel>Notes</TabLabel>
+ *   </TabRowFrame>
+ *   <TabList aria-label="Open notes">
+ *     <Tab id="trip">Trip</Tab>
+ *   </TabList>
+ * </TabRow>
+ */
+export function TabRowFrame({ separator, ...props }: TabRowFrameProps) {
+  const [variantProps, rest] = splitProps(props, tabRowFrame);
+  return prependOptionalSeparator(
+    TabSeparator,
+    separator,
+    <ak.Role.div {...tabRowFrame.jsx(variantProps)} {...rest} />,
   );
 }
 
