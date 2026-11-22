@@ -324,33 +324,45 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     test.expect(between.length).toBeGreaterThanOrEqual(1);
   });
 
-  test("rounds the panel corner when a button mounts before the strip of a row with a glider", async ({
-    q,
-  }) => {
-    const title = "Tab row glider sidebar";
-    const box = query(q.article("Tab row with a glider"));
-    const list = box.tablist(title);
-    await test.expect
-      .poll(() => getBoxOffset(query(list).tab("Quotes")))
-      .toBeLessThan(0.5);
-    // The selected first tab is at the corner of the panel.
-    test.expect((await getPanelCorners(list)).start).toBe(0);
-    await box.checkbox(`${title} open`).uncheck();
-    await test.expect(box.button(`${title} open sidebar`)).toBeVisible();
-    await test.expect
-      .poll(async () => (await getPanelCorners(list)).start)
-      .toBe(12);
-    // The button changes the padding of the strip, so the tabs move in it, and
-    // the box stays on the selected tab.
-    const quotes = query(list).tab("Quotes");
-    await test.expect.poll(() => getBoxOffset(quotes)).toBeLessThan(0.5);
-    await box.button(`${title} open sidebar`).click();
-    await test.expect(box.button(`${title} open sidebar`)).toHaveCount(0);
-    await test.expect
-      .poll(async () => (await getPanelCorners(list)).start)
-      .toBe(0);
-    await test.expect.poll(() => getBoxOffset(quotes)).toBeLessThan(0.5);
-  });
+  // The tab list of the fixed row keeps its outer size when its padding
+  // changes, and the other one keeps its content size.
+  for (const title of [
+    "Tab row glider sidebar",
+    "Tab row glider sidebar fixed",
+  ]) {
+    test(`rounds the panel corner when a button mounts before the strip of ${title}`, async ({
+      q,
+    }) => {
+      const box = query(q.article("Tab row with a glider"));
+      const list = box.tablist(title);
+      await test.expect
+        .poll(() => getBoxOffset(query(list).tab("Quotes")))
+        .toBeLessThan(0.5);
+      // The selected first tab is at the corner of the panel.
+      test.expect((await getPanelCorners(list)).start).toBe(0);
+      await box.checkbox(`${title} open`).uncheck();
+      await test.expect(box.button(`${title} open sidebar`)).toBeVisible();
+      await test.expect
+        .poll(async () => (await getPanelCorners(list)).start)
+        .toBe(12);
+      // The button changes the padding of the strip, so the tabs move in it,
+      // and the box goes with the selected tab at once. A box that traveled
+      // there would take two seconds, and would still be more than a pixel away
+      // after one second.
+      const quotes = query(list).tab("Quotes");
+      await test.expect
+        .poll(() => getBoxOffset(quotes), { timeout: 1000 })
+        .toBeLessThan(0.5);
+      await box.button(`${title} open sidebar`).click();
+      await test.expect(box.button(`${title} open sidebar`)).toHaveCount(0);
+      await test.expect
+        .poll(async () => (await getPanelCorners(list)).start)
+        .toBe(0);
+      await test.expect
+        .poll(() => getBoxOffset(quotes), { timeout: 1000 })
+        .toBeLessThan(0.5);
+    });
+  }
 
   test("moves the panel corner with the fold of the name during a travel of the box", async ({
     q,

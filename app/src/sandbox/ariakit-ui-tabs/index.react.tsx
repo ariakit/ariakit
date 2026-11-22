@@ -490,6 +490,11 @@ function TabRowFoldTabs({ name }: TabRowFoldTabsProps) {
 interface TabRowSidebarTabsProps {
   /** The prefix of the tab ids and the name of the tab list. */
   name: string;
+  /**
+   * Gives the tab list a fixed width, so the padding that the button changes
+   * doesn't change the outer size of the tab list.
+   */
+  fixedWidth?: boolean;
 }
 
 /**
@@ -497,7 +502,7 @@ interface TabRowSidebarTabsProps {
  * while a sidebar is closed, like an app shell whose sidebar holds the button
  * while it is open. A checkbox stands for the sidebar.
  */
-function TabRowSidebarTabs({ name }: TabRowSidebarTabsProps) {
+function TabRowSidebarTabs({ name, fixedWidth }: TabRowSidebarTabsProps) {
   const id = name.toLowerCase().replaceAll(" ", "-");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   return (
@@ -510,7 +515,13 @@ function TabRowSidebarTabs({ name }: TabRowSidebarTabsProps) {
         />{" "}
         {name} open
       </label>
-      <Tabs defaultSelectedId={`${id}-${tabRowLabels[0]}`}>
+      <Tabs
+        defaultSelectedId={`${id}-${tabRowLabels[0]}`}
+        // The box travels slowly, so a box that travels to its tab when the
+        // padding of the tab list changes shows apart from one that moves at
+        // once.
+        className="[--glider-duration:2000ms]"
+      >
         <TabRow>
           {!sidebarOpen && (
             <TabRowButton
@@ -522,7 +533,10 @@ function TabRowSidebarTabs({ name }: TabRowSidebarTabsProps) {
               </TabSlot>
             </TabRowButton>
           )}
-          <TabList aria-label={name}>
+          <TabList
+            aria-label={name}
+            className={fixedWidth ? "w-80" : undefined}
+          >
             {tabRowLabels.map((label) => (
               <Tab key={label} id={`${id}-${label}`} separator>
                 <TabLabel>{label}</TabLabel>
@@ -3766,7 +3780,7 @@ export default function TabsExamples() {
       </Example>
       <Example
         title="Tab row with a glider"
-        description="A glider box paints the selected folder. Its place counts the parts of the row before and after the strip, so beside a button, the panel keeps its round corner, like without a glider. The boxes show the first tab selected after a button, the last tab of a stretched strip selected before a button, the first tab selected after a button with an adaptive folder curve, whose box keeps the full curve of the tab, a row whose name before the strip folds to no width when you hide it, a row that shows a button before the strip while the sidebar is closed, a row that ends with the item count of the selected tab, and a row with an export button only for Billing. While the name folds, the corner of the panel follows the first tab to the edge of the panel, even during a travel of the box. The button that mounts before the strip rounds the corner, and neither the count that loads during the slow travel of the box nor the export button that mounts with the selection stops it."
+        description="A glider box paints the selected folder. Its place counts the parts of the row before and after the strip, so beside a button, the panel keeps its round corner, like without a glider. The boxes show the first tab selected after a button, the last tab of a stretched strip selected before a button, the first tab selected after a button with an adaptive folder curve, whose box keeps the full curve of the tab, a row whose name before the strip folds to no width when you hide it, two rows that show a button before the strip while the sidebar is closed, one with a tab list of fixed width, a row that ends with the item count of the selected tab, and a row with an export button only for Billing. While the name folds, the corner of the panel follows the first tab to the edge of the panel, even during a travel of the box. The button that mounts before the strip rounds the corner, and neither the count that loads during the slow travel of the box nor the export button that mounts with the selection stops it."
         wide
         code={`
           <Tabs>
@@ -3808,6 +3822,7 @@ export default function TabsExamples() {
           />
           <TabRowFoldTabs name="Tab row glider fold" />
           <TabRowSidebarTabs name="Tab row glider sidebar" />
+          <TabRowSidebarTabs name="Tab row glider sidebar fixed" fixedWidth />
           <TabRowStatusTabs name="Tab row glider status" />
           <TabRowExportTabs name="Tab row glider export" />
         </div>

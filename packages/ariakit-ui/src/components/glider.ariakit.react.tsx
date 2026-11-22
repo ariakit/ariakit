@@ -711,6 +711,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   let travelTimeout = 0;
   let groupWidth = 0;
   let groupHeight = 0;
+  let groupPadding = "";
 
   const groupProps = gliderGroup.htmlObj({
     ...variants,
@@ -992,18 +993,30 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     showHover(boxesAnimated);
   };
 
-  const resizeObserver = new view.ResizeObserver(() => {
+  const onResize = () => {
     const { width, height } = group.getBoundingClientRect();
-    // The boxes follow a group that changes size, and travel when only the
-    // items change size.
-    const resized = width !== groupWidth || height !== groupHeight;
+    const style = view.getComputedStyle(group);
+    const { paddingTop, paddingRight, paddingBottom, paddingLeft } = style;
+    const padding = `${paddingTop} ${paddingRight} ${paddingBottom} ${paddingLeft}`;
+    // The boxes follow a group that changes size or padding, and travel when
+    // only the items change size.
+    const resized =
+      width !== groupWidth ||
+      height !== groupHeight ||
+      padding !== groupPadding;
     groupWidth = width;
     groupHeight = height;
+    groupPadding = padding;
     sync(!resized);
-  });
+  };
+  const resizeObserver = new view.ResizeObserver(onResize);
+  resizeObserver.observe(group);
   // A part of a tab row that mounts beside the strip can change the padding of
-  // the strip, which moves the items, though the content box keeps its size.
-  resizeObserver.observe(group, { box: "border-box" });
+  // the strip, which moves the items. The content box reports it when the outer
+  // size stays, and the border box when the content size stays. An observer
+  // watches only one box of an element.
+  const groupBorderObserver = new view.ResizeObserver(onResize);
+  groupBorderObserver.observe(group, { box: "border-box" });
 
   const rowObserver = new view.ResizeObserver(placeRow);
   const observedParts = new Set<Element>();
@@ -1153,6 +1166,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     }
     mutationObserver.disconnect();
     resizeObserver.disconnect();
+    groupBorderObserver.disconnect();
     rowObserver.disconnect();
     rowMutationObserver.disconnect();
     endTravel();
