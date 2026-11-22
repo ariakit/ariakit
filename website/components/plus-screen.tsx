@@ -19,6 +19,14 @@ import {
   PlusProvider,
 } from "./plus.tsx";
 
+function PlusSoonBadge() {
+  return (
+    <span className="uppercase ms-2 text-xs px-1.5 py-1 rounded bg-black/60 dark:bg-white/60 text-white dark:text-black font-semibold">
+      Soon
+    </span>
+  );
+}
+
 export function PlusScreen() {
   const searchParams = useSearchParams();
   const query = usePrice();
@@ -59,15 +67,20 @@ export function PlusScreen() {
                     Edit examples
                   </PlusFeature>
                   <PlusFeature
-                    feature="preview-docs"
+                    feature="styled-recipes"
                     disabled
                     className="aria-disabled:opacity-50"
                     render={<Focusable flat render={<li />} />}
                   >
-                    Preview API docs{" "}
-                    <span className="uppercase ms-2 text-xs px-1.5 py-1 rounded bg-black/60 dark:bg-white/60 text-white dark:text-black font-semibold">
-                      Soon
-                    </span>
+                    Styled recipes, ready to copy and paste <PlusSoonBadge />
+                  </PlusFeature>
+                  <PlusFeature
+                    feature="mcp-server"
+                    disabled
+                    className="aria-disabled:opacity-50"
+                    render={<Focusable flat render={<li />} />}
+                  >
+                    MCP server for AI agents <PlusSoonBadge />
                   </PlusFeature>
                   <PlusFeature
                     feature="support"
@@ -194,38 +207,6 @@ export function PlusScreen() {
                   <p>
                     Reproduce issues or quickly test something out using an
                     existing example as a starting point.
-                  </p>
-                </PlusFeaturePreview>
-                <PlusFeaturePreview
-                  feature="preview-docs"
-                  heading="Preview API docs"
-                >
-                  <div className="flex cursor-default flex-col items-center gap-3 overflow-hidden rounded-lg bg-black/5 p-6 dark:bg-gray-850">
-                    <div className="flex w-[200px] flex-col gap-3 rounded-lg border border-gray-250 bg-white p-3 text-black outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                      <div className="text-lg font-semibold">Component</div>
-                      <div className="flex flex-col gap-3">
-                        <div className="h-3 w-full rounded-sm bg-black/30 dark:bg-white/40" />
-                        <div className="h-3 w-1/3 rounded-sm bg-black/30 dark:bg-white/40" />
-                      </div>
-                    </div>
-                    <p className="w-[120%] self-start">
-                      <span className="blur-[3px]">You can use </span>
-                      <code className="font-monospace rounded bg-black/[7.5%] px-[0.3em] pb-1.5 pt-1 font-medium text-[#227289] underline decoration-dotted decoration-1 underline-offset-[0.25em] [text-decoration-skip-ink:none] dark:bg-white/[7.5%] dark:text-[#4ec9b0]">
-                        Component
-                      </code>
-                      <span className="blur-[3px]">
-                        {" "}
-                        to render a wrapper around child components.
-                      </span>
-                    </p>
-                  </div>
-                  <p>
-                    Quickly preview comprehensive API documentation by simply
-                    hovering over the relevant API link on our site.
-                  </p>
-                  <p>
-                    No more need to navigate away from the current page. Avoid
-                    constant tab switching and focus on what matters.
                   </p>
                 </PlusFeaturePreview>
                 <PlusFeaturePreview

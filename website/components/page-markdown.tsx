@@ -15,7 +15,7 @@ import { getReferences } from "@/build-pages/reference-utils.js";
 import type { Page, TableOfContents } from "@/build-pages/types.ts";
 import { rehypeCodeMeta } from "@/lib/rehype-code-meta.ts";
 import { rehypeWrapHeadings } from "@/lib/rehype-wrap-headings.ts";
-import { AuthEnabled } from "./auth.tsx";
+import { Subscribed } from "./auth.tsx";
 import {
   PageA,
   PageAside,
@@ -200,8 +200,8 @@ async function Hovercards({
   }
 
   return (
-    <AuthEnabled>
+    <Subscribed>
       <PageHovercard contents={contents} />
-    </AuthEnabled>
+    </Subscribed>
   );
 }
