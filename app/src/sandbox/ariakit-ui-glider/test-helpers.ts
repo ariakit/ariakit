@@ -38,3 +38,53 @@ export function getItemsToScale(q: Query) {
     query(q.article("Vertical navigation")).link("Accessibility"),
   ];
 }
+
+// The easing of the travel in the glider style recipe: cubic-bezier(0.3,0,0,1).
+const TRAVEL_EASING = [0.3, 0, 0, 1] as const;
+
+function getBezierPoint(first: number, second: number, time: number) {
+  const rest = 1 - time;
+  return (
+    3 * first * rest * rest * time + 3 * second * rest * time ** 2 + time ** 3
+  );
+}
+
+/**
+ * Returns the part of the distance, from 0 to 1, that a travel of the glider
+ * covers in `elapsed` milliseconds of a `duration` travel time. Tests compare
+ * the box with it, because the time that a probe takes depends on the frames of
+ * the machine.
+ */
+export function getTravelProgress(elapsed: number, duration: number) {
+  const [x1, y1, x2, y2] = TRAVEL_EASING;
+  const timeProgress = Math.min(Math.max(elapsed / duration, 0), 1);
+  // Find the curve parameter of the time progress, then the travel at it.
+  let low = 0;
+  let high = 1;
+  for (let i = 0; i < 50; i++) {
+    const middle = (low + high) / 2;
+    if (getBezierPoint(x1, x2, middle) < timeProgress) {
+      low = middle;
+    } else {
+      high = middle;
+    }
+  }
+  return getBezierPoint(y1, y2, (low + high) / 2);
+}
+
+/**
+ * Returns the largest part of the distance, from 0 to 1, that a travel of the
+ * glider covers in any `span` milliseconds of a `duration` travel time. A probe
+ * can then bound how far the box moves between two reads when it can't know
+ * when the travel started.
+ */
+export function getLargestTravel(span: number, duration: number) {
+  let largest = 0;
+  for (let elapsed = 0; elapsed <= duration; elapsed++) {
+    const travel =
+      getTravelProgress(elapsed + span, duration) -
+      getTravelProgress(elapsed, duration);
+    largest = Math.max(largest, travel);
+  }
+  return largest;
+}
