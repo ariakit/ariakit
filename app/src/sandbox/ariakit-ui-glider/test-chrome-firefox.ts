@@ -55,4 +55,46 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(hydrated).toBeChecked();
     await test.expect.poll(() => getHoverBoxOffset(grid)).toBeLessThan(0.5);
   });
+
+  // Chrome and Firefox show the travel of the box at the time of the last
+  // frame, so the glider moves its travels to the time since they started.
+  test("keeps the box in its window when the item that it travels to grows", async ({
+    q,
+  }) => {
+    await q.combobox(/^Travel time/).selectOption({ label: "Slow (800ms)" });
+    // The box and its window are presentation, so this probe reads them from
+    // the DOM. A card shows the badge on Board while the box travels there, so
+    // Board grows in its place, and the box gets a new size but no new travel.
+    const gaps = await q
+      .article("A count that changes")
+      .evaluate(async (node) => {
+        const board = node.querySelector<HTMLInputElement>(
+          'input[value="Board"]',
+        );
+        const addCard = Array.from(node.querySelectorAll("button")).find(
+          (button) => button.textContent === "Add a card",
+        );
+        const box = node.querySelector('.glider-box[data-selected="true"]');
+        const boxWindow = node.querySelector(".glider-window");
+        if (!board || !addCard || !box || !boxWindow) return [];
+        const afterPaint = () =>
+          new Promise((resolve) => {
+            requestAnimationFrame(() => setTimeout(resolve));
+          });
+        board.click();
+        for (let frame = 0; frame < 2; frame++) {
+          await afterPaint();
+        }
+        addCard.click();
+        const gaps: number[] = [];
+        for (let frame = 0; frame < 5; frame++) {
+          await afterPaint();
+          const boxLeft = box.getBoundingClientRect().left;
+          gaps.push(Math.abs(boxLeft - boxWindow.getBoundingClientRect().left));
+        }
+        return gaps;
+      });
+    test.expect(gaps).toHaveLength(5);
+    test.expect(Math.max(...gaps)).toBeLessThan(1);
+  });
 });

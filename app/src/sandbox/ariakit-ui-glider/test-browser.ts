@@ -300,6 +300,170 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     test.expect(largestGap).toBeLessThan(0.5);
   });
 
+  // The browser can report the start of a travel a frame or more after it
+  // starts on the compositor, so the long task comes one or two frames after
+  // the click.
+  for (const [frames, label] of [
+    [1, "one frame"],
+    [2, "two frames"],
+  ] as const) {
+    test(`starts a new travel from where the box shows after a long task ${label} after a click`, async ({
+      q,
+    }) => {
+      // The very slow travel keeps the box short of Grid after the long task,
+      // so a catch-up that counted the long task twice would show.
+      await q
+        .combobox(/^Travel time/)
+        .selectOption({ label: "Very slow (3s)" });
+      // The box is presentation, so this probe reads it from the DOM. The
+      // travel to Grid runs on the compositor while a long task, such as a
+      // render, holds the page at the frame before it. Board is past Grid, so
+      // the box keeps going the same way.
+      const places = await q
+        .article("Glider")
+        .evaluate(async (node, frames) => {
+          const getRadio = (value: string) =>
+            node.querySelector<HTMLInputElement>(`input[value="${value}"]`);
+          const box = node.querySelector('.glider-box[data-selected="true"]');
+          const grid = getRadio("Grid")?.closest(".control");
+          if (!box || !grid) return null;
+          const getLeft = (element: Element) =>
+            element.getBoundingClientRect().left;
+          // The glider moves the box in a microtask after a click, and a frame
+          // shows after its callbacks, so each read waits for a task after a
+          // frame.
+          const afterPaint = () =>
+            new Promise((resolve) => {
+              requestAnimationFrame(() => setTimeout(resolve));
+            });
+          const start = getLeft(box);
+          getRadio("Grid")?.click();
+          for (let frame = 0; frame < frames; frame++) {
+            await afterPaint();
+          }
+          const lastFrame = getLeft(box);
+          const blockStart = performance.now();
+          while (performance.now() - blockStart < 600) {
+            // A long task.
+          }
+          getRadio("Board")?.click();
+          await afterPaint();
+          return { start, grid: getLeft(grid), lastFrame, next: getLeft(box) };
+        }, frames);
+      if (!places) {
+        throw new Error("The glider has no selected box");
+      }
+      // The new travel starts where the box shows after the long task, not
+      // where the page last drew it, which would show the box go back. It
+      // doesn't start where the box would show after twice the long task
+      // either, near Grid.
+      const distance = places.grid - places.start;
+      const moved = places.next - places.lastFrame;
+      test.expect(moved).toBeGreaterThan(distance * 0.2);
+      test.expect(moved).toBeLessThan(distance * 0.65);
+    });
+  }
+
+  test("keeps a travel on its way when an item changes after a long task", async ({
+    q,
+  }) => {
+    // The very slow travel keeps the box short of Calendar after the long task.
+    await q.combobox(/^Travel time/).selectOption({ label: "Very slow (3s)" });
+    const article = q.article("A count that changes");
+    const box = query(article);
+    // The first card shows the badge on Board, and the second one changes only
+    // its count, so Calendar keeps its place.
+    await box.button("Add a card").click();
+    await test.expect(box.radio("Board 1")).toBeVisible();
+    // The box is presentation, so this probe reads it from the DOM. The count
+    // changes while the box travels to Calendar, after a long task, so the
+    // glider reads where the box shows to start the copies again.
+    const places = await article.evaluate(async (node) => {
+      const calendar = node.querySelector<HTMLInputElement>(
+        'input[value="Calendar"]',
+      );
+      const addCard = Array.from(node.querySelectorAll("button")).find(
+        (button) => button.textContent === "Add a card",
+      );
+      const box = node.querySelector('.glider-box[data-selected="true"]');
+      const target = calendar?.closest(".control");
+      if (!calendar || !addCard || !box || !target) return null;
+      const getLeft = (element: Element) =>
+        element.getBoundingClientRect().left;
+      // The glider moves the box in a microtask after a click, and a frame
+      // shows after its callbacks, so each read waits for a task after a frame.
+      const afterPaint = () =>
+        new Promise((resolve) => {
+          requestAnimationFrame(() => setTimeout(resolve));
+        });
+      const start = getLeft(box);
+      calendar.click();
+      for (let frame = 0; frame < 2; frame++) {
+        await afterPaint();
+      }
+      const blockStart = performance.now();
+      while (performance.now() - blockStart < 600) {
+        // A long task.
+      }
+      addCard.click();
+      await afterPaint();
+      return { start, calendar: getLeft(target), next: getLeft(box) };
+    });
+    if (!places) {
+      throw new Error("The glider has no selected box");
+    }
+    // The box keeps its travel, so it shows where the time since the click puts
+    // it, not where twice the long task would, near Calendar.
+    const distance = places.calendar - places.start;
+    test.expect(places.next - places.start).toBeLessThan(distance * 0.6);
+  });
+
+  test("doesn't move the box ahead when a long task delays the start of its travel", async ({
+    q,
+  }) => {
+    await q.combobox(/^Travel time/).selectOption({ label: "Slow (800ms)" });
+    // The box is presentation, so this probe reads it from the DOM. A long task
+    // right after the click on Grid holds the travel until its first frame, so
+    // the box is still near List when Board takes the selection.
+    const places = await q.article("Glider").evaluate(async (node) => {
+      const getRadio = (value: string) =>
+        node.querySelector<HTMLInputElement>(`input[value="${value}"]`);
+      const box = node.querySelector('.glider-box[data-selected="true"]');
+      const grid = getRadio("Grid")?.closest(".control");
+      if (!box || !grid) return null;
+      const getLeft = (element: Element) =>
+        element.getBoundingClientRect().left;
+      // The glider moves the box in a microtask after a click, and a frame
+      // shows after its callbacks, so each read waits for a task after a frame.
+      const afterPaint = () =>
+        new Promise((resolve) => {
+          requestAnimationFrame(() => setTimeout(resolve));
+        });
+      const start = getLeft(box);
+      getRadio("Grid")?.click();
+      await Promise.resolve();
+      const blockStart = performance.now();
+      while (performance.now() - blockStart < 500) {
+        // A long task.
+      }
+      for (let frame = 0; frame < 3; frame++) {
+        await afterPaint();
+      }
+      const lastFrame = getLeft(box);
+      getRadio("Board")?.click();
+      await afterPaint();
+      return { start, grid: getLeft(grid), lastFrame, next: getLeft(box) };
+    });
+    if (!places) {
+      throw new Error("The glider has no selected box");
+    }
+    // The new travel starts where the box shows, which moved for a few frames
+    // only, not for the time of the long task, which would put it near Grid.
+    // The box can still move a little after the last frame on a busy machine.
+    const distance = places.grid - places.start;
+    test.expect(places.next - places.lastFrame).toBeLessThan(distance * 0.6);
+  });
+
   test("keeps the copies until the box stops", async ({ q }) => {
     await q.combobox(/^Travel time/).selectOption({ label: "Slow (800ms)" });
     // The copies and the mask are presentation, so this probe reads them from

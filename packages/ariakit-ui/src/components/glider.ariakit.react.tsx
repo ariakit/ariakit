@@ -1,6 +1,6 @@
 import * as ak from "@ariakit/react";
 import { useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
-import { getWindow } from "@ariakit/utils";
+import { getWindow, isSafari } from "@ariakit/utils";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
@@ -357,6 +357,16 @@ interface GliderTrack {
   state: GliderState;
   /** The item and the place that the box copies, to skip equal updates. */
   key: string | null;
+  /**
+   * When the first frame after the last shift ran, from `performance.now()`.
+   * The travel of the shift starts on the screen at about that time. In Chrome,
+   * it starts after the work of that frame. So after a long frame, a new travel
+   * that starts before Chrome reports the start time starts ahead of the box:
+   * about a third of the way after 30ms of work, with the default travel time.
+   */
+  shownAt: number | null;
+  /** The frame request that sets `shownAt`. */
+  shownRequest: number;
 }
 
 function createTrack(root: HTMLElement, state: GliderState) {
@@ -373,6 +383,8 @@ function createTrack(root: HTMLElement, state: GliderState) {
     placed: new WeakSet(),
     state,
     key: null,
+    shownAt: null,
+    shownRequest: 0,
   };
   return track;
 }
@@ -380,6 +392,56 @@ function createTrack(root: HTMLElement, state: GliderState) {
 function hideTrack(track: GliderTrack) {
   track.element.setAttribute("data-hidden", "");
   track.key = null;
+}
+
+// The items that enter and leave, such as tabs that grow in and close, have
+// these attributes, like Ariakit disclosure content.
+const SETTLING_SELECTOR = "[data-enter], [data-leave]";
+
+/**
+ * Reads where the box of a track shows, such as its place or its rect. The
+ * travel of the shift runs on the compositor, which keeps moving the box while
+ * a long task, such as a render, holds the page. Chrome and Firefox then
+ * compute the shift at the time of the last frame, so a new travel that started
+ * from it would show the box go back. The travel of the mover catches up for
+ * the read. The size of the box travels on the main thread, which shows the
+ * time of its last frame.
+ */
+function readShown<T>(track: GliderTrack, read: () => T): T {
+  // Safari computes the shift at the time of the compositor, but a new current
+  // time would count the long task again and move the box too far.
+  if (isSafari()) return read();
+  const now = getWindow(track.element).performance.now();
+  const caughtUp: Array<[animation: Animation, currentTime: number]> = [];
+  for (const animation of track.mover.getAnimations()) {
+    if (animation.playState !== "running") continue;
+    if (!("transitionProperty" in animation)) continue;
+    if (animation.transitionProperty !== "translate") continue;
+    const { startTime, currentTime } = animation;
+    if (typeof currentTime !== "number") continue;
+    // The travel starts on the screen with its first frame, but the browser can
+    // report its start time a frame or more later. The start time is on the
+    // timeline of the document, which shares its origin with performance.now().
+    const start = typeof startTime === "number" ? startTime : track.shownAt;
+    // A travel that waits for its first frame, such as after a long task,
+    // doesn't move on the screen either.
+    if (start == null) continue;
+    const elapsed = now - start;
+    if (currentTime >= elapsed) continue;
+    caughtUp.push([animation, currentTime]);
+    animation.currentTime = elapsed;
+  }
+  try {
+    return read();
+  } finally {
+    // A new current time also moves the start time of the travel in Chrome and
+    // Firefox, so a travel that goes on, such as when the box keeps its place,
+    // would then run ahead of the screen and of the window of the box. A new
+    // travel replaces it anyway.
+    for (const [animation, currentTime] of caughtUp) {
+      animation.currentTime = currentTime;
+    }
+  }
 }
 
 /**
@@ -409,6 +471,24 @@ interface MoveTrackParams {
   rect: ItemRect;
   animated: boolean;
   offsets?: InlineOffsets;
+  /**
+   * Whether items enter or leave, so the track moves at once on each frame. It
+   * then stays instant until they settle, without a style flush on each frame.
+   */
+  settling?: boolean;
+}
+
+/**
+ * Lets the travels of a track come back after it moved at once. The place
+ * applies first, so the move doesn't travel.
+ */
+function endInstant(track: GliderTrack) {
+  if (!track.element.hasAttribute("data-instant")) return;
+  track.element.getBoundingClientRect();
+  track.element.removeAttribute("data-instant");
+  for (const follower of track.followers) {
+    follower.removeAttribute("data-glider-instant");
+  }
 }
 
 /**
@@ -421,6 +501,7 @@ function moveTrack({
   rect,
   animated,
   offsets,
+  settling = false,
 }: MoveTrackParams) {
   const { element, movers, box, followers, placed, state } = track;
   const { x, y, width, height } = rect;
@@ -435,14 +516,30 @@ function moveTrack({
   // A new follower, such as a panel that the framework replaced, needs the
   // place of the box even when the box stays where it is.
   const fresh = followers.filter((follower) => !placed.has(follower));
-  if (key === track.key && !fresh.length) return false;
+  if (key === track.key && !fresh.length) {
+    // A move at once also ends a travel to the same place, such as when items
+    // settle while the box travels, because the copies of the travel end too.
+    // The style is clean here, so reading the animations doesn't flush it.
+    if (!animated && track.mover.getAnimations().length) {
+      element.setAttribute("data-instant", "");
+      for (const follower of followers) {
+        follower.setAttribute("data-glider-instant", "");
+      }
+      if (!settling) {
+        endInstant(track);
+      }
+    }
+    return false;
+  }
   const wasHidden = track.key == null;
   track.key = key;
   // A track that was not shown has no place to travel from.
   const instant = wasHidden || !animated;
   // The box travels from the place where it shows now. This reads the style of
   // the mover before the box gets the style of its item, like the flush below.
-  const from = instant ? null : getShownPlace(track.mover);
+  const from = instant
+    ? null
+    : readShown(track, () => getShownPlace(track.mover));
   const shift =
     from && (from.x !== x || from.y !== y)
       ? { x: from.shownX - x, y: from.shownY - y }
@@ -505,19 +602,20 @@ function moveTrack({
       mover.style.setProperty("--glider-shift-x", "0px");
       mover.style.setProperty("--glider-shift-y", "0px");
     }
+    const view = getWindow(element);
+    view.cancelAnimationFrame(track.shownRequest);
+    track.shownAt = null;
+    track.shownRequest = view.requestAnimationFrame(() => {
+      track.shownAt = view.performance.now();
+    });
   }
   // The first box replaces the surface of its item with no fade, so hydration
   // does not flash.
   if (!animated) {
     element.removeAttribute("data-hidden");
   }
-  if (instant) {
-    // Apply the place before the animation comes back.
-    element.getBoundingClientRect();
-    element.removeAttribute("data-instant");
-    for (const follower of followers) {
-      follower.removeAttribute("data-glider-instant");
-    }
+  if (instant && !settling) {
+    endInstant(track);
   }
   element.removeAttribute("data-hidden");
   return true;
@@ -558,6 +656,8 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   // The item that the selected box travels to. Its idle copy shows its content
   // until the box arrives.
   let maskedItem: HTMLElement | null = null;
+  // Whether items entered or left in the last sync.
+  let settling = false;
   let travelTimeout = 0;
   let groupWidth = 0;
   let groupHeight = 0;
@@ -697,6 +797,8 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     });
     for (const follower of followers) {
       scopeFollowers.add(follower);
+      // The same value would still restyle the follower on each sync.
+      if (follower.hasAttribute("data-glider-following")) continue;
       follower.setAttribute("data-glider-following", "");
     }
     selectedTrack.followers = [selectedTrack.box, ...followers];
@@ -704,12 +806,23 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
 
   const showHover = (animated: boolean) => {
     if (!hoverTrack) return;
+    // Like the selected box, the hover box goes to its item at once while the
+    // items settle.
+    if (!settling) {
+      endInstant(hoverTrack);
+    }
     if (!hoveredItem) {
       hideTrack(hoverTrack);
       return;
     }
     const rect = getRect(scaleProbe, hoveredItem);
-    moveTrack({ track: hoverTrack, target: hoveredItem, rect, animated });
+    moveTrack({
+      track: hoverTrack,
+      target: hoveredItem,
+      rect,
+      animated: animated && !settling,
+      settling,
+    });
   };
 
   const sync = (animated: boolean) => {
@@ -720,8 +833,29 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     const previousItem = selectedItem;
     selectedItem =
       items.find((element) => element.matches(selectedSelector)) ?? null;
+    // While an item enters or leaves, such as a tab that grows in or one that
+    // closes, the items move on each frame, so the selected box goes to its
+    // item at once and changes with it. A box that traveled there would go to a
+    // place that changes on each frame, and its copies would start again on
+    // each one.
+    const wasSettling = settling;
+    settling = items.some((item) => item.matches(SETTLING_SELECTOR));
+    // The items can move once more when they settle, such as when a closed tab
+    // leaves the list with the gap beside it, so the boxes go there at once
+    // too.
+    const boxesAnimated = animated && !settling && !wasSettling;
+    // The track stayed instant while the items settled.
+    if (!settling) {
+      endInstant(selectedTrack);
+    }
+    // The window has the corners of the box, which has the corners of the item.
+    // This reads them before the moves below change any style, so it doesn't
+    // flush the style.
+    const borderRadius = selectedItem
+      ? view.getComputedStyle(selectedItem).borderRadius
+      : "";
     const travels =
-      animated &&
+      boxesAnimated &&
       !!previousItem &&
       !!selectedItem &&
       selectedItem !== previousItem;
@@ -729,17 +863,21 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     // so the copies start again from the place of the box. The travel keeps its
     // timeout.
     const refreshes =
-      animated &&
+      boxesAnimated &&
       !!maskedItem &&
       !!selectedItem &&
       selectedItem === previousItem;
-    if (!animated || selectedItem !== previousItem) {
+    if (!boxesAnimated || selectedItem !== previousItem) {
       endTravel();
     }
     if (selectedItem) {
       // The box can be between two items when the selection changes again.
       const from =
-        travels || refreshes ? getRect(scaleProbe, selectedTrack.box) : null;
+        travels || refreshes
+          ? readShown(selectedTrack, () =>
+              getRect(scaleProbe, selectedTrack.box),
+            )
+          : null;
       const to = getRect(scaleProbe, selectedItem);
       const offsets = getInlineOffsets(group, to);
       findFollowers();
@@ -747,12 +885,10 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
         track: selectedTrack,
         target: selectedItem,
         rect: to,
-        animated,
+        animated: boxesAnimated,
         offsets,
+        settling,
       });
-      // The window has the corners of the box, which has the corners of the
-      // item.
-      const { borderRadius } = view.getComputedStyle(selectedItem);
       selectedWindow.style.borderRadius = borderRadius;
       if (from && travels) {
         startTravel(from, selectedItem, to);
@@ -772,7 +908,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     if (hoveredItem && !items.includes(hoveredItem)) {
       hoveredItem = null;
     }
-    showHover(animated);
+    showHover(boxesAnimated);
   };
 
   const resizeObserver = new view.ResizeObserver(() => {
@@ -786,7 +922,9 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   });
   resizeObserver.observe(group);
 
-  // Observing an item again would report its size again.
+  // Observing an item again would report its size again. The border box keeps
+  // reporting a tab that closes after its content has no width left, while its
+  // padding still shrinks.
   const observeItems = (items: HTMLElement[]) => {
     for (const element of observedItems) {
       if (items.includes(element)) continue;
@@ -796,7 +934,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     for (const element of items) {
       if (observedItems.has(element)) continue;
       observedItems.add(element);
-      resizeObserver.observe(element);
+      resizeObserver.observe(element, { box: "border-box" });
     }
   };
 
@@ -898,6 +1036,10 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
 
   return () => {
     destroyed = true;
+    view.cancelAnimationFrame(selectedTrack.shownRequest);
+    if (hoverTrack) {
+      view.cancelAnimationFrame(hoverTrack.shownRequest);
+    }
     mutationObserver.disconnect();
     resizeObserver.disconnect();
     endTravel();
@@ -910,6 +1052,8 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     }
     for (const follower of scopeFollowers) {
       follower.removeAttribute("data-glider-following");
+      // A follower stays instant while the items settle.
+      follower.removeAttribute("data-glider-instant");
       follower.style.removeProperty("--glider-start");
       follower.style.removeProperty("--glider-end");
     }
@@ -938,10 +1082,12 @@ export interface GliderProps
  * state. After hydration, it copies the box of the selected item into a
  * separate element that travels to the next selected item. While the box
  * travels, the content of the items under it shows in the selected state, so
- * text, icons, and badges change at the edge of the box. It stays off with
- * forced colors and with reduced motion. To change the travel time, set
- * `--glider-duration` on an element around the group, so other parts that
- * follow the box, such as the panel of folder tabs, take the same time.
+ * text, icons, and badges change at the edge of the box. While an item enters
+ * or leaves, such as a tab that grows in or one that closes, the boxes go to
+ * their items at once and change with them. It stays off with forced colors and
+ * with reduced motion. To change the travel time, set `--glider-duration` on an
+ * element around the group, so other parts that follow the box, such as the
+ * panel of folder tabs, take the same time.
  * @example
  * <RadioGroup aria-label="View" $kind="segmented">
  *   <RadioCard value="list" $kind="segmented">List</RadioCard>
