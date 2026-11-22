@@ -192,10 +192,10 @@ body > * {
 }
 
 /* How far the selected glider box is from the start and from the end of its
-   group, along the inline axis. The Glider style component writes them to the
-   box and to the elements that follow it, and registration lets the browser
-   animate them with the box. A rule can then shape an element from the place of
-   the box, as the curves of a folder tab and the corners of its panel do. */
+   group, or of its row, along the inline axis. The box and the elements that
+   follow it add the two parts that the Glider style component writes. A rule
+   can then shape an element from the place of the box, as the curves of a
+   folder tab and the corners of its panel do. */
 @property --glider-start {
   syntax: "<length>";
   inherits: false;
@@ -208,11 +208,54 @@ body > * {
   initial-value: 0px;
 }
 
+/* The distances of the box from the ends of its group. Registration lets the
+   browser animate them with the box. */
+@property --glider-travel-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-travel-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* The distances of the group from the ends of a row with the glider-row class.
+   They change at once, apart from the travel of the box. */
+@property --glider-row-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-row-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* Resolve the tab indent at the root so strip, tab, and panel fonts cannot
    change it. */
 @property --tabs-indent {
   syntax: "<length>";
   inherits: true;
+  initial-value: 0px;
+}
+
+/* The top corners of the tab panels. They can change on each frame, with a
+   glider or while the strip scrolls. Without inheritance, that change doesn't
+   restyle the content of the panels. */
+@property --tabs-corner-s {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --tabs-corner-e {
+  syntax: "<length>";
+  inherits: false;
   initial-value: 0px;
 }
 

@@ -195,6 +195,56 @@ interface InlineOffsets {
 }
 
 /**
+ * The parts beside the group in a row with the `glider-row` class, such as the
+ * controls beside the strip of a tab row. The scroll button areas of a carousel
+ * row lie over the ends of the group, not beside it, and a part that the page
+ * doesn't lay out has no place in the row.
+ */
+function getRowParts(group: HTMLElement) {
+  const row = group.parentElement;
+  if (!row?.classList.contains("glider-row")) return [];
+  return Array.from(row.children).filter((part) => {
+    if (part === group) return false;
+    if (part.classList.contains("carousel-button-area")) return false;
+    return part.getClientRects().length > 0;
+  });
+}
+
+interface RowInsets {
+  left: number;
+  right: number;
+}
+
+/**
+ * How far the group is from the left and the right of the row around it, in CSS
+ * pixels of the glider. On each side, the row ends at the outermost part on
+ * that side, or at the group when no part is there. The group can reach under a
+ * part beside it, so an inset can be negative, such as next to a part that
+ * folds to no width.
+ */
+function getRowInsets(group: HTMLElement, probe: HTMLElement): RowInsets {
+  const groupRect = group.getBoundingClientRect();
+  const middle = groupRect.left + groupRect.width / 2;
+  let left: number | null = null;
+  let right: number | null = null;
+  for (const part of getRowParts(group)) {
+    const rect = part.getBoundingClientRect();
+    if (rect.left + rect.width / 2 < middle) {
+      left = Math.min(left ?? rect.left, rect.left);
+    } else {
+      right = Math.max(right ?? rect.right, rect.right);
+    }
+  }
+  // The parts are on the screen, and the insets are in CSS pixels of the
+  // glider.
+  const scale = getScale(probe, probe.getBoundingClientRect());
+  return {
+    left: left == null ? 0 : (groupRect.left - left) / scale.x,
+    right: right == null ? 0 : (right - groupRect.right) / scale.x,
+  };
+}
+
+/**
  * How far a box is from the start and from the end of the group's scrollable
  * content, along the inline axis.
  */
@@ -550,12 +600,12 @@ function moveTrack({
     // the style of its item, which drops its place until the loop below, so the
     // flush does not restart the transitions of the box.
     const boxStyle = getWindow(box).getComputedStyle(box);
-    const boxStart = boxStyle.getPropertyValue("--glider-start");
-    const boxEnd = boxStyle.getPropertyValue("--glider-end");
+    const boxStart = boxStyle.getPropertyValue("--glider-travel-start");
+    const boxEnd = boxStyle.getPropertyValue("--glider-travel-end");
     for (const follower of fresh) {
       follower.setAttribute("data-glider-instant", "");
-      follower.style.setProperty("--glider-start", boxStart);
-      follower.style.setProperty("--glider-end", boxEnd);
+      follower.style.setProperty("--glider-travel-start", boxStart);
+      follower.style.setProperty("--glider-travel-end", boxEnd);
     }
     element.getBoundingClientRect();
     for (const follower of fresh) {
@@ -573,8 +623,8 @@ function moveTrack({
   element.toggleAttribute("data-shifting", !!shift);
   for (const follower of followers) {
     follower.toggleAttribute("data-glider-instant", instant);
-    follower.style.setProperty("--glider-start", `${start}px`);
-    follower.style.setProperty("--glider-end", `${end}px`);
+    follower.style.setProperty("--glider-travel-start", `${start}px`);
+    follower.style.setProperty("--glider-travel-end", `${end}px`);
     placed.add(follower);
   }
   for (const mover of movers) {
@@ -661,6 +711,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   let travelTimeout = 0;
   let groupWidth = 0;
   let groupHeight = 0;
+  let groupPadding = "";
 
   const groupProps = gliderGroup.htmlObj({
     ...variants,
@@ -825,6 +876,31 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     });
   };
 
+  // In a row with the glider-row class, the followers also know how far the
+  // group is from each end of the row. A part of the row that changes size,
+  // mounts, or unmounts can change that, such as a part that folds away with an
+  // animation. The followers take the new place at once on each frame, apart
+  // from the place of the box, so the box keeps its travel.
+  const row = group.parentElement?.classList.contains("glider-row")
+    ? group.parentElement
+    : null;
+  const rowPlaces = new WeakMap<HTMLElement, string>();
+  const placeRow = () => {
+    if (!row) return;
+    const { left, right } = getRowInsets(group, scaleProbe);
+    const { direction } = view.getComputedStyle(group);
+    const start = direction === "rtl" ? right : left;
+    const end = direction === "rtl" ? left : right;
+    const place = `${start}|${end}`;
+    for (const follower of selectedTrack.followers) {
+      // The same value would still restyle the follower on each frame.
+      if (rowPlaces.get(follower) === place) continue;
+      rowPlaces.set(follower, place);
+      follower.style.setProperty("--glider-row-start", `${start}px`);
+      follower.style.setProperty("--glider-row-end", `${end}px`);
+    }
+  };
+
   const sync = (animated: boolean) => {
     // The framework can write the class attribute of the group in any update.
     addGroupClasses();
@@ -881,7 +957,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       const to = getRect(scaleProbe, selectedItem);
       const offsets = getInlineOffsets(group, to);
       findFollowers();
-      moveTrack({
+      const moved = moveTrack({
         track: selectedTrack,
         target: selectedItem,
         rect: to,
@@ -889,6 +965,12 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
         offsets,
         settling,
       });
+      // A box that moves takes the style of its item, which drops its row
+      // place.
+      if (moved) {
+        rowPlaces.delete(selectedTrack.box);
+      }
+      placeRow();
       selectedWindow.style.borderRadius = borderRadius;
       if (from && travels) {
         startTravel(from, selectedItem, to);
@@ -911,16 +993,58 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     showHover(boxesAnimated);
   };
 
-  const resizeObserver = new view.ResizeObserver(() => {
+  const onResize = () => {
     const { width, height } = group.getBoundingClientRect();
-    // The boxes follow a group that changes size, and travel when only the
-    // items change size.
-    const resized = width !== groupWidth || height !== groupHeight;
+    const style = view.getComputedStyle(group);
+    const { paddingTop, paddingRight, paddingBottom, paddingLeft } = style;
+    const padding = `${paddingTop} ${paddingRight} ${paddingBottom} ${paddingLeft}`;
+    // The boxes follow a group that changes size or padding, and travel when
+    // only the items change size.
+    const resized =
+      width !== groupWidth ||
+      height !== groupHeight ||
+      padding !== groupPadding;
     groupWidth = width;
     groupHeight = height;
+    groupPadding = padding;
     sync(!resized);
-  });
+  };
+  const resizeObserver = new view.ResizeObserver(onResize);
   resizeObserver.observe(group);
+  // A part of a tab row that mounts beside the strip can change the padding of
+  // the strip, which moves the items. The content box reports it when the outer
+  // size stays, and the border box when the content size stays. An observer
+  // watches only one box of an element.
+  const groupBorderObserver = new view.ResizeObserver(onResize);
+  groupBorderObserver.observe(group, { box: "border-box" });
+
+  const rowObserver = new view.ResizeObserver(placeRow);
+  const observedParts = new Set<Element>();
+  // The observer also watches a part that the page doesn't lay out, so the part
+  // counts once it gets a box.
+  const observeRowParts = () => {
+    if (!row) return;
+    for (const part of observedParts) {
+      if (part.parentElement === row) continue;
+      observedParts.delete(part);
+      rowObserver.unobserve(part);
+    }
+    for (const part of row.children) {
+      if (part === group) continue;
+      if (part.classList.contains("carousel-button-area")) continue;
+      if (observedParts.has(part)) continue;
+      observedParts.add(part);
+      rowObserver.observe(part, { box: "border-box" });
+    }
+  };
+  const rowMutationObserver = new view.MutationObserver(() => {
+    observeRowParts();
+    placeRow();
+  });
+  if (row) {
+    observeRowParts();
+    rowMutationObserver.observe(row, { childList: true });
+  }
 
   // Observing an item again would report its size again. The border box keeps
   // reporting a tab that closes after its content has no width left, while its
@@ -1042,6 +1166,9 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     }
     mutationObserver.disconnect();
     resizeObserver.disconnect();
+    groupBorderObserver.disconnect();
+    rowObserver.disconnect();
+    rowMutationObserver.disconnect();
     endTravel();
     group.removeEventListener("pointerover", onPointerOver);
     group.removeEventListener("pointerleave", onPointerLeave);
@@ -1054,8 +1181,10 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       follower.removeAttribute("data-glider-following");
       // A follower stays instant while the items settle.
       follower.removeAttribute("data-glider-instant");
-      follower.style.removeProperty("--glider-start");
-      follower.style.removeProperty("--glider-end");
+      follower.style.removeProperty("--glider-travel-start");
+      follower.style.removeProperty("--glider-travel-end");
+      follower.style.removeProperty("--glider-row-start");
+      follower.style.removeProperty("--glider-row-end");
     }
     root.replaceChildren();
   };

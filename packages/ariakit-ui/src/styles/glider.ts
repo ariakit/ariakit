@@ -70,6 +70,15 @@ export const gliderMover = cv({
   ],
 });
 
+// The distances of the selected box from the ends of its group, which travel
+// with the box, plus the distances of the group from the ends of its row, which
+// change at once, such as while a part of the row folds. The Glider style
+// component writes both parts.
+const gliderPlace = cx(
+  "[--glider-start:calc(var(--glider-travel-start)+var(--glider-row-start))]",
+  "[--glider-end:calc(var(--glider-travel-end)+var(--glider-row-end))]",
+);
+
 /**
  * A box that fills its mover. The `Glider` style component gives it the classes
  * of the item that it copies, so each rule here has `!` to win over the rules
@@ -88,7 +97,8 @@ export const gliderBox = cv({
     // item can shape it from its place, as a folder tab does with its curves.
     // Only those distances change with the travel. The box takes the look of
     // the item that it travels to at once.
-    "[transition-property:--glider-start,--glider-end]!",
+    gliderPlace,
+    "[transition-property:--glider-travel-start,--glider-travel-end]!",
     "duration-(--glider-duration,200ms)! ease-[cubic-bezier(0.3,0,0,1)]!",
     "[[data-instant]_&]:[transition-property:none]!",
   ],
@@ -132,13 +142,16 @@ export const gliderLayer = cv({
  * The classes of an element that follows the selected box of a glider, such as
  * the panel of folder tabs. The `Glider` style component finds the elements
  * with the `glider-follower` class in the nearest element with the
- * `glider-scope` class around its group. It writes `--glider-start` and
- * `--glider-end` to them, the distances of the box from the start and from the
- * end of its group, and sets `data-glider-following` on them while it is on.
+ * `glider-scope` class around its group. They get `--glider-start` and
+ * `--glider-end`, the distances of the box from the start and from the end of
+ * its group, and the `Glider` sets `data-glider-following` on them while it is
+ * on. In a row with the `glider-row` class, the distances reach the ends of the
+ * row.
  */
 export const gliderFollower = cx(
   "glider-follower",
-  "[transition-property:--glider-start,--glider-end]",
+  gliderPlace,
+  "[transition-property:--glider-travel-start,--glider-travel-end]",
   "duration-(--glider-duration,200ms) ease-[cubic-bezier(0.3,0,0,1)]",
   "data-glider-instant:transition-none",
 );

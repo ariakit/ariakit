@@ -11,6 +11,7 @@ import * as ak from "@ariakit/react";
 import { Badge } from "@ariakit/ui/components/badge.ariakit.react";
 import { CarouselButton } from "@ariakit/ui/components/carousel.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
+import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
 import { Input } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Popover,
@@ -44,7 +45,7 @@ import {
   PlusIcon,
   SettingsIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Example,
   ExampleGrid,
@@ -285,6 +286,8 @@ interface TabRowTabsProps {
    * presses in its field still reach the tab through the React tree.
    */
   renamable?: boolean;
+  /** Paints the selected folder with a glider box. */
+  glider?: boolean;
   tabsProps?: TabsProps;
   rowProps?: TabRowProps;
 }
@@ -311,6 +314,7 @@ function TabRowTabs({
   renamable,
   disabledLabel,
   listHidden,
+  glider,
   tabsProps,
   rowProps,
 }: TabRowTabsProps) {
@@ -389,6 +393,7 @@ function TabRowTabs({
               )}
             </Tab>
           ))}
+          {glider && <Glider />}
         </TabList>
         {!stretch && (
           <TabRowButton
@@ -416,6 +421,259 @@ function TabRowTabs({
           </TabPanel>
         </TabPanels>
       )}
+    </Tabs>
+  );
+}
+
+interface TabRowFoldTabsProps {
+  /** The prefix of the tab ids and the name of the tab list. */
+  name: string;
+}
+
+/**
+ * Tabs with a glider in a row whose only part before the tab list is the name
+ * of a workspace. The name folds to no width, like the room of a logo that
+ * moves into a sidebar as the sidebar opens. The box travels slowly.
+ */
+function TabRowFoldTabs({ name }: TabRowFoldTabsProps) {
+  const id = name.toLowerCase().replaceAll(" ", "-");
+  const [folded, setFolded] = useState(false);
+  return (
+    <Tabs
+      defaultSelectedId={`${id}-${tabRowLabels[0]}`}
+      // The box travels longer than the name folds, so a fold can run during a
+      // travel.
+      className="[--glider-duration:3000ms]"
+    >
+      <TabRow>
+        {/* A grid column folds the name from its full width to none. The fold
+            is slow and linear, so each frame of it shows. */}
+        <span
+          className={`grid shrink-0 self-center transition-[grid-template-columns] duration-2000 ease-linear ${
+            folded ? "grid-cols-[0fr]" : "grid-cols-[1fr]"
+          }`}
+        >
+          <span className="min-w-0 overflow-hidden">
+            <span className="block px-3 text-sm font-semibold whitespace-nowrap">
+              Acme
+            </span>
+          </span>
+        </span>
+        <TabList aria-label={name}>
+          {tabRowLabels.map((label) => (
+            <Tab key={label} id={`${id}-${label}`} separator>
+              <TabLabel>{label}</TabLabel>
+            </Tab>
+          ))}
+          <Glider />
+        </TabList>
+        <div className="grow" />
+        <TabRowButton
+          aria-label={`${name} hide name`}
+          aria-pressed={folded}
+          onClick={() => setFolded(!folded)}
+        >
+          <TabSlot>
+            <PanelLeftIcon />
+          </TabSlot>
+        </TabRowButton>
+      </TabRow>
+      <TabPanels>
+        <TabPanel single>
+          <p className="text-sm">The panel of the selected tab.</p>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+  );
+}
+
+interface TabRowSidebarTabsProps {
+  /** The prefix of the tab ids and the name of the tab list. */
+  name: string;
+  /**
+   * Gives the tab list a fixed width, so the padding that the button changes
+   * doesn't change the outer size of the tab list.
+   */
+  fixedWidth?: boolean;
+}
+
+/**
+ * Tabs with a glider in a row that shows a button before the tab list only
+ * while a sidebar is closed, like an app shell whose sidebar holds the button
+ * while it is open. A checkbox stands for the sidebar.
+ */
+function TabRowSidebarTabs({ name, fixedWidth }: TabRowSidebarTabsProps) {
+  const id = name.toLowerCase().replaceAll(" ", "-");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  return (
+    <div className="grid gap-2">
+      <label className="text-sm">
+        <input
+          type="checkbox"
+          checked={sidebarOpen}
+          onChange={(event) => setSidebarOpen(event.target.checked)}
+        />{" "}
+        {name} open
+      </label>
+      <Tabs
+        defaultSelectedId={`${id}-${tabRowLabels[0]}`}
+        // The box travels slowly, so a box that travels to its tab when the
+        // padding of the tab list changes shows apart from one that moves at
+        // once.
+        className="[--glider-duration:2000ms]"
+      >
+        <TabRow>
+          {!sidebarOpen && (
+            <TabRowButton
+              aria-label={`${name} open sidebar`}
+              onClick={() => setSidebarOpen(true)}
+            >
+              <TabSlot>
+                <PanelLeftIcon />
+              </TabSlot>
+            </TabRowButton>
+          )}
+          <TabList
+            aria-label={name}
+            className={fixedWidth ? "w-80" : undefined}
+          >
+            {tabRowLabels.map((label) => (
+              <Tab key={label} id={`${id}-${label}`} separator>
+                <TabLabel>{label}</TabLabel>
+              </Tab>
+            ))}
+            <Glider />
+          </TabList>
+          <TabRowButton aria-label={`${name} new tab`} separator>
+            <TabSlot>
+              <PlusIcon />
+            </TabSlot>
+          </TabRowButton>
+        </TabRow>
+        <TabPanels>
+          <TabPanel single>
+            <p className="text-sm">The panel of the selected tab.</p>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </div>
+  );
+}
+
+const tabRowItemCounts = new Map([
+  ["Quotes", "1 item"],
+  ["Billing", "128 items"],
+  ["Support", "24 items"],
+]);
+
+interface TabRowStatusTabsProps {
+  /** The prefix of the tab ids and the name of the tab list. */
+  name: string;
+}
+
+/**
+ * Tabs with a glider in a row that ends with the item count of the selected
+ * tab, right after the tab list. The count loads a moment after the selection,
+ * so it changes its width while the box travels, but the strip stays in place.
+ * The travel is slow, so each frame of it shows.
+ */
+function TabRowStatusTabs({ name }: TabRowStatusTabsProps) {
+  const id = name.toLowerCase().replaceAll(" ", "-");
+  const [selectedId, setSelectedId] = useState<string | null | undefined>(
+    `${id}-${tabRowLabels[0]}`,
+  );
+  const selectedLabel = selectedId?.slice(id.length + 1) ?? "";
+  const [loadedLabel, setLoadedLabel] = useState(selectedLabel);
+  useEffect(() => {
+    const timeout = setTimeout(() => setLoadedLabel(selectedLabel), 300);
+    return () => clearTimeout(timeout);
+  }, [selectedLabel]);
+  const count =
+    loadedLabel === selectedLabel
+      ? tabRowItemCounts.get(selectedLabel)
+      : "Loading";
+  return (
+    <Tabs
+      selectedId={selectedId}
+      setSelectedId={setSelectedId}
+      className="[--glider-duration:2000ms]"
+    >
+      <TabRow>
+        <TabRowButton aria-label={`${name} sidebar`}>
+          <TabSlot>
+            <PanelLeftIcon />
+          </TabSlot>
+        </TabRowButton>
+        <TabList aria-label={name}>
+          {tabRowLabels.map((label) => (
+            <Tab key={label} id={`${id}-${label}`} separator>
+              <TabLabel>{label}</TabLabel>
+            </Tab>
+          ))}
+          <Glider />
+        </TabList>
+        <span
+          role="status"
+          aria-label={`${name} count`}
+          className="self-center px-3 text-sm"
+        >
+          {count}
+        </span>
+      </TabRow>
+      <TabPanels>
+        <TabPanel single>
+          <p className="text-sm">The panel of the selected tab.</p>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+  );
+}
+
+interface TabRowExportTabsProps {
+  /** The prefix of the tab ids and the name of the tab list. */
+  name: string;
+}
+
+/**
+ * Tabs with a glider in a row that shows an export button at its end only while
+ * Billing is selected, so the button mounts and unmounts with the selection. An
+ * element that takes the free space keeps the button away from the tab list, so
+ * the tab list keeps its size. The travel is slow, so each frame of it shows.
+ */
+function TabRowExportTabs({ name }: TabRowExportTabsProps) {
+  const id = name.toLowerCase().replaceAll(" ", "-");
+  const [selectedId, setSelectedId] = useState<string | null | undefined>(
+    `${id}-${tabRowLabels[0]}`,
+  );
+  return (
+    <Tabs
+      selectedId={selectedId}
+      setSelectedId={setSelectedId}
+      className="[--glider-duration:2000ms]"
+    >
+      <TabRow>
+        <TabList aria-label={name}>
+          {tabRowLabels.map((label) => (
+            <Tab key={label} id={`${id}-${label}`} separator>
+              <TabLabel>{label}</TabLabel>
+            </Tab>
+          ))}
+          <Glider />
+        </TabList>
+        <div className="grow" />
+        {selectedId === `${id}-Billing` && (
+          <TabRowButton aria-label={`${name} export`}>
+            <TabSlot>
+              <ArrowRightIcon />
+            </TabSlot>
+          </TabRowButton>
+        )}
+      </TabRow>
+      <TabPanels>
+        <TabPanel single>
+          <p className="text-sm">The panel of the selected tab.</p>
+        </TabPanel>
+      </TabPanels>
     </Tabs>
   );
 }
@@ -3518,6 +3776,55 @@ export default function TabsExamples() {
             listHidden
             rowProps={{ $buttons: "always" }}
           />
+        </div>
+      </Example>
+      <Example
+        title="Tab row with a glider"
+        description="A glider box paints the selected folder. Its place counts the parts of the row before and after the strip, so beside a button, the panel keeps its round corner, like without a glider. The boxes show the first tab selected after a button, the last tab of a stretched strip selected before a button, the first tab selected after a button with an adaptive folder curve, whose box keeps the full curve of the tab, a row whose name before the strip folds to no width when you hide it, two rows that show a button before the strip while the sidebar is closed, one with a tab list of fixed width, a row that ends with the item count of the selected tab, and a row with an export button only for Billing. While the name folds, the corner of the panel follows the first tab to the edge of the panel, even during a travel of the box. The button that mounts before the strip rounds the corner, and neither the count that loads during the slow travel of the box nor the export button that mounts with the selection stops it."
+        wide
+        code={`
+          <Tabs>
+            <TabRow>
+              <span className="grid grid-cols-[1fr] transition-[grid-template-columns]">
+                …
+              </span>
+              <TabList>
+                <Tab separator>Quotes</Tab>
+                <Tab separator>Billing</Tab>
+                <Tab separator>Support</Tab>
+                <Glider />
+              </TabList>
+              <div className="grow" />
+              <TabRowButton aria-label="Hide name" aria-pressed={folded}>
+                …
+              </TabRowButton>
+            </TabRow>
+            <TabPanels>
+              <TabPanel single>
+                …
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(min(26rem,100%),1fr))] items-start gap-4">
+          <TabRowTabs name="Tab row glider" glider />
+          <TabRowTabs
+            name="Tab row glider stretch"
+            selected={2}
+            stretch
+            glider
+          />
+          <TabRowTabs
+            name="Tab row glider adapt"
+            glider
+            tabsProps={{ $folderCurve: "adapt" }}
+          />
+          <TabRowFoldTabs name="Tab row glider fold" />
+          <TabRowSidebarTabs name="Tab row glider sidebar" />
+          <TabRowSidebarTabs name="Tab row glider sidebar fixed" fixedWidth />
+          <TabRowStatusTabs name="Tab row glider status" />
+          <TabRowExportTabs name="Tab row glider export" />
         </div>
       </Example>
     </ExampleGrid>
