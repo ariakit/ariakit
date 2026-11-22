@@ -179,15 +179,35 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         if (!separator) return Number.NaN;
         return Number.parseFloat(getComputedStyle(separator).opacity);
       });
+    // The time of the opacity transition of the separator before an item, in
+    // milliseconds, which is the time of the state that it goes to.
+    const getOpacityDuration = (control: Locator) =>
+      control.evaluate((node) => {
+        const separator = node.previousElementSibling;
+        if (!separator) return Number.NaN;
+        const style = getComputedStyle(separator);
+        const properties = style.transitionProperty.split(", ");
+        const durations = style.transitionDuration.split(", ");
+        const index = properties.findIndex(
+          (property) => property === "opacity" || property === "all",
+        );
+        if (index < 0) return Number.NaN;
+        // The durations repeat when the list is shorter than the properties.
+        const duration = durations[index % durations.length] ?? "";
+        return (
+          Number.parseFloat(duration) * (duration.endsWith("ms") ? 1 : 1000)
+        );
+      });
     // A separator hides with a 200ms opacity transition when no box travels.
     const separatorTime = 200;
 
     // A hover does not move the selected box, so the separator between Grid and
-    // Board hides in its own time.
+    // Board hides in its own time, not in the 3s travel time. A busy machine
+    // can apply the hover late, so the probe reads the time of the fade from
+    // the separator instead of a limit on the wall clock.
     await box.radio("Grid").hover();
-    // The 1s limit is far above the 200ms of the separator and far below the 3s
-    // travel time.
-    await test.expect.poll(() => getOpacity(board), { timeout: 1000 }).toBe(0);
+    await test.expect.poll(() => getOpacity(board)).toBe(0);
+    test.expect(await getOpacityDuration(board)).toBe(separatorTime);
     await page.mouse.move(0, 0);
 
     // A hover or a focus on an item hides the separator beside it in its own
@@ -259,11 +279,13 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     { name: "Flat tab before folders", tabs: ["Folder", "Flat"] },
   ];
 
+  // The Hydrated checkbox renders the whole page again, which takes seconds on
+  // a busy machine, so each tab gets its own test and its own time.
   for (const { name, tabs } of cornerCases) {
-    test(`gives the panel of ${name.toLowerCase()} the corners of the server markup`, async ({
-      q,
-    }) => {
-      for (const tab of tabs) {
+    for (const tab of tabs) {
+      test(`gives the panel of ${name.toLowerCase()} the corners of the server markup with ${tab} selected`, async ({
+        q,
+      }) => {
         const item = query(q.article(name)).tab(tab);
         await item.click();
         await expectServerCorners(
@@ -271,8 +293,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           q.checkbox(/^Hydrated/),
           item,
         );
-      }
-    });
+      });
+    }
   }
 
   test("keeps the panel corners with a glider in the panel", async ({ q }) => {
@@ -323,15 +345,17 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   test("keeps a new panels element with the box", async ({ q }) => {
     await q.combobox(/^Travel time/).selectOption({ label: "Slow (800ms)" });
     const article = q.article("Panels that change with the selection");
+    // The probe reads the corner radius of the panels with the box at rest on
+    // Month, which a busy machine can reach well after the 800ms travel. On the
+    // first tab, the corner is square.
+    const month = query(article).tab("Month");
+    await month.click();
+    await test.expect.poll(() => getBoxOffset(month)).toBeLessThan(0.5);
     // The box and the panels are presentation, so this probe reads the place
     // that each one takes on every frame. A new panels element replaces the old
     // one on each selection, including Day, which the user selects 100ms into
-    // the travel to Week. The corners change only while half of the place is
-    // below the corner radius, so the probe compares the places there, relative
-    // to the radius. Without a start at the place of the box, the gap reaches
-    // many radii. Firefox starts the replacing transition of the box from its
-    // place on the next frame, so the new panels trail it by about one frame.
-    const largestGap = await article.evaluate(async (node) => {
+    // the travel to Week.
+    const places = await article.evaluate(async (node) => {
       const getTab = (label: string) =>
         Array.from(node.querySelectorAll<HTMLElement>("[role=tab]")).find(
           (tab) => tab.textContent?.trim() === label,
@@ -344,34 +368,75 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         return Number.parseFloat(value);
       };
       const box = node.querySelector('.glider-box[data-selected="true"]');
-      const sample = async (duration: number, zone: number) => {
-        let gap = 0;
+      const panels = getPanels();
+      if (!box || !panels) return null;
+      const sample = async (duration: number) => {
+        const samples: Array<{ panels: number; box: number }> = [];
         const start = performance.now();
         while (performance.now() - start < duration) {
           await new Promise((resolve) => requestAnimationFrame(resolve));
-          const panelsStart = getStart(getPanels());
-          const boxStart = getStart(box);
-          if (Math.min(panelsStart, boxStart) >= zone) continue;
-          gap = Math.max(gap, Math.abs(panelsStart - boxStart));
+          samples.push({ panels: getStart(getPanels()), box: getStart(box) });
         }
-        return gap;
+        return samples;
       };
-      getTab("Month")?.click();
-      // Waits for the box to rest on Month after the 800ms travel.
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const panels = getPanels();
-      if (!panels) return null;
       const radius = Number.parseFloat(
         getComputedStyle(panels).borderStartStartRadius,
       );
       getTab("Week")?.click();
-      const firstGap = await sample(100, radius * 2);
+      const toWeek = await sample(100);
+      const beforeDay = getStart(box);
       getTab("Day")?.click();
-      const secondGap = await sample(1000, radius * 2);
-      return Math.max(firstGap, secondGap) / radius;
+      const toDay = await sample(1000);
+      return { radius, toWeek, beforeDay, toDay };
     });
-    test.expect(largestGap).not.toBeNull();
-    test.expect(largestGap).toBeLessThan(0.5);
+    if (!places) {
+      throw new Error("The tabs have no selected box or panels");
+    }
+    const day = query(article).tab("Day");
+    await test.expect.poll(() => getBoxOffset(day)).toBeLessThan(0.5);
+    const end = await day.evaluate((element) => {
+      const box = element
+        .closest(".glider-group")
+        ?.querySelector('.glider-box[data-selected="true"]');
+      if (!box) return Number.NaN;
+      const value = getComputedStyle(box).getPropertyValue("--glider-start");
+      return Number.parseFloat(value);
+    });
+    const { radius, toWeek, beforeDay, toDay } = places;
+    // Firefox gives the new panels the place of the box from the last frame
+    // before the click, but starts the new travel of the box from where it
+    // shows after the click frame. Both travels go to Day in the same time, so
+    // the panels trail the box by its move in the click frame, which shrinks
+    // with the rest of the travel. A slow click frame on a busy machine makes
+    // that move longer. The box rests on Month before Week, so the panels and
+    // the box start from the same place there.
+    const firstDay = toDay[0]?.box ?? Number.NaN;
+    const getTrail = (box: number) => {
+      const span = firstDay - end;
+      // A machine that shows its first frame after the travel ends both travels
+      // on it, so the panels have no trail.
+      if (Math.abs(span) < 0.5) return 0;
+      const rest = (box - end) / span;
+      return Math.abs(beforeDay - firstDay) * Math.max(0, rest);
+    };
+    // The corners change only while half of the place is below the corner
+    // radius, so the probe compares the places there, relative to the radius.
+    // Without a start at the place of the box, the gap reaches many radii.
+    const getLargestGap = (
+      samples: typeof toDay,
+      getAllowed: (box: number) => number,
+    ) => {
+      let gap = 0;
+      for (const sample of samples) {
+        if (Math.min(sample.panels, sample.box) >= radius * 2) continue;
+        const excess =
+          Math.abs(sample.panels - sample.box) - getAllowed(sample.box);
+        gap = Math.max(gap, excess);
+      }
+      return gap / radius;
+    };
+    test.expect(getLargestGap(toWeek, () => 0)).toBeLessThan(0.5);
+    test.expect(getLargestGap(toDay, getTrail)).toBeLessThan(0.5);
   });
 
   // The browser can report the start of a travel a frame or more after it

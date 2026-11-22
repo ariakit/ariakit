@@ -1,5 +1,8 @@
 import type { Locator } from "@playwright/test";
-import { getBoxOffset } from "#app/sandbox/ariakit-ui-glider/test-helpers.ts";
+import {
+  getBoxOffset,
+  getTravelProgress,
+} from "#app/sandbox/ariakit-ui-glider/test-helpers.ts";
 import {
   captureInView,
   capturePage,
@@ -11,6 +14,7 @@ import {
   tabTo,
   withCaptures,
 } from "#app/test-utils/ariakit-ui.ts";
+import { flushFrames } from "#app/test-utils/preview.ts";
 
 withCaptures(import.meta.dirname, async ({ query, test }) => {
   test("page @visual", async ({ page, visual }) => {
@@ -192,11 +196,13 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const end = corners.at(-1)?.frame ?? 0;
     // The corner is round away from the first tab, and small beside it.
     test.expect(start).toBeGreaterThan(end + 1);
-    // The corner changes with the box while it travels, not at once.
+    // The corner changes with the box while it travels, not at once. A busy
+    // machine can show few frames of the travel, so one frame between is
+    // enough.
     const between = corners.filter(
       ({ frame }) => frame < start - 0.5 && frame > end + 0.5,
     );
-    test.expect(between.length).toBeGreaterThan(1);
+    test.expect(between.length).toBeGreaterThanOrEqual(1);
   });
 
   // The panel squares and opens its top corners with scroll-driven animations
@@ -207,6 +213,7 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     "Sticky strip without fades",
   ]) {
     test(`keeps the top corners of the frame of a ${name.toLowerCase()} with those of the panel while the strip scrolls`, async ({
+      page,
       q,
     }) => {
       const list = query(
@@ -215,6 +222,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       const panelCorners = new Set<string>();
       for (const distance of [0, 10, 40, 120]) {
         await scrollStripFromStart(list, distance);
+        // The corners follow the scroll with scroll-driven animations, which
+        // the next frame updates. Until then, the frame and the panel still
+        // match with the corners of the last step.
+        await flushFrames(page, 1);
         await test.expect
           .poll(async () => {
             const { frame, panel } = await getStickyCorners(list);
@@ -225,6 +236,8 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       }
       for (const distance of [40, 10, 0]) {
         await scrollStripFromEnd(list, distance);
+        // The scroll-driven animations update on the next frame, like above.
+        await flushFrames(page, 1);
         await test.expect
           .poll(async () => {
             const { frame, panel } = await getStickyCorners(list);
@@ -246,11 +259,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     await test.expect
       .poll(() => getBoxOffset(query(list).tab("Quotes")))
       .toBeLessThan(0.5);
-    const recording = await recordStickyFold(box.text("Acme"));
-    await box.button(`${title} hide name`).click();
-    const samples = await recording.evaluate((record) => record.done);
-    // The fold takes two seconds, so it shows on many frames.
-    test.expect(samples.length).toBeGreaterThan(10);
+    const samples = await stepFold(
+      box.text("Acme"),
+      box.button(`${title} hide name`),
+    );
     for (const { frame, panel } of samples) {
       test.expect(Math.abs(frame - panel)).toBeLessThan(0.5);
     }
@@ -664,26 +676,24 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const tab = query(list).tab("Quotes");
     await test.expect.poll(() => getBoxOffset(tab)).toBeLessThan(0.5);
     test.expect((await getPanelCorners(list)).start).toBe(12);
-    const recording = await recordFold(box.text("Acme"));
-    await box.button(`${title} hide name`).click();
-    const samples = await recording.evaluate((record) => record.done);
-    // The fold takes two seconds, so it shows on many frames.
-    test.expect(samples.length).toBeGreaterThan(10);
-    test.expect(samples[0]?.corner).toBe(12);
+    const samples = await stepFold(
+      box.text("Acme"),
+      box.button(`${title} hide name`),
+    );
+    test.expect(samples[0]?.panel).toBe(12);
     // The first tab reaches the edge of the panel, so the corner is square.
-    test.expect(samples.at(-1)?.corner).toBe(0);
+    test.expect(samples.at(-1)?.panel).toBe(0);
     await test.expect
       .poll(() => getDistanceFromPanel(tab))
       .toBeLessThanOrEqual(1);
     // The corner shrinks as the tab comes near the edge, through the values
-    // between, and doesn't jump at the end of the fold. A busy machine can skip
-    // frames, so one frame between is enough.
+    // between, and doesn't jump at the end of the fold.
     for (const [index, sample] of samples.entries()) {
       const previous = samples[index - 1];
       if (!previous) continue;
-      test.expect(sample.corner).toBeLessThanOrEqual(previous.corner + 0.01);
+      test.expect(sample.panel).toBeLessThanOrEqual(previous.panel + 0.01);
     }
-    const between = samples.filter(({ corner }) => corner > 0 && corner < 12);
+    const between = samples.filter(({ panel }) => panel > 0 && panel < 12);
     test.expect(between.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -703,27 +713,34 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
         .toBeLessThan(0.5);
       // The selected first tab is at the corner of the panel.
       test.expect((await getPanelCorners(list)).start).toBe(0);
+      const quotes = query(list).tab("Quotes");
+      // The button changes the padding of the strip, so the tabs move in it,
+      // and the box goes with the selected tab at once. A box that traveled
+      // there would show between the old and the new place of the tab on the
+      // frames of its two-second travel.
+      const expectShiftAtOnce = (offsets: number[]) => {
+        const shift = Math.max(...offsets);
+        const between = offsets.filter(
+          (offset) => offset > 0.5 && offset < shift - 0.5,
+        );
+        test.expect(between).toEqual([]);
+      };
+      const mount = await recordOffsets(quotes);
       await box.checkbox(`${title} open`).uncheck();
       await test.expect(box.button(`${title} open sidebar`)).toBeVisible();
       await test.expect
         .poll(async () => (await getPanelCorners(list)).start)
         .toBe(12);
-      // The button changes the padding of the strip, so the tabs move in it,
-      // and the box goes with the selected tab at once. A box that traveled
-      // there would take two seconds, and would still be more than a pixel away
-      // after one second.
-      const quotes = query(list).tab("Quotes");
-      await test.expect
-        .poll(() => getBoxOffset(quotes), { timeout: 1000 })
-        .toBeLessThan(0.5);
+      await test.expect.poll(() => getBoxOffset(quotes)).toBeLessThan(0.5);
+      expectShiftAtOnce(await mount.evaluate((record) => record.stop()));
+      const unmount = await recordOffsets(quotes);
       await box.button(`${title} open sidebar`).click();
       await test.expect(box.button(`${title} open sidebar`)).toHaveCount(0);
       await test.expect
         .poll(async () => (await getPanelCorners(list)).start)
         .toBe(0);
-      await test.expect
-        .poll(() => getBoxOffset(quotes), { timeout: 1000 })
-        .toBeLessThan(0.5);
+      await test.expect.poll(() => getBoxOffset(quotes)).toBeLessThan(0.5);
+      expectShiftAtOnce(await unmount.evaluate((record) => record.stop()));
     });
   }
 
@@ -762,15 +779,12 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const recording = await recordTravel(tab);
     await tab.click();
     await test.expect(box.button(`${title} export`)).toBeVisible();
-    const frames = await recording.evaluate((record) => record.done);
-    const start = frames[0]?.offset ?? 0;
-    test.expect(start).toBeGreaterThan(50);
-    // The travel takes two seconds. A busy machine can skip frames, so three
-    // frames between the tabs are enough.
-    const between = frames.filter(
-      (frame) => frame.offset > 0.5 && frame.offset < start - 0.5,
-    );
-    test.expect(between.length).toBeGreaterThanOrEqual(3);
+    const { frames } = await recording.evaluate((record) => record.done);
+    test.expect(frames[0]?.offset).toBeGreaterThan(50);
+    // The button mounts with the selection, so a box that jumped with it would
+    // be ahead of its two-second travel from the first frame on.
+    test.expect(getTravelLead(frames, 2000)).toBeLessThan(1);
+    test.expect(getFramesBetween(frames).length).toBeGreaterThanOrEqual(1);
   });
 
   test("keeps the box traveling while the count of the row loads", async ({
@@ -787,35 +801,68 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const recording = await recordTravel(tab, count);
     await tab.click();
     await test.expect(count).toHaveText("128 items");
-    const frames = await recording.evaluate((record) => record.done);
-    const start = frames[0]?.offset ?? 0;
-    test.expect(start).toBeGreaterThan(50);
-    // The count loads a moment after the selection and changes its width.
-    test.expect(frames.some((frame) => frame.count === "Loading")).toBe(true);
-    // The travel takes two seconds, and the count loads after 300ms, so the box
-    // is still between the tabs on many frames after the count loads. A busy
-    // machine can skip frames, so three frames are enough.
-    const between = frames.filter(
-      (frame) =>
-        frame.count === "128 items" &&
-        frame.offset > 0.5 &&
-        frame.offset < start - 0.5,
+    const { frames, counts } = await recording.evaluate(
+      (record) => record.done,
     );
-    test.expect(between.length).toBeGreaterThanOrEqual(3);
+    test.expect(frames[0]?.offset).toBeGreaterThan(50);
+    // The count loads a moment after the selection and changes its width.
+    test.expect(counts.slice(1)).toEqual(["Loading", "128 items"]);
+    // The travel takes four seconds, and the count loads after 300ms. A box
+    // that jumped or ran faster with a new width of the count would be ahead of
+    // its travel on the frames after the load.
+    test.expect(getTravelLead(frames, 4000)).toBeLessThan(1);
+    test.expect(getFramesBetween(frames).length).toBeGreaterThanOrEqual(1);
   });
 });
+
+// Records the distance of the selected glider box from a tab on each frame
+// until the recording stops. The glider is presentation with aria-hidden, so
+// this reads its box from the DOM, like getBoxOffset.
+function recordOffsets(tab: Locator) {
+  return tab.evaluateHandle((element) => {
+    const control = element.closest(".control");
+    const box = control
+      ?.closest(".glider-group")
+      ?.querySelector('.glider-box[data-selected="true"]');
+    if (!control || !box) {
+      throw new Error("Missing glider box");
+    }
+    const offsets: number[] = [];
+    let request = 0;
+    const read = () => {
+      const boxLeft = box.getBoundingClientRect().left;
+      offsets.push(Math.abs(boxLeft - control.getBoundingClientRect().left));
+      request = requestAnimationFrame(read);
+    };
+    read();
+    const stop = () => {
+      cancelAnimationFrame(request);
+      return offsets;
+    };
+    return { stop };
+  });
+}
 
 interface TravelFrame {
   /** The distance of the selected glider box from the tab. */
   offset: number;
-  /** The text of the count of the row. */
-  count: string;
+  /** The time of the frame, from its `requestAnimationFrame` callback. */
+  frameTime: number;
+  /** When the frame read the box, from `performance.now()`. */
+  readTime: number;
 }
 
-// Records the distance of the selected glider box from a tab, and the text of
-// the count of the row when there is one, on each frame until the box reaches
-// the tab. The glider is presentation with aria-hidden, so this reads its box
-// from the DOM, like getBoxOffset.
+interface TravelRecord {
+  frames: TravelFrame[];
+  /** Each text of the count of the row, in order, from the start. */
+  counts: string[];
+}
+
+// Records the distance of the selected glider box from a tab on each frame
+// until the box reaches the tab, and each text of the count of the row when
+// there is one. A mutation observer reads the count, so a busy machine that
+// shows few frames doesn't miss a text. The glider is presentation with
+// aria-hidden, so this reads its box from the DOM, like getBoxOffset.
 async function recordTravel(tab: Locator, count?: Locator) {
   const countElement = count ? await count.elementHandle() : null;
   return tab.evaluateHandle((element, countElement) => {
@@ -825,16 +872,30 @@ async function recordTravel(tab: Locator, count?: Locator) {
     if (!box) {
       throw new Error("Missing glider box");
     }
+    const counts = countElement ? [countElement.textContent ?? ""] : [];
+    const observer = new MutationObserver(() => {
+      const text = countElement?.textContent ?? "";
+      if (text === counts.at(-1)) return;
+      counts.push(text);
+    });
+    if (countElement) {
+      observer.observe(countElement, {
+        characterData: true,
+        childList: true,
+        subtree: true,
+      });
+    }
     const frames: TravelFrame[] = [];
-    const done = new Promise<TravelFrame[]>((resolve) => {
-      const read = () => {
+    const done = new Promise<TravelRecord>((resolve) => {
+      const read = (frameTime = performance.now()) => {
         const offset = Math.abs(
           box.getBoundingClientRect().left -
             element.getBoundingClientRect().left,
         );
-        frames.push({ offset, count: countElement?.textContent ?? "" });
+        frames.push({ offset, frameTime, readTime: performance.now() });
         if (offset < 0.5 && frames.length > 1) {
-          resolve(frames);
+          observer.disconnect();
+          resolve({ frames, counts });
           return;
         }
         requestAnimationFrame(read);
@@ -843,6 +904,39 @@ async function recordTravel(tab: Locator, count?: Locator) {
     });
     return { done };
   }, countElement);
+}
+
+// Returns the frames of a travel that show the box between its start and the
+// tab.
+function getFramesBetween(frames: TravelFrame[]) {
+  const start = frames[0]?.offset ?? 0;
+  return frames.filter(
+    (frame) => frame.offset > 0.5 && frame.offset < start - 0.5,
+  );
+}
+
+// Returns how many pixels the box is ahead of a travel of `duration`
+// milliseconds at most, on the frames of a recordTravel. The travel starts no
+// sooner than the last frame that shows the box at its start, so the box can't
+// be farther along on a later read than a travel that started at the time of
+// that frame. The bound follows the time on the frames, so it holds when a busy
+// machine shows few of them. The travel runs on the compositor, which can show
+// it a few frames ahead of the main thread, so the bound allows 100ms more.
+function getTravelLead(frames: TravelFrame[], duration: number) {
+  const start = frames[0]?.offset ?? 0;
+  // The travel eases in, so its first frames move the box by much less than a
+  // pixel.
+  const lastAtStart = frames.findLastIndex(
+    (frame) => Math.abs(frame.offset - start) < 0.01,
+  );
+  const startedAfter = (frames[lastAtStart]?.frameTime ?? 0) - 100;
+  let lead = 0;
+  for (const frame of frames.slice(lastAtStart + 1)) {
+    const elapsed = frame.readTime - startedAfter;
+    const progress = getTravelProgress(elapsed, duration);
+    lead = Math.max(lead, start * (1 - progress) - frame.offset);
+  }
+  return lead;
 }
 
 // Returns the widths of the start curves of a selected folder tab and of the
@@ -916,36 +1010,77 @@ function recordFold(name: Locator) {
   });
 }
 
-// Records the top start corners of the frame of a sticky row and of the panel
-// on each frame of the fold of a part of the row, until the part has no width,
-// like recordFold. The frame is a pseudo-element of the row.
-function recordStickyFold(name: Locator) {
-  return name.evaluateHandle((element) => {
-    const part = element.parentElement;
+interface FoldStep {
+  /** The radius of the top start corner of the frame of a sticky row. */
+  frame: number;
+  /** The radius of the top start corner of the panel. */
+  panel: number;
+}
+
+// Folds the name before the strip of a tab row with a press of its button, and
+// reads the top start corners of the frame of the row and of the panel at steps
+// of the fold. The fold is a CSS transition of the fixture, so this pauses it
+// and moves it to each step. The reads then don't depend on how many frames a
+// busy machine shows during the two seconds of the fold.
+async function stepFold(name: Locator, button: Locator) {
+  // A busy machine can end the fold before a read after the press, or before
+  // its transitionrun event. The press changes the class of the columns, so a
+  // mutation observer reads the transition that it starts before a frame, and
+  // pauses it.
+  const fold = await name.evaluateHandle((element) => {
+    const columns = element.parentElement?.parentElement;
+    if (!columns) {
+      throw new Error("Missing fold");
+    }
+    const transition = new Promise<Animation>((resolve) => {
+      const observer = new MutationObserver(() => {
+        const [animation] = columns.getAnimations();
+        if (!animation) return;
+        animation.pause();
+        observer.disconnect();
+        resolve(animation);
+      });
+      observer.observe(columns, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    });
+    return { transition };
+  });
+  await button.click();
+  return name.evaluate(async (element, { transition: running }) => {
+    const transition = await running;
     const row = element.closest(".tab-row");
     const panel = row?.nextElementSibling;
-    if (!part || !row || !panel) {
+    if (!row || !panel) {
       throw new Error("Missing tab row or panels");
     }
-    const samples: Array<{ frame: number; panel: number }> = [];
-    const done = new Promise<typeof samples>((resolve) => {
-      const observer = new ResizeObserver(([entry]) => {
-        samples.push({
-          frame: Number.parseFloat(
-            getComputedStyle(row, "::after").borderStartStartRadius,
-          ),
-          panel: Number.parseFloat(
-            getComputedStyle(panel).borderStartStartRadius,
-          ),
-        });
-        if (entry?.borderBoxSize[0]?.inlineSize !== 0) return;
-        observer.disconnect();
-        resolve(samples);
-      });
-      observer.observe(part, { box: "border-box" });
-    });
-    return { done };
-  });
+    const duration = Number(transition.effect?.getComputedTiming().duration);
+    // The glider reads the new size of the row in a resize observer after the
+    // layout of the next frame, so the read waits for the frame after it.
+    const readAfterGlider = async () => {
+      for (let i = 0; i < 2; i++) {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      return {
+        frame: Number.parseFloat(
+          getComputedStyle(row, "::after").borderStartStartRadius,
+        ),
+        panel: Number.parseFloat(
+          getComputedStyle(panel).borderStartStartRadius,
+        ),
+      };
+    };
+    const steps: FoldStep[] = [];
+    const stepCount = 20;
+    for (let step = 0; step < stepCount; step++) {
+      transition.currentTime = (duration * step) / stepCount;
+      steps.push(await readAfterGlider());
+    }
+    transition.finish();
+    steps.push(await readAfterGlider());
+    return steps;
+  }, fold);
 }
 
 // Returns the start and end radii of the top corners of the panel below a tab

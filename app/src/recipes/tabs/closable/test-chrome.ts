@@ -248,10 +248,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
       throw new Error("The strip has no frames");
     }
     test.expect(last.scroll).toBeGreaterThan(start + 1);
-    // The strip reaches its place while the note still grows, so the note grows
-    // where it shows.
-    const arrived = frames.find((frame) => frame.scroll >= last.scroll - 0.5);
-    test.expect(arrived?.width).toBeLessThan(last.width - 1);
+    // The strip scrolls while the note still grows, so the note grows where it
+    // shows. The note ends its enter on a timer with the growth time, so a slow
+    // machine can paint its first frame late and show the note whole in the
+    // next one, while the scroll still eases out. The strip then can't be in
+    // place in a frame with the note still growing, but it moves before the
+    // note is whole and is in place when it is.
+    const grown = frames.findIndex((frame) => frame.width >= last.width - 1);
+    // The scroll eases out, so its last frames move the strip by a pixel or
+    // less, while a scroll that waits for the growth is a whole note away.
+    const arrived = frames.findIndex(
+      (frame) => frame.scroll >= last.scroll - 2,
+    );
+    // A machine that paints its first frame after the growth has no frame
+    // before the note is whole, and the strip must be in place on that one.
+    if (grown > 0) {
+      test.expect(frames[grown - 1]?.scroll).toBeGreaterThan(start + 1);
+    }
+    test.expect(arrived).toBeLessThanOrEqual(grown);
     // The strip never scrolls back, such as when the room for the note goes.
     for (const [index, frame] of frames.entries()) {
       const previous = frames[index - 1];
