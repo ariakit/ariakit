@@ -7,11 +7,12 @@ test("collapsed code is not a tab stop", async () => {
     "aria-expanded",
     "false",
   );
-  // The code comes first, so the first tab stop skips it.
-  await press.Tab();
-  expect(q.button("Show all 36 lines")).toHaveFocus();
+  // The code comes first, so the first tab stop skips it and goes to the copy
+  // button in it.
   await press.Tab();
   expect(q.button("Copy use-users.ts")).toHaveFocus();
+  await press.Tab();
+  expect(q.button("Show all 36 lines")).toHaveFocus();
 });
 
 test("moves the focus to the code that the buttons control", async () => {

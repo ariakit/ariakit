@@ -23,11 +23,45 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("skips the collapsed code in the tab order", async ({ page, q }) => {
     // The collapsed code comes first on the page, so the first tab stop shows
-    // that it's skipped. The copy button over the code comes last.
-    await page.keyboard.press("Tab");
-    await test.expect(q.button("Show all 36 lines")).toBeFocused();
+    // that it's skipped. The copy button in the code comes before the expand
+    // button.
     await page.keyboard.press("Tab");
     await test.expect(q.button("Copy use-users.ts")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await test.expect(q.button("Show all 36 lines")).toBeFocused();
+  });
+
+  test("copies the collapsed code without expanding it", async ({
+    context,
+    q,
+  }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    // The copy button is in the scroll area, and the click target of the expand
+    // button covers the scroll area, so the copy button stays above it.
+    await q.button("Copy use-users.ts").click();
+    await test.expect(q.button("Copied")).toBeVisible();
+    await test.expect(q.button("Show all 36 lines")).toBeVisible();
+  });
+
+  test("doesn't scroll the expanded code when the copy button takes the focus", async ({
+    page,
+    q,
+  }) => {
+    const code = page.locator("pre");
+    const getScrollTop = () => code.evaluate((element) => element.scrollTop);
+    await q.button("Show all 36 lines").click();
+    await test.expect(q.region("use-users.ts")).toBeFocused();
+    await code.evaluate((element) => {
+      element.scrollTop = 60;
+    });
+    // The copy button sticks to the corner of the code, inside its padding, so
+    // a scroll padding would scroll the code a bit more on each focus.
+    await page.keyboard.press("Tab");
+    await test.expect(q.button("Copy use-users.ts")).toBeFocused();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await test.expect(q.button("Copy use-users.ts")).toBeFocused();
+    test.expect(await getScrollTop()).toBe(60);
   });
 
   test("puts the collapse button after the code and its copy button in the tab order", async ({
