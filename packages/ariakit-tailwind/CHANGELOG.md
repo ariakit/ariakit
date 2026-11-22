@@ -1,5 +1,58 @@
 # @ariakit/tailwind
 
+## 0.2.11
+
+### New `ak-frame-divide` utility
+
+The new `ak-frame-divide` utility draws a border only on the sides of a frame that face a sibling in the parent flow. The first frame omits its start side, and the last frame omits its end side. Use it on a cover frame, such as a dialog footer or a header band, to draw one line between it and the content while the parent edge stays as it is on the other sides.
+
+```html
+<div class="ak-layer ak-frame ak-frame-2xl/4 ak-frame-border flex flex-col">
+  <p>Body</p>
+  <div
+    class="ak-layer ak-layer-darken-3 ak-frame ak-frame-cover ak-frame-divide"
+  >
+    Footer
+  </div>
+</div>
+```
+
+In a parent with `ak-frame-row`, the lines follow the text direction. `ak-frame-divide-*` sets the width, and `ak-frame-divide-inherit` takes the width of the parent frame edge. The cover stretch and the radius of nested frames stay the same, so the corners stay concentric.
+
+### Layer appearance variants for `ak-outset` elements
+
+The new `ak-outset-*` variants, such as `ak-outset-dark` and `ak-outset-light-high`, match the layer around the parent layer on an element with `ak-outset`. This is the surface behind the element, such as the page under a bar below a selected tab. The regular variants, such as `ak-dark`, keep matching the parent layer, which can have the opposite appearance. An example is a tab that high contrast mode fills with a dark color on a light page.
+
+```html
+<div class="ak-layer ak-layer-white">
+  <button class="ak-layer ak-layer-black relative">
+    Selected tab
+    <span
+      class="ak-layer ak-layer-contrast ak-outset ak-outset-light:h-[3px] ak-outset-dark:h-[2px] absolute inset-x-0 top-full"
+    ></span>
+  </button>
+</div>
+```
+
+Each layer appearance variant has an `ak-outset-*` counterpart, and `not-*` works with them, such as `not-ak-outset-dark`.
+
+### Smoother nested `ak-frame` radius between `0.5rem` and `1rem`
+
+A nested `ak-frame` took the concentric radius until it was `1rem` from the parent edge, and its declared radius from there. When the distance was larger than the parent radius, the concentric radius was the `0.125em` minimum. Thus, a frame was almost square just before it became fully round.
+
+Between `0.5rem` and `1rem` from the parent edge, the radius now goes in a straight line from the concentric radius at `0.5rem` to the declared radius at `1rem`. If the declared radius is the smaller of the two, the frame keeps the concentric radius until that radius is equal to the declared radius. Frames in this range can become rounder, and a frame with a full declared radius, such as `ak-frame-rounded-full`, is a pill in this range. Frames up to `0.5rem` from the parent edge do not change, and neither do frames whose concentric radius is larger than their declared radius.
+
+```html
+<div class="ak-frame ak-frame-xl/3.5">
+  <!-- Before: 0.125em. After: 0.625rem. At ak-frame-xl/4: 0.75rem -->
+  <div class="ak-frame ak-frame-xl"></div>
+</div>
+```
+
+Add `ak-frame-force` to a nested frame to use its declared radius at each distance.
+
+This update also fixes a frame in a parent with a full radius, such as `ak-frame-rounded-full`. In Firefox and Safari, that frame stayed a pill at `1rem` or more from the parent edge. It now takes its declared radius there, as in Chrome.
+
 ## 0.2.10
 
 ### Contrast floors for edges and layers
