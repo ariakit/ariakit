@@ -137,24 +137,28 @@ jobs:
         with:
           filters: app...
 
-      - parallel:
-          - name: Install Playwright
-            uses: ./.github/workflows/install-playwright
-            with:
-              engines: ${{ matrix.engine }}
-              workspace: app
+      # TODO: Run these steps in parallel again when the runner stops
+      # rewriting event.json at the start of each step. A step that starts at
+      # the same time can read an empty or partial file and fail with a JSON
+      # SyntaxError, such as "Unexpected end of JSON input". See
+      # https://github.com/actions/runner/issues/4641
+      - name: Download app artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: app-build
+          path: app
 
-          - name: Download app artifact
-            uses: actions/download-artifact@v8
-            with:
-              name: app-build
-              path: app
+      - name: Download Next.js artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
 
-          - name: Download Next.js artifact
-            uses: actions/download-artifact@v8
-            with:
-              name: nextjs-dist
-              path: nextjs/.open-next
+      - name: Install Playwright
+        uses: ./.github/workflows/install-playwright
+        with:
+          engines: ${{ matrix.engine }}
+          workspace: app
 
       - name: Test
         id: test
@@ -236,24 +240,28 @@ jobs:
             app...
             root
 
-      - parallel:
-          - name: Install Playwright
-            uses: ./.github/workflows/install-playwright
-            with:
-              engines: ${{ matrix.engine }}
-              workspace: app
+      # TODO: Run these steps in parallel again when the runner stops
+      # rewriting event.json at the start of each step. A step that starts at
+      # the same time can read an empty or partial file and fail with a JSON
+      # SyntaxError, such as "Unexpected end of JSON input". See
+      # https://github.com/actions/runner/issues/4641
+      - name: Download app artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: app-build
+          path: app
 
-          - name: Download app artifact
-            uses: actions/download-artifact@v8
-            with:
-              name: app-build
-              path: app
+      - name: Download Next.js artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
 
-          - name: Download Next.js artifact
-            uses: actions/download-artifact@v8
-            with:
-              name: nextjs-dist
-              path: nextjs/.open-next
+      - name: Install Playwright
+        uses: ./.github/workflows/install-playwright
+        with:
+          engines: ${{ matrix.engine }}
+          workspace: app
 
       # The capture of the base commit lets the adapter accept a first
       # screenshot that has a known image digest. The digests are only hints,
