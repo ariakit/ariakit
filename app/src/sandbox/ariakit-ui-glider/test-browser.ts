@@ -1,6 +1,11 @@
 import type { Locator } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
-import { getBoxOffset, getItemsToScale } from "./test-helpers.ts";
+import {
+  getBoxOffset,
+  getItemsToScale,
+  getLargestTravel,
+  getTravelProgress,
+} from "./test-helpers.ts";
 
 function countBoxes(article: Locator) {
   return article.evaluate(
@@ -17,6 +22,47 @@ function getCorners(panel: Locator) {
     const style = getComputedStyle(panels);
     return `${style.borderStartStartRadius} ${style.borderStartEndRadius}`;
   });
+}
+
+// The travel times of the "Very slow (3s)" and "Slow (800ms)" options.
+const VERY_SLOW_TRAVEL = 3000;
+const SLOW_TRAVEL = 800;
+
+// A long task, such as a render, that holds the page while the box travels on
+// the compositor.
+const LONG_TASK = 600;
+
+interface LongTaskTimes {
+  /** When the probe selects the item that the box travels to. */
+  clickedAt: number;
+  /** After the first frame that follows the click, when the travel shows. */
+  shownAt: number;
+  /** When the probe changes the glider after the long task. */
+  changedAt: number;
+  /** When the probe reads the box. */
+  readAt: number;
+}
+
+/**
+ * Returns the range, as a part of the distance, where the box can show after a
+ * long task during its travel. The range comes from the time that passed, so
+ * slow frames on a busy machine move it with the box. The bounds are halfway to
+ * the places of the bugs: a travel that starts again from where the page last
+ * drew the box, near the start, and one that counts the long task twice.
+ */
+function getLongTaskRange(times: LongTaskTimes, duration: number) {
+  // The travel shows from the first frame after the click, so the box is about
+  // this far when the change comes. The browser can report the start of the
+  // travel a frame or more late, so the bound has a margin.
+  const least = getTravelProgress(times.changedAt - times.shownAt, duration);
+  // The travel can't start before the click, so the box is at most this far
+  // when the probe reads it.
+  const most = getTravelProgress(times.readAt - times.clickedAt, duration);
+  const twice = getTravelProgress(
+    times.readAt - times.clickedAt + LONG_TASK,
+    duration,
+  );
+  return { min: least / 2, max: (most + twice) / 2 };
 }
 
 withFramework(import.meta.dirname, async ({ query, test }) => {
@@ -347,9 +393,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       // travel to Grid runs on the compositor while a long task, such as a
       // render, holds the page at the frame before it. Board is past Grid, so
       // the box keeps going the same way.
-      const places = await q
-        .article("Glider")
-        .evaluate(async (node, frames) => {
+      const places = await q.article("Glider").evaluate(
+        async (node, { frames, longTask }) => {
           const getRadio = (value: string) =>
             node.querySelector<HTMLInputElement>(`input[value="${value}"]`);
           const box = node.querySelector('.glider-box[data-selected="true"]');
@@ -366,18 +411,30 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
             });
           const start = getLeft(box);
           getRadio("Grid")?.click();
-          for (let frame = 0; frame < frames; frame++) {
+          const clickedAt = performance.now();
+          await afterPaint();
+          const shownAt = performance.now();
+          for (let frame = 1; frame < frames; frame++) {
             await afterPaint();
           }
-          const lastFrame = getLeft(box);
           const blockStart = performance.now();
-          while (performance.now() - blockStart < 600) {
+          while (performance.now() - blockStart < longTask) {
             // A long task.
           }
           getRadio("Board")?.click();
+          const changedAt = performance.now();
           await afterPaint();
-          return { start, grid: getLeft(grid), lastFrame, next: getLeft(box) };
-        }, frames);
+          const next = getLeft(box);
+          const readAt = performance.now();
+          return {
+            start,
+            grid: getLeft(grid),
+            next,
+            times: { clickedAt, shownAt, changedAt, readAt },
+          };
+        },
+        { frames, longTask: LONG_TASK },
+      );
       if (!places) {
         throw new Error("The glider has no selected box");
       }
@@ -385,10 +442,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       // where the page last drew it, which would show the box go back. It
       // doesn't start where the box would show after twice the long task
       // either, near Grid.
-      const distance = places.grid - places.start;
-      const moved = places.next - places.lastFrame;
-      test.expect(moved).toBeGreaterThan(distance * 0.2);
-      test.expect(moved).toBeLessThan(distance * 0.65);
+      const progress =
+        (places.next - places.start) / (places.grid - places.start);
+      const range = getLongTaskRange(places.times, VERY_SLOW_TRAVEL);
+      test.expect(progress).toBeGreaterThan(range.min);
+      test.expect(progress).toBeLessThan(range.max);
     });
   }
 
@@ -406,7 +464,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // The box is presentation, so this probe reads it from the DOM. The count
     // changes while the box travels to Calendar, after a long task, so the
     // glider reads where the box shows to start the copies again.
-    const places = await article.evaluate(async (node) => {
+    const places = await article.evaluate(async (node, longTask) => {
       const calendar = node.querySelector<HTMLInputElement>(
         'input[value="Calendar"]',
       );
@@ -426,24 +484,37 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         });
       const start = getLeft(box);
       calendar.click();
-      for (let frame = 0; frame < 2; frame++) {
-        await afterPaint();
-      }
+      const clickedAt = performance.now();
+      await afterPaint();
+      const shownAt = performance.now();
+      await afterPaint();
       const blockStart = performance.now();
-      while (performance.now() - blockStart < 600) {
+      while (performance.now() - blockStart < longTask) {
         // A long task.
       }
       addCard.click();
+      const changedAt = performance.now();
       await afterPaint();
-      return { start, calendar: getLeft(target), next: getLeft(box) };
-    });
+      const next = getLeft(box);
+      const readAt = performance.now();
+      return {
+        start,
+        calendar: getLeft(target),
+        next,
+        times: { clickedAt, shownAt, changedAt, readAt },
+      };
+    }, LONG_TASK);
     if (!places) {
       throw new Error("The glider has no selected box");
     }
     // The box keeps its travel, so it shows where the time since the click puts
-    // it, not where twice the long task would, near Calendar.
-    const distance = places.calendar - places.start;
-    test.expect(places.next - places.start).toBeLessThan(distance * 0.6);
+    // it, not where twice the long task would, near Calendar. The range has no
+    // use here as a lower bound: Chrome can keep the travel pending, with no
+    // start time, until after the read, so it reads the box at its start.
+    const progress =
+      (places.next - places.start) / (places.calendar - places.start);
+    const range = getLongTaskRange(places.times, VERY_SLOW_TRAVEL);
+    test.expect(progress).toBeLessThan(range.max);
   });
 
   test("doesn't move the box ahead when a long task delays the start of its travel", async ({
@@ -458,38 +529,67 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         node.querySelector<HTMLInputElement>(`input[value="${value}"]`);
       const box = node.querySelector('.glider-box[data-selected="true"]');
       const grid = getRadio("Grid")?.closest(".control");
-      if (!box || !grid) return null;
+      const board = getRadio("Board")?.closest(".control");
+      if (!box || !grid || !board) return null;
       const getLeft = (element: Element) =>
         element.getBoundingClientRect().left;
       // The glider moves the box in a microtask after a click, and a frame
       // shows after its callbacks, so each read waits for a task after a frame.
+      // It resolves with the time of the frame, when the page drew the box.
       const afterPaint = () =>
-        new Promise((resolve) => {
-          requestAnimationFrame(() => setTimeout(resolve));
+        new Promise<number>((resolve) => {
+          requestAnimationFrame((time) => setTimeout(() => resolve(time)));
         });
       const start = getLeft(box);
       getRadio("Grid")?.click();
+      const clickedAt = performance.now();
       await Promise.resolve();
       const blockStart = performance.now();
       while (performance.now() - blockStart < 500) {
         // A long task.
       }
+      let lastFrameAt = 0;
       for (let frame = 0; frame < 3; frame++) {
-        await afterPaint();
+        lastFrameAt = await afterPaint();
       }
       const lastFrame = getLeft(box);
       getRadio("Board")?.click();
+      const changedAt = performance.now();
       await afterPaint();
-      return { start, grid: getLeft(grid), lastFrame, next: getLeft(box) };
+      const next = getLeft(box);
+      const readAt = performance.now();
+      return {
+        start,
+        grid: getLeft(grid),
+        board: getLeft(board),
+        lastFrame,
+        next,
+        clickedAt,
+        lastFrameAt,
+        changedAt,
+        readAt,
+      };
     });
     if (!places) {
       throw new Error("The glider has no selected box");
     }
     // The new travel starts where the box shows, which moved for a few frames
     // only, not for the time of the long task, which would put it near Grid.
-    // The box can still move a little after the last frame on a busy machine.
+    // After the last frame, the box can still move as far as the travel to Grid
+    // goes in the time to the read, and then as far as the travel to Board goes
+    // from the click on Board, so slow frames on a busy machine move the bound
+    // too. The bound is halfway to where the box would be ahead, when that is
+    // past the move that the box can make.
     const distance = places.grid - places.start;
-    test.expect(places.next - places.lastFrame).toBeLessThan(distance * 0.6);
+    const moved = (places.next - places.lastFrame) / distance;
+    const canMove =
+      getLargestTravel(places.readAt - places.lastFrameAt, SLOW_TRAVEL) +
+      getTravelProgress(places.readAt - places.changedAt, SLOW_TRAVEL) *
+        ((places.board - places.start) / distance);
+    const ahead =
+      getTravelProgress(places.readAt - places.clickedAt, SLOW_TRAVEL) -
+      (places.lastFrame - places.start) / distance;
+    test.expect(moved).toBeLessThan((canMove + Math.max(canMove, ahead)) / 2);
   });
 
   test("keeps the copies until the box stops", async ({ q }) => {
