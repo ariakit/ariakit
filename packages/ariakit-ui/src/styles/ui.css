@@ -3059,7 +3059,7 @@ body > * {
     --max-l: 0.85;
     --bg-dark-l: l;
     --shadow: 0 -0.5px 0.5px var(--shadow-color);
-    --highlight: 0 1.5px 0.5px oklch(from var(--bg-dark) calc(l + 0.1) c h);
+    --highlight: 0 1px 0.5px oklch(from var(--bg-dark) calc(l + 0.1) c h);
   }
 }
 
