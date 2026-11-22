@@ -434,7 +434,8 @@ interface TabRowFrameTabsProps {
   padding?: number;
   /**
    * Whether the row has tabs and panels. Without them, the row holds only the
-   * sidebar button and the logo, like a row in a layer above other tabs.
+   * sidebar button and the logo, like a row in a layer above other tabs, so the
+   * root is transparent and has no outer edge.
    */
   tabs?: boolean;
 }
@@ -447,7 +448,11 @@ interface TabRowFrameTabsProps {
 function TabRowFrameTabs({ name, padding, tabs = true }: TabRowFrameTabsProps) {
   const id = name.toLowerCase().replaceAll(" ", "-");
   return (
-    <Tabs defaultSelectedId={`${id}-${tabRowLabels[1]}`}>
+    <Tabs
+      defaultSelectedId={`${id}-${tabRowLabels[1]}`}
+      $layer={tabs ? undefined : "transparent"}
+      $outerEdge={tabs ? undefined : false}
+    >
       <TabRow>
         <TabRowButton aria-label={`${name} sidebar`} $p={padding}>
           <TabSlot>
@@ -3831,7 +3836,7 @@ export default function TabsExamples() {
       </Example>
       <Example
         title="Tab row frame"
-        description="A static part of a tab row, with a logo and a name, between a sidebar button and the tabs. It has the box of a tab that is not selected, so with the same padding, its icon and its name line up with those of the buttons and the tabs. It has no hover surface, so the separator before it stays while the pointer is on it. The second row has less padding, and the third row has only the sidebar button and the logo, like a row in a layer above other tabs."
+        description="A static part of a tab row, with a logo and a name, between a sidebar button and the tabs. It has the box of a tab that is not selected, so with the same padding, its icon and its name line up with those of the buttons and the tabs. It has no hover surface, so the separator before it stays while the pointer is on it. The second row has less padding, and the third row has only the sidebar button and the logo, on a transparent root with no outer edge, like a row in a layer above other tabs."
         stretch
         code={`
           <Tabs>
