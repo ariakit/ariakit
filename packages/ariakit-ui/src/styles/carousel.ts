@@ -56,7 +56,7 @@ export const carousel = cv({
     // The space between each button and the end of the row, and the same
     // space on the other side of the button, where it also takes the pointer.
     // Zero specificity lets an extender, such as a tab strip, set its own.
-    "ui-base:[--carousel-button-padding:--spacing(2)]",
+    "ui-base:[--carousel-button-padding:round(--spacing(2),1px)]",
     // The ui-tabs-open-* utilities repeat this size, because a tab panel can't
     // read it from the strip.
     "[--carousel-fade-size:--spacing(8)]",

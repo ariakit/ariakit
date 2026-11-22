@@ -46,8 +46,9 @@ export const codeBlock = cv({
     "[&>.code-block-header~.code-block-code,&>.tab-list-carousel~.code-block-code]:row-start-2",
     // The space around the copy button: the padding of the block, or a
     // little space when the block has none, so the button never touches the
-    // edge.
-    "[--code-block-copy-gap:max(var(--tabs-padding),--spacing(1))]",
+    // edge. A whole pixel keeps the button on the pixel grid at text sizes
+    // where the em step isn't one.
+    "[--code-block-copy-gap:round(max(var(--tabs-padding),--spacing(1)),1px)]",
     scrollportHeight,
   ],
   variants: {
@@ -240,7 +241,7 @@ export const codeBlockCollapse = cv({
     "code-block-collapse flex justify-center",
     "[.code-block>&]:row-start-2",
     "[.code-block>.code-block-header~&,.code-block>.tab-list-carousel~&]:row-start-3",
-    "pt-[calc(var(--tabs-padding,0px)+var(--tabs-bordering,0px)+--spacing(2))]",
+    "pt-[calc(var(--tabs-padding,0px)+var(--tabs-bordering,0px)+round(--spacing(2),1px))]",
   ],
 });
 

@@ -863,7 +863,7 @@ export const tabListCarousel = cv({
     "[--carousel-button-y:calc((var(--tabs-notch,0px)+max(0px,var(--tabs-bordering)-var(--tabs-padding))*var(--tabs-folder,0))/-2)]",
     // With the root padding and edge beside them, the buttons keep about as
     // much space from the side of the strip as from its top.
-    "[--carousel-button-padding:--spacing(1)]",
+    "[--carousel-button-padding:round(--spacing(1),1px)]",
     "before:row-start-1 before:col-start-1",
     "before:-mt-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
     "before:-mx-[calc(var(--tabs-padding)+var(--tabs-bordering))]",
