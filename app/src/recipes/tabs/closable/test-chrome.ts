@@ -355,16 +355,37 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.tab("Note 4")).toBeInViewport({ ratio: 1 });
     // The selection moves while the new note still grows in, so this presses
     // the tabs in the page. The note ends its enter on a timer with the growth
-    // time, so the presses on timers with no delay come before it.
+    // time. A slow render can make that timer due before a press, so each press
+    // after the first waits for the selection of the press before it on a
+    // mutation observer, which runs before any timer.
     await newNote.evaluate(async (button) => {
       const strip = document.querySelector("[role='tablist']");
       if (!strip || !(button instanceof HTMLElement)) return;
-      const nextTask = () => new Promise((resolve) => setTimeout(resolve));
+      const id = "note-new-5";
+      const isSelected = () =>
+        document.getElementById(id)?.getAttribute("aria-selected") === "true";
+      const whenSelected = (selected: boolean) =>
+        new Promise<void>((resolve) => {
+          if (isSelected() === selected) {
+            resolve();
+            return;
+          }
+          const observer = new MutationObserver(() => {
+            if (isSelected() !== selected) return;
+            observer.disconnect();
+            resolve();
+          });
+          observer.observe(strip, {
+            attributes: true,
+            childList: true,
+            subtree: true,
+          });
+        });
       button.click();
-      await nextTask();
+      await whenSelected(true);
       const tabs = strip.querySelectorAll<HTMLElement>("[role='tab']");
       tabs[tabs.length - 2]?.click();
-      await nextTask();
+      await whenSelected(false);
       tabs[tabs.length - 1]?.click();
     });
     await test.expect(q.tab("Note 5")).toHaveAttribute("aria-selected", "true");
