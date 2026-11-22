@@ -27,6 +27,12 @@ import {
   carouselViewport,
 } from "../styles/carousel.ts";
 import type { carouselViewportBase } from "../styles/carousel.ts";
+import type { ClearRange } from "../utils/carousel-clear.ts";
+import {
+  getClearOffset,
+  getClearRange,
+  getViewportClearOffset,
+} from "../utils/carousel-clear.ts";
 import { Button } from "./button.ariakit.react.tsx";
 import type { ButtonProps } from "./button.ariakit.react.tsx";
 
@@ -65,29 +71,6 @@ function getSlideScrollOffset(viewport: HTMLElement, slide: SlideItem) {
   const padding = getScrollPadding(viewport);
   const offset = getStartOffset(viewport, slide.element) - padding.start;
   return Math.min(Math.max(0, offset), getMaxOffset(viewport));
-}
-
-interface ClearRange {
-  left: number;
-  right: number;
-}
-
-/**
- * Returns how far a row scrolls so that a box lies in the clear range between
- * the fades and the buttons: to the nearest edge of the range, or to its middle
- * when the box doesn't fit. Returns 0 when the box is already clear.
- */
-function getClearOffset(rect: DOMRect, clear: ClearRange) {
-  if (rect.width > clear.right - clear.left) {
-    return rect.left + rect.width / 2 - (clear.left + clear.right) / 2;
-  }
-  if (rect.left < clear.left) {
-    return rect.left - clear.left;
-  }
-  if (rect.right > clear.right) {
-    return rect.right - clear.right;
-  }
-  return 0;
 }
 
 interface GetSnapOffsetParams {
@@ -462,14 +445,7 @@ function useCarousel({
       if (pressing) return;
       if (!target.matches(":focus-visible")) return;
       const style = win.getComputedStyle(viewport);
-      const viewportRect = viewport.getBoundingClientRect();
-      const viewportLeft = viewportRect.left + viewport.clientLeft;
-      const viewportRight = viewportLeft + viewport.clientWidth;
-      const clear = {
-        left: viewportLeft + (Number.parseFloat(style.scrollPaddingLeft) || 0),
-        right:
-          viewportRight - (Number.parseFloat(style.scrollPaddingRight) || 0),
-      };
+      const clear = getClearRange(viewport);
       const fits = (element: Element) =>
         element.getBoundingClientRect().width <= clear.right - clear.left;
       const snapItem =
@@ -480,12 +456,8 @@ function useCarousel({
           : undefined;
       const snaps = snapItem != null && fits(snapItem);
       const item = snaps ? snapItem : target;
-      // Fractional widths can leave an item a fraction of a pixel past the
-      // clear range, which still shows it whole.
-      const getItemOffset = () => {
-        const offset = getClearOffset(item.getBoundingClientRect(), clear);
-        return Math.abs(offset) < 1 ? 0 : offset;
-      };
+      const getItemOffset = () =>
+        getViewportClearOffset(viewport, item.getBoundingClientRect());
       const offset = getItemOffset();
       if (!offset) return;
       // The carousel scrolls the viewport alone. scrollIntoView would also

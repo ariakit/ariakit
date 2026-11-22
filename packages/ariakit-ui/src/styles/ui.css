@@ -837,6 +837,14 @@ body > * {
   initial-value: 16px;
 }
 
+/* How far a sidebar with $reveal="zoom" is open, from 0 to 1. Its column
+   animates the value, and its panel takes its opacity and its scale from it. */
+@property --shell-reveal {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
 /* Sidebars set their slot width and publish it on the root. Registered lengths
    resolve relative units once before the columns and their bodies inherit
    them. */

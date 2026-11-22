@@ -229,7 +229,7 @@ export default function Example() {
         </ShellSidebarFooter>
       </ShellSidebar>
       <ShellMain>
-        <ShellMainHeader $sticky $blur $borderType="dashed">
+        <ShellMainHeader $blur $borderType="dashed">
           <div className="flex w-full items-center justify-between gap-4 text-sm">
             <span className="ak-ink-70 truncate">
               Edited 6 min ago by Anna Park

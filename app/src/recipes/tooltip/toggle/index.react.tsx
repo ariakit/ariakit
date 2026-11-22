@@ -19,8 +19,6 @@ export default function Example() {
       $gap="sm"
       $lighten
       $border
-      $rounded="xl"
-      $p={1}
     >
       <Tooltip text={muted ? "Unmute" : "Mute"}>
         <Button

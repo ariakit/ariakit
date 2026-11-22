@@ -231,8 +231,11 @@ const seam = cv({
       const width = typeof value === "boolean" ? Number(value) : value;
       return { style: { "--border-width": `${width}px` } };
     },
-    /** Draws one facing edge as a solid border, a dashed border, or no edge. */
-    $borderType(value?: "border" | "dashed" | "none") {
+    /**
+     * Draws the facing edge as a solid or a dashed border. To draw no edge, set
+     * `$border` to `false`, like on other frames.
+     */
+    $borderType(value?: "border" | "dashed") {
       if (value === "border") {
         return [facingBorder, "[--shell-facing-border:var(--border-width)]"];
       }
@@ -242,8 +245,8 @@ const seam = cv({
           "border-dashed [--shell-facing-border:var(--border-width)]",
         );
       }
-      // The marker lets a bar tell the shell that it has no facing edge.
-      return "[--shell-facing-border:0px] shell-edge-none";
+      // Another border type of a frame doesn't draw a one-sided edge.
+      return "[--shell-facing-border:0px]";
     },
   },
   defaultVariants: {
@@ -256,7 +259,6 @@ const seam = cv({
       switch (defaultValue) {
         case "border":
         case "dashed":
-        case "none":
           return defaultValue;
         default:
           return "border";
@@ -402,8 +404,6 @@ export const shellHeader = cv({
   class: [
     bar,
     "shell-header row-[header] box-border min-h-[calc(var(--shell-header-height)+var(--shell-facing-border,0px))] @container/shell-header",
-    // Without a facing edge, the shell adds no edge width to its offsets.
-    "[.shell:has(>&.shell-edge-none)]:[--shell-header-border:0px]",
     // Edge bars in a centered navigation row reach the bottom of the header
     // and cover its facing edge. The navigation measures the header without
     // the border of its carousel root, and reaches over both edges.
@@ -584,8 +584,6 @@ export const shellFooter = cv({
     // The footer ends the sidebar columns, pushing sticky sidebar bodies up
     // without a fixed footer height.
     "shell-footer row-[footer] box-border min-h-[calc(var(--shell-footer-height)+var(--shell-facing-border,0px))] @container/shell-footer",
-    // Without a facing edge, the shell adds no edge width to its offsets.
-    "[.shell:has(>&.shell-edge-none)]:[--shell-footer-border:0px]",
     // Let edge bars in a centered navigation row reach the inner edge.
     // The bottom safe area pads the footer, so it doesn't hold the row. The
     // navigation measures the footer without the border of its carousel root,
@@ -654,6 +652,37 @@ export const shellFooter = cv({
     $px: barInsetDefault,
   },
 });
+
+// The panel of a sidebar with `$reveal` stays in place while the column folds.
+// The column also names its side, so these rules outrank the alignment that the
+// panel sets for itself.
+const shellSidebarRevealPlace = cx(
+  "[&.shell-sidebar-start>.shell-sidebar-panel]:self-start [&.shell-sidebar-end>.shell-sidebar-panel]:self-end",
+);
+
+// The panel of a sidebar with the `zoom` value of `$reveal` also fades in and
+// grows.
+const shellSidebarRevealZoom = cx(
+  // How far the column is open, from 0 to 1. The column is always in the page,
+  // so it can animate the value, also on the way in, and a sidebar that is open
+  // on the first render doesn't animate. The panel is not in the page while
+  // the sidebar is closed.
+  "[&.shell-sidebar-start]:[--shell-reveal:calc(var(--shell-start-1-open)*var(--shell-start-1-fit))]",
+  "[.shell-sidebar-start~&.shell-sidebar-start]:[--shell-reveal:calc(var(--shell-start-2-open)*var(--shell-start-2-fit))]",
+  "[&.shell-sidebar-end]:[--shell-reveal:calc(var(--shell-end-1-open)*var(--shell-end-1-fit))]",
+  "[.shell-sidebar-end~&.shell-sidebar-end]:[--shell-reveal:calc(var(--shell-end-2-open)*var(--shell-end-2-fit))]",
+  "[&.shell-sidebar]:transition-[width,--shell-reveal]",
+  "[&>.shell-sidebar-panel]:opacity-(--shell-reveal)",
+  "[&>.shell-sidebar-panel]:scale-[calc(0.95+0.05*var(--shell-reveal))]",
+  // The panel grows from its top corner at the outer side of the shell, so
+  // what is next to that corner stays in place. The column follows the
+  // direction of the shell.
+  "[&.shell-sidebar-start:dir(ltr)>.shell-sidebar-panel]:origin-top-left [&.shell-sidebar-start:dir(rtl)>.shell-sidebar-panel]:origin-top-right",
+  "[&.shell-sidebar-end:dir(ltr)>.shell-sidebar-panel]:origin-top-right [&.shell-sidebar-end:dir(rtl)>.shell-sidebar-panel]:origin-top-left",
+  // The parts of the panel reset the value, so a frame of the fold doesn't
+  // restyle what they hold.
+  "[&>.shell-sidebar-panel>*]:[--shell-reveal:initial]",
+);
 
 /**
  * A sidebar column that folds to zero width while its panel keeps its full
@@ -801,6 +830,22 @@ export const shellSidebar = cv({
         "shell-sidebar-show-max-6xl @6xl/shell:[&.shell-sidebar]:w-0 @6xl/shell:[&>.shell-sidebar-panel]:hidden",
       "max-7xl":
         "shell-sidebar-show-max-7xl @7xl/shell:[&.shell-sidebar]:w-0 @7xl/shell:[&>.shell-sidebar-panel]:hidden",
+    },
+    /**
+     * Keeps the panel in place while the column folds, so main uncovers the
+     * panel when the sidebar opens and covers it when the sidebar closes. Main
+     * also covers the edge of the panel that faces it until the column is fully
+     * open, so that edge shows only at rest. A sidebar that main uncovers
+     * usually has no edge: set `$border` to `false` on its panel. `zoom` also
+     * brings the panel forward: it fades in and grows from 95% to its full
+     * size, from its top corner at the outer side of the shell. The panel keeps
+     * a scale when it is open, so it is the containing block of fixed elements
+     * inside it. Without `$reveal`, the panel moves with the edge that faces
+     * main. Defaults to `false`.
+     */
+    $reveal: {
+      true: shellSidebarRevealPlace,
+      zoom: [shellSidebarRevealPlace, shellSidebarRevealZoom],
     },
     /** Selects the first row the sidebar spans. Defaults to `main`. */
     $from: {
@@ -1206,8 +1251,6 @@ export const shellMainHeader = cv({
     "shell-main-header col-start-1 col-end-[calc(2+var(--shell-header-free-1)+var(--shell-header-free-1)*var(--shell-header-free-2))] row-[main-header]",
     "box-border min-h-[calc(var(--shell-main-header-height)+var(--shell-facing-border,0px))] content-center py-0! z-3",
     "[--shell-main-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-main-header-space),1px))]",
-    // Without a facing edge, the shell adds no edge width to its offsets.
-    "[.shell:has(>.shell-main>&.shell-edge-none)]:[--shell-main-header-border:0px]",
     // The spacing inside the bar follows its own text size, like the shell
     // header. Without this, the bar takes the step of a sized main, which has
     // larger text.
@@ -1445,8 +1488,32 @@ export const shellMainBody = cv({
     // oxlint-disable-next-line tailwindcss/enforce-canonical -- py-[...] sorts after py-*
     "[padding-block:var(--shell-main-pbs)_var(--shell-main-pbe)]",
   ],
-  variants: contentVariants,
-  defaultVariants: { $p: "unset" },
+  variants: {
+    ...contentVariants,
+    /**
+     * Sets what the content column is centered on while the body has free
+     * space. `shell` counts the sidebars of the shell when the body is directly
+     * inside `ShellMain`. Behind a wrapper in `ShellMain`, such as in a tab
+     * panel, the body can't read the sidebars, so it centers the column on the
+     * wrapper. `outer` makes that body ask the nearest `ShellMain` for its open
+     * sidebars, so the column stays on the center of the shell. Keep the same
+     * space between that main and the body at both sides. It has no effect on a
+     * body directly inside `ShellMain`. Defaults to `shell`.
+     */
+    $center: {
+      shell: "",
+      outer: [
+        // A body directly inside main already reads the sidebars of its shell,
+        // so the query would count them twice there.
+        "[&:not(.shell-main>*)]:shell-center-outer",
+        // The body reads the space itself. Below it, the space would restyle
+        // the content on each toggle and move a shell inside it. A shell that
+        // is centered on the outer shell asks main for the state itself.
+        "[&:not(.shell-main>*)>:not(.shell-center-outer)]:[--shell-outer-start:initial] [&:not(.shell-main>*)>:not(.shell-center-outer)]:[--shell-outer-end:initial]",
+      ],
+    },
+  },
+  defaultVariants: { $p: "unset", $center: "shell" },
 });
 
 /**

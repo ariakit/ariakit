@@ -318,6 +318,10 @@ export interface ShellMainBodyProps
  * set scroll padding on the page's scroll port to their total height, for
  * example `html { scroll-padding-block-start: 114px }` for two default headers.
  * Content must fit the configured header heights.
+ *
+ * Behind a wrapper in `ShellMain`, such as in a tab panel, set
+ * `$center="outer"` to keep the content column on the center of the shell while
+ * its sidebars open and close.
  * @example
  * <Shell>
  *   <ShellMain>
