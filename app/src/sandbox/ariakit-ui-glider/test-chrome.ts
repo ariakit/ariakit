@@ -311,6 +311,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           return getComputedStyle(follower).transitionProperty;
         }),
       )
-      .toBe("--glider-start, --glider-end");
+      .toBe("--glider-travel-start, --glider-travel-end");
   });
 });

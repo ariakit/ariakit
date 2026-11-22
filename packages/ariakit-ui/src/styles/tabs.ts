@@ -328,13 +328,11 @@ function inheritsTabsBorder(variants: TabsBorderVariants) {
 const tabFolder = cx(
   "ui-folder",
   // The box of a glider paints the selected folder, wherever it is. It takes
-  // the meet from its own place, so its curves change while it travels.
+  // the meet from its own place, so its curves change while it travels. Beside
+  // a control of a tab row, that place holds the control, so the box keeps its
+  // full curve there.
   "[&.glider-box]:[--tabs-meet:calc(var(--glider-start)/2)]",
   "[.tabs-stretch_&.glider-box]:[--tabs-meet-end:calc(var(--glider-end)/2)]",
-  // Beside a control of a tab row, the box is not at the end of the row, so it
-  // keeps its full curve there.
-  "[.tab-row>:not(.carousel-button-area)~.tabs-strip_&.glider-box]:[--tabs-meet:initial]",
-  "[.tab-row>.tabs-strip:has(~:not(.carousel-button-area))_&.glider-box]:[--tabs-meet-end:initial]",
   tabsBorder,
   tabCurves,
   tabCutCurves,
@@ -858,7 +856,9 @@ export const tabRow = cv({
   class: [
     // The parts lay out in one line, in place of the single grid cell of a
     // carousel root, which this follows in the stylesheet.
-    "tab-row flex! items-start",
+    // The glider of the strip counts the other parts of the row in the place
+    // of its box, so the corners know how far the box is from each end.
+    "tab-row glider-row flex! items-start",
     tabsFloat,
     // The controls keep the space of the tabs between them.
     "gap-(--tabs-float)",
@@ -933,8 +933,6 @@ export const tabPanels = cv({
     // corners take the meet from the place of the box, and change with it
     // while it travels. Other selected tabs don't meet the panel.
     gliderFollower,
-    "[.tabs:has(>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip:nth-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-meet:calc(var(--glider-start)/2)]",
-    "[.tabs:has(>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip.tabs-stretch:nth-last-child(1_of_:not(.carousel-button-area))>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-meet-end:calc(var(--glider-end)/2)]",
     // Overlap the strip notch and root edge so the selected folder covers the
     // seam. The top margin and corners here apply only below a strip. A panel
     // with no strip before it keeps those of $cover, like the first frame.
@@ -949,6 +947,17 @@ export const tabPanels = cv({
     // space past the curve.
     "[.tabs-folder-cut>&]:[--tabs-corner-s:calc(min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet,var(--tabs-radius))-var(--tabs-radius)))*var(--tabs-round-s,1))]",
     "[.tabs-folder-cut>&]:[--tabs-corner-e:calc(min(var(--tabs-notch,0px),max(0px,2*var(--tabs-meet-end,var(--tabs-radius))-var(--tabs-radius)))*var(--tabs-round-e,1))]",
+    // With a glider in the strip, the corners take the meet from the place of
+    // the box, which is half of its distance from the end of the row. Beside a
+    // control of a tab row, that distance holds the control, so the corner
+    // stays round, and it shrinks with a control that folds away. These
+    // rules set the corners and not the meet, because the corners are
+    // registered and don't inherit. A value that changes on each frame of the
+    // travel would otherwise restyle everything in the panels on each frame.
+    "[.tabs:has(>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-corner-s:calc(min(var(--tabs-notch,0px),var(--glider-start)/2)*var(--tabs-round-s,1))]",
+    "[.tabs:has(>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-corner-e:calc(min(var(--tabs-notch,0px),var(--glider-end)/2)*var(--tabs-round-e,1))]",
+    "[.tabs.tabs-folder-cut:has(>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-corner-s:calc(min(var(--tabs-notch,0px),max(0px,var(--glider-start)-var(--tabs-radius)))*var(--tabs-round-s,1))]",
+    "[.tabs.tabs-folder-cut:has(>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-corner-e:calc(min(var(--tabs-notch,0px),max(0px,var(--glider-end)-var(--tabs-radius)))*var(--tabs-round-e,1))]",
     // Each corner opens from that radius to a full corner as --tabs-open-s or
     // --tabs-open-e grows, while the fade hides a selected outer folder.
     "not-first:rounded-ss-[calc(var(--tabs-corner-s)+(var(--tabs-notch,0px)-var(--tabs-corner-s))*var(--tabs-open-s,0))]",

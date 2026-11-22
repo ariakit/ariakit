@@ -1,4 +1,5 @@
 import type { Locator } from "@playwright/test";
+import { getBoxOffset } from "#app/sandbox/ariakit-ui-glider/test-helpers.ts";
 import {
   captureInView,
   capturePage,
@@ -255,7 +256,290 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
       .poll(() => getPanelCorners(list))
       .toEqual({ start: 0, end: 0 });
   });
+
+  test("keeps the round panel corners beside the buttons of a row with a glider", async ({
+    q,
+  }) => {
+    const box = query(q.article("Tab row with a glider"));
+    const first = box.tablist("Tab row glider");
+    const last = box.tablist("Tab row glider stretch");
+    // The panel follows the box once the box is on the selected tab.
+    await test.expect
+      .poll(() => getBoxOffset(query(first).tab("Quotes")))
+      .toBeLessThan(0.5);
+    await test.expect
+      .poll(() => getBoxOffset(query(last).tab("Support")))
+      .toBeLessThan(0.5);
+    // A button is before the first tab and after the stretched last tab, so the
+    // selected folder is not at the corner of the panel.
+    test.expect(await getPanelCorners(first)).toEqual({ start: 12, end: 12 });
+    test.expect(await getPanelCorners(last)).toEqual({ start: 12, end: 12 });
+  });
+
+  test("keeps the full folder curve of the box beside a button of a row with a glider", async ({
+    q,
+  }) => {
+    const title = "Tab row glider adapt";
+    const list = query(q.article("Tab row with a glider")).tablist(title);
+    const quotes = query(list).tab("Quotes");
+    await test.expect.poll(() => getBoxOffset(quotes)).toBeLessThan(0.5);
+    // A button is before the first tab, so the box paints the full start curve
+    // of the selected tab under it, like the tab itself.
+    await test.expect.poll(() => getFolderCurves(quotes)).toEqual([12, 12]);
+    await query(list).tab("Billing").click();
+    await quotes.click();
+    await test.expect.poll(() => getBoxOffset(quotes)).toBeLessThan(0.5);
+    test.expect(await getFolderCurves(quotes)).toEqual([12, 12]);
+  });
+
+  test("moves the panel corner with the first tab while the name before the strip folds", async ({
+    q,
+  }) => {
+    const title = "Tab row glider fold";
+    const box = query(q.article("Tab row with a glider"));
+    const list = box.tablist(title);
+    const tab = query(list).tab("Quotes");
+    await test.expect.poll(() => getBoxOffset(tab)).toBeLessThan(0.5);
+    test.expect((await getPanelCorners(list)).start).toBe(12);
+    const recording = await recordFold(box.text("Acme"));
+    await box.button(`${title} hide name`).click();
+    const samples = await recording.evaluate((record) => record.done);
+    // The fold takes two seconds, so it shows on many frames.
+    test.expect(samples.length).toBeGreaterThan(10);
+    test.expect(samples[0]?.corner).toBe(12);
+    // The first tab reaches the edge of the panel, so the corner is square.
+    test.expect(samples.at(-1)?.corner).toBe(0);
+    await test.expect
+      .poll(() => getDistanceFromPanel(tab))
+      .toBeLessThanOrEqual(1);
+    // The corner shrinks as the tab comes near the edge, through the values
+    // between, and doesn't jump at the end of the fold. A busy machine can skip
+    // frames, so one frame between is enough.
+    for (const [index, sample] of samples.entries()) {
+      const previous = samples[index - 1];
+      if (!previous) continue;
+      test.expect(sample.corner).toBeLessThanOrEqual(previous.corner + 0.01);
+    }
+    const between = samples.filter(({ corner }) => corner > 0 && corner < 12);
+    test.expect(between.length).toBeGreaterThanOrEqual(1);
+  });
+
+  test("rounds the panel corner when a button mounts before the strip of a row with a glider", async ({
+    q,
+  }) => {
+    const title = "Tab row glider sidebar";
+    const box = query(q.article("Tab row with a glider"));
+    const list = box.tablist(title);
+    await test.expect
+      .poll(() => getBoxOffset(query(list).tab("Quotes")))
+      .toBeLessThan(0.5);
+    // The selected first tab is at the corner of the panel.
+    test.expect((await getPanelCorners(list)).start).toBe(0);
+    await box.checkbox(`${title} open`).uncheck();
+    await test.expect(box.button(`${title} open sidebar`)).toBeVisible();
+    await test.expect
+      .poll(async () => (await getPanelCorners(list)).start)
+      .toBe(12);
+    // The button changes the padding of the strip, so the tabs move in it, and
+    // the box stays on the selected tab.
+    const quotes = query(list).tab("Quotes");
+    await test.expect.poll(() => getBoxOffset(quotes)).toBeLessThan(0.5);
+    await box.button(`${title} open sidebar`).click();
+    await test.expect(box.button(`${title} open sidebar`)).toHaveCount(0);
+    await test.expect
+      .poll(async () => (await getPanelCorners(list)).start)
+      .toBe(0);
+    await test.expect.poll(() => getBoxOffset(quotes)).toBeLessThan(0.5);
+  });
+
+  test("moves the panel corner with the fold of the name during a travel of the box", async ({
+    q,
+  }) => {
+    const title = "Tab row glider fold";
+    const box = query(q.article("Tab row with a glider"));
+    const list = box.tablist(title);
+    await query(list).tab("Billing").click();
+    // The box of this row travels for three seconds.
+    await test.expect
+      .poll(() => getBoxOffset(query(list).tab("Billing")), { timeout: 10_000 })
+      .toBeLessThan(0.5);
+    const recording = await recordFold(box.text("Acme"));
+    await query(list).tab("Quotes").click();
+    await box.button(`${title} hide name`).click();
+    const samples = await recording.evaluate((record) => record.done);
+    // The name folds in two seconds, while the box still travels to Quotes for
+    // about one more second. The box is then a few pixels from the edge of the
+    // panel, so the corner is almost square. A corner that waits for the end of
+    // the travel would still be full.
+    test.expect(samples.at(-1)?.corner).toBeLessThan(11);
+  });
+
+  test("keeps the box traveling when a part of the row mounts with the selection", async ({
+    q,
+  }) => {
+    const title = "Tab row glider export";
+    const box = query(q.article("Tab row with a glider"));
+    const list = box.tablist(title);
+    const tab = query(list).tab("Billing");
+    await test.expect
+      .poll(() => getBoxOffset(query(list).tab("Quotes")))
+      .toBeLessThan(0.5);
+    const recording = await recordTravel(tab);
+    await tab.click();
+    await test.expect(box.button(`${title} export`)).toBeVisible();
+    const frames = await recording.evaluate((record) => record.done);
+    const start = frames[0]?.offset ?? 0;
+    test.expect(start).toBeGreaterThan(50);
+    // The travel takes two seconds. A busy machine can skip frames, so three
+    // frames between the tabs are enough.
+    const between = frames.filter(
+      (frame) => frame.offset > 0.5 && frame.offset < start - 0.5,
+    );
+    test.expect(between.length).toBeGreaterThanOrEqual(3);
+  });
+
+  test("keeps the box traveling while the count of the row loads", async ({
+    q,
+  }) => {
+    const title = "Tab row glider status";
+    const box = query(q.article("Tab row with a glider"));
+    const list = box.tablist(title);
+    const tab = query(list).tab("Billing");
+    const count = box.status(`${title} count`);
+    await test.expect
+      .poll(() => getBoxOffset(query(list).tab("Quotes")))
+      .toBeLessThan(0.5);
+    const recording = await recordTravel(tab, count);
+    await tab.click();
+    await test.expect(count).toHaveText("128 items");
+    const frames = await recording.evaluate((record) => record.done);
+    const start = frames[0]?.offset ?? 0;
+    test.expect(start).toBeGreaterThan(50);
+    // The count loads a moment after the selection and changes its width.
+    test.expect(frames.some((frame) => frame.count === "Loading")).toBe(true);
+    // The travel takes two seconds, and the count loads after 300ms, so the box
+    // is still between the tabs on many frames after the count loads. A busy
+    // machine can skip frames, so three frames are enough.
+    const between = frames.filter(
+      (frame) =>
+        frame.count === "128 items" &&
+        frame.offset > 0.5 &&
+        frame.offset < start - 0.5,
+    );
+    test.expect(between.length).toBeGreaterThanOrEqual(3);
+  });
 });
+
+interface TravelFrame {
+  /** The distance of the selected glider box from the tab. */
+  offset: number;
+  /** The text of the count of the row. */
+  count: string;
+}
+
+// Records the distance of the selected glider box from a tab, and the text of
+// the count of the row when there is one, on each frame until the box reaches
+// the tab. The glider is presentation with aria-hidden, so this reads its box
+// from the DOM, like getBoxOffset.
+async function recordTravel(tab: Locator, count?: Locator) {
+  const countElement = count ? await count.elementHandle() : null;
+  return tab.evaluateHandle((element, countElement) => {
+    const box = element
+      .closest(".glider-group")
+      ?.querySelector('.glider-box[data-selected="true"]');
+    if (!box) {
+      throw new Error("Missing glider box");
+    }
+    const frames: TravelFrame[] = [];
+    const done = new Promise<TravelFrame[]>((resolve) => {
+      const read = () => {
+        const offset = Math.abs(
+          box.getBoundingClientRect().left -
+            element.getBoundingClientRect().left,
+        );
+        frames.push({ offset, count: countElement?.textContent ?? "" });
+        if (offset < 0.5 && frames.length > 1) {
+          resolve(frames);
+          return;
+        }
+        requestAnimationFrame(read);
+      };
+      read();
+    });
+    return { done };
+  }, countElement);
+}
+
+// Returns the widths of the start curves of a selected folder tab and of the
+// glider box that paints it. The glider is presentation with aria-hidden, so
+// this reads its box from the DOM, like getBoxOffset.
+function getFolderCurves(tab: Locator) {
+  return tab.evaluate((element) => {
+    const box = element
+      .closest(".glider-group")
+      ?.querySelector('.glider-box[data-selected="true"]');
+    if (!box) {
+      throw new Error("Missing glider box");
+    }
+    return [element, box].map((node) =>
+      Number.parseFloat(getComputedStyle(node, "::before").width),
+    );
+  });
+}
+
+// Returns the distance of a tab from the start edge of the panel below it.
+function getDistanceFromPanel(tab: Locator) {
+  return tab.evaluate((node) => {
+    const panel = node
+      .closest(".tabs")
+      ?.querySelector(":scope > :has(> [role=tablist]) + *");
+    if (!panel) {
+      throw new Error("Missing tab panels");
+    }
+    return (
+      node.getBoundingClientRect().left - panel.getBoundingClientRect().left
+    );
+  });
+}
+
+interface FoldSample {
+  /** The radius of the start corner of the panel. */
+  corner: number;
+}
+
+// Records the panel corner on each frame of the fold of a part of a tab row,
+// until the part has no width. The reads are in a resize observer that the test
+// adds after the glider's, so each frame reads the corner after the glider
+// moves the panel to the new place of the box. A task after the frame could lag
+// on a slow machine.
+function recordFold(name: Locator) {
+  return name.evaluateHandle((element) => {
+    // The name has padding, so it stops shrinking before the fold ends. The box
+    // around it folds with the column.
+    const part = element.parentElement;
+    const panel = element
+      .closest(".tabs")
+      ?.querySelector(":scope > :has(> [role=tablist]) + *");
+    if (!part || !panel) {
+      throw new Error("Missing tab panels");
+    }
+    const samples: FoldSample[] = [];
+    const done = new Promise<FoldSample[]>((resolve) => {
+      const observer = new ResizeObserver(([entry]) => {
+        samples.push({
+          corner: Number.parseFloat(
+            getComputedStyle(panel).borderStartStartRadius,
+          ),
+        });
+        if (entry?.borderBoxSize[0]?.inlineSize !== 0) return;
+        observer.disconnect();
+        resolve(samples);
+      });
+      observer.observe(part, { box: "border-box" });
+    });
+    return { done };
+  });
+}
 
 // Returns the start and end radii of the top corners of the panel below a tab
 // strip, in pixels.
