@@ -153,6 +153,14 @@ export default function Example() {
     setNotes((notes) => notes.filter((note) => note.id !== id));
   };
 
+  // The tab list doesn't change the order itself. After a drag or a move with
+  // the keyboard, it gives the IDs of the tabs in their new order.
+  const reorderNotes = (ids: string[]) => {
+    setNotes((notes) =>
+      [...notes].sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id)),
+    );
+  };
+
   // Without another tab, nothing can take the selection, so the last tab stays.
   const closable = notes.length > 1;
 
@@ -289,7 +297,7 @@ export default function Example() {
                 <NotesLogo separator $m={0} />
               </span>
             </span>
-            <TabList aria-label="Open notes">
+            <TabList aria-label="Open notes" onReorder={reorderNotes}>
               <Glider />
               {notes.map((note, index) => (
                 <Tab

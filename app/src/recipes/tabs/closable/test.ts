@@ -69,3 +69,14 @@ test("opens a tab with the button after the tab list", async () => {
   expect(q.tab("Note 1")).toHaveAttribute("aria-selected", "true");
   expect(q.tabpanel("Note 1")).toHaveTextContent("This note is empty.");
 });
+
+test("moves a tab with Ctrl+Shift and an arrow key and keeps the focus", async () => {
+  await click(q.tab("Groceries"));
+  // happy-dom reports a platform that isn't an Apple device, where the Control
+  // key moves tabs.
+  await press.ArrowRight(null, { ctrlKey: true, shiftKey: true });
+  const names = q.tab.all().map((tab) => tab.textContent);
+  expect(names).toEqual(["Workshop", "Groceries", "Trip"]);
+  expect(q.tab("Groceries")).toHaveFocus();
+  expect(q.tab("Groceries")).toHaveAttribute("aria-selected", "true");
+});

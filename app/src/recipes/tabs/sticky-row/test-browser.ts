@@ -152,6 +152,64 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect.poll(() => getBoxOffset(tab)).toBeLessThan(1);
   });
 
+  test("keeps the folder of the glider on a note while the pointer drags it", async ({
+    page,
+    q,
+  }) => {
+    const tab = q.tab("Trip");
+    const next = q.tab("Workshop");
+    const from = await getBox(tab);
+    const to = await getBox(next);
+    const y = from.y + from.height / 2;
+    await page.mouse.move(from.x + from.width / 2, y);
+    await page.mouse.down();
+    // The folder goes with the note on each frame of the drag. A folder that
+    // traveled to the note would be behind it while the pointer moves, and
+    // would reach it only after the pointer rests, so no state after the move
+    // shows the difference. This reads the largest distance between the two on
+    // the frames of the move.
+    const farthest = tab.evaluate((element) => {
+      return new Promise<number>((resolve) => {
+        const group = element.closest(".glider-group");
+        const box = group?.querySelector('.glider-box[data-selected="true"]');
+        let distance = box ? 0 : Number.POSITIVE_INFINITY;
+        let frames = 0;
+        const step = () => {
+          if (box) {
+            const { left } = element.getBoundingClientRect();
+            const gap = Math.abs(left - box.getBoundingClientRect().left);
+            distance = Math.max(distance, gap);
+          }
+          frames += 1;
+          if (frames < 30) {
+            requestAnimationFrame(step);
+            return;
+          }
+          resolve(distance);
+        };
+        requestAnimationFrame(step);
+      });
+    });
+    await page.mouse.move(to.x + to.width / 2, y, { steps: 20 });
+    test.expect(await farthest).toBeLessThan(2);
+    // The folder of the glider is behind all the notes, so the dragged note
+    // paints its own surface, which covers the notes that it passes. At rest,
+    // only the folder paints it.
+    const getBackground = () =>
+      tab.evaluate((element) => getComputedStyle(element).backgroundColor);
+    test.expect(await getBackground()).not.toBe("rgba(0, 0, 0, 0)");
+    await test.expect
+      .poll(async () => (await getBox(next)).x)
+      .toBeLessThan(from.x + 1);
+    await page.mouse.up();
+    await test.expect
+      .poll(() => q.tab().allTextContents())
+      .toEqual(["Workshop", "Trip", "Groceries"]);
+    await test.expect(tab).toHaveAttribute("aria-selected", "true");
+    await test.expect.poll(() => getBoxOffset(tab)).toBeLessThan(1);
+    await test.expect.poll(getBackground).toBe("rgba(0, 0, 0, 0)");
+  });
+
   test("keeps the corner of the sticky frame with the corner of the panel while the folder travels", async ({
     q,
   }) => {

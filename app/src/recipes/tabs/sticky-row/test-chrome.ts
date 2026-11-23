@@ -1,3 +1,4 @@
+import { getBoxOffset } from "#app/sandbox/ariakit-ui-glider/test-helpers.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -28,5 +29,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.tab("Trip")).toBeFocused();
     await page.keyboard.press("Tab");
     await test.expect(q.button("New note")).toBeFocused();
+  });
+
+  test("moves a note with the keyboard and keeps the folder of the glider on it", async ({
+    page,
+    q,
+  }) => {
+    const tab = q.tab("Trip");
+    await tab.click();
+    await page.keyboard.press("ControlOrMeta+Shift+ArrowRight");
+    await test.expect
+      .poll(() => q.tab().allTextContents())
+      .toEqual(["Workshop", "Trip", "Groceries"]);
+    await test.expect(tab).toBeFocused();
+    await test.expect(tab).toHaveAttribute("aria-selected", "true");
+    await test.expect.poll(() => getBoxOffset(tab)).toBeLessThan(1);
   });
 });

@@ -47,4 +47,33 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await test.expect(tab).toBeInViewport({ ratio: 1 });
     }
   });
+
+  test("moves a note to the place where the pointer drops it", async ({
+    page,
+    q,
+  }) => {
+    const tab = q.tab("Workshop");
+    const next = q.tab("Trip");
+    await test.expect(tab).toHaveAttribute("aria-selected", "false");
+    const [from, to] = await Promise.all([
+      tab.boundingBox(),
+      next.boundingBox(),
+    ]);
+    if (!from || !to) throw new Error("A tab has no bounding box.");
+    const y = from.y + from.height / 2;
+    await page.mouse.move(from.x + from.width / 2, y);
+    await page.mouse.down();
+    await page.mouse.move(to.x + to.width / 2, y, { steps: 8 });
+    // The other note makes room before the drop.
+    await test.expect
+      .poll(async () => (await next.boundingBox())?.x)
+      .toBeCloseTo(from.x, 0);
+    await page.mouse.up();
+    await test.expect
+      .poll(() => q.tab().allTextContents())
+      .toEqual(["Groceries", "Trip", "Workshop"]);
+    // The drag selects the note.
+    await test.expect(tab).toHaveAttribute("aria-selected", "true");
+    await test.expect(q.tabpanel("Workshop")).toBeVisible();
+  });
 });

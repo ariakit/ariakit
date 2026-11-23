@@ -459,8 +459,10 @@ function hideTrack(track: GliderTrack) {
 }
 
 // The items that enter and leave, such as tabs that grow in and close, have
-// these attributes, like Ariakit disclosure content.
-const SETTLING_SELECTOR = "[data-enter], [data-leave]";
+// these attributes, like Ariakit disclosure content. A selected tab that moves
+// to a new place in its list, such as under the pointer of a drag, has
+// data-tab-moving, and it also changes its place on each frame.
+const SETTLING_SELECTOR = "[data-enter], [data-leave], [data-tab-moving]";
 
 /**
  * Reads where the box of a track shows, such as its place or its rect. The

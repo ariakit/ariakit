@@ -128,6 +128,8 @@
     "./utils/is-document-or-shadow-root": "./src/utils/is-document-or-shadow-root.ts",
     "./utils/keys": "./src/utils/keys.ts",
     "./utils/styles": "./src/utils/styles.ts",
+    "./utils/tab-drag": "./src/utils/tab-drag.ts",
+    "./utils/tab-reorder": "./src/utils/tab-reorder.ts",
     "./package.json": "./package.json"
   },
   "dependencies": {
