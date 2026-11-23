@@ -16,6 +16,14 @@
 
 @source "../../../packages/ariakit-ui/src/**";
 
+/* The Styles pages name many utilities in their text and code samples, and
+   Tailwind would compile each one into the CSS of every page. The pages render
+   only their html preview code fences, so Tailwind scans the markup of those
+   fences in a generated file instead. See app/src/lib/preview-fence-source.ts.
+   The components that the pages import are ordinary sources. */
+@source not "../docs/styles/**/*.mdx";
+@source "../../.astro/integrations/ariakit-preview-fences/preview-fences.html";
+
 /* The site's Theme panel sets data-theme on the root element. Without it, the
    dark variant follows the system color scheme. */
 @custom-variant dark {

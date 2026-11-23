@@ -1,2 +1,6 @@
 @import "tailwindcss";
 @import "../../app/src/styles/global.css";
+
+/* The Astro app generates Tailwind sources for the live examples of its own
+   pages. This app does not render those pages. */
+@source not "../../app/.astro";
