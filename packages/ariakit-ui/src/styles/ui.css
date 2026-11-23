@@ -306,6 +306,22 @@ body > * {
   initial-value: 0;
 }
 
+/* Flags that a disclosure group and a shell main header set from their own
+   :has() checks, for their children to read with a style query. See the tabs
+   flags above. Without inheritance, a change of a flag restyles only the
+   children that read it, not the rest of the subtree. */
+@property --disclosure-group-closed {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --shell-main-header-bars {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
 /* The top corners of the tab panels. They can change on each frame, with a
    glider or while the strip scrolls. Without inheritance, that change doesn't
    restyle the content of the panels. */

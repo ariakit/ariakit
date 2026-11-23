@@ -1281,7 +1281,7 @@ export const shellMainHeader = cv({
     // any page with the rule. So the header sets a flag that its children read
     // with a style query. The doubled class keeps the specificity of the :has()
     // check.
-    "[--shell-main-header-bars:0] [&:has(>.shell-bar-part)]:[--shell-main-header-bars:1]",
+    "[&:has(>.shell-bar-part)]:[--shell-main-header-bars:1]",
     "[@container_style(--shell-main-header-bars:1)]:[&&>*]:col-2",
     "[&:has(>.shell-bar-part):has(>.shell-bar-center)]:grid-cols-[1fr_auto_1fr]",
     "[&:has(>.shell-bar-part):has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",

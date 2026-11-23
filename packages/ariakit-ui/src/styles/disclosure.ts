@@ -50,7 +50,7 @@ export const disclosureGroup = cv({
       // changes, on any page with the rule. So the group sets a flag that the
       // last member reads with a style query. The doubled class keeps the
       // specificity of the :has() check.
-      "[--disclosure-group-closed:0] [&:not(:has(>[data-open]))]:[--disclosure-group-closed:1]",
+      "[&:not(:has(>[data-open]))]:[--disclosure-group-closed:1]",
       "[@container_style(--disclosure-group-closed:1)]:[&&>:last-child]:border-b",
     ],
   },
