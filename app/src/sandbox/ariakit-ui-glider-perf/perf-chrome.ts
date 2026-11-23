@@ -18,6 +18,21 @@ async function selectTab(q: Query, name: string) {
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  // The pointer crosses the tabs on its way to one, so each tab that it enters
+  // pays this cost.
+  test("hover a tab", async ({ perf }) => {
+    await perf.measure(
+      async ({ q }) => {
+        await q.tab("Onboarding").hover();
+        // The separator before a hovered tab hides.
+        await expect(
+          q.tab("Onboarding").locator("xpath=preceding-sibling::*[1]"),
+        ).toHaveCSS("opacity", "0");
+      },
+      { setup: ({ page, q }) => setup(page, q) },
+    );
+  });
+
   test("select the next tab", async ({ perf }) => {
     await perf.measure(({ q }) => selectTab(q, "Sales"), {
       setup: ({ page, q }) => setup(page, q),
