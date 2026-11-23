@@ -178,15 +178,18 @@ export const gliderGroup = cv({
   class: [
     // Keeps the boxes, which sit behind the items, above the group surface.
     "glider-group isolate",
-    // The selected box paints the surface that the selected item painted.
-    "[&_.control:not(.glider-box)]:ui-selected:bg-transparent!",
-    "[&_.control:not(.glider-box)]:ui-selected:bg-none!",
-    "[&_.control:not(.glider-box)]:ui-selected:[box-shadow:none]!",
-    "[&_.control:not(.glider-box)]:ui-selected:border-transparent!",
+    // The selected box paints the surface that the selected item painted. The
+    // box sits behind the items, so a selected tab that moves over other tabs,
+    // such as under the pointer of a drag, keeps its own surface for that
+    // time, and covers them. The box stays under it.
+    "[&_.control:not(.glider-box,[data-tab-moving])]:ui-selected:bg-transparent!",
+    "[&_.control:not(.glider-box,[data-tab-moving])]:ui-selected:bg-none!",
+    "[&_.control:not(.glider-box,[data-tab-moving])]:ui-selected:[box-shadow:none]!",
+    "[&_.control:not(.glider-box,[data-tab-moving])]:ui-selected:border-transparent!",
     // A folder tab draws its curves on pseudo-elements, and the box draws them
     // too.
-    "[&_.ui-folder:not(.glider-box)]:ui-selected:before:hidden!",
-    "[&_.ui-folder:not(.glider-box)]:ui-selected:after:hidden!",
+    "[&_.ui-folder:not(.glider-box,[data-tab-moving])]:ui-selected:before:hidden!",
+    "[&_.ui-folder:not(.glider-box,[data-tab-moving])]:ui-selected:after:hidden!",
     // The item that the box travels to keeps its place and its clicks, and a
     // copy shows its content in the idle state until the box arrives.
     "[&_.control[data-glider-masked]]:text-transparent!",

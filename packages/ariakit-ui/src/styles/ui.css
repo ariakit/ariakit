@@ -259,6 +259,23 @@ body > * {
   initial-value: 0px;
 }
 
+/* How far a selected folder tab that moves, such as under the pointer of a
+   drag, is from the start and from the end of its row. The tab style component
+   writes them on each frame of the move, on the tab and on the elements that
+   take their corners from its place. Without inheritance, that change doesn't
+   restyle the content of the panels. */
+@property --tab-move-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --tab-move-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* Animate corner rounding from square (0) to round (1), with round defaults. */
 @property --tabs-round-s {
   syntax: "<number>";

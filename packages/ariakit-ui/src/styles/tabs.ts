@@ -361,6 +361,12 @@ const tabFolder = cx(
   // full curve there.
   "[&.glider-box]:[--tabs-meet:calc(var(--glider-start)/2)]",
   "[.tabs-stretch_&.glider-box]:[--tabs-meet-end:calc(var(--glider-end)/2)]",
+  // A selected folder that moves, such as under the pointer of a drag, shows
+  // away from its place in the page, so it takes the meet from where it shows.
+  // The `TabList` style component sets data-tab-moving and the distances for
+  // the time of the move.
+  "data-tab-moving:[--tabs-meet:calc(var(--tab-move-start)/2)]",
+  "[.tabs-stretch>&]:data-tab-moving:[--tabs-meet-end:calc(var(--tab-move-end)/2)]",
   tabsBorder,
   tabCurves,
   tabCutCurves,
@@ -451,6 +457,10 @@ export const tab = cv({
   class: [
     "z-6",
     tabMotion,
+    // A tab under the pointer of a drag, and a selected tab that slides to a
+    // new place, pass over the other tabs.
+    "[[data-dragging],[data-tab-moving]]:z-7",
+    "data-dragging:cursor-grabbing",
     // Only selected tabs paint at rest; retain other layers for hover.
     "not-ui-selected:bg-transparent",
     // Unselected tabs use the strip surface without a lift. Selected tabs use
@@ -612,6 +622,13 @@ export const tabSeparator = cv({
     // The separator of a tab that enters or leaves shows with the tab.
     "[&:has(+[data-leave])]:opacity-0",
     "[&:has(+[data-enter])]:starting:opacity-0",
+    // While a tab drags, it shows away from its place in the page, where the
+    // rules above find the selected tab. The `TabList` style component sets
+    // data-tab-dragging on the strip for that time, and data-shy on the
+    // separators on each side of the place that the dragged tab takes, also on
+    // the separator after the strip. The other separators show.
+    "[[data-tab-dragging]>&,[data-tab-dragging]+&,[data-tab-dragging]+.carousel-button-area+&]:opacity-100!",
+    "[[data-tab-dragging]>&[data-shy],[data-tab-dragging]+&[data-shy],[data-tab-dragging]+.carousel-button-area+&[data-shy]]:opacity-(--separator-shy-opacity)!",
   ],
   defaultVariants: {
     // A mark as tall as the font, not the line, sits lighter beside short tab
@@ -937,6 +954,12 @@ const tabRowSticky = cx(
   "[.tabs:has(>*>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-e:min(var(--tabs-notch,0px),var(--glider-end)/2)]",
   "[.tabs.tabs-folder-cut:has(>*>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-s:min(var(--tabs-notch,0px),max(0px,var(--glider-start)-var(--tabs-radius)))]",
   "[.tabs.tabs-folder-cut:has(>*>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tab-row-corner-e:min(var(--tabs-notch,0px),max(0px,var(--glider-end)-var(--tabs-radius)))]",
+  // The corners follow a selected folder that moves in the same way, from the
+  // distances that the `TabList` style component writes.
+  "data-tab-moving:[--tab-row-corner-s:min(var(--tabs-notch,0px),var(--tab-move-start)/2)]",
+  "[&:has(>.tabs-strip.tabs-stretch)]:data-tab-moving:[--tab-row-corner-e:min(var(--tabs-notch,0px),var(--tab-move-end)/2)]",
+  "[.tabs-folder-cut>&]:data-tab-moving:[--tab-row-corner-s:min(var(--tabs-notch,0px),max(0px,var(--tab-move-start)-var(--tabs-radius)))]",
+  "[.tabs-folder-cut>&:has(>.tabs-strip.tabs-stretch)]:data-tab-moving:[--tab-row-corner-e:min(var(--tabs-notch,0px),max(0px,var(--tab-move-end)-var(--tabs-radius)))]",
   // While the strip scrolls, the panels square a corner that tabs pass over,
   // and open a corner that a faded outer folder no longer covers, with
   // scroll-driven animations. Their values don't inherit, so the row runs the
@@ -1157,6 +1180,14 @@ export const tabPanels = cv({
     "[.tabs:has(>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-corner-e:calc(min(var(--tabs-notch,0px),var(--glider-end)/2)*var(--tabs-round-e,1))]",
     "[.tabs.tabs-folder-cut:has(>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-corner-s:calc(min(var(--tabs-notch,0px),max(0px,var(--glider-start)-var(--tabs-radius)))*var(--tabs-round-s,1))]",
     "[.tabs.tabs-folder-cut:has(>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']),>*>.tabs-strip.tabs-stretch>.ui-folder:is([aria-selected='true'],[data-selected='true']))>&]:data-glider-following:[--tabs-corner-e:calc(min(var(--tabs-notch,0px),max(0px,var(--glider-end)-var(--tabs-radius)))*var(--tabs-round-e,1))]",
+    // A selected folder that moves, such as under the pointer of a drag, shows
+    // away from its place in the page. The corners then take the meet from
+    // where the tab shows, like with a glider, from the distances that the
+    // `TabList` style component writes on each frame of the move.
+    "data-tab-moving:[--tabs-corner-s:calc(min(var(--tabs-notch,0px),var(--tab-move-start)/2)*var(--tabs-round-s,1))]",
+    "[.tabs:has(>.tabs-strip.tabs-stretch,>*>.tabs-strip.tabs-stretch)>&]:data-tab-moving:[--tabs-corner-e:calc(min(var(--tabs-notch,0px),var(--tab-move-end)/2)*var(--tabs-round-e,1))]",
+    "[.tabs-folder-cut>&]:data-tab-moving:[--tabs-corner-s:calc(min(var(--tabs-notch,0px),max(0px,var(--tab-move-start)-var(--tabs-radius)))*var(--tabs-round-s,1))]",
+    "[.tabs:has(>.tabs-strip.tabs-stretch,>*>.tabs-strip.tabs-stretch).tabs-folder-cut>&]:data-tab-moving:[--tabs-corner-e:calc(min(var(--tabs-notch,0px),max(0px,var(--tab-move-end)-var(--tabs-radius)))*var(--tabs-round-e,1))]",
     // Each corner opens from that radius to a full corner as --tabs-open-s or
     // --tabs-open-e grows, while the fade hides a selected outer folder.
     "not-first:rounded-ss-[calc(var(--tabs-corner-s)+(var(--tabs-notch,0px)-var(--tabs-corner-s))*var(--tabs-open-s,0))]",

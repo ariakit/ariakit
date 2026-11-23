@@ -51,3 +51,14 @@ test("opens a note in a new tab and closes it with Delete", async () => {
   expect(q.tab("Groceries")).toHaveFocus();
   expect(q.tab("Groceries")).toHaveAttribute("aria-selected", "true");
 });
+
+test("moves a note with Ctrl+Shift and an arrow key and keeps the focus", async () => {
+  await click(q.tab("Trip"));
+  // happy-dom reports a platform that isn't an Apple device, where the Control
+  // key moves tabs.
+  await press.ArrowRight(null, { ctrlKey: true, shiftKey: true });
+  const names = q.tab.all().map((tab) => tab.textContent);
+  expect(names).toEqual(["Workshop", "Trip", "Groceries"]);
+  expect(q.tab("Trip")).toHaveFocus();
+  expect(q.tab("Trip")).toHaveAttribute("aria-selected", "true");
+});

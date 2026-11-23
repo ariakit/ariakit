@@ -46,6 +46,8 @@ import {
   getViewportClearOffset,
   scrollIntoClearRange,
 } from "../utils/carousel-clear.ts";
+import { observeTabDrag } from "../utils/tab-drag.ts";
+import { observeTabReorderKeys, setTabStatus } from "../utils/tab-reorder.ts";
 import {
   Carousel,
   CarouselButton,
@@ -461,6 +463,52 @@ function useSelectedTabInView(strip: HTMLElement | null) {
   }, [strip]);
 }
 
+interface UseTabReorderParams {
+  strip: HTMLElement | null;
+  store?: ak.TabStore;
+  onReorder?: (ids: string[]) => void;
+}
+
+/**
+ * Lets people move the tabs of a strip to a new place, with a drag and with the
+ * keyboard, when the tab list has `onReorder`. The app keeps the order of the
+ * tabs, and changes it in `onReorder`. Returns the live region that speaks each
+ * move to screen reader users, for the tab list to render. The region goes in a
+ * portal, because an element with the `tablist` role holds only tabs, and the
+ * selectors of a tab row count the parts beside the strip.
+ */
+function useTabReorder({ strip, store, onReorder }: UseTabReorderParams) {
+  const statusRef = useRef<HTMLDivElement>(null);
+  const onReorderEvent = useEvent(onReorder);
+  const reorderable = !!onReorder;
+  useEffect(() => {
+    if (!strip) return;
+    if (!reorderable) return;
+    const params = {
+      strip,
+      onReorder: (ids: string[]) => onReorderEvent(ids),
+      announce: (text: string) => setTabStatus(statusRef.current, text),
+    };
+    const stopKeys = observeTabReorderKeys(params);
+    const stopDrag = observeTabDrag({
+      ...params,
+      // A tab takes the selection when its drag starts. The click that would
+      // select it doesn't come after a drag.
+      onDragStart: (tab) => store?.setSelectedId(tab.id),
+    });
+    return () => {
+      stopKeys();
+      stopDrag();
+    };
+  }, [strip, store, reorderable, onReorderEvent]);
+  if (!reorderable) return null;
+  return (
+    <ak.Portal>
+      <div ref={statusRef} role="status" className="sr-only" />
+    </ak.Portal>
+  );
+}
+
 export interface TabsProps
   extends
     ak.RoleProps,
@@ -730,6 +778,16 @@ export interface TabListProps
    * props. `false` omits it. Defaults to a button named "Next tabs".
    */
   nextButton?: CarouselButtonRender;
+  /**
+   * Lets people move the tabs of the list to a new place: with a drag, with a
+   * long press and a drag on a touch screen, and with Ctrl+Shift (Command+Shift
+   * on Apple devices) and the Left and Right Arrow keys, or the Home and End
+   * keys. Called once after each move with the IDs of the tabs in their new
+   * order. Change the order of your tabs here: the list doesn't change it
+   * itself. Give each tab an `id`. A disabled tab doesn't move, and the other
+   * tabs can pass it. A screen reader speaks the new place of the tab.
+   */
+  onReorder?: (ids: string[]) => void;
 }
 
 /**
@@ -793,6 +851,17 @@ function renderTab(tab: React.ReactNode | TabProps, props?: TabProps) {
  *     <TabPanel tabId="activity">Recent changes</TabPanel>
  *   </TabPanels>
  * </Tabs>
+ * @example
+ * <TabList
+ *   aria-label="Files"
+ *   onReorder={(ids) => {
+ *     setFiles(files.toSorted((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id)));
+ *   }}
+ * >
+ *   {files.map((file) => (
+ *     <Tab key={file.id} id={file.id}>{file.name}</Tab>
+ *   ))}
+ * </TabList>
  */
 export function TabList({
   tabs,
@@ -800,15 +869,22 @@ export function TabList({
   buttons = true,
   previousButton = true,
   nextButton = true,
+  onReorder,
   ref,
   ...props
 }: TabListProps) {
   const [variantProps, rest] = splitProps(props, tabList);
   const inRow = useContext(TabRowContext);
+  const context = ak.useTabContext();
   // The tabs that render after the list has its element were added to it.
   const [list, setList] = useState<HTMLElement | null>(null);
   const listRef = useMergeRefs(ref, setList);
   useSelectedTabInView(list);
+  const reorderStatus = useTabReorder({
+    strip: list,
+    store: rest.store ?? context,
+    onReorder,
+  });
   const segmented = variantProps.$kind === "segmented";
   // The tabs of the shorthand have no props of their own to set the kind.
   const kindProps: TabProps | undefined = segmented
@@ -830,6 +906,7 @@ export function TabList({
             <Fragment key={id}>{renderTab(tab, { ...kindProps, id })}</Fragment>
           ))}
       {children}
+      {reorderStatus}
     </TabListMountedContext.Provider>
   );
   const buttonProps = {

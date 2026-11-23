@@ -405,4 +405,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.tab("Note 5")).toHaveAttribute("aria-selected", "true");
     await test.expect(q.tab("Note 5")).toBeInViewport({ ratio: 1 });
   });
+
+  test("moves a note with the keyboard and closes it at its new place", async ({
+    page,
+    q,
+  }) => {
+    const tab = q.tab("Groceries");
+    await tab.click();
+    await page.keyboard.press("ControlOrMeta+Shift+ArrowRight");
+    await test.expect
+      .poll(() => q.tab().allTextContents())
+      .toEqual(["Workshop", "Groceries", "Trip"]);
+    await test.expect(tab).toBeFocused();
+    await test.expect(tab).toHaveAttribute("aria-selected", "true");
+    await test
+      .expect(q.status())
+      .toHaveText("Groceries moved to position 2 of 3");
+    // The next note in the new order takes the place of the closed note.
+    await page.keyboard.press("Delete");
+    await test.expect(q.tab("Trip")).toHaveAttribute("aria-selected", "true");
+    await test.expect(q.tab("Trip")).toBeFocused();
+  });
 });
