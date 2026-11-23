@@ -2,7 +2,7 @@ diff --git a/dist/cli/build/bundle-server.js b/dist/cli/build/bundle-server.js
 index 9d0375ab175ff83d0476fc52be6f69e9fd06e9a4..4e856986c09823ec98c28b6892d77f7a3b7af2e6 100644
 --- a/dist/cli/build/bundle-server.js
 +++ b/dist/cli/build/bundle-server.js
-@@ -11,6 +11,7 @@ import { getOpenNextConfig } from "../../api/config.js";
+@@ -10,6 +10,7 @@ import { getOpenNextConfig } from "../../api/config.js";
  import { normalizePath } from "../utils/normalize-path.js";
  import { patchVercelOgLibrary } from "./patches/ast/patch-vercel-og-library.js";
  import { patchWebpackRuntime } from "./patches/ast/webpack-runtime.js";
@@ -10,7 +10,7 @@ index 9d0375ab175ff83d0476fc52be6f69e9fd06e9a4..4e856986c09823ec98c28b6892d77f7a
  import { inlineDynamicRequires } from "./patches/plugins/dynamic-requires.js";
  import { inlineFindDir } from "./patches/plugins/find-dir.js";
  import { patchInstrumentation } from "./patches/plugins/instrumentation.js";
-@@ -85,7 +86,16 @@ export async function bundleServer(buildOpts, projectOpts) {
+@@ -117,7 +118,16 @@ export async function bundleServer(buildOpts, projectOpts) {
      const updater = new ContentUpdater(buildOpts);
      const useWorkerdCondition = getOpenNextConfig(buildOpts).cloudflare?.useWorkerdCondition !== false;
      const result = await build({
@@ -28,7 +28,7 @@ index 9d0375ab175ff83d0476fc52be6f69e9fd06e9a4..4e856986c09823ec98c28b6892d77f7a
          bundle: true,
          outfile: openNextServerBundle,
          format: "esm",
-@@ -114,6 +124,7 @@ export async function bundleServer(buildOpts, projectOpts) {
+@@ -146,6 +156,7 @@ export async function bundleServer(buildOpts, projectOpts) {
              fixRequire(updater),
              handleOptionalDependencies(optionalDependencies),
              patchInstrumentation(updater, buildOpts),
