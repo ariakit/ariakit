@@ -751,58 +751,92 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     await q.combobox(/^Travel time/).selectOption({ label: "Very slow (3s)" });
-    const article = q.article("Glider", { exact: true });
-    await query(article).radio("Calendar").click();
-    // The copies are presentation, so this probe reads them from the DOM.
-    await test.expect
-      .poll(() =>
-        article.evaluate((node) => !!node.querySelector(".glider-copy")),
-      )
-      .toBe(true);
-    // A style outside the group makes Grid wider and Board narrower by the same
-    // width, so the group keeps its size, and only a resize callback of the
-    // items reports the change.
-    await article.evaluate((node) => {
-      const rules = [
-        { value: "Grid", change: 20 },
-        { value: "Board", change: -20 },
-      ].map(({ value, change }) => {
-        const input = node.querySelector(`input[value="${value}"]`);
-        const control = input?.closest(".control");
-        const width = control?.getBoundingClientRect().width ?? 0;
-        const selector = `.control:has(> input[value="${value}"])`;
-        return `${selector} { flex: none; width: ${width + change}px; overflow: hidden; }`;
-      });
-      const style = document.createElement("style");
-      style.textContent = rules.join("\n");
-      document.head.append(style);
-    });
-    // While the box travels, each copy in its window stays over its item. This
-    // returns the largest distance between a copy and its item, or null when
-    // the travel ended.
-    const getLargestCopyOffset = () =>
-      article.evaluate((node) => {
-        const probe = node.querySelector(".glider-scale-probe");
-        const layer = node.querySelector(".glider-window > .glider-layer");
-        const copies = layer?.querySelectorAll<HTMLElement>(".glider-copy");
-        if (!probe || !copies?.length) return null;
-        const probeLeft = probe.getBoundingClientRect().left;
-        const items = Array.from(node.querySelectorAll(".control")).filter(
-          (control) => !control.closest(".glider"),
+    // The copies are presentation, so this probe reads them from the DOM. It
+    // clicks Calendar, waits for the copies, resizes Grid and Board by opposite
+    // widths so the group keeps its size, and checks the copy offsets in one
+    // evaluate call so IPC latency on slow runners cannot outlast the 3s
+    // travel.
+    const largestOffset = await q
+      .article("Glider", { exact: true })
+      .evaluate(async (node) => {
+        const calendar = node.querySelector<HTMLInputElement>(
+          'input[value="Calendar"]',
         );
-        let largest = 0;
-        for (const copy of copies) {
-          const text = copy.textContent?.trim();
-          const item = items.find((control) => {
-            return control.textContent?.trim() === text;
-          });
-          if (!item) return Number.POSITIVE_INFINITY;
-          const itemLeft = item.getBoundingClientRect().left - probeLeft;
-          const copyLeft = Number.parseFloat(copy.style.left);
-          largest = Math.max(largest, Math.abs(itemLeft - copyLeft));
+        const probe = node.querySelector(".glider-scale-probe");
+        const grid = node
+          .querySelector('input[value="Grid"]')
+          ?.closest(".control");
+        const board = node
+          .querySelector('input[value="Board"]')
+          ?.closest(".control");
+        if (!calendar) return null;
+        if (!probe) return null;
+        if (!grid) return null;
+        if (!board) return null;
+        const nextFrame = () =>
+          new Promise((resolve) => requestAnimationFrame(resolve));
+        const getCopies = () =>
+          node
+            .querySelector(".glider-window > .glider-layer")
+            ?.querySelectorAll<HTMLElement>(".glider-copy");
+        calendar.click();
+        const copyStart = performance.now();
+        while (performance.now() - copyStart < 2000) {
+          if (getCopies()?.length) break;
+          await nextFrame();
         }
-        return largest;
+        if (!getCopies()?.length) return null;
+        const boardLeft = board.getBoundingClientRect().left;
+        // A style outside the group makes Grid wider and Board narrower by the
+        // same width, so the group keeps its size, and only a resize callback
+        // of the items reports the change.
+        const rules = [
+          { value: "Grid", width: grid.getBoundingClientRect().width + 20 },
+          { value: "Board", width: board.getBoundingClientRect().width - 20 },
+        ].map(({ value, width }) => {
+          const selector = `.control:has(> input[value="${value}"])`;
+          return `${selector} { flex: none; width: ${width}px; overflow: hidden; }`;
+        });
+        const style = document.createElement("style");
+        style.textContent = rules.join("\n");
+        document.head.append(style);
+        try {
+          if (Math.abs(board.getBoundingClientRect().left - boardLeft) < 1) {
+            return null;
+          }
+          const items = Array.from(node.querySelectorAll(".control")).filter(
+            (control) => !control.closest(".glider"),
+          );
+          const getLargestOffset = (copies: NodeListOf<HTMLElement>) => {
+            const probeLeft = probe.getBoundingClientRect().left;
+            let largest = 0;
+            for (const copy of copies) {
+              const text = copy.textContent?.trim();
+              const item = items.find((control) => {
+                return control.textContent?.trim() === text;
+              });
+              if (!item) return Number.POSITIVE_INFINITY;
+              const itemLeft = item.getBoundingClientRect().left - probeLeft;
+              const copyLeft = Number.parseFloat(copy.style.left);
+              largest = Math.max(largest, Math.abs(itemLeft - copyLeft));
+            }
+            return largest;
+          };
+          let lastOffset: number | null = null;
+          const start = performance.now();
+          while (performance.now() - start < 2000) {
+            await nextFrame();
+            const copies = getCopies();
+            if (!copies?.length) break;
+            lastOffset = getLargestOffset(copies);
+            if (lastOffset < 0.5) break;
+          }
+          return lastOffset;
+        } finally {
+          style.remove();
+        }
       });
-    await test.expect.poll(getLargestCopyOffset).toBeLessThan(0.5);
+    test.expect(largestOffset).not.toBeNull();
+    test.expect(largestOffset).toBeLessThan(0.5);
   });
 });
