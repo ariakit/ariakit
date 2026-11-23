@@ -26,23 +26,43 @@ interface FenceFile {
   path?: string;
 }
 
+type MetaToken = ReturnType<typeof tokenizeCodeFenceMeta>[number];
+
 /** The info string word that turns an HTML code fence into a live example. */
 const PREVIEW_WORD = "preview";
 
 /** The lines that the code of a card shows before its expand button. */
 const MAX_LINES = 12;
 
+interface FenceInfo {
+  /** The first word of the info string, which MDX calls `lang`. */
+  lang?: string | null;
+  /** The rest of the info string, which MDX calls `meta`. */
+  meta?: string | null;
+}
+
+function isName(token: MetaToken, name: string) {
+  return token.type === "name" && token.raw === name;
+}
+
+/**
+ * Returns whether the info string of a code fence makes it an `html preview`
+ * fence, which the page renders as a live example. The code fence tokenizer
+ * keeps quoted text whole, so a title such as "A preview card" is not the
+ * preview word.
+ */
+export function isPreviewFence({ lang, meta }: FenceInfo) {
+  if (lang !== "html") return false;
+  const tokens = tokenizeCodeFenceMeta(meta ?? "");
+  return tokens.some((token) => isName(token, PREVIEW_WORD));
+}
+
 // Returns the meta of an html preview fence without the preview word, or
-// undefined for any other fence. The code fence tokenizer keeps quoted text
-// whole, so a title such as "A preview card" keeps its word. The code sits
-// under the example, so long code collapses unless the fence sets its own
-// maxLines, and the card stays short.
+// undefined for any other fence. The code sits under the example, so long code
+// collapses unless the fence sets its own maxLines, and the card stays short.
 function getPreviewMeta(node: CodeNode) {
-  if (node.lang !== "html") return;
+  if (!isPreviewFence(node)) return;
   const tokens = tokenizeCodeFenceMeta(node.meta ?? "");
-  const isName = (token: (typeof tokens)[number], name: string) =>
-    token.type === "name" && token.raw === name;
-  if (!tokens.some((token) => isName(token, PREVIEW_WORD))) return;
   const words = tokens
     .filter((token) => !isName(token, PREVIEW_WORD))
     .map((token) => token.raw);
@@ -61,7 +81,9 @@ function getPreviewMeta(node: CodeNode) {
  * readers and agents see the same markup that the page renders. Code longer
  * than 12 lines collapses. This plugin runs before `remarkCodeFences`, which
  * renders the fence in the card as a code block and would report the preview
- * word as an unknown option.
+ * word as an unknown option. Tailwind does not scan the Styles pages, so it
+ * reads the classes of their fences from the source that
+ * `preview-fence-source.ts` generates.
  *
  * ````md
  * ```html preview

@@ -98,6 +98,11 @@ test("an html preview fence renders its markup with its code", async ({
   // Preflight gives every element a solid zero-width border, so only the width
   // shows that Tailwind generated the ak-frame-border class of the fence.
   await expect(live).toHaveCSS("border-top-width", "1px");
+  // Tailwind scans the markup of the fence in a generated source, not the text
+  // of the page. Only the fence names the ring utility of its second element,
+  // and this file must not name it, because Tailwind scans this file too.
+  const ring = stage.getByText("Ring from ak-layer", { exact: true });
+  await expect(ring).not.toHaveCSS("box-shadow", "none");
   // The fence keeps its code, which renders as a code block in the card.
   await expect(card.locator("pre")).toContainText(
     '<div class="ak-layer ak-frame ak-frame-border">Border from ak-layer</div>',

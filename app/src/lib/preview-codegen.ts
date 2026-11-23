@@ -111,7 +111,11 @@ export function getPreviewContentFile(previewsDir: string, id: string) {
   return join(dirname(getPreviewFile(previewsDir, id)), "preview.mdx");
 }
 
-async function writeFileIfChanged(file: string, content: string) {
+/**
+ * Writes a generated file and returns whether its content changed. An unchanged
+ * file keeps its modification time, so its watchers stay quiet.
+ */
+export async function writeFileIfChanged(file: string, content: string) {
   try {
     const current = await fs.readFile(file, "utf8");
     if (current === content) return false;

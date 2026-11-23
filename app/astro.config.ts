@@ -19,6 +19,7 @@ import { Features } from "lightningcss";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { previewConfig } from "./src/lib/preview-config.ts";
 import { resolvePreviewRoots } from "./src/lib/preview-discovery.ts";
+import { previewFenceSourceIntegration } from "./src/lib/preview-fence-source.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
 import { rehypeHtmlComponents } from "./src/lib/rehype.ts";
 import { remarkCodeFences } from "./src/lib/remark-code-fence.server.ts";
@@ -138,6 +139,7 @@ export default defineConfig({
 
   integrations: [
     previewIntegration(previewConfig),
+    previewFenceSourceIntegration({ dir: "docs/styles" }),
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
     mdx({ extendMarkdownConfig: true }),
