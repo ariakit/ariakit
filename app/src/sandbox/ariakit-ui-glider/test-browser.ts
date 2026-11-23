@@ -746,4 +746,63 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
     test.expect(unmaskedEarly).toBe(false);
   });
+
+  test("moves the copies with the items that resize while the box travels", async ({
+    q,
+  }) => {
+    await q.combobox(/^Travel time/).selectOption({ label: "Very slow (3s)" });
+    const article = q.article("Glider", { exact: true });
+    await query(article).radio("Calendar").click();
+    // The copies are presentation, so this probe reads them from the DOM.
+    await test.expect
+      .poll(() =>
+        article.evaluate((node) => !!node.querySelector(".glider-copy")),
+      )
+      .toBe(true);
+    // A style outside the group makes Grid wider and Board narrower by the same
+    // width, so the group keeps its size, and only a resize callback of the
+    // items reports the change.
+    await article.evaluate((node) => {
+      const rules = [
+        { value: "Grid", change: 20 },
+        { value: "Board", change: -20 },
+      ].map(({ value, change }) => {
+        const input = node.querySelector(`input[value="${value}"]`);
+        const control = input?.closest(".control");
+        const width = control?.getBoundingClientRect().width ?? 0;
+        const selector = `.control:has(> input[value="${value}"])`;
+        return `${selector} { flex: none; width: ${width + change}px; overflow: hidden; }`;
+      });
+      const style = document.createElement("style");
+      style.textContent = rules.join("\n");
+      document.head.append(style);
+    });
+    // While the box travels, each copy in its window stays over its item. This
+    // returns the largest distance between a copy and its item, or null when
+    // the travel ended.
+    const getLargestCopyOffset = () =>
+      article.evaluate((node) => {
+        const probe = node.querySelector(".glider-scale-probe");
+        const layer = node.querySelector(".glider-window > .glider-layer");
+        const copies = layer?.querySelectorAll<HTMLElement>(".glider-copy");
+        if (!probe || !copies?.length) return null;
+        const probeLeft = probe.getBoundingClientRect().left;
+        const items = Array.from(node.querySelectorAll(".control")).filter(
+          (control) => !control.closest(".glider"),
+        );
+        let largest = 0;
+        for (const copy of copies) {
+          const text = copy.textContent?.trim();
+          const item = items.find((control) => {
+            return control.textContent?.trim() === text;
+          });
+          if (!item) return Number.POSITIVE_INFINITY;
+          const itemLeft = item.getBoundingClientRect().left - probeLeft;
+          const copyLeft = Number.parseFloat(copy.style.left);
+          largest = Math.max(largest, Math.abs(itemLeft - copyLeft));
+        }
+        return largest;
+      });
+    await test.expect.poll(getLargestCopyOffset).toBeLessThan(0.5);
+  });
 });

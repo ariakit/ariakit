@@ -265,6 +265,13 @@ function getInlineOffsets(group: HTMLElement, rect: ItemRect): InlineOffsets {
   return { start: left, end: right + overflow };
 }
 
+function isSameRect(a: ItemRect, b: ItemRect) {
+  if (a.x !== b.x) return false;
+  if (a.y !== b.y) return false;
+  if (a.width !== b.width) return false;
+  return a.height === b.height;
+}
+
 /** Whether two boxes share an area, with the first one grown to hold both. */
 function isOnPath(from: ItemRect, to: ItemRect, rect: ItemRect) {
   const left = Math.min(from.x, to.x);
@@ -678,6 +685,15 @@ function moveTrack({
   return true;
 }
 
+interface CopiedPath {
+  /** The place of the box when the copies started. */
+  from: ItemRect;
+  /** The place of the target. */
+  to: ItemRect;
+  /** The items under the path, with their places. */
+  rects: Map<HTMLElement, ItemRect>;
+}
+
 interface GliderOptions extends Pick<GliderGroupVariants, "$hover"> {
   root: HTMLElement;
   group: HTMLElement;
@@ -713,6 +729,8 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   // The item that the selected box travels to. Its idle copy shows its content
   // until the box arrives.
   let maskedItem: HTMLElement | null = null;
+  // The path that the copies show, with the places of its items.
+  let copiedPath: CopiedPath | null = null;
   // Whether items entered or left in the last sync.
   let settling = false;
   let travelTimeout = 0;
@@ -745,6 +763,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
   // goes back behind the items. After the travel, nothing changes on the
   // screen.
   const removeCopies = () => {
+    copiedPath = null;
     selectedTrack.element.removeAttribute("data-traveling");
     selectedLayer.replaceChildren();
     idleLayer.replaceChildren();
@@ -759,6 +778,33 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     removeCopies();
   };
 
+  // The items that the box covers on its way, with their places.
+  const getPath = (from: ItemRect, to: ItemRect) => {
+    const path = new Map<HTMLElement, ItemRect>();
+    for (const element of getItems(group, root)) {
+      const rect = getRect(scaleProbe, element);
+      if (!isOnPath(from, to, rect)) continue;
+      path.set(element, rect);
+    }
+    return path;
+  };
+
+  // Whether the copies still show their path to the target, with each item in
+  // its place. Then new copies would look the same. Copies exist only during a
+  // travel to the selected item, so they show its path.
+  const hasCurrentCopies = (to: ItemRect) => {
+    if (!copiedPath) return false;
+    if (!isSameRect(copiedPath.to, to)) return false;
+    const path = getPath(copiedPath.from, to);
+    if (path.size !== copiedPath.rects.size) return false;
+    for (const [element, rect] of path) {
+      const copiedRect = copiedPath.rects.get(element);
+      if (!copiedRect) return false;
+      if (!isSameRect(copiedRect, rect)) return false;
+    }
+    return true;
+  };
+
   // While the selected box travels, it covers the items under it, and its
   // window shows a copy of those items in the selected state. So the content of
   // an item changes state at the edge of the box. The item that the box travels
@@ -767,12 +813,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     // A box that shows the items behind it can't cover their content, so the
     // items change their own content at once.
     if (!hasOpaqueSurface(selectedTrack.box)) return;
-    const path = new Map<HTMLElement, ItemRect>();
-    for (const element of getItems(group, root)) {
-      const rect = getRect(scaleProbe, element);
-      if (!isOnPath(from, to, rect)) continue;
-      path.set(element, rect);
-    }
+    const path = getPath(from, to);
     const selectedCopies = [
       createCopy({
         element: target,
@@ -823,6 +864,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     idleLayer.replaceChildren(idleCopy);
     target.setAttribute("data-glider-masked", "");
     maskedItem = target;
+    copiedPath = { from, to, rects: path };
     selectedTrack.element.setAttribute("data-traveling", "");
     dropOwnMutations();
   };
@@ -908,7 +950,11 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     }
   };
 
-  const sync = (animated: boolean) => {
+  /**
+   * Places the boxes on their items. A sync for a resize only, with no change
+   * of the items, keeps the copies when their items keep their places.
+   */
+  const sync = (animated: boolean, resizeOnly = false) => {
     // The framework can write the class attribute of the group in any update.
     addGroupClasses();
     const items = getItems(group, root);
@@ -962,6 +1008,11 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
             )
           : null;
       const to = getRect(scaleProbe, selectedItem);
+      // A resize callback can report a size that the last sync already used,
+      // such as when the selected item grows with its state. New copies would
+      // flush the style of the items around the group twice for no change. This
+      // reads the places before the moves below change any style.
+      const keepsCopies = refreshes && resizeOnly && hasCurrentCopies(to);
       const offsets = getInlineOffsets(group, to);
       findFollowers();
       const moved = moveTrack({
@@ -981,7 +1032,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
       selectedWindow.style.borderRadius = borderRadius;
       if (from && travels) {
         startTravel(from, selectedItem, to);
-      } else if (from && refreshes) {
+      } else if (from && refreshes && !keepsCopies) {
         removeCopies();
         showCopies(from, selectedItem, to);
       }
@@ -1014,7 +1065,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     groupWidth = width;
     groupHeight = height;
     groupPadding = padding;
-    sync(!resized);
+    sync(!resized, true);
   };
   const resizeObserver = new view.ResizeObserver(onResize);
   resizeObserver.observe(group);
