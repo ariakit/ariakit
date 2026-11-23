@@ -245,7 +245,13 @@ export function observeTabDrag(params: TabDragParams) {
     endPress();
     const tabs = getStripTabs(strip);
     const from = tabs.indexOf(tab);
-    if (from < 0) return;
+    // The tab can become disabled or start to close while the pointer holds it,
+    // such as during the long press of a finger.
+    const movable = from >= 0 && !isFixedTab(tab);
+    if (!movable) {
+      removePointerListeners();
+      return;
+    }
     const rtl = isRtl();
     const { translate, transition: tabTransition, scale } = tab.style;
     const styles = new Map<HTMLElement, InlineStyle>([
@@ -382,27 +388,41 @@ export function observeTabDrag(params: TabDragParams) {
   };
 
   // The pointer is still down after the Escape key, and its click comes when it
-  // goes up.
-  const dropClickAfterRelease = () => {
+  // goes up. A pointer that goes up outside the window sends no event here, so
+  // the wait also ends when the window loses focus or the drag stops.
+  let stopRelease: (() => void) | null = null;
+  const dropClickAfterRelease = (pointerId: number) => {
+    stopRelease?.();
     const stop = () => {
+      stopRelease = null;
       win.removeEventListener("pointerup", onRelease);
-      win.removeEventListener("pointercancel", stop);
+      win.removeEventListener("pointercancel", onCancel);
+      win.removeEventListener("blur", stop);
     };
-    const onRelease = () => {
+    const onRelease = (event: PointerEvent) => {
+      if (event.pointerId !== pointerId) return;
       stop();
       dropClick();
     };
+    const onCancel = (event: PointerEvent) => {
+      if (event.pointerId !== pointerId) return;
+      stop();
+    };
     win.addEventListener("pointerup", onRelease);
-    win.addEventListener("pointercancel", stop);
+    win.addEventListener("pointercancel", onCancel);
+    win.addEventListener("blur", stop);
+    stopRelease = stop;
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key !== "Escape") return;
+    if (!drag) return;
+    const { pointerId } = drag;
     // The key ends the drag, and doesn't also close a dialog around the tabs.
     event.preventDefault();
     event.stopPropagation();
     cancelDrag();
-    dropClickAfterRelease();
+    dropClickAfterRelease(pointerId);
   };
 
   const onPointerMove = (event: PointerEvent) => {
@@ -444,9 +464,30 @@ export function observeTabDrag(params: TabDragParams) {
       endDrag();
       return;
     }
-    const ids = moveItem(tabs, from, to).map((item) => item.id);
+    // Tabs can open, close, or become disabled during the drag, such as from
+    // the keyboard. A tab that opened has no place in the order from the start
+    // of the drag, and a dragged tab that closed or can't move now has no new
+    // place, so the dragged tab goes back with no call. The other tabs that
+    // closed leave the order.
+    const stripTabs = getStripTabs(strip);
+    const opened = stripTabs.some((item) => !tabs.includes(item));
+    const movable = !opened && stripTabs.includes(tab) && !isFixedTab(tab);
+    if (!movable) {
+      endDrag();
+      return;
+    }
+    const order = moveItem(tabs, from, to).filter((item) => {
+      return stripTabs.includes(item);
+    });
+    // Without the tabs that closed, the tab can be back at its place.
+    const moved = order.some((item, index) => item !== stripTabs[index]);
+    if (!moved) {
+      endDrag();
+      return;
+    }
+    const ids = order.map((item) => item.id);
     endDrag(() => onReorder(ids));
-    announce(getMoveStatus(tab, to, tabs.length));
+    announce(getMoveStatus(tab, order.indexOf(tab), order.length));
   };
 
   const onPointerCancel = (event: PointerEvent) => {
@@ -516,6 +557,7 @@ export function observeTabDrag(params: TabDragParams) {
   return () => {
     endPress();
     endDrag();
+    stopRelease?.();
     removePointerListeners();
     style.setProperty("-webkit-touch-callout", touchCallout);
     strip.removeEventListener("pointerdown", onPointerDown);

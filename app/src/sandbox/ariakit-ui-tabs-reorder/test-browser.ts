@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import { getCenter, getLeft, getTabNames } from "./test-helpers.ts";
 
 /**
@@ -163,6 +163,111 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // when it stays, so that time passes first.
     await page.waitForTimeout(300);
     await test.expect(tab).toBeVisible();
+  });
+
+  test("doesn't drag a tab that starts to close while the pointer holds it", async ({
+    page,
+    q,
+  }) => {
+    const tab = q.tab("Workshop");
+    await tab.click();
+    const { x, y } = await getCenter(tab);
+    // A move past the place of the last tab, which a drag of the tab would
+    // take.
+    const distance = (await getCenter(q.tab("Trip"))).x - x + 40;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    // The Delete key closes the focused tab, which leaves with a transition.
+    await page.keyboard.press("Delete");
+    await page.mouse.move(x + distance, y, { steps: 8 });
+    await test.expect(tab).toHaveCount(0);
+    await page.mouse.up();
+    // The text shows no move already before the drop. A call at the drop would
+    // change it as the app renders, so the frames of that render pass first.
+    await flushFrames(page);
+    test
+      .expect(await q.text(/^Open notes: \d+ moves?\./).textContent())
+      .toBe("Open notes: 0 moves. Groceries, Trip");
+    // The start of a drag selects its tab, which would take the selection from
+    // the tab that took the place of the closed tab.
+    await test.expect(q.tab("Trip")).toHaveAttribute("aria-selected", "true");
+    await test.expect(q.tabpanel("Trip")).toBeVisible();
+  });
+
+  test("moves a tab with a drag that starts while another tab closes", async ({
+    page,
+    q,
+  }) => {
+    // The tab before the closed tab stays in place while the closed tab
+    // shrinks, so the press lands on it at any time.
+    const tab = q.tab("Groceries");
+    const closing = q.tab("Workshop");
+    // In browsers that animate the width, the closed tab leaves with a 200ms
+    // transition, and the drag usually starts before it is gone. Other
+    // browsers, and a slow runner, start the drag after it is gone. The next
+    // test covers a tab that closes during a drag in any browser.
+    await getCloseMark(closing).click();
+    await pressAndMove(page, tab, 400);
+    await test.expect(closing).toHaveCount(0);
+    await page.mouse.up();
+    await test
+      .expect(q.text("Open notes: 1 move. Trip, Groceries"))
+      .toBeVisible();
+    await test.expect
+      .poll(() => getTabNames(q.tablist("Open notes")))
+      .toEqual(["Trip", "Groceries"]);
+  });
+
+  test("moves a tab with a drag while another tab closes", async ({
+    page,
+    q,
+  }) => {
+    const tab = q.tab("Groceries");
+    const left = await getLeft(tab);
+    await pressAndMove(page, tab, 40);
+    await test.expect.poll(() => getLeft(tab)).toBeGreaterThan(left + 20);
+    // A plain arrow key moves the focus to the next tab, and the Delete key
+    // closes it. The order from the start of the drag still has that tab.
+    await page.keyboard.press("ArrowRight");
+    await page.keyboard.press("Delete");
+    await test.expect(q.tab("Workshop")).toHaveCount(0);
+    const { x, y } = await getCenter(tab);
+    await page.mouse.move(x + 360, y, { steps: 8 });
+    await page.mouse.up();
+    await test
+      .expect(q.text("Open notes: 1 move. Trip, Groceries"))
+      .toBeVisible();
+    await test.expect
+      .poll(() => getTabNames(q.tablist("Open notes")))
+      .toEqual(["Trip", "Groceries"]);
+  });
+
+  test("puts the tab back when it closes during its drag", async ({
+    page,
+    q,
+  }) => {
+    const tab = q.tab("Groceries");
+    await tab.click();
+    const step = (await getLeft(q.tab("Workshop"))) - (await getLeft(tab));
+    await pressAndMove(page, tab, step);
+    await test.expect
+      .poll(
+        async () => (await getLeft(q.tab("Workshop"))) < (await getLeft(tab)),
+      )
+      .toBe(true);
+    // The order from the start of the drag still has the tab that closes.
+    await page.keyboard.press("Delete");
+    await test.expect(tab).toHaveCount(0);
+    await page.mouse.up();
+    // The text shows no move already before the drop. A call at the drop would
+    // change it as the app renders, so the frames of that render pass first.
+    await flushFrames(page);
+    test
+      .expect(await q.text(/^Open notes: \d+ moves?\./).textContent())
+      .toBe("Open notes: 0 moves. Workshop, Trip");
+    await test.expect
+      .poll(() => getTabNames(q.tablist("Open notes")))
+      .toEqual(["Workshop", "Trip"]);
   });
 
   test("takes a press on the close mark right after a drop", async ({
