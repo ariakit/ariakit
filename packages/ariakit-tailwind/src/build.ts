@@ -7,7 +7,7 @@ import type {
   Rule,
   Var,
 } from "./lib.ts";
-import { Type } from "./lib.ts";
+import { AtRuleName, Type } from "./lib.ts";
 
 type BlockChild = AtRule["children"][number];
 type DeclarationNode = Extract<BlockChild, { type: Type["Declaration"] }>;
@@ -246,8 +246,54 @@ function assertUniqueIdentifiers(nodes: OutputNode[]) {
   );
 }
 
+function isColorMixSupportsRule(node: BlockChild) {
+  if (node.type !== Type.AtRule) return false;
+  if (node.name !== AtRuleName.Supports) return false;
+  return node.params?.includes("color-mix(") ?? false;
+}
+
+/**
+ * Fails when a utility has a declaration that uses color-mix() outside an
+ * @supports rule for it. Tailwind can add a fallback copy of that declaration
+ * to each compiled variant, and no browser test detects the larger output.
+ */
+function assertColorMixSupport(nodes: OutputNode[]) {
+  const unsupported: string[] = [];
+
+  const visit = (children: BlockChild[], owner: string) => {
+    for (const child of children) {
+      if (child.type === Type.Declaration) {
+        if (typeof child.value !== "string") continue;
+        if (!child.value.includes("color-mix(")) continue;
+        unsupported.push(`- ${child.property} in ${owner}`);
+        continue;
+      }
+      if (child.type === Type.CustomProperty) continue;
+      if (isColorMixSupportsRule(child)) continue;
+      visit(child.children, owner);
+    }
+  };
+
+  for (const node of nodes) {
+    if (node.type !== Type.AtRule) continue;
+    if (node.name !== AtRuleName.Utility) continue;
+    visit(node.children, `@utility ${node.params}`);
+  }
+
+  if (!unsupported.length) {
+    return;
+  }
+  throw new Error(
+    [
+      "Declarations with color-mix() must be inside withColorMixSupport():",
+      ...unsupported,
+    ].join("\n"),
+  );
+}
+
 export function output(nodes: OutputNode[] = input) {
   assertUniqueIdentifiers(nodes);
+  assertColorMixSupport(nodes);
   const css = nodes
     .filter(isRenderableOutputNode)
     .map((node) => renderNode(node, 0))

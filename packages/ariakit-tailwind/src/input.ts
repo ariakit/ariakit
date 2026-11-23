@@ -1,4 +1,4 @@
-import type { Value, VarProperty, WithContextParams } from "./lib.ts";
+import type { AtRule, Value, VarProperty, WithContextParams } from "./lib.ts";
 import {
   at,
   createContext,
@@ -551,6 +551,16 @@ function getLayerTextLightness() {
   );
 }
 
+// The contrast floors read a pack, which the comment above
+// getContrastFloorRatio() describes. Inside an srgb-linear relative color from
+// a pack, the channels scaled by `2 * alpha` are the packed color, and
+// `2 * alpha - 1` is the encoded reference. Black is 0 in every linear space,
+// so the pack decodes in any of them.
+const packedRed = fn.mul(r, 2, alpha);
+const packedGreen = fn.mul(g, 2, alpha);
+const packedBlue = fn.mul(b, 2, alpha);
+const packedReference = fn.sub(fn.mul(2, alpha), 1);
+
 // Constants registered once as @property initial values. They only depend on
 // color channels or fixed numeric constants.
 const constantMathVars = {
@@ -593,6 +603,15 @@ const constantMathVars = {
   bandDarkLow: _ak.prop("bdl", { initial: bandDarkLow }),
   bandLightLow: _ak.prop("bll", { initial: bandLightLow }),
   bandLightHigh: _ak.prop("blh", { initial: bandLightHigh }),
+  // The contrast floor stages repeat these two terms many times. A stage reads
+  // them by name inside a relative color from a pack, so each compiled floor
+  // rule holds the formulas once here instead of once per use.
+  packedClippedLuminance: _ak.prop("pcl", {
+    initial: getClippedLuminance(packedRed, packedGreen, packedBlue),
+  }),
+  packedFlaredReference: _ak.prop("pfr", {
+    initial: getContrastFlaredReference(packedReference),
+  }),
 };
 
 const disabledVars = {
@@ -668,7 +687,11 @@ const layerColorVars = {
   // style (for if() style queries), even when the same element is also a layer
   // that overwrites layerTextL for its descendants. Registered so style()
   // comparisons match computed colors rather than token streams.
-  layerTextLContext: _ak.var("ltlc"),
+  //
+  // ak-text sets the base name to the copy on the parity of its parent, so its
+  // if() chains read one name on both parities. It does not inherit, so only
+  // that element computes it.
+  layerTextLContext: _ak.prop.canvas("ltlc"),
   layerTextLContextEven: _ak.prop.canvas("ltlc-even", { inherits: true }),
   layerTextLContextOdd: _ak.prop.canvas("ltlc-odd", { inherits: true }),
   // Parity copies of layerL routed through layerContext. A layer keeps its
@@ -959,6 +982,24 @@ const light = createVariant(
 
 // Parses as a valid declaration only in browsers that support if().
 const IF_SUPPORTS_CONDITION = "(color: if(else: red))";
+
+// The condition of the @supports rule that Tailwind writes for color-mix().
+const COLOR_MIX_SUPPORTS_CONDITION = "(color: color-mix(in lab, red, red))";
+
+/**
+ * Wraps declarations that use color-mix() with variables. Tailwind compiles
+ * each of them outside this rule twice: a fallback copy without color-mix(),
+ * then the declaration in an @supports rule of its own. From version 4.2, it
+ * skips the fallback inside an @supports rule whose condition contains
+ * `color-mix(`. Each browser with the relative colors and style queries that
+ * the utilities need also has color-mix(), so the fallback only adds size to
+ * each compiled variant. The build fails for a color-mix() declaration outside
+ * this rule.
+ * https://github.com/tailwindlabs/tailwindcss/pull/19450
+ */
+function withColorMixSupport(...children: AtRule["children"]) {
+  return at.supports(COLOR_MIX_SUPPORTS_CONDITION, ...children);
+}
 
 const darkHigh = createVariant(
   "ak-dark-high",
@@ -1660,8 +1701,8 @@ function getContrastFlaredReference(encodedReference: Value) {
  * Returns the luminance that reaches the floor ratio against the reference.
  * Light parents need darker edges, and dark parents need lighter edges.
  */
-function getEdgeContrastTarget(encodedReference: Value, lighter: boolean) {
-  const flaredReference = getContrastFlaredReference(encodedReference);
+function getEdgeContrastTarget(lighter: boolean) {
+  const flaredReference = vars.packedFlaredReference;
   const flaredTarget = lighter
     ? fn.mul(flaredReference, vars.edgeContrastRatio)
     : fn.div(flaredReference, vars.edgeContrastRatio);
@@ -1674,10 +1715,10 @@ function getEdgeContrastTarget(encodedReference: Value, lighter: boolean) {
  * to the direction multiplies on dark parents, divides on light parents, and is
  * 1 without a parent layer.
  */
-function getLayerContrastTarget(encodedReference: Value) {
+function getLayerContrastTarget() {
   return fn.sub(
     fn.mul(
-      getContrastFlaredReference(encodedReference),
+      vars.packedFlaredReference,
       fn.exp`pow(${vars.layerContrastRatio}, ${vars.layerContrastDirection})`,
     ),
     0.05,
@@ -1717,15 +1758,6 @@ function getContrastFloorTint(target: Value, clippedLuminance: Value) {
     ),
   );
 }
-
-// Inside an srgb-linear relative color from a pack, the channels scaled by
-// `2 * alpha` are the packed color, and `2 * alpha - 1` is the encoded
-// reference. Black is 0 in every linear space, so the pack decodes in any of
-// them.
-const packedRed = fn.mul(r, 2, alpha);
-const packedGreen = fn.mul(g, 2, alpha);
-const packedBlue = fn.mul(b, 2, alpha);
-const packedReference = fn.sub(fn.mul(2, alpha), 1);
 
 /**
  * Returns the colored stage of a contrast floor from a pack. The stage keeps
@@ -1782,7 +1814,7 @@ function getContrastFloorChannel({
  * Returns the declarations of the edge contrast floor for one parent scheme.
  */
 function getEdgeContrastDeclarations(lighter: boolean) {
-  const target = getEdgeContrastTarget(packedReference, lighter);
+  const target = getEdgeContrastTarget(lighter);
   // Neutral edges are black on light parents and white on dark parents. The
   // stage keeps the fill channels and stores the lowest alpha that reaches the
   // target once the edge is painted over a backdrop with this sRGB gray value.
@@ -1818,21 +1850,19 @@ function getEdgeContrastDeclarations(lighter: boolean) {
           fn.exp`sign(${vars.frameRing})`,
         ),
       )
-    : getEncodedSrgb(getClippedLuminance(packedRed, packedGreen, packedBlue));
+    : getEncodedSrgb(vars.packedClippedLuminance);
   // A ring paints outside the border box, over the parent layer. Only the
   // parent luminance is known here, so its gray equivalent stands in for it.
   // That holds for black rings and neutral parents, but a white ring on a
   // saturated dark parent can stay under the floor.
-  const ringBackdrop = getEncodedSrgb(
-    fn.sub(getContrastFlaredReference(packedReference), 0.05),
-  );
+  const ringBackdrop = getEncodedSrgb(fn.sub(vars.packedFlaredReference, 0.05));
   const neutralAlpha = fn.max(
     getNeutralAlpha(fillBackdrop),
     fn.mul(fn.exp`sign(${vars.frameRing})`, getNeutralAlpha(ringBackdrop)),
   );
   // A colored edge is measured clipped to sRGB, as it paints. A color that
   // reaches the target there keeps its color.
-  const clippedY = getClippedLuminance(packedRed, packedGreen, packedBlue);
+  const clippedY = vars.packedClippedLuminance;
   const passes = fn.binary(
     lighter ? fn.sub(clippedY, target) : fn.sub(target, clippedY),
   );
@@ -1915,8 +1945,8 @@ function getLayerContrastSafeLightness(currentLightness: Value) {
  */
 function getLayerContrastFloorDeclarations() {
   const direction = vars.layerContrastDirection;
-  const target = getLayerContrastTarget(packedReference);
-  const clippedY = getClippedLuminance(packedRed, packedGreen, packedBlue);
+  const target = getLayerContrastTarget();
+  const clippedY = vars.packedClippedLuminance;
   // A color that reaches the target passes, and so does every color without a
   // parent layer, where the direction is 0.
   const passes = fn.sub(
@@ -2151,13 +2181,15 @@ utility("layer-offset-*", getLayerOffsetDeclarations());
 utility("layer-color-*", set(inputs.layerColor, fn.value(color, "[*]")));
 
 function getLayerMixDeclaration() {
-  return set(
-    inputs.layerMix,
-    fn.colorMix(
-      inputs.layerMixMethod,
-      inputs.layerMixColor,
-      vars.layerIdleBase,
-      inputs.layerMixAmount,
+  return withColorMixSupport(
+    set(
+      inputs.layerMix,
+      fn.colorMix(
+        inputs.layerMixMethod,
+        inputs.layerMixColor,
+        vars.layerIdleBase,
+        inputs.layerMixAmount,
+      ),
     ),
   );
 }
@@ -2214,9 +2246,11 @@ function getLayerFadeDeclaration() {
     ...mapLayerLightnessSteps((_, isDark) =>
       isDark ? [set(vars.layerFadeDirection, 1)] : [],
     ),
-    set(
-      inputs.layerFade,
-      fn.oklch(faded, { l: getPushL(l, awayFromParent, moved) }),
+    withColorMixSupport(
+      set(
+        inputs.layerFade,
+        fn.oklch(faded, { l: getPushL(l, awayFromParent, moved) }),
+      ),
     ),
   ];
 }
@@ -2303,7 +2337,7 @@ utility(
     ),
     set(vars.layerContrastParentL, fn.var(vars.outsetParentL, parentL)),
   ]),
-  getLayerContrastFloorDeclarations(),
+  withColorMixSupport(...getLayerContrastFloorDeclarations()),
 );
 
 utility(
@@ -2463,13 +2497,15 @@ utility(
     const parentEdge = inherit(vars.layerEdgeContext, vars.layer);
     const parentEdgeSource = inherit(vars.layerEdgeSourceContext, 0);
     return [
-      set(
-        inputs.edgeColor,
-        fn.colorMix(
-          "oklch",
-          vars.layer,
-          parentEdge,
-          fn.mul(parentEdgeSource, "100%"),
+      withColorMixSupport(
+        set(
+          inputs.edgeColor,
+          fn.colorMix(
+            "oklch",
+            vars.layer,
+            parentEdge,
+            fn.mul(parentEdgeSource, "100%"),
+          ),
         ),
       ),
       set(
@@ -2567,32 +2603,35 @@ utility(
 // https://github.com/ariakit/ariakit/issues/8050
 utility(
   "edge-contrast",
-  set(vars.edgeContrastRatio, edgeContrastRatio),
-  set(vars.contrastReference, contrastReference),
-  set(vars.edgeContrastNeutralPack, getContrastPack(vars.layer)),
-  // The neutral edge from the fill channels, with the requested alpha raised to
-  // the floor alpha that the scheme branch stores in the stage below.
-  set(
-    vars.edgeContrastNeutralEdge,
-    fn.oklch(vars.edgeContrastNeutral, {
-      ...edgeChannels,
-      a: fn.max(edgeAlpha, alpha),
-    }),
+  withColorMixSupport(
+    set(vars.edgeContrastRatio, edgeContrastRatio),
+    set(vars.contrastReference, contrastReference),
+    set(vars.edgeContrastNeutralPack, getContrastPack(vars.layer)),
+    // The neutral edge from the fill channels, with the requested alpha raised
+    // to the floor alpha that the scheme branch stores in the stage below.
+    set(
+      vars.edgeContrastNeutralEdge,
+      fn.oklch(vars.edgeContrastNeutral, {
+        ...edgeChannels,
+        a: fn.max(edgeAlpha, alpha),
+      }),
+    ),
+    set(
+      vars.edgeContrastColoredPack,
+      getContrastPack(getEdgeColor(fn.var(inputs.edgeColor))),
+    ),
+    set(
+      vars.edgeContrastColoredRepack,
+      getContrastPack(gateColoredEdge(vars.edgeContrastColoredMoved)),
+    ),
+    set(vars.edgeFloor, fn.var(vars.edgeFloorColored, vars.edgeFloorNeutral)),
+    // The parent scheme decides the direction, as it does for the regular edge
+    // push. Each branch holds only its own formulas, which keeps the
+    // per-element parsing cost low. A layer without a parent scheme keeps its
+    // regular edge.
+    at.variant(light, ...getEdgeContrastDeclarations(false)),
+    at.variant(dark, ...getEdgeContrastDeclarations(true)),
   ),
-  set(
-    vars.edgeContrastColoredPack,
-    getContrastPack(getEdgeColor(fn.var(inputs.edgeColor))),
-  ),
-  set(
-    vars.edgeContrastColoredRepack,
-    getContrastPack(gateColoredEdge(vars.edgeContrastColoredMoved)),
-  ),
-  set(vars.edgeFloor, fn.var(vars.edgeFloorColored, vars.edgeFloorNeutral)),
-  // The parent scheme decides the direction, as it does for the regular edge
-  // push. Each branch holds only its own formulas, which keeps the per-element
-  // parsing cost low. A layer without a parent scheme keeps its regular edge.
-  at.variant(light, ...getEdgeContrastDeclarations(false)),
-  at.variant(dark, ...getEdgeContrastDeclarations(true)),
 );
 
 const textBaseColor = fn.var(inputs.textColor, vars.layer);
@@ -2671,13 +2710,12 @@ const textLightnessSteps = getTextLightnessSteps();
  * initial so unmatched contexts keep today's behavior.
  */
 function getTextStepIf(
-  parentTextL: VarProperty,
   getStepValue: (step: TextLightnessStep) => number,
   elseValue: number,
 ) {
   return fn.if(
     textLightnessSteps.map((step): [string, Value] => [
-      fn.style(parentTextL, fn.lch({ l: step.parentLightness })),
+      fn.style(vars.layerTextLContext, fn.lch({ l: step.parentLightness })),
       getStepValue(step),
     ]),
     elseValue,
@@ -2692,41 +2730,33 @@ utility(
   // Each emitted rule is selector-matched per element, which gets expensive
   // under child variants like `*:ak-text` whose rules land in the universal
   // bucket. Where if() is available, deliver the whole quantized table as one
-  // if() chain per variable inside the two parity rules instead of one rule
-  // per step. The parity vars carry the parent layer's quantized lightness, so
-  // values match the container query fallback even when the same element is
-  // also a layer.
+  // if() chain per variable instead of one rule per step. The parity vars carry
+  // the parent layer's quantized lightness, so values match the container query
+  // fallback even when the same element is also a layer.
   at.supports(
     IF_SUPPORTS_CONDITION,
-    ...layerContext.read(({ parityVar }) => {
-      const parentTextL = parityVar(vars.layerTextLContext);
-      return [
-        set(
-          vars.textContrastDirection,
-          getTextStepIf(parentTextL, (step) => step.contrastDirection, 1),
-        ),
-        set(
-          vars.textParentL,
-          getTextStepIf(parentTextL, (step) => step.parentL, 0),
-        ),
-        set(
-          vars.textAccessibleL,
-          getTextStepIf(
-            parentTextL,
-            (step) => step.accessibleL,
-            LCH_LIGHTNESS_MAX,
-          ),
-        ),
-        set(
-          vars.textChromaCap,
-          getTextStepIf(
-            parentTextL,
-            (step) => step.chromaCap,
-            LCH_TEXT_CHROMA_CAP,
-          ),
-        ),
-      ];
-    }),
+    // The chains are the largest part of each compiled variant. The parity
+    // rules only point one name at the parent's copy, so the chains are written
+    // once instead of once per parity.
+    ...layerContext.read(({ parityVar }) => [
+      set(vars.layerTextLContext, parityVar(vars.layerTextLContext)),
+    ]),
+    set(
+      vars.textContrastDirection,
+      getTextStepIf((step) => step.contrastDirection, 1),
+    ),
+    set(
+      vars.textParentL,
+      getTextStepIf((step) => step.parentL, 0),
+    ),
+    set(
+      vars.textAccessibleL,
+      getTextStepIf((step) => step.accessibleL, LCH_LIGHTNESS_MAX),
+    ),
+    set(
+      vars.textChromaCap,
+      getTextStepIf((step) => step.chromaCap, LCH_TEXT_CHROMA_CAP),
+    ),
   ),
   at.supports.not(
     IF_SUPPORTS_CONDITION,
@@ -3203,13 +3233,15 @@ utility(
   set(vars.frameRing, inputs.frameRing),
   // A ring paints over the parent layer. A border paints over the element's
   // own layer, unless ak-frame-backdrop paints another surface under it.
-  set(
-    vars.frameBackdrop,
-    fn.colorMix(
-      "oklab",
-      fn.var(inputs.frameBorderBackdrop, vars.layer),
-      vars.layerParent,
-      fn.mul(fn.exp`sign(${vars.frameRing})`, "100%"),
+  withColorMixSupport(
+    set(
+      vars.frameBackdrop,
+      fn.colorMix(
+        "oklab",
+        fn.var(inputs.frameBorderBackdrop, vars.layer),
+        vars.layerParent,
+        fn.mul(fn.exp`sign(${vars.frameRing})`, "100%"),
+      ),
     ),
   ),
   set.padding(vars.framePadding),
@@ -3667,9 +3699,11 @@ function getFrameBackdropDeclarations() {
     fn.exp`linear-gradient(${fn.oklch(color, { a: fn.mul(alpha, onRing) })} 0 0)`;
   return [
     set(inputs.frameBackdropOn, 1),
-    set(
-      inputs.frameBorderBackdrop,
-      fn.colorMix("oklab", vars.layer, backdrop, fn.mul(onRing, "100%")),
+    withColorMixSupport(
+      set(
+        inputs.frameBorderBackdrop,
+        fn.colorMix("oklab", vars.layer, backdrop, fn.mul(onRing, "100%")),
+      ),
     ),
     set.backgroundImage(
       fn.join([getLayer(vars.layer), getLayer(backdrop)], ", "),
