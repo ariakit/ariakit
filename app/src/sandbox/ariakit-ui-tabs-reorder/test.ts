@@ -72,3 +72,15 @@ test("keeps the tabs of a list without onReorder in their places", async () => {
   await press.End(null, move);
   expect(getTabNames("Fixed tabs")).toEqual(["One", "Two", "Three"]);
 });
+
+test("keeps the focus on a tab of the tabs prop that moves", async () => {
+  await focus(q.tab("Editor"));
+  await press.ArrowRight(null, move);
+  expect(getTabNames("Panes")).toEqual(["Terminal", "Editor", "Output"]);
+  // The query runs again, because the element at the old place could now show
+  // another tab.
+  expect(q.tab("Editor")).toHaveFocus();
+  // The next key moves the same tab again.
+  await press.ArrowRight(null, move);
+  expect(getTabNames("Panes")).toEqual(["Terminal", "Output", "Editor"]);
+});

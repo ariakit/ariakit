@@ -127,4 +127,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .poll(() => getTabNames(q.tablist("Fixed tabs")))
       .toEqual(["One", "Two", "Three"]);
   });
+
+  test("keeps the focus on a tab of the tabs prop that moves", async ({
+    page,
+    q,
+  }) => {
+    const tab = q.tab("Editor");
+    await tab.focus();
+    await page.keyboard.press("ControlOrMeta+Shift+ArrowRight");
+    await test
+      .expect(q.text("Panes: 1 move. Terminal, Editor, Output"))
+      .toBeVisible();
+    await test.expect(tab).toBeFocused();
+    // The next key moves the same tab again.
+    await page.keyboard.press("ControlOrMeta+Shift+ArrowRight");
+    await test
+      .expect(q.text("Panes: 2 moves. Terminal, Output, Editor"))
+      .toBeVisible();
+  });
 });

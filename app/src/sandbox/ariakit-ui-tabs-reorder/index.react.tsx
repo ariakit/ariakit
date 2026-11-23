@@ -207,6 +207,34 @@ function Pages() {
   );
 }
 
+// Tabs from the tabs prop, as props with an id and no key.
+function Panes() {
+  const { items, moves, reorder } = useItems([
+    { id: "pane-editor", name: "Editor" },
+    { id: "pane-terminal", name: "Terminal" },
+    { id: "pane-output", name: "Output" },
+  ]);
+  return (
+    <section className="grid gap-2">
+      <Tabs defaultSelectedId="pane-editor" className="w-[24rem] max-w-full">
+        <TabList
+          aria-label="Panes"
+          onReorder={reorder}
+          tabs={items.map((item) => ({ id: item.id, children: item.name }))}
+        />
+        <TabPanels>
+          {items.map((item) => (
+            <TabPanel key={item.id} tabId={item.id}>
+              The {item.name} pane
+            </TabPanel>
+          ))}
+        </TabPanels>
+      </Tabs>
+      <Order label="Panes" items={items} moves={moves} />
+    </section>
+  );
+}
+
 // A tab list without onReorder, whose tabs stay where they are.
 function Fixed() {
   return (
@@ -239,6 +267,7 @@ export default function Example() {
         <Files />
         <Views />
         <Pages />
+        <Panes />
         <Fixed />
       </div>
     </StrictMode>

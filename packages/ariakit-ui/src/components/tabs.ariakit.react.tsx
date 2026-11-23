@@ -802,6 +802,18 @@ function getTabListButton(button: CarouselButtonRender, label: string) {
 }
 
 /**
+ * The key of a tab from the array of the `tabs` prop. Prefixes prevent
+ * collisions between the kinds of keys. Children.toArray clones still cause
+ * missing-key warnings in react-dom 19. A tab with an `id` keeps its element
+ * when `onReorder` changes the order of the array, so the focus stays on it.
+ */
+function getArrayTabKey(element: React.ReactElement<TabProps>, index: number) {
+  if (element.key != null) return `key:${element.key}`;
+  if (element.props.id != null) return `id:${element.props.id}`;
+  return `index:${index}`;
+}
+
+/**
  * Renders one entry of the `tabs` prop. Text, alone or as the `children` of a
  * props object, goes in a `TabLabel` through `Tab`, like the text of a tab
  * written as JSX. Nullish and boolean entries, such as `canEdit && "Settings"`,
@@ -896,11 +908,11 @@ export function TabList({
         ? tabs.map((tab, index) => {
             const element = renderTab(tab, kindProps);
             if (!element) return null;
-            // Prefixes prevent key/index collisions. Children.toArray clones
-            // still cause missing-key warnings in react-dom 19.
-            const key =
-              element.key == null ? `index:${index}` : `key:${element.key}`;
-            return <Fragment key={key}>{element}</Fragment>;
+            return (
+              <Fragment key={getArrayTabKey(element, index)}>
+                {element}
+              </Fragment>
+            );
           })
         : Object.entries(tabs ?? {}).map(([id, tab]) => (
             <Fragment key={id}>{renderTab(tab, { ...kindProps, id })}</Fragment>
