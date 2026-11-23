@@ -68,7 +68,10 @@ export const shell = cv({
     // space of the shell header unless they set their own.
     "[--shell-header-space:3] [--shell-main-header-space:var(--shell-header-space)]",
     "[&:has(>.shell-header)]:[--shell-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-header-space),1px))]",
-    "[&:has(>.shell-footer)]:[--shell-footer-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-footer-space),1px))]",
+    // Only a sticky footer publishes its height, space, and edge on the shell.
+    // The footer comes last, and a new inherited value on the shell restyles
+    // every element that the browser already parsed inside it.
+    "[&:has(>.shell-footer-sticky)]:[--shell-footer-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-footer-space),1px))]",
     "[--shell-main-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-main-header-space),1px))] [--shell-main-head:0px]",
     "[--shell-head:0px]",
     "[&:has(>.shell-header-sticky)]:[--shell-head:calc(var(--shell-header-height)+var(--shell-header-border))]",
@@ -607,14 +610,16 @@ export const shellFooter = cv({
      * footer, so a CSS length goes to `$px`, which sets only the sides.
      * Defaults to 3.
      */
+    // The shell reads the space only to place parts above a sticky footer, so
+    // only a sticky footer sets it on the shell. See the shell's footer height.
     $p: {
-      0: "[.shell:has(>&)]:[--shell-footer-space:0] [--shell-footer-space:0]",
-      1: "[.shell:has(>&)]:[--shell-footer-space:1] [--shell-footer-space:1]",
-      2: "[.shell:has(>&)]:[--shell-footer-space:2] [--shell-footer-space:2]",
-      3: "[.shell:has(>&)]:[--shell-footer-space:3] [--shell-footer-space:3]",
-      4: "[.shell:has(>&)]:[--shell-footer-space:4] [--shell-footer-space:4]",
-      5: "[.shell:has(>&)]:[--shell-footer-space:5] [--shell-footer-space:5]",
-      6: "[.shell:has(>&)]:[--shell-footer-space:6] [--shell-footer-space:6]",
+      0: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:0] [--shell-footer-space:0]",
+      1: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:1] [--shell-footer-space:1]",
+      2: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:2] [--shell-footer-space:2]",
+      3: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:3] [--shell-footer-space:3]",
+      4: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:4] [--shell-footer-space:4]",
+      5: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:5] [--shell-footer-space:5]",
+      6: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:6] [--shell-footer-space:6]",
     },
     /**
      * Sets the facing edge width in whole pixels from 0 to 5. `true` means 1px;
@@ -623,17 +628,17 @@ export const shellFooter = cv({
      * place parts above a sticky footer, so the width is one of these values.
      */
     $border: {
-      true: "[--border-width:1px] [.shell:has(>&)]:[--shell-footer-border:1px]",
+      true: "[--border-width:1px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:1px]",
       false:
-        "[--border-width:0px] [.shell:has(>&)]:[--shell-footer-border:0px]",
-      0: "[--border-width:0px] [.shell:has(>&)]:[--shell-footer-border:0px]",
-      1: "[--border-width:1px] [.shell:has(>&)]:[--shell-footer-border:1px]",
-      2: "[--border-width:2px] [.shell:has(>&)]:[--shell-footer-border:2px]",
-      3: "[--border-width:3px] [.shell:has(>&)]:[--shell-footer-border:3px]",
-      4: "[--border-width:4px] [.shell:has(>&)]:[--shell-footer-border:4px]",
-      5: "[--border-width:5px] [.shell:has(>&)]:[--shell-footer-border:5px]",
+        "[--border-width:0px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:0px]",
+      0: "[--border-width:0px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:0px]",
+      1: "[--border-width:1px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:1px]",
+      2: "[--border-width:2px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:2px]",
+      3: "[--border-width:3px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:3px]",
+      4: "[--border-width:4px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:4px]",
+      5: "[--border-width:5px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:5px]",
       inherit:
-        "ak-edge-inherit [.shell:has(>&)]:[--shell-footer-border:var(--border-width,0px)]",
+        "ak-edge-inherit [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:var(--border-width,0px)]",
     },
     /**
      * Keeps the footer in view at the bottom of the scroll area. Sticky
@@ -1311,14 +1316,17 @@ export const shellMainHeader = cv({
      * `$px`, which sets only the gutter. Defaults to the space of the shell
      * header, or to 3 without one.
      */
+    // The shell reads the space and the edge only to place parts below a sticky
+    // main header, so only a sticky main header sets them on the shell. A new
+    // inherited value on the shell restyles every part inside it.
     $p: {
-      0: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:0] [--shell-main-header-space:0]",
-      1: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:1] [--shell-main-header-space:1]",
-      2: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:2] [--shell-main-header-space:2]",
-      3: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:3] [--shell-main-header-space:3]",
-      4: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:4] [--shell-main-header-space:4]",
-      5: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:5] [--shell-main-header-space:5]",
-      6: "[.shell:has(>.shell-main>&)]:[--shell-main-header-space:6] [--shell-main-header-space:6]",
+      0: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:0] [--shell-main-header-space:0]",
+      1: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:1] [--shell-main-header-space:1]",
+      2: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:2] [--shell-main-header-space:2]",
+      3: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:3] [--shell-main-header-space:3]",
+      4: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:4] [--shell-main-header-space:4]",
+      5: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:5] [--shell-main-header-space:5]",
+      6: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:6] [--shell-main-header-space:6]",
     },
     /**
      * Sets the facing edge width in whole pixels from 0 to 5. `true` means 1px;
@@ -1327,17 +1335,17 @@ export const shellMainHeader = cv({
      * place sticky parts, so the width is one of these values.
      */
     $border: {
-      true: "[--border-width:1px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:1px]",
+      true: "[--border-width:1px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:1px]",
       false:
-        "[--border-width:0px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:0px]",
-      0: "[--border-width:0px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:0px]",
-      1: "[--border-width:1px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:1px]",
-      2: "[--border-width:2px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:2px]",
-      3: "[--border-width:3px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:3px]",
-      4: "[--border-width:4px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:4px]",
-      5: "[--border-width:5px] [.shell:has(>.shell-main>&)]:[--shell-main-header-border:5px]",
+        "[--border-width:0px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:0px]",
+      0: "[--border-width:0px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:0px]",
+      1: "[--border-width:1px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:1px]",
+      2: "[--border-width:2px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:2px]",
+      3: "[--border-width:3px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:3px]",
+      4: "[--border-width:4px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:4px]",
+      5: "[--border-width:5px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:5px]",
       inherit:
-        "ak-edge-inherit [.shell:has(>.shell-main>&)]:[--shell-main-header-border:var(--border-width,0px)]",
+        "ak-edge-inherit [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:var(--border-width,0px)]",
     },
     /**
      * Sets the minimum content gutter apart from `$p`, which still sets the

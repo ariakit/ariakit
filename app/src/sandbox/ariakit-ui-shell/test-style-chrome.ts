@@ -1,13 +1,21 @@
 import { query } from "@ariakit/test/playwright";
 import { invariant } from "@ariakit/utils";
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { gotoAndHydrate, withFramework } from "#app/test-utils/preview.ts";
 import { largestStyleRecalculation } from "#app/test-utils/style.ts";
+import { getPanel, getSidebar } from "./test-helpers.ts";
 
 interface SidebarToggleRestyles {
   closing: number;
   opening: number;
   limit: number;
+}
+
+interface ArrivalOptions {
+  /** The first element that is missing, the part or an earlier sibling. */
+  firstMissing?: Locator;
+  /** Runs while the part is missing, after the browser resolves styles. */
+  whileMissing?: () => Promise<void>;
 }
 
 interface PreviewHelpers {
@@ -17,6 +25,18 @@ interface PreviewHelpers {
 
 function isCached({ closing, opening, limit }: SidebarToggleRestyles) {
   return closing < limit && opening < limit;
+}
+
+/** Returns the custom properties that the element of a locator computes. */
+function readCustomProperties(locator: Locator) {
+  return locator.evaluate((element) => {
+    const entries: Array<[string, string]> = [];
+    for (const [property, values] of element.computedStyleMap()) {
+      if (!property.startsWith("--")) continue;
+      entries.push([property, Array.from(values, String).join(" ")]);
+    }
+    return Object.fromEntries(entries);
+  });
 }
 
 /**
@@ -117,18 +137,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       async ({ page, q }) => {
         const toggle = q.checkbox("Start sidebar");
         const sidebar = q.navigation("Start sidebar");
-        const readCustomProperties = (name: string) =>
-          q
-            .group(name)
-            .locator("> div")
-            .evaluate((element) => {
-              const entries: Array<[string, string]> = [];
-              for (const [property, values] of element.computedStyleMap()) {
-                if (!property.startsWith("--")) continue;
-                entries.push([property, Array.from(values, String).join(" ")]);
-              }
-              return Object.fromEntries(entries);
-            });
+        const readAreaValues = (name: string) =>
+          readCustomProperties(q.group(name).locator("> div"));
         await q.combobox("Scenario").selectOption("areas");
         // Below either area's count. The trace can miss a value that only
         // inherits into a bar, so the checks below compare the values
@@ -137,17 +147,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
           await page.locator('[aria-label="Header area"] *').count(),
           await page.locator('[aria-label="Main header area"] *').count(),
         );
-        const headerValues = await readCustomProperties("Header area");
-        const mainHeaderValues = await readCustomProperties("Main header area");
+        const headerValues = await readAreaValues("Header area");
+        const mainHeaderValues = await readAreaValues("Main header area");
         const closing = await largestStyleRecalculation(page, () =>
           toggle.uncheck(),
         );
         await test.expect(sidebar).toBeHidden();
+        test.expect(await readAreaValues("Header area")).toEqual(headerValues);
         test
-          .expect(await readCustomProperties("Header area"))
-          .toEqual(headerValues);
-        test
-          .expect(await readCustomProperties("Main header area"))
+          .expect(await readAreaValues("Main header area"))
           .toEqual(mainHeaderValues);
         const opening = await largestStyleRecalculation(page, () =>
           toggle.check(),
@@ -258,23 +266,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await page.setViewportSize({ width: 1600, height: 900 });
         const toggle = q.checkbox("Start sidebar");
         const sidebar = q.navigation("Start sidebar");
-        const readCustomProperties = () =>
-          q.group("Area center").evaluate((element) => {
-            const entries: Array<[string, string]> = [];
-            for (const [property, values] of element.computedStyleMap()) {
-              if (!property.startsWith("--")) continue;
-              entries.push([property, Array.from(values, String).join(" ")]);
-            }
-            return Object.fromEntries(entries);
-          });
+        const readCenterValues = () =>
+          readCustomProperties(q.group("Area center"));
         await q.combobox("Scenario").selectOption("page");
         const limit = await q.group("Header area").locator("*").count();
-        const values = await readCustomProperties();
+        const values = await readCenterValues();
         const closing = await largestStyleRecalculation(page, () =>
           toggle.uncheck(),
         );
         await test.expect(sidebar).toBeHidden();
-        test.expect(await readCustomProperties()).toEqual(values);
+        test.expect(await readCenterValues()).toEqual(values);
         const opening = await largestStyleRecalculation(page, () =>
           toggle.check(),
         );
@@ -285,4 +286,131 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(closing).toBeLessThan(limit);
     test.expect(opening).toBeLessThan(limit);
   });
+
+  // While HTML streams in, the browser can resolve styles before the parser
+  // adds a part. This removes the part and the elements after it, resolves
+  // styles, and adds the part back last, as the parser does. The first missing
+  // element can come before the part when the part comes later in the source.
+  const measureArrival = async (
+    page: Page,
+    part: Locator,
+    { firstMissing = part, whileMissing }: ArrivalOptions = {},
+  ) => {
+    await using arriving = await part.elementHandle();
+    await using missing = await firstMissing.elementHandle();
+    await using parent = await missing.evaluateHandle(
+      (element) => element.parentElement,
+    );
+    await missing.evaluate((element) => {
+      while (element.nextSibling) {
+        element.nextSibling.remove();
+      }
+      element.remove();
+    });
+    // Resolving styles keeps the removal out of the trace.
+    await parent.evaluate(
+      (element) => element && getComputedStyle(element).width,
+    );
+    await test.expect(part).toHaveCount(0);
+    await whileMissing?.();
+    const restyles = await largestStyleRecalculation(page, () =>
+      parent.evaluate((element, child) => element?.append(child), arriving),
+    );
+    await test.expect(part).toHaveCount(1);
+    return restyles;
+  };
+
+  test("keeps main content styles cached when the footer arrives after the content", async ({
+    page,
+  }) => {
+    const { opening: arriving, limit } = await measureOnPageLoads(
+      page,
+      async ({ page, q }) => {
+        const limit = await q.main().locator("*").count();
+        const arriving = await measureArrival(page, q.contentinfo());
+        await test.expect(q.contentinfo()).toBeVisible();
+        return { closing: 0, opening: arriving, limit };
+      },
+    );
+    test.expect(arriving).toBeLessThan(limit);
+  });
+
+  const sidebarArrivals = [
+    { name: "Documentation", kind: "a start sidebar", width: 1280 },
+    // Below its show range, the sidebar publishes that it doesn't fit.
+    {
+      name: "Documentation",
+      kind: "a start sidebar off its range",
+      width: 600,
+    },
+    // Like the table of contents of the site, which comes before main. In the
+    // sandbox, it comes after main, so main and the later parts are missing
+    // when it arrives.
+    {
+      name: "On this page",
+      kind: "an end sidebar",
+      width: 1280,
+      afterMain: true,
+    },
+  ];
+
+  for (const { name, kind, width, afterMain } of sidebarArrivals) {
+    test(`keeps the header styles cached when ${kind} arrives before main at ${width}px`, async ({
+      page,
+    }) => {
+      const { opening: arriving, limit } = await measureOnPageLoads(
+        page,
+        async ({ page, q }) => {
+          await page.setViewportSize({ width, height: 800 });
+          const limit = await q.banner().locator("*").count();
+          const firstMissing = afterMain ? q.main() : undefined;
+          const arriving = await measureArrival(page, getSidebar(q, name), {
+            firstMissing,
+          });
+          return { closing: 0, opening: arriving, limit };
+        },
+      );
+      test.expect(arriving).toBeLessThan(limit);
+    });
+  }
+
+  // `5xl` and `max-5xl` set each end of the show range, and `never` hides the
+  // header at every width.
+  const mainHeaderVisibilities = [
+    { visibility: "5xl", kind: "that shows from 5xl" },
+    { visibility: "max-5xl", kind: "that shows below 5xl" },
+    { visibility: "never", kind: "that never shows" },
+  ];
+
+  for (const { visibility, kind } of mainHeaderVisibilities) {
+    test(`keeps the sidebar styles cached when a static main header ${kind} arrives`, async ({
+      page,
+    }) => {
+      const { opening: arriving, limit } = await measureOnPageLoads(
+        page,
+        async ({ page, q }) => {
+          await q.combobox("Scenario").selectOption("parts");
+          await q.checkbox("Sticky main header").uncheck();
+          // Sets `$p` on the main header. The fixture always sets `$border`.
+          await q.checkbox("Compact local headers").check();
+          await q.combobox("Main header visibility").selectOption(visibility);
+          const panel = getPanel(q, "Part navigation");
+          const header = q.main().locator(":scope > .shell-main-header");
+          const limit = await panel.locator("*").count();
+          let values: Record<string, string> = {};
+          const arriving = await measureArrival(page, header, {
+            whileMissing: async () => {
+              values = await readCustomProperties(panel);
+            },
+          });
+          // A static main header publishes nothing on the shell, so an earlier
+          // part keeps its values. The values also cover elements that the
+          // browser doesn't style, which the trace misses.
+          test.expect(await readCustomProperties(panel)).toEqual(values);
+          return { closing: 0, opening: arriving, limit };
+        },
+      );
+      test.expect(arriving).toBeLessThan(limit);
+    });
+  }
 });
