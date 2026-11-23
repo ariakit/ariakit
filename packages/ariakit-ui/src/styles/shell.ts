@@ -1276,11 +1276,17 @@ export const shellMainHeader = cv({
     "[&:has(>.shell-bar-part)]:[--shell-bar-padding-start:var(--shell-track-gutter)] [&:has(>.shell-bar-part)]:[--shell-bar-padding-end:var(--shell-track-gutter)]",
     "[&:has(>.shell-bar-part)]:[--shell-bar-edge-start:var(--shell-track-gutter)] [&:has(>.shell-bar-part)]:[--shell-bar-edge-end:var(--shell-track-gutter)]",
     "[&:has(>.shell-bar-part)]:px-(--shell-track-gutter) [&:has(>.shell-bar-part)]:items-center [&:has(>.shell-bar-part)]:content-stretch",
-    "[&:has(>.shell-bar-part)>*]:col-2",
+    // A :has() before a selector with no class, attribute, or tag makes Chrome
+    // restyle the whole subtree of each :has() anchor whose state changes, on
+    // any page with the rule. So the header sets a flag that its children read
+    // with a style query. The doubled class keeps the specificity of the :has()
+    // check.
+    "[--shell-main-header-bars:0] [&:has(>.shell-bar-part)]:[--shell-main-header-bars:1]",
+    "[@container_style(--shell-main-header-bars:1)]:[&&>*]:col-2",
     "[&:has(>.shell-bar-part):has(>.shell-bar-center)]:grid-cols-[1fr_auto_1fr]",
     "[&:has(>.shell-bar-part):has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
     // A horizontal navigation region fills the header's height, like in a bar.
-    "[&:has(>.shell-bar-part)>:has(>.carousel>.nav.horizontal)]:self-stretch",
+    "[@container_style(--shell-main-header-bars:1)]:[&&>:has(>.carousel>.nav.horizontal)]:self-stretch",
     "[&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:self-stretch [&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:my-0 [&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:py-0",
     // The navigation reaches over the edges that `--nav-edge-start` and
     // `--nav-edge-end` set, so edge bars cover the facing edge, like in a bar.

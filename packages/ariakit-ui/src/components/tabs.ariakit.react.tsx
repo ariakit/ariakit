@@ -303,7 +303,15 @@ function revealEnteringTab(element: HTMLElement) {
   // The strip gets there in half the time, so the room for the tab shows before
   // the tab fills it.
   const scrollTime = growTime / 2;
-  const startTime = win.performance.now();
+  // The transition of the tab takes the time of the frame that renders it,
+  // which is the current frame or a later one. The scroll starts at the time of
+  // the current frame, so it leads the tab by the time since that frame. After
+  // quick presses, the strip can be far behind the tab, and a clock that
+  // started with this effect, or with the transition, could let the tab grow
+  // past the strip on its first frames.
+  const frameTime = win.document.timeline.currentTime;
+  const startTime =
+    typeof frameTime === "number" ? frameTime : win.performance.now();
   // A new transition takes its start time on the next frame, which a long task
   // can delay, such as the render of a large panel, so a fixed time could end
   // before the tabs grow. The strip keeps the room while the tabs that it

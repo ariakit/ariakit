@@ -68,7 +68,10 @@ export const breadcrumbList = cv({
     // further out. The padding and the margin cancel each other in the layout,
     // and the padding must not take pointer events from what comes before.
     "has-[.breadcrumb-truncate]:ps-4 has-[.breadcrumb-truncate]:-ms-4",
-    "has-[.breadcrumb-truncate]:pointer-events-none has-[.breadcrumb-truncate]:*:pointer-events-auto",
+    // The children are list items. Naming them keeps Chrome from restyling the
+    // whole subtree of each :has() anchor whose state changes, which a :has()
+    // before a universal selector does. :where() keeps the specificity of `*`.
+    "has-[.breadcrumb-truncate]:pointer-events-none has-[.breadcrumb-truncate]:[&>:where(li)]:pointer-events-auto",
   ],
 });
 

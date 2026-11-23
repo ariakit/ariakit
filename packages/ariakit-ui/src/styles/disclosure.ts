@@ -45,7 +45,13 @@ export const disclosureGroup = cv({
       // An open disclosure reaches the group's end, which needs no edge. While
       // every disclosure is closed, the last one draws it right below itself.
       "border-b-0! *:last:border-(--ak-edge)",
-      "[&:not(:has(>[data-open]))>:last-child]:border-b",
+      // A :has() before a selector with no class, attribute, or tag makes
+      // Chrome restyle the whole subtree of each :has() anchor whose state
+      // changes, on any page with the rule. So the group sets a flag that the
+      // last member reads with a style query. The doubled class keeps the
+      // specificity of the :has() check.
+      "[--disclosure-group-closed:0] [&:not(:has(>[data-open]))]:[--disclosure-group-closed:1]",
+      "[@container_style(--disclosure-group-closed:1)]:[&&>:last-child]:border-b",
     ],
   },
   defaultVariants: {

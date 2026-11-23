@@ -220,7 +220,11 @@ export const codeBlockExpand = cv({
     "code-block-expand flex items-end justify-center",
     // Over the scroll area, below the copy button.
     "z-1",
-    "cursor-pointer hover:*:ak-state-(--hover-offset)",
+    // The child is the expand button. Naming it keeps Chrome from restyling
+    // the whole subtree of each element that the pointer enters or leaves,
+    // which a hover rule for any child does. :where() keeps the specificity of
+    // `*`.
+    "cursor-pointer hover:[&>:where(.control)]:ak-state-(--hover-offset)",
   ],
   defaultVariants: {
     // A frame over the padding of the panel, like the scroll area, with a
