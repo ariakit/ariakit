@@ -471,12 +471,19 @@ const separatorEdge = cx(
 
 // A list item has no sibling controls, only sibling list items that hover
 // through anything inside them, so a list sets its own rules. The delay keeps
-// the marks of a group from flickering while the pointer crosses a gap.
+// the marks of a group from flickering while the pointer crosses a gap: while
+// the pointer is in the group, a mark shows again late, and a mark beside a
+// hovered, selected, or focused control hides at once. A :has(:hover) check for
+// the gap would make Chrome restyle the whole group, and more, on each hover in
+// it.
 const separatorShy = cx(
-  "in-[.control-group:hover:not(:has(:hover))]:delay-150",
+  "in-[.control-group:hover]:delay-150",
   "not-[li]:ui-adjacent-hover:opacity-(--separator-shy-opacity)",
+  "not-[li]:ui-adjacent-hover:delay-0",
   "not-[li]:ui-adjacent-selected:opacity-(--separator-shy-opacity)",
+  "not-[li]:ui-adjacent-selected:delay-0",
   "not-[li]:ui-adjacent-focus-visible:opacity-(--separator-shy-opacity)",
+  "not-[li]:ui-adjacent-focus-visible:delay-0",
 );
 
 /** A line, slash, or chevron between horizontal controls. */

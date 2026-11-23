@@ -9,6 +9,26 @@ export async function largestStyleRecalculation(
   page: Page,
   action: () => Promise<void>,
 ) {
+  const counts = await traceStyleRecalculations(page, action);
+  return Math.max(0, ...counts);
+}
+
+/**
+ * Runs an action while Chrome traces style work and returns the total number of
+ * elements that its style recalculations updated, on all frames. Chromium only.
+ */
+export async function totalStyleRecalculation(
+  page: Page,
+  action: () => Promise<void>,
+) {
+  const counts = await traceStyleRecalculations(page, action);
+  return counts.reduce((total, count) => total + count, 0);
+}
+
+async function traceStyleRecalculations(
+  page: Page,
+  action: () => Promise<void>,
+) {
   const session = await page.context().newCDPSession(page);
   const counts: number[] = [];
   session.on("Tracing.dataCollected", ({ value }) => {
@@ -36,7 +56,7 @@ export async function largestStyleRecalculation(
     });
     await session.send("Tracing.end");
     await complete;
-    return Math.max(0, ...counts);
+    return counts;
   } finally {
     await session.detach();
   }

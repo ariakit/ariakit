@@ -53,8 +53,15 @@ export const input = cv({
     "ui-field-disabled:ak-disabled",
     "ui-field-disabled:cursor-not-allowed **:ui-disabled:cursor-not-allowed",
     // Skip the descendant ink in forced colors: an icon gets the system color
-    // only while its color inherits.
-    "ui-field-disabled:ak-ink-0 ui-field-disabled:not-forced-colors:**:ak-ink-0",
+    // only while its color inherits. A :has() before a universal selector makes
+    // Chrome restyle the whole subtree of each :has() anchor whose state
+    // changes, on any page with the rule. So the field sets a flag that its
+    // descendants read with a style query. The repeated class outranks the
+    // hover ink of an enabled action button, as the :has() check of
+    // ui-field-disabled did.
+    "ui-field-disabled:ak-ink-0",
+    "ui-field-disabled:[--field-disabled:1]",
+    "not-forced-colors:[@container_style(--field-disabled:1)]:[&&&&&_*]:ak-ink-0",
     "ui-field-disabled:ak-edge-10",
     "ui-field-disabled:ak-layer-lighten-0",
     // Drop the chroma cap too, or a field on a tinted layer stays
@@ -66,7 +73,7 @@ export const input = cv({
     // the descendant rule leaves them out, and the last rule stops the button
     // from inheriting the field's color.
     "ui-field-disabled:forced-colors:text-[GrayText]",
-    "ui-field-disabled:forced-colors:[&_*:not(:is(button,input,a):not(:disabled,[aria-disabled='true']),:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:text-[GrayText]",
+    "forced-colors:[@container_style(--field-disabled:1)]:[&&&&&_*:not(:is(button,input,a):not(:disabled,[aria-disabled='true']),:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:text-[GrayText]",
     "ui-field-disabled:forced-colors:border-[GrayText]",
     "ui-field-disabled:forced-colors:[&_:is(button,input,a):not(:disabled,[aria-disabled='true'])]:text-[revert]",
     // A native input uses the control line box; a textarea keeps its rows.

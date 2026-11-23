@@ -66,6 +66,39 @@ export default function BreadcrumbSandbox() {
       </Example>
 
       <Example
+        title="Clipped labels in list items with roles"
+        description="A step in its own element with the listitem role keeps its link clickable when the label of the link can clip."
+        code={`
+          <Breadcrumb list={{ render: <div role="list" /> }}>
+            <BreadcrumbLink
+              href="#orchard"
+              item={{ render: <div role="listitem" /> }}
+            >
+              <BreadcrumbLabel $truncate>Orchard</BreadcrumbLabel>
+            </BreadcrumbLink>
+          </Breadcrumb>
+        `}
+      >
+        <Breadcrumb
+          aria-label="Clipped labels in list items with roles"
+          list={{ render: <div role="list" /> }}
+        >
+          <BreadcrumbLink
+            href="#orchard"
+            item={{ render: <div role="listitem" /> }}
+          >
+            <BreadcrumbLabel $truncate>Orchard</BreadcrumbLabel>
+          </BreadcrumbLink>
+          <BreadcrumbCurrent
+            item={{ render: <div role="listitem" /> }}
+            separator={{ render: <div /> }}
+          >
+            Pears
+          </BreadcrumbCurrent>
+        </Breadcrumb>
+      </Example>
+
+      <Example
         title="Shy separators"
         description="A separator with $shy hides beside a hover surface in any gap, and one with $shy set to false never hides."
         code={`

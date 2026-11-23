@@ -244,6 +244,84 @@ body > * {
   initial-value: 0px;
 }
 
+/* Flags that a tabs root or a tab list carousel sets from its own :has()
+   checks, for its children to read with a style query. A :has() check on an
+   ancestor of a child, such as `.tabs:has(…) > &`, makes Chrome restyle parts
+   of that ancestor's subtree when anything that a :has() reads changes in it,
+   such as the selected tab, the hidden panels, or the pointer, and all of it
+   when any rule in the stylesheet has a :has() before a universal selector.
+   Without inheritance, a change of a flag restyles only the children that read
+   it. */
+@property --tabs-selected-folder {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tabs-selected-folder-stretch {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tabs-stretch {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tabs-row-start-part {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tabs-row-end-part {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tabs-strip-fade {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tabs-strip-fade-end-folder {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tab-list-followed {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tab-list-end-shy {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* Flags that a disclosure group and a shell main header set from their own
+   :has() checks, for their children to read with a style query. See the tabs
+   flags above. Without inheritance, a change of a flag restyles only the
+   children that read it, not the rest of the subtree. */
+@property --disclosure-group-closed {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --shell-main-header-bars {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
 /* The top corners of the tab panels. They can change on each frame, with a
    glider or while the strip scrolls. Without inheritance, that change doesn't
    restyle the content of the panels. */
@@ -2781,6 +2859,50 @@ body > * {
 @custom-variant ui-mixed-within {
   &:is([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))),
   &:has([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))) {
+    @slot;
+  }
+}
+
+/* The complement of ui-choice-on, with the same specificity as not-ui-choice-on.
+   The not- variant turns the host check into `:where(…) *`. A :has() before a
+   universal selector makes Chrome restyle the whole subtree of every element
+   whose :has() state changes, so the host check names the element instead.
+   WebKit can keep a stale result for a :has() inside :not(), as it does for
+   not-ui-choice-on, so the complements come before the variants that they
+   complement, where the not- variants sort, and the on state still wins. */
+@custom-variant ui-choice-off {
+  &:not(
+      :checked,
+      [aria-checked="true"],
+      [aria-checked="mixed"],
+      :indeterminate:where(:not([type="radio"])),
+      :where(
+          label:has(
+            :checked,
+            [aria-checked="true"],
+            [aria-checked="mixed"],
+            :indeterminate:where(:not([type="radio"]))
+          ),
+          [aria-checked="true"],
+          [aria-checked="mixed"]
+        )
+        &
+    ) {
+    @slot;
+  }
+}
+
+/* The complement of ui-choice-disabled. See ui-choice-off. */
+@custom-variant ui-choice-enabled {
+  &:not(
+      :disabled,
+      [aria-disabled="true"],
+      :where(
+          label:has(:disabled, [aria-disabled="true"]),
+          [aria-disabled="true"]
+        )
+        &
+    ) {
     @slot;
   }
 }

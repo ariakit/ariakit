@@ -24,6 +24,17 @@ import { hover } from "./hover.ts";
 import { hasLayerBackground } from "./layer.ts";
 import { isSegmentedKind } from "./segment.ts";
 
+// A row that holds a disabled input dims everything inside it. A :has() before
+// a universal selector makes Chrome restyle the whole subtree of each :has()
+// anchor whose state changes, on any page with this rule. So the row sets a
+// flag that its descendants read with a style query. The doubled class keeps
+// the specificity of the ui-disabled-within check that the rule replaces.
+const disabledWithinDescendants = cx(
+  "ui-disabled-within:[--choice-disabled:1]",
+  "[@container_style(--choice-disabled:1)]:[&&_*]:ak-ink-0",
+  "forced-colors:[@container_style(--choice-disabled:1)]:[&&_*]:text-[GrayText]",
+);
+
 // The box radius wins over the radius that a slot computes for floating slots.
 // The switch mark can't set it in the same object, so it replaces this value in
 // its computed default.
@@ -56,14 +67,19 @@ export const choice = cv({
     "forced-colors:text-[CanvasText]",
     // A custom child replaces the drawn mark and uses the same size and state.
     "[&>svg]:stroke-[2.5]",
-    "has-[>*]:after:hidden not-ui-choice-on:*:hidden!",
+    // A child reads the state of the box with a style query, because a :has()
+    // in ui-choice-off before the child selector would make Chrome restyle
+    // whole subtrees. See disabledWithinDescendants.
+    "has-[>*]:after:hidden",
+    "[--choice-off:0] ui-choice-off:[--choice-off:1]",
+    "*:[@container_style(--choice-off:1)]:hidden!",
     // The selected fill keeps the brand color on every surface. Like the empty
     // box, a neutral edge keeps the 3:1 boundary. It has no alpha of its own,
     // so it stays faint or hidden where the fill already passes the floor. The
     // plugin's zero-lighten utility cancels the default lightening stored in
     // the style attribute.
-    "not-ui-choice-disabled:ui-choice-on:ak-layer-brand",
-    "not-ui-choice-disabled:ui-choice-on:ak-edge-0",
+    "ui-choice-enabled:ui-choice-on:ak-layer-brand",
+    "ui-choice-enabled:ui-choice-on:ak-edge-0",
     "ui-choice-on:ak-layer-lighten-0",
     // A disabled checked mark draws its edge in the color of its faded fill.
     "ui-choice-disabled:ui-choice-on:ak-edge-raw",
@@ -184,7 +200,7 @@ export const choiceInput = cv({
   class: [
     // Zero specificity lets a plain cursor utility replace the pointer.
     "ui-base:cursor-pointer",
-    "not-ui-choice-disabled:group-hover/choice-field:ak-state-(--hover-offset,0)",
+    "ui-choice-enabled:group-hover/choice-field:ak-state-(--hover-offset,0)",
     // A click can't change a checked radio, so hover doesn't light it.
     "ui-settled:ui-hover:ak-state-0",
     "ui-settled:group-hover/choice-field:ak-state-0",
@@ -221,7 +237,8 @@ export const choiceField = cv({
     // state and dim descendants, including independently colored descriptions.
     "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
-    "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
+    "ui-disabled-within:ak-ink-0",
+    disabledWithinDescendants,
     // An adaptive text color on the row or an ancestor targets nested text
     // with higher specificity. The ui-text rules here and in forced colors set
     // the disabled color on the same targets.
@@ -230,7 +247,6 @@ export const choiceField = cv({
     // Forced colors replace the ink with the normal text color. Use the system
     // disabled color instead.
     "ui-disabled-within:forced-colors:text-[GrayText]",
-    "ui-disabled-within:forced-colors:**:text-[GrayText]",
     "ui-disabled-within:forced-colors:ui-text:text-[GrayText]",
   ],
   defaultVariants: {
@@ -323,7 +339,8 @@ export const choiceCard = cv({
     // suppress hover and press on the label too.
     "ui-disabled-within:ak-disabled",
     "ui-disabled-within:cursor-not-allowed",
-    "ui-disabled-within:ak-ink-0 ui-disabled-within:**:ak-ink-0",
+    "ui-disabled-within:ak-ink-0",
+    disabledWithinDescendants,
     // An adaptive text color on the card or an ancestor targets nested text
     // with higher specificity. The ui-text rules here and in forced colors set
     // the disabled color on the same targets.
@@ -334,7 +351,6 @@ export const choiceCard = cv({
     // disabled color instead; the label's edge follows the text color. It's
     // important because hover and selected ink rules are more specific.
     "ui-disabled-within:forced-colors:text-[GrayText]!",
-    "ui-disabled-within:forced-colors:**:text-[GrayText]",
     "ui-disabled-within:forced-colors:ui-text:text-[GrayText]",
     "ui-disabled-within:ui-hover:ak-state-0",
     "ui-disabled-within:ui-hover:ak-ink-0",
@@ -429,7 +445,7 @@ export const choiceCard = cv({
 // the same way on every corner. The $floating keys below must follow the
 // corners of slotFrameSlot, or a check on a missing corner never hides.
 const floatingCheckClass = [
-  "not-ui-choice-on:scale-0",
+  "ui-choice-off:scale-0",
   // The whole check grows from its center. The scale property is separate
   // from translate, so the check stays on the corner.
   "motion-safe:ui-choice-on:transition-[scale]",
@@ -441,9 +457,9 @@ const floatingCheckClass = [
   "motion-safe:ui-choice-on:will-change-[scale]",
   // The state changes the colors at once. Hold them until the check has
   // shrunk.
-  "motion-safe:not-ui-choice-on:transition-[scale,background-color,color]",
-  "motion-safe:not-ui-choice-on:duration-150",
-  "motion-safe:not-ui-choice-on:ease-[var(--ease-in-out),step-end,step-end]",
+  "motion-safe:ui-choice-off:transition-[scale,background-color,color]",
+  "motion-safe:ui-choice-off:duration-150",
+  "motion-safe:ui-choice-off:ease-[var(--ease-in-out),step-end,step-end]",
 ];
 
 /**
@@ -484,10 +500,10 @@ export const choiceCardCheck = cv({
       // The check shrinks as a whole, so the mark stays until it's gone instead
       // of hiding when the state changes. The mask keeps a mixed check's dash
       // from turning into a check on the way out.
-      "motion-safe:not-ui-choice-on:after:transition-[clip-path,mask-image,scale]",
-      "motion-safe:not-ui-choice-on:after:transition-discrete",
-      "motion-safe:not-ui-choice-on:after:duration-0",
-      "motion-safe:not-ui-choice-on:after:delay-150",
+      "motion-safe:ui-choice-off:after:transition-[clip-path,mask-image,scale]",
+      "motion-safe:ui-choice-off:after:transition-discrete",
+      "motion-safe:ui-choice-off:after:duration-0",
+      "motion-safe:ui-choice-off:after:delay-150",
     ]);
   },
 });

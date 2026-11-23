@@ -31,4 +31,12 @@ withCaptures(import.meta.dirname, async ({ test }) => {
     test.expect(geometry.step).toBeGreaterThanOrEqual(geometry.trail);
     test.expect(geometry.overflow).toBe(0);
   });
+
+  test("keeps a link with a truncating label in a list item with a role clickable", async ({
+    page,
+    q,
+  }) => {
+    await q.link("Orchard").click();
+    await test.expect(page).toHaveURL(/#orchard$/);
+  });
 });
