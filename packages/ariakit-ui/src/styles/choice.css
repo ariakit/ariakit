@@ -160,14 +160,6 @@
       }
     }
 
-    @variant motion-safe {
-      @variant ui-choice-on {
-        @variant after {
-          @apply transition-[clip-path] duration-150 ease-linear;
-        }
-      }
-    }
-
     /* The mixed state replaces the check with a level dash, which the same
        wipe also follows. */
     @variant ui-choice-mixed {
@@ -191,15 +183,6 @@
     @variant ui-choice-on {
       @variant after {
         @apply scale-100;
-      }
-    }
-
-    @variant motion-safe {
-      @variant ui-choice-on {
-        @variant after {
-          /* Only the on state sets these, so unchecking is immediate. */
-          @apply transition-[scale] duration-150 ease-in-out;
-        }
       }
     }
   }

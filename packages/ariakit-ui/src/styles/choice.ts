@@ -113,8 +113,27 @@ export const choice = cv({
     $mark: {
       // The check mark style recipe draws the check with the layer's readable
       // text color.
-      check: "ui-choice--mark-check",
-      dot: "ui-choice--mark-dot",
+      check: [
+        "ui-choice--mark-check",
+        // Stays a class to come after the off-state transition classes of the
+        // floating check, which it replaces. Safari also applies those
+        // `ui-choice-off` classes to the `::after` of a checked choice, so the
+        // order decides.
+        "motion-safe:ui-choice-on:after:transition-[clip-path]",
+        "motion-safe:ui-choice-on:after:duration-150",
+        "motion-safe:ui-choice-on:after:ease-linear",
+      ],
+      dot: [
+        "ui-choice--mark-dot",
+        // Only the on state sets these, so unchecking is immediate.
+        // Stays a class to come after the off-state transition classes of the
+        // floating check, which it replaces. Safari also applies those
+        // `ui-choice-off` classes to the `::after` of a checked choice, so the
+        // order decides.
+        "motion-safe:ui-choice-on:after:transition-[scale]",
+        "motion-safe:ui-choice-on:after:duration-150",
+        "motion-safe:ui-choice-on:after:ease-in-out",
+      ],
       switch: "ui-choice--mark-switch",
     },
   },
