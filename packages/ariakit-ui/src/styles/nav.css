@@ -141,7 +141,9 @@
        with the selected box of a glider in the same navigation. */
     @apply duration-(--glider-duration,200ms) ease-[cubic-bezier(0.3,0,0,1)];
     position: absolute;
-    z-index: 1;
+    /* Match list disclosure content (z-index: 2) so tree order keeps the
+       traveling bar above its guide and below list markers (z-index: 3). */
+    z-index: 2;
     pointer-events: none;
     top: 0;
     left: 0;

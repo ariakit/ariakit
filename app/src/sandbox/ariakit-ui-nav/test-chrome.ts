@@ -292,4 +292,50 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // the bar has one link to travel to.
     await test.expect(nav).toHaveAttribute("data-bar-traveling");
   });
+
+  // https://github.com/ariakit/ariakit/issues/8584
+  test("draws the traveling bar above list disclosure content and its guide", async ({
+    page,
+    q,
+  }) => {
+    // Keep the bar on its way while the test checks its stacking order.
+    await page.addStyleTag({ content: ":root { --glider-duration: 30s; }" });
+    const nav = q.navigation("List disclosure guide bar");
+    const stateButton = query(nav).button("State");
+    const derivedState = query(nav).link("Derived state");
+    await derivedState.click();
+    await test.expect(derivedState).toHaveAttribute("aria-current", "page");
+    await test.expect(nav).toHaveAttribute("data-bar-traveling");
+    const contentId = await stateButton.getAttribute("aria-controls");
+    test.expect(contentId).toBeTruthy();
+    if (!contentId) return;
+    const stacking = await nav.evaluate((node, id) => {
+      const content = node.ownerDocument.getElementById(id);
+      const disclosure = content?.parentElement;
+      const button = disclosure?.querySelector(".ui-list-disclosure-button");
+      const marker = disclosure?.querySelector(".ui-list-item-marker");
+      if (!content || !disclosure || !button || !marker) {
+        throw new Error("Missing list disclosure elements");
+      }
+      const travelerStyle = getComputedStyle(node, "::after");
+      return {
+        travelerContent: travelerStyle.content,
+        travelerZ: Number.parseInt(travelerStyle.zIndex, 10),
+        contentZ: Number.parseInt(getComputedStyle(content).zIndex, 10),
+        disclosureZ: getComputedStyle(disclosure).zIndex,
+        buttonZ: Number.parseInt(getComputedStyle(button).zIndex, 10),
+        markerZ: Number.parseInt(getComputedStyle(marker).zIndex, 10),
+      };
+    }, contentId);
+    test.expect(stacking.travelerContent).not.toBe("none");
+    // The disclosure root has no stacking context of its own, so its content
+    // and nav::after compete in the nav's stacking context. Since nav::after
+    // comes after all children in tree order, an equal or higher z-index paints
+    // it above the content and its ::before guide, while staying below the
+    // chapter button and marker.
+    test.expect(stacking.disclosureZ).toBe("auto");
+    test.expect(stacking.travelerZ).toBeGreaterThanOrEqual(stacking.contentZ);
+    test.expect(stacking.travelerZ).toBeLessThan(stacking.buttonZ);
+    test.expect(stacking.travelerZ).toBeLessThan(stacking.markerZ);
+  });
 });
