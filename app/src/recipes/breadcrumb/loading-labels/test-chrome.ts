@@ -31,7 +31,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await reload.click();
     await test.expect(q.link("Northwind")).toBeHidden();
     // Parts animate only inside a skeleton root that is loading.
-    await test.expect(page.locator(".skeleton-shimmer")).toHaveCount(1);
+    await test
+      .expect(page.locator(".ui-skeleton--animate-shimmer"))
+      .toHaveCount(1);
     const loadingReload = await reload.boundingBox();
     const loadingCurrent = await current.boundingBox();
     test.expect(loadingReload?.y).toBe(loadedReload?.y);

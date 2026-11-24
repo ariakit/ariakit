@@ -237,7 +237,7 @@ function splitBodyContent({
   const flush = () => {
     if (!run.length) return;
     parts.push(
-      createWrapper(names.prose, "[.shell-band>&]:col-[content]", run),
+      createWrapper(names.prose, "[.ui-shell-main-band>&]:col-[content]", run),
     );
     run = [];
   };

@@ -24,14 +24,13 @@ import { hover } from "./hover.ts";
 import { hasLayerBackground } from "./layer.ts";
 import { isSegmentedKind } from "./segment.ts";
 
-// A row that holds a disabled input dims everything inside it. A :has() before
-// a universal selector makes Chrome restyle the whole subtree of each :has()
-// anchor whose state changes, on any page with this rule. So the row sets a
-// flag that its descendants read with a style query. The doubled class keeps
-// the specificity of the ui-disabled-within check that the rule replaces.
 const disabledWithinDescendants = cx(
-  "ui-disabled-within:[--choice-disabled:1]",
+  "ui-choice-disabled-within-descendants",
+  // Stays a class, so that another class here that sets the color still comes
+  // after it and replaces it.
   "[@container_style(--choice-disabled:1)]:[&&_*]:ak-ink-0",
+  // Stays a class to come after another class here that sets the color, which
+  // it replaces.
   "forced-colors:[@container_style(--choice-disabled:1)]:[&&_*]:text-[GrayText]",
 );
 
@@ -53,47 +52,54 @@ const choiceBase = cv({
 export const choice = cv({
   extend: [choiceBase, checkMark],
   class: [
-    "appearance-none",
-    // The check and a custom child are relative to the box.
-    "[--check-mark-box:var(--size)] [--slot-icon-size:var(--check-mark-size)]",
-    // Restore text-line alignment for bare inputs; flex and grid parents still
-    // control placement.
-    "inline-flex align-middle",
-    // Keep forced colors from replacing the mark background with the system
-    // canvas.
-    "after:forced-color-adjust-none",
+    "ui-choice",
     // The mark then inherits the box's text color from before forced colors,
     // which can match the canvas. Set the system text color for it to inherit.
+    // Stays a class to come after the color of `ink`, which it replaces.
     "forced-colors:text-[CanvasText]",
-    // A custom child replaces the drawn mark and uses the same size and state.
-    "[&>svg]:stroke-[2.5]",
     // A child reads the state of the box with a style query, because a :has()
     // in ui-choice-off before the child selector would make Chrome restyle
     // whole subtrees. See disabledWithinDescendants.
-    "has-[>*]:after:hidden",
-    "[--choice-off:0] ui-choice-off:[--choice-off:1]",
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
     "*:[@container_style(--choice-off:1)]:hidden!",
     // The selected fill keeps the brand color on every surface. Like the empty
     // box, a neutral edge keeps the 3:1 boundary. It has no alpha of its own,
     // so it stays faint or hidden where the fill already passes the floor. The
     // plugin's zero-lighten utility cancels the default lightening stored in
     // the style attribute.
+    // Stays a class with the other `ui-choice-on:ak-layer-*` classes, which
+    // come after the layer classes of the control and replace them.
     "ui-choice-enabled:ui-choice-on:ak-layer-brand",
-    "ui-choice-enabled:ui-choice-on:ak-edge-0",
+    // Stays a class to come after the --_ak-layer-idle-relative-lightness of
+    // `layer`, which it replaces.
     "ui-choice-on:ak-layer-lighten-0",
     // A disabled checked mark draws its edge in the color of its faded fill.
+    // Stays a class to come after another class here that sets the
+    // --_ak-edge-alpha, which it replaces.
     "ui-choice-disabled:ui-choice-on:ak-edge-raw",
     // The selected fill keeps its color; the chroma cap is for the raised box.
+    // Stays a class to come after the --_ak-layer-chroma-max of `layer`, which
+    // it replaces.
     "ui-choice-on:ak-layer-max-c-[initial]",
     // Keep disabled marks and empty boxes distinct on light surfaces.
+    // Stays a class with the other `ui-choice-on:ak-layer-*` classes, which
+    // come after the layer classes of the control and replace them.
     "ui-choice-disabled:ui-choice-on:ak-layer-15",
-    "ui-choice-disabled:ak-ink-0 ui-choice-disabled:ak-edge-20",
+    // Stays a class to come after the --_ak-text-alpha of `ink`, which it
+    // replaces.
+    "ui-choice-disabled:ak-ink-0",
+    // Stays a class to come after the --_ak-edge-alpha of `edge`, which it
+    // replaces.
+    "ui-choice-disabled:ak-edge-20",
     // Forced colors replace the ink and edge with the normal text color. Use
     // the system disabled color for the mark and the box. A native input needs
     // the edge rule in Chromium; other hosts follow the text color.
+    // Stays a class to come after the color of `ink`, which it replaces.
     "ui-choice-disabled:forced-colors:text-[GrayText]",
+    // Stays a class to come after the border-color of `floatingClass`, which it
+    // replaces.
     "ui-choice-disabled:forced-colors:border-[GrayText]",
-    "ui-choice-disabled:cursor-not-allowed",
   ],
   variants: {
     /**
@@ -106,48 +112,10 @@ export const choice = cv({
      */
     $mark: {
       // The check mark style recipe draws the check with the layer's readable
-      // text color. The state comes from the input or a surrounding choice
-      // host, which shows the mark with the wipe of the check mark. The mixed
-      // state replaces the check with a level dash, which the same wipe also
-      // follows.
-      check: [
-        "ui-choice-mixed:after:mask-(--choice-mark-dash)",
-        "after:[clip-path:inset(0_100%_0_0)] ui-choice-on:after:[clip-path:inset(0)]",
-        "motion-safe:ui-choice-on:after:transition-[clip-path]",
-        "motion-safe:ui-choice-on:after:duration-150",
-        "motion-safe:ui-choice-on:after:ease-linear",
-      ],
-      dot: [
-        // Like the check, the bullet takes the fill's readable text color, so
-        // it keeps its contrast against the box in checked and disabled states.
-        "after:size-[calc((var(--size)-2*var(--border-width))*0.5)]",
-        "after:rounded-full after:bg-current",
-        // The fill changes at once, and the bullet grows from the center.
-        "after:scale-0 ui-choice-on:after:scale-100",
-        // Only the on state sets these, so unchecking is immediate.
-        "motion-safe:ui-choice-on:after:transition-[scale]",
-        "motion-safe:ui-choice-on:after:duration-150",
-        "motion-safe:ui-choice-on:after:ease-in-out",
-      ],
-      switch: [
-        "w-[calc(var(--size)*1.75)]",
-        // The thumb moves from the center to the center of each round end, so
-        // it stays concentric with the track at any thumb size.
-        "[--choice-switch-dir:1] rtl:[--choice-switch-dir:-1]",
-        "[--choice-switch-travel:calc(var(--size)*0.375*var(--choice-switch-dir))]",
-        "after:-translate-x-(--choice-switch-travel)",
-        "ui-choice-on:after:translate-x-(--choice-switch-travel)",
-        "ui-choice-mixed:after:translate-x-0",
-        // The thumb takes the track's readable text color, because the edge
-        // color can fall below 3:1 against the track.
-        "after:size-(--slot-icon-size) after:rounded-full after:bg-current",
-        // Unlike the check, the switch animates both ways, because its thumb
-        // travels between two resting positions.
-        "motion-safe:transition-[background-color,border-color,color]",
-        "motion-safe:duration-150 motion-safe:ease-out",
-        "motion-safe:after:transition-[translate]",
-        "motion-safe:after:duration-150 motion-safe:after:ease-out",
-      ],
+      // text color.
+      check: "ui-choice--mark-check",
+      dot: "ui-choice--mark-dot",
+      switch: "ui-choice--mark-switch",
     },
   },
   defaultVariants: {
@@ -197,14 +165,7 @@ export const choice = cv({
  */
 export const choiceInput = cv({
   extend: [choice, focusHighlight],
-  class: [
-    // Zero specificity lets a plain cursor utility replace the pointer.
-    "ui-base:cursor-pointer",
-    "ui-choice-enabled:group-hover/choice-field:ak-state-(--hover-offset,0)",
-    // A click can't change a checked radio, so hover doesn't light it.
-    "ui-settled:ui-hover:ak-state-0",
-    "ui-settled:group-hover/choice-field:ak-state-0",
-  ],
+  class: "ui-choice-input",
   defaultVariants: {
     $focus: true,
     $hoverOffset: 3,
@@ -227,16 +188,15 @@ export const choiceInput = cv({
 export const choiceField = cv({
   extend: [control],
   class: [
-    "group/choice-field",
-    // Zero specificity lets a plain cursor utility replace the pointer.
-    "ui-base:cursor-pointer justify-start select-none",
-    // The box follows a cursor set on the row. This outranks the pointer on the
-    // input, but not a plain cursor utility on it.
-    "[:where(&)_input:where([type=checkbox],[type=radio])]:cursor-[inherit]",
+    "group/choice-field ui-choice-field",
+    // Stays a class to come after the content of `ui-control`, which it
+    // replaces.
+    "justify-start",
     // Group-disabled inputs may not pass $disabled to the row. Read their DOM
     // state and dim descendants, including independently colored descriptions.
     "ui-disabled-within:ak-disabled",
-    "ui-disabled-within:cursor-not-allowed",
+    // Stays a class, so that another class here that sets the color still comes
+    // after it and replaces it.
     "ui-disabled-within:ak-ink-0",
     disabledWithinDescendants,
     // An adaptive text color on the row or an ancestor targets nested text
@@ -244,10 +204,12 @@ export const choiceField = cv({
     // the disabled color on the same targets.
     // https://github.com/ariakit/ariakit/issues/7869
     "ui-disabled-within:not-forced-colors:ui-text:ak-ink-0",
+    "ui-disabled-within:forced-colors:ui-text:text-[GrayText]",
     // Forced colors replace the ink with the normal text color. Use the system
     // disabled color instead.
+    // Stays a class to come after another class here that sets the color, which
+    // it replaces.
     "ui-disabled-within:forced-colors:text-[GrayText]",
-    "ui-disabled-within:forced-colors:ui-text:text-[GrayText]",
   ],
   defaultVariants: {
     // Resolve the input against the surrounding surface without an extra layer.
@@ -283,47 +245,47 @@ export const choiceFieldLabel = controlLabel;
 /** Secondary choice field text with optional line limits. */
 export const choiceFieldDescription = controlDescription;
 
-// The surface of a card. A segmented kind paints the thumb of its group
-// instead.
 const choiceCardSurface = cx(
   // Choice groups give cards more room than simple fields.
-  "choice-card",
+  "ui-choice-card--surface",
   // Allow a direct description to occupy its own row.
-  "flex-wrap justify-start content-start",
-  "[&_input]:sr-only",
-  // The label reads checked, mixed, and disabled states from its input.
-  "not-ui-disabled-within:ui-checked-within:ak-edge-brand",
-  "not-ui-disabled-within:ui-checked-within:ak-edge-raw",
+  "flex-wrap",
+  // Stays a class to come after the content of `ui-control`, which it
+  // replaces.
+  "justify-start",
+  // Stays a class to come after the --_ak-layer-color of `segmentBase`, which
+  // it replaces.
   "not-ui-disabled-within:ui-checked-within:ak-layer-brand",
+  // Stays a class with another class here that sets the same property, so
+  // Tailwind keeps their order.
   "not-ui-disabled-within:ui-checked-within:ak-layer-mix-20",
-  "not-ui-disabled-within:ui-mixed-within:ak-edge-brand",
-  "not-ui-disabled-within:ui-mixed-within:ak-edge-raw",
+  // Stays a class to come after the --_ak-layer-color of `segmentBase`, which
+  // it replaces.
   "not-ui-disabled-within:ui-mixed-within:ak-layer-brand",
+  // Stays a class with another class here that sets the same property, so
+  // Tailwind keeps their order.
   "not-ui-disabled-within:ui-mixed-within:ak-layer-mix-20",
   // Use the plugin's zero-lighten utility to cancel the default inline
   // channel.
+  // Stays a class with another class here that sets the same property, so
+  // Tailwind keeps their order.
   "not-ui-disabled-within:ui-checked-within:ak-layer-lighten-0",
   "not-ui-disabled-within:ui-mixed-within:ak-layer-lighten-0",
-  // Without a mark, an inset ring adds a second edge pixel to the selected
-  // card, so its state doesn't rest on color alone. The ring takes no space.
-  "inset-ring-(--ak-edge)",
-  "not-has-[.choice-card-check]:ui-checked-within:inset-ring",
-  "not-has-[.choice-card-check]:ui-mixed-within:inset-ring",
   // Forced colors remove shadows. Use a real border one pixel wider instead.
-  "not-has-[.choice-card-check]:ui-checked-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
-  "not-has-[.choice-card-check]:ui-mixed-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
+  // Stays a class to come after the classes of a caller, so that the forced
+  // colors rule still applies.
+  "not-has-[.ui-choice-card-check]:ui-checked-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
+  "not-has-[.ui-choice-card-check]:ui-mixed-within:forced-colors:ak-frame-border-[length:calc(var(--border-width,1px)+1px)]",
 );
 
-// The input covers a segment, so it takes the hover and the focus of a tooltip
-// anchored to it. Labels center in the segment instead of filling a card row.
 const choiceCardSegment = cx(
-  // WebKit doesn't stretch an input with inset alone.
-  "[&_input]:absolute [&_input]:inset-0 [&_input]:size-full [&_input]:m-0 [&_input]:opacity-0",
-  "[&_input]:cursor-[inherit]",
-  "*:grow-0 *:text-center",
-  // A checked segment restores full ink, so a disabled one needs the disabled
-  // ink at a higher specificity.
-  "ui-disabled-within:ui-selected:ak-ink-0",
+  "ui-choice-card--segment",
+  // Stays a class to come after the flex-grow that the control gives its
+  // label, which it replaces.
+  "*:grow-0",
+  // Stays a class to keep its order with the classes of the elements that it
+  // styles.
+  "*:text-center",
 );
 
 /** A card label whose tint follows a nested input's checked or mixed state. */
@@ -331,31 +293,35 @@ export const choiceCard = cv({
   extend: [button, focusWithin],
   class: [
     // Let slots read the nested input's disabled state.
-    "group/choice",
+    "group/choice ui-choice-card",
     // A click can't change a checked radio card, so hover doesn't light it. It
     // keeps its selected offset, which the hover state would otherwise replace.
     "ui-settled:ui-hover:ak-state-(--selected-offset,0)",
     // Group-disabled cards may not receive $disabled. Read the input state and
     // suppress hover and press on the label too.
-    "ui-disabled-within:ak-disabled",
-    "ui-disabled-within:cursor-not-allowed",
-    "ui-disabled-within:ak-ink-0",
+    "ui-disabled-within:ak-disabled ui-disabled-within:ak-ink-0",
     disabledWithinDescendants,
     // An adaptive text color on the card or an ancestor targets nested text
     // with higher specificity. The ui-text rules here and in forced colors set
     // the disabled color on the same targets.
     // https://github.com/ariakit/ariakit/issues/7869
     "ui-disabled-within:not-forced-colors:ui-text:ak-ink-0",
-    "ui-disabled-within:ak-edge-5 ui-disabled-within:ak-layer-fade-80",
+    "ui-disabled-within:ak-layer-fade-80",
     // Forced colors replace the ink with the normal text color. Use the system
     // disabled color instead; the label's edge follows the text color. It's
     // important because hover and selected ink rules are more specific.
+    // Stays a class to come after the color of `ui-control-disabled`, which it
+    // replaces.
     "ui-disabled-within:forced-colors:text-[GrayText]!",
+    // Stays a class to come after the color of `ui-choice-card`, which it
+    // replaces.
     "ui-disabled-within:forced-colors:ui-text:text-[GrayText]",
+    // Stays a class to come after the hover state of `hover`, which it replaces
+    // in a disabled choice.
     "ui-disabled-within:ui-hover:ak-state-0",
+    // Stays a class to come after the hover ink of `hover`, which it replaces
+    // in a disabled choice.
     "ui-disabled-within:ui-hover:ak-ink-0",
-    "ui-disabled-within:ui-active:scale-x-100",
-    "ui-disabled-within:ui-active:scale-y-100",
   ],
   variants: {
     /**
@@ -365,15 +331,11 @@ export const choiceCard = cv({
      */
     $orientation: {
       vertical: [
+        "ui-choice-card--orientation-vertical",
         // Override the control's reset of this flag on direct children.
+        // Stays a class to keep its order with the classes of the elements that
+        // it styles.
         "*:[--control-inline:0]!",
-        // Override the later-sorted justify-start and justify-center utilities.
-        "justify-between!",
-        // Keep shorter badges from stretching to the tallest slot. Zero
-        // specificity lets caller alignment classes override this.
-        // https://github.com/ariakit/ariakit/issues/7599
-        "ui-base:items-start",
-        "[&>.control-content]:basis-full [&>.control-content]:order-1",
       ],
     },
     /**
@@ -382,10 +344,15 @@ export const choiceCard = cv({
      */
     $gapY: {
       // Share the smaller wrapped-row gap with the content wrapper.
-      card: "[--gap-y:calc(var(--py)/2)] gap-y-(--gap-y)",
+      card: [
+        "[--gap-y:calc(var(--py)/2)]",
+        // Stays a class to come after the gap of `slotFrame`, which it
+        // replaces.
+        "gap-y-(--gap-y)",
+      ],
     },
     /** Applies disabled styles while keeping a faint card boundary. */
-    $disabled: ["[--disabled-border:var(--ak-edge)]", "ak-edge-5"],
+    $disabled: "ui-choice-card--disabled ak-edge-5",
   },
   defaultVariants: {
     $rounded(defaultValue, variants) {
@@ -469,7 +436,7 @@ const floatingCheckClass = [
 export const choiceCardCheck = cv({
   extend: [choice],
   // Cards without this mark draw a second edge pixel when selected.
-  class: "choice-card-check",
+  class: "ui-choice-card-check",
   variants: {
     /**
      * Places the check on a corner of the card and hides it when unchecked.
@@ -524,12 +491,7 @@ export const choiceCardLabelRow = controlLabelRow;
 export const choiceCardLabel = cv({
   extend: [buttonLabel],
   variants: {
-    // The card wraps so a direct description can take its own row, and a
-    // wrapping row moves an item to the next line before it shrinks it. A zero
-    // basis keeps a direct label on the row of its slots, so it truncates or
-    // wraps its text instead of moving the check below it. Zero specificity
-    // lets a caller basis class win.
-    $grow: "[.choice-card>&]:ui-base:basis-0",
+    $grow: "ui-choice-card-label--grow",
   },
   defaultVariants: {
     $grow: true,
@@ -552,13 +514,7 @@ const choiceItemsGap = {
 
 /** A responsive grid of choice cards with equal row heights. */
 export const choiceCardGrid = cv({
-  class: [
-    "choice-card-grid grid auto-rows-fr",
-    // Let the grid shrink below its cards' text width.
-    "min-w-0",
-    // Keep the minimum column width within the available space.
-    "grid-cols-[repeat(auto-fill,minmax(min(100%,var(--choice-card-min-w)),1fr))]",
-  ],
+  class: "ui-choice-card-grid",
   variants: {
     /**
      * Sets the narrowest a card may get before the grid drops a column. Numbers
@@ -579,8 +535,7 @@ export const choiceCardGrid = cv({
      * @default "auto"
      */
     $gap: {
-      // Outside a group, use the group gap of cards.
-      auto: "ui-base:gap-[calc(var(--choice-group-gap,--spacing(4))*2/3)]",
+      auto: "ui-choice-card-grid--gap-auto",
       ...choiceItemsGap,
     },
   },
@@ -599,15 +554,7 @@ export const choiceCardGrid = cv({
  * items.
  */
 export const choiceGroup = cv({
-  class: [
-    // The label and the description read the disabled state of the group.
-    // The gaps of the group follow its text size.
-    "choice-group ui-spacing-em group/choice-group min-w-0",
-    // The label covers the gap with its padding, as in a field.
-    "[--_field-gap:var(--choice-group-gap)] gap-(--choice-group-gap)",
-    // Zero specificity lets caller layout classes win.
-    "ui-base:flex ui-base:flex-col",
-  ],
+  class: "group/choice-group ui-choice-group",
   variants: {
     /**
      * Sets the gap between the label, the items, and the texts of the group.
@@ -620,26 +567,11 @@ export const choiceGroup = cv({
      */
     $gap: {
       none: "[--choice-group-gap:0px]",
-      xs: [
-        "[--choice-group-gap:--spacing(1)]",
-        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(2)]",
-      ],
-      sm: [
-        "[--choice-group-gap:--spacing(2)]",
-        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(3)]",
-      ],
-      md: [
-        "[--choice-group-gap:--spacing(3)]",
-        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(4)]",
-      ],
-      lg: [
-        "[--choice-group-gap:--spacing(4)]",
-        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(5)]",
-      ],
-      xl: [
-        "[--choice-group-gap:--spacing(5)]",
-        "has-[.choice-card,.control-description]:[--choice-group-gap:--spacing(6)]",
-      ],
+      xs: "ui-choice-group--gap-xs",
+      sm: "ui-choice-group--gap-sm",
+      md: "ui-choice-group--gap-md",
+      lg: "ui-choice-group--gap-lg",
+      xl: "ui-choice-group--gap-xl",
     },
   },
   defaultVariants: {
@@ -655,18 +587,14 @@ export const choiceGroup = cv({
 export const choiceGroupLabel = cv({
   extend: [controlFieldLabel],
   class: [
-    "choice-group-label",
-    // A legend is drawn above the fieldset's content, out of its flex layout,
-    // so the group gap doesn't follow it. Its bottom padding makes the gap
-    // instead. WebKit ignores a float on a flex child, so floating the legend
-    // into the layout doesn't work there.
-    "[legend&]:mb-0",
-    // Chromium sizes a legend to its text, so it would overflow a narrow group
-    // instead of truncating. Fill the width, like a label in the flex layout.
-    "[legend&]:w-full",
+    "ui-choice-group-label",
     // A disabled fieldset or radio group dims its label. Forced colors replace
     // the ink with the normal text color, so use the system disabled color.
+    // Stays a class, so that another class here that sets the color still comes
+    // after it and replaces it.
     "group-ui-disabled/choice-group:ak-ink-0",
+    // Stays a class to come after another class here that sets the color, which
+    // it replaces.
     "group-ui-disabled/choice-group:forced-colors:text-[GrayText]",
   ],
 });
@@ -680,14 +608,12 @@ export const choiceGroupLabel = cv({
 export const choiceGroupDescription = cv({
   extend: [controlFieldDescription],
   class: [
-    "choice-group-description",
-    // Pull the text from the group gap up to a small gap under the label, or to
-    // the group gap when it is smaller, such as none. The padding of a legend
-    // makes the gap, so the margin also works there. The field gap holds the
-    // group gap resolved in the group's font, which is larger than this text.
-    // The small gap is one em step, so it follows this text.
-    "[.choice-group-label+&]:-mt-[max(0px,var(--_field-gap)-var(--spacing-em))]",
+    "ui-choice-group-description",
+    // Stays a class, so that another class here that sets the color still comes
+    // after it and replaces it.
     "group-ui-disabled/choice-group:ak-ink-0",
+    // Stays a class to come after another class here that sets the color, which
+    // it replaces.
     "group-ui-disabled/choice-group:forced-colors:text-[GrayText]",
   ],
 });
@@ -697,8 +623,7 @@ export const choiceGroupDescription = cv({
  * only the items, so the group label keeps the group gap.
  */
 export const choiceList = cv({
-  // Zero specificity lets caller layout classes win.
-  class: "choice-list min-w-0 ui-base:flex ui-base:flex-col",
+  class: "ui-choice-list",
   variants: {
     /**
      * Sets the gap between the items. `auto` takes two thirds of the gap of the
@@ -708,8 +633,7 @@ export const choiceList = cv({
      * @default "auto"
      */
     $gap: {
-      // Outside a group, use the group gap of simple fields.
-      auto: "ui-base:gap-[calc(var(--choice-group-gap,--spacing(3))*2/3)]",
+      auto: "ui-choice-list--gap-auto",
       ...choiceItemsGap,
     },
   },

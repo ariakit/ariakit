@@ -80,7 +80,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         // Only a body that holds a covering navigation reaches over the seam,
         // so this body stays on the padding box of its panel.
         const panel = q.navigation(name);
-        const body = panel.locator(".shell-sidebar-body");
+        const body = panel.locator(".ui-shell-sidebar-body");
         await expect
           .poll(async () => {
             const [box, frame, inset] = await Promise.all([
@@ -227,7 +227,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           );
           const samples = await body.evaluate(
             (node, { rtl, side, animation }) => {
-              const column = node.closest(".shell-sidebar");
+              const column = node.closest(".ui-shell-sidebar");
               const link = node.querySelector("a");
               if (!column || !link) {
                 throw new Error("Missing sidebar parts");

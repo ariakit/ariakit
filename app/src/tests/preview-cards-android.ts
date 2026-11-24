@@ -237,7 +237,7 @@ test("preview card frames take arrow keys after a touch on the docs page", async
   // it stops before any touch.
   const sidebar = query(frame)
     .navigation("Primary")
-    .locator(".shell-sidebar-body");
+    .locator(".ui-shell-sidebar-body");
   expect(await isOverflowing(sidebar)).toBe(false);
   await expect(sidebar).toHaveCSS("overflow-y", "hidden");
   const today = query(frame).radio("Today");

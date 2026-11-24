@@ -23,7 +23,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     await q.checkbox("Inherit seams").check();
     const color = await page
-      .locator(".shell")
+      .locator(".ui-shell")
       .evaluate((node) => getComputedStyle(node).borderBottomColor);
     for (const rtl of [false, true]) {
       await q.checkbox("Right to left").setChecked(rtl);

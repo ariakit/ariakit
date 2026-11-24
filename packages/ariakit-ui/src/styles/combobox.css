@@ -1,0 +1,70 @@
+/* The CSS of the combobox style recipe in combobox.ts. Import this file in the
+   CSS file that imports Tailwind CSS, after ui.css and the CSS files of the
+   style recipes that combobox.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./input.css";
+   @import "./popover.css";
+   @import "./combobox.css"; */
+
+@utility ui-combobox-popover {
+  /* Suppress the temporary popup focus ring; the active item carries the
+     highlight. */
+  @apply outline-none;
+  overflow: auto;
+  overscroll-behavior: contain;
+  max-height: min(var(--popover-available-height), 20rem);
+  max-width: var(--popover-available-width);
+  min-width: min(var(--popover-anchor-width), var(--popover-available-width));
+  inset-inline-start: calc(anchor(start) - var(--ak-frame-padding));
+  /* Use native invoker anchors unless Ariakit supplies inline positioning. */
+  top: calc(anchor(bottom) + (var(--spacing)));
+  position-try-fallbacks: flip-block, flip-inline;
+
+  &:has(> .ui-combobox-list) {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@utility ui-combobox-list {
+  @apply outline-none;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+
+  .ui-combobox-input + & {
+    margin-top: var(--spacing);
+  }
+}
+
+@utility ui-combobox-item {
+  @variant ui-focus {
+    /* Follow current focus. The active item keeps data-active-item after focus
+       leaves the combobox, so that attribute would leave a stale highlight. */
+    @apply ak-state-5;
+  }
+}
+
+@utility ui-combobox-select-arrow {
+  margin-inline-start: auto;
+
+  /* After an empty label, which fills the free space, the arrow keeps its side
+     margins, so it stays centered in a select that fits its content. */
+  :empty + & {
+    margin-inline-start: var(--mx, 0px);
+  }
+}
+
+@utility ui-combobox-item-check {
+  pointer-events: none;
+
+  @variant empty {
+    visibility: hidden;
+  }
+}

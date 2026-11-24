@@ -10,7 +10,7 @@ function getScrollGap(shellWidth: number) {
   return shellWidth < 1024 ? 16 : 32;
 }
 
-const mainHeaderSelector = ":scope > .shell-main > .shell-main-header";
+const mainHeaderSelector = ":scope > .ui-shell-main > .ui-shell-main-header";
 
 /**
  * Narrows the page to 600px, where the end sidebar of the parts shell no longer
@@ -124,7 +124,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.checkbox("Sticky footer").check();
     await q.checkbox("Long footer note").check();
     const footer = q.contentinfo("Part footer");
-    const start = footer.locator(":scope > .shell-bar-start");
+    const start = footer.locator(":scope > .ui-shell-start");
     await expect(start).toHaveText(/wider than half of the bar/);
     const lineHeight = await start.evaluate((node) =>
       Number.parseFloat(getComputedStyle(node).lineHeight),
@@ -145,8 +145,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.checkbox("Sticky footer").check();
     await q.checkbox("Footer actions").check();
     const footer = q.contentinfo("Part footer");
-    const start = footer.locator(":scope > .shell-bar-start");
-    const end = footer.locator(":scope > .shell-bar-end");
+    const start = footer.locator(":scope > .ui-shell-start");
+    const end = footer.locator(":scope > .ui-shell-end");
     await expect(end).toHaveText(/Discard or save/);
     const lineHeight = await end.evaluate((node) =>
       Number.parseFloat(getComputedStyle(node).lineHeight),
@@ -173,7 +173,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.checkbox("Sticky footer").check();
     await q.checkbox("Footer actions").check();
     const footer = q.contentinfo("Part footer");
-    const end = footer.locator(":scope > .shell-bar-end");
+    const end = footer.locator(":scope > .ui-shell-end");
     const lineHeight = await end.evaluate((node) =>
       Number.parseFloat(getComputedStyle(node).lineHeight),
     );
@@ -193,10 +193,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // A set space resolves at main, so the larger text of the intro doesn't
     // change it.
     await q.combobox("Local text size").selectOption("text-lg");
-    const intro = page.locator(".shell-main-intro");
-    const body = q.main().locator(":scope > .shell-main-body");
+    const intro = page.locator(".ui-shell-main-intro");
+    const body = q.main().locator(":scope > .ui-shell-main-body");
     const nestedBody = page.locator(
-      "#nested-parts-shell > .shell-main > .shell-main-body",
+      "#nested-parts-shell > .ui-shell-main > .ui-shell-main-body",
     );
     // At main's 16px: the 2rem page gutter, none, 10 steps, and 2em. The
     // default intro doesn't take the gutter from main, so its fluid 14 bar
@@ -229,9 +229,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
   }) => {
     await q.combobox("Main header visibility").selectOption("never");
-    const intro = page.locator(".shell-main-intro");
+    const intro = page.locator(".ui-shell-main-intro");
     const title = q.heading("Explicit shell parts");
-    const body = q.main().locator(":scope > .shell-main-body");
+    const body = q.main().locator(":scope > .ui-shell-main-body");
     const getIntroSpace = () =>
       intro.evaluate((node) =>
         Number.parseFloat(getComputedStyle(node).paddingBlockStart),
@@ -360,7 +360,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
   }) => {
     await q.checkbox("Intro without a body").check();
-    const intro = page.locator("#intro-only-shell .shell-main-intro");
+    const intro = page.locator("#intro-only-shell .ui-shell-main-intro");
     await expect(intro).toBeVisible();
     const start = await intro.evaluate(
       (node) => getComputedStyle(node).paddingBlockStart,
@@ -382,7 +382,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await q.combobox("End sidebar starts at").selectOption("main");
       await q.combobox("End sidebar visibility").selectOption("5xl");
       const column = getSidebar(q, "Part details");
-      const header = page.locator(".shell-main-header");
+      const header = page.locator(".ui-shell-main-header");
       await expect(column).toHaveCSS("width", "160px");
       const fold = await getFoldPaint(column, mainHeaderSelector, () =>
         q.checkbox(control).setChecked(checkedWhenClosed),
@@ -423,8 +423,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   for (const [bar, selector] of [
-    ["shell header", ":scope > .shell-header"],
-    ["sticky footer", ":scope > .shell-footer"],
+    ["shell header", ":scope > .ui-shell-header"],
+    ["sticky footer", ":scope > .ui-shell-footer"],
   ] as const) {
     test(`keeps the ${bar} above a folding end sidebar that isn't sticky`, async ({
       q,
@@ -450,8 +450,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await q.combobox("End sidebar starts at").selectOption(from);
       await q.checkbox("Second end sidebar").check();
       await q.combobox("Main header visibility").selectOption("5xl");
-      const header = page.locator(".shell-main-header");
-      const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
+      const header = page.locator(".ui-shell-main-header");
+      const nestedHeader = page.locator(
+        "#nested-parts-shell > .ui-shell-header",
+      );
       await expect(header).toBeVisible();
       await q.checkbox("Narrow shell").check();
       await expect(header).toBeHidden();
@@ -469,10 +471,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       // retries the click while the columns still move.
       // https://github.com/ariakit/ariakit/issues/7595
       await page.evaluate(() => window.scrollTo(0, 0));
-      expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
-        65,
-        0,
-      );
+      expect(
+        (await getBox(page.locator(".ui-shell-main-intro"))).y,
+      ).toBeCloseTo(65, 0);
       await page.evaluate(() => window.scrollTo(0, 700));
       await expect
         .poll(async () => (await getBox(q.complementary("Part details"))).y)
@@ -495,8 +496,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await q.combobox("End sidebar starts at").selectOption(from);
       await q.checkbox("Second end sidebar").check();
       await q.combobox("Main header visibility").selectOption("max-5xl");
-      const header = page.locator(".shell-main-header");
-      const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
+      const header = page.locator(".ui-shell-main-header");
+      const nestedHeader = page.locator(
+        "#nested-parts-shell > .ui-shell-header",
+      );
       await expect(header).toBeHidden();
       for (const width of [1023, 1024, 1440]) {
         await page.setViewportSize({ width, height: 900 });
@@ -539,8 +542,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     }) => {
       await q.combobox("End sidebar starts at").selectOption(from);
       await q.checkbox("Second end sidebar").check();
-      const header = page.locator(".shell-main-header");
-      const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
+      const header = page.locator(".ui-shell-main-header");
+      const nestedHeader = page.locator(
+        "#nested-parts-shell > .ui-shell-header",
+      );
       for (const width of [1440, 1000]) {
         await page.setViewportSize({ width, height: 900 });
         await q.combobox("Main header visibility").selectOption("never");
@@ -557,10 +562,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
           `${65 + getScrollGap(width)}px`,
         );
         await page.evaluate(() => window.scrollTo(0, 0));
-        expect((await getBox(page.locator(".shell-main-intro"))).y).toBeCloseTo(
-          65,
-          0,
-        );
+        expect(
+          (await getBox(page.locator(".ui-shell-main-intro"))).y,
+        ).toBeCloseTo(65, 0);
         await page.evaluate(() => window.scrollTo(0, 700));
         await expect
           .poll(async () => (await getBox(q.complementary("Part details"))).y)
@@ -620,7 +624,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
           });
         }
         expect(
-          (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
+          (await getBox(q.main().locator(":scope > .ui-shell-main-body")))
+            .width,
         ).toBeCloseTo(width - (visible ? 640 : 0), 0);
       }
     });
@@ -658,9 +663,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
     page,
   }) => {
-    const mainHeader = page.locator(".shell-main-header");
-    const sidebarHeader = page.locator(".shell-sidebar-header");
-    const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
+    const mainHeader = page.locator(".ui-shell-main-header");
+    const sidebarHeader = page.locator(".ui-shell-sidebar-header");
+    const nestedHeader = page.locator("#nested-parts-shell > .ui-shell-header");
     // The 64px of the shell header without its border, plus the local border.
     for (const header of [mainHeader, sidebarHeader]) {
       await expect(header).toHaveCSS("height", "69px");
@@ -711,13 +716,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const middle = page.locator("#nested-parts-shell");
     const inner = page.locator("#inner-parts-shell");
     const middleHeader = middle.locator(
-      ":scope > .shell-main > .shell-main-header",
+      ":scope > .ui-shell-main > .ui-shell-main-header",
     );
-    const innerHeader = inner.locator(":scope > .shell-header");
+    const innerHeader = inner.locator(":scope > .ui-shell-header");
     const innerMainHeader = inner.locator(
-      ":scope > .shell-main > .shell-main-header",
+      ":scope > .ui-shell-main > .ui-shell-main-header",
     );
-    await expect(middle.locator(":scope > .shell-header")).toHaveCSS(
+    await expect(middle.locator(":scope > .ui-shell-header")).toHaveCSS(
       "top",
       "134px",
     );
@@ -747,11 +752,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     }) => {
       await q.checkbox("Use spacing gutter").check();
       await q.checkbox("Unbounded content").setChecked(unbounded);
-      const mainHeader = page.locator(".shell-main-header");
-      const sidebarHeader = page.locator(".shell-sidebar-header");
+      const mainHeader = page.locator(".ui-shell-main-header");
+      const sidebarHeader = page.locator(".ui-shell-sidebar-header");
       const actions = page.locator('[aria-label="Main actions"]');
       const content = q.region("Main content");
-      const nestedHeader = page.locator("#nested-parts-shell > .shell-header");
+      const nestedHeader = page.locator(
+        "#nested-parts-shell > .ui-shell-header",
+      );
       for (const size of ["text-sm", "text-lg"]) {
         await q.combobox("Local text size").selectOption(size);
         for (const header of [mainHeader, sidebarHeader]) {
@@ -791,9 +798,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     }) => {
       await q.checkbox("Right to left").setChecked(rtl);
       await q.checkbox("Second end sidebar").check();
-      const body = q.main().locator(":scope > .shell-main-body");
-      const header = page.locator(".shell-main-header");
-      const intro = page.locator(".shell-main-intro");
+      const body = q.main().locator(":scope > .ui-shell-main-body");
+      const header = page.locator(".ui-shell-main-header");
+      const intro = page.locator(".ui-shell-main-intro");
       const bodyContent = q.region("Main content");
       const headerContent = page.locator('[aria-label="Main actions"]');
       const introContent = q.heading("Explicit shell parts");
@@ -857,16 +864,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     await q.combobox("End sidebar starts at").selectOption("main");
     const sidebar = getSidebar(q, "Part details");
-    const header = page.locator(".shell-main-header");
+    const header = page.locator(".ui-shell-main-header");
     expect((await getBox(sidebar)).y).toBeCloseTo((await getBox(header)).y, 0);
     await q.checkbox("Main header").uncheck();
     expect((await getBox(sidebar)).y).toBeCloseTo(
-      (await getBox(page.locator(".shell-main-intro"))).y,
+      (await getBox(page.locator(".ui-shell-main-intro"))).y,
       0,
     );
     await q.checkbox("Main intro").uncheck();
     expect((await getBox(sidebar)).y).toBeCloseTo(
-      (await getBox(q.main().locator(":scope > .shell-main-body"))).y,
+      (await getBox(q.main().locator(":scope > .ui-shell-main-body"))).y,
       0,
     );
     await expect(q.main()).toHaveCSS("top", "auto");
@@ -882,9 +889,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
   }) => {
     const panel = q.navigation("Part navigation");
-    const header = panel.locator(".shell-sidebar-header");
-    const footer = panel.locator(".shell-sidebar-footer");
-    const body = panel.locator(".shell-sidebar-body");
+    const header = panel.locator(".ui-shell-sidebar-header");
+    const footer = panel.locator(".ui-shell-sidebar-footer");
+    const body = panel.locator(".ui-shell-sidebar-body");
     const headerBefore = await getBox(header);
     const footerBefore = await getBox(footer);
     await body.evaluate((node) => node.scrollTo(0, 500));
@@ -940,7 +947,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         throw new Error("Missing toggle");
       }
       const header = document.querySelector('[aria-label="Main actions"]');
-      const intro = document.querySelector(".shell-main-intro > h1");
+      const intro = document.querySelector(".ui-shell-main-intro > h1");
       const body = document.querySelector('[aria-label="Main content"]');
       const panel = column.firstElementChild;
       if (!header || !intro || !body || !panel) {

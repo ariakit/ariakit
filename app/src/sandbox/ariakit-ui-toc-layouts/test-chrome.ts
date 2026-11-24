@@ -44,7 +44,7 @@ async function pauseGlides(page: Page, navs: Locator[], id: string) {
 function getBarLinks(nav: Locator) {
   return nav.evaluate((element) => {
     return [...element.querySelectorAll("a")].flatMap((link) => {
-      const bar = link.querySelector<HTMLElement>(".toc-link-bar");
+      const bar = link.querySelector<HTMLElement>(".ui-toc-link-bar");
       if (!bar) return [];
       // Each bar piece holds the range that glides on it.
       const style = getComputedStyle(bar);
@@ -151,7 +151,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         for (const animation of animations) {
           animation.currentTime = time;
         }
-        const bars = [...element.querySelectorAll(".toc-link-bar")];
+        const bars = [...element.querySelectorAll(".ui-toc-link-bar")];
         return {
           animations: animations.length,
           pieces: [...new Set(bars.map(read))],
@@ -192,8 +192,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             const { effect } = animation;
             const target = effect instanceof KeyframeEffect && effect.target;
             if (!target) return "none";
-            if (target.matches(".toc-link-bar")) return "bar";
-            if (target.matches(".toc-link-marker")) return "marker";
+            if (target.matches(".ui-toc-link-bar")) return "bar";
+            if (target.matches(".ui-toc-link-marker")) return "marker";
             return target.tagName.toLowerCase();
           });
         return [...new Set(targets)].sort();
@@ -205,8 +205,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           style.getPropertyValue("--nav-bar-end"),
         ].join(" ");
       };
-      const bars = [...nav.querySelectorAll(".toc-link-bar")];
-      const markers = [...nav.querySelectorAll(".toc-link-marker")];
+      const bars = [...nav.querySelectorAll(".ui-toc-link-bar")];
+      const markers = [...nav.querySelectorAll(".ui-toc-link-marker")];
       const rings = markers.map((marker) => read(marker, "::after"));
       return {
         targets: getTargets(nav),
@@ -242,7 +242,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       const getFillHeight = (name: string) => {
         const links = [...element.querySelectorAll("a")];
         const link = links.find((item) => item.textContent === name);
-        const marker = link?.querySelector(".toc-link-marker");
+        const marker = link?.querySelector(".ui-toc-link-marker");
         if (!marker) return Number.NaN;
         const { clipPath } = getComputedStyle(marker, "::after");
         const insets = clipPath.match(/-?[\d.]+/g)?.map(Number) ?? [];
@@ -285,7 +285,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     ) => {
       const row = query(q.navigation(nav)).link(link);
       await test
-        .expect(row.locator(".toc-link-marker"))
+        .expect(row.locator(".ui-toc-link-marker"))
         .toBeVisible({ visible });
     };
     await expectNumber("Right to left", "الاستخدام", true);

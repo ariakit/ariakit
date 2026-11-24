@@ -1,0 +1,132 @@
+/* The CSS of the progress style recipe in progress.ts. Import this file after
+   ui.css in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./progress.css"; */
+
+@theme {
+  --animate-ui-progress: ui-progress 1.5s ease-in-out infinite;
+
+  @keyframes ui-progress {
+    from {
+      translate: -100%;
+    }
+    to {
+      /* A third-width segment leaves the track after three of its widths. */
+      translate: 300%;
+    }
+  }
+}
+
+/* Registration lets progress fills animate their width or conic sweep. */
+@property --progress-value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@utility ui-progress-base {
+  /* A number thickness follows the text size. */
+  @apply ui-spacing-em;
+  position: relative;
+}
+
+@utility ui-progress {
+  display: block;
+  overflow: clip;
+  height: var(--progress-thickness);
+  width: 100%;
+}
+
+@utility ui-progress-circular {
+  @apply size-full;
+  display: grid;
+  place-items: center;
+  /* Copy the parent color and edge before the pseudo-element recomputes
+     them. */
+  --progress-layer-parent: var(--ak-layer-parent);
+  --progress-edge: var(--ak-edge);
+  /* The center disc restores the parent surface. Isolation keeps it above
+     the track and below child content. */
+  isolation: isolate;
+
+  @variant after {
+    @apply ak-layer-color-(--progress-layer-parent);
+    @apply ring-(length:--border-width) ring-(--progress-edge);
+    position: absolute;
+    z-index: calc(1 * -1);
+    border-radius: calc(var(--radius) * infinity);
+    inset: var(--progress-thickness);
+  }
+}
+
+@utility ui-progress-fill-base {
+  @apply duration-1000;
+}
+
+@utility ui-progress-fill {
+  /* Animate from empty on first paint. */
+  @apply transition-[width];
+  display: block;
+  height: 100%;
+  width: calc(var(--progress-value) * 100%);
+
+  &[data-indeterminate] {
+    /* Center the resting segment under reduced motion. */
+    @apply translate-x-full;
+    width: calc(1 / 3 * 100%);
+    /* Keep the same origin in RTL; reverse only the animation direction. */
+    position: absolute;
+    left: 0;
+  }
+
+  @variant motion-safe {
+    &[data-indeterminate] {
+      animation: var(--animate-ui-progress);
+    }
+  }
+
+  @variant rtl {
+    &[data-indeterminate] {
+      animation-direction: reverse;
+    }
+  }
+
+  @variant not-data-indeterminate {
+    @variant starting {
+      width: 0 !important;
+    }
+  }
+}
+
+@utility ui-progress-circular-fill {
+  /* Both arcs grow from zero when they show. An indeterminate arc grows to
+     its fixed length while it spins. */
+  @apply transition-[--progress-value];
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--radius) * infinity);
+  /* Hit testing ignores the mask, so allow pointer input through to center
+     content. */
+  pointer-events: none;
+  /* Soften aliased edges. Reduce angular feathering at both endpoints to
+     avoid a faint arc at zero or a seam at one. */
+  --feather-px: 0.5px;
+  --feather-deg: min(1deg, var(--progress-value) * 1turn, (1 - var(--progress-value)) * 1turn);
+  background-image: conic-gradient(from 0deg, var(--ak-layer) 0turn, var(--ak-layer) calc(var(--progress-value) * 1turn - var(--feather-deg)), transparent calc(var(--progress-value) * 1turn + var(--feather-deg)), transparent 1turn);
+  mask-image: radial-gradient(farthest-side, transparent calc(100% - var(--progress-thickness) - var(--feather-px)), #000 calc(100% - var(--progress-thickness) + var(--feather-px)));
+
+  &[data-indeterminate] {
+    --progress-value: 0.5;
+  }
+
+  @variant motion-safe {
+    &[data-indeterminate] {
+      animation: var(--animate-spin);
+    }
+  }
+
+  @variant starting {
+    --progress-value: 0 !important;
+  }
+}

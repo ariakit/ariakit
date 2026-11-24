@@ -78,7 +78,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       const notifications = nav.link(/Notifications/);
       const anaLima = nav.link(/Ana Lima/);
       const slot = (row: Locator, text: string) =>
-        row.locator(".slot-frame-slot").filter({ hasText: text });
+        row.locator(".ui-slot-frame-slot").filter({ hasText: text });
       await q.combobox("Slot size").selectOption(slotSize);
       await navigation.scrollIntoViewIfNeeded();
       // The text size is 16px at the sandbox's font, and $slotSize={5} and
@@ -92,8 +92,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       );
       const trailingSize = slotSize === "text" ? lineHeight : size;
       const squares = [
-        [inbox.locator(":scope > .disclosure-button-slot").first(), size],
-        [drafts.locator(".slot-frame-slot").first(), size],
+        [inbox.locator(":scope > .ui-disclosure-button-slot").first(), size],
+        [drafts.locator(".ui-slot-frame-slot").first(), size],
         [slot(notifications, "9"), size],
         [slot(anaLima, "AL"), size],
         [slot(drafts, "3"), trailingSize],
@@ -135,7 +135,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       // as its end inset.
       const [row, rowIcon, rowPadding] = await Promise.all([
         getBox(drafts),
-        getBox(drafts.locator(".slot-frame-slot").first()),
+        getBox(drafts.locator(".ui-slot-frame-slot").first()),
         drafts.evaluate((node) =>
           parseFloat(getComputedStyle(node).paddingTop),
         ),
@@ -161,10 +161,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       // A section badge joins the chevron at the row end instead of following
       // the label.
       const [inboxIcon, inboxLabel, inboxBadge, chevron] = await Promise.all([
-        getBox(inbox.locator(".slot-frame-slot").first()),
+        getBox(inbox.locator(".ui-slot-frame-slot").first()),
         getBox(query(inbox).text("Inbox")),
         getBox(slot(inbox, "12")),
-        getBox(inbox.locator(".slot-frame-slot").last()),
+        getBox(inbox.locator(".ui-slot-frame-slot").last()),
       ]);
       const rowGap = inboxLabel.x - inboxIcon.x - inboxIcon.width;
       const badgeToChevron = chevron.x - inboxBadge.x - inboxBadge.width;
@@ -179,7 +179,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       q,
     }) => {
       const nav = q.navigation(`End bar across sections (${dir})`);
-      const bar = nav.locator(".control-bar:visible");
+      const bar = nav.locator(".ui-bar:visible");
       const overview = query(nav).link("Overview");
       const styling = query(nav).button("Styling");
       const themes = query(nav).link("Themes");
@@ -368,7 +368,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }) => {
     const nav = q.navigation("Project pages");
     const link = query(nav).link("Overview");
-    const bar = nav.locator(".control-bar:visible");
+    const bar = nav.locator(".ui-bar:visible");
     await nav.scrollIntoViewIfNeeded();
     await expect(bar).toBeVisible();
     const radius = await link.evaluate(
@@ -418,7 +418,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await expect(bar).toBeInViewport({ ratio: 1 });
     }
     const standalone = q.navigation("Single link");
-    await expect(standalone.locator(".control-bar:visible")).toBeVisible();
+    await expect(standalone.locator(".ui-bar:visible")).toBeVisible();
     await expect(query(standalone).link("Home")).toHaveAttribute(
       "aria-current",
       "location",
@@ -430,7 +430,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }) => {
     const nav = q.navigation("Project pages");
     const link = query(nav).link("Overview");
-    const bar = nav.locator(".control-bar:visible");
+    const bar = nav.locator(".ui-bar:visible");
     await nav.scrollIntoViewIfNeeded();
     await q.combobox("Bar distance").selectOption("halfway");
     for (const side of ["end", "start"]) {
@@ -467,7 +467,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // The carousel root around the scrolling navigation draws the border.
     const root = nav.locator("xpath=..");
     const link = query(nav).link("Overview");
-    const bar = nav.locator(".control-bar:visible");
+    const bar = nav.locator(".ui-bar:visible");
     await nav.scrollIntoViewIfNeeded();
     await expect(root).toHaveCSS("border-top-width", "1px");
     // The scrolling navigation reaches over the border above and below, so it
@@ -528,8 +528,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await nav.scrollIntoViewIfNeeded();
     await expect(nav).toHaveCSS("border-left-width", "1px");
     await expect(nav).toHaveCSS("border-right-width", "1px");
-    const getBar = (name: string) =>
-      query(nav).link(name).locator(".control-bar");
+    const getBar = (name: string) => query(nav).link(name).locator(".ui-bar");
     for (const side of ["start", "end"]) {
       await q.combobox("Column bar side").selectOption(side);
       // A nested start bar sits on the guide of its section instead.
@@ -580,7 +579,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }) => {
     const nav = q.navigation("Project pages");
     const link = query(nav).link("Overview");
-    const bar = nav.locator(".control-bar:visible");
+    const bar = nav.locator(".ui-bar:visible");
     await nav.scrollIntoViewIfNeeded();
     // Without frame padding, links keep the navigation's rounded corners.
     await q.checkbox("Add frame padding").uncheck();

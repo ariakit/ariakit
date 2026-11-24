@@ -104,7 +104,7 @@ function BarPlacement() {
         <TabList
           aria-label="Bar placement"
           $p={3}
-          className="[&>.control]:shrink-0 [&>.control]:whitespace-nowrap"
+          className="[&>.ui-control]:shrink-0 [&>.ui-control]:whitespace-nowrap"
         >
           <Tab id="placement-preview" $kind="bevel" $selectedPush={1} bar={bar}>
             Preview

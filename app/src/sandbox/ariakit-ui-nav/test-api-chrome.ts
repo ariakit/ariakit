@@ -31,7 +31,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     q,
   }) => {
     const nav = query(q.navigation("Bar overrides"));
-    const getBar = (name: string) => nav.link(name).locator(".control-bar");
+    const getBar = (name: string) => nav.link(name).locator(".ui-bar");
     // Positive when the bar sits after the link's center.
     const getSide = async (name: string) => {
       const [bar, link] = await Promise.all([
@@ -48,7 +48,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // Toggling the bar keeps the link's children mounted.
     const slot = await nav
       .link("Default bar")
-      .locator(".slot-frame-slot")
+      .locator(".ui-slot-frame-slot")
       .elementHandle();
     await q.checkbox("Show bars").uncheck();
     await expect(getBar("Default bar")).toHaveCount(0);
@@ -57,6 +57,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     expect(await slot?.evaluate((node) => node.isConnected)).toBe(true);
     const recipe = query(q.navigation("Recipe bar")).link("Recipe link");
     await expect(recipe).toHaveAccessibleName("Recipe link");
-    await expect(recipe.locator(".control-bar")).toBeVisible();
+    await expect(recipe.locator(".ui-bar")).toBeVisible();
   });
 });

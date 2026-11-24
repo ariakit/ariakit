@@ -212,7 +212,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const nav = q.navigation("Empty, false, and unknown current values");
     const rows = query(nav);
     // Every link renders a bar, and only the current one shows it.
-    const bar = nav.locator(".control-bar:visible");
+    const bar = nav.locator(".ui-bar:visible");
     const overview = rows.link("Overview");
     const themes = rows.link("Themes");
     const tokens = rows.link("Tokens");
@@ -261,7 +261,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     }
     const [themesBox, iconBox] = await Promise.all([
       getBox(themes),
-      getBox(styling.locator(".slot-frame-slot").first()),
+      getBox(styling.locator(".ui-slot-frame-slot").first()),
     ]);
     await test.expect
       .poll(async () => (await barEdges()).middle)

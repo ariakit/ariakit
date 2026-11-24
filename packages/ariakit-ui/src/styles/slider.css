@@ -1,0 +1,76 @@
+/* The CSS of the slider style recipe in slider.ts. Import this file in the CSS
+   file that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that slider.ts imports:
+
+   @import "./ui.css";
+   @import "./progress.css";
+   @import "./slider.css"; */
+
+@utility ui-slider {
+  display: grid;
+  width: 100%;
+  align-items: center;
+}
+
+@utility ui-slider-input {
+  grid-column-start: 1;
+  grid-row-start: 1;
+  margin: 0;
+  width: 100%;
+  height: var(--slider-thumb-size);
+  appearance: none;
+  background-color: transparent;
+  opacity: 0;
+  cursor: pointer;
+
+  @variant disabled {
+    cursor: not-allowed;
+  }
+
+  &::-moz-range-thumb {
+    @apply size-(--slider-thumb-size) border-0;
+  }
+
+  &::-webkit-slider-thumb {
+    @apply size-(--slider-thumb-size);
+    /* Browsers map the pointer to a value over the width of the input less the
+       width of the thumb, so the thumb must match the drawn thumb. */
+    appearance: none;
+  }
+}
+
+@utility ui-slider-track {
+  grid-column-start: 1;
+  grid-row-start: 1;
+  pointer-events: none;
+}
+
+@utility ui-slider-fill {
+  display: block;
+  height: 100%;
+  width: calc(var(--slider-thumb-size) / 2 + var(--slider-value, 0) * (100% - var(--slider-thumb-size)));
+}
+
+/* The slider root reads the state of its own input with :has(). A sibling
+   combinator from the input would make Chrome restyle later siblings across the
+   page when the DOM changes. Child combinators keep the match to the input and
+   the parts of this slider. */
+@utility ui-slider-disabled-part {
+  .ui-slider:has(> input:disabled) > * > & {
+    @apply ak-disabled ak-layer-fade-80 ak-layer-contrast-0;
+  }
+}
+
+@utility ui-slider-thumb {
+  @apply -translate-y-1/2 size-(--slider-thumb-size) shadow-sm;
+  position: absolute;
+  outline-offset: 2px;
+
+  .ui-slider:has(> input:disabled) > * > & {
+    @apply shadow-none;
+  }
+
+  .ui-slider:has(> input:focus-visible) > * > & {
+    @apply outline-2;
+  }
+}

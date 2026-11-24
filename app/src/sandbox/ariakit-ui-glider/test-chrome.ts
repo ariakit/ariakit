@@ -46,9 +46,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect
       .poll(() =>
         week.evaluate((element) => {
-          const group = element.closest(".glider-group");
+          const group = element.closest(".ui-glider-group");
           const glider = group?.querySelector(
-            '.glider-box[data-selected="true"]',
+            '.ui-glider-box[data-selected="true"]',
           );
           return glider?.hasAttribute("data-focus-visible");
         }),
@@ -67,7 +67,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect
       .poll(() =>
         article.evaluate((node) => {
-          const uses = node.querySelectorAll(".glider-copy use");
+          const uses = node.querySelectorAll(".ui-glider-copy use");
           if (!uses.length) return false;
           return Array.from(uses).every(
             (use) => use.getAttribute("href") === "#glider-sprite-dot",
@@ -88,7 +88,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const calendar = box.radio("Calendar");
     await calendar.click();
     const control = calendar.locator(
-      "xpath=ancestor-or-self::*[contains(concat(' ', @class, ' '), ' control ')][1]",
+      "xpath=ancestor-or-self::*[contains(concat(' ', @class, ' '), ' ui-control ')][1]",
     );
     await test.expect(control).toHaveAttribute("data-glider-masked");
     // The first card adds the badge to Board, and the second one changes only
@@ -100,7 +100,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect
       .poll(() =>
         article.evaluate((node) => {
-          const copies = Array.from(node.querySelectorAll(".glider-copy"));
+          const copies = Array.from(node.querySelectorAll(".ui-glider-copy"));
           const texts = copies.map((copy) => copy.textContent?.trim());
           return texts.find((text) => text?.startsWith("Board")) ?? null;
         }),
@@ -131,7 +131,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         const selected = strip.querySelector(
           "[role='tab'][aria-selected='true']",
         );
-        const glider = strip.querySelector('.glider-box[data-selected="true"]');
+        const glider = strip.querySelector(
+          '.ui-glider-box[data-selected="true"]',
+        );
         if (!selected || !glider) return;
         const { left } = selected.getBoundingClientRect();
         const offset = Math.abs(glider.getBoundingClientRect().left - left);
@@ -193,7 +195,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       if (!strip || !hovered || !(mark instanceof HTMLElement)) return [];
       const samples: Array<{ place: number; offset: number }> = [];
       const observer = new ResizeObserver(() => {
-        const glider = strip.querySelector(".glider-box.ui-hovered");
+        const glider = strip.querySelector(".ui-glider-box.ui-hovered");
         if (!glider) return;
         const { left } = hovered.getBoundingClientRect();
         const offset = Math.abs(glider.getBoundingClientRect().left - left);
@@ -267,7 +269,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       const selected = strip.querySelector(
         "[role='tab'][aria-selected='true']",
       );
-      const glider = strip.querySelector('.glider-box[data-selected="true"]');
+      const glider = strip.querySelector(
+        '.ui-glider-box[data-selected="true"]',
+      );
       if (!selected || !glider) return null;
       const { left } = selected.getBoundingClientRect();
       const offset = Math.abs(glider.getBoundingClientRect().left - left);
@@ -302,7 +306,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const before = await week.evaluate(async (tab, checkbox) => {
       const follower = tab
         .closest("article")
-        ?.querySelector(".glider-follower");
+        ?.querySelector(".ui-glider-follower");
       if (!follower || !(checkbox instanceof HTMLElement)) return null;
       tab.dispatchEvent(
         new KeyboardEvent("keydown", { key: "Delete", bubbles: true }),
@@ -324,7 +328,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect
       .poll(() =>
         panel.evaluate((element) => {
-          const follower = element.closest(".glider-follower");
+          const follower = element.closest(".ui-glider-follower");
           if (!follower) return null;
           return getComputedStyle(follower).transitionProperty;
         }),

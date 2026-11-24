@@ -11,7 +11,7 @@ export async function selectScenario(q: Query, scenario: string) {
 
 /** The shell root on the page: the outermost one when shells are nested. */
 export function getShell(page: Page) {
-  return page.locator(".shell").first();
+  return page.locator(".ui-shell").first();
 }
 
 /** The panel of a sidebar: the landmark with the sidebar's name. */
@@ -24,13 +24,13 @@ export function getPanel(q: Query, name: string) {
 /** The column of the sidebar whose landmark has the given name. */
 export function getSidebar(q: Query, name: string) {
   return getPanel(q, name).locator(
-    "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' shell-sidebar ')][1]",
+    "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' ui-shell-sidebar ')][1]",
   );
 }
 
 /** The first rendered child of main, which sits in the content column. */
 export function getContent(q: Query) {
-  return q.main().locator(":scope > .shell-main-body > :not(style)").first();
+  return q.main().locator(":scope > .ui-shell-main-body > :not(style)").first();
 }
 
 export async function getBox(locator: Locator) {

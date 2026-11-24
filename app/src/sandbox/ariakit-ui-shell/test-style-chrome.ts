@@ -80,7 +80,8 @@ function createCustomPropertyNames(names: string[]) {
 // whole content on some page loads, depending on where custom property names
 // land in memory. An Ariakit regression shows on every load, so a test measures
 // again in a new renderer process (a reload keeps the process) that creates
-// every name before the stylesheets load.
+// every name before the stylesheets load. Which creation order avoids the bug
+// depends on the stylesheet, so each new process tries another order.
 // https://github.com/ariakit/ariakit/issues/8350
 // https://github.com/ariakit/ariakit/issues/8084
 // https://issues.chromium.org/issues/577199085
@@ -88,19 +89,24 @@ async function measureOnPageLoads(
   page: Page,
   measure: (helpers: PreviewHelpers) => Promise<SidebarToggleRestyles>,
 ) {
-  const restyles = await measure({ page, q: query(page) });
+  let restyles = await measure({ page, q: query(page) });
   if (isCached(restyles)) return restyles;
   const browser = page.context().browser();
   invariant(browser, "The test page must belong to a browser");
   const names = await page.evaluate(readCustomPropertyNames);
-  // Inside a test, Playwright applies the project and test.use() context
-  // options to every new context, so it matches the test page.
-  await using context = await browser.newContext();
-  await context.addInitScript(createCustomPropertyNames, names);
-  const freshPage = await context.newPage();
-  await gotoAndHydrate(freshPage, page.url());
-  // Awaits before `context` is disposed at the end of the scope.
-  return await measure({ page: freshPage, q: query(freshPage) });
+  const orders = [names, [...names].reverse(), [...names].sort()];
+  for (const order of orders) {
+    // Inside a test, Playwright applies the project and test.use() context
+    // options to every new context, so it matches the test page.
+    await using context = await browser.newContext();
+    await context.addInitScript(createCustomPropertyNames, order);
+    const freshPage = await context.newPage();
+    await gotoAndHydrate(freshPage, page.url());
+    // Awaits before `context` is disposed at the end of the iteration.
+    restyles = await measure({ page: freshPage, q: query(freshPage) });
+    if (isCached(restyles)) return restyles;
+  }
+  return restyles;
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -395,7 +401,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           await q.checkbox("Compact local headers").check();
           await q.combobox("Main header visibility").selectOption(visibility);
           const panel = getPanel(q, "Part navigation");
-          const header = q.main().locator(":scope > .shell-main-header");
+          const header = q.main().locator(":scope > .ui-shell-main-header");
           const limit = await panel.locator("*").count();
           let values: Record<string, string> = {};
           const arriving = await measureArrival(page, header, {

@@ -85,7 +85,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // clicks the tab.
     const recording = usage.evaluate((tab) => {
       const panel = tab
-        .closest(".tabs")
+        .closest(".ui-tabs")
         ?.querySelector(":scope > :has(> [role=tablist]) + *");
       if (!panel) throw new Error("Missing tab panels");
       const sizes = new Set<string>();
@@ -132,7 +132,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       query(q.article(title))
         .tab("Preview")
         .evaluate((tab) => {
-          const root = tab.closest(".tabs");
+          const root = tab.closest(".ui-tabs");
           if (!root) {
             throw new Error("Missing tabs root");
           }
@@ -161,7 +161,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const display = await query(q.article("Flex root"))
       .tab("Preview")
       .evaluate((tab) => {
-        const root = tab.closest(".tabs");
+        const root = tab.closest(".ui-tabs");
         if (!root) {
           throw new Error("Missing tabs root");
         }
@@ -177,7 +177,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const layers = await query(q.article("Transparent on a brand layer"))
       .tab("Preview")
       .evaluate((tab) => {
-        const root = tab.closest(".tabs");
+        const root = tab.closest(".ui-tabs");
         if (!root?.parentElement) {
           throw new Error("Missing tabs root");
         }
@@ -266,7 +266,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           const tab = query(q.article(name)).tab(selected);
           await test.expect(tab).toHaveAttribute("aria-selected", "true");
           const edges = await tab.evaluate((element) => {
-            const root = element.closest(".tabs");
+            const root = element.closest(".ui-tabs");
             const panels = root?.querySelector(
               ":scope > :has(> [role=tablist]) + *",
             );
@@ -326,7 +326,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       const tab = query(q.article(name)).tab(selected);
       await test.expect(tab).toHaveAttribute("aria-selected", "true");
       const surfaces = await tab.evaluate((element) => {
-        const root = element.closest(".tabs");
+        const root = element.closest(".ui-tabs");
         // TabList wraps the strip with its scroll buttons.
         const strip = root?.querySelector(":scope > * > [role=tablist]");
         const panels = strip?.parentElement?.nextElementSibling;

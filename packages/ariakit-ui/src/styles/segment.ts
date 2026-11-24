@@ -8,23 +8,12 @@ export function isSegmentedKind(kind?: string) {
   return kind === "segmented-flat";
 }
 
-// ui-selected reads the state from the element or from a native input in a
-// label, so every host shares these rules.
 const segmentBase = cx(
-  // Only the selected segment paints at rest. Hover restores the layer.
-  "not-ui-selected:bg-transparent",
-  "not-ui-selected:ak-layer-color-(--ak-layer-parent)",
-  "not-ui-selected:ak-layer-lighten-0",
-  "not-ui-selected:ak-layer-offset-0",
-  "not-ui-selected:ui-hover:bg-(--ak-layer)",
+  "ui-segment-base not-ui-selected:ak-layer-color-(--ak-layer-parent)",
+  "not-ui-selected:ak-layer-lighten-0 not-ui-selected:ak-layer-offset-0",
   // A press can't change a settled segment, so its surface doesn't react. It
   // keeps its selected offset, which the hover state would otherwise replace.
   "ui-settled:ui-hover:ak-state-(--selected-offset,0)",
-  // Segments size to their text, so a heavier thumb would move the segments
-  // after it. Only a label with data-text turns heavier, because it keeps that
-  // width. This sorts after the zero-specificity button weight, so it wins, and
-  // a weight class on the segment still wins over both.
-  "ui-base:font-normal",
 );
 
 /** The classes of each segmented kind, for extenders that replace `$kind`. */
@@ -50,8 +39,7 @@ export const segment = cv({
      * Casts a large shadow from the selected surface, which the group clips.
      * It's on by default for `segmented-flat`.
      */
-    $selectedShadow:
-      "ui-selected:shadow-[0_2px_2em_oklch(0_0_0/0.3)] ak-dark:ui-selected:shadow-[0_2px_2em_oklch(0_0_0/0.9)]",
+    $selectedShadow: "ui-segment--selected-shadow",
   },
   defaultVariants: {
     // Computed defaults run after static ones, so these replace the defaults of
@@ -150,17 +138,6 @@ export const segment = cv({
 });
 
 /**
- * The classes of the segmented group kind, for extenders that replace `$kind`.
- */
-export const segmentGroupClass = cx(
-  // The thumb takes the surface around the group, so it stands out from the
-  // darker group on light and dark surfaces.
-  "[--segmented-surface:var(--ak-layer-parent)]",
-  // Zero specificity lets the stretch layout and caller widths win.
-  "ui-base:w-fit",
-);
-
-/**
  * The classes of a frame that scrolls sideways as the viewport of a `carousel`
  * root, such as a segmented group or a horizontal navigation. The root paints
  * the surface and the edge of the frame, so the fade of the viewport fades only
@@ -168,32 +145,22 @@ export const segmentGroupClass = cx(
  * of the root. Outside a carousel, the frame scrolls without fades.
  */
 export const carouselFrameClass = cx(
-  "carousel-frame",
-  // A frame that fits its content still fits its container. In a carousel,
-  // it stretches over the padding of the root, which fits the content or
-  // fills the row instead.
-  "max-w-full [.carousel>&]:max-w-none [.carousel>&]:w-auto",
-  // The frame shares the first grid cell of the root with the buttons, which
-  // follow its scroll timeline.
-  "[.carousel>&]:row-start-1 [.carousel>&]:col-start-1",
-  "scrollbar-none [scroll-timeline:--carousel_inline]",
+  "ui-carousel-frame",
   // Scroll a focused item clear of the padding, the fade, and the button, or
   // the space that the fade keeps clear without a button, if it's larger, like
   // the mask of the fade. Outside a carousel, the fade and the button take no
   // space.
-  "[--carousel-inset:calc(var(--ak-frame-padding)+max(var(--carousel-button-space),var(--carousel-clear))+var(--carousel-fade-size))]",
+  // Stays a class, so that the --carousel-inset of `tabStrip` still comes
+  // after it and replaces it.
+  "[--carousel-inset:calc(var(--ak-frame-padding)+max(var(--carousel-button-space,0px),var(--carousel-clear,0px))+var(--carousel-fade-size,0px))]",
+  // Stays a class, so that the scroll-padding of `tabStrip` still comes after
+  // it and replaces it.
   "scroll-px-(--carousel-inset)",
-  // The root takes the edge, the margins, and the font size of the frame, and
-  // the frame covers its padding box and matches its corners. A numeric size
-  // sets the line height from the line height around it, which the root has
-  // already scaled, so the frame takes the line height of the root too.
-  "[.carousel>&]:ak-frame-cover [.carousel>&]:ak-frame-start [.carousel>&]:ak-frame-end",
-  "[.carousel>&]:[--border-width:0px]! [.carousel>&]:[--frame-margin:0px]!",
-  "[.carousel>&]:text-[1em]/[inherit]!",
   // The frame reads the layer around the root, so it takes the same color as
   // the root, and items that read the surface around the frame, such as the
-  // thumb of a segmented group, take the color around both.
-  "[.carousel>&]:ak-outset [.carousel>&]:bg-transparent!",
+  // thumb of a segmented group, take the color around both. The plugin finds
+  // an outset element by its class, so this stays a class.
+  "[.ui-carousel>&]:ak-outset",
 );
 
 /**
@@ -202,12 +169,7 @@ export const carouselFrameClass = cx(
  * padding box, and the focus ring fits in the padding.
  */
 const segmentGroupScrollClass = cx(
-  // A group with no overflow stays still under a sideways swipe.
-  "overflow-x-auto overflow-y-clip overscroll-x-none",
-  // Segments keep their width, so the group scrolls instead of truncating them.
-  // Stretched segments start at zero width, so this doesn't stop them from
-  // sharing the row.
-  "[&>.control]:shrink-0",
+  "ui-segment-group-scroll",
   carouselFrameClass,
 );
 
@@ -229,7 +191,7 @@ export const segmentGroup = cv({
      * for an edge around it.
      */
     $kind: {
-      segmented: segmentGroupClass,
+      segmented: "ui-segment-group",
     },
   },
   defaultVariants: {
@@ -265,7 +227,7 @@ export const segmentGroup = cv({
     // Without padding, the focus ring of a cell reaches past the group, and
     // nothing can clip the shadow of the thumb.
     if (variants.$p === "none") {
-      addClass("[&>.control]:ui-selected:shadow-none");
+      addClass("[&>.ui-control]:ui-selected:shadow-none");
       return;
     }
     addClass(segmentGroupScrollClass);

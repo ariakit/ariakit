@@ -1,0 +1,59 @@
+/* The CSS of the button style recipe in button.ts. Import this file in the CSS
+   file that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that button.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css"; */
+
+@utility ui-button {
+  &:not(:is(button)) {
+    @apply select-none;
+  }
+
+  @variant ui-base {
+    /* Map the 0–100 contrast scale to font weights 500–600. Zero specificity
+       lets a weight class on the button win, whatever its order. */
+    @apply font-[calc(500+var(--contrast))];
+    /* Zero specificity lets a plain cursor utility replace the pointer,
+       whatever the order that Tailwind gives the two rules. */
+    cursor: pointer;
+  }
+}
+
+@utility ui-button-label {
+  &[data-text] {
+    @variant before {
+      /* A zero-height copy of data-text at the selected weight sets the label
+         width, so the control keeps its size when it becomes selected. */
+      @apply content-[attr(data-text)] font-[calc(500+var(--contrast))];
+      display: block;
+      height: 0;
+      overflow: hidden;
+      visibility: hidden;
+    }
+
+    @variant group-ui-selected/control {
+      @variant ui-base {
+        /* Zero specificity lets a weight class on the label win in every
+           state. */
+        @apply font-[calc(500+var(--contrast))];
+      }
+    }
+  }
+
+  &:where(.ui-button-label--grow-false) {
+    /* A label in a content column keeps the start of the column. */
+    .ui-control > & {
+      &[data-text] {
+        @variant ui-base {
+          /* Zero specificity lets an alignment class on the label win. */
+          text-align: center;
+        }
+      }
+    }
+  }
+}

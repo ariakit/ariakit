@@ -10,39 +10,18 @@ import { hasSelectedSurface } from "./selected.ts";
 export const popover = cv({
   extend: [frame],
   class: [
-    "z-10",
-    // Use transition utilities so `transition-none` can disable motion. Open
-    // and closed states supply their own durations.
-    // Translate is in the list so an extender can slide the popup in, such as
-    // a dialog at a side of the viewport.
-    "transition-[overlay,display,scale,translate,opacity] transition-discrete",
-    // Keep the browser easing curve when closing.
-    "ease-[ease]",
-    "ui-open:duration-(--duration-overshoot)",
-    // An extender can set --popover-open-ease to change the opening curve, and
-    // --popover-hidden-scale to change the scale of the hidden popup. Each
-    // popup sets the defaults with zero specificity, so a popup inside another
-    // one, such as a side sheet, doesn't inherit the values of that one.
-    "ui-base:[--popover-open-ease:var(--ease-overshoot)] ui-base:[--popover-hidden-scale:95%]",
-    "ui-open:ease-(--popover-open-ease)",
-    "ui-open:starting:scale-(--popover-hidden-scale) ui-open:starting:opacity-0",
-    "ui-closed:duration-250 ui-closed:scale-(--popover-hidden-scale) ui-closed:opacity-0",
+    "ui-popover",
     // Animate only backdrop opacity. A display transition would delay removal
     // of the Ariakit backdrop after it is hidden.
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
     "ui-backdrop:transition-opacity ui-backdrop:duration-250 ui-backdrop:ease-[ease]",
-    "ui-open:starting:ui-backdrop:opacity-0 ui-closed:ui-backdrop:opacity-0",
+    "motion-reduce:ui-backdrop:transition-none",
     // Remove transition properties so state-specific durations cannot delay
     // hiding under reduced motion.
-    "motion-reduce:transition-none motion-reduce:ui-backdrop:transition-none",
-    // Use the Ariakit anchor origin when supplied; native popovers retain the
-    // default center origin.
-    "origin-(--popover-transform-origin)",
-    // Content that fits in its scroll area, such as a code block, fits in the
-    // room that Ariakit leaves for the popover, inside its padding and edge.
-    // The sticky bars of the page don't cover it. Zero specificity, so a
-    // dialog can publish its own height.
-    "ui-base:[--scrollport-height:calc(var(--popover-available-height,100dvh)-2*(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px)))]",
-    "[--scrollport-start:0px] [--scrollport-end:0px]",
+    // Stays a class to come after the classes of a caller, so that the reduced
+    // motion rule still applies.
+    "motion-reduce:transition-none",
   ],
   variants: {
     /** Sets the surface shadow. Use `none` to omit it. */
@@ -82,15 +61,7 @@ export const popoverPositioner = cv({
      * motion turns the slide off. In a scroll container, an open popup trails
      * its anchor while the container scrolls.
      */
-    $slide: [
-      // The :has() selector checks only the positioner, so browsers don't
-      // check it on every element that they restyle. The motion-safe:
-      // condition turns the slide off with reduced motion, because :has()
-      // outranks a motion-reduce: class.
-      "motion-safe:[&:has(>[data-enter])]:transition-transform",
-      "motion-safe:[&:has(>[data-enter])]:duration-150",
-      "motion-safe:[&:has(>[data-enter])]:ease-out",
-    ],
+    $slide: "ui-popover-positioner--slide",
   },
 });
 
@@ -106,7 +77,7 @@ export const popoverDisclosure = cv({
     // sidebar toggles, and comboboxes, which stay expanded while people work
     // elsewhere.
     addClass([
-      "popover-disclosure-surface [--selected-push:initial]",
+      "ui-popover-disclosure--surface [--selected-push:initial]",
       "aria-expanded:ak-state-(--selected-offset,0)",
       "aria-expanded:ak-state-push-(--selected-push,0)",
       "aria-expanded:ui-hover:ak-state-(--selected-offset,0)",
@@ -125,7 +96,7 @@ export const popoverDismiss = cv({
  */
 export const popoverScroll = cv({
   extend: [frameBase],
-  class: "overflow-auto overscroll-contain",
+  class: "ui-popover-scroll",
   defaultVariants: {
     $cover: true,
   },

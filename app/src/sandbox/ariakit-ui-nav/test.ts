@@ -8,21 +8,21 @@ import {
 test("lets links take, omit, or replace the navigation bar", () => {
   const nav = q.within(q.navigation("Bar overrides"));
   const getBar = (name: string) =>
-    nav.link(name).querySelector(":scope > .control-bar");
+    nav.link(name).querySelector(":scope > .ui-bar");
   expect(getBar("Default bar")).toHaveAttribute("aria-hidden", "true");
-  expect(getBar("Default bar")).not.toHaveClass("nav-bar-end");
+  expect(getBar("Default bar")).not.toHaveClass("ui-nav-link-bar--side-end");
   expect(getBar("No bar")).toBeNull();
-  expect(getBar("Element bar")).toHaveClass("nav-bar-end");
+  expect(getBar("Element bar")).toHaveClass("ui-nav-link-bar--side-end");
 });
 
 test("keeps link children mounted while the navigation bar toggles", async () => {
   const link = q.within(q.navigation("Bar overrides")).link("Default bar");
-  const slot = link.querySelector(".slot-frame-slot");
+  const slot = link.querySelector(".ui-slot-frame-slot");
   expect(slot).not.toBeNull();
   await click(q.checkbox("Show bars"));
-  expect(link.querySelector(".control-bar")).toBeNull();
+  expect(link.querySelector(".ui-bar")).toBeNull();
   await click(q.checkbox("Show bars"));
-  expect(link.querySelector(".control-bar")).not.toBeNull();
+  expect(link.querySelector(".ui-bar")).not.toBeNull();
   expect(slot?.isConnected).toBe(true);
 });
 
@@ -30,7 +30,7 @@ test("keeps link children mounted while the navigation bar toggles", async () =>
 test("renders every nav row without repeated or important gap classes", () => {
   const buttons = q.button
     .all()
-    .filter((button) => button.parentElement?.matches(".nav-disclosure"));
+    .filter((button) => button.parentElement?.matches(".ui-nav-disclosure"));
   expect(buttons).not.toHaveLength(0);
   const rows: Element[] = [
     q.within(q.navigation("Command row")).button(/^Search/),
@@ -99,7 +99,7 @@ test("keeps a bare fragment label separate from its description and badge", asyn
   // The chevron that leads the row is a slot too, so the badge is found by its
   // text.
   const badges = Array.from(
-    button.querySelectorAll(":scope > .slot-frame-slot"),
+    button.querySelectorAll(":scope > .ui-slot-frame-slot"),
   ).filter((slot) => slot.textContent === "3");
   expect(badges).toHaveLength(1);
   await click(button);
@@ -156,7 +156,7 @@ test("renders nested Nav rows without a landmark unless they have a name", () =>
 test("skips the landmark of a Nav with landmark set to false", () => {
   const link = q.link("Recent search");
   expect(link.closest("nav, [role='navigation']")).toBeNull();
-  expect(link.closest(".nav")).toBeInTheDocument();
+  expect(link.closest(".ui-nav")).toBeInTheDocument();
 });
 
 // https://github.com/ariakit/ariakit/issues/8327

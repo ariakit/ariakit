@@ -236,7 +236,7 @@ test("preview card frames pass the wheel to the page over contained scroll areas
   // Contain the overscroll of the open section, as an app could, so it keeps
   // the wheel from the page even though its links fit.
   await link.evaluate((element) => {
-    const section = element.closest(".disclosure-content > *");
+    const section = element.closest(".ui-disclosure-content > *");
     if (!(section instanceof HTMLElement)) throw new Error("No section");
     section.style.overscrollBehavior = "contain";
   });

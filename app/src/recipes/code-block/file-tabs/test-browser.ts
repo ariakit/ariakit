@@ -14,7 +14,7 @@ withCaptures(import.meta.dirname, async ({ id, test }) => {
         .expect(q.tab("toggle.tsx"))
         .toHaveAttribute("aria-selected", "true");
       await visual(
-        getCapture(page.locator(".code-block"), colorScheme, {
+        getCapture(page.locator(".ui-code-block"), colorScheme, {
           item: `${id}/selected-file`,
         }),
       );

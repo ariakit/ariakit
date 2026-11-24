@@ -9,7 +9,7 @@ import {
 
 function countBoxes(article: Locator) {
   return article.evaluate(
-    (node) => node.querySelectorAll(".glider-box").length,
+    (node) => node.querySelectorAll(".ui-glider-box").length,
   );
 }
 
@@ -17,7 +17,7 @@ function countBoxes(article: Locator) {
 // folder, and the glider writes the place of the box to it.
 function getCorners(panel: Locator) {
   return panel.evaluate((node) => {
-    const panels = node.closest(".glider-follower");
+    const panels = node.closest(".ui-glider-follower");
     if (!panels) return null;
     const style = getComputedStyle(panels);
     return `${style.borderStartStartRadius} ${style.borderStartEndRadius}`;
@@ -149,7 +149,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const item = box.radio("Calendar");
     await item.click();
     const control = item.locator(
-      "xpath=ancestor-or-self::*[contains(concat(' ', @class, ' '), ' control ')][1]",
+      "xpath=ancestor-or-self::*[contains(concat(' ', @class, ' '), ' ui-control ')][1]",
     );
     await test.expect(control).toHaveAttribute("data-glider-masked");
     await test.expect(control).not.toHaveAttribute("data-glider-masked");
@@ -167,7 +167,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const box = query(q.article("Separators"));
     const getControl = (item: Locator) =>
       item.locator(
-        "xpath=ancestor-or-self::*[contains(concat(' ', @class, ' '), ' control ')][1]",
+        "xpath=ancestor-or-self::*[contains(concat(' ', @class, ' '), ' ui-control ')][1]",
       );
     const calendar = getControl(box.radio("Calendar"));
     const board = getControl(box.radio("Board"));
@@ -360,14 +360,14 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         Array.from(node.querySelectorAll<HTMLElement>("[role=tab]")).find(
           (tab) => tab.textContent?.trim() === label,
         );
-      const getPanels = () => node.querySelector(".glider-follower");
+      const getPanels = () => node.querySelector(".ui-glider-follower");
       const getStart = (element: Element | null) => {
         if (!element) return Number.NaN;
         const value =
           getComputedStyle(element).getPropertyValue("--glider-start");
         return Number.parseFloat(value);
       };
-      const box = node.querySelector('.glider-box[data-selected="true"]');
+      const box = node.querySelector('.ui-glider-box[data-selected="true"]');
       const panels = getPanels();
       if (!box || !panels) return null;
       const sample = async (duration: number) => {
@@ -396,8 +396,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect.poll(() => getBoxOffset(day)).toBeLessThan(0.5);
     const end = await day.evaluate((element) => {
       const box = element
-        .closest(".glider-group")
-        ?.querySelector('.glider-box[data-selected="true"]');
+        .closest(".ui-glider-group")
+        ?.querySelector('.ui-glider-box[data-selected="true"]');
       if (!box) return Number.NaN;
       const value = getComputedStyle(box).getPropertyValue("--glider-start");
       return Number.parseFloat(value);
@@ -462,9 +462,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         async (node, { frames, longTask }) => {
           const getRadio = (value: string) =>
             node.querySelector<HTMLInputElement>(`input[value="${value}"]`);
-          const box = node.querySelector('.glider-box[data-selected="true"]');
-          const grid = getRadio("Grid")?.closest(".control");
-          const board = getRadio("Board")?.closest(".control");
+          const box = node.querySelector(
+            '.ui-glider-box[data-selected="true"]',
+          );
+          const grid = getRadio("Grid")?.closest(".ui-control");
+          const board = getRadio("Board")?.closest(".ui-control");
           if (!box || !grid || !board) return null;
           const getLeft = (element: Element) =>
             element.getBoundingClientRect().left;
@@ -553,8 +555,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       const addCard = Array.from(node.querySelectorAll("button")).find(
         (button) => button.textContent === "Add a card",
       );
-      const box = node.querySelector('.glider-box[data-selected="true"]');
-      const target = calendar?.closest(".control");
+      const box = node.querySelector('.ui-glider-box[data-selected="true"]');
+      const target = calendar?.closest(".ui-control");
       if (!calendar || !addCard || !box || !target) return null;
       const getLeft = (element: Element) =>
         element.getBoundingClientRect().left;
@@ -609,9 +611,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const places = await q.article("Glider").evaluate(async (node) => {
       const getRadio = (value: string) =>
         node.querySelector<HTMLInputElement>(`input[value="${value}"]`);
-      const box = node.querySelector('.glider-box[data-selected="true"]');
-      const grid = getRadio("Grid")?.closest(".control");
-      const board = getRadio("Board")?.closest(".control");
+      const box = node.querySelector('.ui-glider-box[data-selected="true"]');
+      const grid = getRadio("Grid")?.closest(".ui-control");
+      const board = getRadio("Board")?.closest(".ui-control");
       if (!box || !grid || !board) return null;
       const getLeft = (element: Element) =>
         element.getBoundingClientRect().left;
@@ -685,8 +687,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .evaluate(async (node) => {
         const getRadio = (value: string) =>
           node.querySelector<HTMLInputElement>(`input[value="${value}"]`);
-        const box = node.querySelector('.glider-box[data-selected="true"]');
-        const target = getRadio("Board")?.closest(".control");
+        const box = node.querySelector('.ui-glider-box[data-selected="true"]');
+        const target = getRadio("Board")?.closest(".ui-control");
         if (!box || !target) return null;
         getRadio("Grid")?.click();
         await new Promise((resolve) => setTimeout(resolve, 300));
@@ -719,11 +721,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         const calendar = node.querySelector<HTMLInputElement>(
           'input[value="Calendar"]',
         );
-        const target = calendar?.closest(".control");
+        const target = calendar?.closest(".ui-control");
         const button = Array.from(node.querySelectorAll("button")).find(
           (element) => element.textContent?.trim() === "Add a card",
         );
-        const box = node.querySelector('.glider-box[data-selected="true"]');
+        const box = node.querySelector('.ui-glider-box[data-selected="true"]');
         if (!calendar || !target || !button || !box) return null;
         calendar.click();
         await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -762,13 +764,13 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         const calendar = node.querySelector<HTMLInputElement>(
           'input[value="Calendar"]',
         );
-        const probe = node.querySelector(".glider-scale-probe");
+        const probe = node.querySelector(".ui-glider-scale-probe");
         const grid = node
           .querySelector('input[value="Grid"]')
-          ?.closest(".control");
+          ?.closest(".ui-control");
         const board = node
           .querySelector('input[value="Board"]')
-          ?.closest(".control");
+          ?.closest(".ui-control");
         if (!calendar) return null;
         if (!probe) return null;
         if (!grid) return null;
@@ -777,8 +779,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           new Promise((resolve) => requestAnimationFrame(resolve));
         const getCopies = () =>
           node
-            .querySelector(".glider-window > .glider-layer")
-            ?.querySelectorAll<HTMLElement>(".glider-copy");
+            .querySelector(".ui-glider-window > .ui-glider-layer")
+            ?.querySelectorAll<HTMLElement>(".ui-glider-copy");
         calendar.click();
         const copyStart = performance.now();
         while (performance.now() - copyStart < 2000) {
@@ -794,7 +796,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           { value: "Grid", width: grid.getBoundingClientRect().width + 20 },
           { value: "Board", width: board.getBoundingClientRect().width - 20 },
         ].map(({ value, width }) => {
-          const selector = `.control:has(> input[value="${value}"])`;
+          const selector = `.ui-control:has(> input[value="${value}"])`;
           return `${selector} { flex: none; width: ${width}px; overflow: hidden; }`;
         });
         const style = document.createElement("style");
@@ -804,8 +806,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
           if (Math.abs(board.getBoundingClientRect().left - boardLeft) < 1) {
             return null;
           }
-          const items = Array.from(node.querySelectorAll(".control")).filter(
-            (control) => !control.closest(".glider"),
+          const items = Array.from(node.querySelectorAll(".ui-control")).filter(
+            (control) => !control.closest(".ui-glider"),
           );
           const getLargestOffset = (copies: NodeListOf<HTMLElement>) => {
             const probeLeft = probe.getBoundingClientRect().left;

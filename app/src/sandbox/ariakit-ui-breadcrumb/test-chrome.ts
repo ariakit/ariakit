@@ -25,7 +25,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   }) => {
     const extra = await q
       .link("il")
-      .locator(".breadcrumb-truncate")
+      .locator(".ui-breadcrumb-label--truncate")
       .evaluate((element) => {
         const range = element.ownerDocument.createRange();
         range.selectNodeContents(element);

@@ -1,0 +1,492 @@
+/* The CSS of the carousel style recipe in carousel.ts. Import this file in the
+   CSS file that imports Tailwind CSS, after ui.css and the CSS files of the
+   style recipes that carousel.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./carousel.css"; */
+
+/* How far the carousel content is faded at each end, from 0 at rest to 1. */
+@property --carousel-start {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --carousel-end {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* Resolve carousel lengths where they are set, so the buttons, the fade mask,
+   and the slides agree whatever their fonts. */
+@property --carousel-button-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-button-space {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-fade-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-overhang {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* The space at each end that the fade keeps clear without a button, such as
+   beside a round corner. A button that covers more space clears that instead. */
+@property --carousel-clear {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-button-padding {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --carousel-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Script reads the step of each viewport. A viewport inside another one takes
+   the default step, not the step of its ancestor. */
+@property --carousel-step {
+  syntax: "*";
+  inherits: false;
+}
+
+@keyframes ui-carousel-start {
+  from {
+    --carousel-start: 0;
+  }
+  to {
+    --carousel-start: 1;
+  }
+}
+
+@keyframes ui-carousel-end {
+  from {
+    --carousel-end: 1;
+  }
+  to {
+    --carousel-end: 0;
+  }
+}
+
+/* Each button switches halfway through a range that is 4px long, so the last
+   2px at each end count as the end. */
+@keyframes ui-carousel-show-start {
+  from,
+  50% {
+    visibility: hidden;
+  }
+  50.01%,
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes ui-carousel-show-end {
+  from,
+  49.99% {
+    visibility: visible;
+  }
+  50%,
+  to {
+    visibility: hidden;
+  }
+}
+
+/* A row button grows in while the row scrolls away from its end. The scale
+   adds to the press scale, which uses the scale property. */
+@keyframes ui-carousel-grow-start {
+  from {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ui-carousel-grow-end {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+}
+
+/**
+ * Fades the ends of a carousel viewport while more content lies that way. The
+ * content is fully faded behind a visible button, and the fade runs between
+ * the button and the content. Both grow from the end of the viewport as it
+ * scrolls away from that end. Chromium can stop scrolling up to 1px before the
+ * end of the scroll timeline when the content width is fractional, so the last
+ * 2px at each end count as the end. Without scroll-driven animations, nothing
+ * fades. Use longhands because the animation shorthand resets the timeline and
+ * range.
+ */
+@utility ui-carousel-fade {
+  @supports (animation-timeline: scroll()) {
+    --carousel-mask-inset: calc(
+      var(--carousel-overhang, 0px) +
+        max(var(--carousel-button-space), var(--carousel-clear))
+    );
+    /* A viewport can cover another length at one end, such as a tab strip
+       beside a control. */
+    --carousel-mask-start: var(--carousel-cover-start, var(--carousel-mask-inset));
+    --carousel-mask-end: var(--carousel-cover-end, var(--carousel-mask-inset));
+    mask-image: linear-gradient(
+      var(--carousel-mask-direction, to right),
+      transparent calc(var(--carousel-mask-start) * var(--carousel-start)),
+      #000
+        calc(
+          (var(--carousel-mask-start) + var(--carousel-fade-size)) *
+            var(--carousel-start)
+        ),
+      #000
+        calc(
+          100% - (var(--carousel-mask-end) + var(--carousel-fade-size)) *
+            var(--carousel-end)
+        ),
+      transparent calc(100% - var(--carousel-mask-end) * var(--carousel-end))
+    );
+    animation-name: ui-carousel-start, ui-carousel-end;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --carousel, --carousel;
+    animation-range:
+      2px calc(var(--carousel-fade-size) + 2px),
+      calc(100% - var(--carousel-fade-size) - 2px) calc(100% - 2px);
+    &:dir(rtl) {
+      --carousel-mask-direction: to left;
+    }
+    /* A viewport with nothing to scroll has an inactive scroll timeline, where
+       browsers can keep the last progress of the fades. */
+    [data-carousel-fits] > & {
+      animation-name: none;
+    }
+  }
+}
+
+/**
+ * Shows a carousel button as the root sets. A row root hides it, and with a fine
+ * pointer, it sets the animations that show the button only while the row can
+ * scroll toward its side. The button grows in over the first stretch of the
+ * scroll, as long as the button. A hovered button stays, disabled at the end
+ * of the row, so quick clicks past the end don't reach the content under it.
+ * After a pause in the clicks, it hides, so the next click reaches that
+ * content. A focused button stays until script moves focus to the other
+ * button. Without scroll-driven animations, row buttons stay hidden.
+ */
+@utility ui-carousel-button-start {
+  visibility: var(--carousel-button-visibility, visible);
+  @supports (animation-timeline: scroll()) {
+    animation-name: var(--carousel-button-start-animation, none);
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --carousel, --carousel;
+    animation-range:
+      0 4px,
+      2px calc(2px + var(--carousel-button-size));
+    /* A viewport with nothing to scroll has an inactive scroll timeline, where
+       browsers can keep the last progress of the animations, so a button
+       could stay over the content. The button then takes its resting
+       visibility. */
+    [data-carousel-fits] > * > & {
+      animation-name: none;
+    }
+  }
+  /* Without the animations, the disabled styles still apply. */
+  &:is(:hover, :focus) {
+    visibility: visible;
+    animation-name: none;
+  }
+  /* A hovered button at its end takes its resting visibility after a pause,
+     as long as the default double-click interval on Windows. Each press
+     restarts the pause, and a focused button stays. Buttons that show on
+     every device rest visible, so they stay. A change in visibility alone
+     doesn't update the cursor and the hover state until the pointer moves, so
+     the minimum width changes at the same time. That changes the layout but
+     not the size of the button. */
+  &:hover:is(:disabled, [aria-disabled="true"]):not(:active, :focus) {
+    visibility: var(--carousel-button-visibility, visible);
+    min-width: 1px;
+    transition:
+      visibility 0s 500ms,
+      min-width 0s 500ms allow-discrete;
+  }
+}
+
+@utility ui-carousel-button-end {
+  visibility: var(--carousel-button-visibility, visible);
+  @supports (animation-timeline: scroll()) {
+    animation-name: var(--carousel-button-end-animation, none);
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --carousel, --carousel;
+    animation-range:
+      calc(100% - 4px) 100%,
+      calc(100% - 2px - var(--carousel-button-size)) calc(100% - 2px);
+    /* See ui-carousel-button-start. */
+    [data-carousel-fits] > * > & {
+      animation-name: none;
+    }
+  }
+  /* Without the animations, the disabled styles still apply. */
+  &:is(:hover, :focus) {
+    visibility: visible;
+    animation-name: none;
+  }
+  /* See ui-carousel-button-start. */
+  &:hover:is(:disabled, [aria-disabled="true"]):not(:active, :focus) {
+    visibility: var(--carousel-button-visibility, visible);
+    min-width: 1px;
+    transition:
+      visibility 0s 500ms,
+      min-width 0s 500ms allow-discrete;
+  }
+}
+
+@utility ui-carousel {
+  /* The sizes of the buttons and the fades follow the text size. */
+  @apply ui-spacing-em;
+  /* The first grid cell holds the viewport and both buttons. Let the root
+     shrink in flex and grid layouts so the viewport can scroll. */
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+  /* The buttons follow the scroll timeline of the viewport, their sibling. */
+  timeline-scope: --carousel;
+  --carousel-button-size: --spacing(8);
+  /* The ui-tabs-open-* utilities repeat this size, because a tab panel can't
+     read it from the strip. */
+  --carousel-fade-size: --spacing(8);
+  /* The space that a visible button takes at each end. It stays zero until
+     $buttons sets it. */
+  --carousel-button-space: 0px;
+  /* The border width of the root, which a frame that covers the root can
+     reach over. A ring lies outside the root, where a frame that reached it
+     would add to the scrollable overflow of a scrolling ancestor. */
+  --carousel-border: var(--ak-frame-border);
+
+  &:has(> .ui-carousel-frame) {
+    /* A row of controls, such as a segmented group, fits its buttons to the
+       line and the block padding of its controls, so the buttons keep the same
+       space from the edge of the row on every side. A border on the controls,
+       which segments draw on a dark surface, adds 1px above and below. The size
+       follows the text of the row, so controls with a text size of their own
+       need the row to take it too. Whole and even pixels keep the icons on the
+       pixel grid. */
+    --carousel-button-padding: round(var(--spacing), 1px);
+    --carousel-button-size: round(calc(1lh + 1em - 2 * var(--carousel-button-padding)), 2px);
+  }
+
+  @variant ui-base {
+    /* Keep the z-index of the buttons inside. Zero specificity lets an
+       extender, such as a tab strip, stack its parts with the elements around
+       it instead. */
+    isolation: isolate;
+    /* The space between each button and the end of the row, and the same
+       space on the other side of the button, where it also takes the pointer.
+       Zero specificity lets an extender, such as a tab strip, set its own. */
+    --carousel-button-padding: round(--spacing(2), 1px);
+  }
+
+  &:where(.ui-carousel--buttons-pointer) {
+    /* Row buttons hide, and with a fine pointer, scroll-driven animations
+       show them while the viewport can scroll toward their side, and grow
+       them in. */
+    --carousel-button-visibility: hidden;
+
+    @variant any-pointer-fine {
+      --carousel-button-start-animation: ui-carousel-show-start,ui-carousel-grow-start;
+      --carousel-button-end-animation: ui-carousel-show-end,ui-carousel-grow-end;
+    }
+
+    &:has(> .ui-carousel-button-area) {
+      @supports (animation-timeline: scroll()) {
+        @variant any-pointer-fine {
+          /* The buttons show only with scroll-driven animations, so the space
+             needs them too. */
+          --carousel-button-space: calc(var(--carousel-button-size) + var(--carousel-button-padding));
+        }
+      }
+    }
+  }
+
+  &:where(.ui-carousel--buttons-always) {
+    /* Reset the values that a row around this carousel sets. */
+    --carousel-button-visibility: visible;
+    --carousel-button-start-animation: none;
+    --carousel-button-end-animation: none;
+
+    &:has(> .ui-carousel-button-area) {
+      --carousel-button-space: calc(var(--carousel-button-size) + var(--carousel-button-padding));
+    }
+  }
+}
+
+/* A viewport without a fade. The buttons cover the content, and the content
+   keeps its place under them. With snapping, a button space would also move
+   the snap points, so the viewport drops it. */
+@utility ui-carousel-no-fade {
+  --carousel-fade-size: 0px;
+  --carousel-button-space: 0px;
+}
+
+@utility ui-carousel-viewport {
+  grid-row-start: 1;
+  grid-column-start: 1;
+  display: flex;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: clip;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  scroll-timeline: --carousel inline;
+  /* Reach past the root by the bleed of the root, with the same padding, so
+     the items stay in place and keep room for focus rings. */
+  margin: calc(var(--carousel-overhang, 0px) * -1);
+  padding: var(--carousel-overhang, 0px);
+  /* The part of each end that the fade and the button cover, or the space
+     that the fade keeps clear without a button, if it's larger. */
+  --carousel-inset: calc(var(--carousel-overhang,0px) + max(var(--carousel-button-space), var(--carousel-clear)) + var(--carousel-fade-size));
+  scroll-padding-inline: var(--carousel-inset);
+
+  @variant ui-base {
+    /* Zero specificity lets a gap class win, though slides size with $gap. */
+    gap: var(--carousel-gap);
+  }
+
+  &:where(.ui-carousel-viewport--snap-proximity) {
+    @apply snap-x snap-proximity;
+  }
+
+  &:where(.ui-carousel-viewport--snap-mandatory) {
+    @apply snap-x snap-mandatory;
+  }
+}
+
+@utility ui-carousel-button-area {
+  /* Containers can raise the buttons above other layers of the first cell. */
+  grid-row-start: 1;
+  grid-column-start: 1;
+  z-index: var(--carousel-button-z, 1);
+  align-self: stretch;
+  /* The padding goes only on the sides, so the area spans the viewport with
+     its bleed. */
+  padding-block: 0;
+  margin-block: calc(var(--carousel-overhang, 0px) * -1);
+  /* The hit area of the button reaches far above and below it, and the area
+     cuts it at its own edges. A size container could size it instead, but
+     container queries in nested grids can stop Chromium for seconds on each
+     layout. */
+  overflow-y: clip;
+  /* The area paints nothing, and its radius only keeps the button concentric.
+     Firefox would clip the hit area to its rounded corners. */
+  border-radius: 0 !important;
+  display: flex;
+  justify-content: center;
+  align-items: var(--carousel-button-align, center);
+  pointer-events: none;
+}
+
+@utility ui-carousel-button {
+  @apply size-(--carousel-button-size);
+  pointer-events: auto;
+  flex-shrink: 0;
+  align-items: center;
+  /* The area centers the button, or aligns it as the root sets, and this
+     moves it down from there, as $buttonCenter does. */
+  top: var(--carousel-button-y, 0px);
+
+  @variant before {
+    /* The hit area, which the area cuts at its top and bottom. Side offsets
+       start inside the border, if there's one. */
+    position: absolute;
+    inset-inline: calc(calc(var(--carousel-button-padding) + var(--control-border, 0px)) * -1);
+    inset-block: calc(100vh * -1);
+  }
+
+  @variant ui-disabled {
+    /* A disabled button can lie over the content, so it keeps its color and
+       lets the content show through, instead of fading toward the color
+       around the carousel. */
+    @apply ak-layer-fade-0!;
+    opacity: 0.5;
+  }
+
+  @variant rtl {
+    & svg {
+      /* Chevrons point to the start or the end in either writing direction. */
+      @apply -scale-x-100;
+    }
+  }
+
+  & > svg {
+    @apply size-[1em];
+  }
+}
+
+@utility ui-carousel-slide {
+  min-width: 0;
+  flex-shrink: 0;
+  flex-grow: 0;
+  scroll-snap-align: start;
+
+  @variant ui-base {
+    flex-basis: 100%;
+  }
+}
+
+@utility ui-carousel-tab-list {
+  display: flex;
+  justify-content: center;
+}
+
+@utility ui-carousel-tab {
+  @apply size-6;
+  align-items: center;
+  justify-content: center;
+
+  @variant before {
+    @apply size-2 transition-[width,opacity];
+    border-radius: calc(var(--radius) * infinity);
+    background-color: currentcolor;
+    opacity: 0.4;
+  }
+
+  @variant ui-selected {
+    @variant before {
+      width: --spacing(4);
+      opacity: 1;
+    }
+  }
+}

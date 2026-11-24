@@ -1,0 +1,84 @@
+/* The CSS of the prose style recipe in prose.ts. Import this file after ui.css
+   in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./prose.css"; */
+
+@utility ui-prose-column {
+  /* The gaps of the column follow its text size. */
+  @apply ui-spacing-em;
+  --prose-gap: --spacing(5);
+}
+
+@utility ui-prose {
+  @variant ui-base {
+    /* Use zero specificity so text size and line-height utilities can override
+       these defaults. A sized shell main sets the token to 1em, which resolves
+       against the parent here, so the column follows the text around it. A
+       unitless line height keeps smaller text inside in proportion. */
+    @apply text-(length:--prose-size,1rem)/[1.75];
+  }
+
+  & :is(p, li) {
+    @variant ak-dark {
+      @variant ui-base {
+        /* Keep markup defaults at zero specificity. Paragraphs and list items
+           restore muted ink inside nested surfaces. */
+        @apply ak-ink-75;
+      }
+    }
+
+    @variant ak-light {
+      @variant ui-base {
+        @apply ak-ink-90;
+      }
+    }
+  }
+
+  & strong {
+    @variant ui-base {
+      @apply ak-ink-100 font-medium;
+    }
+  }
+
+  & > .ui-heading-description {
+    @variant ui-base {
+      /* A short lead sits closer together than the paragraphs below it. A
+         direct property keeps the leading fallbacks of text-* classes. */
+      line-height: 1.625;
+    }
+  }
+
+  & > :is(h1, h2, h3, h4, h5, h6) + .ui-heading-description {
+    @variant ui-base {
+      /* Tighten only the space after a heading, so later children keep the gap.
+         The margin is negative while the gap is larger than this space. */
+      margin-top: calc(var(--spacing) * 3.5 - var(--prose-gap));
+    }
+  }
+
+  & > :is(h1, h2, h3, h4, h5, h6) + :is(h1, h2, h3, h4, h5, h6) {
+    @variant ui-base {
+      margin-top: 0.35em;
+    }
+  }
+
+  & > :not(h1, h2, h3, h4, h5, h6) + :is(h1, h2, h3, h4, h5, h6) {
+    @variant ui-base {
+      /* A heading starts a new part of the column, so it adds space above the
+         gap. Adjacent headings stay closer. Zero specificity lets caller mt-*
+         classes win, and em values follow the size of each heading. A spacing
+         step would follow the text size of the column instead. */
+      margin-top: 1em;
+    }
+  }
+
+  :is(.ui-shell-popout, .ui-shell-feature, .ui-shell-full) + & > :is(h1, h2, h3, h4, h5, h6):first-child {
+    @variant ui-base {
+      /* A column after a popout, feature, or full band between two columns,
+         such as a code block, a figure, or a callout in an article, continues
+         the same text, so its first heading starts a new part too. */
+      margin-top: 1em;
+    }
+  }
+}

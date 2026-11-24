@@ -9,14 +9,14 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }) => {
     await selectScenario(q, "bar");
     const nav = q.navigation("Footer pages");
-    const bar = query(nav).link("Home").locator(".control-bar");
+    const bar = query(nav).link("Home").locator(".ui-bar");
     const session = await page.context().newCDPSession(page);
     // A larger safe area lets the row outgrow the footer's content box.
     for (const inset of [34, 10, 0]) {
       await session.send("Emulation.setSafeAreaInsetsOverride", {
         insets: { bottom: inset, bottomMax: inset },
       });
-      await expect(page.locator(".shell-footer")).toHaveCSS(
+      await expect(page.locator(".ui-shell-footer")).toHaveCSS(
         "padding-bottom",
         `${inset}px`,
       );
@@ -44,7 +44,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const nav = q.navigation("Footer pages");
     // The carousel root around the scrolling navigation draws the border.
     const root = nav.locator("xpath=..");
-    const bar = query(nav).link("Home").locator(".control-bar");
+    const bar = query(nav).link("Home").locator(".ui-bar");
     await expect(root).toHaveCSS("border-bottom-width", "1px");
     await expect
       .poll(async () => {
@@ -144,7 +144,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await sidebar.evaluate((node) => node.getAnimations().length),
       ).toBe(0);
       // The content grids animate the compensation.
-      const body = main.locator(":scope > .shell-main-body");
+      const body = main.locator(":scope > .ui-shell-main-body");
       expect(await body.evaluate((node) => node.getAnimations().length)).toBe(
         0,
       );
@@ -221,7 +221,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await expect
           .poll(() =>
             sidebar.evaluate((column) => {
-              const body = document.querySelector("main > .shell-main-body");
+              const body = document.querySelector("main > .ui-shell-main-body");
               return [column, body].flatMap(
                 (element) => element?.getAnimations() ?? [],
               ).length;
@@ -231,7 +231,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         const transitions = await sidebar.evaluate((column) => {
           const shell = column.parentElement;
           const panel = column.firstElementChild;
-          const body = document.querySelector("main > .shell-main-body");
+          const body = document.querySelector("main > .ui-shell-main-body");
           if (!shell || !panel || !body) {
             throw new Error("Missing shell, sidebar panel, or main body");
           }

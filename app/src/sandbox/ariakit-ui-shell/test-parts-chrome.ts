@@ -22,7 +22,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.contentinfo()).toHaveCount(0);
     await expect(q.main()).toHaveCSS("container-type", "normal");
     await expect(q.main()).toHaveCSS("overflow", "visible");
-    await expect(page.locator(".shell-main").first()).toHaveCSS(
+    await expect(page.locator(".ui-shell-main").first()).toHaveCSS(
       "grid-template-rows",
       /subgrid/,
     );
@@ -32,7 +32,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
     page,
   }) => {
-    const intro = page.locator(".shell-main-intro");
+    const intro = page.locator(".ui-shell-main-intro");
     const width = (await getBox(intro)).width;
     const cases = [
       ["50%", width / 2],

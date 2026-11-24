@@ -16,10 +16,7 @@ import { getIconSlotSize } from "./slot-frame.ts";
 /** A shared frame with dividers between disclosures. */
 export const disclosureGroup = cv({
   extend: [frame],
-  class: [
-    "disclosure-group [--disclosure-group:1]",
-    "divide-y divide-(--ak-edge)",
-  ],
+  class: "ui-disclosure-group",
   variants: {
     /**
      * Grows the open disclosure into the height that closed ones leave, so its
@@ -29,29 +26,12 @@ export const disclosureGroup = cv({
      * a closed last disclosure.
      */
     $fill: [
-      // Grow in a flex column parent without growing it past its height.
-      "grow min-h-0 flex flex-col",
+      "ui-disclosure-group--fill flex-col",
       // The root disables its own transitions, so the growth transition must
-      // take precedence. Only the open disclosure may shrink below its content.
-      "*:flex *:flex-col *:data-open:grow *:data-open:min-h-0",
-      "*:transition-[flex-grow]!",
-      "[&>*>.disclosure-content]:grow [&>*>.disclosure-content]:basis-0",
-      "[&>*>.disclosure-content]:min-h-0",
-      // Open content grows past its own height to fill the disclosure.
-      "[&>[data-open]>.disclosure-content]:max-h-full!",
-      // The body scrolls, so the content keeps clipping its rounded corners.
-      // Overscroll chains to the page, so the body does not trap the wheel.
-      "[&>*>.disclosure-content>*]:h-full [&>*>.disclosure-content>*]:overflow-y-auto",
-      // An open disclosure reaches the group's end, which needs no edge. While
-      // every disclosure is closed, the last one draws it right below itself.
-      "border-b-0! *:last:border-(--ak-edge)",
-      // A :has() before a selector with no class, attribute, or tag makes
-      // Chrome restyle the whole subtree of each :has() anchor whose state
-      // changes, on any page with the rule. So the group sets a flag that the
-      // last member reads with a style query. The doubled class keeps the
-      // specificity of the :has() check.
-      "[&:not(:has(>[data-open]))]:[--disclosure-group-closed:1]",
-      "[@container_style(--disclosure-group-closed:1)]:[&&>:last-child]:border-b",
+      // take precedence.
+      // Stays a class to keep its order with the classes of the elements that
+      // it styles.
+      "*:transition-[flex-grow]! *:flex *:flex-col",
     ],
   },
   defaultVariants: {
@@ -73,45 +53,10 @@ export const disclosureGroup = cv({
 export const disclosure = cv({
   extend: [frame],
   class: [
-    // The padding and the gaps of the parts follow the text size of the root.
-    // The parts read lengths that resolve on the root, so a button with smaller
-    // text keeps the icon size and the `$indent` of the body.
-    "ui-spacing-em",
-    // Descendants use the frame padding; the empty root must not apply it
-    // again, including through caller utilities.
-    "p-0!",
-    "max-w-[inherit]",
-    // Copy non-inherited --tw-duration into a shared channel. Reduced motion
-    // disables descendant animations through the same channel.
-    "transition-none duration-300 motion-reduce:duration-0",
-    "[--disclosure-duration:var(--tw-duration)]",
-    // Capture state and geometry before nested frames change them.
-    "[--disclosure-open:0]",
-    "[--disclosure-padding:var(--ak-frame-padding)]",
-    "[--disclosure-radius:var(--ak-frame-radius)]",
-    "[--disclosure-border:calc(var(--ak-frame-border)+var(--ak-frame-ring))]",
-    // Group members have no border of their own, so a split line matches the
-    // group dividers.
-    "ui-disclosure-group:[--disclosure-border:1px]",
-    // Match the button's default optical text inset. A button-specific $size or
-    // $px changes only its label position.
-    "[--disclosure-px:calc(var(--disclosure-padding)+(1lh-1cap)*0.5)]",
-    // Clear ancestor indentation before nested disclosures set their own.
-    "[--disclosure-ps:initial]",
-    // Registered as a length so the body and its guide use the same measured
-    // offset.
-    "[--disclosure-body-offset:0px]",
-    // Share the slot gap with the body to align it under the label.
-    "[--disclosure-gap:max(--spacing(2),var(--disclosure-padding)/2)]",
-    // Include oversized leading-icon overflow. Registered lengths preserve
-    // root-font measurements in descendants; the button must keep the root line
-    // height.
-    "[--disclosure-lead:calc(var(--disclosure-padding)+1lh+var(--disclosure-gap)+max(0px,(var(--disclosure-icon-size,1em)-1lh)/2)*var(--disclosure-icon,0))]",
-    // Only a first slot, or one after a start indicator, indents the body.
-    // Reset nested state; :where() lets utility order decide overrides.
-    "[--disclosure-icon:0]",
-    "[&:has(>:where(.disclosure-button)>:where(.disclosure-button-slot):where(:first-child,[data-disclosure-indicator]:first-child+*))]:[--disclosure-icon:1]",
-    "open:[--disclosure-open:1] data-open:[--disclosure-open:1]",
+    "ui-disclosure",
+    // Stays a class to come after the classes of a caller, so that the reduced
+    // motion rule still applies.
+    "motion-reduce:duration-0",
     // Cover the group frame; this utility sorts after the member's radius and
     // padding.
     "ui-disclosure-group:ak-frame-cover",
@@ -130,8 +75,8 @@ export const disclosure = cv({
      * across that gap. A split layout enables this automatically.
      */
     $contentPadding: {
-      true: "[--disclosure-content-padding:1]",
-      false: "[--disclosure-content-padding:0]",
+      true: "ui-disclosure--content-padding-true",
+      false: "ui-disclosure--content-padding-false",
     },
     /**
      * Sets the button icon size and body indentation from the root. Defaults to
@@ -180,7 +125,7 @@ export const disclosure = cv({
      */
     $leadingIcon(value?: boolean) {
       if (value == null) return;
-      // Inline style must override the later-sorted detection rule.
+      // The inline style overrides the detection rule of the root.
       return {
         style: { "--disclosure-icon": value ? "1" : "0" },
       };
@@ -204,14 +149,12 @@ export const disclosure = cv({
 export const disclosureButton = cv({
   extend: [button],
   class: [
-    "disclosure-button overflow-clip w-full justify-start text-wrap text-start",
+    "ui-disclosure-button",
     // Let guide and list indentation override horizontal padding without
     // changing ordinary buttons.
+    // Stays a class to come after the padding of `textFrame`, which it
+    // replaces.
     "ps-(--disclosure-ps,var(--px))",
-    "ui-disclosure-group:rounded-[inherit]",
-    // Only split layouts need square open corners. The style query sorts after
-    // the inherited radius rule.
-    "[@container_style(--disclosure-split:_1)]:ui-disclosure-open:rounded-b-none",
   ],
   variants: {
     /**
@@ -247,9 +190,7 @@ export const disclosureButton = cv({
      * one base spacing step. Keep `auto` to align body text with the label.
      */
     $gap: {
-      // Restore the slot's negative side margin so the label matches the body
-      // indent.
-      auto: "[--gap:calc(var(--disclosure-gap)+var(--px)-var(--py))] gap-(--gap)",
+      auto: "ui-disclosure-button--gap-auto",
     },
     /**
      * Sets the vertical label-to-description gap to half the frame padding,
@@ -293,7 +234,7 @@ export const disclosureButton = cv({
       "[--disclosure-hover-end:calc(min(var(--ak-frame-radius,0px),50%)*var(--disclosure-open,0)*(1-var(--disclosure-content-padding,0))*(1-var(--disclosure-split,0)))]",
       // A group squares the bottom corners of each member but the last one
       // that shows, or one with $frameEnd, as ak-frame-cover does.
-      "[.disclosure-group>:not(.ak-frame-end):has(~:not([hidden],template))>&]:[--disclosure-hover-end:0px]",
+      "[.ui-disclosure-group>:not(.ak-frame-end):has(~:not([hidden],template))>&]:[--disclosure-hover-end:0px]",
       // Animate the fade on open and close, without animating it on hover.
       "from-[calc(100%-var(--disclosure-hover-fade)-var(--disclosure-hover-end))]",
       "to-[calc(100%-var(--disclosure-hover-end))]",
@@ -314,11 +255,7 @@ export const disclosureButtonContent = buttonContent;
  */
 export const disclosureButtonLabel = cv({
   extend: [buttonLabel],
-  class: [
-    "min-w-0",
-    // A next indicator follows the label text instead of the row end.
-    "[&:has(~.disclosure-indicator-next)]:grow-0",
-  ],
+  class: "ui-disclosure-button-label",
   defaultVariants: {
     $truncate: false,
     $grow: true,
@@ -329,7 +266,12 @@ export const disclosureButtonLabel = cv({
 export const disclosureButtonDescription = cv({
   extend: [buttonDescription],
   // Inherit the measured gap so smaller description text does not rescale it.
-  class: "grid gap-y-[inherit]",
+  class: [
+    "gap-y-[inherit]",
+    // Stays a class to come after the display of `controlDescription`, which it
+    // replaces.
+    "grid",
+  ],
   defaultVariants: {
     $truncate: false,
   },
@@ -341,7 +283,7 @@ export const disclosureButtonDescription = cv({
  */
 export const disclosureButtonSlot = cv({
   extend: [buttonSlot],
-  class: "disclosure-button-slot",
+  class: "ui-disclosure-button-slot",
   variants: {
     /**
      * Adds `auto`, which follows the root's `$iconSize` or text size. Icons use
@@ -349,7 +291,7 @@ export const disclosureButtonSlot = cv({
      * margins preserve label and body alignment for oversized icons.
      */
     $size: {
-      auto: "[--size:var(--disclosure-icon-size,1em)]",
+      auto: "ui-disclosure-button-slot--size-auto",
     },
   },
   defaultVariants: {
@@ -365,7 +307,7 @@ const disclosureIndicatorVariants = {
    */
   $position: {
     start: "",
-    next: "disclosure-indicator-next",
+    next: "ui-disclosure-indicator--position-next",
     end: "ms-auto!",
   },
 };
@@ -373,11 +315,7 @@ const disclosureIndicatorVariants = {
 /** A direction-aware chevron that rotates when the disclosure opens. */
 export const disclosureChevron = cv({
   extend: [buttonSlot],
-  class: [
-    "transition-[rotate,opacity] duration-(--disclosure-duration)",
-    // Enlarge the glyph without changing the slot box used for alignment.
-    "[--slot-icon-size:1.1em]",
-  ],
+  class: "ui-disclosure-chevron",
   variants: {
     ...disclosureIndicatorVariants,
     /**
@@ -385,8 +323,8 @@ export const disclosureChevron = cv({
      * downward; `down` opens upward.
      */
     $direction: {
-      right: ["-rotate-90 rtl:rotate-90", "ui-disclosure-open:rotate-0"],
-      down: ["rotate-0", "ui-disclosure-open:rotate-180"],
+      right: "ui-disclosure-chevron--direction-right",
+      down: "ui-disclosure-chevron--direction-down",
     },
   },
   defaultVariants: {
@@ -398,18 +336,7 @@ export const disclosureChevron = cv({
 /** A plus indicator that changes to a minus when the disclosure opens. */
 export const disclosurePlus = cv({
   extend: [buttonSlot],
-  class: [
-    "transition-[rotate,background-size,opacity]",
-    "[--plus-line-thickness:2px]",
-    "duration-[var(--disclosure-duration),calc(var(--disclosure-duration)/3)]",
-    // Collapse one gradient stroke and rotate the other to change plus to
-    // minus.
-    "bg-[linear-gradient(currentColor_0_0),linear-gradient(currentColor_0_0)]",
-    "bg-no-repeat bg-center",
-    "bg-size-[60%_var(--plus-line-thickness),var(--plus-line-thickness)_60%]",
-    "ui-disclosure-open:rotate-90",
-    "ui-disclosure-open:bg-size-[var(--plus-line-thickness)_60%]",
-  ],
+  class: "ui-disclosure-plus",
   variants: disclosureIndicatorVariants,
   defaultVariants: {
     $size: "xl",
@@ -422,41 +349,14 @@ export const disclosurePlus = cv({
 
 /** An animated disclosure region with an optional guide line. */
 export const disclosureContent = cv({
-  class: [
-    "disclosure-content relative z-1 max-h-0 overflow-clip rounded-b-[inherit]",
-    "transition-[content-visibility,height,max-height]",
-    // Keep nested disclosures outside the ancestor group.
-    "[--disclosure-group:0]",
-    // Nested content without a guide must not inherit the outer guide.
-    "[--disclosure-guide:initial]",
-    "transition-discrete",
-    "[interpolate-size:allow-keywords]",
-    // Only animate when the browser can interpolate to max-content.
-    "supports-[interpolate-size:allow-keywords]:duration-(--disclosure-duration)",
-    // Prevent initially open content from animating before user interaction.
-    "[html:focus-within_&]:starting:max-h-0",
-    // Use a style query so icon-free content can retain explicit root
-    // indentation.
-    "[@container_style(--disclosure-icon:_1)]:[--disclosure-ps:var(--disclosure-lead)]",
-    "[[open]>&]:max-h-max data-open:max-h-max ui-disclosure-open:max-h-max",
-  ],
+  class: "ui-disclosure-content",
   variants: {
     /**
      * Draws a guide below a leading icon or indicator and aligns content with
      * the label. Set `--disclosure-guide-width` on an ancestor to change the
      * default `1px` width.
      */
-    $guide: [
-      "[--disclosure-ps:var(--disclosure-lead)]",
-      "[--disclosure-guide-center:calc(var(--disclosure-padding)+0.5lh)]",
-      // Expose the guide center to navigation bars in the content rows. The
-      // compound selector outranks the reset above.
-      "[&.disclosure-content]:[--disclosure-guide:var(--disclosure-guide-center)]",
-      "before:absolute before:top-(--disclosure-body-offset) before:bottom-0 before:ak-layer",
-      "before:border-e-(length:--disclosure-guide-width,1px)",
-      // Center any guide width on the leading slot's one-line column.
-      "before:inset-s-[calc(var(--disclosure-guide-center)-var(--disclosure-guide-width,1px)/2)]",
-    ],
+    $guide: "ui-disclosure-content--guide",
   },
 });
 
@@ -472,19 +372,20 @@ const disclosureProse = cv({
 export const disclosureContentBody = cv({
   extend: [edge],
   class: [
-    "rounded-b-[inherit]",
-    // Reset icon size for nested disclosures. `initial` restores var()
-    // fallbacks; `unset` would inherit.
-    "[--disclosure-icon-size:initial]",
+    "ui-disclosure-content-body",
+    // Stays a class, so that the padding of `listDisclosureContentBody` still
+    // comes after it and replaces it.
     "p-(--ak-frame-padding)",
-    "[--disclosure-body-ps:var(--disclosure-ps,var(--disclosure-px))]",
+    // Stays a class to come after another class here that sets the padding,
+    // which it replaces.
     "ps-(--disclosure-body-ps)",
-    // Cover children must cross the body's full start inset plus their frame
-    // border.
-    "[&>.ak-frame-cover]:-ms-[calc(var(--disclosure-body-ps)+var(--ak-frame-border))]",
     // Use padding for the body offset. A margin can collapse through clipped
     // content and keep a closed disclosure tall.
+    // Stays a class, so that the padding of `listDisclosureContentBody` still
+    // comes after it and replaces it.
     "pbs-[calc(var(--disclosure-body-offset)+var(--ak-frame-padding)*var(--disclosure-content-padding,0))]",
+    // Stays a class, so that the border-style of `frameBase` still comes after
+    // it and replaces it.
     "border-bs-[calc(var(--disclosure-border)*var(--disclosure-split,0))]",
   ],
   variants: {

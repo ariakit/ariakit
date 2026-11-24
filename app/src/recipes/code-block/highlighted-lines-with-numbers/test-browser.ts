@@ -24,7 +24,7 @@ withCaptures(import.meta.dirname, async ({ id, test }) => {
     await forEachColorScheme(page, async (colorScheme) => {
       await scrollSideways(q.region("fetch-users.ts"));
       await visual(
-        getCapture(page.locator(".code-block"), colorScheme, {
+        getCapture(page.locator(".ui-code-block"), colorScheme, {
           item: `${id}/scrolled`,
         }),
       );
@@ -43,7 +43,7 @@ withCaptures(import.meta.dirname, async ({ id, test }) => {
       await expectMedia(page, "(prefers-contrast: more)");
       await scrollSideways(q.region("fetch-users.ts"));
       await visual(
-        getCapture(page.locator(".code-block"), colorScheme, {
+        getCapture(page.locator(".ui-code-block"), colorScheme, {
           item: `${id}/scrolled`,
         }),
       );
@@ -61,7 +61,7 @@ withCaptures(import.meta.dirname, async ({ id, test }) => {
         document.documentElement.dir = "rtl";
       });
       await visual(
-        getCapture(page.locator(".code-block"), colorScheme, {
+        getCapture(page.locator(".ui-code-block"), colorScheme, {
           item: `${id}/rtl`,
         }),
       );

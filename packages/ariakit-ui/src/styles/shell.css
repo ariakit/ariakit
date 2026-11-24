@@ -1,0 +1,3649 @@
+/* The CSS of the shell style recipe in shell.ts. Import this file after ui.css
+   in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./shell.css"; */
+
+/* A flag that a shell main header sets from its own :has() check, for its
+   children to read with a style query. See the tabs flags in tabs.css. Without
+   inheritance, a change of the flag restyles only the children that read it,
+   not the rest of the subtree. */
+@property --shell-main-header-bars {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* How far a sidebar with $reveal="zoom" is open, from 0 to 1. Its column
+   animates the value, and its panel takes its opacity and its scale from it. */
+@property --shell-reveal {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+/* Sidebars set their slot width and publish it on the root. Registered lengths
+   resolve relative units once before the columns and their bodies inherit
+   them. */
+@property --shell-slot-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 256px;
+}
+
+@property --shell-start-1-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 256px;
+}
+
+@property --shell-start-2-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 256px;
+}
+
+@property --shell-end-1-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 256px;
+}
+
+@property --shell-end-2-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 256px;
+}
+
+/* Shared geometry resolves relative units at its owning shell or main, so
+   a part's text size does not change inherited heights, offsets, or gutters. */
+@property --shell-header-step {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 4px;
+}
+
+/* The height of a default control and the default space of a bar round to
+   whole pixels. Bar heights add them up, so they resolve here too: Chrome can
+   round a half pixel differently under browser zoom when no registered
+   property resolves it first, and a bar would drift from its own padding. The
+   bar heights don't include the facing edge of the bar. */
+@property --shell-control-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 40px;
+}
+
+@property --shell-bar-space {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 12px;
+}
+
+@property --shell-header-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-footer-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-main-header-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 64px;
+}
+
+@property --shell-local-header-height {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 64px;
+}
+
+@property --shell-gutter {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 12px;
+}
+
+@property --shell-main-py-length {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* The body's end reads the animated sidebar lengths, so it doesn't inherit:
+   each step of a fold restyles the body, not the content inside it. */
+@property --shell-main-pbe {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-main-max-width {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 672px;
+}
+
+/* A shell's `$maxWidth` resolves at that shell, so its main, its bars, and the
+   shell inside it read one length. Alternating channels carry it to the shell
+   inside without a same-element custom-property cycle. */
+@property --shell-max-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 672px;
+}
+
+@property --shell-max-width-a {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 672px;
+}
+
+@property --shell-max-width-b {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 672px;
+}
+
+/* The space on each side of the box of a shell inside a shell with
+   `$maxWidth`. Only that shell's columns read it. */
+@property --shell-page-track {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Animate occupied sidebar widths to keep main content centered during folding.
+   Disable inheritance so nested shells account only for their own sidebars. */
+@property --shell-start-1-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-start-2-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-end-1-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-end-2-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Each main publishes the width that each sidebar of its shell takes when it
+   opens, for a shell inside it with `$center="outer"`. The values follow
+   `$width` and `$show`, not a toggle, so a toggle doesn't restyle main. */
+@property --shell-outer-start-1-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-outer-start-2-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-outer-end-1-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-outer-end-2-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* A shell with `$center="outer"` reads whether each sidebar of the outer shell
+   is open. These flags don't inherit, so a toggle restyles that shell, not the
+   content inside it. */
+@property --shell-outer-start-1-open {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --shell-outer-start-2-open {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --shell-outer-end-1-open {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --shell-outer-end-2-open {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* The space of the open sidebars of the outer shell, which a shell with
+   `$center="outer"` passes to its parts. As lengths, they change only when the
+   space does, not when a value that they're computed from does. */
+@property --shell-outer-start {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-outer-end {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* A shell with `$center="outer"` directly inside a shell counts the container
+   sizes that the outer shell reaches, like a part does. It reads the count on
+   the same element, so the count doesn't inherit. */
+@property --shell-parent-breakpoint {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* The same space in content grids and bars, which animate it like their own
+   sidebar lengths. */
+@property --shell-outer-start-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-outer-end-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Content grids read these values from the animated lengths on the same
+   element. Disable inheritance so an animation frame does not restyle the
+   content inside them. */
+@property --shell-start-total {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-end-total {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-comp-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-comp-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-start-space {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-end-space {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-padding-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-padding-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-edge-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-edge-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-width {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-free {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-offset-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-offset-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-content {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-rest {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-popout {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-feature {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-area {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-track-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-bar-track-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-content-end-space {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-free {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-offset-start {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shell-offset-end {
+  syntax: "<length-percentage>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Alternating offset channels carry sticky header heights through three
+   nested shells without a same-element custom-property cycle. */
+@property --shell-top {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-head {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* A nested shell without its own sticky footer keeps the outer footer's
+   height, so its sticky sidebars also stop above that footer. */
+@property --shell-foot {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-below-a {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --shell-below-b {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Typed values compute to numbers, so crossing a container size changes the
+   values that the shell content inherits only when a part's visibility does. */
+@property --shell-breakpoint {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --shell-start-1-fit {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-start-2-fit {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-end-1-fit {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-end-2-fit {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-main-header-visible {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --shell-main-head {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/** Publishes the state of the direct parts of a shell on the shell. */
+@utility ui-shell-state {
+  /* Reset inherited state so nested shells only read their own parts. */
+  --shell-start-1-open: 0;
+  --shell-start-2-open: 0;
+  --shell-end-1-open: 0;
+  --shell-end-2-open: 0;
+  --shell-main-header-sticky: 0;
+  --shell-end-1-from-main: 0;
+  --shell-end-1-from-body: 0;
+  --shell-end-2-from-main: 0;
+  --shell-end-2-from-body: 0;
+  /* A part shows while the count of named container sizes that the shell
+     reaches is at least its show-from and below its show-below. The shell
+     reads the show range of a main header only for its sticky offset, so only
+     a sticky main header sets it. */
+  --shell-main-header-show-from: 0;
+  --shell-main-header-show-below: 14;
+  --shell-start-1-show-from: 0;
+  --shell-start-1-show-below: 14;
+  --shell-start-2-show-from: 0;
+  --shell-start-2-show-below: 14;
+  --shell-end-1-show-from: 0;
+  --shell-end-1-show-below: 14;
+  --shell-end-2-show-from: 0;
+  --shell-end-2-show-below: 14;
+
+  /* Each sidebar toggle changes the open values, and each sidebar that the
+     HTML parser adds while the page streams in changes the others. Stop them
+     below the parts and content grids that read them, so neither restyles
+     the content. Explicit inheritance would skip the content too, but WebKit
+     doesn't update values derived from it. */
+  :where(
+      & > :not(.ui-shell-slot-state, .ui-shell-center-outer),
+      & > .ui-shell-slot-state > :not(.ui-shell-content-grid),
+      & > .ui-shell-slot-state > .ui-shell-content-grid > *
+    ) {
+    --shell-start-1-open: initial;
+    --shell-start-2-open: initial;
+    --shell-end-1-open: initial;
+    --shell-end-2-open: initial;
+    --shell-start-1-width: initial;
+    --shell-start-2-width: initial;
+    --shell-end-1-width: initial;
+    --shell-end-2-width: initial;
+    --shell-start-1-fit: initial;
+    --shell-start-2-fit: initial;
+    --shell-end-1-fit: initial;
+    --shell-end-2-fit: initial;
+    --shell-start-1-show-from: initial;
+    --shell-start-1-show-below: initial;
+    --shell-start-2-show-from: initial;
+    --shell-start-2-show-below: initial;
+    --shell-end-1-show-from: initial;
+    --shell-end-1-show-below: initial;
+    --shell-end-2-show-from: initial;
+    --shell-end-2-show-below: initial;
+    --shell-end-1-from-main: initial;
+    --shell-end-1-from-body: initial;
+    --shell-end-2-from-main: initial;
+    --shell-end-2-from-body: initial;
+    --shell-header-free-1: initial;
+    --shell-header-free-2: initial;
+    --shell-intro-free-1: initial;
+    --shell-intro-free-2: initial;
+    --shell-outer-start: initial;
+    --shell-outer-end: initial;
+    --shell-parent-start-1-open: initial;
+    --shell-parent-start-2-open: initial;
+    --shell-parent-end-1-open: initial;
+    --shell-parent-end-2-open: initial;
+  }
+
+  /* A shell directly inside this one with `$center="outer"` gets the state
+     like a part does, under names that its own state doesn't replace. The
+     stop rule above lets that shell through, and it computes the space. */
+  &:has(> .ui-shell-center-outer) {
+    --shell-parent-start-1-open: var(--shell-start-1-open);
+    --shell-parent-start-2-open: var(--shell-start-2-open);
+    --shell-parent-end-1-open: var(--shell-end-1-open);
+    --shell-parent-end-2-open: var(--shell-end-2-open);
+    --shell-parent-start-1-width: var(--shell-start-1-width);
+    --shell-parent-start-2-width: var(--shell-start-2-width);
+    --shell-parent-end-1-width: var(--shell-end-1-width);
+    --shell-parent-end-2-width: var(--shell-end-2-width);
+    --shell-parent-start-1-show-from: var(--shell-start-1-show-from);
+    --shell-parent-start-1-show-below: var(--shell-start-1-show-below);
+    --shell-parent-start-2-show-from: var(--shell-start-2-show-from);
+    --shell-parent-start-2-show-below: var(--shell-start-2-show-below);
+    --shell-parent-end-1-show-from: var(--shell-end-1-show-from);
+    --shell-parent-end-1-show-below: var(--shell-end-1-show-below);
+    --shell-parent-end-2-show-from: var(--shell-end-2-show-from);
+    --shell-parent-end-2-show-below: var(--shell-end-2-show-below);
+  }
+
+  /* Every :has() here styles the shell itself. With a :has() before a
+     combinator, Chromium would restyle the whole shell each time a
+     data-open attribute inside it changes. The panel decides whether a
+     sidebar is open. While HTML streams in, the parser can pause before the
+     panel, so the column's own data-open stands in until then.
+     https://github.com/ariakit/ariakit/issues/8147 */
+  &:has(> .ui-shell-sidebar--side-start:not(.ui-shell-sidebar--side-start ~ *)[data-open]) {
+    --shell-start-1-open: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start:not(.ui-shell-sidebar--side-start ~ *)
+        > .ui-shell-sidebar-panel:not([data-open])
+    ) {
+    --shell-start-1-open: 0;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start:not(.ui-shell-sidebar--side-start ~ *)
+        > .ui-shell-sidebar-panel[data-open]
+    ) {
+    --shell-start-1-open: 1;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start[data-open]) {
+    --shell-start-2-open: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start
+        ~ .ui-shell-sidebar--side-start
+        > .ui-shell-sidebar-panel:not([data-open])
+    ) {
+    --shell-start-2-open: 0;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start
+        ~ .ui-shell-sidebar--side-start
+        > .ui-shell-sidebar-panel[data-open]
+    ) {
+    --shell-start-2-open: 1;
+  }
+  &:has(> .ui-shell-sidebar--side-end:not(.ui-shell-sidebar--side-end ~ *)[data-open]) {
+    --shell-end-1-open: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end:not(.ui-shell-sidebar--side-end ~ *)
+        > .ui-shell-sidebar-panel:not([data-open])
+    ) {
+    --shell-end-1-open: 0;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end:not(.ui-shell-sidebar--side-end ~ *)
+        > .ui-shell-sidebar-panel[data-open]
+    ) {
+    --shell-end-1-open: 1;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end[data-open]) {
+    --shell-end-2-open: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end
+        ~ .ui-shell-sidebar--side-end
+        > .ui-shell-sidebar-panel:not([data-open])
+    ) {
+    --shell-end-2-open: 0;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end
+        ~ .ui-shell-sidebar--side-end
+        > .ui-shell-sidebar-panel[data-open]
+    ) {
+    --shell-end-2-open: 1;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky) {
+    --shell-main-header-sticky: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--from-main:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-from-main: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--from-body:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-from-body: 1;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--from-main) {
+    --shell-end-2-from-main: 1;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--from-body) {
+    --shell-end-2-from-body: 1;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-false) {
+    --shell-main-header-show-from: 14;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-false:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 14;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-false) {
+    --shell-start-2-show-from: 14;
+  }
+  &:has(> .ui-shell-sidebar--side-end.ui-shell-sidebar--show-false:not(.ui-shell-sidebar--side-end ~ *)) {
+    --shell-end-1-show-from: 14;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-false) {
+    --shell-end-2-show-from: 14;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-3xs) {
+    --shell-main-header-show-from: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-3xs:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 1;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-3xs) {
+    --shell-start-2-show-from: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-3xs:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 1;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-3xs) {
+    --shell-end-2-show-from: 1;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-3xs) {
+    --shell-main-header-show-below: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-3xs:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-3xs
+    ) {
+    --shell-start-2-show-below: 1;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-3xs:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 1;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-3xs) {
+    --shell-end-2-show-below: 1;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-2xs) {
+    --shell-main-header-show-from: 2;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-2xs:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 2;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-2xs) {
+    --shell-start-2-show-from: 2;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-2xs:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 2;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-2xs) {
+    --shell-end-2-show-from: 2;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-2xs) {
+    --shell-main-header-show-below: 2;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-2xs:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 2;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-2xs
+    ) {
+    --shell-start-2-show-below: 2;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-2xs:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 2;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-2xs) {
+    --shell-end-2-show-below: 2;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-xs) {
+    --shell-main-header-show-from: 3;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-xs:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 3;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-xs) {
+    --shell-start-2-show-from: 3;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-xs:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 3;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-xs) {
+    --shell-end-2-show-from: 3;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-xs) {
+    --shell-main-header-show-below: 3;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-xs:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 3;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-xs
+    ) {
+    --shell-start-2-show-below: 3;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-xs:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 3;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-xs) {
+    --shell-end-2-show-below: 3;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-sm) {
+    --shell-main-header-show-from: 4;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-sm:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 4;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-sm) {
+    --shell-start-2-show-from: 4;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-sm:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 4;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-sm) {
+    --shell-end-2-show-from: 4;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-sm) {
+    --shell-main-header-show-below: 4;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-sm:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 4;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-sm
+    ) {
+    --shell-start-2-show-below: 4;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-sm:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 4;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-sm) {
+    --shell-end-2-show-below: 4;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-md) {
+    --shell-main-header-show-from: 5;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-md:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 5;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-md) {
+    --shell-start-2-show-from: 5;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-md:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 5;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-md) {
+    --shell-end-2-show-from: 5;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-md) {
+    --shell-main-header-show-below: 5;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-md:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 5;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-md
+    ) {
+    --shell-start-2-show-below: 5;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-md:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 5;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-md) {
+    --shell-end-2-show-below: 5;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-lg) {
+    --shell-main-header-show-from: 6;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-lg:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 6;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-lg) {
+    --shell-start-2-show-from: 6;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-lg:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 6;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-lg) {
+    --shell-end-2-show-from: 6;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-lg) {
+    --shell-main-header-show-below: 6;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-lg:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 6;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-lg
+    ) {
+    --shell-start-2-show-below: 6;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-lg:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 6;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-lg) {
+    --shell-end-2-show-below: 6;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-xl) {
+    --shell-main-header-show-from: 7;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 7;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-xl) {
+    --shell-start-2-show-from: 7;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 7;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-xl) {
+    --shell-end-2-show-from: 7;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-xl) {
+    --shell-main-header-show-below: 7;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 7;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-xl
+    ) {
+    --shell-start-2-show-below: 7;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 7;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-xl) {
+    --shell-end-2-show-below: 7;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-2xl) {
+    --shell-main-header-show-from: 8;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-2xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 8;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-2xl) {
+    --shell-start-2-show-from: 8;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-2xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 8;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-2xl) {
+    --shell-end-2-show-from: 8;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-2xl) {
+    --shell-main-header-show-below: 8;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-2xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 8;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-2xl
+    ) {
+    --shell-start-2-show-below: 8;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-2xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 8;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-2xl) {
+    --shell-end-2-show-below: 8;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-3xl) {
+    --shell-main-header-show-from: 9;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-3xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 9;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-3xl) {
+    --shell-start-2-show-from: 9;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-3xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 9;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-3xl) {
+    --shell-end-2-show-from: 9;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-3xl) {
+    --shell-main-header-show-below: 9;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-3xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 9;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-3xl
+    ) {
+    --shell-start-2-show-below: 9;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-3xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 9;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-3xl) {
+    --shell-end-2-show-below: 9;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-4xl) {
+    --shell-main-header-show-from: 10;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-4xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 10;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-4xl) {
+    --shell-start-2-show-from: 10;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-4xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 10;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-4xl) {
+    --shell-end-2-show-from: 10;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-4xl) {
+    --shell-main-header-show-below: 10;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-4xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 10;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-4xl
+    ) {
+    --shell-start-2-show-below: 10;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-4xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 10;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-4xl) {
+    --shell-end-2-show-below: 10;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-5xl) {
+    --shell-main-header-show-from: 11;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-5xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 11;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-5xl) {
+    --shell-start-2-show-from: 11;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-5xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 11;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-5xl) {
+    --shell-end-2-show-from: 11;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-5xl) {
+    --shell-main-header-show-below: 11;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-5xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 11;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-5xl
+    ) {
+    --shell-start-2-show-below: 11;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-5xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 11;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-5xl) {
+    --shell-end-2-show-below: 11;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-6xl) {
+    --shell-main-header-show-from: 12;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-6xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 12;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-6xl) {
+    --shell-start-2-show-from: 12;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-6xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 12;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-6xl) {
+    --shell-end-2-show-from: 12;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-6xl) {
+    --shell-main-header-show-below: 12;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-6xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 12;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-6xl
+    ) {
+    --shell-start-2-show-below: 12;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-6xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 12;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-6xl) {
+    --shell-end-2-show-below: 12;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-7xl) {
+    --shell-main-header-show-from: 13;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-7xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-from: 13;
+  }
+  &:has(> .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-7xl) {
+    --shell-start-2-show-from: 13;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-7xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-from: 13;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-7xl) {
+    --shell-end-2-show-from: 13;
+  }
+  &:has(> .ui-shell-main > .ui-shell-main-header--sticky.ui-shell-main-header--show-max-7xl) {
+    --shell-main-header-show-below: 13;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-7xl:not(.ui-shell-sidebar--side-start ~ *)
+    ) {
+    --shell-start-1-show-below: 13;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-start ~ .ui-shell-sidebar--side-start.ui-shell-sidebar--show-max-7xl
+    ) {
+    --shell-start-2-show-below: 13;
+  }
+  &:has(
+      > .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-7xl:not(.ui-shell-sidebar--side-end ~ *)
+    ) {
+    --shell-end-1-show-below: 13;
+  }
+  &:has(> .ui-shell-sidebar--side-end ~ .ui-shell-sidebar--side-end.ui-shell-sidebar--show-max-7xl) {
+    --shell-end-2-show-below: 13;
+  }
+}
+
+/* Centers the content of a shell on the outer shell: content grids and bars
+   add the space of its open sidebars to their own. Inside the main of the outer
+   shell, behind any wrappers, the shell asks the nearest main, a named
+   container, whether each sidebar is open. A value that inherits through main
+   would restyle all of main on each toggle. A style query restyles the shell
+   and, in Chrome, every element in that main that uses a style query. */
+@utility ui-shell-center-outer {
+  &:not(.ui-shell > *) {
+    @container shell-main style(--shell-start-1-open: 1) {
+      --shell-outer-start-1-open: 1;
+    }
+    @container shell-main style(--shell-start-2-open: 1) {
+      --shell-outer-start-2-open: 1;
+    }
+    @container shell-main style(--shell-end-1-open: 1) {
+      --shell-outer-end-1-open: 1;
+    }
+    @container shell-main style(--shell-end-2-open: 1) {
+      --shell-outer-end-2-open: 1;
+    }
+  }
+  --shell-outer-start: calc(
+    var(--shell-outer-start-1-width) * var(--shell-outer-start-1-open) +
+      var(--shell-outer-start-2-width) * var(--shell-outer-start-2-open)
+  );
+  --shell-outer-end: calc(
+    var(--shell-outer-end-1-width) * var(--shell-outer-end-1-open) +
+      var(--shell-outer-end-2-width) * var(--shell-outer-end-2-open)
+  );
+
+  /* In the main of the outer shell, the folds of this shell take the timing
+     of the outer shell, like a shell directly inside it does, so the content
+     moves with the outer sidebars. `$duration` on this shell still sets its
+     own. */
+  .ui-shell &:not(.ui-shell > *) {
+    --shell-duration: inherit;
+    --shell-motion: inherit;
+    --shell-ease: inherit;
+  }
+
+  /* Directly inside a shell, the outer shell passes its state on, and this
+     shell applies the `$show` of the outer sidebars like a part does: its
+     container queries measure the outer shell. Keep the sums in one value: a
+     value per sidebar wouldn't stop at the parts. */
+  .ui-shell > & {
+    --shell-parent-breakpoint: 0;
+    @variant @3xs/shell {
+      --shell-parent-breakpoint: 1;
+    }
+    @variant @2xs/shell {
+      --shell-parent-breakpoint: 2;
+    }
+    @variant @xs/shell {
+      --shell-parent-breakpoint: 3;
+    }
+    @variant @sm/shell {
+      --shell-parent-breakpoint: 4;
+    }
+    @variant @md/shell {
+      --shell-parent-breakpoint: 5;
+    }
+    @variant @lg/shell {
+      --shell-parent-breakpoint: 6;
+    }
+    @variant @xl/shell {
+      --shell-parent-breakpoint: 7;
+    }
+    @variant @2xl/shell {
+      --shell-parent-breakpoint: 8;
+    }
+    @variant @3xl/shell {
+      --shell-parent-breakpoint: 9;
+    }
+    @variant @4xl/shell {
+      --shell-parent-breakpoint: 10;
+    }
+    @variant @5xl/shell {
+      --shell-parent-breakpoint: 11;
+    }
+    @variant @6xl/shell {
+      --shell-parent-breakpoint: 12;
+    }
+    @variant @7xl/shell {
+      --shell-parent-breakpoint: 13;
+    }
+    --shell-outer-start: calc(
+      var(--shell-parent-start-1-width, 0px) * var(--shell-parent-start-1-open, 0) *
+        clamp(
+          0,
+          var(--shell-parent-breakpoint) -
+            var(--shell-parent-start-1-show-from, 0) + 1,
+          1
+        ) *
+        clamp(
+          0,
+          var(--shell-parent-start-1-show-below, 14) -
+            var(--shell-parent-breakpoint),
+          1
+        ) +
+        var(--shell-parent-start-2-width, 0px) * var(--shell-parent-start-2-open, 0) *
+        clamp(
+          0,
+          var(--shell-parent-breakpoint) -
+            var(--shell-parent-start-2-show-from, 0) + 1,
+          1
+        ) *
+        clamp(
+          0,
+          var(--shell-parent-start-2-show-below, 14) -
+            var(--shell-parent-breakpoint),
+          1
+        )
+    );
+    --shell-outer-end: calc(
+      var(--shell-parent-end-1-width, 0px) * var(--shell-parent-end-1-open, 0) *
+        clamp(
+          0,
+          var(--shell-parent-breakpoint) -
+            var(--shell-parent-end-1-show-from, 0) + 1,
+          1
+        ) *
+        clamp(
+          0,
+          var(--shell-parent-end-1-show-below, 14) -
+            var(--shell-parent-breakpoint),
+          1
+        ) +
+        var(--shell-parent-end-2-width, 0px) * var(--shell-parent-end-2-open, 0) *
+        clamp(
+          0,
+          var(--shell-parent-breakpoint) -
+            var(--shell-parent-end-2-show-from, 0) + 1,
+          1
+        ) *
+        clamp(
+          0,
+          var(--shell-parent-end-2-show-below, 14) -
+            var(--shell-parent-breakpoint),
+          1
+        )
+    );
+  }
+}
+
+/* The sidebar lengths of a bar: the same lengths that a content grid reads.
+   Every bar resolves them so an area that renders later doesn't animate them
+   from zero. They don't inherit, so a toggle doesn't restyle what the bar holds. */
+@utility ui-shell-bar-spaces {
+  --shell-start-1-space: calc(
+    var(--shell-start-1-width) * var(--shell-start-1-open) *
+      var(--shell-start-1-fit)
+  );
+  --shell-start-2-space: calc(
+    var(--shell-start-2-width) * var(--shell-start-2-open) *
+      var(--shell-start-2-fit)
+  );
+  --shell-end-1-space: calc(
+    var(--shell-end-1-width) * var(--shell-end-1-open) * var(--shell-end-1-fit)
+  );
+  --shell-end-2-space: calc(
+    var(--shell-end-2-width) * var(--shell-end-2-open) * var(--shell-end-2-fit)
+  );
+  --shell-outer-start-space: var(--shell-outer-start, 0px);
+  --shell-outer-end-space: var(--shell-outer-end, 0px);
+}
+
+/* What a bar with a content area adds: it animates its sidebar lengths, like a
+   content grid, and sets its own gutter, because main's gutter doesn't reach it. */
+@utility ui-shell-bar-fold {
+  transition-property:
+    --shell-start-1-space, --shell-start-2-space, --shell-end-1-space,
+    --shell-end-2-space, --shell-outer-start-space, --shell-outer-end-space;
+  transition-duration: var(--shell-time);
+  transition-timing-function: var(--shell-ease);
+  --shell-start-total: calc(
+    max(0px, var(--shell-start-1-space)) + max(0px, var(--shell-start-2-space))
+  );
+  --shell-end-total: calc(
+    max(0px, var(--shell-end-1-space)) + max(0px, var(--shell-end-2-space))
+  );
+  --shell-comp-end: max(
+    0px,
+    calc(
+      var(--shell-start-total) + max(0px, var(--shell-outer-start-space)) -
+        var(--shell-end-total) - max(0px, var(--shell-outer-end-space))
+    )
+  );
+  --shell-comp-start: max(
+    0px,
+    calc(
+      var(--shell-end-total) + max(0px, var(--shell-outer-end-space)) -
+        var(--shell-start-total) - max(0px, var(--shell-outer-start-space))
+    )
+  );
+  --shell-popout: 1rem;
+  --shell-feature: 3.5rem;
+  --shell-gutter: round(calc(var(--shell-header-step) * 3), 1px);
+  /* In a shell inside a shell with `$maxWidth`, the page space puts main and
+     the parts inside the box. The edge is the smallest space for the content
+     past the page space, and the safe area counts from the screen edge. */
+  --shell-bar-start-space: calc(
+    var(--shell-start-total) + var(--shell-page-space)
+  );
+  --shell-bar-end-space: calc(var(--shell-end-total) + var(--shell-page-space));
+  --shell-bar-edge-start: max(
+    var(--ak-frame-padding),
+    calc(env(safe-area-inset-left) - var(--shell-page-space))
+  );
+  --shell-bar-edge-end: max(
+    var(--ak-frame-padding),
+    calc(env(safe-area-inset-right) - var(--shell-page-space))
+  );
+  @variant rtl {
+    --shell-bar-edge-start: max(
+      var(--ak-frame-padding),
+      calc(env(safe-area-inset-right) - var(--shell-page-space))
+    );
+    --shell-bar-edge-end: max(
+      var(--ak-frame-padding),
+      calc(env(safe-area-inset-left) - var(--shell-page-space))
+    );
+  }
+  --shell-bar-padding-start: calc(
+    var(--shell-bar-edge-start) + var(--shell-page-space)
+  );
+  --shell-bar-padding-end: calc(
+    var(--shell-bar-edge-end) + var(--shell-page-space)
+  );
+}
+
+/* Three tracks that aim the middle one at a column of main, for a part with
+   content areas. A part can't read main's named lines from outside its grid, so
+   this repeats how `centered` in shell.ts shares free space. Keep them in sync.
+   A side track grows to its target and past it only for a wider side part, so
+   only the edge next to that part moves. These values must stay registered and
+   not inherit, or each frame of a fold restyles what the part holds. */
+@utility ui-shell-bar-tracks {
+  --shell-bar-width: calc(
+    100% + var(--shell-bar-padding-start) + var(--shell-bar-padding-end) -
+      var(--shell-bar-start-space) - var(--shell-bar-end-space)
+  );
+  --shell-bar-free: calc(
+    var(--shell-bar-width) - var(--shell-main-max-width) - var(--shell-gutter) -
+      2 * var(--shell-popout) - 2 * var(--shell-feature)
+  );
+  --shell-bar-offset-start: clamp(
+    0px,
+    calc(var(--shell-bar-free) - var(--shell-gutter)),
+    var(--shell-comp-start)
+  );
+  --shell-bar-offset-end: clamp(
+    0px,
+    calc(var(--shell-bar-free) - var(--shell-gutter)),
+    var(--shell-comp-end)
+  );
+  --shell-bar-content: min(
+    var(--shell-main-max-width),
+    max(
+      0px,
+      calc(
+        var(--shell-bar-width) - var(--shell-bar-edge-start) -
+          var(--shell-bar-edge-end)
+      )
+    )
+  );
+  --shell-bar-rest: calc(
+    var(--shell-bar-width) - var(--shell-bar-offset-start) -
+      var(--shell-bar-offset-end) - var(--shell-bar-edge-start) -
+      var(--shell-bar-edge-end) - var(--shell-bar-content)
+  );
+  --shell-bar-popout: clamp(
+    0px,
+    calc(var(--shell-bar-rest) / 4),
+    var(--shell-popout)
+  );
+  --shell-bar-feature: clamp(
+    0px,
+    calc(var(--shell-bar-rest) / 2 - var(--shell-bar-popout)),
+    var(--shell-feature)
+  );
+  --shell-bar-area: var(--shell-bar-content);
+  &:has(> .ui-shell-popout) {
+    --shell-bar-area: calc(
+      var(--shell-bar-content) + 2 * var(--shell-bar-popout)
+    );
+  }
+  &:has(> .ui-shell-feature) {
+    --shell-bar-area: calc(
+      var(--shell-bar-content) + 2 * var(--shell-bar-popout) + 2 *
+        var(--shell-bar-feature)
+    );
+  }
+  &:has(> .ui-shell-wide) {
+    --shell-bar-area: calc(
+      var(--shell-bar-width) - var(--shell-bar-offset-start) -
+        var(--shell-bar-offset-end)
+    );
+  }
+  --shell-bar-track-start: max(
+    0px,
+    calc(
+      var(--shell-bar-start-space) +
+        (
+          var(--shell-bar-width) + var(--shell-bar-offset-start) -
+            var(--shell-bar-offset-end) - var(--shell-bar-area)
+        ) /
+        2 - var(--shell-bar-padding-start)
+    )
+  );
+  --shell-bar-track-end: max(
+    0px,
+    calc(
+      var(--shell-bar-end-space) +
+        (
+          var(--shell-bar-width) - var(--shell-bar-offset-start) +
+            var(--shell-bar-offset-end) - var(--shell-bar-area)
+        ) /
+        2 - var(--shell-bar-padding-end)
+    )
+  );
+  &:has(> .ui-shell-full) {
+    --shell-bar-track-start: 0px;
+    --shell-bar-track-end: 0px;
+  }
+  grid-template-columns:
+    minmax(auto, var(--shell-bar-track-start)) minmax(auto, 1fr)
+    minmax(auto, var(--shell-bar-track-end));
+  column-gap: 0;
+}
+
+/** Resolves the published shell state on each direct part of a shell. */
+@utility ui-shell-slot-state {
+  --shell-main-header-visible: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-main-header-show-from) + 1, 1) *
+      clamp(0, var(--shell-main-header-show-below) - var(--shell-breakpoint), 1)
+  );
+  --shell-main-head: calc(
+    (var(--shell-main-header-height) + var(--shell-main-header-border)) *
+      var(--shell-main-header-sticky) * var(--shell-main-header-visible)
+  );
+  --shell-start-1-fit: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-start-1-show-from) + 1, 1) *
+      clamp(0, var(--shell-start-1-show-below) - var(--shell-breakpoint), 1)
+  );
+  --shell-start-2-fit: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-start-2-show-from) + 1, 1) *
+      clamp(0, var(--shell-start-2-show-below) - var(--shell-breakpoint), 1)
+  );
+  --shell-end-1-fit: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-end-1-show-from) + 1, 1) *
+      clamp(0, var(--shell-end-1-show-below) - var(--shell-breakpoint), 1)
+  );
+  --shell-end-2-fit: calc(
+    clamp(0, var(--shell-breakpoint) - var(--shell-end-2-show-from) + 1, 1) *
+      clamp(0, var(--shell-end-2-show-below) - var(--shell-breakpoint), 1)
+  );
+  --shell-header-free-1: calc(
+    1 - var(--shell-end-1-open) * var(--shell-end-1-fit) *
+      var(--shell-end-1-from-main)
+  );
+  --shell-intro-free-1: calc(
+    1 - var(--shell-end-1-open) * var(--shell-end-1-fit) *
+      (1 - var(--shell-end-1-from-body))
+  );
+  --shell-header-free-2: calc(
+    1 - var(--shell-end-2-open) * var(--shell-end-2-fit) *
+      var(--shell-end-2-from-main)
+  );
+  --shell-intro-free-2: calc(
+    1 - var(--shell-end-2-open) * var(--shell-end-2-fit) *
+      (1 - var(--shell-end-2-from-body))
+  );
+
+  /* A query cannot style its container, so each part counts the named
+     container sizes that its shell reaches. */
+  --shell-breakpoint: 0;
+  @variant @3xs/shell {
+    --shell-breakpoint: 1;
+  }
+  @variant @2xs/shell {
+    --shell-breakpoint: 2;
+  }
+  @variant @xs/shell {
+    --shell-breakpoint: 3;
+  }
+  @variant @sm/shell {
+    --shell-breakpoint: 4;
+  }
+  @variant @md/shell {
+    --shell-breakpoint: 5;
+  }
+  @variant @lg/shell {
+    --shell-breakpoint: 6;
+  }
+  @variant @xl/shell {
+    --shell-breakpoint: 7;
+  }
+  @variant @2xl/shell {
+    --shell-breakpoint: 8;
+  }
+  @variant @3xl/shell {
+    --shell-breakpoint: 9;
+  }
+  @variant @4xl/shell {
+    --shell-breakpoint: 10;
+  }
+  @variant @5xl/shell {
+    --shell-breakpoint: 11;
+  }
+  @variant @6xl/shell {
+    --shell-breakpoint: 12;
+  }
+  @variant @7xl/shell {
+    --shell-breakpoint: 13;
+  }
+}
+
+@utility ui-shell {
+  /* A single-axis clip around sticky chrome causes compositor jitter in
+     WebKit. The main intro and body own the horizontal clip instead.
+     https://bugs.webkit.org/show_bug.cgi?id=320439 */
+  @apply ui-shell-state @container/shell;
+  /* The spacing of every part follows the text size of the shell, so parts
+     with different text sizes keep the same gutters. */
+  @apply ui-spacing-em;
+  isolation: isolate;
+  display: grid;
+  border-radius: 0 !important;
+  min-height: 100cqb;
+  /* The page tracks hold the box of a shell directly inside a shell with
+     `$maxWidth`. They are zero otherwise. */
+  grid-template-columns: [page-start] var(--shell-page-track) [shell-start start-1-start] auto [start-1-end start-2-start] auto [start-2-end main-start] minmax(0, 1fr) [main-end end-1-start] auto [end-1-end end-2-start] auto [end-2-end shell-end] var(--shell-page-track) [page-end];
+  /* The tracks resolve against this shell's width. The page space stays
+     unresolved until a bar reads it, so its container units measure this
+     shell, not the shell around it. */
+  --shell-page-space: 0px;
+  grid-template-rows: [shell-start header-start] auto [header-end main-start main-header-start] auto [main-header-end intro-start] auto [intro-end body-start] minmax(0, 1fr) [body-end footer-start] auto [footer-end shell-end];
+  --shell-start-1-width: 0px;
+  --shell-start-2-width: 0px;
+  --shell-end-1-width: 0px;
+  --shell-end-2-width: 0px;
+  /* Without a main size, Prose is 1rem, so this is 42em of its text. */
+  --shell-header-height: 0px;
+  --shell-main-max-width: 42rem;
+  /* The bar heights don't include the facing edge of the bar. Each bar
+     publishes its edge width, and the offsets of sticky parts add it. */
+  --shell-header-border: 0px;
+  --shell-footer-border: 0px;
+  --shell-main-header-border: 0px;
+  --shell-duration: 300ms;
+  --shell-motion: 1;
+  --shell-time: calc(var(--shell-duration) * var(--shell-motion));
+  --shell-ease: cubic-bezier(0.2,0,0,1);
+  /* A default control is one line of the shell's text with two spacing steps
+     of padding above and below it, which round like frame padding. A bar is
+     that tall plus its space above and below, which is three steps by
+     default, plus its facing edge. */
+  --shell-control-height: calc(var(--shell-header-step) * 4 * var(--shell-leading) + 2 * round(var(--shell-header-step) * 2, 1px));
+  --shell-bar-space: round(calc(var(--shell-header-step) * 3), 1px);
+  /* Each bar publishes its space as a number of steps, and the shell turns
+     it into a height here. The main header and the sidebar headers take the
+     space of the shell header unless they set their own. */
+  --shell-header-space: 3;
+  --shell-main-header-space: var(--shell-header-space);
+  --shell-main-header-height: calc(var(--shell-control-height) + 2 * round(var(--shell-header-step) * var(--shell-main-header-space), 1px));
+  --shell-main-head: 0px;
+  --shell-head: 0px;
+  /* The page scrolls under the sticky bars, so content that fits in the
+     scroll area, such as a code block, stays below and above them. Main adds
+     its own sticky header. */
+  --scrollport-start: calc(var(--shell-top) + var(--shell-head));
+  --scrollport-end: var(--shell-foot);
+
+  &:has(> .ui-shell-footer--sticky) {
+    /* Only a sticky footer publishes its height, space, and edge on the shell.
+       The footer comes last, and a new inherited value on the shell restyles
+       every element that the browser already parsed inside it. */
+    --shell-footer-height: calc(var(--shell-control-height) + 2 * round(var(--shell-header-step) * var(--shell-footer-space), 1px));
+    --shell-foot: calc(var(--shell-footer-height) + var(--shell-footer-border));
+  }
+
+  &:has(> .ui-shell-header) {
+    --shell-header-height: calc(var(--shell-control-height) + 2 * round(var(--shell-header-step) * var(--shell-header-space), 1px));
+  }
+
+  &:has(> .ui-shell-header--sticky) {
+    --shell-head: calc(var(--shell-header-height) + var(--shell-header-border));
+  }
+
+  &:not(.ui-shell *) {
+    /* Each level copies its width to an alternating channel, so a shell reads
+       the width of the shell around it even when it sets its own. These
+       mutually exclusive selectors support three shell levels. */
+    --shell-max-width-a: var(--shell-max-width);
+    /* Alternating registered lengths avoid same-element custom-property
+       cycles. These mutually exclusive selectors support three shell levels;
+       each further level needs another rule with the opposite channel. */
+    --shell-top: 0px;
+    --shell-below-a: calc(var(--shell-top) + var(--shell-head));
+  }
+
+  .ak-frame &:not(.ui-shell *) {
+    /* A page shell keeps its radius for the frames inside it but paints square
+       corners, and fills the viewport or a size container. Inside another
+       frame, such as a dialog, a shell paints its concentric radius and fills
+       only a frame with a definite height. */
+    border-radius: var(--ak-frame-radius) !important;
+    min-height: min(100cqb, 100%);
+  }
+
+  .ui-shell &:not(.ui-shell .ui-shell *) {
+    --shell-max-width-b: var(--shell-max-width);
+    --shell-top: var(--shell-below-a);
+    --shell-below-b: calc(var(--shell-top) + var(--shell-head));
+  }
+
+  .ui-shell .ui-shell & {
+    --shell-max-width-a: var(--shell-max-width);
+    --shell-top: var(--shell-below-b);
+    --shell-below-a: calc(var(--shell-top) + var(--shell-head));
+  }
+
+  .ui-shell .ui-shell--paged > & {
+    --shell-page-track: max(0px, calc((100% - var(--shell-max-width-b)) / 2));
+    --shell-page-space: max(0px, calc((100cqi - var(--shell-max-width-b)) / 2));
+  }
+
+  .ui-shell-main--sized-main & {
+    /* A shell inside a sized main doesn't pass that size on to its Prose. */
+    --prose-size: initial;
+  }
+
+  .ui-shell--paged > &:not(.ui-shell .ui-shell *) {
+    --shell-page-track: max(0px, calc((100% - var(--shell-max-width-a)) / 2));
+    --shell-page-space: max(0px, calc((100cqi - var(--shell-max-width-a)) / 2));
+  }
+
+  .ui-shell > & {
+    grid-column: main;
+    grid-row: body;
+    min-height: 0;
+    --shell-duration: inherit;
+    --shell-motion: inherit;
+    --shell-ease: inherit;
+    --shell-main-max-width: inherit;
+  }
+
+  &:where(.ui-shell--size-auto) {
+    @apply text-sm;
+    --shell-header-step: calc(0.875rem / 4);
+    --shell-radius: calc(var(--radius) * 5 / 0.875);
+    --shell-leading: var(--text-sm--line-height);
+
+    .ui-shell & {
+      /* A leading utility would set --tw-leading and replace
+         text-* fallbacks. */
+      font-size: inherit;
+      line-height: inherit;
+      --shell-header-step: inherit;
+      --shell-radius: inherit;
+      --shell-leading: inherit;
+    }
+
+    .ui-shell .ui-shell-main--sized-main & {
+      /* The outer shell's size, not the size of a main around this shell. The
+         extra class outranks the inherited size above. */
+      font-size: calc(var(--shell-header-step) * 4);
+      line-height: var(--shell-leading);
+    }
+  }
+
+  &:where(.ui-shell--size-sm) {
+    --shell-header-step: calc(0.875rem / 4);
+    --shell-radius: calc(var(--radius) * 5 / 0.875);
+    --shell-leading: var(--text-sm--line-height);
+  }
+
+  &:where(.ui-shell--size-md) {
+    --shell-header-step: calc(1rem / 4);
+    --shell-radius: calc(var(--radius) * 5);
+    --shell-leading: var(--text-base--line-height);
+  }
+
+  &:where(.ui-shell--size-lg) {
+    --shell-header-step: calc(1.125rem / 4);
+    --shell-radius: calc(var(--radius) * 5 / 1.125);
+    --shell-leading: var(--text-lg--line-height);
+  }
+}
+
+@utility ui-shell-facing-border {
+  &:is(.ui-shell-footer, .ui-shell-sidebar-footer) {
+    @apply border-bs-(length:--border-width);
+  }
+
+  &:is(.ui-shell-header, .ui-shell-main-header, .ui-shell-sidebar-header) {
+    @apply border-be-(length:--border-width);
+  }
+
+  .ui-shell-sidebar--side-end:dir(ltr) > & {
+    @apply border-l-(length:--border-width);
+  }
+
+  .ui-shell-sidebar--side-end:dir(rtl) > & {
+    @apply border-r-(length:--border-width);
+  }
+
+  .ui-shell-sidebar--side-start:dir(ltr) > & {
+    /* The column follows the shell direction; the body can have its own dir. */
+    @apply border-r-(length:--border-width);
+  }
+
+  .ui-shell-sidebar--side-start:dir(rtl) > & {
+    @apply border-l-(length:--border-width);
+  }
+}
+
+@utility ui-shell-header {
+  @apply @container/shell-header;
+  grid-row: header;
+  box-sizing: border-box;
+  min-height: calc(var(--shell-header-height) + var(--shell-facing-border, 0px));
+  z-index: 6;
+  --shell-header-height: calc(var(--shell-control-height) + 2 * round(var(--shell-header-step) * var(--shell-header-space), 1px));
+  --shell-bar-inset: round(var(--shell-header-step) * var(--shell-header-space), 1px);
+
+  & > * > .ui-carousel > .ui-nav.ui-nav--layout-horizontal {
+    /* Edge bars in a centered navigation row reach the bottom of the header
+       and cover its facing edge. The navigation measures the header without
+       the border of its carousel root, and reaches over both edges. */
+    --nav-block-size: calc(var(--shell-header-height) - 2 * var(--carousel-border,0px));
+    --nav-edge-end: calc(var(--carousel-border,0px) + var(--shell-facing-border,0px));
+  }
+
+  & > .ui-shell-main-band > .ui-shell-bar-part > .ui-carousel > .ui-nav.ui-nav--layout-horizontal {
+    --nav-block-size: calc(var(--shell-header-height) - 2 * var(--carousel-border,0px));
+    --nav-edge-end: calc(var(--carousel-border,0px) + var(--shell-facing-border,0px));
+  }
+
+  &:where(.ui-shell-header--p-0) {
+    --shell-header-space: 0;
+
+    .ui-shell:has(> &) {
+      --shell-header-space: 0;
+    }
+  }
+
+  &:where(.ui-shell-header--p-1) {
+    --shell-header-space: 1;
+
+    .ui-shell:has(> &) {
+      --shell-header-space: 1;
+    }
+  }
+
+  &:where(.ui-shell-header--p-2) {
+    --shell-header-space: 2;
+
+    .ui-shell:has(> &) {
+      --shell-header-space: 2;
+    }
+  }
+
+  &:where(.ui-shell-header--p-3) {
+    --shell-header-space: 3;
+
+    .ui-shell:has(> &) {
+      --shell-header-space: 3;
+    }
+  }
+
+  &:where(.ui-shell-header--p-4) {
+    --shell-header-space: 4;
+
+    .ui-shell:has(> &) {
+      --shell-header-space: 4;
+    }
+  }
+
+  &:where(.ui-shell-header--p-5) {
+    --shell-header-space: 5;
+
+    .ui-shell:has(> &) {
+      --shell-header-space: 5;
+    }
+  }
+
+  &:where(.ui-shell-header--p-6) {
+    --shell-header-space: 6;
+
+    .ui-shell:has(> &) {
+      --shell-header-space: 6;
+    }
+  }
+
+  &:where(.ui-shell-header--border-true) {
+    --border-width: 1px;
+
+    .ui-shell:has(> &) {
+      --shell-header-border: 1px;
+    }
+  }
+
+  &:where(.ui-shell-header--border-false) {
+    --border-width: 0px;
+
+    .ui-shell:has(> &) {
+      --shell-header-border: 0px;
+    }
+  }
+
+  &:where(.ui-shell-header--border-0) {
+    --border-width: 0px;
+
+    .ui-shell:has(> &) {
+      --shell-header-border: 0px;
+    }
+  }
+
+  &:where(.ui-shell-header--border-1) {
+    --border-width: 1px;
+
+    .ui-shell:has(> &) {
+      --shell-header-border: 1px;
+    }
+  }
+
+  &:where(.ui-shell-header--border-2) {
+    --border-width: 2px;
+
+    .ui-shell:has(> &) {
+      --shell-header-border: 2px;
+    }
+  }
+
+  &:where(.ui-shell-header--border-3) {
+    --border-width: 3px;
+
+    .ui-shell:has(> &) {
+      --shell-header-border: 3px;
+    }
+  }
+
+  &:where(.ui-shell-header--border-4) {
+    --border-width: 4px;
+
+    .ui-shell:has(> &) {
+      --shell-header-border: 4px;
+    }
+  }
+
+  &:where(.ui-shell-header--border-5) {
+    --border-width: 5px;
+
+    .ui-shell:has(> &) {
+      --shell-header-border: 5px;
+    }
+  }
+
+  &:where(.ui-shell-header--border-inherit) {
+    .ui-shell:has(> &) {
+      --shell-header-border: var(--border-width,0px);
+    }
+  }
+
+  &:where(.ui-shell-header--sticky) {
+    position: sticky;
+    inset-block-start: var(--shell-top);
+  }
+
+  &:where(.ui-shell-header--stack-center) {
+    @container shell-header (width < 40rem) {
+      & > .ui-shell-main-band:has(> .ui-shell-center) {
+        grid-row-end: span 2;
+        grid-template-rows: subgrid;
+      }
+
+      & > .ui-shell-main-band > .ui-shell-center.ui-shell-bar-part {
+        /* In a content area, the extra class outranks the row of its parts. The
+           area spans both rows of the header, so parts outside it stay on the
+           first row with its start and end parts. */
+        grid-column: 1 / -1;
+        grid-row-start: 2;
+      }
+
+      & > .ui-shell-center {
+        grid-column: 1 / -1;
+        grid-row-start: 2;
+      }
+    }
+  }
+}
+
+@utility ui-shell-bar {
+  @apply ui-shell-bar-spaces;
+  grid-column: page;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: --spacing(2);
+  /* In a shell inside a shell with `$maxWidth`, the bar spans the inner shell
+     and its parts start at its box. The safe area stays the smallest space
+     from the screen edge. */
+  padding-right: max(calc(var(--ak-frame-padding) + var(--shell-page-space)), env(safe-area-inset-right));
+  padding-left: max(calc(var(--ak-frame-padding) + var(--shell-page-space)), env(safe-area-inset-left));
+
+  &:has(> .ui-shell-main-band) {
+    @apply ui-shell-bar-fold ui-shell-bar-tracks;
+  }
+
+  &:has(> .ui-shell-center.ui-shell-bar-part--grow-true) {
+    /* A growing center receives twice the free space and stays centered while
+       each side fits within one quarter. */
+    grid-template-columns: 1fr minmax(auto, 2fr) 1fr;
+  }
+
+  &:not(:has(> .ui-shell-center, > .ui-shell-main-band, > .ui-shell-bar-part--grow-true)) {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  & > * > .ui-carousel:has(> .ui-nav.ui-nav--layout-horizontal) {
+    align-self: stretch;
+    margin-block: 0;
+    padding-block: 0;
+    /* The region scrolls, so rounded corners would clip a bar at its edge. */
+    border-radius: 0 !important;
+  }
+
+  & > * > .ui-carousel > .ui-nav.ui-nav--layout-horizontal {
+    /* The navigation covers the root, so its block margins reach past the root
+       unless they go too. It reaches over the edges that `--nav-edge-start` and
+       `--nav-edge-end` set, with the same padding, so its scroll box doesn't
+       clip the edge bars that cover them. */
+    align-items: center;
+    margin-top: calc(-1 * var(--nav-edge-start, 0px)) !important;
+    margin-bottom: calc(-1 * var(--nav-edge-end, 0px)) !important;
+    padding-top: var(--nav-edge-start, 0px);
+    padding-bottom: var(--nav-edge-end, 0px);
+    /* Without block padding, edge bars measure from the region's height
+       alone. */
+    --nav-bar-gap: 0px;
+    border-radius: 0 !important;
+  }
+
+  & > .ui-shell-main-band:has(> .ui-carousel > .ui-nav.ui-nav--layout-horizontal) {
+    align-self: stretch;
+  }
+
+  & > .ui-shell-main-band:has(> .ui-shell-bar-part > .ui-carousel > .ui-nav.ui-nav--layout-horizontal) {
+    /* The same goes for a part in a content area, which stretches with its
+       area. */
+    align-self: stretch;
+  }
+
+  & > .ui-shell-main-band > .ui-shell-bar-part:has(> .ui-carousel > .ui-nav.ui-nav--layout-horizontal) {
+    align-self: stretch;
+  }
+
+  & > .ui-shell-main-band > .ui-shell-bar-part > .ui-carousel:has(> .ui-nav.ui-nav--layout-horizontal) {
+    align-self: stretch;
+    margin-block: 0;
+    padding-block: 0;
+    border-radius: 0 !important;
+  }
+
+  & > .ui-shell-main-band > .ui-shell-bar-part > .ui-carousel > .ui-nav.ui-nav--layout-horizontal {
+    align-items: center;
+    margin-top: calc(-1 * var(--nav-edge-start, 0px)) !important;
+    margin-bottom: calc(-1 * var(--nav-edge-end, 0px)) !important;
+    padding-top: var(--nav-edge-start, 0px);
+    padding-bottom: var(--nav-edge-end, 0px);
+    --nav-bar-gap: 0px;
+    border-radius: 0 !important;
+  }
+
+  & > .ui-shell-center:has(> .ui-carousel > .ui-nav.ui-nav--layout-horizontal) {
+    align-self: stretch;
+  }
+
+  & > .ui-shell-end:has(> .ui-carousel > .ui-nav.ui-nav--layout-horizontal) {
+    align-self: stretch;
+  }
+
+  & > .ui-shell-start:has(> .ui-carousel > .ui-nav.ui-nav--layout-horizontal) {
+    /* A horizontal navigation region fills the bar's height, so edge bars in
+       its centered rows meet the bar's edge. It scrolls in a carousel root,
+       which takes its place in the bar. */
+    align-self: stretch;
+  }
+
+  .ui-shell--paged > &:has(~ .ui-shell) {
+    /* Next to a shell inside a shell with `$maxWidth`, a content area starts
+       the bar's padding inside that shell's box, like parts at the bar's edges
+       and in that shell's own bars. With the default space of the bar, that is
+       on the rows of its sidebars. It skips compensation, so an outer sidebar
+       doesn't move it off the box. The bar looks for that shell among its
+       siblings: a `:has()` on the outer shell would restyle the whole page on
+       each sidebar toggle in Chrome. */
+    --shell-main-max-width: calc(var(--shell-max-width) - 2 * var(--ak-frame-padding));
+    --shell-comp-start: 0px;
+    --shell-comp-end: 0px;
+  }
+
+  .ui-shell--paged > .ui-shell ~ & {
+    --shell-main-max-width: calc(var(--shell-max-width) - 2 * var(--ak-frame-padding));
+    --shell-comp-start: 0px;
+    --shell-comp-end: 0px;
+  }
+}
+
+@utility ui-shell-bar-part {
+  display: flex;
+  align-items: center;
+  gap: --spacing(2);
+
+  .ui-shell-bar > .ui-shell-main-band > & {
+    grid-row-start: 1;
+  }
+
+  .ui-shell-main-header > & {
+    grid-row-start: 1;
+  }
+
+  &:where(.ui-shell-bar-part--shrink-true) {
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: clip;
+    overflow-clip-margin: 0.25rem;
+  }
+
+  &:where(.ui-shell-bar-part--shrink-false) {
+    min-width: auto;
+
+    /* A side track can be narrower than its part, and the part must not wrap
+       to fit. It takes room from the area instead. */
+    &:has(~ .ui-shell-main-band) {
+      min-width: max-content;
+    }
+
+    .ui-shell-main-band ~ & {
+      min-width: max-content;
+    }
+
+    /* With a center part, a main header has the tracks of a plain bar, so
+       text can wrap like in a bar. */
+    .ui-shell-main-header:not(:has(> .ui-shell-center)) > & {
+      min-width: max-content;
+    }
+  }
+}
+
+@utility ui-shell-start {
+  grid-column: 1;
+
+  &:has(~ .ui-shell-main-band) {
+    margin-inline-end: --spacing(2);
+  }
+
+  .ui-shell-main-header > & {
+    margin-inline-end: --spacing(2);
+  }
+
+  &:where(.ui-shell-start--shrink-true) {
+    &:has(~ .ui-shell-main-band) {
+      max-width: calc(100% - (--spacing(2)));
+    }
+
+    .ui-shell-main-header > & {
+      max-width: calc(100% - (--spacing(2)));
+    }
+  }
+}
+
+@utility ui-shell-center {
+  grid-column: 2;
+
+  .ui-shell-bar > .ui-shell-main-band > & {
+    grid-column: 2;
+  }
+}
+
+@utility ui-shell-end {
+  grid-column: 3;
+
+  .ui-shell-main-band ~ & {
+    margin-inline-start: --spacing(2);
+  }
+
+  .ui-shell-main-header > & {
+    margin-inline-start: --spacing(2);
+  }
+
+  &:where(.ui-shell-end--shrink-true) {
+    .ui-shell-main-band ~ & {
+      max-width: calc(100% - (--spacing(2)));
+    }
+
+    .ui-shell-main-header > & {
+      max-width: calc(100% - (--spacing(2)));
+    }
+  }
+}
+
+@utility ui-shell-footer {
+  /* The footer ends the sidebar columns, pushing sticky sidebar bodies up
+     without a fixed footer height. */
+  @apply @container/shell-footer;
+  grid-row: footer;
+  box-sizing: border-box;
+  min-height: calc(var(--shell-footer-height) + var(--shell-facing-border, 0px));
+  z-index: 5;
+  --shell-footer-height: calc(var(--shell-control-height) + 2 * round(var(--shell-header-step) * var(--shell-footer-space), 1px));
+  --shell-bar-inset: round(var(--shell-header-step) * var(--shell-footer-space), 1px);
+
+  & > * > .ui-carousel > .ui-nav.ui-nav--layout-horizontal {
+    /* Let edge bars in a centered navigation row reach the inner edge.
+       The bottom safe area pads the footer, so it doesn't hold the row. The
+       navigation measures the footer without the border of its carousel root,
+       which it reaches over. */
+    --nav-block-size: calc(var(--shell-footer-height) - env(safe-area-inset-bottom) - 2 * var(--carousel-border,0px));
+  }
+
+  & > .ui-shell-main-band > .ui-shell-bar-part > .ui-carousel > .ui-nav.ui-nav--layout-horizontal {
+    --nav-block-size: calc(var(--shell-footer-height) - env(safe-area-inset-bottom) - 2 * var(--carousel-border,0px));
+  }
+
+  &:where(.ui-shell-footer--p-0) {
+    --shell-footer-space: 0;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-space: 0;
+    }
+  }
+
+  &:where(.ui-shell-footer--p-1) {
+    --shell-footer-space: 1;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-space: 1;
+    }
+  }
+
+  &:where(.ui-shell-footer--p-2) {
+    --shell-footer-space: 2;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-space: 2;
+    }
+  }
+
+  &:where(.ui-shell-footer--p-3) {
+    --shell-footer-space: 3;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-space: 3;
+    }
+  }
+
+  &:where(.ui-shell-footer--p-4) {
+    --shell-footer-space: 4;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-space: 4;
+    }
+  }
+
+  &:where(.ui-shell-footer--p-5) {
+    --shell-footer-space: 5;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-space: 5;
+    }
+  }
+
+  &:where(.ui-shell-footer--p-6) {
+    --shell-footer-space: 6;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-space: 6;
+    }
+  }
+
+  &:where(.ui-shell-footer--border-true) {
+    --border-width: 1px;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-border: 1px;
+    }
+  }
+
+  &:where(.ui-shell-footer--border-false) {
+    --border-width: 0px;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-border: 0px;
+    }
+  }
+
+  &:where(.ui-shell-footer--border-0) {
+    --border-width: 0px;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-border: 0px;
+    }
+  }
+
+  &:where(.ui-shell-footer--border-1) {
+    --border-width: 1px;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-border: 1px;
+    }
+  }
+
+  &:where(.ui-shell-footer--border-2) {
+    --border-width: 2px;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-border: 2px;
+    }
+  }
+
+  &:where(.ui-shell-footer--border-3) {
+    --border-width: 3px;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-border: 3px;
+    }
+  }
+
+  &:where(.ui-shell-footer--border-4) {
+    --border-width: 4px;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-border: 4px;
+    }
+  }
+
+  &:where(.ui-shell-footer--border-5) {
+    --border-width: 5px;
+
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-border: 5px;
+    }
+  }
+
+  &:where(.ui-shell-footer--border-inherit) {
+    .ui-shell:has(> &.ui-shell-footer--sticky) {
+      --shell-footer-border: var(--border-width,0px);
+    }
+  }
+
+  &:where(.ui-shell-footer--sticky) {
+    position: sticky;
+    inset-block-end: 0;
+  }
+}
+
+@utility ui-shell-sidebar {
+  @apply transition-[width] duration-(--shell-time) ease-(--shell-ease);
+  --shell-sidebar-head: 0px;
+  display: flex;
+  box-sizing: border-box;
+  border-radius: 0 !important;
+  z-index: 2;
+  width: var(--shell-slot-width);
+  overflow: clip;
+
+  &.ui-shell-sidebar--side-end {
+    /* Keep the panel's offset while its own column closes or collapses. */
+    --shell-sidebar-head: calc(var(--shell-main-head) * (1 - var(--shell-end-1-from-main)));
+    /* The main header spans a closing column at once, so a column that starts
+       at main folds above it. An open column stays below the header's
+       popovers. */
+    z-index: calc(2 + 2 * var(--shell-end-1-from-main) * var(--shell-header-free-1));
+  }
+
+  &:has(> .ui-shell-sidebar-panel:not([data-open])) {
+    /* Fold beside a closed panel. While HTML streams in, the parser can pause
+       before the panel, so the column's own data-open stands in until then.
+       https://github.com/ariakit/ariakit/issues/8147 */
+    width: 0;
+  }
+
+  &:not([data-open]):not(:has(> .ui-shell-sidebar-panel)) {
+    width: 0;
+  }
+
+  & > .ui-shell-sidebar-panel:not([data-open]) {
+    display: none;
+  }
+
+  .ui-shell-sidebar--side-end ~ &.ui-shell-sidebar--side-end {
+    --shell-sidebar-head: calc(var(--shell-main-head) * var(--shell-header-free-1) * (1 - var(--shell-end-2-from-main)));
+    z-index: calc(2 + 2 * var(--shell-end-2-from-main) * var(--shell-header-free-2));
+  }
+
+  &:where(.ui-shell-sidebar--side-start) {
+    grid-column: start-1;
+
+    .ui-shell-sidebar--side-start ~ & {
+      grid-column: start-2;
+    }
+  }
+
+  &:where(.ui-shell-sidebar--side-end) {
+    grid-column: end-1;
+
+    .ui-shell-sidebar--side-end ~ & {
+      grid-column: end-2;
+    }
+  }
+
+  &:where(.ui-shell-sidebar--width-3xs) {
+    /* A default button is one line tall. The body, group, and button padding
+       each round to a whole pixel per side, and the facing edge adds 1px. */
+    --shell-slot-width: calc(1lh + 2 * (round(--spacing(3), 1px) + round(var(--spacing), 1px) + round(--spacing(2), 1px)) + 1px);
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-end:not(.ui-shell-sidebar--side-end ~ *)) {
+      --shell-end-1-width: calc(1lh + 2 * (round(--spacing(3), 1px) + round(var(--spacing), 1px) + round(--spacing(2), 1px)) + 1px);
+    }
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-start:not(.ui-shell-sidebar--side-start ~ *)) {
+      --shell-start-1-width: calc(1lh + 2 * (round(--spacing(3), 1px) + round(var(--spacing), 1px) + round(--spacing(2), 1px)) + 1px);
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-end ~ &.ui-shell-sidebar--side-end) {
+      --shell-end-2-width: calc(1lh + 2 * (round(--spacing(3), 1px) + round(var(--spacing), 1px) + round(--spacing(2), 1px)) + 1px);
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-start ~ &.ui-shell-sidebar--side-start) {
+      --shell-start-2-width: calc(1lh + 2 * (round(--spacing(3), 1px) + round(var(--spacing), 1px) + round(--spacing(2), 1px)) + 1px);
+    }
+  }
+
+  &:where(.ui-shell-sidebar--width-xs) {
+    --shell-slot-width: 10rem;
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-end:not(.ui-shell-sidebar--side-end ~ *)) {
+      --shell-end-1-width: 10rem;
+    }
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-start:not(.ui-shell-sidebar--side-start ~ *)) {
+      --shell-start-1-width: 10rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-end ~ &.ui-shell-sidebar--side-end) {
+      --shell-end-2-width: 10rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-start ~ &.ui-shell-sidebar--side-start) {
+      --shell-start-2-width: 10rem;
+    }
+  }
+
+  &:where(.ui-shell-sidebar--width-sm) {
+    --shell-slot-width: 12rem;
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-end:not(.ui-shell-sidebar--side-end ~ *)) {
+      --shell-end-1-width: 12rem;
+    }
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-start:not(.ui-shell-sidebar--side-start ~ *)) {
+      --shell-start-1-width: 12rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-end ~ &.ui-shell-sidebar--side-end) {
+      --shell-end-2-width: 12rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-start ~ &.ui-shell-sidebar--side-start) {
+      --shell-start-2-width: 12rem;
+    }
+  }
+
+  &:where(.ui-shell-sidebar--width-md) {
+    --shell-slot-width: 16rem;
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-end:not(.ui-shell-sidebar--side-end ~ *)) {
+      --shell-end-1-width: 16rem;
+    }
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-start:not(.ui-shell-sidebar--side-start ~ *)) {
+      --shell-start-1-width: 16rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-end ~ &.ui-shell-sidebar--side-end) {
+      --shell-end-2-width: 16rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-start ~ &.ui-shell-sidebar--side-start) {
+      --shell-start-2-width: 16rem;
+    }
+  }
+
+  &:where(.ui-shell-sidebar--width-lg) {
+    --shell-slot-width: 20rem;
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-end:not(.ui-shell-sidebar--side-end ~ *)) {
+      --shell-end-1-width: 20rem;
+    }
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-start:not(.ui-shell-sidebar--side-start ~ *)) {
+      --shell-start-1-width: 20rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-end ~ &.ui-shell-sidebar--side-end) {
+      --shell-end-2-width: 20rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-start ~ &.ui-shell-sidebar--side-start) {
+      --shell-start-2-width: 20rem;
+    }
+  }
+
+  &:where(.ui-shell-sidebar--width-xl) {
+    --shell-slot-width: 24rem;
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-end:not(.ui-shell-sidebar--side-end ~ *)) {
+      --shell-end-1-width: 24rem;
+    }
+
+    .ui-shell:has(> &.ui-shell-sidebar--side-start:not(.ui-shell-sidebar--side-start ~ *)) {
+      --shell-start-1-width: 24rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-end ~ &.ui-shell-sidebar--side-end) {
+      --shell-end-2-width: 24rem;
+    }
+
+    .ui-shell:has(> .ui-shell-sidebar--side-start ~ &.ui-shell-sidebar--side-start) {
+      --shell-start-2-width: 24rem;
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-false) {
+    &.ui-shell-sidebar {
+      width: 0;
+    }
+
+    & > .ui-shell-sidebar-panel {
+      display: none;
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-3xs) {
+    @variant @max-3xs/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-2xs) {
+    @variant @max-2xs/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-xs) {
+    @variant @max-xs/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-sm) {
+    @variant @max-sm/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-md) {
+    @variant @max-md/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-lg) {
+    @variant @max-lg/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-xl) {
+    @variant @max-xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-2xl) {
+    @variant @max-2xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-3xl) {
+    @variant @max-3xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-4xl) {
+    @variant @max-4xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-5xl) {
+    @variant @max-5xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-6xl) {
+    @variant @max-6xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-7xl) {
+    @variant @max-7xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-3xs) {
+    @variant @3xs/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-2xs) {
+    @variant @2xs/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-xs) {
+    @variant @xs/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-sm) {
+    @variant @sm/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-md) {
+    @variant @md/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-lg) {
+    @variant @lg/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-xl) {
+    @variant @xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-2xl) {
+    @variant @2xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-3xl) {
+    @variant @3xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-4xl) {
+    @variant @4xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-5xl) {
+    @variant @5xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-6xl) {
+    @variant @6xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  &:where(.ui-shell-sidebar--show-max-7xl) {
+    @variant @7xl/shell {
+      &.ui-shell-sidebar {
+        width: 0;
+      }
+
+      & > .ui-shell-sidebar-panel {
+        display: none;
+      }
+    }
+  }
+
+  /* The panel of a sidebar with `$reveal` stays in place while the column
+     folds. The column also names its side, so these rules outrank the alignment
+     that the panel sets for itself. */
+  &:where(.ui-shell-sidebar--reveal-place) {
+    &.ui-shell-sidebar--side-end > .ui-shell-sidebar-panel {
+      align-self: flex-end;
+    }
+
+    &.ui-shell-sidebar--side-start > .ui-shell-sidebar-panel {
+      align-self: flex-start;
+    }
+  }
+
+  /* The panel of a sidebar with the `zoom` value of `$reveal` also fades in and
+     grows. */
+  &:where(.ui-shell-sidebar--reveal-zoom) {
+    &.ui-shell-sidebar {
+      @apply transition-[width,--shell-reveal];
+    }
+
+    &.ui-shell-sidebar--side-end {
+      --shell-reveal: calc(var(--shell-end-1-open) * var(--shell-end-1-fit));
+    }
+
+    &.ui-shell-sidebar--side-end:dir(ltr) > .ui-shell-sidebar-panel {
+      transform-origin: 100% 0;
+    }
+
+    &.ui-shell-sidebar--side-end:dir(rtl) > .ui-shell-sidebar-panel {
+      transform-origin: 0 0;
+    }
+
+    &.ui-shell-sidebar--side-start {
+      /* How far the column is open, from 0 to 1. The column is always in the
+         page, so it can animate the value, also on the way in, and a sidebar
+         that is open on the first render doesn't animate. The panel is not in
+         the page while the sidebar is closed. */
+      --shell-reveal: calc(var(--shell-start-1-open) * var(--shell-start-1-fit));
+    }
+
+    &.ui-shell-sidebar--side-start:dir(ltr) > .ui-shell-sidebar-panel {
+      /* The panel grows from its top corner at the outer side of the shell, so
+         what is next to that corner stays in place. The column follows the
+         direction of the shell. */
+      transform-origin: 0 0;
+    }
+
+    &.ui-shell-sidebar--side-start:dir(rtl) > .ui-shell-sidebar-panel {
+      transform-origin: 100% 0;
+    }
+
+    & > .ui-shell-sidebar-panel {
+      opacity: var(--shell-reveal);
+      scale: calc(0.95 + 0.05 * var(--shell-reveal));
+    }
+
+    & > .ui-shell-sidebar-panel > * {
+      /* The parts of the panel reset the value, so a frame of the fold doesn't
+         restyle what they hold. */
+      --shell-reveal: initial;
+    }
+
+    .ui-shell-sidebar--side-end ~ &.ui-shell-sidebar--side-end {
+      --shell-reveal: calc(var(--shell-end-2-open) * var(--shell-end-2-fit));
+    }
+
+    .ui-shell-sidebar--side-start ~ &.ui-shell-sidebar--side-start {
+      --shell-reveal: calc(var(--shell-start-2-open) * var(--shell-start-2-fit));
+    }
+  }
+
+  &:where(.ui-shell-sidebar--sticky) {
+    & > .ui-shell-sidebar-panel {
+      position: sticky;
+      inset-block-start: calc(var(--shell-top) + var(--shell-head) + var(--shell-sidebar-head));
+      /* Without a size container, cqb falls back to the small viewport, which
+         stops short of the bottom once mobile browser bars collapse. The
+         dynamic viewport follows the bars; a size container keeps cqb. */
+      max-height: calc(100dvh - var(--shell-top) - var(--shell-head) - var(--shell-sidebar-head) - var(--shell-foot));
+    }
+
+    @container (min-height: 0px) {
+      & > .ui-shell-sidebar-panel {
+        max-height: calc(100cqb - var(--shell-top) - var(--shell-head) - var(--shell-sidebar-head) - var(--shell-foot));
+      }
+    }
+  }
+}
+
+@utility ui-shell-sidebar-panel {
+  /* The panel keeps its width while the column folds, so its queries hold
+     their results. WebKit restyles everything inside query containers that
+     change size, and lays out the page again, on each step of the fold. */
+  @apply @container/shell-sidebar;
+  /* Supporting browsers defer removal until the fold ends. Others hide at
+     once. */
+  @apply transition-[display] duration-(--shell-time);
+  box-sizing: border-box;
+  width: var(--shell-slot-width);
+  min-height: 0;
+  flex: auto;
+  display: flex;
+  /* A body reaches over the facing edge only while this padding plus the
+     body's margin is zero. */
+  --shell-panel-padding: var(--ak-frame-padding);
+  transition-behavior: allow-discrete;
+
+  .ui-shell-sidebar--side-end > & {
+    align-self: flex-start;
+  }
+
+  .ui-shell-sidebar--side-start > & {
+    /* End alignment keeps an overflowing panel against its facing edge while
+       the column folds. */
+    align-self: flex-end;
+  }
+}
+
+@utility ui-shell-sidebar-header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: calc(var(--shell-local-header-height) + var(--shell-facing-border, 0px));
+  padding-block: 0 !important;
+  --shell-local-header-height: calc(var(--shell-control-height) + 2 * round(var(--shell-header-step) * var(--shell-sidebar-header-space,var(--shell-header-space)), 1px));
+  --shell-bar-inset: round(var(--shell-header-step) * var(--shell-sidebar-header-space,var(--shell-header-space)), 1px);
+
+  &:where(.ui-shell-sidebar-header--p-0) {
+    --shell-sidebar-header-space: 0;
+  }
+
+  &:where(.ui-shell-sidebar-header--p-1) {
+    --shell-sidebar-header-space: 1;
+  }
+
+  &:where(.ui-shell-sidebar-header--p-2) {
+    --shell-sidebar-header-space: 2;
+  }
+
+  &:where(.ui-shell-sidebar-header--p-3) {
+    --shell-sidebar-header-space: 3;
+  }
+
+  &:where(.ui-shell-sidebar-header--p-4) {
+    --shell-sidebar-header-space: 4;
+  }
+
+  &:where(.ui-shell-sidebar-header--p-5) {
+    --shell-sidebar-header-space: 5;
+  }
+
+  &:where(.ui-shell-sidebar-header--p-6) {
+    --shell-sidebar-header-space: 6;
+  }
+}
+
+@utility ui-shell-sidebar-body {
+  min-height: 0;
+  flex: auto;
+  overflow-y: auto;
+  border-radius: 0 !important;
+  /* The scroll box clips at its padding box, so a body that holds a covering
+     column reaches over the facing edge of its panel, with the same padding.
+     Then edge bars of the column can cover that edge. A scrollbar that
+     always shows also covers it. The edge is physical, and the body can have
+     its own dir. A body that its margin or the padding of the panel moves
+     off the edge doesn't reach, whichever way it moves. A nested shell resets
+     the sides that its own sidebar doesn't set. */
+  --shell-seam-left: 0px;
+  --shell-seam-right: 0px;
+
+  &:has(> .ui-nav--fill) {
+    /* A flex column fits a filling navigation to the body's height. */
+    display: flex;
+    flex-direction: column;
+  }
+
+  & > .ui-nav.ui-vertical.ak-frame-cover:dir(ltr) {
+    /* A covering column meets the inner side of the edge, so its edge bars add
+       the reach to its own border. */
+    --nav-edge-start: calc(var(--ak-frame-border) + var(--shell-seam-left));
+    --nav-edge-end: calc(var(--ak-frame-border) + var(--shell-seam-right));
+  }
+
+  & > .ui-nav.ui-vertical.ak-frame-cover:dir(rtl) {
+    --nav-edge-start: calc(var(--ak-frame-border) + var(--shell-seam-right));
+    --nav-edge-end: calc(var(--ak-frame-border) + var(--shell-seam-left));
+  }
+
+  .ui-shell-sidebar--side-end:dir(ltr) > .ui-shell-sidebar-panel > & {
+    --shell-seam-left: calc(var(--shell-facing-border,0px) * (1 - abs(sign(var(--shell-panel-padding,0px) + var(--ak-frame-margin)))));
+  }
+
+  .ui-shell-sidebar--side-end:dir(rtl) > .ui-shell-sidebar-panel > & {
+    --shell-seam-right: calc(var(--shell-facing-border,0px) * (1 - abs(sign(var(--shell-panel-padding,0px) + var(--ak-frame-margin)))));
+  }
+
+  .ui-shell-sidebar-panel > &:has(> .ui-nav.ui-vertical.ak-frame-cover) {
+    /* The panel selector outranks the margin and padding of the frame. */
+    margin-right: calc(var(--ak-frame-margin) - var(--shell-seam-right));
+    margin-left: calc(var(--ak-frame-margin) - var(--shell-seam-left));
+    padding-right: calc(var(--ak-frame-padding) + var(--shell-seam-right));
+    padding-left: calc(var(--ak-frame-padding) + var(--shell-seam-left));
+  }
+
+  .ui-shell-sidebar--side-start:dir(ltr) > .ui-shell-sidebar-panel > & {
+    --shell-seam-right: calc(var(--shell-facing-border,0px) * (1 - abs(sign(var(--shell-panel-padding,0px) + var(--ak-frame-margin)))));
+  }
+
+  .ui-shell-sidebar--side-start:dir(rtl) > .ui-shell-sidebar-panel > & {
+    --shell-seam-left: calc(var(--shell-facing-border,0px) * (1 - abs(sign(var(--shell-panel-padding,0px) + var(--ak-frame-margin)))));
+  }
+}
+
+@utility ui-shell-main {
+  grid-column: main-start/shell-end;
+  grid-row: main-start/body-end;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  min-width: 0;
+  /* Without `$py`, the body spends its own gutter on its edges next to the
+     bars, and the intro its own `$py`. After an intro with the default `$py`,
+     the body ends with the space above the intro, so the page ends with the
+     space it starts with. A nested main doesn't take the space set on an
+     outer one or on an intro around it. */
+  --shell-main-py: initial;
+  --shell-main-intro-pbs: initial;
+  --scrollport-start: calc(var(--shell-top) + var(--shell-head) + var(--shell-main-head));
+  --shell-outer-start-1-width: calc(var(--shell-start-1-width) * var(--shell-start-1-fit));
+  --shell-outer-start-2-width: calc(var(--shell-start-2-width) * var(--shell-start-2-fit));
+  --shell-outer-end-1-width: calc(var(--shell-end-1-width) * var(--shell-end-1-fit));
+  --shell-outer-end-2-width: calc(var(--shell-end-2-width) * var(--shell-end-2-fit));
+
+  @variant ui-base {
+    /* A shell inside main with `$center="outer"` queries the nearest main for
+       the open sidebars and reads their widths here. The widths don't change
+       when a sidebar opens or closes, so they don't restyle main.
+       Zero specificity lets a container name of the caller win. */
+    container-name: shell-main;
+  }
+
+  .ui-shell .ui-shell:not(.ui-shell .ui-shell .ui-shell) > & {
+    --shell-below-b: calc(var(--shell-top) + var(--shell-head) + var(--shell-main-head));
+  }
+
+  .ui-shell--paged > & {
+    /* The shell's `$maxWidth` sets the column unless main sets its own. */
+    --shell-main-max-width: var(--shell-max-width);
+  }
+
+  .ui-shell:not(.ui-shell *) > & {
+    /* Nested shells inside main also clear its sticky local header. Only the
+       first two levels publish offsets: the supported third level consumes
+       them. */
+    --shell-below-a: calc(var(--shell-top) + var(--shell-head) + var(--shell-main-head));
+  }
+
+  /* Bars read the column from the shell, in rem, because they keep the
+     shell's text. Each value of the sm, md, and lg rules is 42em at the text
+     of that size. The doubled class wins over the rule that resets this value
+     on a nested shell. */
+  &:where(.ui-shell-main--size-sm) {
+    .ui-shell.ui-shell:has(> &) {
+      --shell-main-max-width: 36.75rem;
+    }
+  }
+
+  /* The registered width resolves against main's own text, so every part keeps
+     the same column. An unregistered 1em follows the parent where Prose reads
+     it. */
+  &:where(.ui-shell-main--sized-main) {
+    /* The spacing inside a sized main follows its text size, not the
+       shell's. */
+    @apply ui-spacing-em;
+    --prose-size: 1em;
+    --shell-main-max-width: 42em;
+  }
+
+  &:where(.ui-shell-main--size-md) {
+    .ui-shell.ui-shell:has(> &) {
+      --shell-main-max-width: 42rem;
+    }
+  }
+
+  &:where(.ui-shell-main--size-lg) {
+    .ui-shell.ui-shell:has(> &) {
+      --shell-main-max-width: 47.25rem;
+    }
+  }
+}
+
+@utility ui-shell-main-header {
+  /* The spacing inside the bar follows its own text size, like the shell
+     header. Without this, the bar takes the step of a sized main, which has
+     larger text. */
+  @apply ui-spacing-em;
+  grid-column-start: 1;
+  grid-column-end: calc(2 + var(--shell-header-free-1) + var(--shell-header-free-1) * var(--shell-header-free-2));
+  grid-row: main-header;
+  box-sizing: border-box;
+  min-height: calc(var(--shell-main-header-height) + var(--shell-facing-border, 0px));
+  align-content: center;
+  padding-block: 0 !important;
+  z-index: 3;
+  --shell-main-header-height: calc(var(--shell-control-height) + 2 * round(var(--shell-header-step) * var(--shell-main-header-space), 1px));
+  --shell-content-end-space: calc(max(0px, var(--shell-end-1-space)) * var(--shell-header-free-1) + max(0px, var(--shell-end-2-space)) * var(--shell-header-free-1) * var(--shell-header-free-2));
+  /* Like other bars, a header with less or more space than the default three
+     steps shrinks or grows its side insets by the difference. This is only
+     the smallest space at the edge. The column keeps the main gutter, so it
+     matches the body until the edge reaches it, with no query. Both spaces
+     round to a whole pixel like the space in the bar heights, so a header
+     over a default main gutter stays on the edge of the bars. At the default
+     space the difference is zero, so a raw main gutter still matches the
+     body. */
+  --shell-track-gutter: max(0px, calc(var(--shell-gutter) + round(var(--shell-header-step) * var(--shell-main-header-space), 1px) - var(--shell-bar-space)));
+
+  &:has(> .ui-shell-bar-part) {
+    /* With a Start, Center, or End part, the header uses the tracks of a bar.
+       Other children share the middle track, and aim for the same column. */
+    @apply ui-shell-bar-tracks;
+    --shell-bar-end-space: var(--shell-content-end-space);
+    --shell-bar-padding-start: var(--shell-track-gutter);
+    --shell-bar-padding-end: var(--shell-track-gutter);
+    --shell-bar-edge-start: var(--shell-track-gutter);
+    --shell-bar-edge-end: var(--shell-track-gutter);
+    padding-inline: var(--shell-track-gutter);
+    align-items: center;
+    align-content: stretch;
+    /* A :has() before a selector with no class, attribute, or tag makes Chrome
+       restyle the whole subtree of each :has() anchor whose state changes, on
+       any page with the rule. So the header sets a flag that its children read
+       with a style query. The doubled class keeps the specificity of the :has()
+       check. */
+    --shell-main-header-bars: 1;
+  }
+
+  &:has(> .ui-shell-bar-part):has(> .ui-shell-center) {
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  &:has(> .ui-shell-bar-part):has(> .ui-shell-center.ui-shell-bar-part--grow-true) {
+    grid-template-columns: 1fr minmax(auto, 2fr) 1fr;
+  }
+
+  &:has(> .ui-shell-bar-part) > * > .ui-carousel:has(> .ui-nav.ui-nav--layout-horizontal) {
+    align-self: stretch;
+    margin-block: 0;
+    padding-block: 0;
+    border-radius: 0 !important;
+  }
+
+  &:has(> .ui-shell-bar-part) > * > .ui-carousel > .ui-nav.ui-nav--layout-horizontal {
+    /* The navigation reaches over the edges that `--nav-edge-start` and
+       `--nav-edge-end` set, so edge bars cover the facing edge, like in a
+       bar. */
+    align-items: center;
+    margin-top: calc(-1 * var(--nav-edge-start, 0px)) !important;
+    margin-bottom: calc(-1 * var(--nav-edge-end, 0px)) !important;
+    padding-top: var(--nav-edge-start, 0px);
+    padding-bottom: var(--nav-edge-end, 0px);
+    --nav-bar-gap: 0px;
+    border-radius: 0 !important;
+    --nav-block-size: calc(var(--shell-main-header-height) - 2 * var(--carousel-border,0px));
+    --nav-edge-end: calc(var(--carousel-border,0px) + var(--shell-facing-border,0px));
+  }
+
+  .ui-shell-main--sized-main > & {
+    @variant ui-base {
+      /* A bar keeps the shell's text inside a sized main. Zero specificity lets
+         caller text-* classes win. */
+      font-size: calc(var(--shell-header-step) * 4);
+      line-height: var(--shell-leading);
+    }
+  }
+
+  @container style(--shell-main-header-bars: 1) {
+    && > * {
+      grid-column: 2;
+    }
+
+    && > :has(> .ui-carousel > .ui-nav.ui-nav--layout-horizontal) {
+      /* A horizontal navigation region fills the header's height, like in a
+         bar. */
+      align-self: stretch;
+    }
+  }
+
+  &:where(.ui-shell-main-header--p-0) {
+    --shell-main-header-space: 0;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-space: 0;
+    }
+  }
+
+  &:where(.ui-shell-main-header--p-1) {
+    --shell-main-header-space: 1;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-space: 1;
+    }
+  }
+
+  &:where(.ui-shell-main-header--p-2) {
+    --shell-main-header-space: 2;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-space: 2;
+    }
+  }
+
+  &:where(.ui-shell-main-header--p-3) {
+    --shell-main-header-space: 3;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-space: 3;
+    }
+  }
+
+  &:where(.ui-shell-main-header--p-4) {
+    --shell-main-header-space: 4;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-space: 4;
+    }
+  }
+
+  &:where(.ui-shell-main-header--p-5) {
+    --shell-main-header-space: 5;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-space: 5;
+    }
+  }
+
+  &:where(.ui-shell-main-header--p-6) {
+    --shell-main-header-space: 6;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-space: 6;
+    }
+  }
+
+  &:where(.ui-shell-main-header--border-true) {
+    --border-width: 1px;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-border: 1px;
+    }
+  }
+
+  &:where(.ui-shell-main-header--border-false) {
+    --border-width: 0px;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-border: 0px;
+    }
+  }
+
+  &:where(.ui-shell-main-header--border-0) {
+    --border-width: 0px;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-border: 0px;
+    }
+  }
+
+  &:where(.ui-shell-main-header--border-1) {
+    --border-width: 1px;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-border: 1px;
+    }
+  }
+
+  &:where(.ui-shell-main-header--border-2) {
+    --border-width: 2px;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-border: 2px;
+    }
+  }
+
+  &:where(.ui-shell-main-header--border-3) {
+    --border-width: 3px;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-border: 3px;
+    }
+  }
+
+  &:where(.ui-shell-main-header--border-4) {
+    --border-width: 4px;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-border: 4px;
+    }
+  }
+
+  &:where(.ui-shell-main-header--border-5) {
+    --border-width: 5px;
+
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-border: 5px;
+    }
+  }
+
+  &:where(.ui-shell-main-header--border-inherit) {
+    .ui-shell:has(> .ui-shell-main > &.ui-shell-main-header--sticky) {
+      --shell-main-header-border: var(--border-width,0px);
+    }
+  }
+
+  &:where(.ui-shell-main-header--sticky) {
+    position: sticky;
+    inset-block-start: calc(var(--shell-top) + var(--shell-head));
+  }
+}
+
+@utility ui-shell-content-grid {
+  @apply transition-[--shell-start-1-space,--shell-start-2-space,--shell-end-1-space,--shell-end-2-space,--shell-outer-start-space,--shell-outer-end-space];
+  @apply duration-(--shell-time) ease-(--shell-ease);
+  /* Sidebars use registered lengths so content centering follows their
+     animation. Clamp each length to zero before summing: easing can overshoot
+     after the column reaches zero width. Each content grid animates its own
+     lengths, and the values derived from them do not inherit, so each animation
+     frame restyles the grids but not the content inside them. A `transition`
+     utility on a main header, intro, or body replaces this transition, so keep
+     the slot spaces and the outer spaces in its transition properties. */
+  --shell-start-1-space: calc(var(--shell-start-1-width) * var(--shell-start-1-open) * var(--shell-start-1-fit));
+  --shell-start-2-space: calc(var(--shell-start-2-width) * var(--shell-start-2-open) * var(--shell-start-2-fit));
+  --shell-end-1-space: calc(var(--shell-end-1-width) * var(--shell-end-1-open) * var(--shell-end-1-fit));
+  --shell-end-2-space: calc(var(--shell-end-2-width) * var(--shell-end-2-open) * var(--shell-end-2-fit));
+  /* The open sidebars of the outer shell in a shell with `$center="outer"`.
+     Other shells have none. */
+  --shell-outer-start-space: var(--shell-outer-start,0px);
+  --shell-outer-end-space: var(--shell-outer-end,0px);
+  --shell-start-total: calc(max(0px, var(--shell-start-1-space)) + max(0px, var(--shell-start-2-space)));
+  --shell-end-total: calc(max(0px, var(--shell-end-1-space)) + max(0px, var(--shell-end-2-space)));
+  /* Limit sidebar compensation to free space, but keep the minimum gutter. The
+     offsets sit outside the wide lines, so the wide span stays centered on the
+     content. `auto` tracks grow by equal amounts, preserving that center; `1fr`
+     loses it. Only a main header sets a track gutter: its tracks keep their bar
+     inset as a minimum, while the offsets use the same gutter as the body. */
+  --shell-free: calc(100% - var(--shell-content-end-space) - var(--shell-main-max-width) - var(--shell-gutter) - 2 * var(--shell-popout) - 2 * var(--shell-feature));
+  --shell-offset-start: clamp(0px, calc(var(--shell-free) - var(--shell-gutter)), var(--shell-comp-start));
+  --shell-offset-end: calc(var(--shell-content-end-space) + clamp(0px, calc(var(--shell-free) - var(--shell-gutter)), var(--shell-comp-end)));
+  grid-template-columns: [full-start] var(--shell-offset-start) [wide-start] minmax(var(--shell-track-gutter, var(--shell-gutter)), auto) [feature-start] minmax(0, var(--shell-feature)) [popout-start] minmax(0, var(--shell-popout)) [content-start] minmax(min(var(--shell-main-max-width), max(0px, calc(100% - var(--shell-content-end-space) - 2 * var(--shell-track-gutter, var(--shell-gutter))))), var(--shell-main-max-width)) [content-end] minmax(0, var(--shell-popout)) [popout-end] minmax(0, var(--shell-feature)) [feature-end] minmax(var(--shell-track-gutter, var(--shell-gutter)), auto) [wide-end] var(--shell-offset-end) [full-end];
+  --shell-comp-end: max(0px, calc(var(--shell-start-total) + max(0px, var(--shell-outer-start-space)) - var(--shell-end-total) - max(0px, var(--shell-outer-end-space))));
+  --shell-comp-start: max(0px, calc(var(--shell-end-total) + max(0px, var(--shell-outer-end-space)) - var(--shell-start-total) - max(0px, var(--shell-outer-start-space))));
+  display: grid;
+  justify-content: stretch;
+  min-width: 0;
+  border-radius: 0 !important;
+  /* Grid items do not collapse margins, so the grid spaces its children. */
+  row-gap: var(--shell-content-gap);
+  --shell-content-gap: --spacing(6);
+  /* Publish gutter spacing as frame padding so nested frame corners remain
+     concentric. */
+  --shell-popout: 1rem;
+  --shell-feature: 3.5rem;
+  padding-inline: 0;
+
+  :is(& *) {
+    @variant ui-base {
+      /* Keep focused content above a sticky footer when it scrolls into
+         view. */
+      scroll-margin-block-end: var(--shell-foot);
+    }
+  }
+
+  & [id] {
+    /* Fragment targets clear the space above the parts, and at least 1rem, so a
+       table of contents marks the first heading current at the top of the
+       page. */
+    scroll-margin-block-start: calc(var(--shell-top) + var(--shell-head) + var(--shell-main-head) + max(1rem, var(--shell-main-intro-pbs, var(--shell-main-py, var(--shell-gutter)))));
+  }
+
+  /* A leading or trailing wide or full band touches the bars around the
+     section. The space between the intro and the body stays. */
+  &:not(.ui-shell-main-intro):has(> :is(.ui-shell-wide, .ui-shell-full):last-child) {
+    padding-block-end: 0;
+  }
+
+  &:not(.ui-shell-main-intro ~ *):has(> :is(.ui-shell-wide, .ui-shell-full):first-child) {
+    padding-block-start: 0;
+  }
+
+  & > :is(.ui-control, .ui-badge) {
+    /* Keep controls and badges at their content width instead of stretching to
+       the column. */
+    justify-self: flex-start;
+  }
+}
+
+@utility ui-shell-main-intro {
+  align-content: flex-start;
+  grid-column-start: 1;
+  grid-column-end: calc(2 + var(--shell-intro-free-1) + var(--shell-intro-free-1) * var(--shell-intro-free-2));
+  grid-row: intro;
+  overflow-x: clip;
+  --shell-content-end-space: calc(max(0px, var(--shell-end-1-space)) * var(--shell-intro-free-1) + max(0px, var(--shell-end-2-space)) * var(--shell-intro-free-1) * var(--shell-intro-free-2));
+  /* By default, the intro starts `$py` from main, or a space that follows the
+     width of the intro, below the header. Below the intro, that same space
+     stays, whatever main sets. A percentage resolves against the grid area,
+     which sidebars beside the intro reduce and adjacent end sidebars that
+     start at the body don't. Whole pixels keep a fluid value from leaving the
+     page at a fractional height.
+     Don't use a container unit here: in Chrome, one such unit under a stretched
+     grid container restyles each element with a container query on every
+     relayout of that container, such as each frame of a sidebar fold. */
+  --shell-main-intro-space: round(clamp(calc(var(--shell-header-step) * 5), 5%, calc(var(--shell-header-step) * 14)), 1px);
+  /* The body below starts three bar steps lower, which keeps it level with
+     sidebars that start at the body. So the intro ends that much earlier, and
+     the space between them is the space above the intro. A smaller space
+     keeps the three steps. */
+  --shell-main-intro-end: var(--shell-main-intro-space);
+  padding-block: var(--shell-main-py, var(--shell-main-intro-space)) var(--shell-main-intro-end);
+  /* Fragment targets can't read a percentage, so they clear the largest space.
+     A table of contents still marks a target current at the top of the page. */
+  --shell-main-intro-pbs: var(--shell-main-py,round(calc(var(--shell-header-step) * 14), 1px));
+
+  &:has(~ .ui-shell-main-body) {
+    --shell-main-intro-end: max(0px, calc(var(--shell-main-intro-space) - round(calc(var(--shell-header-step) * 3), 1px)));
+  }
+}
+
+@utility ui-shell-main-body {
+  align-content: flex-start;
+  grid-column: main;
+  grid-row: body;
+  overflow-x: clip;
+  --shell-content-end-space: 0px;
+  /* The body keeps `$py` from main, or its own gutter, above and below it.
+     After an intro, it starts three bar steps below the intro. */
+  --shell-main-pbs: var(--shell-main-py,var(--shell-gutter));
+  --shell-main-pbe: var(--shell-main-py,var(--shell-gutter));
+  padding-block: var(--shell-main-pbs) var(--shell-main-pbe);
+
+  .ui-shell-main-intro:not(.ui-shell-main-intro--py) ~ & {
+    /* After an intro with the default `$py`, the body ends with the space above
+       the intro. The intro also spans the adjacent end sidebars that start at
+       the body, so their width counts toward its 5%. */
+    --shell-main-pbe: var(--shell-main-py,round(clamp(calc(var(--shell-header-step) * 5), calc(5% + 0.05 * (max(0px, var(--shell-end-1-space)) * var(--shell-intro-free-1) + max(0px, var(--shell-end-2-space)) * var(--shell-intro-free-1) * var(--shell-intro-free-2))), calc(var(--shell-header-step) * 14)), 1px));
+  }
+
+  .ui-shell-main-intro ~ & {
+    --shell-main-pbs: round(calc(var(--shell-header-step) * 3), 1px);
+  }
+
+  &:where(.ui-shell-main-body--center-outer) {
+    &:not(.ui-shell-main > *) {
+      /* A body directly inside main already reads the sidebars of its shell,
+         so the query would count them twice there. */
+      @apply ui-shell-center-outer;
+    }
+
+    &:not(.ui-shell-main > *) > :not(.ui-shell-center-outer) {
+      /* The body reads the space itself. Below it, the space would restyle
+         the content on each toggle and move a shell inside it. A shell that
+         is centered on the outer shell asks main for the state itself. */
+      --shell-outer-start: initial;
+      --shell-outer-end: initial;
+    }
+  }
+}
+
+@utility ui-shell-main-band {
+  display: grid;
+  grid-template-columns: subgrid;
+  min-width: 0;
+
+  .ui-shell-main-band > & {
+    @apply contain-inline-size;
+  }
+
+  .ui-shell-bar > &.ui-shell-main-band:has(> .ui-shell-center.ui-shell-bar-part--grow-true) {
+    grid-template-columns: 1fr minmax(auto, 2fr) 1fr;
+  }
+
+  .ui-shell-bar > &.ui-shell-main-band:has(> .ui-shell-bar-part) {
+    /* In a bar, the band holds start, center, and end parts in the tracks of a
+       bar, so they line up with the area. The extra class outranks the single
+       track above. */
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: --spacing(2);
+  }
+
+  .ui-shell-bar > &.ui-shell-main-band:has(> .ui-shell-bar-part):not(:has(> .ui-shell-center, > .ui-shell-bar-part--grow-true)) {
+    /* Without a center part, each side part fits its own track, like in a
+       bar. */
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .ui-shell-content-grid > & {
+    @apply contain-inline-size;
+  }
+
+  :is(.ui-shell-bar, .ui-shell-main-header:has(> .ui-shell-bar-part)) > & {
+    @apply contain-inline-size;
+    grid-column: 2;
+    grid-row-start: 1;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+@utility ui-shell-content {
+  .ui-shell-main-band > & {
+    grid-column: content;
+  }
+
+  .ui-shell-content-grid > & {
+    grid-column: content;
+  }
+}
+
+@utility ui-shell-popout {
+  .ui-shell-main-band > & {
+    grid-column: popout;
+  }
+
+  .ui-shell-content-grid > & {
+    grid-column: popout;
+  }
+}
+
+@utility ui-shell-feature {
+  .ui-shell-main-band > & {
+    grid-column: feature;
+  }
+
+  .ui-shell-content-grid > & {
+    grid-column: feature;
+  }
+}
+
+@utility ui-shell-wide {
+  .ui-shell-main-band > & {
+    grid-column: wide;
+  }
+
+  .ui-shell-content-grid > & {
+    grid-column: wide;
+  }
+}
+
+@utility ui-shell-full {
+  .ui-shell-main-band > & {
+    grid-column: full;
+  }
+
+  .ui-shell-content-grid > & {
+    grid-column: full;
+  }
+}

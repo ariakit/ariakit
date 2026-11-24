@@ -1,0 +1,19 @@
+/* The CSS of the code style recipe in code.ts. Import this file after ui.css in
+   the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./code.css"; */
+
+@utility ui-code {
+  /* The side padding follows the text size of the chip. */
+  @apply ui-spacing-em ring;
+  /* A layer supplies the edge channel; raw edges keep their full opacity. */
+  @apply ring-(--ak-edge);
+  /* Break overflowing tokens without reducing min-content width. Preserve
+     decoration on each fragment. */
+  @apply box-decoration-clone;
+  padding-inline: var(--spacing);
+  padding-block: 0.18em;
+  border-radius: var(--radius);
+  overflow-wrap: break-word;
+}

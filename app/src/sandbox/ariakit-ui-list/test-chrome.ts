@@ -94,10 +94,10 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     // The other rows of the list keep their markers, which also shows that the
     // list rendered before the check for the missing marker.
     const row = box.listitem().filter({ hasText: "Keyboard shortcuts" });
-    await test.expect(row.locator(".list-marker")).toHaveCount(1);
+    await test.expect(row.locator(".ui-list-item-marker")).toHaveCount(1);
     const button = box.button("Right-to-left layouts");
     await test.expect(button).toBeVisible();
-    await test.expect(button.locator(".list-marker")).toHaveCount(0);
+    await test.expect(button.locator(".ui-list-item-marker")).toHaveCount(0);
   });
 
   // https://github.com/ariakit/ariakit/issues/7553
@@ -109,8 +109,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       locator.evaluate((node) => node.getBoundingClientRect().left);
     const getEnd = (locator: Locator) =>
       locator.evaluate((node) => node.getBoundingClientRect().right);
-    const leadingMarker = box.button("Version 3.0").locator(".list-marker");
-    const plainMarker = box.button("Version 2.9").locator(".list-marker");
+    const leadingMarker = box
+      .button("Version 3.0")
+      .locator(".ui-list-item-marker");
+    const plainMarker = box
+      .button("Version 2.9")
+      .locator(".ui-list-item-marker");
     const leadingText = box.text("Menus can open on hover.");
     const plainText = box.text("Dialogs keep focus in nested frames.");
     await test.expect(leadingText).toBeVisible();

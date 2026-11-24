@@ -1,0 +1,306 @@
+/* The CSS of the glider style recipe in glider.ts. Import this file after
+   ui.css in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./glider.css"; */
+
+/* Registration lets a glider box travel: the Glider style component sets the
+   place and the size of the box, and the browser animates them as lengths. They
+   don't inherit, so an animation frame changes only the element that travels,
+   not the box or the copies of the items inside it. The bar that travels
+   between the links of a navigation takes its place and its size from the same
+   values, which the Nav style component sets on the navigation. */
+@property --glider-x {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-height {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* How far the selected glider box is from the start and from the end of its
+   group, or of its row, along the inline axis. The box and the elements that
+   follow it add the two parts that the Glider style component writes. A rule
+   can then shape an element from the place of the box, as the curves of a
+   folder tab and the corners of its panel do. */
+@property --glider-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* The distances of the box from the ends of its group. Registration lets the
+   browser animate them with the box. */
+@property --glider-travel-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-travel-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* The distances of the group from the ends of a row with the ui-glider-row
+   class. They change at once, apart from the travel of the box. */
+@property --glider-row-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-row-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@utility ui-glider {
+  @apply size-0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+@utility ui-glider-scale {
+  @apply size-0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: clip;
+}
+
+@utility ui-glider-scale-probe {
+  @apply size-[100px];
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+@utility ui-glider-track {
+  @apply size-0;
+  /* A track fades when it shows or hides. */
+  @apply transition-opacity duration-150;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: calc(1 * -1);
+
+  &[data-hidden] {
+    opacity: 0;
+  }
+
+  &[data-instant] {
+    transition-property: none;
+  }
+
+  &[data-traveling] {
+    /* While it travels, the box covers the items under it, and the window shows
+       a copy of those items in the state of the box. Items can set their own
+       place in the stack, as tabs do, so the track goes above them. */
+    z-index: 10;
+  }
+}
+
+@utility ui-glider-mover {
+  @apply translate-x-(--glider-shift-x,0px);
+  @apply translate-y-(--glider-shift-y,0px);
+  @apply duration-(--glider-duration,200ms) ease-[cubic-bezier(0.3,0,0,1)];
+  /* The browser places the mover on whole pixels, like the item, so the box
+     has the same sharp edges at rest. A place that only a shift sets would
+     not. At rest, the shift is zero. */
+  position: absolute;
+  top: var(--glider-y);
+  left: var(--glider-x);
+  width: var(--glider-width);
+  height: var(--glider-height);
+  transition-property: translate, --glider-width, --glider-height;
+
+  [data-instant] & {
+    /* A track with no place to travel from goes to its item at once. */
+    transition-property: none;
+  }
+
+  [data-shifting] & {
+    /* The shift from the last place applies at once, and then travels. The size
+       keeps its travel. */
+    transition-property: --glider-width, --glider-height;
+  }
+}
+
+@utility ui-glider-box {
+  /* The item keeps its own focus ring. The box shows only a focus state that
+     the item draws on its surface, such as the edge of a folder tab. */
+  @apply outline-none! duration-(--glider-duration,200ms)!;
+  @apply ease-[cubic-bezier(0.3,0,0,1)]!;
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  translate: none !important;
+  scale: none !important;
+  pointer-events: none !important;
+  opacity: 1 !important;
+  transition-property: --glider-travel-start, --glider-travel-end !important;
+
+  [data-instant] & {
+    transition-property: none !important;
+  }
+}
+
+/* The distances of the selected box from the ends of its group, which travel
+   with the box, plus the distances of the group from the ends of its row, which
+   change at once, such as while a part of the row folds. The Glider style
+   component writes both parts. */
+@utility ui-glider-place {
+  --glider-start: calc(var(--glider-travel-start) + var(--glider-row-start));
+  --glider-end: calc(var(--glider-travel-end) + var(--glider-row-end));
+}
+
+@utility ui-glider-layer {
+  @apply size-0;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  .ui-glider-window > & {
+    @apply -translate-x-(--glider-shift-x,0px);
+    @apply -translate-y-(--glider-shift-y,0px);
+    @apply duration-(--glider-duration,200ms) ease-[cubic-bezier(0.3,0,0,1)];
+    top: calc(var(--glider-y) * -1);
+    left: calc(var(--glider-x) * -1);
+    transition-property: translate;
+  }
+
+  [data-instant] & {
+    transition-property: none;
+  }
+
+  [data-shifting] .ui-glider-window > & {
+    /* The selector also names the window, so this rule wins over the rule
+       above that names it. */
+    transition-property: none;
+  }
+}
+
+@utility ui-glider-follower {
+  @apply duration-(--glider-duration,200ms) ease-[cubic-bezier(0.3,0,0,1)];
+  transition-property: --glider-travel-start, --glider-travel-end;
+
+  &[data-glider-instant] {
+    transition-property: none;
+  }
+}
+
+@utility ui-glider-copy {
+  position: absolute !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  pointer-events: none !important;
+}
+
+@utility ui-glider-group {
+  /* Keeps the boxes, which sit behind the items, above the group surface. */
+  isolation: isolate;
+
+  & .ui-control-separator {
+    @variant ui-adjacent-selected {
+      /* A separator that hides beside the item that the box travels to fades
+         with the travel, so it is gone when the box arrives. A transition takes
+         the timing of the new state, so a hover or focus fade keeps its own
+         timing. */
+      @apply duration-(--glider-duration,200ms) ease-[cubic-bezier(0.3,0,0,1)];
+    }
+  }
+
+  & .ui-control:not(.ui-glider-box, [data-tab-moving]) {
+    @variant ui-selected {
+      /* The selected box paints the surface that the selected item painted. The
+         box sits behind the items, so a selected tab that moves over other
+         tabs, such as under the pointer of a drag, keeps its own surface for
+         that time, and covers them. The box stays under it. */
+      background-color: transparent !important;
+      background-image: none !important;
+      box-shadow: none !important;
+      border-color: transparent !important;
+    }
+  }
+
+  & .ui-control[data-glider-masked] {
+    /* The item that the box travels to keeps its place and its clicks, and a
+       copy shows its content in the idle state until the box arrives. */
+    color: transparent !important;
+  }
+
+  & .ui-control[data-glider-masked] > :not(input) {
+    opacity: 0 !important;
+  }
+
+  & .ui-folder:not(.ui-glider-box, [data-tab-moving]) {
+    @variant ui-selected {
+      @variant before {
+        /* A folder tab draws its curves on pseudo-elements, and the box draws
+           them too. */
+        display: none !important;
+      }
+
+      @variant after {
+        display: none !important;
+      }
+    }
+  }
+
+  &:where(.ui-glider-group--hover) {
+    & .ui-control:not(.ui-glider-box) {
+      @variant ui-hover {
+        background-color: transparent !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        border-color: transparent !important;
+      }
+    }
+
+    & .ui-folder:not(.ui-glider-box) {
+      @variant ui-hover {
+        @variant after {
+          /* An unselected folder tab paints its hover surface on a
+             pseudo-element. */
+          background-color: transparent !important;
+        }
+      }
+    }
+  }
+}

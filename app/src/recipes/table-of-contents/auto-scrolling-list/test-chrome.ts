@@ -20,7 +20,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect
       .poll(() =>
         last.evaluate((link) => {
-          const box = link.closest(".shell-sidebar-body");
+          const box = link.closest(".ui-shell-sidebar-body");
           if (!box) return false;
           const boxRect = box.getBoundingClientRect();
           const rect = link.getBoundingClientRect();
@@ -48,12 +48,12 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect
       .poll(() =>
         nav.evaluate((element) => {
-          const box = element.closest(".shell-sidebar-body");
+          const box = element.closest(".ui-shell-sidebar-body");
           if (!box) return null;
           const boxRect = box.getBoundingClientRect();
           const rows = { covered: 0, outside: [] as string[] };
           for (const link of element.querySelectorAll("a")) {
-            const bar = link.querySelector<HTMLElement>(".toc-link-bar");
+            const bar = link.querySelector<HTMLElement>(".ui-toc-link-bar");
             if (!bar) continue;
             // The inline range is where the bar glides to.
             const { style } = bar;
@@ -100,7 +100,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect
       .poll(() =>
         label.evaluate((element) => {
-          const box = element.closest(".shell-sidebar-body");
+          const box = element.closest(".ui-shell-sidebar-body");
           if (!box) return false;
           const boxRect = box.getBoundingClientRect();
           const rect = element.getBoundingClientRect();

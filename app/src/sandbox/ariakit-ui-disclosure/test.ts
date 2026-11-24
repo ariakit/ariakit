@@ -43,7 +43,7 @@ test("renders a zero label and omits a false label without wrapping row children
   expect(members).not.toHaveAttribute("aria-labelledby");
   expect(members).toHaveAccessibleDescription("Members waiting for access");
   expect(
-    members.querySelectorAll(":scope > .disclosure-button-slot"),
+    members.querySelectorAll(":scope > .ui-disclosure-button-slot"),
   ).toHaveLength(1);
 });
 
@@ -52,7 +52,7 @@ test("keeps a bare fragment label separate from its description and badge", asyn
   const button = q.button("Account settings");
   expect(button).toHaveAccessibleDescription("Manage your profile");
   expect(
-    button.querySelector(":scope > .disclosure-button-slot"),
+    button.querySelector(":scope > .ui-disclosure-button-slot"),
   ).toHaveTextContent("3");
   await click(button);
   expect(q.text("Update account settings")).toBeVisible();

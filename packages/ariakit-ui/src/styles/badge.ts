@@ -17,22 +17,13 @@ export const badge = cv({
   class: [
     // Rules that keep controls at their content width or color the border of a
     // floating slot also match this marker.
-    "badge font-medium",
-    // Letter spacing inherits as a length, so the spacing of a large heading
-    // around a badge would crowd its smaller text. The direct property keeps
-    // the letter spacing fallback of text-* classes.
-    "ui-base:[letter-spacing:normal]",
-    // Center short counts in the minimum width, and position floating slots.
-    "relative justify-center",
+    "ui-badge",
+    "font-medium",
     // Keep badges aligned with surrounding text while allowing flex and grid
     // placement.
+    // Stays a class to come after the display of `ui-slot-frame`, which it
+    // replaces.
     "inline-flex",
-    // Keep one-line counts at least square, including padding and borders.
-    "min-w-[calc(1lh+(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px))*2)]",
-    // In a slot, the slot height sets the size of the badge, and short counts
-    // stay at least square.
-    "[.slot-frame-slot>&]:self-stretch [.slot-frame-slot>&]:items-center",
-    "[.slot-frame-slot>&]:min-w-(--slot-height)",
   ],
   variants: {
     /**
@@ -48,10 +39,7 @@ export const badge = cv({
      * A raw `$px` length overrides it, and a named `$px` has no effect. Outside
      * a slot, it has no effect.
      */
-    $round: [
-      // The extra selector wins over the side padding that fits the slot.
-      "[.slot-frame-slot>&.badge]:[--px:calc(var(--slot-height)*0.15)]",
-    ],
+    $round: "ui-badge--round",
   },
   defaultVariants: {
     $kind: "tint",
@@ -149,8 +137,8 @@ export const badge = cv({
         // padding, and $px still sets the extra at the sides. Slot padding
         // would sit outside the fill. --slot-height is a registered length that
         // keeps the font of the slot, and 1lh and 1cap follow the badge.
-        "[.slot-frame-slot>&]:[--py:max(0px,calc((var(--slot-height)-1lh)/2))]",
-        "[.slot-frame-slot>&]:[--px:max(0px,calc((var(--slot-height)-1lh)/2+(1lh-1cap)*var(--px-scale)))]",
+        "[.ui-slot-frame-slot>&]:[--py:max(0px,calc((var(--slot-height)-1lh)/2))]",
+        "[.ui-slot-frame-slot>&]:[--px:max(0px,calc((var(--slot-height)-1lh)/2+(1lh-1cap)*var(--px-scale)))]",
       ]);
     }
     if (variants.$kind === "solid") return;
@@ -167,15 +155,7 @@ export const badge = cv({
 /** Badge text with capital-height alignment. */
 export const badgeLabel = cv({
   extend: [slotFrameText],
-  class: [
-    // Trim browser-dependent font metrics to center the capitals. Padding
-    // restores the line height only where text-box is supported; untrimmable
-    // elements still gain padding.
-    // https://github.com/ariakit/ariakit/issues/7592
-    "[text-box:cap_alphabetic] supports-[text-box:cap_alphabetic]:py-[calc((1lh-1cap)/2)]",
-    // Compensate for padding rounded down to the browser layout unit.
-    "min-h-lh",
-  ],
+  class: "ui-badge-label",
   variants: {
     /**
      * Truncates the label to one line with an ellipsis. Uses `overflow-x: clip`

@@ -1,0 +1,111 @@
+/* The CSS of the popover style recipe in popover.ts. Import this file in the
+   CSS file that imports Tailwind CSS, after ui.css and the CSS files of the
+   style recipes that popover.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./popover.css"; */
+
+/* Keep ui-open and ui-closed complementary for native and Ariakit overlays.
+   Set data-open on markup that must render open. */
+@custom-variant ui-open {
+  &:is([open], :popover-open, :open, [data-open]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-closed {
+  &:not(:is([open], :popover-open, :open, [data-open])) {
+    @slot;
+  }
+}
+
+/* Put open variants before ui-backdrop; reversing them puts ::backdrop inside
+   :is(), which invalidates the selector. */
+@custom-variant ui-backdrop {
+  &::backdrop,
+  :where([data-backdrop]):has(+ &, + * &) {
+    @slot;
+  }
+}
+
+@utility ui-popover {
+  /* Use transition utilities so `transition-none` can disable motion. Open
+     and closed states supply their own durations.
+     Translate is in the list so an extender can slide the popup in, such as
+     a dialog at a side of the viewport. */
+  @apply transition-[overlay,display,scale,translate,opacity];
+  /* Keep the browser easing curve when closing. */
+  @apply ease-[ease];
+  z-index: 10;
+  transition-behavior: allow-discrete;
+  /* Use the Ariakit anchor origin when supplied; native popovers retain the
+     default center origin. */
+  transform-origin: var(--popover-transform-origin);
+  --scrollport-start: 0px;
+  --scrollport-end: 0px;
+
+  @variant ui-base {
+    /* An extender can set --popover-open-ease to change the opening curve, and
+       --popover-hidden-scale to change the scale of the hidden popup. Each
+       popup sets the defaults with zero specificity, so a popup inside another
+       one, such as a side sheet, doesn't inherit the values of that one. */
+    --popover-open-ease: var(--ease-overshoot);
+    --popover-hidden-scale: 95%;
+    /* Content that fits in its scroll area, such as a code block, fits in the
+       room that Ariakit leaves for the popover, inside its padding and edge.
+       The sticky bars of the page don't cover it. Zero specificity, so a
+       dialog can publish its own height. */
+    --scrollport-height: calc(var(--popover-available-height,100dvh) - 2 * (var(--ak-frame-padding,0px) + var(--ak-frame-border,0px)));
+  }
+
+  @variant ui-open {
+    @apply duration-(--duration-overshoot) ease-(--popover-open-ease);
+
+    @variant starting {
+      scale: var(--popover-hidden-scale);
+      opacity: 0;
+    }
+  }
+
+  @variant ui-closed {
+    @apply duration-250;
+    scale: var(--popover-hidden-scale);
+    opacity: 0;
+  }
+
+  @variant ui-open {
+    @variant starting {
+      @variant ui-backdrop {
+        opacity: 0;
+      }
+    }
+  }
+
+  @variant ui-closed {
+    @variant ui-backdrop {
+      opacity: 0;
+    }
+  }
+}
+
+@utility ui-popover-positioner--slide {
+  @variant motion-safe {
+    &:has(> [data-enter]) {
+      /* The :has() selector checks only the positioner, so browsers don't
+         check it on every element that they restyle. The motion-safe:
+         condition turns the slide off with reduced motion, because :has()
+         outranks a motion-reduce: class. */
+      @apply transition-transform duration-150 ease-out;
+    }
+  }
+}
+
+@utility ui-popover-scroll {
+  overflow: auto;
+  overscroll-behavior: contain;
+}

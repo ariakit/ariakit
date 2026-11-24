@@ -13,15 +13,7 @@ export const tooltip = cv({
   // The slot frame lays out `TooltipText` and `TooltipSlot` parts in a row,
   // with the optical side padding and gaps of a control.
   extend: [popover, slotFrame],
-  class: [
-    // Allow caller max-w-* utilities to override the wrapping limit.
-    "[--tooltip-max-width:--spacing(80)] max-w-(--tooltip-max-width)",
-    // A tooltip that the next tooltip replaces at once hides without its exit
-    // transition, so their contents don't overlap. Only transition: none stops
-    // an exit transition that already runs. The next tooltip keeps its enter
-    // transition.
-    "data-instant:ui-closed:transition-none",
-  ],
+  class: "ui-tooltip",
   defaultVariants: {
     $size: "sm",
     $shadow: "md",

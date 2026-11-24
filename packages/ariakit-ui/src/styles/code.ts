@@ -6,15 +6,7 @@ import { text } from "./text.ts";
 /** A code chip that scales with the surrounding text. */
 export const code = cv({
   extend: [edge, text],
-  class: [
-    // The side padding follows the text size of the chip.
-    "ui-spacing-em px-1 py-[0.18em] rounded ring",
-    // A layer supplies the edge channel; raw edges keep their full opacity.
-    "ring-(--ak-edge)",
-    // Break overflowing tokens without reducing min-content width. Preserve
-    // decoration on each fragment.
-    "wrap-break-word box-decoration-clone",
-  ],
+  class: "ui-code",
   defaultVariants: {
     $font: "mono",
     // An inherited line height centers on this font's metrics, not those of the

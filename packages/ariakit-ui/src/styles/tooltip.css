@@ -1,0 +1,28 @@
+/* The CSS of the tooltip style recipe in tooltip.ts. Import this file in the
+   CSS file that imports Tailwind CSS, after ui.css and the CSS files of the
+   style recipes that tooltip.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./popover.css";
+   @import "./tooltip.css"; */
+
+@utility ui-tooltip {
+  /* Allow caller max-w-* utilities to override the wrapping limit. */
+  --tooltip-max-width: --spacing(80);
+  max-width: var(--tooltip-max-width);
+
+  &[data-instant] {
+    @variant ui-closed {
+      /* A tooltip that the next tooltip replaces at once hides without its exit
+         transition, so their contents don't overlap. Only transition: none
+         stops an exit transition that already runs. The next tooltip keeps its
+         enter transition. */
+      transition-property: none;
+    }
+  }
+}

@@ -8,9 +8,9 @@ type Query = ReturnType<typeof query>;
 // of the item that the user selected.
 export function getBoxOffset(item: Locator) {
   return item.evaluate((element) => {
-    const control = element.closest(".control");
-    const group = control?.closest(".glider-group");
-    const box = group?.querySelector('.glider-box[data-selected="true"]');
+    const control = element.closest(".ui-control");
+    const group = control?.closest(".ui-glider-group");
+    const box = group?.querySelector('.ui-glider-box[data-selected="true"]');
     if (!control || !box) return Number.POSITIVE_INFINITY;
     const itemRect = control.getBoundingClientRect();
     const boxRect = box.getBoundingClientRect();

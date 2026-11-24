@@ -1,0 +1,328 @@
+/* The CSS of the skeleton style recipe in skeleton.ts. Import this file after
+   ui.css in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./skeleton.css"; */
+
+/* A skeleton part while its highlight moves. Forced colors drop the gradient,
+   so the part keeps its static paint there. */
+@custom-variant ui-skeleton-shimmer {
+  @media (prefers-reduced-motion: no-preference) and (not (forced-colors: active)) {
+    :where(.ui-skeleton--animate-shimmer) & {
+      @slot;
+    }
+  }
+}
+
+@theme {
+  /* The highlight moves about 570 pixels per second, whatever the part size. */
+  --animate-ui-skeleton-shimmer: ui-skeleton-shimmer 1.5s linear infinite;
+
+  @keyframes ui-skeleton-shimmer {
+    /* Moving the layer by one tile of the highlight stream repeats the stream
+       exactly. This repeats --skeleton-tile from ui-skeleton-shimmer-layer
+       without the variable, which would make every main-thread style update
+       of the layers slower. */
+    from {
+      translate: calc(-50rem / sin(110deg));
+    }
+    to {
+      translate: 0;
+    }
+  }
+
+  --animate-ui-skeleton-reveal: ui-skeleton-reveal 200ms ease;
+
+  @keyframes ui-skeleton-reveal {
+    /* Without a to keyframe, the element ends at its own opacity. */
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/**
+ * Paints the skeleton highlight on the layer that the shimmer moves. The layer
+ * is one tile of the highlight stream wider than the part, and the shimmer
+ * moves it by one tile, so the highlight keeps the same width and speed on
+ * parts of any size.
+ */
+@utility ui-skeleton-shimmer-layer {
+  /* The stream repeats every 50rem along the 110deg gradient line, which is
+     this distance across. The keyframes of the shimmer move the layer by it. */
+  --skeleton-tile: calc(50rem / sin(110deg));
+  width: calc(100% + var(--skeleton-tile));
+  background-color: var(--skeleton-highlight);
+  /* Fixed stops in a mask cost much less to restyle than stops that mix the
+     highlight color. The highlight eases in over most of its 20rem band and
+     eases out quickly, so a sharp edge leads and a soft tail follows. */
+  mask-image: repeating-linear-gradient(
+    110deg,
+    transparent 0rem,
+    rgb(0 0 0 / 1.7%) 1.4167rem,
+    rgb(0 0 0 / 6.7%) 2.8333rem,
+    rgb(0 0 0 / 14.6%) 4.25rem,
+    rgb(0 0 0 / 25%) 5.6667rem,
+    rgb(0 0 0 / 37.1%) 7.0833rem,
+    rgb(0 0 0 / 50%) 8.5rem,
+    rgb(0 0 0 / 62.9%) 9.9167rem,
+    rgb(0 0 0 / 75%) 11.3333rem,
+    rgb(0 0 0 / 85.4%) 12.75rem,
+    rgb(0 0 0 / 93.3%) 14.1667rem,
+    rgb(0 0 0 / 98.3%) 15.5833rem,
+    black 17rem,
+    rgb(0 0 0 / 93.3%) 17.5rem,
+    rgb(0 0 0 / 75%) 18rem,
+    rgb(0 0 0 / 50%) 18.5rem,
+    rgb(0 0 0 / 25%) 19rem,
+    rgb(0 0 0 / 6.7%) 19.5rem,
+    transparent 20rem,
+    transparent 50rem
+  );
+  mask-size: var(--skeleton-tile) 100%;
+  mask-repeat: repeat-x;
+}
+
+/** Moves the skeleton highlight across the child of a skeleton fill. */
+@utility ui-skeleton-fill-shimmer {
+  /* The child's pseudo-elements carry the highlight and the edge, as on the
+     other skeleton parts. Form controls render no pseudo-elements, or render
+     their own marks with them, so they keep the static tint and edge. */
+  @media (prefers-reduced-motion: no-preference) and (not (forced-colors: active)) {
+    :where(.ui-skeleton--animate-shimmer) & > :not(input, select, textarea) {
+      /* Paint containment clips the layers to the child and gives them a
+         containing block without changing how the child is positioned. */
+      contain: paint !important;
+      box-shadow: none !important;
+
+      /* Important declarations replace the child's own pseudo-element styles.
+         The layers are absolutely positioned, so they take no space in a flex
+         child. */
+      &::before,
+      &::after {
+        content: "" !important;
+        position: absolute !important;
+        display: block !important;
+        visibility: visible !important;
+        z-index: auto !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        border: 0 !important;
+        opacity: 1 !important;
+        transform: none !important;
+        scale: none !important;
+        rotate: none !important;
+        filter: none !important;
+        mask: none !important;
+        clip-path: none !important;
+        mix-blend-mode: normal !important;
+      }
+
+      /* The highlight layer matches the one on the other skeleton parts. */
+      &::before {
+        inset: 0 auto 0 0 !important;
+        border-radius: 0 !important;
+        background: none !important;
+        @apply ui-skeleton-shimmer-layer!;
+        animation: var(--animate-ui-skeleton-shimmer) !important;
+      }
+
+      /* Matches the rtl variants on the other skeleton parts, so all of them
+         move in step and mirror the band. */
+      &:where(:dir(rtl), [dir="rtl"], [dir="rtl"] *)::before {
+        animation-direction: reverse !important;
+        scale: -1 1 !important;
+      }
+
+      /* The edge paints above the highlight, as it did over the background. */
+      &::after {
+        inset: 0 !important;
+        border-radius: inherit !important;
+        translate: none !important;
+        animation: none !important;
+        background: none !important;
+        box-shadow: inset 0 0 0 var(--border-width) var(--skeleton-edge) !important;
+      }
+    }
+  }
+}
+
+@utility ui-skeleton-base {
+  @apply select-none;
+  /* A pending part keeps its space without painting, so the layout does not
+     move when the placeholders fade in. */
+  @apply transition-opacity;
+  pointer-events: none;
+  /* Parts read the highlight from a variable so that each shape can paint it on
+     its own layer: over the element, its bar, or the child it fills. The tint
+     resolves here, before a filled child redefines the layer color. */
+  --skeleton-highlight: oklch(from var(--ak-layer) calc(l + 0.07) c h);
+
+  &[data-pending] {
+    opacity: 0;
+  }
+}
+
+@utility ui-skeleton-box {
+  display: block;
+}
+
+/* The highlight moves on a layer one tile of the highlight stream wider than
+   the part. Moving a layer runs on the compositor, while moving a background
+   repaints the part on every frame. The layers can move the part's edges by a
+   fraction of a pixel, so they exist only while the highlight moves. */
+@utility ui-skeleton-shimmer-before {
+  @variant before {
+    @apply ui-skeleton-shimmer-layer;
+    display: none;
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+  }
+
+  @variant rtl {
+    @variant before {
+      /* The direction shares the variant, so the animation shorthand cannot
+         reset it. The layer mirrors too, so the band leans and leads the same
+         way. */
+      @apply -scale-x-100;
+    }
+  }
+
+  @variant ui-skeleton-shimmer {
+    /* Paint containment clips the layer to the part's corners and gives it a
+       containing block without changing how the part is positioned. */
+    @apply contain-paint;
+
+    @variant before {
+      display: block;
+      animation: var(--animate-ui-skeleton-shimmer);
+    }
+
+    @variant rtl {
+      @variant before {
+        animation-direction: reverse;
+      }
+    }
+  }
+}
+
+/* The inset edge moves from the part to a layer above the highlight, so the
+   highlight passes under it, as it did as a background. Other edge types paint
+   outside the clipped layer. */
+@utility ui-skeleton-shimmer-inset-edge {
+  @variant after {
+    @apply ring-(length:--border-width) ring-inset ring-(--ak-edge);
+    display: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  @variant ui-skeleton-shimmer {
+    @variant after {
+      display: block;
+    }
+  }
+}
+
+@utility ui-skeleton-circle {
+  display: block;
+  aspect-ratio: 1 / 1;
+}
+
+@utility ui-skeleton-line {
+  height: 1lh;
+  position: relative;
+  background-color: transparent !important;
+  /* The space above and below the bar. Capital letters plus a fifth of the
+     font size is close to the height from ascenders to descenders. */
+  --skeleton-bar-inset: calc((1lh - 1cap - 0.2em) / 2);
+
+  @variant before {
+    @apply ring-(length:--border-width) ring-inset ring-(--ak-edge);
+    /* A pseudo-element paints the bar. Vertical margins on the element itself
+       would collapse with siblings and move the layout. */
+    position: absolute;
+    inset-inline: 0;
+    inset-block: var(--skeleton-bar-inset);
+    border-radius: inherit;
+    background-color: var(--ak-layer);
+  }
+
+  @variant after {
+    @apply ui-skeleton-shimmer-layer;
+    /* The highlight moves on a layer above the bar, one tile of the highlight
+       stream wider than the bar. Paint containment clips it to the bar's ends,
+       and a clip path to the bar's height and corners. As on the other parts,
+       they exist only while the highlight moves. */
+    display: none;
+    position: absolute;
+    inset-block: var(--skeleton-bar-inset);
+    left: 0;
+  }
+
+  @variant rtl {
+    @variant after {
+      @apply -scale-x-100;
+    }
+  }
+
+  @variant ui-base {
+    /* Zero specificity lets an extending recipe or a class set another
+       display, such as inline-block for a bar in a line of text. */
+    display: block;
+  }
+
+  @variant ui-skeleton-shimmer {
+    @apply contain-paint;
+    clip-path: inset(var(--skeleton-bar-inset) 0 round var(--ak-frame-radius));
+
+    @variant after {
+      display: block;
+      animation: var(--animate-ui-skeleton-shimmer);
+    }
+
+    @variant rtl {
+      @variant after {
+        animation-direction: reverse;
+      }
+    }
+  }
+}
+
+@utility ui-skeleton-fill {
+  /* While the highlight moves, the child's pseudo-elements carry it and the
+     edge, as on the other parts. */
+  @apply ui-skeleton-fill-shimmer;
+  /* The wrapper generates no box, so the child keeps its place in the parent
+     layout. Custom properties still pass through it to the child. */
+  display: contents;
+  /* Resolve the tint here, before the child's own layer redefines these
+     variables. */
+  --skeleton-tint: var(--ak-layer);
+  --skeleton-edge: var(--ak-edge);
+
+  :is(& > *) {
+    @variant placeholder {
+      color: transparent !important;
+    }
+
+    /* The before and after variants would add pseudo-elements that take space
+       in a flex child, so these selectors only hide existing ones. */
+    &::after {
+      visibility: hidden;
+    }
+
+    &::before {
+      visibility: hidden;
+    }
+  }
+
+  &[data-pending] {
+    :is(& > *) {
+      opacity: 0 !important;
+    }
+  }
+}

@@ -28,9 +28,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // A :has() check on an ancestor of the tabs that reads the pointer state of a
-  // tab, such as `.tabs:has(… :hover) > &`, restyles that ancestor's subtree on
-  // each hover. A :has() before a universal selector anywhere in the stylesheet
-  // makes it the whole subtree, panels included.
+  // tab, such as `.ui-tabs:has(… :hover) > &`, restyles that ancestor's subtree
+  // on each hover. A :has() before a universal selector anywhere in the
+  // stylesheet makes it the whole subtree, panels included.
   test("keeps the panel styles cached when a tab is hovered", async ({
     page,
     q,

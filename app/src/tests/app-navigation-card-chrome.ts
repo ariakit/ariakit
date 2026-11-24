@@ -187,10 +187,10 @@ test("site navigation card lays out its previews beside the link", async ({
     .toBe(0);
   const layout = await card.evaluate(
     (element, anchor) => {
-      const viewport = element.querySelector(".carousel-viewport");
-      const slide = element.querySelector(".carousel-slide");
+      const viewport = element.querySelector(".ui-carousel-viewport");
+      const slide = element.querySelector(".ui-carousel-slide");
       const iframe = element.querySelector("iframe");
-      const button = element.querySelector(".carousel-button");
+      const button = element.querySelector(".ui-carousel-button");
       if (!viewport) return null;
       if (!slide) return null;
       if (!iframe) return null;
@@ -255,7 +255,7 @@ test("site navigation card lays out its previews beside the link", async ({
   // An app shell rounds its corners to the inner corners of the frame around
   // it, which clips the page.
   const innerRadius = await shellCard
-    .locator(".carousel-viewport:visible")
+    .locator(".ui-carousel-viewport:visible")
     .evaluate((viewport) => {
       const style = getComputedStyle(viewport);
       const radius = Number.parseFloat(style.borderTopLeftRadius);
@@ -527,7 +527,7 @@ test("site navigation card stays open over a preview that it kept", async ({
   await link.hover();
   await expect(card).toBeVisible();
   // The mouse moves within the preview page, which Ariakit also follows.
-  const viewport = await card.locator(".carousel-viewport").boundingBox();
+  const viewport = await card.locator(".ui-carousel-viewport").boundingBox();
   if (!viewport) throw new Error("The card has no viewport");
   const center = {
     x: viewport.x + viewport.width / 2,

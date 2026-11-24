@@ -1,0 +1,94 @@
+/* The CSS of the segment style recipe in segment.ts. Import this file after
+   ui.css in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./segment.css"; */
+
+/* ui-selected reads the state from the element or from a native input in a
+   label, so every host shares these rules. */
+@utility ui-segment-base {
+  @variant not-ui-selected {
+    /* Only the selected segment paints at rest. Hover restores the layer. */
+    background-color: transparent;
+
+    @variant ui-hover {
+      background-color: var(--ak-layer);
+    }
+  }
+
+  @variant ui-base {
+    /* Segments size to their text, so a heavier thumb would move the segments
+       after it. Only a label with data-text turns heavier, because it keeps
+       that width. This sorts after the zero-specificity button weight, so it
+       wins, and a weight class on the segment still wins over both. */
+    @apply font-normal;
+  }
+}
+
+@utility ui-segment--selected-shadow {
+  @variant ui-selected {
+    @apply shadow-[0_2px_2em_oklch(0_0_0/0.3)];
+  }
+
+  @variant ak-dark {
+    @variant ui-selected {
+      @apply shadow-[0_2px_2em_oklch(0_0_0/0.9)];
+    }
+  }
+}
+
+/* The segmented group kind. A style recipe that replaces $kind, such as the
+   tab list, adds this class. */
+@utility ui-segment-group {
+  /* The thumb takes the surface around the group, so it stands out from the
+     darker group on light and dark surfaces. */
+  --segmented-surface: var(--ak-layer-parent);
+
+  @variant ui-base {
+    /* Zero specificity lets the stretch layout and caller widths win. */
+    width: fit-content;
+  }
+}
+
+@utility ui-segment-group-scroll {
+  /* A group with no overflow stays still under a sideways swipe. */
+  overflow-x: auto;
+  overflow-y: clip;
+  overscroll-behavior-x: none;
+
+  & > .ui-control {
+    /* Segments keep their width, so the group scrolls instead of truncating
+       them. Stretched segments start at zero width, so this doesn't stop them
+       from sharing the row. */
+    flex-shrink: 0;
+  }
+}
+
+@utility ui-carousel-frame {
+  /* A frame that fits its content still fits its container. In a carousel,
+     it stretches over the padding of the root, which fits the content or
+     fills the row instead. */
+  max-width: 100%;
+  scrollbar-width: none;
+  scroll-timeline: --carousel inline;
+
+  .ui-carousel > & {
+    /* The root takes the edge, the margins, and the font size of the frame, and
+       the frame covers its padding box and matches its corners. A numeric size
+       sets the line height from the line height around it, which the root has
+       already scaled, so the frame takes the line height of the root too. */
+    @apply ak-frame-cover ak-frame-start ak-frame-end text-[1em]/[inherit]!;
+    max-width: none;
+    width: auto;
+    /* The frame shares the first grid cell of the root with the buttons, which
+       follow its scroll timeline. */
+    grid-row-start: 1;
+    grid-column-start: 1;
+    --border-width: 0px !important;
+    --frame-margin: 0px !important;
+    /* The frame reads the layer around the root, so it takes the same color as
+       the root, and items that read the surface around the frame, such as the
+       thumb of a segmented group, take the color around both. */
+    background-color: transparent !important;
+  }
+}

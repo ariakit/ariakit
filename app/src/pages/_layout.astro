@@ -409,7 +409,7 @@ const drawerNavigation = navigation.map((group) => ({
       {/* The table of contents comes before the main content, but it starts
           below the intro. It shows once the main body starts, after the intro,
           instead of moving down when the intro arrives. */}
-      <Shell className="[&>.shell-sidebar-end:not(:has(~.shell-main>.shell-main-body))]:invisible">
+      <Shell className="[&>.ui-shell-sidebar--side-end:not(:has(~.ui-shell-main>.ui-shell-main-body))]:invisible">
         {/* The navigation island takes the place of the center part, so the
             header keeps the tracks that center it. */}
         <ShellHeader

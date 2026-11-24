@@ -58,14 +58,7 @@ function hasLightnessShift(variants: LightnessShiftVariants) {
  */
 export const button = cv({
   extend: [control, hover, focusHighlight, active, selected, segment],
-  class: [
-    // Zero specificity lets a plain cursor utility replace the pointer, whatever
-    // the order that Tailwind gives the two rules.
-    "ui-base:cursor-pointer not-[button]:select-none",
-    // Map the 0–100 contrast scale to font weights 500–600. Zero specificity
-    // lets a weight class on the button win, whatever its order.
-    "ui-base:font-[calc(500+var(--contrast))]",
-  ],
+  class: "ui-button",
   variants: {
     /**
      * Sets the button surface. `bevel` adds a gradient and inner shadow; `flat`
@@ -155,15 +148,7 @@ export const button = cv({
  */
 export const buttonLabel = cv({
   extend: [controlLabel],
-  class: [
-    // Zero specificity lets a weight class on the label win in every state.
-    "data-text:group-ui-selected/control:ui-base:font-[calc(500+var(--contrast))]",
-    // A zero-height copy of data-text at the selected weight sets the label
-    // width, so the control keeps its size when it becomes selected.
-    "data-text:before:block data-text:before:h-0 data-text:before:overflow-hidden",
-    "data-text:before:invisible data-text:before:content-[attr(data-text)]",
-    "data-text:before:font-[calc(500+var(--contrast))]",
-  ],
+  class: "ui-button-label",
   variants: {
     /**
      * Fills the free space in its row, so the slots after it sit together at
@@ -172,9 +157,8 @@ export const buttonLabel = cv({
     $grow: {
       // A grown label starts its text in the free space of the control. In the
       // control row, other labels keep the text in the middle of the reserved
-      // width at both weights. A label in a content column keeps the start of
-      // the column. Zero specificity lets an alignment class on the label win.
-      false: "[.control>&]:data-text:ui-base:text-center",
+      // width at both weights.
+      false: "ui-button-label--grow-false",
     },
   },
   defaultVariants: {

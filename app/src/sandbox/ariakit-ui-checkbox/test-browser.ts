@@ -19,7 +19,9 @@ import {
 function toggleAndGetTransitions(checkbox: Locator) {
   return checkbox.evaluate((input: HTMLInputElement) => {
     input.click();
-    const check = input.closest("label")?.querySelector(".choice-card-check");
+    const check = input
+      .closest("label")
+      ?.querySelector(".ui-choice-card-check");
     const animations = check?.getAnimations({ subtree: true }) ?? [];
     const transitions = animations.flatMap((animation) => {
       if (!(animation instanceof CSSTransition)) return [];
@@ -36,7 +38,9 @@ function toggleAndGetTransitions(checkbox: Locator) {
 
 function getCheckEasing(checkbox: Locator) {
   return checkbox.evaluate((input: HTMLInputElement) => {
-    const check = input.closest("label")?.querySelector(".choice-card-check");
+    const check = input
+      .closest("label")
+      ?.querySelector(".ui-choice-card-check");
     return check ? getComputedStyle(check).transitionTimingFunction : null;
   });
 }
@@ -119,7 +123,9 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     const checkbox = query(q.article("Floating check")).checkbox("Analytics");
     await test.expect(checkbox).toBeChecked();
     const masks = await checkbox.evaluate((input: HTMLInputElement) => {
-      const check = input.closest("label")?.querySelector(".choice-card-check");
+      const check = input
+        .closest("label")
+        ?.querySelector(".ui-choice-card-check");
       if (!check) return null;
       input.indeterminate = true;
       // Reading the mask also flushes the style, so that the click below starts

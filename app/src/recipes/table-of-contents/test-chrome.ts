@@ -8,7 +8,7 @@ import { withFramework } from "#app/test-utils/preview.ts";
 function getBarLinks(nav: Locator) {
   return nav.evaluate((element) => {
     return [...element.querySelectorAll("a")].flatMap((link) => {
-      const bar = link.querySelector<HTMLElement>(".toc-link-bar");
+      const bar = link.querySelector<HTMLElement>(".ui-toc-link-bar");
       if (!bar) return [];
       // Each bar piece holds the range that glides on it.
       const style = getComputedStyle(bar);
@@ -135,7 +135,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   test("keeps the bar still with reduced motion", async ({ page, q }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     // The bar glides on its pieces.
-    const bar = q.navigation("On this page").locator(".toc-link-bar");
+    const bar = q.navigation("On this page").locator(".ui-toc-link-bar");
     await test.expect(bar.first()).toHaveCSS("transition-property", "none");
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await test.expect(bar.first()).not.toHaveCSS("transition-property", "none");

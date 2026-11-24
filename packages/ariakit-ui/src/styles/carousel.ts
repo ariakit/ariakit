@@ -1,4 +1,4 @@
-import { cv, cx } from "clava";
+import { cv } from "clava";
 import { getPaddingValue, getSpacingValue } from "../utils/styles.ts";
 import { button } from "./button.ts";
 import { frame, frameBase } from "./frame.ts";
@@ -16,16 +16,6 @@ export const carouselStepClasses = {
 };
 
 /**
- * The classes of a viewport without a fade. The buttons cover the content, and
- * the content keeps its place under them. With snapping, a button space would
- * also move the snap points, so the viewport drops it.
- */
-export const carouselNoFadeClass = cx(
-  "[--carousel-fade-size:0px]",
-  "[--carousel-button-space:0px]",
-);
-
-/**
  * A horizontal carousel root that holds the viewport, the buttons beside it,
  * and anything below them, such as slide tabs. `$kind="row"` suits chips,
  * thumbnails, and cards that scroll freely, with buttons shown only with a fine
@@ -40,43 +30,7 @@ export const carouselNoFadeClass = cx(
  */
 export const carousel = cv({
   extend: [frame, text],
-  class: [
-    // The sizes of the buttons and the fades follow the text size.
-    "carousel ui-spacing-em",
-    // The first grid cell holds the viewport and both buttons. Let the root
-    // shrink in flex and grid layouts so the viewport can scroll.
-    "grid min-w-0 grid-cols-[minmax(0,1fr)]",
-    // Keep the z-index of the buttons inside. Zero specificity lets an
-    // extender, such as a tab strip, stack its parts with the elements around
-    // it instead.
-    "ui-base:isolate",
-    // The buttons follow the scroll timeline of the viewport, their sibling.
-    "[timeline-scope:--carousel]",
-    "[--carousel-button-size:--spacing(8)]",
-    // The space between each button and the end of the row, and the same
-    // space on the other side of the button, where it also takes the pointer.
-    // Zero specificity lets an extender, such as a tab strip, set its own.
-    "ui-base:[--carousel-button-padding:round(--spacing(2),1px)]",
-    // The ui-tabs-open-* utilities repeat this size, because a tab panel can't
-    // read it from the strip.
-    "[--carousel-fade-size:--spacing(8)]",
-    // The space that a visible button takes at each end. It stays zero until
-    // $buttons sets it.
-    "[--carousel-button-space:0px]",
-    // The border width of the root, which a frame that covers the root can
-    // reach over. A ring lies outside the root, where a frame that reached it
-    // would add to the scrollable overflow of a scrolling ancestor.
-    "[--carousel-border:var(--ak-frame-border)]",
-    // A row of controls, such as a segmented group, fits its buttons to the
-    // line and the block padding of its controls, so the buttons keep the same
-    // space from the edge of the row on every side. A border on the controls,
-    // which segments draw on a dark surface, adds 1px above and below. The size
-    // follows the text of the row, so controls with a text size of their own
-    // need the row to take it too. Whole and even pixels keep the icons on the
-    // pixel grid.
-    "has-[>.carousel-frame]:[--carousel-button-padding:round(--spacing(1),1px)]",
-    "has-[>.carousel-frame]:[--carousel-button-size:round(calc(1lh+1em-2*var(--carousel-button-padding)),2px)]",
-  ],
+  class: "ui-carousel",
   variants: {
     /**
      * Sets `row` for content that scrolls freely, or `slides` for a classic
@@ -95,23 +49,8 @@ export const carousel = cv({
      * The buttons read it through custom properties.
      */
     $buttons: {
-      pointer: [
-        // Row buttons hide, and with a fine pointer, scroll-driven animations
-        // show them while the viewport can scroll toward their side, and grow
-        // them in.
-        "[--carousel-button-visibility:hidden]",
-        "any-pointer-fine:[--carousel-button-start-animation:ui-carousel-show-start,ui-carousel-grow-start]",
-        "any-pointer-fine:[--carousel-button-end-animation:ui-carousel-show-end,ui-carousel-grow-end]",
-        // The buttons show only with scroll-driven animations, so the space
-        // needs them too.
-        "has-[>.carousel-button-area]:supports-[animation-timeline:scroll()]:any-pointer-fine:[--carousel-button-space:calc(var(--carousel-button-size)+var(--carousel-button-padding))]",
-      ],
-      always: [
-        // Reset the values that a row around this carousel sets.
-        "[--carousel-button-visibility:visible]",
-        "[--carousel-button-start-animation:none] [--carousel-button-end-animation:none]",
-        "has-[>.carousel-button-area]:[--carousel-button-space:calc(var(--carousel-button-size)+var(--carousel-button-padding))]",
-      ],
+      pointer: "ui-carousel--buttons-pointer",
+      always: "ui-carousel--buttons-always",
     },
     /**
      * Sets how far the viewport reaches past the root on each side, with the
@@ -182,8 +121,8 @@ export const carouselViewportBase = cv({
      * nothing fades.
      */
     $fade: {
-      true: "carousel-fade ui-carousel-fade",
-      false: carouselNoFadeClass,
+      true: "ui-carousel-faded ui-carousel-fade",
+      false: "ui-carousel-no-fade",
     },
     /**
      * Sets how far a row button scrolls: `view`, the default, scrolls by the
@@ -203,22 +142,7 @@ export const carouselViewportBase = cv({
  */
 export const carouselViewport = cv({
   extend: [carouselViewportBase],
-  class: [
-    "carousel-viewport",
-    "row-start-1 col-start-1",
-    "flex min-w-0",
-    "overflow-x-auto overflow-y-clip overscroll-x-contain scrollbar-none",
-    "[scroll-timeline:--carousel_inline]",
-    // Zero specificity lets a gap class win, though slides size with $gap.
-    "ui-base:gap-(--carousel-gap)",
-    // Reach past the root by the bleed of the root, with the same padding, so
-    // the items stay in place and keep room for focus rings.
-    "-m-(--carousel-overhang,0px) p-(--carousel-overhang,0px)",
-    // The part of each end that the fade and the button cover, or the space
-    // that the fade keeps clear without a button, if it's larger.
-    "[--carousel-inset:calc(var(--carousel-overhang,0px)+max(var(--carousel-button-space),var(--carousel-clear))+var(--carousel-fade-size))]",
-    "scroll-px-(--carousel-inset)",
-  ],
+  class: "ui-carousel-viewport",
   variants: {
     /**
      * Sets `row` or `slides`, like the root. It's a preset for `$snap`,
@@ -236,8 +160,8 @@ export const carouselViewport = cv({
      */
     $snap: {
       none: "",
-      proximity: "snap-x snap-proximity",
-      mandatory: "snap-x snap-mandatory",
+      proximity: "ui-carousel-viewport--snap-proximity",
+      mandatory: "ui-carousel-viewport--snap-mandatory",
     },
     /**
      * Sets the space between items. Numbers multiply the spacing token. Slides
@@ -278,24 +202,7 @@ export const carouselViewport = cv({
  */
 export const carouselButtonArea = cv({
   extend: [frameBase],
-  class: [
-    "carousel-button-area",
-    // Containers can raise the buttons above other layers of the first cell.
-    "row-start-1 col-start-1 z-(--carousel-button-z,1) self-stretch",
-    // The padding goes only on the sides, so the area spans the viewport with
-    // its bleed.
-    "py-0 -my-(--carousel-overhang,0px)",
-    // The hit area of the button reaches far above and below it, and the area
-    // cuts it at its own edges. A size container could size it instead, but
-    // container queries in nested grids can stop Chromium for seconds on each
-    // layout.
-    "overflow-y-clip",
-    // The area paints nothing, and its radius only keeps the button concentric.
-    // Firefox would clip the hit area to its rounded corners.
-    "rounded-none!",
-    "flex justify-center [align-items:var(--carousel-button-align,center)]",
-    "pointer-events-none",
-  ],
+  class: "ui-carousel-button-area",
   variants: {
     /** Sets the side the area sits on. */
     $side: {
@@ -323,24 +230,11 @@ export const carouselButtonArea = cv({
 export const carouselButton = cv({
   extend: [button],
   class: [
-    "carousel-button",
-    "pointer-events-auto size-(--carousel-button-size) shrink-0 items-center",
-    "shadow-md [&>svg]:size-[1em]",
+    "ui-carousel-button shadow-md",
     // A row button grows in from its middle, and the press scales it there too.
+    // Stays a class to come after the transform-origin of `active`, which it
+    // replaces.
     "origin-center",
-    // The area centers the button, or aligns it as the root sets, and this
-    // moves it down from there, as $buttonCenter does.
-    "top-(--carousel-button-y,0px)",
-    // The hit area, which the area cuts at its top and bottom. Side offsets
-    // start inside the border, if there's one.
-    "before:absolute before:-inset-y-[100vh]",
-    "before:-inset-x-[calc(var(--carousel-button-padding)+var(--control-border,0px))]",
-    // A disabled button can lie over the content, so it keeps its color and
-    // lets the content show through, instead of fading toward the color
-    // around the carousel.
-    "ui-disabled:ak-layer-fade-0! ui-disabled:opacity-50",
-    // Chevrons point to the start or the end in either writing direction.
-    "rtl:[&_svg]:-scale-x-100",
   ],
   variants: {
     /** Sets the side the button scrolls toward. */
@@ -370,10 +264,7 @@ export const carouselButton = cv({
  * half the gap for two slides.
  */
 export const carouselSlide = cv({
-  class: [
-    "carousel-slide",
-    "min-w-0 shrink-0 grow-0 ui-base:basis-full snap-start",
-  ],
+  class: "ui-carousel-slide",
   variants: {
     /**
      * Sets whether a fast swipe, such as a flick on a touch screen or a
@@ -395,18 +286,17 @@ export const carouselSlide = cv({
 
 /** A row of slide tabs below the viewport. */
 export const carouselTabList = cv({
-  class: "flex flex-wrap justify-center",
+  class: "ui-carousel-tab-list flex-wrap",
 });
 
 /** A dot that picks its slide. */
 export const carouselTab = cv({
   extend: [button],
   class: [
-    "carousel-tab",
-    "size-6 items-center justify-center",
-    "before:size-2 before:rounded-full before:bg-current before:opacity-40",
-    "before:transition-[width,opacity] motion-reduce:before:transition-none",
-    "ui-selected:before:w-4 ui-selected:before:opacity-100",
+    "ui-carousel-tab",
+    // Stays a class to come after the classes of a caller, so that the reduced
+    // motion rule still applies.
+    "motion-reduce:before:transition-none",
   ],
   defaultVariants: {
     $rounded: "full",

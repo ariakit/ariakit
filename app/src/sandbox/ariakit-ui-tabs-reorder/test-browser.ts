@@ -291,8 +291,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // and one before the button after the tab list.
     const getOpacities = () =>
       list.evaluate((strip) => {
-        const separators =
-          strip.parentElement?.querySelectorAll(".control-separator");
+        const separators = strip.parentElement?.querySelectorAll(
+          ".ui-control-separator",
+        );
         return Array.from(separators ?? []).map((separator) => {
           return getComputedStyle(separator).opacity;
         });
@@ -370,7 +371,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // between the value and the place of the tab on the frames of the move.
     const farthest = tab.evaluate((element) => {
       return new Promise<number>((resolve) => {
-        const row = element.closest(".tab-row");
+        const row = element.closest(".ui-tab-row");
         let distance = row ? 0 : Number.POSITIVE_INFINITY;
         let frames = 0;
         const step = () => {

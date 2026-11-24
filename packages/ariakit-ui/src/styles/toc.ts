@@ -30,7 +30,7 @@ import { text } from "./text.ts";
  */
 export const toc = cv({
   extend: [nav, text],
-  class: "toc",
+  class: "ui-toc",
   defaultVariants: {
     $size: "sm",
     // The navigation has no guide by default.
@@ -48,7 +48,7 @@ export const toc = cv({
 /** The title above the rows, which names the table of contents. */
 export const tocLabel = cv({
   extend: [navGroupLabel],
-  class: "toc-label",
+  class: "ui-toc-label",
 });
 
 /**
@@ -57,7 +57,7 @@ export const tocLabel = cv({
  */
 export const tocList = cv({
   extend: [navList],
-  class: "toc-list",
+  class: "ui-toc-list",
   defaultVariants: {
     $gutter: true,
   },
@@ -66,7 +66,7 @@ export const tocList = cv({
 /** A list item that holds a link and the nested list of its rows. */
 export const tocItem = cv({
   extend: [navItem],
-  class: "toc-item",
+  class: "ui-toc-item",
 });
 
 /**
@@ -78,7 +78,7 @@ export const tocItem = cv({
 export const tocLink = cv({
   extend: [navLink],
   class: [
-    "toc-link",
+    "ui-toc-link",
     // Forced colors remove the selected surface.
     "ui-selected:forced-colors:ak-frame-border-[length:max(1px,var(--border-width,1px))]",
   ],
@@ -88,7 +88,7 @@ export const tocLink = cv({
      * differently and move the rows after it.
      */
     $selectedBold: {
-      true: "ui-selected:font-[calc(500+var(--contrast))]",
+      true: "ui-toc-link--selected-bold-true",
       false: "ui-selected:font-normal",
     },
     /**
@@ -103,15 +103,17 @@ export const tocLink = cv({
         allowZero: true,
         property: "--parent-ink",
         class:
-          "[li:has(>.nav-list_[aria-current]:not([aria-current=''],[aria-current=false]))>&]:ak-ink-(--parent-ink)",
+          "[li:has(>.ui-nav-list_[aria-current]:not([aria-current=''],[aria-current=false]))>&]:ak-ink-(--parent-ink)",
       });
     },
     /**
      * Shows the links whose nested rows hold the current link in a heavier
      * weight.
      */
+    // Stays a class to come after the --tw-font-weight of `navLink`, which it
+    // replaces.
     $parentBold:
-      "[li:has(>.nav-list_[aria-current]:not([aria-current=''],[aria-current=false]))>&]:font-[calc(500+var(--contrast))]",
+      "[li:has(>.ui-nav-list_[aria-current]:not([aria-current=''],[aria-current=false]))>&]:font-[calc(500+var(--contrast))]",
   },
   defaultVariants: {
     // The guide, bar, and marker pieces sit inside the link, so press scaling
@@ -127,7 +129,7 @@ export const tocLink = cv({
  */
 export const tocLinkGuide = cv({
   extend: [navLinkGuide],
-  class: "toc-link-guide",
+  class: "ui-toc-link-guide",
 });
 
 /**
@@ -137,7 +139,7 @@ export const tocLinkGuide = cv({
  */
 export const tocLinkBar = cv({
   extend: [navLinkGuideBar],
-  class: "toc-link-bar",
+  class: "ui-toc-link-bar",
   defaultVariants: {
     // The style component sets one range on all pieces.
     $glide: true,
@@ -147,7 +149,7 @@ export const tocLinkBar = cv({
 /** A hidden marker on the guide at a row: the marker of a navigation link. */
 export const tocLinkMarker = cv({
   extend: [navLinkMarker],
-  class: "toc-link-marker",
+  class: "ui-toc-link-marker",
   defaultVariants: {
     $glide: true,
   },

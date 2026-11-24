@@ -1,0 +1,42 @@
+/* The CSS of the active style recipe in active.ts. Import this file after
+   ui.css in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./active.css"; */
+
+@utility ui-active {
+  /* Keep these channels defined even when $active is off so composed
+     transition lists stay valid. */
+  --active-transition: scale;
+  --active-duration: 100ms;
+
+  &:where(.ui-active--on) {
+    &:has(:is(.ui-control-description)) {
+      /* Halve vertical depth for taller controls with descriptions.
+         $activeDepthY still overrides this rule. */
+      --active-depth-y: calc(var(--active-depth) * 0.5);
+    }
+
+    @variant ui-active {
+      @apply scale-x-(--active-scale-x) scale-y-(--active-scale-y);
+      /* Per-axis depths override the shared depth, including values set through
+         the style attribute. */
+      --active-scale-x: min(100%, 98% + 2% * calc(1 - clamp(0, var(--active-depth-x,var(--active-depth)) / 10, 1)));
+      --active-scale-y: min(100%, 94% + 6% * calc(1 - clamp(0, var(--active-depth-y,var(--active-depth)) / 10, 1)));
+    }
+
+    @variant ui-settled {
+      /* A press can't change a settled element, such as the current page, so
+         it doesn't scale, and neither does a bar inside it. An element that
+         settles while easing back from a press drops to full size at once, so
+         a script that measures it, such as for a bar that glides, reads it
+         where it rests. */
+      scale: none;
+      --active-transition: --none;
+    }
+  }
+
+  &:where(.ui-active--transition) {
+    @apply transition-(--active-transition) duration-(--active-duration);
+  }
+}

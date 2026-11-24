@@ -1,0 +1,22 @@
+/* The CSS of the toc style recipe in toc.ts. Import this file in the CSS file
+   that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that toc.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./prose.css";
+   @import "./disclosure.css";
+   @import "./check-mark.css";
+   @import "./list.css";
+   @import "./nav.css";
+   @import "./toc.css"; */
+
+@utility ui-toc-link--selected-bold-true {
+  @variant ui-selected {
+    @apply font-[calc(500+var(--contrast))];
+  }
+}

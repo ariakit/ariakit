@@ -1,0 +1,304 @@
+/* The CSS of the table style recipe in table.ts. Import this file in the CSS
+   file that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that table.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./table.css"; */
+
+/* Resolve cell padding in the table's font to align header and body text. */
+@property --table-py {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --table-px {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* A header slot uses the table's font size even when its label is smaller. */
+@property --table-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 16px;
+}
+
+@utility ui-table {
+  @apply border-spacing-0;
+  position: relative;
+  width: 100%;
+  border-collapse: separate;
+  --table-row-line: max(var(--table-border-bs,0), var(--table-border-be,0));
+  --table-cell-line: max(var(--table-border-s,0), var(--table-border-e,0));
+  /* Registered padding lengths keep smaller headers aligned with body cells.
+     Only cells receive padding; `!` clears the table frame padding. */
+  --table-py: var(--py);
+  --table-px: var(--px);
+  --table-size: 1em;
+  padding: 0 !important;
+}
+
+@utility ui-table-edge-inputs {
+  @variant ui-base {
+    /* Inherited inputs are defaults; explicit edge utilities on a part win. */
+    @apply ak-edge-color-(--table-edge-color);
+    @apply ak-edge-alpha-(--table-edge-alpha,0.1);
+    @apply ak-edge-push-(--table-edge-push,1);
+  }
+}
+
+@utility ui-table-container {
+  /* Overflow does not clip table boxes; the wrapper clips corner cells. */
+  overflow: clip;
+  /* Allow shrinking in flex and grid layouts so the scroller takes overflow. */
+  min-width: 0;
+  /* Reset inherited edge colors for nested tables. */
+  --table-edge-color: initial;
+  --table-edge-alpha: initial;
+  --table-edge-push: initial;
+}
+
+@utility ui-table-caption {
+  padding-inline: var(--table-px);
+  padding-block: var(--table-py);
+  text-align: start;
+}
+
+@utility ui-table-scroller {
+  max-height: inherit;
+  overflow: auto;
+
+  @variant ak-dark {
+    /* Scrollbars follow the surface even when the theme differs from the system
+       scheme. */
+    color-scheme: dark;
+  }
+
+  @variant ak-light {
+    color-scheme: light;
+  }
+}
+
+@utility ui-table-row-group {
+  --table-grid-edge: var(--ak-edge);
+  position: relative;
+  /* Reset group position flags so nested tables do not inherit outer
+     corners. */
+  --table-rowgroup-first: 0;
+  --table-rowgroup-last: 0;
+
+  &:is(tfoot):last-of-type {
+    --table-rowgroup-last: 1;
+  }
+
+  &:is(thead):first-of-type {
+    --table-rowgroup-first: 1;
+  }
+
+  :not(:has(> tfoot)) > &:last-child {
+    --table-rowgroup-last: 1;
+  }
+
+  :not(:has(> thead)) > &:nth-child(1 of tbody, tfoot) {
+    --table-rowgroup-first: 1;
+  }
+
+  &:where(.ui-table-row-group--sticky-top) {
+    z-index: 3;
+    position: sticky;
+    top: 0;
+  }
+
+  &:where(.ui-table-row-group--sticky-bottom) {
+    z-index: 3;
+    position: sticky;
+    bottom: 0;
+
+    /* A bottom-pinned group draws its own leading line because the previous
+       row scrolls away. */
+    & > tr:first-child {
+      --table-row-line-bs: calc(var(--table-row-line) * (1 - var(--table-row-first,0)));
+    }
+
+    :has(+ &) > tr:last-child {
+      --table-row-line-be: 0;
+    }
+  }
+}
+
+@utility ui-table-row {
+  /* Reset row position flags before forwarding group edges to cells. */
+  --table-row-first: 0;
+  --table-row-last: 0;
+  /* Omit the last row line. A bottom-pinned group supplies its own leading
+     line. */
+  --table-row-line-be: calc(var(--table-row-line) * (1 - var(--table-row-last,0)));
+  /* Hover and selection repaint the previous row's line, except at the table
+     start or when the row already owns that line. */
+  --table-row-shadow: calc(var(--table-row-state,0) * (var(--table-row-line) * (1 - var(--table-row-first,0)) - var(--table-row-line-bs,0)));
+  /* Match the container's inner corners so row and cell rings follow its
+     clipping. */
+  --table-row-radius-bs: calc((var(--ak-frame-radius,0px) - var(--table-border-bs,0) * 1px) * var(--table-row-first,0));
+  --table-row-radius-be: calc((var(--ak-frame-radius,0px) - var(--table-border-be,0) * 1px) * var(--table-row-last,0));
+
+  @variant first-of-type {
+    --table-row-first: var(--table-rowgroup-first,0);
+  }
+
+  @variant last-of-type {
+    --table-row-last: var(--table-rowgroup-last,0);
+  }
+
+  &:where(.ui-table-row--hover) {
+    @variant ui-hover {
+      --table-row-state: 1;
+    }
+  }
+
+  &:where(.ui-table-row--selected) {
+    @variant ui-selected {
+      @apply ak-layer-brand ak-layer-mix-15;
+      --table-row-state: 1;
+    }
+  }
+}
+
+@utility ui-table-cell {
+  @apply border-s-[calc(var(--table-cell-line-s,0)*1px)];
+  @apply border-e-[calc(var(--table-cell-line-e,0)*1px)];
+  @apply border-bs-[calc(var(--table-row-line-bs,0)*1px)];
+  @apply border-be-[calc(var(--table-row-line-be,0)*1px)];
+  /* Later cells repaint the previous row's line with their own surface and
+     edge. The first shadow paints on top; zero offset keeps idle shadows
+     under cells. */
+  @apply shadow-[0_calc(var(--table-row-shadow,0)*-1px)_0_var(--table-cell-edge),0_calc(var(--table-row-shadow,0)*-1px)_0_var(--ak-layer)];
+  padding-inline: var(--table-px);
+  padding-block: var(--table-py);
+  /* Cells own their trailing row and column lines. End-pinned cells own
+     their leading divider instead. Borders keep focus rings inside the grid;
+     row surfaces show through unpainted cells. */
+  --table-cell-line-e: var(--table-cell-line);
+  /* Slice one gradient into row lines and inset column dividers.
+     Border-image slices use unitless widths and physical sides, so RTL needs
+     reversed slices. */
+  border-image-source: linear-gradient(var(--table-cell-edge) calc(var(--table-row-line-bs, 0) * 1px), transparent 0 calc(var(--table-row-line-bs, 0) * 1px + var(--table-border-inset, 0px)), var(--table-cell-edge) 0 calc(100% - var(--table-row-line-be, 0) * 1px - var(--table-border-inset, 0px)), transparent 0 calc(100% - var(--table-row-line-be, 0) * 1px), var(--table-cell-edge) 0);
+  border-image-slice: var(--table-row-line-bs, 0) var(--table-cell-line-e, 0) var(--table-row-line-be, 0) var(--table-cell-line-s, 0);
+
+  @variant first {
+    border-start-start-radius: var(--table-row-radius-bs);
+    border-end-start-radius: var(--table-row-radius-be);
+  }
+
+  @variant last {
+    --table-cell-line-e: 0;
+    border-start-end-radius: var(--table-row-radius-bs);
+    border-end-end-radius: var(--table-row-radius-be);
+  }
+
+  &[aria-sort="ascending"] {
+    @apply ak-ink-100;
+  }
+
+  &[aria-sort="descending"] {
+    @apply ak-ink-100;
+  }
+
+  @variant rtl {
+    border-image-slice: var(--table-row-line-bs, 0) var(--table-cell-line-s, 0) var(--table-row-line-be, 0) var(--table-cell-line-e, 0);
+  }
+
+  &:has(+ .ui-table-cell--sticky-end) {
+    --table-cell-line-e: 0;
+  }
+
+  &:where(.ui-table-cell--header-column) {
+    & > .ui-slot-frame-slot {
+      /* A bare choice or icon keeps the body size beside the smaller label.
+         Slots inside a control keep that control's own explicit size. */
+      font-size: var(--table-size);
+    }
+  }
+
+  &:where(.ui-table-cell--numeric) {
+    @apply tabular-nums;
+    text-align: end;
+  }
+
+  &:where(.ui-table-cell--sticky-start) {
+    z-index: 1;
+    position: sticky;
+    inset-inline-start: 0;
+
+    @variant after {
+      width: var(--spacing-px);
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: calc(-1px - var(--table-cell-line-e, 0) * 1px);
+      background-color: var(--ak-layer);
+      pointer-events: none;
+    }
+  }
+
+  &:where(.ui-table-cell--sticky-end) {
+    z-index: 1;
+    position: sticky;
+    inset-inline-end: 0;
+    --table-cell-line-s: var(--table-cell-line);
+
+    @variant after {
+      width: var(--spacing-px);
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: calc(-1px - var(--table-cell-line-s, 0) * 1px);
+      background-color: var(--ak-layer);
+      pointer-events: none;
+    }
+  }
+
+  &:where(.ui-table-cell--fit) {
+    width: 0;
+    white-space: nowrap;
+  }
+}
+
+@utility ui-table-sort-button {
+  /* Use registered table padding, which the button frame does not replace.
+     Negative margins cover the cell; an explicit width prevents button
+     shrink-wrapping. */
+  margin-inline: calc(var(--table-px) * -1);
+  margin-block: calc(var(--table-py) * -1);
+  width: calc(100% + var(--table-px) * 2);
+  justify-content: flex-start;
+  text-align: start;
+  /* Preserve the header weight and ink, including the stronger sorted state. */
+  font-weight: inherit;
+  --table-sort-ink: 0.4;
+  /* Inherit individual cell corners so the focus ring follows container
+     clipping. */
+  border-radius: inherit;
+
+  @variant ui-hover {
+    --table-sort-ink: 1;
+  }
+
+  @variant ui-focus-visible {
+    @apply ak-ink-100;
+    --table-sort-ink: 1;
+  }
+}
+
+@utility ui-table-sort-indicator {
+  @apply transition-[rotate] duration-150;
+  --slot-icon-size: 1.1em;
+
+  :where([aria-sort="descending"]) & {
+    rotate: 180deg;
+  }
+}

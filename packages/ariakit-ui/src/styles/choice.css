@@ -1,0 +1,523 @@
+/* The CSS of the choice style recipe in choice.ts. Import this file in the CSS
+   file that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that choice.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./check-mark.css";
+   @import "./choice.css"; */
+
+/* The complement of ui-choice-on, with the same specificity as not-ui-choice-on.
+   The not- variant turns the host check into `:where(…) *`. A :has() before a
+   universal selector makes Chrome restyle the whole subtree of every element
+   whose :has() state changes, so the host check names the element instead.
+   WebKit can keep a stale result for a :has() inside :not(), as it does for
+   not-ui-choice-on, so the complements come before the variants that they
+   complement, where the not- variants sort, and the on state still wins. */
+@custom-variant ui-choice-off {
+  &:not(
+      :checked,
+      [aria-checked="true"],
+      [aria-checked="mixed"],
+      :indeterminate:where(:not([type="radio"])),
+      :where(
+          label:has(
+            :checked,
+            [aria-checked="true"],
+            [aria-checked="mixed"],
+            :indeterminate:where(:not([type="radio"]))
+          ),
+          [aria-checked="true"],
+          [aria-checked="mixed"]
+        )
+        &
+    ) {
+    @slot;
+  }
+}
+
+/* The complement of ui-choice-disabled. See ui-choice-off. */
+@custom-variant ui-choice-enabled {
+  &:not(
+      :disabled,
+      [aria-disabled="true"],
+      :where(
+          label:has(:disabled, [aria-disabled="true"]),
+          [aria-disabled="true"]
+        )
+        &
+    ) {
+    @slot;
+  }
+}
+
+/* Choice boxes read their own state or their host's state. */
+@custom-variant ui-choice-on {
+  &:is(
+    :checked,
+    [aria-checked="true"],
+    [aria-checked="mixed"],
+    :indeterminate:where(:not([type="radio"]))
+  ),
+  :where(
+      label:has(
+        :checked,
+        [aria-checked="true"],
+        [aria-checked="mixed"],
+        :indeterminate:where(:not([type="radio"]))
+      ),
+      [aria-checked="true"],
+      [aria-checked="mixed"]
+    )
+    & {
+    @slot;
+  }
+}
+
+@custom-variant ui-choice-mixed {
+  &:is([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))),
+  :where(
+      label:has([aria-checked="mixed"], :indeterminate:where(:not([type="radio"]))),
+      [aria-checked="mixed"]
+    )
+    & {
+    @slot;
+  }
+}
+
+/* Register disabled last so its edge and text color override the on state. */
+@custom-variant ui-choice-disabled {
+  &:is(:disabled, [aria-disabled="true"]),
+  :where(label:has(:disabled, [aria-disabled="true"]), [aria-disabled="true"])
+    & {
+    @slot;
+  }
+}
+
+/* The Lucide minus mask has a heavier stroke to stay clear at 11px. */
+:root {
+  --choice-mark-dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
+}
+
+@utility ui-choice {
+  appearance: none;
+  /* The check and a custom child are relative to the box. */
+  --check-mark-box: var(--size);
+  --slot-icon-size: var(--check-mark-size);
+  /* Restore text-line alignment for bare inputs; flex and grid parents still
+     control placement. */
+  display: inline-flex;
+  vertical-align: middle;
+  /* The children of the box read this state with a style query. */
+  --choice-off: 0;
+
+  @variant after {
+    /* Keep forced colors from replacing the mark background with the system
+       canvas. */
+    forced-color-adjust: none;
+  }
+
+  &:has(> *) {
+    @variant after {
+      display: none;
+    }
+  }
+
+  @variant ui-choice-off {
+    --choice-off: 1;
+  }
+
+  @variant ui-choice-enabled {
+    @variant ui-choice-on {
+      @apply ak-edge-0;
+    }
+  }
+
+  @variant ui-choice-disabled {
+    cursor: not-allowed;
+  }
+
+  & > svg {
+    /* A custom child replaces the drawn mark and uses the same size and
+       state. */
+    stroke-width: 2.5;
+  }
+
+  &:where(.ui-choice--mark-check) {
+    /* The state comes from the input or a surrounding choice host, which
+       shows the mark with the wipe of the check mark. */
+    @variant after {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    @variant ui-choice-on {
+      @variant after {
+        clip-path: inset(0);
+      }
+    }
+
+    @variant motion-safe {
+      @variant ui-choice-on {
+        @variant after {
+          @apply transition-[clip-path] duration-150 ease-linear;
+        }
+      }
+    }
+
+    /* The mixed state replaces the check with a level dash, which the same
+       wipe also follows. */
+    @variant ui-choice-mixed {
+      @variant after {
+        mask-image: var(--choice-mark-dash);
+      }
+    }
+  }
+
+  &:where(.ui-choice--mark-dot) {
+    @variant after {
+      @apply size-[calc((var(--size)-2*var(--border-width))*0.5)];
+      /* The fill changes at once, and the bullet grows from the center. */
+      @apply scale-0;
+      border-radius: calc(var(--radius) * infinity);
+      /* Like the check, the bullet takes the fill's readable text color, so it
+         keeps its contrast against the box in checked and disabled states. */
+      background-color: currentcolor;
+    }
+
+    @variant ui-choice-on {
+      @variant after {
+        @apply scale-100;
+      }
+    }
+
+    @variant motion-safe {
+      @variant ui-choice-on {
+        @variant after {
+          /* Only the on state sets these, so unchecking is immediate. */
+          @apply transition-[scale] duration-150 ease-in-out;
+        }
+      }
+    }
+  }
+
+  &:where(.ui-choice--mark-switch) {
+    width: calc(var(--size) * 1.75);
+    /* The thumb moves from the center to the center of each round end, so
+       it stays concentric with the track at any thumb size. */
+    --choice-switch-dir: 1;
+    --choice-switch-travel: calc(var(--size) * 0.375 * var(--choice-switch-dir));
+
+    @variant after {
+      @apply -translate-x-(--choice-switch-travel);
+      @apply size-(--slot-icon-size);
+      border-radius: calc(var(--radius) * infinity);
+      /* The thumb takes the track's readable text color, because the edge
+         color can fall below 3:1 against the track. */
+      background-color: currentcolor;
+    }
+
+    @variant motion-safe {
+      /* Unlike the check, the switch animates both ways, because its thumb
+         travels between two resting positions. */
+      @apply transition-[background-color,border-color,color] duration-150;
+      @apply ease-out;
+
+      @variant after {
+        @apply transition-[translate] duration-150 ease-out;
+      }
+    }
+
+    @variant rtl {
+      --choice-switch-dir: -1;
+    }
+
+    @variant ui-choice-on {
+      @variant after {
+        @apply translate-x-(--choice-switch-travel);
+      }
+    }
+
+    @variant ui-choice-mixed {
+      @variant after {
+        @apply translate-x-0;
+      }
+    }
+  }
+}
+
+@utility ui-choice-input {
+  @variant ui-base {
+    /* Zero specificity lets a plain cursor utility replace the pointer. */
+    cursor: pointer;
+  }
+
+  @variant ui-choice-enabled {
+    @variant group-hover/choice-field {
+      @apply ak-state-(--hover-offset,0);
+    }
+  }
+
+  @variant ui-settled {
+    @variant group-hover/choice-field {
+      @apply ak-state-0;
+    }
+
+    @variant ui-hover {
+      /* A click can't change a checked radio, so hover doesn't light it. */
+      @apply ak-state-0;
+    }
+  }
+}
+
+@utility ui-choice-field {
+  @apply select-none;
+
+  @variant ui-base {
+    /* Zero specificity lets a plain cursor utility replace the pointer. */
+    cursor: pointer;
+  }
+
+  @variant ui-disabled-within {
+    cursor: not-allowed;
+  }
+
+  :where(&) input:where([type=checkbox], [type=radio]) {
+    /* The box follows a cursor set on the row. This outranks the pointer on the
+       input, but not a plain cursor utility on it. */
+    cursor: inherit;
+  }
+}
+
+/* A row that holds a disabled input dims everything inside it. A :has() before
+   a universal selector makes Chrome restyle the whole subtree of each :has()
+   anchor whose state changes, on any page with this rule. So the row sets a
+   flag that its descendants read with a style query. The doubled class keeps
+   the specificity of the ui-disabled-within check that the rule replaces. */
+@utility ui-choice-disabled-within-descendants {
+  @variant ui-disabled-within {
+    --choice-disabled: 1;
+  }
+}
+
+@utility ui-choice-card {
+  @variant ui-disabled-within {
+    @apply ak-edge-5;
+    cursor: not-allowed;
+
+    @variant ui-active {
+      @apply scale-x-100 scale-y-100;
+    }
+  }
+
+  &:where(.ui-choice-card--orientation-vertical) {
+    /* Override the justify-start class and the centered content of
+       ui-control, which sort later. */
+    justify-content: space-between !important;
+
+    @variant ui-base {
+      /* Keep shorter badges from stretching to the tallest slot. Zero
+         specificity lets caller alignment classes override this.
+         https://github.com/ariakit/ariakit/issues/7599 */
+      align-items: flex-start;
+    }
+
+    & > .ui-control-content {
+      flex-basis: 100%;
+      order: 1;
+    }
+  }
+
+  &:where(.ui-choice-card--disabled) {
+    --disabled-border: var(--ak-edge);
+  }
+
+  /* The input covers a segment, so it takes the hover and the focus of a
+     tooltip anchored to it. Labels center in the segment instead of filling a
+     card row. */
+  &:where(.ui-choice-card--segment) {
+    @variant ui-disabled-within {
+      @variant ui-selected {
+        /* A checked segment restores full ink, so a disabled one needs the
+           disabled ink at a higher specificity. */
+        @apply ak-ink-0;
+      }
+    }
+
+    & input {
+      /* WebKit doesn't stretch an input with inset alone. */
+      @apply size-full;
+      position: absolute;
+      inset: 0;
+      margin: 0;
+      opacity: 0;
+      cursor: inherit;
+    }
+  }
+
+  /* The surface of a card. A segmented kind paints the thumb of its group
+     instead. */
+  &:where(.ui-choice-card--surface) {
+    /* Without a mark, an inset ring adds a second edge pixel to the selected
+       card, so its state doesn't rest on color alone. The ring takes no
+       space. */
+    @apply inset-ring-(--ak-edge);
+    align-content: flex-start;
+
+    &:not(:has(:is(.ui-choice-card-check))) {
+      @variant ui-checked-within {
+        @apply inset-ring;
+      }
+
+      @variant ui-mixed-within {
+        @apply inset-ring;
+      }
+    }
+
+    @variant not-ui-disabled-within {
+      @variant ui-checked-within {
+        /* The label reads checked, mixed, and disabled states from its
+           input. */
+        @apply ak-edge-brand ak-edge-raw;
+      }
+
+      @variant ui-mixed-within {
+        @apply ak-edge-brand ak-edge-raw;
+      }
+    }
+
+    & input {
+      @apply sr-only;
+    }
+  }
+}
+
+@utility ui-choice-card-label--grow {
+  .ui-choice-card--surface > & {
+    @variant ui-base {
+      /* The card wraps so a direct description can take its own row, and a
+         wrapping row moves an item to the next line before it shrinks it. A
+         zero basis keeps a direct label on the row of its slots, so it
+         truncates or wraps its text instead of moving the check below it.
+         Zero specificity lets a caller basis class win. */
+      flex-basis: 0;
+    }
+  }
+}
+
+@utility ui-choice-card-grid {
+  display: grid;
+  grid-auto-rows: minmax(0, 1fr);
+  /* Let the grid shrink below its cards' text width. */
+  min-width: 0;
+  /* Keep the minimum column width within the available space. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--choice-card-min-w)), 1fr));
+
+  &:where(.ui-choice-card-grid--gap-auto) {
+    @variant ui-base {
+      /* Outside a group, use the group gap of cards. */
+      gap: calc(var(--choice-group-gap, --spacing(4)) * 2 / 3);
+    }
+  }
+}
+
+@utility ui-choice-group {
+  /* The label and the description read the disabled state of the group.
+     The gaps of the group follow its text size. */
+  @apply ui-spacing-em;
+  min-width: 0;
+  /* The label covers the gap with its padding, as in a field. */
+  --_field-gap: var(--choice-group-gap);
+  gap: var(--choice-group-gap);
+
+  @variant ui-base {
+    /* Zero specificity lets caller layout classes win. */
+    display: flex;
+    flex-direction: column;
+  }
+
+  &:where(.ui-choice-group--gap-xs) {
+    --choice-group-gap: var(--spacing);
+
+    &:has(:is(.ui-choice-card--surface, .ui-control-description)) {
+      --choice-group-gap: --spacing(2);
+    }
+  }
+
+  &:where(.ui-choice-group--gap-sm) {
+    --choice-group-gap: --spacing(2);
+
+    &:has(:is(.ui-choice-card--surface, .ui-control-description)) {
+      --choice-group-gap: --spacing(3);
+    }
+  }
+
+  &:where(.ui-choice-group--gap-md) {
+    --choice-group-gap: --spacing(3);
+
+    &:has(:is(.ui-choice-card--surface, .ui-control-description)) {
+      --choice-group-gap: --spacing(4);
+    }
+  }
+
+  &:where(.ui-choice-group--gap-lg) {
+    --choice-group-gap: --spacing(4);
+
+    &:has(:is(.ui-choice-card--surface, .ui-control-description)) {
+      --choice-group-gap: --spacing(5);
+    }
+  }
+
+  &:where(.ui-choice-group--gap-xl) {
+    --choice-group-gap: --spacing(5);
+
+    &:has(:is(.ui-choice-card--surface, .ui-control-description)) {
+      --choice-group-gap: --spacing(6);
+    }
+  }
+}
+
+@utility ui-choice-group-label {
+  legend& {
+    /* A legend is drawn above the fieldset's content, out of its flex layout,
+       so the group gap doesn't follow it. Its bottom padding makes the gap
+       instead. WebKit ignores a float on a flex child, so floating the legend
+       into the layout doesn't work there. */
+    margin-bottom: 0;
+    /* Chromium sizes a legend to its text, so it would overflow a narrow group
+       instead of truncating. Fill the width, like a label in the flex
+       layout. */
+    width: 100%;
+  }
+}
+
+@utility ui-choice-group-description {
+  .ui-choice-group-label + & {
+    /* Pull the text from the group gap up to a small gap under the label, or to
+       the group gap when it is smaller, such as none. The padding of a legend
+       makes the gap, so the margin also works there. The field gap holds the
+       group gap resolved in the group's font, which is larger than this text.
+       The small gap is one em step, so it follows this text. */
+    margin-top: calc(max(0px, var(--_field-gap) - var(--spacing-em)) * -1);
+  }
+}
+
+@utility ui-choice-list {
+  min-width: 0;
+
+  @variant ui-base {
+    /* Zero specificity lets caller layout classes win. */
+    display: flex;
+    flex-direction: column;
+  }
+
+  &:where(.ui-choice-list--gap-auto) {
+    @variant ui-base {
+      /* Outside a group, use the group gap of simple fields. */
+      gap: calc(var(--choice-group-gap, --spacing(3)) * 2 / 3);
+    }
+  }
+}

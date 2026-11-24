@@ -23,32 +23,7 @@ function getAvatarSizeStyle(value?: number | (string & {})) {
  */
 export const avatar = cv({
   extend: [frame, focus],
-  class: [
-    // A number size follows the text size.
-    "ui-spacing-em",
-    "relative inline-grid flex-none place-items-center",
-    "font-medium whitespace-nowrap",
-    // In running text, an avatar of one line fills the line box from its top,
-    // so it does not make the line taller. Flex and grid items ignore this.
-    "align-top",
-    // The same default as the group, which sets --avatar-size for its avatars.
-    "[--avatar-box:var(--avatar-size,2lh)]",
-    // In a slot, the slot height sets the size, also with $size. --slot-height
-    // is a registered length, so it keeps the font of the slot.
-    "[.slot-frame-slot>&]:[--avatar-box:var(--slot-height)]",
-    "size-(--avatar-box)",
-    // Preserve the line height and set the capital height of the initials to
-    // 0.3 times the avatar size. tan(atan2(a,b)) divides lengths where Firefox
-    // calc() cannot.
-    "leading-[1lh] [font-size-adjust:cap-height_calc(0.3*tan(atan2(var(--avatar-box),1em)))]",
-    "[&>svg]:block [&>svg]:size-[50%]",
-    // In a group, a ring in the color of the surface around the avatar reads
-    // as a gap between it and the avatar that it covers. It is a box shadow,
-    // not a ring utility, so a border drawn as a ring stays inside it.
-    "in-[.avatar-group]:shadow-[0_0_0_max(2px,calc(var(--avatar-box)/16))_var(--ak-layer-parent)]",
-    // Draw the focus ring over the next avatar.
-    "in-[.avatar-group]:ui-focus-visible:z-1",
-  ],
+  class: "ui-avatar font-medium",
   variants: {
     /**
      * Sets the avatar size. Numbers scale the spacing token, so the avatar
@@ -96,7 +71,7 @@ export const avatar = cv({
  * transparent image shows what is under it.
  */
 export const avatarImage = cv({
-  class: "absolute inset-0 size-full object-cover rounded-[inherit]",
+  class: "ui-avatar-image",
 });
 
 /**
@@ -105,14 +80,7 @@ export const avatarImage = cv({
  * anchor, still gets the ring, and the element takes the overlap.
  */
 export const avatarGroup = cv({
-  class: [
-    // A number size follows the text size of the group.
-    "avatar-group ui-spacing-em flex",
-    // The same default as the avatar. The overlap below needs the size here,
-    // and the avatars inherit it.
-    "[--avatar-size:2lh]",
-    "*:not-first:ms-[calc(var(--avatar-size)/-8)]",
-  ],
+  class: "ui-avatar-group",
   variants: {
     /**
      * Sets the size of the avatars in the group. Numbers scale the spacing

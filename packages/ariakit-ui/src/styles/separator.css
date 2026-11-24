@@ -1,0 +1,20 @@
+/* The CSS of the separator style recipe in separator.ts. Import this file after
+   ui.css in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./separator.css"; */
+
+@utility ui-separator {
+  /* Set a border width for elements other than hr. */
+  @apply border-bs;
+  margin-block: var(--separator-gap);
+  --separator-gap: calc(var(--prose-gap,--spacing(5)) * 0.5);
+
+  & + * {
+    @variant not-first {
+      /* The separator supplies the next element's top spacing. `not-first`
+         raises specificity above margin utilities on that element. */
+      margin-top: 0;
+    }
+  }
+}

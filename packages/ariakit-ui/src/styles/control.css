@@ -1,0 +1,510 @@
+/* The CSS of the control style recipe in control.ts. Import this file in the
+   CSS file that imports Tailwind CSS, after ui.css and the CSS files of the
+   style recipes that control.ts imports:
+
+   @import "./ui.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css"; */
+
+/* A wrapper is disabled only when all its entry controls are disabled.
+   Buttons and choice controls do not count, but a select button with the
+   combobox role does. Keep both entry lists identical. */
+@custom-variant ui-field-disabled {
+  &:is(:disabled, [aria-disabled="true"]),
+  &:has(
+      :is(
+          input:not(
+              [type="hidden"],
+              [type="button"],
+              [type="submit"],
+              [type="reset"],
+              [type="image"],
+              [type="checkbox"],
+              [type="radio"]
+            ),
+          textarea,
+          select,
+          [role="combobox"]
+        )
+    ):not(
+      :has(
+        :is(
+            input:not(
+                [type="hidden"],
+                [type="button"],
+                [type="submit"],
+                [type="reset"],
+                [type="image"],
+                [type="checkbox"],
+                [type="radio"]
+              ),
+            textarea,
+            select,
+            [role="combobox"]
+          ):not(:disabled, [aria-disabled="true"])
+      )
+    ) {
+    @slot;
+  }
+}
+
+/* Count a select button with the combobox role, as ui-field-disabled does. */
+@custom-variant ui-field-invalid {
+  &[aria-invalid="true"],
+  &:has(:is(input, textarea, select, [role="combobox"])[aria-invalid="true"]) {
+    @slot;
+  }
+}
+
+/* Each field resolves the --field-gap and --field-column-gap that a caller
+   sets on it or on an ancestor into these lengths in its own font, so its
+   smaller label can cover the same gap. */
+@property --_field-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --_field-column-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@utility ui-control {
+  position: relative;
+  justify-content: center;
+  /* Bars measure from the border edge, but frame borders do not inherit. */
+  --control-border: var(--ak-frame-border);
+
+  @variant ui-hover {
+    @apply ak-frame-join-active;
+  }
+
+  @variant ui-focus-visible {
+    @apply ak-frame-join-active;
+  }
+
+  @variant ui-selected {
+    @apply ak-frame-join-active;
+  }
+}
+
+/* Disabled control styles. They follow the DOM disabled state and the
+   ui-disabled class that $disabled adds, which also stops hover and press
+   styles. */
+@utility ui-control-disabled {
+  @variant ui-disabled {
+    /* Cards can retain a faint disabled edge through --disabled-border. */
+    @apply ak-disabled ring-(--disabled-border,transparent)! inset-shadow-none!;
+    @apply shadow-none! ak-ink-0!;
+    cursor: not-allowed !important;
+    border-color: var(--disabled-border, transparent) !important;
+    background-image: none !important;
+
+    :is(& > *) {
+      @apply ak-ink-0!;
+    }
+
+    @variant not-forced-colors {
+      @variant ui-text {
+        /* An adaptive text color targets nested text and icons directly, so set
+           the ink on the same targets. Skip forced colors: this rule would
+           override the system disabled color on nested text. */
+        @apply ak-ink-0!;
+      }
+    }
+  }
+}
+
+@utility ui-control-slot {
+  @variant group-ui-disabled/control {
+    & kbd {
+      /* Fade the surfaces of flat keys and keycaps, and mute key text like the
+         label. Plain keys set their own ink, which the control's ink would not
+         replace. */
+      @apply ak-layer-fade-80 ak-ink-0;
+    }
+  }
+
+  @variant group-ui-disabled-within/choice {
+    & kbd {
+      @apply ak-layer-fade-80 ak-ink-0;
+    }
+  }
+
+  @variant group-ui-field-disabled/control {
+    & kbd:not(:is(button, input, a):not(:disabled, [aria-disabled='true']) *) {
+      /* A disabled input group mutes the text of its descendants itself. It is
+         disabled through its entry controls, so the keys of an enabled action
+         button in the group keep their surfaces. */
+      @apply ak-layer-fade-80;
+    }
+  }
+}
+
+@utility ui-control-label-row {
+  display: flex;
+  align-items: flex-start;
+  /* A wrapped slot sits as far below the label as the description does. */
+  column-gap: var(--gap);
+  row-gap: var(--gap-y);
+
+  & > .ui-slot-frame-slot {
+    /* Slots pull into the control's side padding. In the row, only the end
+       margin can reach it, so a wrapped slot stays in line with the label. */
+    margin-inline-start: 0;
+  }
+}
+
+@utility ui-control-label {
+  .ui-control-content.flex-col > & {
+    /* Content already fills the row, so a description stays beside or below
+       the label text. Only direct children, so a label in a label row can
+       still grow. */
+    flex: none;
+  }
+
+  .ui-control-content.flex-wrap > & {
+    flex-grow: 0;
+  }
+}
+
+@utility ui-control-description {
+  /* Remove sibling slot margins that would indent a full-width description. */
+  margin-inline-start: 0 !important;
+  /* Use a full row unless horizontal content has room beside the label. */
+  flex-basis: 100%;
+
+  :is(:where(.group\/control-content):is(.flex-wrap) &) {
+    flex-basis: auto;
+  }
+}
+
+@utility ui-control-field {
+  /* The gaps between the label, the control, and the texts follow the text
+     size. */
+  @apply ui-spacing-em;
+  min-width: 0;
+  /* Labels read the gap to cover it. Set --field-gap on the field or an
+     ancestor to change it. */
+  --_field-gap: var(--field-gap,--spacing(1.5));
+  gap: var(--_field-gap);
+
+  &:where(.ui-control-field--orientation-horizontal) {
+    display: grid;
+    align-items: baseline;
+    /* The label pads its end instead of a column gap, so a click there
+       also reaches the control. Set --field-column-gap to change it. */
+    column-gap: 0;
+    --_field-column-gap: var(--field-column-gap,--spacing(3));
+
+    @variant ui-base {
+      grid-template-columns: var(--field-columns, max-content minmax(0, 1fr));
+    }
+
+    & > .ui-control-field-label {
+      padding-inline-end: var(--_field-column-gap);
+    }
+  }
+
+  &:where(.ui-control-field--label-align-end) {
+    & > .ui-control-field-label {
+      text-align: end;
+    }
+
+    @container field-grid (width < 20rem) {
+      & > .ui-control-field-label {
+        text-align: start;
+      }
+    }
+  }
+}
+
+@utility ui-control-field-grid {
+  /* The container query reads the grid's own width, which contains its
+     inline size. */
+  @apply @container/field-grid;
+  display: grid;
+  min-width: 0;
+
+  @variant ui-base {
+    /* Zero specificity lets caller widths, gaps, and columns win. */
+    width: 100%;
+    row-gap: --spacing(7);
+    grid-template-columns: max-content minmax(0, 1fr);
+  }
+
+  :is(& > *) {
+    @variant ui-base {
+      /* Every child takes a full row. Only direct fields use the columns as
+         their own, so a field in another child, such as a fieldset, uses its
+         own columns. */
+      grid-column: 1 / -1;
+    }
+  }
+
+  & > .ui-control-field {
+    --field-columns: subgrid;
+  }
+}
+
+@utility ui-control-field-content {
+  display: flex;
+  min-width: 0;
+  gap: var(--_field-gap);
+}
+
+@utility ui-control-field-label {
+  /* Cover the gap below the label, so a click there also reaches the
+     control. The negative margin keeps the layout. */
+  padding-bottom: var(--_field-gap);
+  margin-bottom: calc(var(--_field-gap) * -1);
+
+  @variant ui-base {
+    /* Zero specificity lets caller font classes win. */
+    @apply font-medium;
+    font-size: 0.875em;
+  }
+}
+
+@utility ui-control-field-error-text {
+  min-width: 0;
+  flex-grow: 1;
+}
+
+@utility ui-control-separator {
+  @apply transition-opacity duration-200 ease-out;
+  @apply border-e-(length:--border-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  --border-width: calc(var(--width) * 1px);
+  /* The space between the mark and each control beside it, in a row where the
+     separator closes the padding of the group. */
+  --separator-clearance: calc(var(--group-gap,0px) - (var(--ak-frame-padding,0px) + var(--border-width)) / 2 - var(--separator-lean,0px));
+  height: var(--size);
+  margin-inline: calc(calc((var(--ak-frame-padding, 0px) + var(--border-width)) / 2) * -1);
+
+  .ui-vertical > & {
+    display: none;
+  }
+
+  &:where(.ui-control-separator--kind-slash) {
+    /* The skew moves the ends of the slash toward the controls beside it. */
+    @apply -skew-15;
+    border-radius: calc(var(--radius) * infinity);
+    /* A stretched slash has no size, so this assumes a row of about two
+       lines. */
+    --separator-lean: calc(tan(15deg) * var(--size,2lh) / 2);
+  }
+
+  &:where(.ui-control-separator--kind-chevron) {
+    @apply border-t-(length:--border-width);
+    /* Reverse the chevron rotation and optical offset in RTL rows. */
+    @apply scale-50 -translate-x-1/10;
+    border-start-end-radius: calc(var(--radius) * 0.5);
+    --border-width: calc(var(--width) * 2px) !important;
+    aspect-ratio: 1 / 1;
+    rotate: 45deg;
+
+    @variant rtl {
+      @apply translate-x-1/10;
+      rotate: calc(45deg * -1);
+    }
+  }
+
+  &:where(.ui-control-separator--size-xs) {
+    --size: 1cap;
+    align-self: center;
+  }
+
+  /* Reduce opacity as stroke width grows. Chevrons need a stronger edge; both
+     formulas stay positive across the supported widths. */
+  &:where(.ui-control-separator--edge) {
+    &:is(.ui-control-separator--kind-chevron) {
+      @apply ak-edge-alpha-[calc((64-var(--width)*12)/100)];
+    }
+  }
+
+  &:where(.ui-control-separator--size-sm) {
+    --size: 1em;
+    align-self: center;
+  }
+
+  &:where(.ui-control-separator--size-md) {
+    --size: 1lh;
+    align-self: center;
+  }
+
+  &:where(.ui-control-separator--size-full) {
+    align-self: stretch;
+    margin-inline: 0;
+    margin-block: calc(var(--ak-frame-padding, 0px) * -1);
+  }
+
+  &:where(.ui-control-separator--shy-auto) {
+    /* The opacity is 0 with 2px of space or less, and 1 otherwise. Without a
+       value, the rules have no effect. tan(atan2(a,b)) divides lengths where
+       Firefox calc() cannot. */
+    --separator-shy-opacity: clamp(0, tan(atan2(calc(var(--separator-clearance) - 2px), 1px)) * 1000, 1);
+  }
+
+  /* A list item has no sibling controls, only sibling list items that hover
+     through anything inside them, so a list sets its own rules. The delay keeps
+     the marks of a group from flickering while the pointer crosses a gap: while
+     the pointer is in the group, a mark shows again late, and a mark beside a
+     hovered, selected, or focused control hides at once. A :has(:hover) check
+     for the gap would make Chrome restyle the whole group, and more, on each
+     hover in it. */
+  &:where(.ui-control-separator--shy) {
+    :where(:is(.ui-control-group:hover)) & {
+      transition-delay: 150ms;
+    }
+
+    &:not(:is(li)) {
+      @variant ui-adjacent-hover {
+        opacity: var(--separator-shy-opacity);
+        transition-delay: 0ms;
+      }
+
+      @variant ui-adjacent-selected {
+        opacity: var(--separator-shy-opacity);
+        transition-delay: 0ms;
+      }
+
+      @variant ui-adjacent-focus-visible {
+        opacity: var(--separator-shy-opacity);
+        transition-delay: 0ms;
+      }
+    }
+  }
+}
+
+@utility ui-control-bar-base {
+  position: absolute;
+  pointer-events: none;
+  border-radius: calc(var(--radius) * 0.5);
+  /* Slot margin rules reach the next sibling; keep the bar on its insets. */
+  margin: 0 !important;
+  /* Show the bar only while its control is checked, selected, or current. */
+  display: none;
+  /* A fixed width keeps the bar the same at every text size. Normalize the
+     0–100 contrast scale so high contrast adds only 20%. */
+  --bar: calc(var(--bar-width,var(--bar-width-auto,2px)) * (1 + 0.2 * var(--contrast,0) / 100));
+
+  @variant group-ui-selected/control {
+    display: block;
+  }
+
+  &.ui-bar--over {
+    @variant ak-dark {
+      --bar-width-auto: 2px;
+    }
+
+    @variant ak-light {
+      --bar-width-auto: 3px;
+    }
+  }
+
+  &:where(.ui-control-bar-base--length-auto) {
+    /* Browsers clamp a rendered corner to half the control's shorter side,
+       which is about one line plus its padding. */
+    --bar-inset: min(var(--ak-frame-radius) / 2, calc((1lh + var(--py,0px) * 2) / 4), 25%);
+  }
+}
+
+@utility ui-control-bar {
+  --bar-gap: var(--control-bar-gap,0px);
+  inset-inline-start: var(--bar-inset);
+  inset-inline-end: var(--bar-inset);
+  height: var(--bar);
+
+  .ui-vertical > .ui-control > & {
+    top: var(--bar-inset);
+    bottom: var(--bar-inset);
+    height: auto;
+    width: var(--bar);
+  }
+
+  &:where(.ui-control-bar--side-end) {
+    top: calc(100% + var(--control-border, 0px) + var(--bar-offset));
+
+    .ui-vertical > .ui-control > & {
+      inset-inline-end: auto;
+      inset-inline-start: calc(100% + var(--control-border, 0px) + var(--bar-offset));
+    }
+  }
+
+  &:where(.ui-control-bar--side-start) {
+    bottom: calc(100% + var(--control-border, 0px) + var(--bar-offset));
+
+    .ui-vertical > .ui-control > & {
+      inset-inline-start: auto;
+      inset-inline-end: calc(100% + var(--control-border, 0px) + var(--bar-offset));
+    }
+  }
+}
+
+@utility ui-control-group {
+  /* The padding and the gap of the group follow its text size, like those of
+     the controls inside it. */
+  @apply ui-spacing-em;
+  /* Bars inside the controls reach the group's padding edge. */
+  --control-bar-gap: var(--ak-frame-padding);
+
+  &:where(.ui-control-group--layout-stretch) {
+    display: flex;
+    width: 100%;
+
+    & > .ui-control {
+      flex-basis: 0;
+      min-width: 0;
+      flex-grow: 1;
+      /* Centered items have free space, where a label outweighs its icon.
+         More side padding pulls the icon further, which moves the row toward
+         it. */
+      --stretch-px-scale: 0.75;
+    }
+  }
+
+  &:where(.ui-control-group--layout-vertical) {
+    display: flex;
+
+    & > .ui-control {
+      justify-content: flex-start;
+    }
+  }
+
+  &:where(.ui-control-group--gap-auto) {
+    --group-gap: var(--ak-frame-padding,0px);
+    gap: var(--group-gap);
+  }
+
+  &:where(.ui-control-group--gap-xs) {
+    --group-gap: --spacing(0.5);
+    gap: var(--group-gap);
+  }
+
+  &:where(.ui-control-group--gap-sm) {
+    --group-gap: var(--spacing);
+    gap: var(--group-gap);
+  }
+
+  &:where(.ui-control-group--gap-md) {
+    --group-gap: --spacing(2);
+    gap: var(--group-gap);
+  }
+
+  &:where(.ui-control-group--gap-lg) {
+    --group-gap: --spacing(3);
+    gap: var(--group-gap);
+  }
+
+  &:where(.ui-control-group--gap-xl) {
+    --group-gap: --spacing(4);
+    gap: var(--group-gap);
+  }
+}

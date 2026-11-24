@@ -1,0 +1,75 @@
+/* The CSS of the avatar style recipe in avatar.ts. Import this file in the CSS
+   file that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that avatar.ts imports:
+
+   @import "./ui.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./avatar.css"; */
+
+@utility ui-avatar {
+  /* A number size follows the text size. */
+  @apply ui-spacing-em size-(--avatar-box);
+  /* Preserve the line height and set the capital height of the initials to
+     0.3 times the avatar size. tan(atan2(a,b)) divides lengths where Firefox
+     calc() cannot. */
+  @apply leading-[1lh];
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  white-space: nowrap;
+  /* In running text, an avatar of one line fills the line box from its top,
+     so it does not make the line taller. Flex and grid items ignore this. */
+  vertical-align: top;
+  /* The same default as the group, which sets --avatar-size for its avatars. */
+  --avatar-box: var(--avatar-size,2lh);
+  font-size-adjust: cap-height calc(0.3 * tan(atan2(var(--avatar-box), 1em)));
+
+  :where(:is(.ui-avatar-group)) & {
+    /* In a group, a ring in the color of the surface around the avatar reads
+       as a gap between it and the avatar that it covers. It is a box shadow,
+       not a ring utility, so a border drawn as a ring stays inside it. */
+    @apply shadow-[0_0_0_max(2px,calc(var(--avatar-box)/16))_var(--ak-layer-parent)];
+
+    @variant ui-focus-visible {
+      /* Draw the focus ring over the next avatar. */
+      z-index: 1;
+    }
+  }
+
+  & > svg {
+    @apply size-[50%];
+    display: block;
+  }
+
+  .ui-slot-frame-slot > & {
+    /* In a slot, the slot height sets the size, also with $size. --slot-height
+       is a registered length, so it keeps the font of the slot. */
+    --avatar-box: var(--slot-height);
+  }
+}
+
+@utility ui-avatar-image {
+  @apply size-full;
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+@utility ui-avatar-group {
+  /* A number size follows the text size of the group. */
+  @apply ui-spacing-em;
+  display: flex;
+  /* The same default as the avatar. The overlap below needs the size here,
+     and the avatars inherit it. */
+  --avatar-size: 2lh;
+
+  :is(& > *) {
+    @variant not-first {
+      margin-inline-start: calc(var(--avatar-size) / -8);
+    }
+  }
+}

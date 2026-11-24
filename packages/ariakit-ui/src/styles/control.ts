@@ -30,18 +30,11 @@ export function fadesDisabledSurface(variants: VariantProps<typeof layer>) {
  * styles.
  */
 export const controlDisabledClass = cx(
-  "ui-disabled:ak-disabled ui-disabled:cursor-not-allowed!",
-  // Cards can retain a faint disabled edge through --disabled-border.
-  "ui-disabled:border-(--disabled-border,transparent)!",
-  "ui-disabled:ring-(--disabled-border,transparent)!",
-  "ui-disabled:inset-shadow-none! ui-disabled:shadow-none!",
-  "ui-disabled:bg-none! ui-disabled:ak-ink-0! ui-disabled:*:ak-ink-0!",
-  // An adaptive text color targets nested text and icons directly, so set the
-  // ink on the same targets. Skip forced colors: this rule would override the
-  // system disabled color on nested text.
-  "ui-disabled:not-forced-colors:ui-text:ak-ink-0!",
+  "ui-control-disabled",
   // Forced colors replace the ink with the normal text color. Use the system
   // disabled color, also on descendants that set their own color.
+  // Stays a class to come after the classes of a caller, so that the forced
+  // colors rule still applies.
   "ui-disabled:forced-colors:text-[GrayText]!",
   "ui-disabled:forced-colors:**:text-[GrayText]!",
   "ui-disabled:forced-colors:border-[GrayText]!",
@@ -51,12 +44,11 @@ export const controlDisabledClass = cx(
 export const control = cv({
   extend: [slotFrame],
   class: [
-    "control ak-frame-join-item group/control relative justify-center",
-    "ui-hover:ak-frame-join-active ui-selected:ak-frame-join-active ui-focus-visible:ak-frame-join-active",
-    // Bars measure from the border edge, but frame borders do not inherit.
-    "[--control-border:var(--ak-frame-border)]",
+    "ui-control ak-frame-join-item group/control",
     // Only the items of a stretched group take its side padding, not the badges
     // and controls inside their slots.
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
     "*:[--stretch-px-scale:initial]",
   ],
   variants: {
@@ -124,19 +116,7 @@ export function getDisabledContentClass(variants: VariantProps<typeof layer>) {
  */
 export const controlSlot = cv({
   extend: [slotFrameSlot],
-  class: [
-    // Fade the surfaces of flat keys and keycaps, and mute key text like the
-    // label. Plain keys set their own ink, which the control's ink would not
-    // replace.
-    "group-ui-disabled/control:[&_kbd]:ak-layer-fade-80",
-    "group-ui-disabled-within/choice:[&_kbd]:ak-layer-fade-80",
-    "group-ui-disabled/control:[&_kbd]:ak-ink-0",
-    "group-ui-disabled-within/choice:[&_kbd]:ak-ink-0",
-    // A disabled input group mutes the text of its descendants itself. It is
-    // disabled through its entry controls, so the keys of an enabled action
-    // button in the group keep their surfaces.
-    "group-ui-field-disabled/control:[&_kbd:not(:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:ak-layer-fade-80",
-  ],
+  class: "ui-control-slot",
   refine({ variants, addClass }) {
     addClass(getDisabledContentClass(variants));
   },
@@ -148,7 +128,7 @@ export const controlSlot = cv({
  */
 export const controlContent = cv({
   extend: [slotFrameContent],
-  class: "control-content group/control-content text-start",
+  class: "ui-control-content group/control-content text-start",
 });
 
 /**
@@ -157,14 +137,7 @@ export const controlContent = cv({
  * a slot wraps below the label when the row runs out of room.
  */
 export const controlLabelRow = cv({
-  class: [
-    "control-label-row flex flex-wrap items-start",
-    // A wrapped slot sits as far below the label as the description does.
-    "gap-x-(--gap) gap-y-(--gap-y)",
-    // Slots pull into the control's side padding. In the row, only the end
-    // margin can reach it, so a wrapped slot stays in line with the label.
-    "[&>.slot-frame-slot]:ms-0",
-  ],
+  class: "ui-control-label-row flex-wrap",
 });
 
 /**
@@ -173,13 +146,7 @@ export const controlLabelRow = cv({
  */
 export const controlLabel = cv({
   extend: [slotFrameText],
-  class: [
-    // Content already fills the row, so a description stays beside or below
-    // the label text. Only direct children, so a label in a label row can
-    // still grow.
-    "[.control-content.flex-col>&]:flex-none [.control-content.flex-wrap>&]:grow-0",
-    "group-ui-disabled/control:ak-ink-0",
-  ],
+  class: "ui-control-label group-ui-disabled/control:ak-ink-0",
 });
 
 /**
@@ -189,13 +156,9 @@ export const controlLabel = cv({
 export const controlDescription = cv({
   extend: [text],
   class: [
-    // Let active.ts reduce press depth for controls with descriptions.
-    "control-description",
-    // Remove sibling slot margins that would indent a full-width description.
-    "ms-0!",
-    // Use a full row unless horizontal content has room beside the label.
-    "basis-full group-[.flex-wrap]/control-content:basis-auto",
-    "font-normal",
+    // Let the active style recipe reduce press depth for controls with
+    // descriptions.
+    "ui-control-description font-normal",
     "group-ui-disabled/control:ak-ink-0",
   ],
   variants: {
@@ -230,13 +193,10 @@ export const controlDescription = cv({
  */
 export const controlField = cv({
   class: [
-    // The gaps between the label, the control, and the texts follow the text
-    // size.
-    "control-field ui-spacing-em group/field min-w-0",
-    // Labels read the gap to cover it. Set --field-gap on the field or an
-    // ancestor to change it.
-    "[--_field-gap:var(--field-gap,--spacing(1.5))] gap-(--_field-gap)",
+    "group/field ui-control-field",
     // Fields inside this one start their own columns.
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
     "*:[--field-columns:initial]",
   ],
   variants: {
@@ -251,13 +211,10 @@ export const controlField = cv({
     $orientation: {
       vertical: "flex flex-col",
       horizontal: [
-        "grid items-baseline",
-        "ui-base:grid-cols-(--field-columns,max-content_minmax(0,1fr))",
-        // The label pads its end instead of a column gap, so a click there
-        // also reaches the control. Set --field-column-gap to change it.
-        "gap-x-0 [--_field-column-gap:var(--field-column-gap,--spacing(3))]",
-        "[&>.control-field-label]:pe-(--_field-column-gap)",
+        "ui-control-field--orientation-horizontal",
         // In a narrow field grid, the label and the content take full rows.
+        // Stays a class to keep its order with the classes of the elements that
+        // it styles.
         "@max-[20rem]/field-grid:*:col-span-full",
       ],
     },
@@ -268,10 +225,7 @@ export const controlField = cv({
      */
     $labelAlign: {
       start: "",
-      end: [
-        "[&>.control-field-label]:text-end",
-        "@max-[20rem]/field-grid:[&>.control-field-label]:text-start",
-      ],
+      end: "ui-control-field--label-align-end",
     },
   },
   defaultVariants: {
@@ -293,16 +247,7 @@ export const controlField = cv({
  * full row, and fields inside them use their own columns.
  */
 export const controlFieldGrid = cv({
-  class: [
-    // The container query reads the grid's own width, which contains its
-    // inline size. Zero specificity lets caller widths, gaps, and columns win.
-    "control-field-grid @container/field-grid grid min-w-0 ui-base:w-full",
-    "ui-base:gap-y-7 ui-base:grid-cols-[max-content_minmax(0,1fr)]",
-    // Every child takes a full row. Only direct fields use the columns as
-    // their own, so a field in another child, such as a fieldset, uses its
-    // own columns.
-    "*:ui-base:col-span-full [&>.control-field]:[--field-columns:subgrid]",
-  ],
+  class: "ui-control-field-grid",
 });
 
 /**
@@ -310,7 +255,7 @@ export const controlFieldGrid = cv({
  * horizontal field. Optional in a stacked field.
  */
 export const controlFieldContent = cv({
-  class: "control-field-content flex min-w-0 flex-col gap-(--_field-gap)",
+  class: "ui-control-field-content flex-col",
 });
 
 /**
@@ -320,16 +265,16 @@ export const controlFieldContent = cv({
 export const controlFieldLabel = cv({
   extend: [text],
   class: [
-    // Zero specificity lets caller font classes win.
-    "control-field-label ui-base:text-[0.875em] ui-base:font-medium",
-    // Cover the gap below the label, so a click there also reaches the
-    // control. The negative margin keeps the layout.
-    "pb-(--_field-gap) -mb-(--_field-gap)",
+    "ui-control-field-label",
     // ui-field-disabled reads the field's entry controls, including updates
     // after render.
+    // Stays a class, so that another class here that sets the color still comes
+    // after it and replaces it.
     "group-ui-field-disabled/field:ak-ink-0",
     // Forced colors replace the ink with the normal text color. Use the system
     // disabled color instead.
+    // Stays a class to come after another class here that sets the color, which
+    // it replaces.
     "group-ui-field-disabled/field:forced-colors:text-[GrayText]",
   ],
   variants: {
@@ -342,7 +287,7 @@ export const controlFieldLabel = cv({
 export const controlFieldDescription = cv({
   extend: [text],
   class: [
-    "control-field-description ui-base:text-[0.875em]",
+    "ui-control-field-description ui-base:text-[0.875em]",
     "group-ui-field-disabled/field:ak-ink-0",
   ],
   defaultVariants: {
@@ -364,7 +309,7 @@ export const controlFieldDescription = cv({
  */
 export const controlFieldError = cv({
   extend: [slotFrame],
-  class: "control-field-error ui-base:text-[0.875em]",
+  class: "ui-control-field-error ui-base:text-[0.875em]",
   variants: {
     /**
      * Sets the gap between the icon and the text. `auto` uses
@@ -431,15 +376,20 @@ export const controlFieldError = cv({
 export const controlFieldErrorIcon = cv({
   extend: [slotFrameSlot],
   class: [
+    "ui-control-field-error-icon",
     // The custom property is read with a fallback and never set here, so a
-    // value on the error or an ancestor always wins.
-    "control-field-error-icon [--size:var(--field-error-icon-size,1.125em)]",
+    // value on the error or an ancestor always wins. Stays a class to come
+    // after the --size of `slotSizeClasses`, which it replaces.
+    "[--size:var(--field-error-icon-size,1.125em)]",
     // A panel pulls the icon into its side padding only at the start, so the
     // error's gap is the whole space after the icon. Tailwind emits me-* after
     // mx-*, so this margin wins.
+    // Stays a class to come after the margin of `slotFrameSlot`, which it
+    // replaces.
     "me-0",
     // Chromium paints an inline SVG in the system text color already. The
     // system color keeps currentColor right where SVG colors aren't forced.
+    // Stays a class to come after the color of `ink`, which it replaces.
     "forced-colors:text-[CanvasText]",
   ],
   variants: {
@@ -459,74 +409,40 @@ export const controlFieldErrorIcon = cv({
 export const controlFieldErrorText = cv({
   extend: [text],
   // Fill the row, so an inherited text-align still moves the text.
-  class: "control-field-error-text min-w-0 grow",
+  class: "ui-control-field-error-text",
 });
 
-// Reduce opacity as stroke width grows. Chevrons need a stronger edge; both
-// formulas stay positive across the supported widths.
 const separatorEdge = cx(
-  "ak-edge-alpha-[calc((24-var(--width)*6)/100)]",
-  "[.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
-);
-
-// A list item has no sibling controls, only sibling list items that hover
-// through anything inside them, so a list sets its own rules. The delay keeps
-// the marks of a group from flickering while the pointer crosses a gap: while
-// the pointer is in the group, a mark shows again late, and a mark beside a
-// hovered, selected, or focused control hides at once. A :has(:hover) check for
-// the gap would make Chrome restyle the whole group, and more, on each hover in
-// it.
-const separatorShy = cx(
-  "in-[.control-group:hover]:delay-150",
-  "not-[li]:ui-adjacent-hover:opacity-(--separator-shy-opacity)",
-  "not-[li]:ui-adjacent-hover:delay-0",
-  "not-[li]:ui-adjacent-selected:opacity-(--separator-shy-opacity)",
-  "not-[li]:ui-adjacent-selected:delay-0",
-  "not-[li]:ui-adjacent-focus-visible:opacity-(--separator-shy-opacity)",
-  "not-[li]:ui-adjacent-focus-visible:delay-0",
+  "ui-control-separator--edge ak-edge-alpha-[calc((24-var(--width)*6)/100)]",
 );
 
 /** A line, slash, or chevron between horizontal controls. */
 export const controlSeparator = cv({
   extend: [layer],
   class: [
-    "control-separator [.vertical>&]:hidden",
+    "ui-control-separator",
     // Resolve the separator edge against a layer without painting a background.
-    "bg-transparent flex items-center justify-center pointer-events-none",
-    "transition-opacity duration-200 ease-out",
-    "[--border-width:calc(var(--width)*1px)]",
-    // The space between the mark and each control beside it, in a row where the
-    // separator closes the padding of the group.
-    "[--separator-clearance:calc(var(--group-gap,0px)-(var(--ak-frame-padding,0px)+var(--border-width))/2-var(--separator-lean,0px))]",
-    "h-(--size) border-e-(length:--border-width) -mx-[calc((var(--ak-frame-padding,0px)+var(--border-width))/2)]",
+    // Stays a class to come after the background-color of `layer`, which it
+    // replaces.
+    "bg-transparent",
   ],
   variants: {
     /** Sets the separator shape: a line, slash, or chevron. */
     $kind: {
       pipe: "rounded-full",
-      // The skew moves the ends of the slash toward the controls beside it. A
-      // stretched slash has no size, so this assumes a row of about two lines.
-      slash: [
-        "rounded-full -skew-15",
-        "[--separator-lean:calc(tan(15deg)*var(--size,2lh)/2)]",
-      ],
-      chevron: [
-        "chevron rounded-se-xs [--border-width:calc(var(--width)*2px)]! border-t-(length:--border-width)",
-        // Reverse the chevron rotation and optical offset in RTL rows.
-        "aspect-square scale-50 rotate-45 rtl:-rotate-45",
-        "-translate-x-1/10 rtl:translate-x-1/10",
-      ],
+      slash: "ui-control-separator--kind-slash",
+      chevron: "ui-control-separator--kind-chevron",
     },
     /**
      * Sets the separator height. `lg` fills the row; `full` also covers group
      * padding. Chevrons use `md` for both.
      */
     $size: {
-      xs: ["[--size:1cap] self-center", separatorEdge],
-      sm: ["[--size:1em] self-center", separatorEdge],
-      md: ["[--size:1lh] self-center", separatorEdge],
+      xs: ["ui-control-separator--size-xs", separatorEdge],
+      sm: ["ui-control-separator--size-sm", separatorEdge],
+      md: ["ui-control-separator--size-md", separatorEdge],
       lg: "self-stretch",
-      full: "self-stretch -my-(--ak-frame-padding,0px) mx-0",
+      full: "ui-control-separator--size-full",
     },
     /**
      * Hides the separator beside hovered, selected, or keyboard-focused
@@ -537,14 +453,8 @@ export const controlSeparator = cv({
      * and `full` separators default to `false`.
      */
     $shy: {
-      // The opacity is 0 with 2px of space or less, and 1 otherwise. Without a
-      // value, the rules have no effect. tan(atan2(a,b)) divides lengths where
-      // Firefox calc() cannot.
-      auto: [
-        separatorShy,
-        "[--separator-shy-opacity:clamp(0,tan(atan2(calc(var(--separator-clearance)-2px),1px))*1000,1)]",
-      ],
-      true: [separatorShy, "[--separator-shy-opacity:0]"],
+      auto: "ui-control-separator--shy ui-control-separator--shy-auto",
+      true: ["ui-control-separator--shy", "[--separator-shy-opacity:0]"],
     },
     /** Sets the separator's visual stroke width in pixels. */
     $width: {
@@ -609,39 +519,36 @@ function isNegativeBarOffset(value: string | number) {
 
 /**
  * Resolves a named or spacing bar offset into `--bar-offset`. Negative numbers
- * and lengths that start with `-` also mark the bar with `bar-over`.
+ * and lengths that start with `-` also mark the bar with `ui-bar--over`.
  */
 export function getBarOffset(value?: BarOffset) {
   if (value == null) return;
   if (isNamedBarOffset(value)) return getNamedBarOffsetClass(value);
   const style = { "--bar-offset": getSpacingValue(value) };
   if (!isNegativeBarOffset(value)) return { style };
-  return { class: "bar-over", style };
+  return { class: "ui-bar--over", style };
 }
 
 /** Shared painting and visibility for bars inside selected controls. */
 export const controlBarBase = cv({
   extend: [layer],
   class: [
-    "control-bar absolute pointer-events-none rounded-xs",
-    // Slot margin rules reach the next sibling; keep the bar on its insets.
-    "m-0!",
-    // Show the bar only while its control is checked, selected, or current.
-    "hidden group-ui-selected/control:block",
+    "ui-bar ui-control-bar-base",
     // A dark bar on a light layer looks thinner than a light bar on a dark
     // one, so it is wider by default. The bar paints on the surface around
     // its control, or on the control itself when it is over the control.
     "ak-outset-light:[--bar-width-auto:3px] ak-outset-dark:[--bar-width-auto:2px]",
-    "[&.bar-over]:ak-light:[--bar-width-auto:3px] [&.bar-over]:ak-dark:[--bar-width-auto:2px]",
-    // A fixed width keeps the bar the same at every text size. Normalize the
-    // 0–100 contrast scale so high contrast adds only 20%.
-    "[--bar:calc(var(--bar-width,var(--bar-width-auto,2px))*(1+0.2*var(--contrast,0)/100))]",
     // Forced colors would repaint the fill with the canvas color.
-    "forced-colors:forced-color-adjust-none forced-colors:bg-[CanvasText]",
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
+    "forced-colors:forced-color-adjust-none",
+    // Stays a class to come after the background-color of `layer`, which it
+    // replaces.
+    "forced-colors:bg-[CanvasText]",
     // A bar outside a layered control paints on the surface around the
     // control, so it takes its color context from that surface. A negative
     // offset puts the bar over the control, so it keeps the control's context.
-    "[.ak-layer>&:not(.bar-over)]:ak-outset",
+    "[.ak-layer>&:not(.ui-bar--over)]:ak-outset",
   ],
   variants: {
     /**
@@ -660,9 +567,7 @@ export const controlBarBase = cv({
      */
     $length: {
       full: "[--bar-inset:0px]",
-      // Browsers clamp a rendered corner to half the control's shorter side,
-      // which is about one line plus its padding.
-      auto: "[--bar-inset:min(var(--ak-frame-radius)/2,calc((1lh+var(--py,0px)*2)/4),25%)]",
+      auto: "ui-control-bar-base--length-auto",
     },
   },
   defaultVariants: {
@@ -687,25 +592,12 @@ export const controlBarBase = cv({
  */
 export const controlBar = cv({
   extend: [controlBarBase],
-  class: [
-    "[--bar-gap:var(--control-bar-gap,0px)]",
-    "inset-s-(--bar-inset) inset-e-(--bar-inset) h-(--bar)",
-    "[.vertical>.control>&]:top-(--bar-inset) [.vertical>.control>&]:bottom-(--bar-inset)",
-    "[.vertical>.control>&]:h-auto [.vertical>.control>&]:w-(--bar)",
-  ],
+  class: "ui-control-bar",
   variants: {
     /** Places the bar after or before its control on the group's cross axis. */
     $side: {
-      end: [
-        "top-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
-        "[.vertical>.control>&]:inset-e-auto",
-        "[.vertical>.control>&]:inset-s-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
-      ],
-      start: [
-        "bottom-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
-        "[.vertical>.control>&]:inset-s-auto",
-        "[.vertical>.control>&]:inset-e-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
-      ],
+      end: "ui-control-bar--side-end",
+      start: "ui-control-bar--side-start",
     },
     /**
      * Sets the gap from the control to the bar. `edge` puts the bar on the
@@ -734,15 +626,13 @@ export const controlBar = cv({
 export const controlGroup = cv({
   extend: [frame, segmentGroup, text],
   class: [
-    // The padding and the gap of the group follow its text size, like those of
-    // the controls inside it.
-    "ui-spacing-em",
-    // Bars inside the controls reach the group's padding edge.
-    "control-group [--control-bar-gap:var(--ak-frame-padding)]",
+    "ui-control-group",
     // Forced colors remove the selected surface, which may be the only mark of
     // the checked control, so it keeps an edge. A control with an edge keeps
     // its own width.
-    "[&>.control]:ui-selected:forced-colors:ak-frame-border-[length:max(1px,var(--border-width,1px))]",
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
+    "[&>.ui-control]:ui-selected:forced-colors:ak-frame-border-[length:max(1px,var(--border-width,1px))]",
   ],
   variants: {
     /**
@@ -758,25 +648,19 @@ export const controlGroup = cv({
     $layout: {
       none: "",
       wrap: "flex flex-wrap",
-      stretch: [
-        "flex w-full [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow",
-        // Centered items have free space, where a label outweighs its icon.
-        // More side padding pulls the icon further, which moves the row toward
-        // it.
-        "[&>.control]:[--stretch-px-scale:0.75]",
-      ],
+      stretch: "ui-control-group--layout-stretch",
       horizontal: "flex",
-      vertical: "vertical flex flex-col [&>.control]:justify-start",
+      vertical: "ui-vertical ui-control-group--layout-vertical flex-col",
     },
     /** Sets the gap between controls. `auto` uses the group padding. */
     $gap: {
       none: "[--group-gap:0px]",
-      auto: "[--group-gap:var(--ak-frame-padding,0px)] gap-(--group-gap)",
-      xs: "[--group-gap:--spacing(0.5)] gap-(--group-gap)",
-      sm: "[--group-gap:--spacing(1)] gap-(--group-gap)",
-      md: "[--group-gap:--spacing(2)] gap-(--group-gap)",
-      lg: "[--group-gap:--spacing(3)] gap-(--group-gap)",
-      xl: "[--group-gap:--spacing(4)] gap-(--group-gap)",
+      auto: "ui-control-group--gap-auto",
+      xs: "ui-control-group--gap-xs",
+      sm: "ui-control-group--gap-sm",
+      md: "ui-control-group--gap-md",
+      lg: "ui-control-group--gap-lg",
+      xl: "ui-control-group--gap-xl",
     },
   },
   defaultVariants: {
@@ -812,8 +696,8 @@ export const controlGroup = cv({
     // Ignore separators and hidden controls when finding the first and last
     // controls.
     addClass([
-      "[&>.control:nth-child(1_of_.control:not([hidden]))]:ak-frame-start",
-      "[&>.control:nth-last-child(1_of_.control:not([hidden]))]:ak-frame-end",
+      "[&>.ui-control:nth-child(1_of_.ui-control:not([hidden]))]:ak-frame-start",
+      "[&>.ui-control:nth-last-child(1_of_.ui-control:not([hidden]))]:ak-frame-end",
     ]);
   },
 });

@@ -1,0 +1,53 @@
+/* The CSS of the badge style recipe in badge.ts. Import this file in the CSS
+   file that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that badge.ts imports:
+
+   @import "./ui.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./badge.css"; */
+
+@utility ui-badge {
+  /* Center short counts in the minimum width, and position floating slots. */
+  position: relative;
+  justify-content: center;
+  /* Keep one-line counts at least square, including padding and borders. */
+  min-width: calc(1lh + (var(--ak-frame-padding, 0px) + var(--ak-frame-border, 0px)) * 2);
+
+  @variant ui-base {
+    /* Letter spacing inherits as a length, so the spacing of a large heading
+       around a badge would crowd its smaller text. The direct property keeps
+       the letter spacing fallback of text-* classes. */
+    letter-spacing: normal;
+  }
+
+  .ui-slot-frame-slot > & {
+    /* In a slot, the slot height sets the size of the badge, and short counts
+       stay at least square. */
+    align-self: stretch;
+    align-items: center;
+    min-width: var(--slot-height);
+  }
+
+  &:where(.ui-badge--round) {
+    .ui-slot-frame-slot > &.ui-badge {
+      /* The extra selector wins over the side padding that fits the slot. */
+      --px: calc(var(--slot-height) * 0.15);
+    }
+  }
+}
+
+@utility ui-badge-label {
+  /* Trim browser-dependent font metrics to center the capitals. Padding
+     restores the line height only where text-box is supported; untrimmable
+     elements still gain padding.
+     https://github.com/ariakit/ariakit/issues/7592 */
+  text-box: cap alphabetic;
+  /* Compensate for padding rounded down to the browser layout unit. */
+  min-height: 1lh;
+
+  @supports (text-box: cap alphabetic) {
+    padding-block: calc((1lh - 1cap) / 2);
+  }
+}

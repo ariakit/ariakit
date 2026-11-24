@@ -13,86 +13,12 @@ export type ShellWidth = string | number;
 export const shell = cv({
   extend: [frame],
   class: [
-    // A single-axis clip around sticky chrome causes compositor jitter in
-    // WebKit. The main intro and body own the horizontal clip instead.
-    // https://bugs.webkit.org/show_bug.cgi?id=320439
-    "shell shell-state isolate grid @container/shell rounded-none!",
-    // The spacing of every part follows the text size of the shell, so parts
-    // with different text sizes keep the same gutters.
-    "ui-spacing-em",
-    "min-h-[100cqb]",
-    // A page shell keeps its radius for the frames inside it but paints square
-    // corners, and fills the viewport or a size container. Inside another
-    // frame, such as a dialog, a shell paints its concentric radius and fills
-    // only a frame with a definite height.
-    "[.ak-frame_&:not(.shell_*)]:rounded-(--ak-frame-radius)!",
-    "[.ak-frame_&:not(.shell_*)]:min-h-[min(100cqb,100%)]",
-    // The page tracks hold the box of a shell directly inside a shell with
-    // `$maxWidth`. They are zero otherwise.
-    "grid-cols-[[page-start]_var(--shell-page-track)_[shell-start_start-1-start]_auto_[start-1-end_start-2-start]_auto_[start-2-end_main-start]_minmax(0,1fr)_[main-end_end-1-start]_auto_[end-1-end_end-2-start]_auto_[end-2-end_shell-end]_var(--shell-page-track)_[page-end]]",
-    // Each level copies its width to an alternating channel, so a shell reads
-    // the width of the shell around it even when it sets its own. These
-    // mutually exclusive selectors support three shell levels.
-    "[&:not(.shell_*)]:[--shell-max-width-a:var(--shell-max-width)]",
-    "[.shell_&:not(.shell_.shell_*)]:[--shell-max-width-b:var(--shell-max-width)]",
-    "[.shell_.shell_&]:[--shell-max-width-a:var(--shell-max-width)]",
-    // The tracks resolve against this shell's width. The page space stays
-    // unresolved until a bar reads it, so its container units measure this
-    // shell, not the shell around it.
-    "[--shell-page-space:0px]",
-    "[.shell-paged>&:not(.shell_.shell_*)]:[--shell-page-track:max(0px,calc((100%-var(--shell-max-width-a))/2))]",
-    "[.shell-paged>&:not(.shell_.shell_*)]:[--shell-page-space:max(0px,calc((100cqi-var(--shell-max-width-a))/2))]",
-    "[.shell_.shell-paged>&]:[--shell-page-track:max(0px,calc((100%-var(--shell-max-width-b))/2))]",
-    "[.shell_.shell-paged>&]:[--shell-page-space:max(0px,calc((100cqi-var(--shell-max-width-b))/2))]",
-    "grid-rows-[[shell-start_header-start]_auto_[header-end_main-start_main-header-start]_auto_[main-header-end_intro-start]_auto_[intro-end_body-start]_minmax(0,1fr)_[body-end_footer-start]_auto_[footer-end_shell-end]]",
-    "[--shell-start-1-width:0px] [--shell-start-2-width:0px]",
-    "[--shell-end-1-width:0px] [--shell-end-2-width:0px]",
-    // Without a main size, Prose is 1rem, so this is 42em of its text.
-    "[--shell-header-height:0px] [--shell-main-max-width:42rem]",
-    // The bar heights don't include the facing edge of the bar. Each bar
-    // publishes its edge width, and the offsets of sticky parts add it.
-    "[--shell-header-border:0px] [--shell-footer-border:0px] [--shell-main-header-border:0px]",
-    // A shell inside a sized main doesn't pass that size on to its Prose.
-    "[.shell-main-sized_&]:[--prose-size:initial]",
-    "[--shell-duration:300ms] [--shell-motion:1] motion-reduce:[--shell-motion:0]",
-    "[--shell-time:calc(var(--shell-duration)*var(--shell-motion))]",
-    "[--shell-ease:cubic-bezier(0.2,0,0,1)]",
-    // A default control is one line of the shell's text with two spacing steps
-    // of padding above and below it, which round like frame padding. A bar is
-    // that tall plus its space above and below, which is three steps by
-    // default, plus its facing edge.
-    "[--shell-control-height:calc(var(--shell-header-step)*4*var(--shell-leading)+2*round(var(--shell-header-step)*2,1px))]",
-    "[--shell-bar-space:round(calc(var(--shell-header-step)*3),1px)]",
-    // Each bar publishes its space as a number of steps, and the shell turns
-    // it into a height here. The main header and the sidebar headers take the
-    // space of the shell header unless they set their own.
-    "[--shell-header-space:3] [--shell-main-header-space:var(--shell-header-space)]",
-    "[&:has(>.shell-header)]:[--shell-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-header-space),1px))]",
-    // Only a sticky footer publishes its height, space, and edge on the shell.
-    // The footer comes last, and a new inherited value on the shell restyles
-    // every element that the browser already parsed inside it.
-    "[&:has(>.shell-footer-sticky)]:[--shell-footer-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-footer-space),1px))]",
-    "[--shell-main-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-main-header-space),1px))] [--shell-main-head:0px]",
-    "[--shell-head:0px]",
-    "[&:has(>.shell-header-sticky)]:[--shell-head:calc(var(--shell-header-height)+var(--shell-header-border))]",
-    "[&:has(>.shell-footer-sticky)]:[--shell-foot:calc(var(--shell-footer-height)+var(--shell-footer-border))]",
-    // Alternating registered lengths avoid same-element custom-property
-    // cycles. These mutually exclusive selectors support three shell levels;
-    // each further level needs another rule with the opposite channel.
-    "[&:not(.shell_*)]:[--shell-top:0px]",
-    "[&:not(.shell_*)]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head))]",
-    "[.shell_&:not(.shell_.shell_*)]:[--shell-top:var(--shell-below-a)]",
-    "[.shell_&:not(.shell_.shell_*)]:[--shell-below-b:calc(var(--shell-top)+var(--shell-head))]",
-    "[.shell_.shell_&]:[--shell-top:var(--shell-below-b)]",
-    "[.shell_.shell_&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head))]",
-    // The page scrolls under the sticky bars, so content that fits in the
-    // scroll area, such as a code block, stays below and above them. Main adds
-    // its own sticky header.
-    "[--scrollport-start:calc(var(--shell-top)+var(--shell-head))]",
-    "[--scrollport-end:var(--shell-foot)]",
-    "[.shell>&]:col-[main] [.shell>&]:row-[body] [.shell>&]:min-h-0",
-    "[.shell>&]:[--shell-duration:inherit] [.shell>&]:[--shell-motion:inherit]",
-    "[.shell>&]:[--shell-ease:inherit] [.shell>&]:[--shell-main-max-width:inherit]",
+    "ui-shell",
+    // Stays a class to come after the classes of a caller, so that the reduced
+    // motion rule still applies.
+    "motion-reduce:[--shell-motion:0]",
+    // Stays a class to come after the classes of a caller, so that the print
+    // rule still applies.
     "print:h-auto print:min-h-0",
   ],
   variants: {
@@ -109,36 +35,10 @@ export const shell = cv({
     // without rounding the shell itself. The leading lets parts inside a sized
     // main return to the shell's line height.
     $size: {
-      auto: [
-        "text-sm [--shell-header-step:calc(0.875rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5/0.875)]",
-        "[--shell-leading:var(--text-sm--line-height)]",
-        // A leading utility would set --tw-leading and replace
-        // text-* fallbacks.
-        "[.shell_&]:[font-size:inherit] [.shell_&]:[line-height:inherit]",
-        "[.shell_&]:[--shell-header-step:inherit]",
-        "[.shell_&]:[--shell-radius:inherit]",
-        "[.shell_&]:[--shell-leading:inherit]",
-        // The outer shell's size, not the size of a main around this shell. The
-        // extra class outranks the inherited size above.
-        "[.shell_.shell-main-sized_&]:text-[calc(var(--shell-header-step)*4)]",
-        "[.shell_.shell-main-sized_&]:[line-height:var(--shell-leading)]",
-      ],
-      sm: [
-        "text-sm [--shell-header-step:calc(0.875rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5/0.875)]",
-        "[--shell-leading:var(--text-sm--line-height)]",
-      ],
-      md: [
-        "text-base [--shell-header-step:calc(1rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5)]",
-        "[--shell-leading:var(--text-base--line-height)]",
-      ],
-      lg: [
-        "text-lg [--shell-header-step:calc(1.125rem/4)]",
-        "[--shell-radius:calc(var(--radius)*5/1.125)]",
-        "[--shell-leading:var(--text-lg--line-height)]",
-      ],
+      auto: "ui-shell--size-auto",
+      sm: "ui-shell--size-sm text-sm",
+      md: "ui-shell--size-md text-base",
+      lg: "ui-shell--size-lg text-lg",
     },
     /**
      * Sets what the content of this shell is centered on while main has free
@@ -157,7 +57,7 @@ export const shell = cv({
      */
     $center: {
       shell: "",
-      outer: "shell-center-outer",
+      outer: "ui-shell-center-outer",
     },
     /**
      * Sets the duration of sidebar folds and content compensation. Numbers are
@@ -192,7 +92,7 @@ export const shell = cv({
           ? `calc(var(--shell-header-step) * (${value}))`
           : value;
       return {
-        class: "shell-paged",
+        class: "ui-shell--paged",
         style: { "--shell-max-width": width, "--shell-main-max-width": width },
       };
     },
@@ -205,16 +105,6 @@ export const shell = cv({
     $p: "none",
   },
 });
-
-const facingBorder = cx(
-  "[.shell-header,.shell-main-header,.shell-sidebar-header]:border-be-(length:--border-width)",
-  "[.shell-footer,.shell-sidebar-footer]:border-bs-(length:--border-width)",
-  // The column follows the shell direction; the body can have its own dir.
-  "[.shell-sidebar-start:dir(ltr)>&]:border-r-(length:--border-width)",
-  "[.shell-sidebar-start:dir(rtl)>&]:border-l-(length:--border-width)",
-  "[.shell-sidebar-end:dir(ltr)>&]:border-l-(length:--border-width)",
-  "[.shell-sidebar-end:dir(rtl)>&]:border-r-(length:--border-width)",
-);
 
 /**
  * A surface with one facing edge that preserves the nested frame border
@@ -240,11 +130,14 @@ const seam = cv({
      */
     $borderType(value?: "border" | "dashed") {
       if (value === "border") {
-        return [facingBorder, "[--shell-facing-border:var(--border-width)]"];
+        return [
+          "ui-shell-facing-border",
+          "[--shell-facing-border:var(--border-width)]",
+        ];
       }
       if (value === "dashed") {
         return cx(
-          facingBorder,
+          "ui-shell-facing-border",
           "border-dashed [--shell-facing-border:var(--border-width)]",
         );
       }
@@ -305,55 +198,10 @@ const barPaddingVariants = {
  * reset without restyling what they hold on each toggle.
  */
 const bar = cx(
-  "shell-bar shell-slot-state shell-bar-spaces",
-  "[&:has(>.shell-band)]:shell-bar-fold [&:has(>.shell-band)]:shell-bar-tracks",
-  "[&>.shell-band:has(>.carousel>.nav.horizontal)]:self-stretch",
-  // A horizontal navigation region fills the bar's height, so edge bars in
-  // its centered rows meet the bar's edge. It scrolls in a carousel root,
-  // which takes its place in the bar.
-  "[&>.shell-bar-start:has(>.carousel>.nav.horizontal)]:self-stretch",
-  "[&>.shell-bar-center:has(>.carousel>.nav.horizontal)]:self-stretch",
-  "[&>.shell-bar-end:has(>.carousel>.nav.horizontal)]:self-stretch",
-  "[&>*>.carousel:has(>.nav.horizontal)]:self-stretch [&>*>.carousel:has(>.nav.horizontal)]:my-0 [&>*>.carousel:has(>.nav.horizontal)]:py-0",
-  // The navigation covers the root, so its block margins reach past the root
-  // unless they go too. It reaches over the edges that `--nav-edge-start` and
-  // `--nav-edge-end` set, with the same padding, so its scroll box doesn't clip
-  // the edge bars that cover them.
-  "[&>*>.carousel>.nav.horizontal]:items-center",
-  "[&>*>.carousel>.nav.horizontal]:mt-[calc(-1*var(--nav-edge-start,0px))]! [&>*>.carousel>.nav.horizontal]:mb-[calc(-1*var(--nav-edge-end,0px))]!",
-  "[&>*>.carousel>.nav.horizontal]:pt-(--nav-edge-start,0px) [&>*>.carousel>.nav.horizontal]:pb-(--nav-edge-end,0px)",
-  // Without block padding, edge bars measure from the region's height alone.
-  "[&>*>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
-  // The region scrolls, so rounded corners would clip a bar at its edge.
-  "[&>*>.carousel:has(>.nav.horizontal)]:rounded-none! [&>*>.carousel>.nav.horizontal]:rounded-none!",
-  // The same goes for a part in a content area, which stretches with its area.
-  "[&>.shell-band:has(>.shell-bar-part>.carousel>.nav.horizontal)]:self-stretch [&>.shell-band>.shell-bar-part:has(>.carousel>.nav.horizontal)]:self-stretch",
-  "[&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:self-stretch [&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:my-0 [&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:py-0",
-  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:items-center",
-  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:mt-[calc(-1*var(--nav-edge-start,0px))]! [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:mb-[calc(-1*var(--nav-edge-end,0px))]!",
-  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:pt-(--nav-edge-start,0px) [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:pb-(--nav-edge-end,0px)",
-  "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
-  "[&>.shell-band>.shell-bar-part>.carousel:has(>.nav.horizontal)]:rounded-none! [&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:rounded-none!",
-  "col-[page] grid grid-cols-[1fr_auto_1fr] items-center gap-2 py-0!",
-  "[&:not(:has(>.shell-bar-center,>.shell-band,>.shell-bar-grow))]:grid-cols-[auto_1fr_auto]",
-  // Next to a shell inside a shell with `$maxWidth`, a content area starts the
-  // bar's padding inside that shell's box, like parts at the bar's edges and in
-  // that shell's own bars. With the default space of the bar, that is on the
-  // rows of its sidebars. It skips compensation, so an outer sidebar doesn't
-  // move it off the box. The bar looks for that shell among its siblings: a
-  // `:has()` on the outer shell would restyle the whole page on each sidebar
-  // toggle in Chrome.
-  "[.shell-paged>&:has(~.shell)]:[--shell-main-max-width:calc(var(--shell-max-width)-2*var(--ak-frame-padding))]",
-  "[.shell-paged>.shell~&]:[--shell-main-max-width:calc(var(--shell-max-width)-2*var(--ak-frame-padding))]",
-  "[.shell-paged>&:has(~.shell)]:[--shell-comp-start:0px] [.shell-paged>&:has(~.shell)]:[--shell-comp-end:0px]",
-  "[.shell-paged>.shell~&]:[--shell-comp-start:0px] [.shell-paged>.shell~&]:[--shell-comp-end:0px]",
-  // In that inner shell, the bar spans the shell and its parts start at the
-  // box. The safe area stays the smallest space from the screen edge.
-  "pl-[max(calc(var(--ak-frame-padding)+var(--shell-page-space)),env(safe-area-inset-left))]",
-  "pr-[max(calc(var(--ak-frame-padding)+var(--shell-page-space)),env(safe-area-inset-right))]",
-  // A growing center receives twice the free space and stays centered while
-  // each side fits within one quarter.
-  "[&:has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
+  "ui-shell-bar ui-shell-slot-state",
+  // Stays a class, so that the padding of `shellFooter` still comes after it
+  // and replaces it.
+  "py-0!",
 );
 
 /**
@@ -362,7 +210,10 @@ const bar = cx(
  * create stacking and fixed-position contexts; nested filters do not compose.
  */
 const blur = cx(
-  "backdrop-blur-md bg-[color-mix(in_oklab,var(--ak-layer)_80%,transparent)]",
+  "backdrop-blur-md",
+  // Stays a class to come after the background-color of `layer`, which it
+  // replaces.
+  "bg-[color-mix(in_oklab,var(--ak-layer)_80%,transparent)]",
   "supports-[not(backdrop-filter:blur(1px))]:bg-(--ak-layer)",
   "[@media(prefers-reduced-transparency:reduce)]:bg-(--ak-layer)",
 );
@@ -404,20 +255,7 @@ const barAreaVariants = {
  */
 export const shellHeader = cv({
   extend: [seam],
-  class: [
-    bar,
-    "shell-header row-[header] box-border min-h-[calc(var(--shell-header-height)+var(--shell-facing-border,0px))] @container/shell-header",
-    // Edge bars in a centered navigation row reach the bottom of the header
-    // and cover its facing edge. The navigation measures the header without
-    // the border of its carousel root, and reaches over both edges.
-    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-2*var(--carousel-border,0px))]",
-    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-header-height)-2*var(--carousel-border,0px))]",
-    "[&>*>.carousel>.nav.horizontal]:[--nav-edge-end:calc(var(--carousel-border,0px)+var(--shell-facing-border,0px))]",
-    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-edge-end:calc(var(--carousel-border,0px)+var(--shell-facing-border,0px))]",
-    "z-6",
-    "[--shell-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-header-space),1px))]",
-    "[--shell-bar-inset:round(var(--shell-header-step)*var(--shell-header-space),1px)]",
-  ],
+  class: [bar, "ui-shell-header"],
   variants: {
     ...barAreaVariants,
     ...barPaddingVariants,
@@ -430,13 +268,13 @@ export const shellHeader = cv({
      * length goes to `$px`, which sets only the sides. Defaults to 3.
      */
     $p: {
-      0: "[.shell:has(>&)]:[--shell-header-space:0] [--shell-header-space:0]",
-      1: "[.shell:has(>&)]:[--shell-header-space:1] [--shell-header-space:1]",
-      2: "[.shell:has(>&)]:[--shell-header-space:2] [--shell-header-space:2]",
-      3: "[.shell:has(>&)]:[--shell-header-space:3] [--shell-header-space:3]",
-      4: "[.shell:has(>&)]:[--shell-header-space:4] [--shell-header-space:4]",
-      5: "[.shell:has(>&)]:[--shell-header-space:5] [--shell-header-space:5]",
-      6: "[.shell:has(>&)]:[--shell-header-space:6] [--shell-header-space:6]",
+      0: "ui-shell-header--p-0",
+      1: "ui-shell-header--p-1",
+      2: "ui-shell-header--p-2",
+      3: "ui-shell-header--p-3",
+      4: "ui-shell-header--p-4",
+      5: "ui-shell-header--p-5",
+      6: "ui-shell-header--p-6",
     },
     /**
      * Sets the facing edge width in whole pixels from 0 to 5. `true` means 1px;
@@ -445,23 +283,21 @@ export const shellHeader = cv({
      * place sticky parts, so the width is one of these values.
      */
     $border: {
-      true: "[--border-width:1px] [.shell:has(>&)]:[--shell-header-border:1px]",
-      false:
-        "[--border-width:0px] [.shell:has(>&)]:[--shell-header-border:0px]",
-      0: "[--border-width:0px] [.shell:has(>&)]:[--shell-header-border:0px]",
-      1: "[--border-width:1px] [.shell:has(>&)]:[--shell-header-border:1px]",
-      2: "[--border-width:2px] [.shell:has(>&)]:[--shell-header-border:2px]",
-      3: "[--border-width:3px] [.shell:has(>&)]:[--shell-header-border:3px]",
-      4: "[--border-width:4px] [.shell:has(>&)]:[--shell-header-border:4px]",
-      5: "[--border-width:5px] [.shell:has(>&)]:[--shell-header-border:5px]",
-      inherit:
-        "ak-edge-inherit [.shell:has(>&)]:[--shell-header-border:var(--border-width,0px)]",
+      true: "ui-shell-header--border-true",
+      false: "ui-shell-header--border-false",
+      0: "ui-shell-header--border-0",
+      1: "ui-shell-header--border-1",
+      2: "ui-shell-header--border-2",
+      3: "ui-shell-header--border-3",
+      4: "ui-shell-header--border-4",
+      5: "ui-shell-header--border-5",
+      inherit: "ui-shell-header--border-inherit ak-edge-inherit",
     },
     /**
      * Keeps the header in view within its row and reserves its space. Sticky
      * sidebars and anchors use its height as an offset. Defaults to `true`.
      */
-    $sticky: "shell-header-sticky sticky inset-bs-(--shell-top)",
+    $sticky: "ui-shell-header--sticky",
     /**
      * Blurs the page behind a translucent surface. Uses an opaque surface when
      * backdrop filters are unsupported or transparency is reduced.
@@ -474,17 +310,7 @@ export const shellHeader = cv({
      * row. A center section in a content area keeps its row even when CSS hides
      * it, so render it only where it shows.
      */
-    $stackCenter: [
-      "@max-[40rem]/shell-header:[&>.shell-bar-center]:col-span-full",
-      "@max-[40rem]/shell-header:[&>.shell-bar-center]:row-start-2",
-      // In a content area, the extra class outranks the row of its parts. The
-      // area spans both rows of the header, so parts outside it stay on the
-      // first row with its start and end parts.
-      "@max-[40rem]/shell-header:[&>.shell-band>.shell-bar-center.shell-bar-part]:col-span-full",
-      "@max-[40rem]/shell-header:[&>.shell-band>.shell-bar-center.shell-bar-part]:row-start-2",
-      "@max-[40rem]/shell-header:[&>.shell-band:has(>.shell-bar-center)]:row-end-[span_2]",
-      "@max-[40rem]/shell-header:[&>.shell-band:has(>.shell-bar-center)]:grid-rows-subgrid",
-    ],
+    $stackCenter: "ui-shell-header--stack-center",
   },
   defaultVariants: {
     $sticky: true,
@@ -499,8 +325,7 @@ export const shellHeader = cv({
  * the area off the column. Each part keeps the space itself.
  */
 export const shellBarPart = cv({
-  class:
-    "shell-bar-part flex items-center gap-2 [.shell-main-header>&]:row-start-1 [.shell-bar>.shell-band>&]:row-start-1",
+  class: "ui-shell-bar-part",
   variants: {
     /**
      * Lets the section shrink below its content width. Use `truncate` on text
@@ -509,16 +334,12 @@ export const shellBarPart = cv({
      * reachable.
      */
     $shrink: {
-      true: "max-w-full box-border min-w-0 overflow-clip [overflow-clip-margin:0.25rem]",
-      // A side track can be narrower than its part, and the part must not wrap
-      // to fit. It takes room from the area instead. With a center part, a main
-      // header has the tracks of a plain bar, so text can wrap like in a bar.
-      false:
-        "min-w-auto [&:has(~.shell-band)]:min-w-max [.shell-band~&]:min-w-max [.shell-main-header:not(:has(>.shell-bar-center))>&]:min-w-max",
+      true: "ui-shell-bar-part--shrink-true",
+      false: "ui-shell-bar-part--shrink-false",
     },
     /** Fills the section's track instead of using its resting alignment. */
     $grow: {
-      true: "shell-bar-grow justify-self-stretch",
+      true: "ui-shell-bar-part--grow-true justify-self-stretch",
     },
   },
 });
@@ -527,19 +348,26 @@ export const shellBarPart = cv({
  * A side part alone in a bar spans the bar, not only its side track. So its
  * content wraps only when the bar has no more room.
  */
-const loneSidePart = cx("[.shell-bar>&:only-child]:col-span-full");
+const loneSidePart = cx(
+  // Stays a class, so that the grid-column of `shellStart` still comes after
+  // it and replaces it.
+  "[.ui-shell-bar>&:only-child]:col-span-full",
+);
 
 /** The start section of a shell header, footer, or main header. */
 export const shellStart = cv({
   extend: [shellBarPart],
   class: [
-    "shell-bar-start col-1 [&:has(~.shell-band)]:me-2 [.shell-main-header>&]:me-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-1 [.shell-bar>.shell-band>&]:col-1",
+    "ui-shell-start",
+    // Stays a class to come after the grid-column of `loneSidePart`, which it
+    // replaces.
+    "[.ui-shell-main-header:has(>.ui-shell-bar-part)>&]:col-1 [.ui-shell-bar>.ui-shell-main-band>&]:col-1",
     loneSidePart,
   ],
   variants: {
     // The track also holds the part's margin, so the cap leaves room for it.
     $shrink: {
-      true: "[&:has(~.shell-band)]:max-w-[calc(100%-(--spacing(2)))] [.shell-main-header>&]:max-w-[calc(100%-(--spacing(2)))]",
+      true: "ui-shell-start--shrink-true",
     },
     /** Fills the part's track instead of resting at the bar's start edge. */
     $grow: { false: "justify-self-start" },
@@ -549,7 +377,7 @@ export const shellStart = cv({
 /** The center section of a shell header, footer, or main header. */
 export const shellCenter = cv({
   extend: [shellBarPart],
-  class: "shell-bar-center col-2 [.shell-bar>.shell-band>&]:col-2",
+  class: "ui-shell-center",
   variants: {
     /**
      * Gives the center twice the free width. It stays centered while both sides
@@ -564,13 +392,16 @@ export const shellCenter = cv({
 export const shellEnd = cv({
   extend: [shellBarPart],
   class: [
-    "shell-bar-end col-3 [.shell-band~&]:ms-2 [.shell-main-header>&]:ms-2 [.shell-main-header:has(>.shell-bar-part)>&]:col-3 [.shell-bar>.shell-band>&]:col-3",
+    "ui-shell-end",
+    // Stays a class to come after the grid-column of `loneSidePart`, which it
+    // replaces.
+    "[.ui-shell-main-header:has(>.ui-shell-bar-part)>&]:col-3 [.ui-shell-bar>.ui-shell-main-band>&]:col-3",
     loneSidePart,
   ],
   variants: {
     // The track also holds the part's margin, so the cap leaves room for it.
     $shrink: {
-      true: "[.shell-band~&]:max-w-[calc(100%-(--spacing(2)))] [.shell-main-header>&]:max-w-[calc(100%-(--spacing(2)))]",
+      true: "ui-shell-end--shrink-true",
     },
     /** Fills the part's track instead of resting at the bar's end edge. */
     $grow: { false: "justify-self-end" },
@@ -584,19 +415,9 @@ export const shellFooter = cv({
   extend: [seam],
   class: [
     bar,
-    // The footer ends the sidebar columns, pushing sticky sidebar bodies up
-    // without a fixed footer height.
-    "shell-footer row-[footer] box-border min-h-[calc(var(--shell-footer-height)+var(--shell-facing-border,0px))] @container/shell-footer",
-    // Let edge bars in a centered navigation row reach the inner edge.
-    // The bottom safe area pads the footer, so it doesn't hold the row. The
-    // navigation measures the footer without the border of its carousel root,
-    // which it reaches over.
-    "[&>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-env(safe-area-inset-bottom)-2*var(--carousel-border,0px))]",
-    "[&>.shell-band>.shell-bar-part>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-footer-height)-env(safe-area-inset-bottom)-2*var(--carousel-border,0px))]",
-    "z-5",
+    "ui-shell-footer",
+    // Stays a class to come after the padding of `bar`, which it replaces.
     "pbs-0! pbe-[env(safe-area-inset-bottom)]!",
-    "[--shell-footer-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-footer-space),1px))]",
-    "[--shell-bar-inset:round(var(--shell-header-step)*var(--shell-footer-space),1px)]",
   ],
   variants: {
     ...barAreaVariants,
@@ -613,13 +434,13 @@ export const shellFooter = cv({
     // The shell reads the space only to place parts above a sticky footer, so
     // only a sticky footer sets it on the shell. See the shell's footer height.
     $p: {
-      0: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:0] [--shell-footer-space:0]",
-      1: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:1] [--shell-footer-space:1]",
-      2: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:2] [--shell-footer-space:2]",
-      3: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:3] [--shell-footer-space:3]",
-      4: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:4] [--shell-footer-space:4]",
-      5: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:5] [--shell-footer-space:5]",
-      6: "[.shell:has(>&.shell-footer-sticky)]:[--shell-footer-space:6] [--shell-footer-space:6]",
+      0: "ui-shell-footer--p-0",
+      1: "ui-shell-footer--p-1",
+      2: "ui-shell-footer--p-2",
+      3: "ui-shell-footer--p-3",
+      4: "ui-shell-footer--p-4",
+      5: "ui-shell-footer--p-5",
+      6: "ui-shell-footer--p-6",
     },
     /**
      * Sets the facing edge width in whole pixels from 0 to 5. `true` means 1px;
@@ -628,24 +449,22 @@ export const shellFooter = cv({
      * place parts above a sticky footer, so the width is one of these values.
      */
     $border: {
-      true: "[--border-width:1px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:1px]",
-      false:
-        "[--border-width:0px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:0px]",
-      0: "[--border-width:0px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:0px]",
-      1: "[--border-width:1px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:1px]",
-      2: "[--border-width:2px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:2px]",
-      3: "[--border-width:3px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:3px]",
-      4: "[--border-width:4px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:4px]",
-      5: "[--border-width:5px] [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:5px]",
-      inherit:
-        "ak-edge-inherit [.shell:has(>&.shell-footer-sticky)]:[--shell-footer-border:var(--border-width,0px)]",
+      true: "ui-shell-footer--border-true",
+      false: "ui-shell-footer--border-false",
+      0: "ui-shell-footer--border-0",
+      1: "ui-shell-footer--border-1",
+      2: "ui-shell-footer--border-2",
+      3: "ui-shell-footer--border-3",
+      4: "ui-shell-footer--border-4",
+      5: "ui-shell-footer--border-5",
+      inherit: "ui-shell-footer--border-inherit ak-edge-inherit",
     },
     /**
      * Keeps the footer in view at the bottom of the scroll area. Sticky
      * sidebars stop above it, and main content scrolls focused elements above
      * it. Defaults to `false`.
      */
-    $sticky: "shell-footer-sticky sticky inset-be-0",
+    $sticky: "ui-shell-footer--sticky",
     /**
      * Blurs the page behind a translucent surface. Uses an opaque surface when
      * backdrop filters are unsupported or transparency is reduced.
@@ -658,37 +477,6 @@ export const shellFooter = cv({
   },
 });
 
-// The panel of a sidebar with `$reveal` stays in place while the column folds.
-// The column also names its side, so these rules outrank the alignment that the
-// panel sets for itself.
-const shellSidebarRevealPlace = cx(
-  "[&.shell-sidebar-start>.shell-sidebar-panel]:self-start [&.shell-sidebar-end>.shell-sidebar-panel]:self-end",
-);
-
-// The panel of a sidebar with the `zoom` value of `$reveal` also fades in and
-// grows.
-const shellSidebarRevealZoom = cx(
-  // How far the column is open, from 0 to 1. The column is always in the page,
-  // so it can animate the value, also on the way in, and a sidebar that is open
-  // on the first render doesn't animate. The panel is not in the page while
-  // the sidebar is closed.
-  "[&.shell-sidebar-start]:[--shell-reveal:calc(var(--shell-start-1-open)*var(--shell-start-1-fit))]",
-  "[.shell-sidebar-start~&.shell-sidebar-start]:[--shell-reveal:calc(var(--shell-start-2-open)*var(--shell-start-2-fit))]",
-  "[&.shell-sidebar-end]:[--shell-reveal:calc(var(--shell-end-1-open)*var(--shell-end-1-fit))]",
-  "[.shell-sidebar-end~&.shell-sidebar-end]:[--shell-reveal:calc(var(--shell-end-2-open)*var(--shell-end-2-fit))]",
-  "[&.shell-sidebar]:transition-[width,--shell-reveal]",
-  "[&>.shell-sidebar-panel]:opacity-(--shell-reveal)",
-  "[&>.shell-sidebar-panel]:scale-[calc(0.95+0.05*var(--shell-reveal))]",
-  // The panel grows from its top corner at the outer side of the shell, so
-  // what is next to that corner stays in place. The column follows the
-  // direction of the shell.
-  "[&.shell-sidebar-start:dir(ltr)>.shell-sidebar-panel]:origin-top-left [&.shell-sidebar-start:dir(rtl)>.shell-sidebar-panel]:origin-top-right",
-  "[&.shell-sidebar-end:dir(ltr)>.shell-sidebar-panel]:origin-top-right [&.shell-sidebar-end:dir(rtl)>.shell-sidebar-panel]:origin-top-left",
-  // The parts of the panel reset the value, so a frame of the fold doesn't
-  // restyle what they hold.
-  "[&>.shell-sidebar-panel>*]:[--shell-reveal:initial]",
-);
-
 /**
  * A sidebar column that folds to zero width while its panel keeps its full
  * width. Reopening animates without an entrance animation on first render.
@@ -696,35 +484,15 @@ const shellSidebarRevealZoom = cx(
  * panel is still streaming in.
  */
 export const shellSidebar = cv({
-  class: [
-    "shell-slot-state",
-    "[--shell-sidebar-head:0px]",
-    // Keep the panel's offset while its own column closes or collapses.
-    "[&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*(1-var(--shell-end-1-from-main)))]",
-    "[.shell-sidebar-end~&.shell-sidebar-end]:[--shell-sidebar-head:calc(var(--shell-main-head)*var(--shell-header-free-1)*(1-var(--shell-end-2-from-main)))]",
-    "shell-sidebar flex flex-col box-border rounded-none!",
-    "z-2 w-(--shell-slot-width) overflow-clip",
-    // The main header spans a closing column at once, so a column that starts
-    // at main folds above it. An open column stays below the header's popovers.
-    "[&.shell-sidebar-end]:z-[calc(2+2*var(--shell-end-1-from-main)*var(--shell-header-free-1))]",
-    "[.shell-sidebar-end~&.shell-sidebar-end]:z-[calc(2+2*var(--shell-end-2-from-main)*var(--shell-header-free-2))]",
-    // Fold beside a closed panel. While HTML streams in, the parser can pause
-    // before the panel, so the column's own data-open stands in until then.
-    // https://github.com/ariakit/ariakit/issues/8147
-    "[&:has(>.shell-sidebar-panel:not([data-open]))]:w-0",
-    "[&:not([data-open]):not(:has(>.shell-sidebar-panel))]:w-0",
-    "[&>.shell-sidebar-panel:not([data-open])]:hidden",
-    "transition-[width] duration-(--shell-time) ease-(--shell-ease)",
-  ],
+  class: "ui-shell-sidebar ui-shell-slot-state flex-col",
   variants: {
     /**
      * Chooses the side. Up to two columns per side follow their DOM order: the
      * first start column is outermost and the first end column is innermost.
      */
     $side: {
-      start:
-        "shell-sidebar-start col-[start-1] [.shell-sidebar-start~&]:col-[start-2]",
-      end: "shell-sidebar-end col-[end-1] [.shell-sidebar-end~&]:col-[end-2]",
+      start: "ui-shell-sidebar--side-start",
+      end: "ui-shell-sidebar--side-end",
     },
     /**
      * Sets this sidebar's width and publishes it to the shell. `3xs` fits a
@@ -732,50 +500,12 @@ export const shellSidebar = cv({
      * Defaults to `md`.
      */
     $width: {
-      // A default button is one line tall. The body, group, and button padding
-      // each round to a whole pixel per side, and the facing edge adds 1px.
-      "3xs": [
-        "[--shell-slot-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
-        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
-        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
-        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
-        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:calc(1lh+2*(round(--spacing(3),1px)+round(--spacing(1),1px)+round(--spacing(2),1px))+1px)]",
-      ],
-      xs: [
-        "[--shell-slot-width:10rem]",
-        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:10rem]",
-        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:10rem]",
-        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:10rem]",
-        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:10rem]",
-      ],
-      sm: [
-        "[--shell-slot-width:12rem]",
-        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:12rem]",
-        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:12rem]",
-        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:12rem]",
-        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:12rem]",
-      ],
-      md: [
-        "[--shell-slot-width:16rem]",
-        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:16rem]",
-        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:16rem]",
-        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:16rem]",
-        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:16rem]",
-      ],
-      lg: [
-        "[--shell-slot-width:20rem]",
-        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:20rem]",
-        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:20rem]",
-        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:20rem]",
-        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:20rem]",
-      ],
-      xl: [
-        "[--shell-slot-width:24rem]",
-        "[.shell:has(>&.shell-sidebar-start:not(.shell-sidebar-start~*))]:[--shell-start-1-width:24rem]",
-        "[.shell:has(>.shell-sidebar-start~&.shell-sidebar-start)]:[--shell-start-2-width:24rem]",
-        "[.shell:has(>&.shell-sidebar-end:not(.shell-sidebar-end~*))]:[--shell-end-1-width:24rem]",
-        "[.shell:has(>.shell-sidebar-end~&.shell-sidebar-end)]:[--shell-end-2-width:24rem]",
-      ],
+      "3xs": "ui-shell-sidebar--width-3xs",
+      xs: "ui-shell-sidebar--width-xs",
+      sm: "ui-shell-sidebar--width-sm",
+      md: "ui-shell-sidebar--width-md",
+      lg: "ui-shell-sidebar--width-lg",
+      xl: "ui-shell-sidebar--width-xl",
     },
     /**
      * Shows an open sidebar at or above a named shell-container width. Prefix
@@ -786,55 +516,33 @@ export const shellSidebar = cv({
       // The extra class outranks the column width, so the column folds outside
       // its range whatever its panel state.
       true: "",
-      false:
-        "shell-sidebar-hidden [&.shell-sidebar]:w-0 [&>.shell-sidebar-panel]:hidden",
-      "3xs":
-        "shell-sidebar-show-3xs @max-3xs/shell:[&.shell-sidebar]:w-0 @max-3xs/shell:[&>.shell-sidebar-panel]:hidden",
-      "2xs":
-        "shell-sidebar-show-2xs @max-2xs/shell:[&.shell-sidebar]:w-0 @max-2xs/shell:[&>.shell-sidebar-panel]:hidden",
-      xs: "shell-sidebar-show-xs @max-xs/shell:[&.shell-sidebar]:w-0 @max-xs/shell:[&>.shell-sidebar-panel]:hidden",
-      sm: "shell-sidebar-show-sm @max-sm/shell:[&.shell-sidebar]:w-0 @max-sm/shell:[&>.shell-sidebar-panel]:hidden",
-      md: "shell-sidebar-show-md @max-md/shell:[&.shell-sidebar]:w-0 @max-md/shell:[&>.shell-sidebar-panel]:hidden",
-      lg: "shell-sidebar-show-lg @max-lg/shell:[&.shell-sidebar]:w-0 @max-lg/shell:[&>.shell-sidebar-panel]:hidden",
-      xl: "shell-sidebar-show-xl @max-xl/shell:[&.shell-sidebar]:w-0 @max-xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "2xl":
-        "shell-sidebar-show-2xl @max-2xl/shell:[&.shell-sidebar]:w-0 @max-2xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "3xl":
-        "shell-sidebar-show-3xl @max-3xl/shell:[&.shell-sidebar]:w-0 @max-3xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "4xl":
-        "shell-sidebar-show-4xl @max-4xl/shell:[&.shell-sidebar]:w-0 @max-4xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "5xl":
-        "shell-sidebar-show-5xl @max-5xl/shell:[&.shell-sidebar]:w-0 @max-5xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "6xl":
-        "shell-sidebar-show-6xl @max-6xl/shell:[&.shell-sidebar]:w-0 @max-6xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "7xl":
-        "shell-sidebar-show-7xl @max-7xl/shell:[&.shell-sidebar]:w-0 @max-7xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-3xs":
-        "shell-sidebar-show-max-3xs @3xs/shell:[&.shell-sidebar]:w-0 @3xs/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-2xs":
-        "shell-sidebar-show-max-2xs @2xs/shell:[&.shell-sidebar]:w-0 @2xs/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-xs":
-        "shell-sidebar-show-max-xs @xs/shell:[&.shell-sidebar]:w-0 @xs/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-sm":
-        "shell-sidebar-show-max-sm @sm/shell:[&.shell-sidebar]:w-0 @sm/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-md":
-        "shell-sidebar-show-max-md @md/shell:[&.shell-sidebar]:w-0 @md/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-lg":
-        "shell-sidebar-show-max-lg @lg/shell:[&.shell-sidebar]:w-0 @lg/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-xl":
-        "shell-sidebar-show-max-xl @xl/shell:[&.shell-sidebar]:w-0 @xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-2xl":
-        "shell-sidebar-show-max-2xl @2xl/shell:[&.shell-sidebar]:w-0 @2xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-3xl":
-        "shell-sidebar-show-max-3xl @3xl/shell:[&.shell-sidebar]:w-0 @3xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-4xl":
-        "shell-sidebar-show-max-4xl @4xl/shell:[&.shell-sidebar]:w-0 @4xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-5xl":
-        "shell-sidebar-show-max-5xl @5xl/shell:[&.shell-sidebar]:w-0 @5xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-6xl":
-        "shell-sidebar-show-max-6xl @6xl/shell:[&.shell-sidebar]:w-0 @6xl/shell:[&>.shell-sidebar-panel]:hidden",
-      "max-7xl":
-        "shell-sidebar-show-max-7xl @7xl/shell:[&.shell-sidebar]:w-0 @7xl/shell:[&>.shell-sidebar-panel]:hidden",
+      false: "ui-shell-sidebar--show-false",
+      "3xs": "ui-shell-sidebar--show-3xs",
+      "2xs": "ui-shell-sidebar--show-2xs",
+      xs: "ui-shell-sidebar--show-xs",
+      sm: "ui-shell-sidebar--show-sm",
+      md: "ui-shell-sidebar--show-md",
+      lg: "ui-shell-sidebar--show-lg",
+      xl: "ui-shell-sidebar--show-xl",
+      "2xl": "ui-shell-sidebar--show-2xl",
+      "3xl": "ui-shell-sidebar--show-3xl",
+      "4xl": "ui-shell-sidebar--show-4xl",
+      "5xl": "ui-shell-sidebar--show-5xl",
+      "6xl": "ui-shell-sidebar--show-6xl",
+      "7xl": "ui-shell-sidebar--show-7xl",
+      "max-3xs": "ui-shell-sidebar--show-max-3xs",
+      "max-2xs": "ui-shell-sidebar--show-max-2xs",
+      "max-xs": "ui-shell-sidebar--show-max-xs",
+      "max-sm": "ui-shell-sidebar--show-max-sm",
+      "max-md": "ui-shell-sidebar--show-max-md",
+      "max-lg": "ui-shell-sidebar--show-max-lg",
+      "max-xl": "ui-shell-sidebar--show-max-xl",
+      "max-2xl": "ui-shell-sidebar--show-max-2xl",
+      "max-3xl": "ui-shell-sidebar--show-max-3xl",
+      "max-4xl": "ui-shell-sidebar--show-max-4xl",
+      "max-5xl": "ui-shell-sidebar--show-max-5xl",
+      "max-6xl": "ui-shell-sidebar--show-max-6xl",
+      "max-7xl": "ui-shell-sidebar--show-max-7xl",
     },
     /**
      * Keeps the panel in place while the column folds, so main uncovers the
@@ -849,25 +557,17 @@ export const shellSidebar = cv({
      * main. Defaults to `false`.
      */
     $reveal: {
-      true: shellSidebarRevealPlace,
-      zoom: [shellSidebarRevealPlace, shellSidebarRevealZoom],
+      true: "ui-shell-sidebar--reveal-place",
+      zoom: ["ui-shell-sidebar--reveal-place", "ui-shell-sidebar--reveal-zoom"],
     },
     /** Selects the first row the sidebar spans. Defaults to `main`. */
     $from: {
-      main: "shell-sidebar-from-main row-[main-start/body-end]",
-      intro: "shell-sidebar-from-intro row-[intro-start/body-end]",
-      body: "shell-sidebar-from-body row-[body]",
+      main: "ui-shell-sidebar--from-main row-[main-start/body-end]",
+      intro: "ui-shell-sidebar--from-intro row-[intro-start/body-end]",
+      body: "ui-shell-sidebar--from-body row-[body]",
     },
     /** Keeps the panel below the sticky headers that span its column. */
-    $sticky: [
-      "[&>.shell-sidebar-panel]:sticky",
-      "[&>.shell-sidebar-panel]:inset-bs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-sidebar-head))]",
-      // Without a size container, cqb falls back to the small viewport, which
-      // stops short of the bottom once mobile browser bars collapse. The
-      // dynamic viewport follows the bars; a size container keeps cqb.
-      "[&>.shell-sidebar-panel]:max-h-[calc(100dvh-var(--shell-top)-var(--shell-head)-var(--shell-sidebar-head)-var(--shell-foot))]",
-      "[@container_(min-height:0px)]:[&>.shell-sidebar-panel]:max-h-[calc(100cqb-var(--shell-top)-var(--shell-head)-var(--shell-sidebar-head)-var(--shell-foot))]",
-    ],
+    $sticky: "ui-shell-sidebar--sticky",
   },
   defaultVariants: {
     $side: "start",
@@ -881,33 +581,14 @@ export const shellSidebar = cv({
 /** A sidebar panel that keeps its full width while its column folds. */
 export const shellSidebarPanel = cv({
   extend: [seam],
-  class: [
-    "shell-sidebar-panel box-border w-(--shell-slot-width) min-h-0 flex-auto flex flex-col",
-    // A body reaches over the facing edge only while this padding plus the
-    // body's margin is zero.
-    "[--shell-panel-padding:var(--ak-frame-padding)]",
-    // The panel keeps its width while the column folds, so its queries hold
-    // their results. WebKit restyles everything inside query containers that
-    // change size, and lays out the page again, on each step of the fold.
-    "@container/shell-sidebar",
-    // Supporting browsers defer removal until the fold ends. Others hide at once.
-    "transition-[display] transition-discrete duration-(--shell-time)",
-    // End alignment keeps an overflowing panel against its facing edge while
-    // the column folds.
-    "[.shell-sidebar-start>&]:self-end",
-    "[.shell-sidebar-end>&]:self-start",
-  ],
+  class: "ui-shell-sidebar-panel flex-col",
   defaultVariants: { $p: "none" },
 });
 
 /** A fixed header above the scrollable sidebar body. */
 export const shellSidebarHeader = cv({
   extend: [seam],
-  class: [
-    "shell-sidebar-header flex flex-none items-center box-border min-h-[calc(var(--shell-local-header-height)+var(--shell-facing-border,0px))] py-0!",
-    "[--shell-local-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-sidebar-header-space,var(--shell-header-space)),1px))]",
-    "[--shell-bar-inset:round(var(--shell-header-step)*var(--shell-sidebar-header-space,var(--shell-header-space)),1px)]",
-  ],
+  class: "ui-shell-sidebar-header",
   variants: {
     ...barPaddingVariants,
     /**
@@ -921,13 +602,13 @@ export const shellSidebarHeader = cv({
      * body content on one edge.
      */
     $p: {
-      0: "[--shell-sidebar-header-space:0]",
-      1: "[--shell-sidebar-header-space:1]",
-      2: "[--shell-sidebar-header-space:2]",
-      3: "[--shell-sidebar-header-space:3]",
-      4: "[--shell-sidebar-header-space:4]",
-      5: "[--shell-sidebar-header-space:5]",
-      6: "[--shell-sidebar-header-space:6]",
+      0: "ui-shell-sidebar-header--p-0",
+      1: "ui-shell-sidebar-header--p-1",
+      2: "ui-shell-sidebar-header--p-2",
+      3: "ui-shell-sidebar-header--p-3",
+      4: "ui-shell-sidebar-header--p-4",
+      5: "ui-shell-sidebar-header--p-5",
+      6: "ui-shell-sidebar-header--p-6",
     },
   },
   defaultVariants: {
@@ -947,82 +628,17 @@ export const shellSidebarHeader = cv({
  */
 export const shellSidebarBody = cv({
   extend: [frameBase],
-  class: [
-    "shell-sidebar-body min-h-0 flex-auto overflow-y-auto rounded-none!",
-    // A flex column fits a filling navigation to the body's height.
-    "[&:has(>.nav-fill)]:flex [&:has(>.nav-fill)]:flex-col",
-    // The scroll box clips at its padding box, so a body that holds a covering
-    // column reaches over the facing edge of its panel, with the same padding.
-    // Then edge bars of the column can cover that edge. A scrollbar that
-    // always shows also covers it. The edge is physical, and the body can have
-    // its own dir. A body that its margin or the padding of the panel moves
-    // off the edge doesn't reach, whichever way it moves. A nested shell resets
-    // the sides that its own sidebar doesn't set.
-    "[--shell-seam-left:0px] [--shell-seam-right:0px]",
-    "[.shell-sidebar-start:dir(ltr)>.shell-sidebar-panel>&]:[--shell-seam-right:calc(var(--shell-facing-border,0px)*(1-abs(sign(var(--shell-panel-padding,0px)_+_var(--ak-frame-margin)))))]",
-    "[.shell-sidebar-start:dir(rtl)>.shell-sidebar-panel>&]:[--shell-seam-left:calc(var(--shell-facing-border,0px)*(1-abs(sign(var(--shell-panel-padding,0px)_+_var(--ak-frame-margin)))))]",
-    "[.shell-sidebar-end:dir(ltr)>.shell-sidebar-panel>&]:[--shell-seam-left:calc(var(--shell-facing-border,0px)*(1-abs(sign(var(--shell-panel-padding,0px)_+_var(--ak-frame-margin)))))]",
-    "[.shell-sidebar-end:dir(rtl)>.shell-sidebar-panel>&]:[--shell-seam-right:calc(var(--shell-facing-border,0px)*(1-abs(sign(var(--shell-panel-padding,0px)_+_var(--ak-frame-margin)))))]",
-    // The panel selector outranks the margin and padding of the frame.
-    "[.shell-sidebar-panel>&:has(>.nav.vertical.ak-frame-cover)]:ml-[calc(var(--ak-frame-margin)-var(--shell-seam-left))] [.shell-sidebar-panel>&:has(>.nav.vertical.ak-frame-cover)]:mr-[calc(var(--ak-frame-margin)-var(--shell-seam-right))]",
-    "[.shell-sidebar-panel>&:has(>.nav.vertical.ak-frame-cover)]:pl-[calc(var(--ak-frame-padding)+var(--shell-seam-left))] [.shell-sidebar-panel>&:has(>.nav.vertical.ak-frame-cover)]:pr-[calc(var(--ak-frame-padding)+var(--shell-seam-right))]",
-    // A covering column meets the inner side of the edge, so its edge bars add
-    // the reach to its own border.
-    "[&>.nav.vertical.ak-frame-cover:dir(ltr)]:[--nav-edge-start:calc(var(--ak-frame-border)+var(--shell-seam-left))]",
-    "[&>.nav.vertical.ak-frame-cover:dir(ltr)]:[--nav-edge-end:calc(var(--ak-frame-border)+var(--shell-seam-right))]",
-    "[&>.nav.vertical.ak-frame-cover:dir(rtl)]:[--nav-edge-start:calc(var(--ak-frame-border)+var(--shell-seam-right))]",
-    "[&>.nav.vertical.ak-frame-cover:dir(rtl)]:[--nav-edge-end:calc(var(--ak-frame-border)+var(--shell-seam-left))]",
-  ],
+  class: "ui-shell-sidebar-body",
   defaultVariants: { $p: 3 },
 });
 
 /** A fixed footer below the scrollable sidebar body. */
 export const shellSidebarFooter = cv({
   extend: [seam],
-  class: "shell-sidebar-footer flex-none",
+  class: "ui-shell-sidebar-footer flex-none",
   // Shows the surface of the sidebar, like the sidebar header.
   defaultVariants: { $p: 3, $layer: "transparent" },
 });
-
-/**
- * Sidebars use registered lengths so content centering follows their animation.
- * Clamp each length to zero before summing: easing can overshoot after the
- * column reaches zero width. Each content grid animates its own lengths, and
- * the values derived from them do not inherit, so each animation frame restyles
- * the grids but not the content inside them. A `transition` utility on a main
- * header, intro, or body replaces this transition, so keep the slot spaces and
- * the outer spaces in its transition properties.
- */
-const slotSpaces = cx(
-  "[--shell-start-1-space:calc(var(--shell-start-1-width)*var(--shell-start-1-open)*var(--shell-start-1-fit))]",
-  "[--shell-start-2-space:calc(var(--shell-start-2-width)*var(--shell-start-2-open)*var(--shell-start-2-fit))]",
-  "[--shell-end-1-space:calc(var(--shell-end-1-width)*var(--shell-end-1-open)*var(--shell-end-1-fit))]",
-  "[--shell-end-2-space:calc(var(--shell-end-2-width)*var(--shell-end-2-open)*var(--shell-end-2-fit))]",
-  // The open sidebars of the outer shell in a shell with `$center="outer"`.
-  // Other shells have none.
-  "[--shell-outer-start-space:var(--shell-outer-start,0px)] [--shell-outer-end-space:var(--shell-outer-end,0px)]",
-  "transition-[--shell-start-1-space,--shell-start-2-space,--shell-end-1-space,--shell-end-2-space,--shell-outer-start-space,--shell-outer-end-space]",
-  "duration-(--shell-time) ease-(--shell-ease)",
-  "[--shell-start-total:calc(max(0px,var(--shell-start-1-space))+max(0px,var(--shell-start-2-space)))]",
-  "[--shell-end-total:calc(max(0px,var(--shell-end-1-space))+max(0px,var(--shell-end-2-space)))]",
-);
-
-const compensation = cx(
-  "[--shell-comp-end:max(0px,calc(var(--shell-start-total)+max(0px,var(--shell-outer-start-space))-var(--shell-end-total)-max(0px,var(--shell-outer-end-space))))]",
-  "[--shell-comp-start:max(0px,calc(var(--shell-end-total)+max(0px,var(--shell-outer-end-space))-var(--shell-start-total)-max(0px,var(--shell-outer-start-space))))]",
-);
-
-// Limit sidebar compensation to free space, but keep the minimum gutter. The
-// offsets sit outside the wide lines, so the wide span stays centered on the
-// content. `auto` tracks grow by equal amounts, preserving that center; `1fr`
-// loses it. Only a main header sets a track gutter: its tracks keep their bar
-// inset as a minimum, while the offsets use the same gutter as the body.
-const centered = cx(
-  "[--shell-free:calc(100%-var(--shell-content-end-space)-var(--shell-main-max-width)-var(--shell-gutter)-2*var(--shell-popout)-2*var(--shell-feature))]",
-  "[--shell-offset-start:clamp(0px,calc(var(--shell-free)-var(--shell-gutter)),var(--shell-comp-start))]",
-  "[--shell-offset-end:calc(var(--shell-content-end-space)+clamp(0px,calc(var(--shell-free)-var(--shell-gutter)),var(--shell-comp-end)))]",
-  "grid-cols-[[full-start]_var(--shell-offset-start)_[wide-start]_minmax(var(--shell-track-gutter,var(--shell-gutter)),auto)_[feature-start]_minmax(0,var(--shell-feature))_[popout-start]_minmax(0,var(--shell-popout))_[content-start]_minmax(min(var(--shell-main-max-width),max(0px,calc(100%-var(--shell-content-end-space)-2*var(--shell-track-gutter,var(--shell-gutter))))),var(--shell-main-max-width))_[content-end]_minmax(0,var(--shell-popout))_[popout-end]_minmax(0,var(--shell-feature))_[feature-end]_minmax(var(--shell-track-gutter,var(--shell-gutter)),auto)_[wide-end]_var(--shell-offset-end)_[full-end]]",
-);
 
 /**
  * A content grid with named columns. Children occupy `content`; use `Prose` for
@@ -1030,36 +646,20 @@ const centered = cx(
  * centered in the shell; compensation decreases before the content narrows.
  */
 const content = cx(
-  slotSpaces,
-  centered,
-  compensation,
-  "shell-content-grid grid justify-stretch min-w-0 rounded-none!",
-  // Grid items do not collapse margins, so the grid spaces its children.
-  "gap-y-(--shell-content-gap) [--shell-content-gap:--spacing(6)]",
-  // Keep focused content above a sticky footer when it scrolls into view.
-  "**:ui-base:scroll-mbe-(--shell-foot)",
-  // Keep controls and badges at their content width instead of stretching to
-  // the column.
-  "[&>:is(.control,.badge)]:justify-self-start",
-  // A leading or trailing wide or full band touches the bars around the
-  // section. The space between the intro and the body stays.
-  "[&:not(.shell-main-intro~*):has(>:is(.shell-wide,.shell-full):first-child)]:pbs-0",
-  "[&:not(.shell-main-intro):has(>:is(.shell-wide,.shell-full):last-child)]:pbe-0",
-  // Publish gutter spacing as frame padding so nested frame corners remain
-  // concentric.
-  "[--shell-popout:1rem] [--shell-feature:3.5rem]",
+  "ui-shell-content-grid",
   // A cover child must reach the edge, so this uses the track gutter when the
   // part has one. The bracket form sorts after ak-frame-p-0, so an
   // ak-frame-p-0 class doesn't remove this padding.
   // oxlint-disable-next-line tailwindcss/enforce-canonical -- ak-frame-p-(...) sorts before ak-frame-p-0
-  "ak-frame-p-[var(--shell-track-gutter,var(--shell-gutter))] px-0",
+  "ak-frame-p-[var(--shell-track-gutter,var(--shell-gutter))]",
+  // Stays a class to come after the classes of a caller, so that the print rule
+  // still applies.
   "print:overflow-visible",
-  // Bands and side parts set their own minimum, so a `min-w-*` class on them can
-  // hold. The zero-specificity list keeps this rule at one class.
-  "*:col-[content] *:not-[:where(.shell-band,.shell-bar-part)]:min-w-0",
-  // Fragment targets clear the space above the parts, and at least 1rem, so a
-  // table of contents marks the first heading current at the top of the page.
-  "[&_[id]]:scroll-mbs-[calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head)+max(1rem,var(--shell-main-intro-pbs,var(--shell-main-py,var(--shell-gutter)))))]",
+  // Bands and side parts set their own minimum, so a `min-w-*` class on them
+  // can hold. The zero-specificity list keeps this rule at one class.
+  // Stays a class to keep its order with the classes of the elements that it
+  // styles.
+  "*:col-[content] *:not-[:where(.ui-shell-main-band,.ui-shell-bar-part)]:min-w-0",
 );
 
 const contentVariants = {
@@ -1099,14 +699,6 @@ const contentVariants = {
   },
 };
 
-// The registered width resolves against main's own text, so every part keeps
-// the same column. An unregistered 1em follows the parent where Prose reads it.
-const sizedMain = cx(
-  "shell-main-sized [--prose-size:1em] [--shell-main-max-width:42em]",
-  // The spacing inside a sized main follows its text size, not the shell's.
-  "ui-spacing-em",
-);
-
 /**
  * The main landmark, sharing the shell columns and rows without containment.
  * It's a style container named `shell-main`, which a shell inside it with
@@ -1114,32 +706,7 @@ const sizedMain = cx(
  * so keep `shell-main` in the list, such as `[container-name:shell-main_list]`.
  */
 export const shellMain = cv({
-  class: [
-    "shell-main col-[main-start/shell-end] row-[main-start/body-end] grid grid-cols-subgrid grid-rows-subgrid min-w-0",
-    // The shell's `$maxWidth` sets the column unless main sets its own.
-    "[.shell-paged>&]:[--shell-main-max-width:var(--shell-max-width)]",
-    "shell-slot-state",
-    // Without `$py`, the body spends its own gutter on its edges next to the
-    // bars, and the intro its own `$py`. After an intro with the default `$py`,
-    // the body ends with the space above the intro, so the page ends with the
-    // space it starts with. A nested main doesn't take the space set on an
-    // outer one or on an intro around it.
-    "[--shell-main-py:initial] [--shell-main-intro-pbs:initial]",
-    // Nested shells inside main also clear its sticky local header. Only the
-    // first two levels publish offsets: the supported third level consumes them.
-    "[.shell:not(.shell_*)>&]:[--shell-below-a:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
-    "[.shell_.shell:not(.shell_.shell_.shell)>&]:[--shell-below-b:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
-    "[--scrollport-start:calc(var(--shell-top)+var(--shell-head)+var(--shell-main-head))]",
-    // A shell inside main with `$center="outer"` queries the nearest main for
-    // the open sidebars and reads their widths here. The widths don't change
-    // when a sidebar opens or closes, so they don't restyle main.
-    // Zero specificity lets a container name of the caller win.
-    "ui-base:[container-name:shell-main]",
-    "[--shell-outer-start-1-width:calc(var(--shell-start-1-width)*var(--shell-start-1-fit))]",
-    "[--shell-outer-start-2-width:calc(var(--shell-start-2-width)*var(--shell-start-2-fit))]",
-    "[--shell-outer-end-1-width:calc(var(--shell-end-1-width)*var(--shell-end-1-fit))]",
-    "[--shell-outer-end-2-width:calc(var(--shell-end-2-width)*var(--shell-end-2-fit))]",
-  ],
+  class: "ui-shell-main ui-shell-slot-state",
   variants: {
     /**
      * Sets the text size of main and a column of 42em, and `Prose` inside main
@@ -1152,24 +719,9 @@ export const shellMain = cv({
      */
     $size: {
       auto: "",
-      // Bars read the column from the shell, in rem, because they keep the
-      // shell's text. Each value is 42em at that size's text. The doubled class
-      // wins over the rule that resets this value on a nested shell.
-      sm: [
-        sizedMain,
-        "text-sm",
-        "[.shell.shell:has(>&)]:[--shell-main-max-width:36.75rem]",
-      ],
-      md: [
-        sizedMain,
-        "text-base",
-        "[.shell.shell:has(>&)]:[--shell-main-max-width:42rem]",
-      ],
-      lg: [
-        sizedMain,
-        "text-lg",
-        "[.shell.shell:has(>&)]:[--shell-main-max-width:47.25rem]",
-      ],
+      sm: ["ui-shell-main--sized-main", "ui-shell-main--size-sm text-sm"],
+      md: ["ui-shell-main--sized-main", "ui-shell-main--size-md text-base"],
+      lg: ["ui-shell-main--sized-main", "ui-shell-main--size-lg text-lg"],
     },
     /**
      * Sets the text size of a `$size="lg"` main when the shell is narrower than
@@ -1251,58 +803,7 @@ export const shellMain = cv({
  */
 export const shellMainHeader = cv({
   extend: [seam],
-  class: [
-    content,
-    "shell-main-header col-start-1 col-end-[calc(2+var(--shell-header-free-1)+var(--shell-header-free-1)*var(--shell-header-free-2))] row-[main-header]",
-    "box-border min-h-[calc(var(--shell-main-header-height)+var(--shell-facing-border,0px))] content-center py-0! z-3",
-    "[--shell-main-header-height:calc(var(--shell-control-height)+2*round(var(--shell-header-step)*var(--shell-main-header-space),1px))]",
-    // The spacing inside the bar follows its own text size, like the shell
-    // header. Without this, the bar takes the step of a sized main, which has
-    // larger text.
-    "ui-spacing-em",
-    // A bar keeps the shell's text inside a sized main. Zero specificity lets
-    // caller text-* classes win.
-    "[.shell-main-sized>&]:ui-base:text-[calc(var(--shell-header-step)*4)]",
-    "[.shell-main-sized>&]:ui-base:[line-height:var(--shell-leading)]",
-    "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-header-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-header-free-1)*var(--shell-header-free-2))]",
-    // Like other bars, a header with less or more space than the default three
-    // steps shrinks or grows its side insets by the difference. This is only
-    // the smallest space at the edge. The column keeps the main gutter, so it
-    // matches the body until the edge reaches it, with no query. Both spaces
-    // round to a whole pixel like the space in the bar heights, so a header
-    // over a default main gutter stays on the edge of the bars. At the default
-    // space the difference is zero, so a raw main gutter still matches the
-    // body.
-    "[--shell-track-gutter:max(0px,calc(var(--shell-gutter)+round(var(--shell-header-step)*var(--shell-main-header-space),1px)-var(--shell-bar-space)))]",
-    // With a Start, Center, or End part, the header uses the tracks of a bar.
-    // Other children share the middle track, and aim for the same column.
-    "[&:has(>.shell-bar-part)]:shell-bar-tracks",
-    "[&:has(>.shell-bar-part)]:[--shell-bar-end-space:var(--shell-content-end-space)]",
-    "[&:has(>.shell-bar-part)]:[--shell-bar-padding-start:var(--shell-track-gutter)] [&:has(>.shell-bar-part)]:[--shell-bar-padding-end:var(--shell-track-gutter)]",
-    "[&:has(>.shell-bar-part)]:[--shell-bar-edge-start:var(--shell-track-gutter)] [&:has(>.shell-bar-part)]:[--shell-bar-edge-end:var(--shell-track-gutter)]",
-    "[&:has(>.shell-bar-part)]:px-(--shell-track-gutter) [&:has(>.shell-bar-part)]:items-center [&:has(>.shell-bar-part)]:content-stretch",
-    // A :has() before a selector with no class, attribute, or tag makes Chrome
-    // restyle the whole subtree of each :has() anchor whose state changes, on
-    // any page with the rule. So the header sets a flag that its children read
-    // with a style query. The doubled class keeps the specificity of the :has()
-    // check.
-    "[&:has(>.shell-bar-part)]:[--shell-main-header-bars:1]",
-    "[@container_style(--shell-main-header-bars:1)]:[&&>*]:col-2",
-    "[&:has(>.shell-bar-part):has(>.shell-bar-center)]:grid-cols-[1fr_auto_1fr]",
-    "[&:has(>.shell-bar-part):has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
-    // A horizontal navigation region fills the header's height, like in a bar.
-    "[@container_style(--shell-main-header-bars:1)]:[&&>:has(>.carousel>.nav.horizontal)]:self-stretch",
-    "[&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:self-stretch [&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:my-0 [&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:py-0",
-    // The navigation reaches over the edges that `--nav-edge-start` and
-    // `--nav-edge-end` set, so edge bars cover the facing edge, like in a bar.
-    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:items-center",
-    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:mt-[calc(-1*var(--nav-edge-start,0px))]! [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:mb-[calc(-1*var(--nav-edge-end,0px))]!",
-    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:pt-(--nav-edge-start,0px) [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:pb-(--nav-edge-end,0px)",
-    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-bar-gap:0px]",
-    "[&:has(>.shell-bar-part)>*>.carousel:has(>.nav.horizontal)]:rounded-none! [&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:rounded-none!",
-    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-block-size:calc(var(--shell-main-header-height)-2*var(--carousel-border,0px))]",
-    "[&:has(>.shell-bar-part)>*>.carousel>.nav.horizontal]:[--nav-edge-end:calc(var(--carousel-border,0px)+var(--shell-facing-border,0px))]",
-  ],
+  class: [content, "ui-shell-main-header"],
   variants: {
     ...contentVariants,
     /**
@@ -1320,13 +821,13 @@ export const shellMainHeader = cv({
     // main header, so only a sticky main header sets them on the shell. A new
     // inherited value on the shell restyles every part inside it.
     $p: {
-      0: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:0] [--shell-main-header-space:0]",
-      1: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:1] [--shell-main-header-space:1]",
-      2: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:2] [--shell-main-header-space:2]",
-      3: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:3] [--shell-main-header-space:3]",
-      4: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:4] [--shell-main-header-space:4]",
-      5: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:5] [--shell-main-header-space:5]",
-      6: "[.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-space:6] [--shell-main-header-space:6]",
+      0: "ui-shell-main-header--p-0",
+      1: "ui-shell-main-header--p-1",
+      2: "ui-shell-main-header--p-2",
+      3: "ui-shell-main-header--p-3",
+      4: "ui-shell-main-header--p-4",
+      5: "ui-shell-main-header--p-5",
+      6: "ui-shell-main-header--p-6",
     },
     /**
      * Sets the facing edge width in whole pixels from 0 to 5. `true` means 1px;
@@ -1335,17 +836,15 @@ export const shellMainHeader = cv({
      * place sticky parts, so the width is one of these values.
      */
     $border: {
-      true: "[--border-width:1px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:1px]",
-      false:
-        "[--border-width:0px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:0px]",
-      0: "[--border-width:0px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:0px]",
-      1: "[--border-width:1px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:1px]",
-      2: "[--border-width:2px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:2px]",
-      3: "[--border-width:3px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:3px]",
-      4: "[--border-width:4px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:4px]",
-      5: "[--border-width:5px] [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:5px]",
-      inherit:
-        "ak-edge-inherit [.shell:has(>.shell-main>&.shell-main-header-sticky)]:[--shell-main-header-border:var(--border-width,0px)]",
+      true: "ui-shell-main-header--border-true",
+      false: "ui-shell-main-header--border-false",
+      0: "ui-shell-main-header--border-0",
+      1: "ui-shell-main-header--border-1",
+      2: "ui-shell-main-header--border-2",
+      3: "ui-shell-main-header--border-3",
+      4: "ui-shell-main-header--border-4",
+      5: "ui-shell-main-header--border-5",
+      inherit: "ui-shell-main-header--border-inherit ak-edge-inherit",
     },
     /**
      * Sets the minimum content gutter apart from `$p`, which still sets the
@@ -1365,8 +864,7 @@ export const shellMainHeader = cv({
     /**
      * Keeps the main header below the shell's sticky headers. Defaults to true.
      */
-    $sticky:
-      "shell-main-header-sticky sticky inset-bs-[calc(var(--shell-top)+var(--shell-head))]",
+    $sticky: "ui-shell-main-header--sticky",
     /**
      * Shows the header at or above a named shell-container width. Prefix the
      * name with `max-` to show it only below that width. `true` keeps it at
@@ -1375,33 +873,33 @@ export const shellMainHeader = cv({
      */
     $show: {
       true: "",
-      false: "shell-main-header-hidden hidden",
-      "3xs": "shell-main-header-show-3xs @max-3xs/shell:hidden",
-      "2xs": "shell-main-header-show-2xs @max-2xs/shell:hidden",
-      xs: "shell-main-header-show-xs @max-xs/shell:hidden",
-      sm: "shell-main-header-show-sm @max-sm/shell:hidden",
-      md: "shell-main-header-show-md @max-md/shell:hidden",
-      lg: "shell-main-header-show-lg @max-lg/shell:hidden",
-      xl: "shell-main-header-show-xl @max-xl/shell:hidden",
-      "2xl": "shell-main-header-show-2xl @max-2xl/shell:hidden",
-      "3xl": "shell-main-header-show-3xl @max-3xl/shell:hidden",
-      "4xl": "shell-main-header-show-4xl @max-4xl/shell:hidden",
-      "5xl": "shell-main-header-show-5xl @max-5xl/shell:hidden",
-      "6xl": "shell-main-header-show-6xl @max-6xl/shell:hidden",
-      "7xl": "shell-main-header-show-7xl @max-7xl/shell:hidden",
-      "max-3xs": "shell-main-header-show-max-3xs @3xs/shell:hidden",
-      "max-2xs": "shell-main-header-show-max-2xs @2xs/shell:hidden",
-      "max-xs": "shell-main-header-show-max-xs @xs/shell:hidden",
-      "max-sm": "shell-main-header-show-max-sm @sm/shell:hidden",
-      "max-md": "shell-main-header-show-max-md @md/shell:hidden",
-      "max-lg": "shell-main-header-show-max-lg @lg/shell:hidden",
-      "max-xl": "shell-main-header-show-max-xl @xl/shell:hidden",
-      "max-2xl": "shell-main-header-show-max-2xl @2xl/shell:hidden",
-      "max-3xl": "shell-main-header-show-max-3xl @3xl/shell:hidden",
-      "max-4xl": "shell-main-header-show-max-4xl @4xl/shell:hidden",
-      "max-5xl": "shell-main-header-show-max-5xl @5xl/shell:hidden",
-      "max-6xl": "shell-main-header-show-max-6xl @6xl/shell:hidden",
-      "max-7xl": "shell-main-header-show-max-7xl @7xl/shell:hidden",
+      false: "ui-shell-main-header--show-false hidden",
+      "3xs": "ui-shell-main-header--show-3xs @max-3xs/shell:hidden",
+      "2xs": "ui-shell-main-header--show-2xs @max-2xs/shell:hidden",
+      xs: "ui-shell-main-header--show-xs @max-xs/shell:hidden",
+      sm: "ui-shell-main-header--show-sm @max-sm/shell:hidden",
+      md: "ui-shell-main-header--show-md @max-md/shell:hidden",
+      lg: "ui-shell-main-header--show-lg @max-lg/shell:hidden",
+      xl: "ui-shell-main-header--show-xl @max-xl/shell:hidden",
+      "2xl": "ui-shell-main-header--show-2xl @max-2xl/shell:hidden",
+      "3xl": "ui-shell-main-header--show-3xl @max-3xl/shell:hidden",
+      "4xl": "ui-shell-main-header--show-4xl @max-4xl/shell:hidden",
+      "5xl": "ui-shell-main-header--show-5xl @max-5xl/shell:hidden",
+      "6xl": "ui-shell-main-header--show-6xl @max-6xl/shell:hidden",
+      "7xl": "ui-shell-main-header--show-7xl @max-7xl/shell:hidden",
+      "max-3xs": "ui-shell-main-header--show-max-3xs @3xs/shell:hidden",
+      "max-2xs": "ui-shell-main-header--show-max-2xs @2xs/shell:hidden",
+      "max-xs": "ui-shell-main-header--show-max-xs @xs/shell:hidden",
+      "max-sm": "ui-shell-main-header--show-max-sm @sm/shell:hidden",
+      "max-md": "ui-shell-main-header--show-max-md @md/shell:hidden",
+      "max-lg": "ui-shell-main-header--show-max-lg @lg/shell:hidden",
+      "max-xl": "ui-shell-main-header--show-max-xl @xl/shell:hidden",
+      "max-2xl": "ui-shell-main-header--show-max-2xl @2xl/shell:hidden",
+      "max-3xl": "ui-shell-main-header--show-max-3xl @3xl/shell:hidden",
+      "max-4xl": "ui-shell-main-header--show-max-4xl @4xl/shell:hidden",
+      "max-5xl": "ui-shell-main-header--show-max-5xl @5xl/shell:hidden",
+      "max-6xl": "ui-shell-main-header--show-max-6xl @6xl/shell:hidden",
+      "max-7xl": "ui-shell-main-header--show-max-7xl @7xl/shell:hidden",
     },
     /** Blurs the page behind the header through a translucent surface. */
     $blur: blur,
@@ -1412,32 +910,7 @@ export const shellMainHeader = cv({
 /** The introduction inside the main landmark, above its body. */
 export const shellMainIntro = cv({
   extend: [frameBase],
-  class: [
-    content,
-    "shell-main-intro content-start col-start-1 col-end-[calc(2+var(--shell-intro-free-1)+var(--shell-intro-free-1)*var(--shell-intro-free-2))] row-[intro] overflow-x-clip",
-    "[--shell-content-end-space:calc(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))]",
-    // By default, the intro starts `$py` from main, or a space that follows the
-    // width of the intro, below the header. Below the intro, that same space
-    // stays, whatever main sets. A percentage resolves against the grid area,
-    // which sidebars beside the intro reduce and adjacent end sidebars that
-    // start at the body don't. Whole pixels keep a fluid value from leaving the
-    // page at a fractional height. The padding-block utility sorts before py-*.
-    // Don't use a container unit here: in Chrome, one such unit under a stretched
-    // grid container restyles each element with a container query on every
-    // relayout of that container, such as each frame of a sidebar fold.
-    "[--shell-main-intro-space:round(clamp(calc(var(--shell-header-step)*5),5%,calc(var(--shell-header-step)*14)),1px)]",
-    // The body below starts three bar steps lower, which keeps it level with
-    // sidebars that start at the body. So the intro ends that much earlier, and
-    // the space between them is the space above the intro. A smaller space
-    // keeps the three steps.
-    "[--shell-main-intro-end:var(--shell-main-intro-space)]",
-    "[&:has(~.shell-main-body)]:[--shell-main-intro-end:max(0px,calc(var(--shell-main-intro-space)-round(calc(var(--shell-header-step)*3),1px)))]",
-    // oxlint-disable-next-line tailwindcss/enforce-canonical -- py-[...] sorts after py-*
-    "[padding-block:var(--shell-main-py,var(--shell-main-intro-space))_var(--shell-main-intro-end)]",
-    // Fragment targets can't read a percentage, so they clear the largest space.
-    // A table of contents still marks a target current at the top of the page.
-    "[--shell-main-intro-pbs:var(--shell-main-py,round(calc(var(--shell-header-step)*14),1px))]",
-  ],
+  class: [content, "ui-shell-main-intro"],
   variants: {
     ...contentVariants,
     /**
@@ -1469,7 +942,7 @@ export const shellMainIntro = cv({
       return {
         // The body after this intro can't read the value, so it keeps its own
         // end instead of the fluid space.
-        class: "shell-main-intro-py",
+        class: "ui-shell-main-intro--py",
         style: {
           // The registered length resolves relative units at the intro, and it
           // replaces the space above that main sets.
@@ -1486,22 +959,7 @@ export const shellMainIntro = cv({
 /** The main content grid, excluding the end sidebar columns. */
 export const shellMainBody = cv({
   extend: [frameBase],
-  class: [
-    content,
-    "shell-main-body content-start col-[main] row-[body] overflow-x-clip",
-    "[--shell-content-end-space:0px]",
-    // The body keeps `$py` from main, or its own gutter, above and below it.
-    // After an intro, it starts three bar steps below the intro.
-    "[--shell-main-pbs:var(--shell-main-py,var(--shell-gutter))]",
-    "[--shell-main-pbe:var(--shell-main-py,var(--shell-gutter))]",
-    "[.shell-main-intro~&]:[--shell-main-pbs:round(calc(var(--shell-header-step)*3),1px)]",
-    // After an intro with the default `$py`, the body ends with the space above
-    // the intro. The intro also spans the adjacent end sidebars that start at
-    // the body, so their width counts toward its 5%.
-    "[.shell-main-intro:not(.shell-main-intro-py)~&]:[--shell-main-pbe:var(--shell-main-py,round(clamp(calc(var(--shell-header-step)*5),calc(5%+0.05*(max(0px,var(--shell-end-1-space))*var(--shell-intro-free-1)+max(0px,var(--shell-end-2-space))*var(--shell-intro-free-1)*var(--shell-intro-free-2))),calc(var(--shell-header-step)*14)),1px))]",
-    // oxlint-disable-next-line tailwindcss/enforce-canonical -- py-[...] sorts after py-*
-    "[padding-block:var(--shell-main-pbs)_var(--shell-main-pbe)]",
-  ],
+  class: [content, "ui-shell-main-body"],
   variants: {
     ...contentVariants,
     /**
@@ -1516,15 +974,7 @@ export const shellMainBody = cv({
      */
     $center: {
       shell: "",
-      outer: [
-        // A body directly inside main already reads the sidebars of its shell,
-        // so the query would count them twice there.
-        "[&:not(.shell-main>*)]:shell-center-outer",
-        // The body reads the space itself. Below it, the space would restyle
-        // the content on each toggle and move a shell inside it. A shell that
-        // is centered on the outer shell asks main for the state itself.
-        "[&:not(.shell-main>*)>:not(.shell-center-outer)]:[--shell-outer-start:initial] [&:not(.shell-main>*)>:not(.shell-center-outer)]:[--shell-outer-end:initial]",
-      ],
+      outer: "ui-shell-main-body--center-outer",
     },
   },
   defaultVariants: { $p: "unset", $center: "shell" },
@@ -1547,19 +997,11 @@ export const shellMainBody = cv({
 const mainBand = cv({
   extend: [layer],
   class: [
-    "shell-band grid grid-cols-subgrid min-w-0",
-    "[.shell-content-grid>&]:contain-inline-size [.shell-band>&]:contain-inline-size",
-    "[:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:col-2 [:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:row-start-1",
-    "[:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:contain-inline-size [:is(.shell-bar,.shell-main-header:has(>.shell-bar-part))>&]:grid-cols-1",
-    // In a bar, the band holds start, center, and end parts in the tracks of a
-    // bar, so they line up with the area. The extra class outranks the single
-    // track above.
-    "[.shell-bar>&.shell-band:has(>.shell-bar-part)]:grid-cols-[1fr_auto_1fr] [.shell-bar>&.shell-band:has(>.shell-bar-part)]:items-center [.shell-bar>&.shell-band:has(>.shell-bar-part)]:gap-2",
-    "[.shell-bar>&.shell-band:has(>.shell-bar-center.shell-bar-grow)]:grid-cols-[1fr_minmax(auto,2fr)_1fr]",
-    // Without a center part, each side part fits its own track, like in a bar.
-    "[.shell-bar>&.shell-band:has(>.shell-bar-part):not(:has(>.shell-bar-center,>.shell-bar-grow))]:grid-cols-[auto_1fr_auto]",
+    "ui-shell-main-band",
     // Parts keep their content minimum unless they set `$shrink`.
-    "*:col-span-full *:not-[:where(.shell-bar-part)]:min-w-0",
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
+    "*:col-span-full *:not-[:where(.ui-shell-bar-part)]:min-w-0",
   ],
   variants: {
     /**
@@ -1583,22 +1025,19 @@ const mainBand = cv({
 /** The centered content column, including inside a wider main band. */
 export const shellContent = cv({
   extend: [mainBand],
-  class:
-    "shell-content [.shell-content-grid>&]:col-[content] [.shell-band>&]:col-[content]",
+  class: "ui-shell-content",
 });
 
 /** Extends one step beyond the centered content column. */
 export const shellPopout = cv({
   extend: [mainBand],
-  class:
-    "shell-popout [.shell-content-grid>&]:col-[popout] [.shell-band>&]:col-[popout]",
+  class: "ui-shell-popout",
 });
 
 /** Extends beyond the popout column while leaving the outer gutters. */
 export const shellFeature = cv({
   extend: [mainBand],
-  class:
-    "shell-feature [.shell-content-grid>&]:col-[feature] [.shell-band>&]:col-[feature]",
+  class: "ui-shell-feature",
 });
 
 /**
@@ -1608,13 +1047,11 @@ export const shellFeature = cv({
  */
 export const shellWide = cv({
   extend: [mainBand],
-  class:
-    "shell-wide [.shell-content-grid>&]:col-[wide] [.shell-band>&]:col-[wide]",
+  class: "ui-shell-wide",
 });
 
 /** Fills the main section width, including its outer gutters. */
 export const shellFull = cv({
   extend: [mainBand],
-  class:
-    "shell-full [.shell-content-grid>&]:col-[full] [.shell-band>&]:col-[full]",
+  class: "ui-shell-full",
 });

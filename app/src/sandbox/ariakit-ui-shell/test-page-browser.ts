@@ -39,8 +39,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     q,
     page,
   }) => {
-    await expectEdges(page.locator(".shell-header").first(), 0, 1600);
-    await expectEdges(page.locator(".shell-footer").first(), 0, 1600);
+    await expectEdges(page.locator(".ui-shell-header").first(), 0, 1600);
+    await expectEdges(page.locator(".ui-shell-footer").first(), 0, 1600);
     // An 80rem box centered in the 1600px page.
     const [start, end] = await getOuterEdges(
       getSidebar(q, "Start sidebar"),
@@ -89,7 +89,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       }
       await expectCentered(
         q.group("Area center"),
-        page.locator(".shell-header").first(),
+        page.locator(".ui-shell-header").first(),
       );
     }
   });
@@ -113,7 +113,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     );
     expect(partStart).toBeCloseTo(start, 0);
     expect(partEnd).toBeCloseTo(end, 0);
-    await expectEdges(page.locator(".shell-header").first(), 0, 1600);
+    await expectEdges(page.locator(".ui-shell-header").first(), 0, 1600);
   });
 
   test("keeps the box centered beside an app sidebar", async ({ q, page }) => {
@@ -129,7 +129,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     expect((start + end) / 2).toBeCloseTo(cellCenter, 0);
     await expectEdges(q.group("Header area"), start, end);
     await expectEdges(q.group("Footer area"), start, end);
-    await expectEdges(page.locator(".shell-header").first(), 0, 1900);
+    await expectEdges(page.locator(".ui-shell-header").first(), 0, 1900);
   });
 
   test("keeps the box when the inner shell sets its own width", async ({
@@ -308,8 +308,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.setViewportSize({ width: 600, height: 900 });
     await q.checkbox("Long footer end").check();
     const area = q.group("Footer area");
-    const start = area.locator(":scope > .shell-bar-start");
-    const end = area.locator(":scope > .shell-bar-end");
+    const start = area.locator(":scope > .ui-shell-start");
+    const end = area.locator(":scope > .ui-shell-end");
     await expect(end).toHaveText(/Discard or save/);
     const lineHeight = await end.evaluate((node) =>
       Number.parseFloat(getComputedStyle(node).lineHeight),
@@ -359,7 +359,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     page,
   }) => {
     await q.checkbox("Navigation in the area").check();
-    const header = page.locator(".shell-header").first();
+    const header = page.locator(".ui-shell-header").first();
     const nav = q.navigation("Header links");
     await expect(nav).toBeVisible();
     await expect
@@ -376,7 +376,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     );
     // The current link's bar covers the header's facing edge.
     await expect(header).toHaveCSS("border-bottom-width", "1px");
-    const bar = query(nav).link("Guides").locator(".control-bar");
+    const bar = query(nav).link("Guides").locator(".ui-bar");
     await expect
       .poll(async () => {
         const [barBox, headerBox] = await Promise.all([
@@ -415,11 +415,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       if (!space) {
         await q.checkbox("No header space").check();
       }
-      const header = page.locator(".shell-header").first();
+      const header = page.locator(".ui-shell-header").first();
       const nav = q.navigation("Header links");
       // The carousel root around the scrolling navigation draws the border.
       const root = nav.locator("xpath=..");
-      const bar = query(nav).link("Guides").locator(".control-bar");
+      const bar = query(nav).link("Guides").locator(".ui-bar");
       await expect(root).toHaveCSS("border-bottom-width", "1px");
       await expect(header).toHaveCSS("border-bottom-width", "1px");
       await expect

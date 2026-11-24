@@ -140,28 +140,28 @@ function getGroup(root: HTMLElement | null) {
  * The element around the group whose followers follow the selected box of the
  * group. A group in a follower, such as a segmented control in the panel of
  * folder tabs, is not the strip of that scope, so it has no followers. A
- * follower with the `glider-holder` class that is the parent of the group holds
- * the strip itself, such as a sticky tab row that draws the frame of the
+ * follower with the `ui-glider-holder` class that is the parent of the group
+ * holds the strip itself, such as a sticky tab row that draws the frame of the
  * panels, so it is not in the way.
  */
 function getScope(group: HTMLElement) {
-  const scope = group.closest<HTMLElement>(".glider-scope");
+  const scope = group.closest<HTMLElement>(".ui-glider-scope");
   if (!scope) return group;
   const holder = group.parentElement;
-  const start = holder?.matches(".glider-holder")
+  const start = holder?.matches(".ui-glider-holder")
     ? holder.parentElement
     : group;
-  const follower = start?.closest(".glider-follower");
+  const follower = start?.closest(".ui-glider-follower");
   if (follower && scope.contains(follower)) return group;
   return scope;
 }
 
 function getItems(group: HTMLElement, root: HTMLElement) {
-  const controls = group.querySelectorAll<HTMLElement>(".control");
+  const controls = group.querySelectorAll<HTMLElement>(".ui-control");
   return Array.from(controls).filter((control) => {
     if (root.contains(control)) return false;
     // A control inside another control is content, not an item.
-    return !control.parentElement?.closest(".control");
+    return !control.parentElement?.closest(".ui-control");
   });
 }
 
@@ -202,17 +202,17 @@ interface InlineOffsets {
 }
 
 /**
- * The parts beside the group in a row with the `glider-row` class, such as the
- * controls beside the strip of a tab row. The scroll button areas of a carousel
- * row lie over the ends of the group, not beside it, and a part that the page
- * doesn't lay out has no place in the row.
+ * The parts beside the group in a row with the `ui-glider-row` class, such as
+ * the controls beside the strip of a tab row. The scroll button areas of a
+ * carousel row lie over the ends of the group, not beside it, and a part that
+ * the page doesn't lay out has no place in the row.
  */
 function getRowParts(group: HTMLElement) {
   const row = group.parentElement;
-  if (!row?.classList.contains("glider-row")) return [];
+  if (!row?.classList.contains("ui-glider-row")) return [];
   return Array.from(row.children).filter((part) => {
     if (part === group) return false;
-    if (part.classList.contains("carousel-button-area")) return false;
+    if (part.classList.contains("ui-carousel-button-area")) return false;
     return part.getClientRects().length > 0;
   });
 }
@@ -893,9 +893,9 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
 
   // The elements of nested scopes follow their own gliders.
   const findFollowers = () => {
-    const elements = scope.querySelectorAll<HTMLElement>(".glider-follower");
+    const elements = scope.querySelectorAll<HTMLElement>(".ui-glider-follower");
     const followers = Array.from(elements).filter((element) => {
-      return element.closest(".glider-scope") === scope;
+      return element.closest(".ui-glider-scope") === scope;
     });
     for (const follower of followers) {
       scopeFollowers.add(follower);
@@ -927,12 +927,12 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     });
   };
 
-  // In a row with the glider-row class, the followers also know how far the
+  // In a row with the ui-glider-row class, the followers also know how far the
   // group is from each end of the row. A part of the row that changes size,
   // mounts, or unmounts can change that, such as a part that folds away with an
   // animation. The followers take the new place at once on each frame, apart
   // from the place of the box, so the box keeps its travel.
-  const row = group.parentElement?.classList.contains("glider-row")
+  const row = group.parentElement?.classList.contains("ui-glider-row")
     ? group.parentElement
     : null;
   const rowPlaces = new WeakMap<HTMLElement, string>();
@@ -1091,7 +1091,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     }
     for (const part of row.children) {
       if (part === group) continue;
-      if (part.classList.contains("carousel-button-area")) continue;
+      if (part.classList.contains("ui-carousel-button-area")) continue;
       if (observedParts.has(part)) continue;
       observedParts.add(part);
       rowObserver.observe(part, { box: "border-box" });
@@ -1184,7 +1184,7 @@ function createGlider({ root, group, ...variants }: GliderOptions) {
     if (!hoverTrack) return;
     if (event.pointerType === "touch") return;
     if (!isElement(event.target)) return;
-    const control = event.target.closest<HTMLElement>(".control");
+    const control = event.target.closest<HTMLElement>(".ui-control");
     // The box stays on the last item while the pointer is between items.
     if (!control) return;
     const element = getItems(group, root).find((candidate) =>

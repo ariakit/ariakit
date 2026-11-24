@@ -41,114 +41,7 @@ export const listMarkerClasses = {
 
 /** A list with adaptive item spacing, markers, and optional guides. */
 export const list = cv({
-  class: [
-    // The gaps and the insets of the list follow its text size.
-    "list ui-spacing-em gap-(--list-gap)",
-    // Markers read the native counter, so the `start` attribute applies. They
-    // increment it themselves because a grid row does not count. This rule
-    // stops the implied increment of other rows, which would count twice.
-    "[&>li]:[counter-increment:list-item_0]",
-    // Only list elements scope the native counter by default.
-    "[&:not(ol,ul,menu)]:[counter-reset:list-item]",
-    // The base gap is the rhythm of the text around the list. The space
-    // between two rows derives from it, by how much content the rows hold.
-    "[--list-gap-base:var(--list-gap-base-root,calc(var(--spacing-em)*4))]",
-    // Prose supplies the default base gap. Explicit `$baseGap` wins through the
-    // style attribute; nested lists win by specificity.
-    "in-[.prose]:[--list-gap-base:var(--list-gap-base-root,var(--prose-gap))]",
-    // The rows read these lengths. The em step keeps each length in em, so a
-    // row with smaller text resolves it against its own text size. The step of
-    // the list is a resolved length, which would give every row the same
-    // padding.
-    "[--list-item-padding:round(calc(var(--spacing-em)*1),1px)]",
-    // Rows have padding that doesn't show without a surface, so the derived
-    // gap takes it out. `$gap` sets the space between two rows directly.
-    "[--list-gap:var(--list-gap-root,calc(var(--list-gap-base)*0.5-var(--list-item-padding)))]",
-    // The blocks of a row are as far apart as they are from the edges of its
-    // frame, so they read as one group. $itemGap replaces this gap.
-    "[--list-item-gap:var(--list-item-gap-root,var(--list-item-padding))]",
-    // A list in a row of another list keeps the gap of its parent, and its
-    // indent shows the level. Below the text of its row, or below the marker
-    // box when it is taller, it keeps the space that its own rows have between
-    // them. A row with blocks already adds part of it as a gap. A list that
-    // another list holds outside its rows, such as the list of a navigation,
-    // is not nested.
-    "[.list-row_&]:mt-[calc(var(--list-gap)+var(--list-item-padding)+var(--list-row-overhang)-var(--list-item-gap)*var(--list-row-blocks,0))]",
-    // At the end of its row, the bottom padding of its last row would add to
-    // the bottom padding of the parent row. Only the padding of the parent row
-    // stays below the last row.
-    "[.list-row_&]:last:mb-[calc(-1*var(--list-item-padding)-var(--list-row-overhang))]",
-    // Reset inherited flags so nested lists start with their own state.
-    "[--list-blocks:0] [--list-last-row:0] [--list-first-row:0]",
-    // A nested list reads the marker box of the row that holds it, so its
-    // branch connectors can reach the marker of that row.
-    "[--list-parent-marker-box:var(--list-row-marker-box)]",
-    // It also reads whether that row is the last row of its list. A branch has
-    // no row to curve back to after the last row.
-    "[--list-parent-last-row:var(--list-row-last,0)]",
-    // Rows without a surface start at the list edge. When a row has a surface,
-    // is a disclosure, or is rendered as a link or a button, which have hover
-    // surfaces, all rows keep their frames, so the markers of rows with the
-    // same padding line up. Such a row can sit in its own list item.
-    "[--list-flush:1]",
-    "has-[>.list-item-surface,>*>.list-item-surface,>:is(a,button),>*>:is(a,button)]:[--list-flush:0]",
-    "[&>li:last-of-type]:[--list-last-row:1]",
-    "[&>li:first-of-type]:[--list-first-row:1]",
-    // How far a row without a surface moves out of the list, which is its
-    // padding. A row in prose stays in place.
-    "[--list-row-outset:calc(var(--list-item-padding)*var(--list-flush))]",
-    "in-[.prose]:[--list-row-outset:0px]",
-    // The marker box is as far from the text as it is from the edges of the
-    // frame, so a marker in a card or a hover surface sits in even space, and
-    // the marker is as near to the text as the blocks of the row are to each
-    // other. Rows without frames keep at least about the white between two
-    // lines of text at a line height of 1.5, which runs along the line and
-    // follows the font size. The gap starts at the end of the marker, so the
-    // space that it leaves in its box counts.
-    "[--list-marker-gap:max(calc(var(--list-item-padding)+var(--list-marker-space)),calc(0.75em*var(--list-flush)))]",
-    // The space that a marker leaves between its end and the end of its box.
-    // Without a guide, each marker ends where a counter chip ends. On a guide,
-    // a bullet or a dash is on the center of the box.
-    "[--list-chip-space:calc((var(--list-marker-box,1lh)-var(--list-marker-box,1.75em)+0.4em)/2)]",
-    "[--list-glyph-space:calc((var(--list-marker-box,1lh)-var(--list-glyph-width,0px))/2)]",
-    "[--list-marker-space:calc(var(--list-chip-space)+(var(--list-glyph-space)-var(--list-chip-space))*var(--list-glyph)*var(--list-guide))]",
-    // How far the center of a marker is from the center of its box. Without a
-    // guide, a bullet or a dash ends where a chip ends, so it is not on the
-    // center. A list with a check or a progress row measures it from that
-    // marker, and each row measures its own marker for a list nested in it.
-    "[--list-check-space:initial]",
-    "has-[>.list-item-check,>*>.list-item-check,>*>*>.list-item-check]:[--list-check-space:0.2em]",
-    "[--list-marker-shift:calc((var(--list-check-space,var(--list-glyph-space))-var(--list-chip-space))*var(--list-glyph)*(1-var(--list-guide)))]",
-    // A nested list reads the shift of the marker of the row that holds it.
-    "[--list-parent-marker-shift:var(--list-row-marker-shift)]",
-    // The distance from the marker column of the row that holds a nested list
-    // to the marker column of the list, when the list starts at the text of
-    // that row: half of each marker box, the text inset of that row, and the
-    // padding of the rows of this list, less how far they move out. The
-    // markers of each list can be away from the center of their boxes.
-    "[--list-indent-auto:calc(var(--list-parent-marker-box,1lh)/2+var(--list-marker-box,1lh)/2+var(--list-text-inset,0px)+var(--list-item-padding)-var(--list-row-outset)-var(--list-parent-marker-shift)+var(--list-marker-shift))]",
-    // An explicit indent moves a nested list by its difference from that
-    // distance. The list grows at its start, so its rows end where they did.
-    "[.list-row_&]:ms-[calc(var(--list-indent,var(--list-indent-auto))-var(--list-indent-auto))]",
-    // The guide stops this far from each marker, so the surface around the
-    // list shows between them, whatever it paints.
-    "[--list-guide-gap:calc(var(--spacing-em)*1)]",
-    // A nested list reads how far the guide stops from the marker of the row
-    // that holds it, and from the marker of the row after that one, so its
-    // branch connectors stop there too.
-    "[--list-parent-marker-cut:var(--list-row-marker-cut)]",
-    "[--list-parent-next-marker-cut:var(--list-row-next-marker-cut)]",
-    // The size of a bullet, which equals seven pixels at a 16px font size.
-    // $bulletSize replaces it.
-    "[--list-bullet-size:0.4375em]",
-    // Block content increases item spacing; nested lists inherit this mode.
-    "ui-list-blocks:[--list-blocks:1]",
-    "ui-list-blocks:[--list-item-padding:calc(var(--spacing-em)*2)]",
-    "ui-list-blocks:[--list-gap:var(--list-gap-root,calc(var(--list-gap-base)*0.75-var(--list-item-padding)))]",
-    // The sections variant is registered last, so its gap overrides block
-    // mode.
-    "ui-list-sections:[--list-gap:var(--list-gap-root,calc(var(--list-gap-base)*1-var(--list-item-padding)))]",
-  ],
+  class: "ui-list",
   variants: {
     /**
      * Uses numbered markers by default. The component chooses the list element.
@@ -187,24 +80,10 @@ export const list = cv({
      */
     $marker: {
       counter: listMarkerClasses.counter,
-      // An icon chip takes the surface and the automatic guide of a counter.
-      icon: "[--list-marker:icon] [--list-counter:1] [--list-glyph:0]",
+      icon: "ui-list--marker-icon",
       bullet: listMarkerClasses.bullet,
-      dash: [
-        "[--list-marker:dash] [--list-counter:0] [--list-glyph:1]",
-        "[--list-glyph-width:0.5lh]",
-      ],
-      auto: [
-        "[--list-marker:dash] [--list-counter:0] [--list-glyph:1]",
-        "[--list-glyph-width:0.5lh]",
-        // Each level of automatic lists outranks the level before it.
-        "[:is(&_&)]:[--list-marker:bullet]",
-        "[:is(&_&)]:[--list-glyph-width:var(--list-bullet-size)]",
-        "[:is(&_&_&)]:[--list-marker:dash]",
-        "[:is(&_&_&)]:[--list-glyph-width:0.5lh]",
-        "[:is(&_&_&_&)]:[--list-marker:bullet]",
-        "[:is(&_&_&_&)]:[--list-glyph-width:var(--list-bullet-size)]",
-      ],
+      dash: "ui-list--marker-dash",
+      auto: "ui-list--marker-auto",
       none: listMarkerClasses.none,
     },
     /**
@@ -212,7 +91,7 @@ export const list = cv({
      * and icons in block mode.
      */
     $guide: {
-      auto: "[--list-guide:calc(var(--list-counter)*var(--list-blocks))]",
+      auto: "ui-list--guide-auto",
       true: "[--list-guide:1]",
       false: "[--list-guide:0]",
     },
@@ -366,7 +245,7 @@ export const list = cv({
     // such a row takes its distance from that marker. The row is the list item,
     // a row in its own list item, or the button of a disclosure in one.
     addClass(
-      "has-[>.list-item-check,>*>.list-item-check,>*>*>.list-item-check]:[--list-glyph-space:0.2em]",
+      "has-[>.ui-list-item-check,>*>.ui-list-item-check,>*>*>.ui-list-item-check]:[--list-glyph-space:0.2em]",
     );
     if (variants.$markerSize != null) return;
     // A box of one line keeps a bullet far from the start of the list and gives
@@ -374,7 +253,7 @@ export const list = cv({
     // the font size. A list with a check or a progress row keeps the box of one
     // line, which that marker fills.
     addClass(
-      "not-has-[>.list-item-check,>*>.list-item-check,>*>*>.list-item-check]:[--list-marker-box:1em]",
+      "not-has-[>.ui-list-item-check,>*>.ui-list-item-check,>*>*>.ui-list-item-check]:[--list-marker-box:1em]",
     );
   },
 });
@@ -382,67 +261,7 @@ export const list = cv({
 /** Shared padding and line height for list items and disclosure rows. */
 const listRow = cv({
   extend: [textFrame],
-  class: [
-    // A list nested in the row reads this class.
-    "list-row relative",
-    // Freeze line height as a length so larger child text stays aligned with
-    // the marker.
-    "leading-[1lh]",
-    // Copy the non-inheriting frame border and ring into channels the guide
-    // can inherit.
-    "[--list-row-border:var(--ak-frame-border)]",
-    "[--list-row-ring:var(--ak-frame-ring)]",
-    // A row with a surface sets this flag, so its guide starts below it.
-    "[--list-row-solid:0]",
-    // Pass the marker box of this row to a list nested in it.
-    "[--list-row-marker-box:var(--list-marker-box,1lh)]",
-    // Tell a nested list how far the marker of this row is from the center of
-    // its box. A check row sets its own space.
-    "[--list-row-marker-shift:calc((var(--list-row-glyph-space,var(--list-glyph-space,0px))-var(--list-chip-space,0px))*var(--list-glyph,0)*(1-var(--list-guide,0)))]",
-    // Tell a nested list whether this row is the last row of its list.
-    "[--list-row-last:var(--list-last-row,0)]",
-    // How far a marker reaches from its center along the guide. A check, an
-    // empty slot, or progress fills the marker box, less its inset. A counter
-    // or an icon is a chip, and a check in such a list has its size.
-    "[--list-row-check-reach:calc(var(--list-marker-box,1lh)/2-0.2em)]",
-    "ui-list-counter:[--list-row-check-reach:calc(var(--list-marker-box,1.75em)/2-0.2em)]",
-    "ui-list-icon:[--list-row-check-reach:calc(var(--list-marker-box,1.75em)/2-0.2em)]",
-    // A bullet or a dash is smaller than the box. A vertical guide crosses a
-    // dash, and a horizontal guide runs along it.
-    "[--list-row-plain-reach:var(--list-row-check-reach)]",
-    "ui-list-bullet:[--list-row-plain-reach:calc(var(--list-bullet-size)/2)]",
-    "ui-list-dash:[--list-row-plain-reach:0.5px]",
-    "ui-list-horizontal:ui-list-dash:[--list-row-plain-reach:0.25lh]",
-    // The marker of this row is a check when the row is a list item with the
-    // check class, or a disclosure whose button has it.
-    "[--list-row-marker-reach:var(--list-row-check-reach)]",
-    "not-[.list-item-check,:has(>.list-item-check)]:[--list-row-marker-reach:var(--list-row-plain-reach)]",
-    // The guide stops one gap before the marker and starts again one gap after
-    // it. The pieces of the row, the stem of a branch list in the row, and
-    // that list read this distance. A row without a marker has none.
-    "[--list-row-marker-cut:calc((var(--list-row-marker-reach)+var(--list-guide-gap,0px))*var(--list-row-marker-on,1))]",
-    // The same distance for the marker of the next row, where the guide piece
-    // of this row stops and a branch list in this row returns to the guide.
-    // The next row can have a check when this row has none. That row is a list
-    // item, or a link or a disclosure in a list item. A row in its own list
-    // item, such as a link or a disclosure, reads the list item after that one.
-    "[--list-row-next-marker-cut:calc(var(--list-row-plain-reach)+var(--list-guide-gap,0px))]",
-    "has-[+li.list-item-check,+li>.list-item-check,+li>.list-row>.list-item-check]:[--list-row-next-marker-cut:calc(var(--list-row-check-reach)+var(--list-guide-gap,0px))]",
-    "[li:has(+li.list-item-check,+li>.list-item-check,+li>.list-row>.list-item-check)>&]:[--list-row-next-marker-cut:calc(var(--list-row-check-reach)+var(--list-guide-gap,0px))]",
-    // The text starts one marker gap after the marker, so it starts after the
-    // marker box by that gap, less the space that the marker leaves in the
-    // box. A nested list reads this length to find the text of its row.
-    "[--list-text-inset:calc(var(--list-marker-gap,0px)-var(--list-marker-space,0px))]",
-    // Tell a nested list whether this row lays out its content as blocks.
-    "[--list-row-blocks:0] ui-list-item-blocks:[--list-row-blocks:1]",
-    // How far a marker box taller than one line extends past the first line,
-    // above and below it.
-    "[--list-marker-overhang:max(0px,(var(--list-marker-box,1lh)-1lh)/2)]",
-    // Tell a nested list how much padding the overhang adds around the content
-    // of this row. A horizontal row puts the marker box above its content.
-    "[--list-row-overhang:var(--list-marker-overhang)]",
-    "ui-list-horizontal:[--list-row-overhang:0px]",
-  ],
+  class: "ui-list-row",
   defaultVariants: {
     $layer: false,
     $rounded: "xl",
@@ -469,23 +288,17 @@ const listRow = cv({
 export const listItem = cv({
   extend: [listRow],
   class: [
+    "ui-list-item",
     // Make room for a marker box taller than one line. The longhands override
     // frame padding by stylesheet order.
+    // Stays a class to come after the padding of `textFrame`, which it
+    // replaces.
     "pbs-[calc(var(--py)+var(--list-marker-overhang))]",
     "pbe-[calc(var(--py)+var(--list-marker-overhang))]",
-    // A stretched row, such as a short column next to a taller one in a
-    // horizontal list, keeps its blocks together and leaves the extra height
-    // below them.
-    "ui-list-item-blocks:grid ui-list-item-blocks:content-start",
-    "ui-list-item-blocks:gap-(--list-item-gap)",
-    // Put the marker in the padding corner. The content resets this offset.
-    "[--list-marker-offset:var(--ak-frame-padding)]",
-    // The rows of a horizontal list share one grid row, and each row centers
-    // its content under the marker.
-    "ui-list-horizontal:row-start-1",
-    "ui-list-horizontal:text-center ui-list-horizontal:justify-items-center",
     // A horizontal row puts the marker box above its content, so it adds no
     // overhang to its padding.
+    // Stays a class to come after the padding of `textFrame`, which it
+    // replaces.
     "ui-list-horizontal:pbe-(--py) ui-list-horizontal:pe-(--px)",
   ],
   variants: {
@@ -498,10 +311,14 @@ export const listItem = cv({
     $marker: {
       true: [
         // Reserve the marker box and the distance from it to the text.
+        // Stays a class to come after the padding of `textFrame`, which it
+        // replaces.
         "ps-[calc(var(--py)+var(--list-marker-box,1lh)+var(--list-text-inset))]",
         // A horizontal row reserves the marker box above its content, as far
         // from it as from the top edge. The line height adds white above the
         // text, so it needs no minimum like the marker gap.
+        // Stays a class to come after the padding of `textFrame`, which it
+        // replaces.
         "ui-list-horizontal:ps-(--px)",
         "ui-list-horizontal:pbs-[calc(var(--py)*2+var(--list-marker-box,1lh))]",
         // Both values set the flag, so a row in a row without a marker does
@@ -517,12 +334,7 @@ export const listItem = cv({
      * default, and it keeps a box of one line when a row has this mark. The
      * style component sets it from `checked` and `progress`.
      */
-    $check: [
-      "list-item-check",
-      // A check fills the marker box, less its inset, so its center is nearer
-      // to the center of the box than the center of a bullet.
-      "[--list-row-glyph-space:0.2em]",
-    ],
+    $check: "ui-list-item-check ui-list-item--check",
     /**
      * Shows the row as disabled, like a disabled control: lower contrast and
      * the faintest ink on the row, its marker, and the blocks of its content.
@@ -530,14 +342,22 @@ export const listItem = cv({
      * `aria-disabled`.
      */
     $disabled: [
+      "ui-list-item--disabled",
+      "ak-disabled",
+      // Stays a class to come after the --_ak-text-alpha of `ink`, which it
+      // replaces.
+      "ak-ink-0",
       // Fixed-depth child selectors reach the marker and the content blocks
-      // without an ancestor walk on every style recalculation.
-      "ak-disabled ak-ink-0 *:ak-ink-0 *:*:ak-ink-0",
-      // An adaptive text color targets nested text and icons directly, so set
-      // the ink on the same targets. Skip forced colors, where this rule would
-      // override the system disabled color.
-      "not-forced-colors:ui-text:ak-ink-0",
-      "forced-colors:text-[GrayText] forced-colors:**:text-[GrayText]",
+      // without an ancestor walk on every style recalculation. Stays a class to
+      // keep its order with the classes of the elements that it styles.
+      "*:ak-ink-0 *:*:ak-ink-0",
+      // Stays a class to come after the color of `ink`, which it replaces.
+      "forced-colors:text-[GrayText]",
+      // Stays a class to come after another class here that sets the color,
+      // which it replaces.
+      "forced-colors:**:text-[GrayText]",
+      // Stays a class to come after the classes of a caller, so that the forced
+      // colors rule still applies.
       "forced-colors:ui-text:text-[GrayText]",
     ],
   },
@@ -547,7 +367,7 @@ export const listItem = cv({
   refine({ variants, addClass }) {
     if (hasSlotSurface(variants)) {
       // The list reads this class to keep all its rows in their frames.
-      addClass("list-item-surface");
+      addClass("ui-list-item-surface");
       // The end padding of a row with a marker grows like the block padding, so
       // text at the end is as far from the side as from the top. A row without
       // a marker keeps its inline padding even.
@@ -561,7 +381,7 @@ export const listItem = cv({
       // list keeps its indent.
       addClass([
         "-ms-[calc(var(--ak-frame-padding)*var(--list-flush))]",
-        "in-[.prose]:ms-0 ui-list-horizontal:ms-0",
+        "in-[.ui-prose]:ms-0 ui-list-horizontal:ms-0",
       ]);
       // Its content also ends at the edge of the list, so content at the end of
       // rows at all levels lines up. Without end padding, the row stays inside
@@ -578,17 +398,7 @@ export const listItem = cv({
 
 /** A layout-free wrapper for list content. Use a span to avoid block mode. */
 export const listItemContent = cv({
-  class: [
-    // Markers must come first: Firefox and Safari otherwise read nested
-    // counters. This wrapper restores :first-child for content. Use a span; a
-    // div would force block mode.
-    "contents",
-    // A marker in the content, such as a status icon, must not count or sit
-    // like the row marker. A nested list sets this state again.
-    "[--list-marker:initial] [--list-counter:initial] [--list-glyph:initial]",
-    "[--list-marker-offset:initial]",
-    "[--list-marker-box:initial] [--list-row-glyph-space:initial]",
-  ],
+  class: "ui-list-item-content",
 });
 
 /**
@@ -600,65 +410,25 @@ export const listItemMarker = cv({
   // the mix and the text colors of each kind.
   extend: [frame, tint],
   class: [
-    "list-marker absolute pointer-events-none grid place-items-center",
-    // An icon is small in a marker, so a lighter stroke keeps its shape clear.
-    "[&>svg]:size-[60%] [&>svg]:stroke-[1.5]",
-    // The guide stops before the marker and never runs behind it, so the
-    // marker needs no paint around it to hide the guide.
-    "z-3",
-    // A thin outline in the color of the layer behind the marker separates a
-    // number from a row surface that it overlaps, such as the current link of
-    // a navigation, where the marker sits on the surface around the rows. A
-    // ring paints outside the marker, so the outline starts after it.
-    "ui-list-counter:outline-1 ui-list-counter:outline-(--ak-layer-parent)",
-    "ui-list-counter:outline-offset-(--ak-frame-ring)",
+    "ui-list-item-marker",
+    // Stays a class, so that another class here that sets the outline-color
+    // still comes after it and replaces it.
+    "ui-list-counter:outline-(--ak-layer-parent)",
+    // Stays a class to come after another class here that sets the
+    // outline-color, which it replaces.
     "forced-colors:ui-list-counter:outline-[Canvas]",
     // Preserve system-colored marks; automatic forced colors would remove
     // fills.
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
     "forced-colors:forced-color-adjust-none",
     "forced-colors:[--ak-edge:CanvasText]",
-    // Bullets and dashes override these marker dimensions by stylesheet order.
-    "[--list-marker-inset:0.2em]",
-    "[--list-marker-size:calc(var(--list-marker-box,1lh)-var(--list-marker-inset)*2)]",
-    // A chip follows the font size, not the line height, so a counter has the
-    // same size in a tall line. Checks in a list of chips take that size too.
-    "[--list-chip-size:calc(var(--list-marker-box,calc(1.35em+var(--list-marker-inset)*2))-var(--list-marker-inset)*2)]",
-    "ui-list-counter:[--list-marker-size:var(--list-chip-size)]",
-    "ui-list-icon:[--list-marker-size:var(--list-chip-size)]",
-    // Center the marker box on the first line, at the start of the row.
-    // Outside a row, such as in row content, it is centered in the one-line
-    // host.
-    "[--list-marker-center-x:calc(var(--list-marker-offset,0px)+var(--list-marker-box,1lh)/2)]",
-    "[--list-marker-center-y:calc(var(--list-marker-offset,0px)+var(--list-marker-overhang,0px)+0.5lh)]",
-    // A horizontal row centers the marker box above its content.
-    "ui-list-horizontal:[--list-marker-center-x:50%]",
-    "ui-list-horizontal:[--list-marker-center-y:calc(var(--list-marker-offset,0px)+var(--list-marker-box,1lh)/2)]",
-    // Without a guide, a bullet, a dash, or a check ends where a counter chip
-    // ends, so all kinds of markers end at one line and have the same distance
-    // to the text. On a guide and in a horizontal list, they stay on the
-    // center. A marker outside a list row also stays on the center.
-    "[--list-marker-reach:calc(var(--list-chip-size)/2)]",
-    "[--list-marker-hang:calc(var(--list-glyph,0)*(1-var(--list-guide,0)))]",
-    "ui-list-horizontal:[--list-marker-hang:0]",
+    // Stays a class to come after another class here that sets the inset, which
+    // it replaces.
     "top-[calc(var(--list-marker-center-y)-var(--list-marker-size)/2)]",
+    // Stays a class, so that another class here that sets the inset still comes
+    // after it and replaces it.
     "inset-s-[calc(var(--list-marker-center-x)-var(--list-marker-size)/2+(var(--list-marker-reach)-var(--list-marker-size)/2)*var(--list-marker-hang))]",
-    "w-(--list-marker-size) h-(--list-marker-size) rounded-full",
-    "ui-list-counter:[counter-increment:list-item]",
-    "ui-list-counter:before:content-[counter(list-item)]",
-    "ui-list-counter:before:absolute ui-list-counter:before:inset-0",
-    "ui-list-counter:before:text-center ui-list-counter:before:font-semibold",
-    "ui-list-counter:before:leading-(--list-marker-size)",
-    "ui-list-counter:before:[font-size-adjust:0.45]",
-    // Counters override the thick progress arc with a thin ring around the
-    // number.
-    "[--list-progress-thickness:calc(30%+0.25%*var(--contrast,0))]",
-    "ui-list-counter:[--list-progress-thickness:0.15em]",
-    "ui-list-icon:[--list-progress-thickness:0.15em]",
-    "[--progress-thickness:var(--list-progress-thickness)]",
-    // A spinning arc shows no value, so a thinner stroke reads as loading. The
-    // base value has its own name, because a property that refers to itself is
-    // invalid.
-    "[&>[data-indeterminate]]:[--progress-thickness:calc(var(--list-progress-thickness)*2/3)]",
   ],
   variants: {
     /**
@@ -668,36 +438,62 @@ export const listItemMarker = cv({
      */
     $checked: {
       none: [
-        "forced-colors:bg-[Canvas] forced-colors:text-[CanvasText]",
-        "forced-colors:ui-list-counter:ring forced-colors:ui-list-counter:ring-inset",
-        "forced-colors:ui-list-icon:ring forced-colors:ui-list-icon:ring-inset",
+        "ui-list-item-marker--checked-none",
+        // Stays a class to come after the background-color of `layer`, which it
+        // replaces.
+        "forced-colors:bg-[Canvas]",
+        // Stays a class to come after the color of `ink`, which it replaces.
+        "forced-colors:text-[CanvasText]",
+        // Stays a class to come after the --tw-ring-shadow of `frameBase`,
+        // which it replaces.
+        "forced-colors:ui-list-counter:ring",
+        "forced-colors:ui-list-icon:ring",
+        // Stays a class to come after the classes of a caller, so that the
+        // forced colors rule still applies.
+        "forced-colors:ui-list-counter:ring-inset",
+        "forced-colors:ui-list-icon:ring-inset",
+        // Stays a class to come after another class here that sets the inset,
+        // which it replaces.
         "ui-list-dash:top-(--list-marker-center-y)",
         "ui-list-dash:inset-s-[calc(var(--list-marker-center-x)-0.25lh+(var(--list-marker-reach)-0.25lh)*var(--list-marker-hang))]",
-        "ui-list-dash:w-[0.5lh] ui-list-dash:h-auto",
-        "ui-list-dash:rounded-none ui-list-dash:border-b",
+        // Stays a class to come after the border-style of `frameBase`, which it
+        // replaces.
+        "ui-list-dash:border-b",
         // Use a filled disc; thick rounded borders can leave a hole.
+        // Stays a class to come after another class here that sets the inset,
+        // which it replaces.
         "ui-list-bullet:top-[calc(var(--list-marker-center-y)-var(--list-bullet-size)/2)]",
         "ui-list-bullet:inset-s-[calc(var(--list-marker-center-x)-var(--list-bullet-size)/2+(var(--list-marker-reach)-var(--list-bullet-size)/2)*var(--list-marker-hang))]",
-        "ui-list-bullet:w-(--list-bullet-size) ui-list-bullet:h-(--list-bullet-size)",
-        // A bullet paints only its edge color, which is translucent, so it
-        // takes the tone of the surface behind it, like the guide. No guide
-        // runs behind a marker. In forced colors, it keeps the canvas color
-        // under the system color of the edge.
-        "ui-list-bullet:bg-linear-to-b",
-        "ui-list-bullet:from-(--ak-edge) ui-list-bullet:to-(--ak-edge)",
+        // Stays a class to come after the background-color of `layer`, which it
+        // replaces.
         "not-forced-colors:ui-list-bullet:bg-transparent",
       ],
       true: [
-        "before:hidden",
+        "ui-list-item-marker--checked-true",
+        // Stays a class to come after the background-color of `layer`, which it
+        // replaces.
+        "forced-colors:bg-[Canvas]",
         // Highlight can be translucent, like the selection color of macOS, so
         // paint it over Canvas, or the guide shows through the marker.
-        "forced-colors:bg-[Canvas] forced-colors:bg-linear-to-b",
+        // Stays a class to come after the classes of a caller, so that the
+        // forced colors rule still applies.
+        "forced-colors:bg-linear-to-b",
         "forced-colors:from-[Highlight] forced-colors:to-[Highlight]",
+        // Stays a class to come after the color of `ink`, which it replaces.
         "forced-colors:text-[HighlightText]",
       ],
       false: [
-        "ring ring-inset ui-list-counter:ring-0",
-        "forced-colors:bg-[Canvas] forced-colors:text-[CanvasText]",
+        "ring-inset",
+        // Stays a class to come after the --tw-ring-shadow of `frameBase`,
+        // which it replaces.
+        "ring ui-list-counter:ring-0",
+        // Stays a class to come after the background-color of `layer`, which it
+        // replaces.
+        "forced-colors:bg-[Canvas]",
+        // Stays a class to come after the color of `ink`, which it replaces.
+        "forced-colors:text-[CanvasText]",
+        // Stays a class to come after the --tw-ring-shadow of `frameBase`,
+        // which it replaces.
         "forced-colors:ui-list-counter:ring",
       ],
     },
@@ -797,7 +593,7 @@ export const listItemMarkerCheck = cv({
   extend: [text, checkMark],
   // The adaptive text color of a tinted marker clears the background color of
   // this element, but not of the pseudo-element that draws the check.
-  class: "absolute inset-0 grid place-items-center",
+  class: "ui-list-item-marker-check",
   variants: {
     /**
      * Shows the check. An unchecked marker keeps it out of view, so it can show
@@ -805,16 +601,15 @@ export const listItemMarkerCheck = cv({
      */
     $checked: {
       true: [
-        "after:[clip-path:inset(0)]",
-        // Only this state sets the transition, so the check goes away at once.
-        "motion-safe:after:transition-[clip-path]",
-        "motion-safe:after:duration-150 motion-safe:after:ease-linear",
+        "ui-list-item-marker-check--checked-true",
         // A disabled control sets the system disabled color on its
         // descendants, which is not readable on the selection fill. Set the
         // color of the check directly so that no text color rule changes it.
+        // Stays a class to come after the background-color of `ui-check-mark`,
+        // which it replaces.
         "forced-colors:after:bg-[HighlightText]",
       ],
-      false: "after:[clip-path:inset(0_100%_0_0)]",
+      false: "ui-list-item-marker-check--checked-false",
     },
   },
   defaultVariants: {
@@ -850,66 +645,11 @@ export const listItemMarkerCheck = cv({
 export const listGuide = cv({
   extend: [edge],
   class: [
-    "absolute pointer-events-none",
+    "ui-list-guide",
     // Keep the line in forced colors, with a system color.
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
     "forced-colors:forced-color-adjust-none forced-colors:[--ak-edge:CanvasText]",
-    "[--guide-bent:min(1,var(--guide-in)+var(--guide-outward))]",
-    // The two curves of a bend take the same share of it, so they have the
-    // same size.
-    "[--guide-bend-lower:0.5]",
-    // At whole scales, a whole number of pixels gives both curves one exact edge.
-    // Fractions could round to an overlap, which darkens a pixel of a translucent
-    // guide. The span leaves room for the border of the other curve.
-    "[--guide-bend-lower-width:min(var(--guide-span),round(calc((var(--guide-span)+var(--guide-width))*var(--guide-bend-lower)),1px))]",
-    // The radius of the curves grows with the span, so a wide bend does not
-    // look square, and a narrow bend keeps a radius that is easy to see.
-    "[--guide-radius:max(--spacing(1.5),var(--guide-span)/3)]",
-    // A curve is a quarter of a circle, so its radius is at most the width and
-    // the height of its half of the bend. A straight part joins two curves that
-    // don't fill the bend.
-    "[--guide-curve-radius:min(var(--guide-radius),var(--guide-bend-lower-width),var(--guide-span)+var(--guide-width)-var(--guide-bend-lower-width),(var(--guide-bend-height)+var(--guide-width))*var(--guide-bend-lower))]",
-    // Mirror diagonal bends in right to left text. Logical insets mirror the
-    // rest.
-    "[--guide-dir:1] rtl:[--guide-dir:-1]",
-    // The first half of a smooth bend is a quarter curve from the previous
-    // line. A diagonal bend is one slanted line instead. A straight piece
-    // leaves it empty.
-    "before:absolute before:top-0 before:box-content before:border-(--guide-color,var(--ak-edge))",
-    // Browsers snap a box and its border to device pixels separately, so at
-    // fractional scales a border can be thinner than the line. A border at the
-    // far side of a box keeps the column or row of the line only if the box
-    // adds the border after the content, which ends where the line starts. The
-    // height and the minimum width do that, and an inset as wide as the line
-    // keeps the automatic width below that minimum. Without a far border, the
-    // insets end a curve where the next starts. A slanted line keeps a box as
-    // wide as its border, which is where it rotates.
-    "before:inset-s-[calc(var(--guide-outward)*(var(--guide-curve)*var(--guide-bend-lower-width)+(1-var(--guide-curve))*var(--guide-span)))]",
-    "before:inset-e-[calc((1-var(--guide-curve)*var(--guide-outward))*(var(--guide-curve)*var(--guide-bend-lower-width)+(1-var(--guide-curve))*(var(--guide-span)+var(--guide-width)))+var(--guide-curve)*var(--guide-outward)*var(--guide-width))]",
-    "before:min-w-[calc(var(--guide-curve)*var(--guide-outward)*(var(--guide-span)-var(--guide-bend-lower-width)))]",
-    "before:h-[calc(var(--guide-curve)*((var(--guide-bend-height)+var(--guide-width))*(1-var(--guide-bend-lower))-var(--guide-width))+(1-var(--guide-curve))*var(--guide-bent)*hypot(var(--guide-span),var(--guide-bend-height)))]",
-    "before:border-s-[calc(var(--guide-width)*(var(--guide-curve)*var(--guide-in)+(1-var(--guide-curve))*var(--guide-bent)))]",
-    "before:border-e-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-outward))]",
-    "before:border-be-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-bent))]",
-    "before:rounded-es-[calc(var(--guide-curve-radius)*var(--guide-curve)*var(--guide-in))]",
-    "before:rounded-ee-[calc(var(--guide-curve-radius)*var(--guide-curve)*var(--guide-outward))]",
-    // Only a diagonal bend rotates. A rotation of zero degrees still makes
-    // Firefox paint the curve one device pixel away from the line it leaves.
-    // This rule is for a piece that takes the shape from an element around
-    // it, and the `$bend` variant has the rule for its own shape.
-    "before:origin-top",
-    "[@container_style(--guide-curve:_0)]:before:rotate-[calc(var(--guide-dir)*(var(--guide-outward)-var(--guide-in))*atan2(var(--guide-span),var(--guide-bend-height)))]",
-    // The second half of a smooth bend curves into this row and continues as
-    // the line along it. Other pieces draw only the line.
-    "after:absolute after:bottom-0 after:box-content after:border-(--guide-color,var(--ak-edge))",
-    "after:top-[calc(var(--guide-bent)*(var(--guide-curve)*((var(--guide-bend-height)+var(--guide-width))*(1-var(--guide-bend-lower))-var(--guide-width))+(1-var(--guide-curve))*var(--guide-bend-height)))]",
-    "after:inset-s-[calc(var(--guide-in)*(var(--guide-curve)*(var(--guide-span)+var(--guide-width)-var(--guide-bend-lower-width))+(1-var(--guide-curve))*var(--guide-span)))]",
-    "after:inset-e-[calc((1-var(--guide-in))*(var(--guide-span)+var(--guide-width)-var(--guide-curve)*max(var(--guide-width),var(--guide-bend-lower-width)))+var(--guide-curve)*var(--guide-in)*var(--guide-width))]",
-    "after:min-w-[calc(var(--guide-curve)*var(--guide-in)*(var(--guide-bend-lower-width)-var(--guide-width)))]",
-    "after:border-bs-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-bent))]",
-    "after:border-e-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-in))]",
-    "after:border-s-[calc(var(--guide-width)*(1-var(--guide-curve)*var(--guide-in)))]",
-    "after:rounded-se-[calc(var(--guide-curve-radius)*var(--guide-curve)*var(--guide-in))]",
-    "after:rounded-ss-[calc(var(--guide-curve-radius)*var(--guide-curve)*var(--guide-outward))]",
   ],
   variants: {
     /**
@@ -920,10 +660,7 @@ export const listGuide = cv({
      */
     $bend: {
       smooth: "[--guide-curve:1]",
-      diagonal: [
-        "[--guide-curve:0]",
-        "before:rotate-[calc(var(--guide-dir)*(var(--guide-outward)-var(--guide-in))*atan2(var(--guide-span),var(--guide-bend-height)))]",
-      ],
+      diagonal: "ui-list-guide--bend-diagonal",
       false: "",
     },
     /**
@@ -941,9 +678,9 @@ export const listGuide = cv({
      * each curve of a bend.
      */
     $line: {
-      solid: "before:border-solid after:border-solid",
-      dashed: "before:border-dashed after:border-dashed",
-      dotted: "before:border-dotted after:border-dotted",
+      solid: "ui-list-guide--line-solid",
+      dashed: "ui-list-guide--line-dashed",
+      dotted: "ui-list-guide--line-dotted",
     },
   },
   defaultVariants: {
@@ -1018,15 +755,7 @@ export const listItemGuide = cv({
   // The guide draws the line and the bends, the way the guide of a table of
   // contents bends into a nested list, and colors them with its edge.
   extend: [listGuide],
-  class: [
-    "list-guide",
-    "[--guide-width:calc(var(--list-guide,0)*1px)]",
-    // The marker of a row is centered on its first line, after its padding and
-    // the overhang of the marker box.
-    "[--list-guide-start:calc(var(--ak-frame-padding)+var(--list-marker-overhang,0px)+0.5lh)]",
-    // Center the line on the marker column.
-    "[--list-guide-x:calc(var(--ak-frame-padding)+var(--list-marker-box,1lh)/2-var(--guide-width)/2)]",
-  ],
+  class: "ui-list-item-guide",
   variants: {
     /**
      * Sets which piece of the guide this is. `line` draws the line between two
@@ -1038,85 +767,51 @@ export const listItemGuide = cv({
      */
     $piece: {
       line: [
-        // Keep the line below disclosure content and the surfaces of later
-        // rows, which come after it. It stays above the bends of a branch list,
-        // which start and end on this line, so the line keeps its color where a
-        // bend runs along it.
-        "z-2",
-        "[--guide-in:0] [--guide-outward:0]",
-        "[--guide-span:0px] [--guide-bend-height:0px]",
-        // The guide of a row with a surface starts below the row, so the
-        // surface hides the part that runs to its marker. It also starts below
-        // the border or the ring of the row, which grow outward, because a
-        // translucent line over a translucent border shows as a darker dot.
-        "[--list-guide-skip:calc((100%-var(--list-guide-start)+var(--list-row-border,0px)+var(--list-row-ring,0px))*var(--list-row-solid,0))]",
-        // The piece of a row runs from its marker to the next marker, so the
-        // guide props of a row style the part of the line that leaves it. Row
-        // borders overlap the gap, so they add no length. Clamp negative gaps
-        // to zero, as grid layout does.
-        "[--list-guide-reach:max(0px,var(--list-gap))]",
-        // A row without a marker starts its piece where the piece of the row
-        // before it stops, one cut before the center of this row.
-        "[--list-guide-lead:calc((var(--list-row-plain-reach)+var(--list-guide-gap,0px))*(1-var(--list-row-marker-on,1))*(1-var(--list-first-row,0))*(1-var(--list-row-solid,0)))]",
+        "ui-list-item-guide--piece-line",
+        // Stays a class to come after another class here that sets the inset,
+        // which it replaces.
         "top-[calc(var(--list-guide-start)+var(--list-guide-skip)-var(--list-guide-lead))]",
-        "inset-s-(--list-guide-x) w-(--guide-width)",
-        "h-[calc(100%+var(--list-guide-reach)-var(--list-guide-skip)+var(--list-guide-lead))]",
-        // The clip removes the line around the marker of the row and around
-        // the next marker, so the surface behind the list shows there,
-        // whatever it paints. The piece of a row with a surface starts below
-        // the row, so it keeps its start. The sides extend past the piece, so
-        // the clip never thins a line that snaps to a device pixel beside it.
-        "[clip-path:inset(calc(var(--list-row-marker-cut,0px)*(1-var(--list-row-solid,0)))_-1px_var(--list-row-next-marker-cut,0px)_-1px)]",
+        // Stays a class, so that another class here that sets the inset still
+        // comes after it and replaces it.
+        "inset-s-(--list-guide-x)",
         // A horizontal guide joins the marker centers across the columns. The
         // line runs along the top of the piece, not along its start edge.
+        // Stays a class to come after another class here that sets the inset,
+        // which it replaces.
         "ui-list-horizontal:top-(--list-guide-x)",
         "ui-list-horizontal:inset-s-[calc(50%-var(--list-guide-lead))]",
-        "ui-list-horizontal:h-(--guide-width)",
-        "ui-list-horizontal:w-[calc(100%+var(--list-guide-reach)+var(--list-guide-lead))]",
-        "ui-list-horizontal:after:inset-e-0 ui-list-horizontal:after:border-s-0",
-        "ui-list-horizontal:after:border-bs-(length:--guide-width)",
-        // The clip takes physical sides, so right to left text swaps the cut
-        // of this marker and the cut of the next one.
-        "ui-list-horizontal:[clip-path:inset(-1px_calc((var(--list-row-next-marker-cut,0px)*(1+var(--guide-dir))+var(--list-row-marker-cut,0px)*(1-var(--guide-dir)))/2)_-1px_calc((var(--list-row-marker-cut,0px)*(1+var(--guide-dir))+var(--list-row-next-marker-cut,0px)*(1-var(--guide-dir)))/2))]",
-        // No marker follows the last row.
-        "ui-list-last-row:hidden",
       ],
       in: [
         ...listItemGuideBend,
-        "[--guide-in:1] [--guide-outward:0]",
+        "ui-list-item-guide--piece-in",
+        // Stays a class to come after the display of `listItemGuideBend`, which
+        // it replaces.
         "ui-list-branch:ui-list-first-row:block",
-        // The bend starts at the marker of the row that holds the list.
-        "[--list-guide-far-cut:var(--list-parent-marker-cut,0px)]",
-        // The stem of the list ends where this bend starts.
-        "[anchor-name:var(--list-guide-anchor)]",
-        "top-[calc(var(--list-guide-start)-var(--list-row-marker-cut,0px)-var(--guide-bend-height))]",
       ],
       out: [
         ...listItemGuideBend,
+        "ui-list-item-guide--piece-out",
         // The last row of the parent list has no next row to reach.
+        // Stays a class to come after the display of `listItemGuideBend`, which
+        // it replaces.
         "ui-list-branch:ui-list-last-row:not-ui-list-parent-last-row:block",
-        "[--guide-in:0] [--guide-outward:1]",
-        // The bend ends at the marker of the row after the one that holds the
-        // list.
-        "[--list-guide-far-cut:var(--list-parent-next-marker-cut,0px)]",
-        "top-[calc(var(--list-guide-start)+var(--list-row-marker-cut,0px))]",
-        // The tail of the list starts where this bend ends.
-        "[anchor-name:var(--list-guide-anchor)]",
       ],
       stem: [
         ...listItemGuideLink,
-        // From one gap after the marker of the row to where the first bend
-        // starts. Without an anchor, the stem has no height.
-        "top-[calc(var(--list-guide-start)+var(--list-row-marker-cut,0px))]",
+        "ui-list-item-guide--piece-stem",
+        // Stays a class to come after the inset of `listItemGuideLink`, which
+        // it replaces.
         "bottom-[anchor(top,100%)]",
       ],
       tail: [
         ...listItemGuideLink,
+        "ui-list-item-guide--piece-tail",
         // From where the last bend ends to one gap before the marker of the
         // next row, which is one row gap and one marker offset below this row.
         // Without an anchor, such as in the last row, the tail has no height.
+        // Stays a class to come after the inset of `listItemGuideLink`, which
+        // it replaces.
         "top-[anchor(bottom,calc(200%+100lvh))]",
-        "bottom-[calc(-1*(max(0px,var(--list-gap))+var(--list-guide-start)-var(--list-row-next-marker-cut,0px)))]",
       ],
     },
     /**
@@ -1141,33 +836,8 @@ export const listDisclosure = cv({
   class: [
     // The button has a hover surface, so the row keeps its frame, and the list
     // keeps the other rows in theirs.
-    "list-item-surface",
-    // Reset the list state in the content, as list item content does, whatever
-    // body the content renders.
-    "[&>.disclosure-content]:[--list-marker:initial]",
-    "[&>.disclosure-content]:[--list-counter:initial]",
-    "[&>.disclosure-content]:[--list-glyph:initial]",
-    // The content reads the marker box for its guide, so reset it one level
-    // down.
-    "[&>.disclosure-content>*]:[--list-marker-box:initial]",
-    // The button pads its label with the overhang, so a nested list in the
-    // content adds none.
-    "[&>.disclosure-content]:[--list-row-overhang:0px]",
-    // With a guide, indent content to the row text. The unpadded root still
-    // supplies the frame channels. A registered length keeps the indent of the
-    // row when the content sets a font size.
-    "[--list-disclosure-indent:calc(var(--py)+(var(--list-text-inset)+var(--list-marker-box,1lh))*var(--list-guide))]",
-    // Raise the content over the guide, as the guide of a disclosure content
-    // runs under its rows. The child selector outranks the content's own
-    // stacking. The guide of the row comes after the content and never bends,
-    // so it stays below the content.
-    "[&>.disclosure-content]:z-2",
-    "[&>.list-guide]:z-1",
-    // Expose the marker column as the content guide while the list draws its
-    // guide there, so start bars of nav rows in the content sit on it. The
-    // child selector outranks the content's own reset.
-    "ui-list-guide:[&>.disclosure-content]:[--disclosure-guide-center:calc(var(--disclosure-padding)+var(--list-marker-box,1lh)/2)]",
-    "ui-list-guide:[&>.disclosure-content]:[--disclosure-guide:var(--disclosure-guide-center)]",
+    "ui-list-item-surface",
+    "ui-list-disclosure",
   ],
   variants: {
     /**
@@ -1177,12 +847,8 @@ export const listDisclosure = cv({
      */
     $marker: {
       // Like a list item, both values set whether the guide stops around a
-      // marker. The button holds the marker, so a disclosure without a button
-      // has none.
-      true: [
-        "[--list-row-marker-on:0]",
-        "has-[>.disclosure-button]:[--list-row-marker-on:1]",
-      ],
+      // marker.
+      true: "ui-list-disclosure--marker-true",
       false: "[--list-row-marker-on:0]",
     },
   },
@@ -1203,13 +869,12 @@ export const listDisclosure = cv({
 export const listDisclosureButton = cv({
   extend: [disclosureButton],
   class: [
+    "ui-list-disclosure-button",
     // Make room for a marker box taller than one line.
+    // Stays a class to come after the padding of `textFrame`, which it
+    // replaces.
     "pbs-[calc(var(--py)+var(--list-marker-overhang))]",
     "pbe-[calc(var(--py)+var(--list-marker-overhang))]",
-    // Hover and press surfaces cover the guide; the marker stays above both.
-    "z-3",
-    // Put the marker in the padding corner. Label content resets this offset.
-    "[--list-marker-offset:var(--ak-frame-padding)]",
   ],
   variants: {
     /**
@@ -1218,11 +883,13 @@ export const listDisclosureButton = cv({
      */
     $marker: {
       true: [
-        "[--disclosure-ps:calc(var(--py)+var(--list-marker-box,1lh)+var(--list-text-inset))]",
+        "ui-list-disclosure-button--marker-true",
         // Slots read --py to sit as far from the side as from the top. The end
         // padding grows like the block padding, so slots and text at the end
         // keep that distance. A button without a marker keeps its inline
         // padding even, like a row without one.
+        // Stays a class to come after the padding of `textFrame`, which it
+        // replaces.
         "pe-[calc(var(--px)+var(--list-marker-overhang))]",
       ],
       // The label starts where the text of a row without a marker starts.
@@ -1233,7 +900,7 @@ export const listDisclosureButton = cv({
      * like `$check` on a list item. The style component sets it from `checked`
      * and `progress`.
      */
-    $check: "list-item-check",
+    $check: "ui-list-item-check",
     /**
      * Sets the gap between the label and the description. `auto` uses the gap
      * between the blocks of a list item, so the description is as far below the
@@ -1256,8 +923,13 @@ export const listDisclosureContentBody = cv({
   // for the details of a step.
   extend: [disclosureContentBody, text],
   class: [
-    "grid gap-(--list-item-gap)",
-    "in-[.list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
+    "gap-(--list-item-gap)",
+    // Stays a class to come after the display of `proseColumn`, which it
+    // replaces.
+    "grid",
+    // Stays a class to come after the padding of `disclosureContentBody`, which
+    // it replaces.
+    "in-[.ui-list]:pbs-[calc(var(--list-item-gap)-var(--ak-frame-padding))]",
   ],
   defaultVariants: {
     // Keep the guide under the content visible.

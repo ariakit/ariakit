@@ -17,7 +17,7 @@ interface Piece {
 function getBars(nav: Locator) {
   return nav.evaluate((element) => {
     const origin = element.getBoundingClientRect().top + element.clientTop;
-    const bars = [...element.querySelectorAll(".nav-link-guide-bar")];
+    const bars = [...element.querySelectorAll(".ui-nav-link-guide-bar")];
     return bars.map((bar): Piece => {
       const link = bar.closest("a");
       if (!link) throw new Error("A bar piece has no link");
@@ -47,7 +47,7 @@ function getBars(nav: Locator) {
 // content of the navigation. It changes on each frame of a glide.
 function getRangeStart(nav: Locator) {
   return nav.evaluate((element) => {
-    const bar = element.querySelector(".nav-link-guide-bar");
+    const bar = element.querySelector(".ui-nav-link-guide-bar");
     if (!bar) return Number.NaN;
     const style = getComputedStyle(bar);
     return Number.parseFloat(style.getPropertyValue("--nav-bar-start"));
@@ -65,7 +65,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const getDistance = (nav: Locator) => {
       return nav.evaluate((element) => {
         const link = element.querySelector("a");
-        const marker = link?.querySelector(".nav-link-marker");
+        const marker = link?.querySelector(".ui-nav-link-marker");
         if (!link || !marker) return Number.NaN;
         const linkRect = link.getBoundingClientRect();
         const markerRect = marker.getBoundingClientRect();
@@ -88,7 +88,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         const navRect = element.getBoundingClientRect();
         const links = [...element.querySelectorAll("a")];
         return links.map((link) => {
-          const marker = link.querySelector(".nav-link-marker");
+          const marker = link.querySelector(".ui-nav-link-marker");
           if (!marker) return Number.NaN;
           const linkRect = link.getBoundingClientRect();
           const markerRect = marker.getBoundingClientRect();
@@ -105,7 +105,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .navigation("Numbers on a guide")
       .evaluate((element) => {
         const link = element.querySelector("a");
-        const marker = link?.querySelector(".nav-link-marker");
+        const marker = link?.querySelector(".ui-nav-link-marker");
         if (!link || !marker) return Number.NaN;
         return (
           link.getBoundingClientRect().left -
@@ -144,8 +144,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           return rect.left + Number.parseFloat(style.left) + width / 2;
         };
         return {
-          bar: getCenter(".nav-link-guide-bar"),
-          guide: getCenter(".nav-link-guide"),
+          bar: getCenter(".ui-nav-link-guide-bar"),
+          guide: getCenter(".ui-nav-link-guide"),
         };
       });
     test.expect(centers.bar).toBeCloseTo(centers.guide, 1);
@@ -175,7 +175,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toEqual(["Guides"]);
     // A long glide keeps the bar on its way while the test reads it.
     await page.addStyleTag({
-      content: ".nav-link-guide-bar { transition-duration: 30s !important; }",
+      content:
+        ".ui-nav-link-guide-bar { transition-duration: 30s !important; }",
     });
     await query(nav).link("Deploy").click();
     // The bar passes the links between the old current link and the new one.
@@ -194,7 +195,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const link = query(nav).link("Configure");
     const getDot = () => {
       return link.evaluate((element) => {
-        const marker = element.querySelector(".nav-link-marker");
+        const marker = element.querySelector(".ui-nav-link-marker");
         if (!marker) throw new Error("The link has no marker");
         const origin =
           element.closest("nav")?.getBoundingClientRect().top ?? Number.NaN;
@@ -234,7 +235,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // fill cuts it from the top and from the bottom.
     const getFillHeight = () => {
       return link.evaluate((element) => {
-        const marker = element.querySelector(".nav-link-marker");
+        const marker = element.querySelector(".ui-nav-link-marker");
         if (!marker) throw new Error("The link has no marker");
         const { clipPath } = getComputedStyle(marker, "::after");
         const insets = clipPath.match(/-?[\d.]+/g)?.map(Number) ?? [];
@@ -252,7 +253,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // A long glide keeps the bar on its way while the test reads it.
     await page.addStyleTag({
       content:
-        ".nav-link-guide-bar, .nav-link-marker { transition-duration: 30s !important; }",
+        ".ui-nav-link-guide-bar, .ui-nav-link-marker { transition-duration: 30s !important; }",
     });
     await link.click();
     // The bar is on its way, along the links between the old current link and
@@ -276,7 +277,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // The link in the disclosure has a plain bar, so the guide has no bar.
     await test.expect.poll(getShownBars).toEqual([]);
     await test
-      .expect(query(nav).link("Install").locator(".control-bar"))
+      .expect(query(nav).link("Install").locator(".ui-bar"))
       .toBeVisible();
     await query(nav).link("Overview").click();
     await test.expect.poll(getShownBars).toEqual(["Overview"]);
@@ -300,37 +301,37 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // rule isn't important, so the inline duration that stops a cleared range
     // still wins.
     await page.addStyleTag({
-      content: ".nav-link-guide-bar { transition-duration: 30s; }",
+      content: ".ui-nav-link-guide-bar { transition-duration: 30s; }",
     });
     const support = query(nav).link("Support");
     await support.click();
     await test.expect(support).toHaveAttribute("aria-current", "page");
     await test.expect.poll(getShownBars).toEqual([]);
-    await test.expect(support.locator(".control-bar")).toBeVisible();
+    await test.expect(support.locator(".ui-bar")).toBeVisible();
   });
 
   test("keeps a plain bar at the end side and in a disclosure", async ({
     q,
   }) => {
     const end = q.navigation("Bar at the end");
-    await test.expect(end.locator(".nav-link-guide")).not.toHaveCount(0);
-    await test.expect(end.locator(".nav-link-guide-bar")).toHaveCount(0);
-    const bar = query(end).link("Guides").locator(".control-bar");
+    await test.expect(end.locator(".ui-nav-link-guide")).not.toHaveCount(0);
+    await test.expect(end.locator(".ui-nav-link-guide-bar")).toHaveCount(0);
+    const bar = query(end).link("Guides").locator(".ui-bar");
     await test.expect(bar).toBeVisible();
     const disclosure = q.navigation("Disclosure in a guide");
     const install = query(disclosure).link("Install");
-    await test.expect(install.locator(".control-bar")).toBeVisible();
-    await test.expect(install.locator(".nav-link-guide-bar")).toHaveCount(0);
-    await test.expect(install.locator(".nav-link-marker")).toHaveCount(0);
+    await test.expect(install.locator(".ui-bar")).toBeVisible();
+    await test.expect(install.locator(".ui-nav-link-guide-bar")).toHaveCount(0);
+    await test.expect(install.locator(".ui-nav-link-marker")).toHaveCount(0);
     // The top-level links still have their numbers.
     const overview = query(disclosure).link("Overview");
-    await test.expect(overview.locator(".nav-link-marker")).toBeVisible();
+    await test.expect(overview.locator(".ui-nav-link-marker")).toBeVisible();
     // The guide starts again at the row after the disclosure, with no bend that
     // reaches up from the row.
     const guideTop = await query(disclosure)
       .link("FAQ")
       .evaluate((link) => {
-        const guide = link.querySelector(".nav-link-guide");
+        const guide = link.querySelector(".ui-nav-link-guide");
         if (!guide) return Number.NaN;
         return (
           guide.getBoundingClientRect().top - link.getBoundingClientRect().top
@@ -352,7 +353,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const overviewStart = await getStart();
     // A long glide keeps the bar on its way while the links change.
     await page.addStyleTag({
-      content: ".nav-link-guide-bar { transition-duration: 30s; }",
+      content: ".ui-nav-link-guide-bar { transition-duration: 30s; }",
     });
     await query(nav).link("FAQ").click();
     await test.expect.poll(getStart).toBeGreaterThan(overviewStart + 1);
@@ -379,7 +380,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const overviewStart = await getStart();
     // A long glide keeps the bar on its way while the link comes.
     await page.addStyleTag({
-      content: ".nav-link-guide-bar { transition-duration: 30s; }",
+      content: ".ui-nav-link-guide-bar { transition-duration: 30s; }",
     });
     await query(nav).link("FAQ").click();
     await test.expect.poll(getStart).toBeGreaterThan(overviewStart + 1);
@@ -398,7 +399,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       const getBar = (name: string) =>
         links
           .find((link) => link.textContent === name)
-          ?.querySelector(".nav-link-guide-bar");
+          ?.querySelector(".ui-nav-link-guide-bar");
       return {
         overview: read(getBar("Overview")),
         added: read(getBar("Changelog")),
@@ -421,7 +422,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(query(nav).link("FAQ")).toHaveCount(0);
     // A glide from the bar at FAQ would take this long to reach the new links.
     await page.addStyleTag({
-      content: ".nav-link-guide-bar { transition-duration: 30s; }",
+      content: ".ui-nav-link-guide-bar { transition-duration: 30s; }",
     });
     await q.button("Show blog links").click();
     await test.expect

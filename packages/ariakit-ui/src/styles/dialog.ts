@@ -16,25 +16,7 @@ import {
 } from "./slot-frame.ts";
 import { text } from "./text.ts";
 
-// A dialog with a set height is a flex column, so a DialogScroll fills it. The
-// scroll area is then a size container, which would have no height without the
-// column. Zero specificity lets a layout class from the caller win.
-const fixedHeightClass = cx(
-  "dialog-fixed-height",
-  "ui-base:flex ui-base:flex-col",
-);
-
-// A side sheet fills the height of the viewport, closer to its edges than a
-// centered dialog. It slides in from its side, by its width and the inset,
-// without the scale of a popover. An overshoot would move it away from its
-// edge, so it eases out without one.
-const sheetClass = cx(
-  fixedHeightClass,
-  "[--dialog-height:var(--dialog-max-height)] [--dialog-inset:--spacing(2)]",
-  "[--popover-hidden-scale:100%] [--popover-open-ease:cubic-bezier(0.32,0.72,0,1)]",
-  "ui-open:starting:[translate:var(--dialog-sheet-offset)_0]",
-  "ui-closed:[translate:var(--dialog-sheet-offset)_0]",
-);
+const sheetClass = cx("ui-dialog-fixed-height ui-dialog--sheet");
 
 /**
  * A centered dialog constrained to the viewport, with the `2xl` corners of a
@@ -43,31 +25,11 @@ const sheetClass = cx(
 export const dialog = cv({
   extend: [popover],
   class: [
-    // The inset is the smallest gap to the window edges. Zero specificity lets
-    // a $placement value replace it. $maxWidth and $height set the other
-    // channels inline, so they win over these defaults. The height has its own
-    // default, so a dialog inside a side sheet doesn't take its height.
-    "ui-base:[--dialog-inset:--spacing(3)] [--dialog-max-width:--spacing(100)]",
-    "ui-base:[--dialog-height:fit-content]",
-    "fixed inset-(--dialog-inset) h-(--dialog-height)",
-    // Override native dialog content sizing so short content uses the same
-    // width.
-    "w-auto max-w-(--dialog-max-width)",
-    // Use Ariakit's visual viewport height to avoid virtual keyboards; native
-    // dialogs fall back to dynamic viewport height.
-    "[--dialog-max-height:calc(var(--dialog-viewport-height,100dvh)-var(--dialog-inset)*2)]",
-    "max-h-(--dialog-max-height)",
-    // Content that fits in its scroll area, such as a code block, fits in the
-    // dialog, inside its padding and edge.
-    "[--scrollport-height:calc(var(--dialog-max-height)-2*(var(--ak-frame-padding,0px)+var(--ak-frame-border,0px)))]",
+    "ui-dialog",
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
     "ui-backdrop:bg-(--ak-layer)/10 ak-dark:ui-backdrop:bg-(--ak-layer)/30",
     "ui-backdrop:backdrop-blur-xs",
-    // When the page is in an iframe with rounded corners, Chrome can paint a
-    // blurred sticky element, such as a shell header, outside the rounded
-    // corners of a DialogScroll. A filter makes the dialog the backdrop root,
-    // which keeps it inside. A backdrop root on the scroll area itself, such as
-    // from a clip path, would stop the blur of the content under the element.
-    "[&:has(>.dialog-scroll)]:filter-[blur(0px)]",
   ],
   variants: {
     /**
@@ -78,24 +40,14 @@ export const dialog = cv({
      */
     $placement: {
       center: "m-auto",
-      start: [
-        "me-auto",
-        "[--dialog-sheet-offset:calc(-100%-var(--dialog-inset))]",
-        "rtl:[--dialog-sheet-offset:calc(100%+var(--dialog-inset))]",
-        sheetClass,
-      ],
-      end: [
-        "ms-auto",
-        "[--dialog-sheet-offset:calc(100%+var(--dialog-inset))]",
-        "rtl:[--dialog-sheet-offset:calc(-100%-var(--dialog-inset))]",
-        sheetClass,
-      ],
-      top: "mx-auto mb-auto",
-      bottom: "mx-auto mt-auto",
-      "top-start": "me-auto mb-auto",
-      "top-end": "ms-auto mb-auto",
-      "bottom-start": "me-auto mt-auto",
-      "bottom-end": "ms-auto mt-auto",
+      start: ["ui-dialog--placement-start", sheetClass],
+      end: ["ui-dialog--placement-end", sheetClass],
+      top: "ui-dialog--placement-top",
+      bottom: "ui-dialog--placement-bottom",
+      "top-start": "ui-dialog--placement-top-start",
+      "top-end": "ui-dialog--placement-top-end",
+      "bottom-start": "ui-dialog--placement-bottom-start",
+      "bottom-end": "ui-dialog--placement-bottom-end",
     },
     /**
      * Sets the maximum width. The dialog takes this width when the viewport has
@@ -116,7 +68,7 @@ export const dialog = cv({
     $height(value?: string | number) {
       if (value == null) return;
       return {
-        class: fixedHeightClass,
+        class: "ui-dialog-fixed-height",
         style: { "--dialog-height": getSpacingValue(value) },
       };
     },
@@ -169,7 +121,7 @@ export const dialogClose = cv({
     // a header, the button sits at the top of the row, so the bottom side keeps
     // its margin, and the hover surface stays off the content below. The extra
     // class outranks the frame margin.
-    addClass("[&.ak-frame]:ms-0 [.dialog-header>&.ak-frame]:mbe-0");
+    addClass("[&.ak-frame]:ms-0 [.ui-dialog-header>&.ak-frame]:mbe-0");
   },
 });
 
@@ -183,7 +135,7 @@ export const dialogClose = cv({
  */
 export const dialogHeader = cv({
   extend: [slotFrame],
-  class: "dialog-header items-start",
+  class: "ui-dialog-header items-start",
   variants: {
     /**
      * Sets the vertical gap between the title and the description in a
@@ -235,12 +187,7 @@ export const dialogHeaderContent = cv({
  */
 export const dialogScroll = cv({
   extend: [popoverScroll],
-  class: [
-    "dialog-scroll grow",
-    // A size container takes no height from its content, so only a dialog
-    // with a set height can make one.
-    "[.dialog-fixed-height>&]:@container-size",
-  ],
+  class: "ui-dialog-scroll",
 });
 
 /**

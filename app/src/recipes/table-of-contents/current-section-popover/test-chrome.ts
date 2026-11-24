@@ -62,7 +62,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .toBe(0);
     const offsets = await nav.evaluate((element) => {
       const top = element.getBoundingClientRect().top + element.clientTop;
-      const bars = element.querySelectorAll<HTMLElement>(".toc-link-bar");
+      const bars = element.querySelectorAll<HTMLElement>(".ui-toc-link-bar");
       return [...bars].map((bar) => {
         const piece = bar.style.getPropertyValue("--nav-bar-top");
         const offset = bar.getBoundingClientRect().top - top;

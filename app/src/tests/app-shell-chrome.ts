@@ -265,7 +265,7 @@ test("site navigation centers the current page bar before its row", async ({
   const sidebar = q.navigation("Site");
   const row = query(sidebar).link("App Shell");
   // The bar is a decorative, hidden element, so only its box can be queried.
-  const bar = row.locator(".control-bar");
+  const bar = row.locator(".ui-bar");
   const getOffsets = async () => {
     const [sidebarBox, rowBox, barBox] = await Promise.all([
       sidebar.boundingBox(),
@@ -286,9 +286,9 @@ test("top bar current section bar covers the header's bottom edge", async ({
 }) => {
   await gotoAndSettle(page, recipePath);
   const main = q.navigation("Main");
-  const header = page.locator(".shell-header", { has: main });
+  const header = page.locator(".ui-shell-header", { has: main });
   // The bar is a decorative, hidden element, so only its box can be queried.
-  const bar = query(main).link("Recipes").locator(".control-bar");
+  const bar = query(main).link("Recipes").locator(".ui-bar");
   await expect(header).toHaveCSS("border-bottom-width", "1px");
   await expect
     .poll(async () => {
@@ -872,9 +872,11 @@ test("table of contents lists the gallery examples", async ({ page, q }) => {
   // Nested rows get dots, in a list that stays unordered. Top-level rows don't.
   await expect(examples.list()).toHaveJSProperty("tagName", "UL");
   await expect(
-    toc.link("Keyboard Shortcuts").locator(".toc-link-marker"),
+    toc.link("Keyboard Shortcuts").locator(".ui-toc-link-marker"),
   ).toBeVisible();
-  await expect(toc.link("Overview").locator(".toc-link-marker")).toBeHidden();
+  await expect(
+    toc.link("Overview").locator(".ui-toc-link-marker"),
+  ).toBeHidden();
 
   await query(cardTitle).link("Keyboard Shortcuts").click();
   await expect(page).toHaveURL(/#shortcuts$/);

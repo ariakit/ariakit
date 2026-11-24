@@ -1,4 +1,4 @@
-import { cv, cx } from "clava";
+import { cv } from "clava";
 import { getSpacingValue } from "../utils/styles.ts";
 import { frame } from "./frame.ts";
 import { progress } from "./progress.ts";
@@ -9,7 +9,7 @@ import { progress } from "./progress.ts";
  * pointer, the keyboard, and forms use the native control.
  */
 export const slider = cv({
-  class: "slider grid w-full items-center",
+  class: "ui-slider",
   variants: {
     /**
      * Sets the position of the value from `0`, at the minimum, to `1`, at the
@@ -41,15 +41,9 @@ export const slider = cv({
  */
 export const sliderInput = cv({
   class: [
-    "col-start-1 row-start-1 m-0 w-full h-(--slider-thumb-size)",
-    "appearance-none bg-transparent opacity-0 cursor-pointer",
-    "disabled:cursor-not-allowed",
-    // Browsers map the pointer to a value over the width of the input less the
-    // width of the thumb, so the thumb must match the drawn thumb.
-    "[&::-webkit-slider-thumb]:appearance-none",
-    "[&::-webkit-slider-thumb]:size-(--slider-thumb-size)",
-    "[&::-moz-range-thumb]:size-(--slider-thumb-size)",
-    "[&::-moz-range-thumb]:border-0",
+    "ui-slider-input",
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
     "forced-colors:opacity-100 forced-colors:appearance-auto",
     "forced-colors:[&::-webkit-slider-thumb]:appearance-auto",
   ],
@@ -62,30 +56,21 @@ export const sliderInput = cv({
 export const sliderTrack = cv({
   extend: [progress],
   class: [
-    "col-start-1 row-start-1 pointer-events-none",
+    "ui-slider-track",
     // The thumb is wider than the track.
-    "overflow-visible forced-colors:hidden",
+    // Stays a class to come after the overflow of `ui-progress`, which it
+    // replaces.
+    "overflow-visible",
+    // Stays a class to come after the display of `ui-progress`, which it
+    // replaces.
+    "forced-colors:hidden",
   ],
 });
-
-// The slider root reads the state of its own input with :has(). A sibling
-// combinator from the input would make Chrome restyle later siblings across the
-// page when the DOM changes. Child combinators keep the match to the input and
-// the parts of this slider.
-const sliderDisabledPart = cx(
-  "[.slider:has(>input:disabled)>*>&]:ak-disabled",
-  "[.slider:has(>input:disabled)>*>&]:ak-layer-fade-80",
-  "[.slider:has(>input:disabled)>*>&]:ak-layer-contrast-0",
-);
 
 /** The filled part of a slider track, from its start to the thumb center. */
 export const sliderFill = cv({
   extend: [frame],
-  class: [
-    "block h-full",
-    "w-[calc(var(--slider-thumb-size)/2+var(--slider-value,0)*(100%-var(--slider-thumb-size)))]",
-    sliderDisabledPart,
-  ],
+  class: "ui-slider-fill ui-slider-disabled-part",
   defaultVariants: {
     $layer: "brand",
     $contrast: 50,
@@ -96,15 +81,17 @@ export const sliderFill = cv({
 export const sliderThumb = cv({
   extend: [frame],
   class: [
-    "absolute top-1/2 -translate-y-1/2 size-(--slider-thumb-size) shadow-sm",
+    "ui-slider-thumb",
+    // Stays a class to come after another class here that sets the inset, which
+    // it replaces.
+    "top-1/2",
     // A percentage resolves against the width of the track, which is the width
     // of the input. The logical side puts the minimum on the right in RTL, like
     // the input.
+    // Stays a class, so that another class here that sets the inset still comes
+    // after it and replaces it.
     "inset-s-[calc(var(--slider-value,0)*(100%-var(--slider-thumb-size)))]",
-    "ak-outline ak-outline-brand outline-offset-2",
-    "[.slider:has(>input:focus-visible)>*>&]:outline-2",
-    sliderDisabledPart,
-    "[.slider:has(>input:disabled)>*>&]:shadow-none",
+    "ak-outline ak-outline-brand ui-slider-disabled-part",
   ],
   defaultVariants: {
     // The thumb takes the color of the fill, so the two read as one shape.

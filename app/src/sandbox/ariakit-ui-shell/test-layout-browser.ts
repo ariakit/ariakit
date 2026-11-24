@@ -26,7 +26,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const intro = page.locator('[aria-label="Page introduction"]');
     expect((await getBox(start)).y).toBeCloseTo((await getBox(intro)).y, 0);
     expect((await getBox(end)).y).toBeCloseTo(
-      (await getBox(q.main().locator(":scope > .shell-main-body"))).y,
+      (await getBox(q.main().locator(":scope > .ui-shell-main-body"))).y,
       0,
     );
     expect((await getBox(end)).y).toBeGreaterThan((await getBox(intro)).y);
@@ -37,9 +37,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect
       .poll(async () => (await getBox(q.navigation("Layout contents"))).y)
       .toBeCloseTo(66, 0);
-    await expect(page.locator(".shell")).toHaveCSS("overflow-x", "visible");
+    await expect(page.locator(".ui-shell")).toHaveCSS("overflow-x", "visible");
     await expect(q.main()).toHaveCSS("overflow-x", "visible");
-    await expect(q.main().locator(":scope > .shell-main-body")).toHaveCSS(
+    await expect(q.main().locator(":scope > .ui-shell-main-body")).toHaveCSS(
       "overflow-x",
       "clip",
     );
@@ -81,7 +81,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect(popout.width).toBeGreaterThanOrEqual(content.width);
       expect(feature.width).toBeGreaterThanOrEqual(popout.width);
       expect(full.width).toBeCloseTo(
-        (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
+        (await getBox(q.main().locator(":scope > .ui-shell-main-body"))).width,
         0,
       );
       // Without an open sidebar, nothing offsets the content.
@@ -122,7 +122,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       "width",
       "192px",
     );
-    const body = q.main().locator(":scope > .shell-main-body");
+    const body = q.main().locator(":scope > .ui-shell-main-body");
     const content = q.main().locator("#layout-content");
     const wide = page.locator('[aria-label="Wide band"]');
     const full = page.locator('[aria-label="Full band"]');
@@ -175,7 +175,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // longer than the fold on a busy runner.
     await using recording = await sidebar.evaluateHandle((column) => {
       const body = column.parentElement?.querySelector(
-        ".shell-main > .shell-main-body",
+        ".ui-shell-main > .ui-shell-main-body",
       );
       if (!body) {
         throw new Error("Missing main body");

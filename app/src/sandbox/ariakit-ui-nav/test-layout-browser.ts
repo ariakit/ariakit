@@ -31,7 +31,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       }
       await page.keyboard.press("Enter");
       await expect(links.last()).toHaveAttribute("aria-current", "step");
-      const bar = nav.locator(".control-bar:visible");
+      const bar = nav.locator(".ui-bar:visible");
       await expect
         .poll(async () => {
           const [marker, item] = await Promise.all([

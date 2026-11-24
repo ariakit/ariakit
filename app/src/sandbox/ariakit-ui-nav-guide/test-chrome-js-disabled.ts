@@ -12,7 +12,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // CSS sets the range of the bar in the current link, and no other link has
     // one.
     const ranges = await nav.evaluate((element) => {
-      const bars = [...element.querySelectorAll(".nav-link-guide-bar")];
+      const bars = [...element.querySelectorAll(".ui-nav-link-guide-bar")];
       return bars.map((bar) => {
         const style = getComputedStyle(bar);
         const start = style.getPropertyValue("--nav-bar-start");
