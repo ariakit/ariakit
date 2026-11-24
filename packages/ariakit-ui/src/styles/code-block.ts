@@ -71,7 +71,7 @@ export const codeBlockHeader = cv({
 // like the code below it, and its text is a bit smaller than the code.
 const codeBlockFolder = cv({
   extend: [tab],
-  class: ["font-sans"],
+  class: "font-sans",
   defaultVariants: {
     // Half a step, not the step of the folder tabs that this extends, which a
     // color or another modifier replaces.

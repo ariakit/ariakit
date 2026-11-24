@@ -558,7 +558,7 @@ export const shellSidebar = cv({
      */
     $reveal: {
       true: "ui-shell-sidebar--reveal-place",
-      zoom: ["ui-shell-sidebar--reveal-place", "ui-shell-sidebar--reveal-zoom"],
+      zoom: "ui-shell-sidebar--reveal-place ui-shell-sidebar--reveal-zoom",
     },
     /** Selects the first row the sidebar spans. Defaults to `main`. */
     $from: {
@@ -719,9 +719,9 @@ export const shellMain = cv({
      */
     $size: {
       auto: "",
-      sm: ["ui-shell-main--sized-main", "ui-shell-main--size-sm text-sm"],
-      md: ["ui-shell-main--sized-main", "ui-shell-main--size-md text-base"],
-      lg: ["ui-shell-main--sized-main", "ui-shell-main--size-lg text-lg"],
+      sm: "ui-shell-main--sized-main ui-shell-main--size-sm text-sm",
+      md: "ui-shell-main--sized-main ui-shell-main--size-md text-base",
+      lg: "ui-shell-main--sized-main ui-shell-main--size-lg text-lg",
     },
     /**
      * Sets the text size of a `$size="lg"` main when the shell is narrower than

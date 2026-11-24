@@ -454,7 +454,7 @@ export const controlSeparator = cv({
      */
     $shy: {
       auto: "ui-control-separator--shy ui-control-separator--shy-auto",
-      true: ["ui-control-separator--shy", "[--separator-shy-opacity:0]"],
+      true: "ui-control-separator--shy [--separator-shy-opacity:0]",
     },
     /** Sets the separator's visual stroke width in pixels. */
     $width: {
