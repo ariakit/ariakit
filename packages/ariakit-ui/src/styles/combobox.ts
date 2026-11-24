@@ -31,7 +31,7 @@ import { text } from "./text.ts";
 /** A combobox input that does not shrink in a flex layout. */
 export const comboboxInput = cv({
   extend: [input],
-  class: "combobox-input shrink-0",
+  class: "ui-combobox-input shrink-0",
 });
 
 /**
@@ -72,19 +72,7 @@ export const comboboxErrorText = controlFieldErrorText;
 /** A scrollable combobox popup constrained to its available space. */
 export const comboboxPopover = cv({
   extend: [popover],
-  class: [
-    // Suppress the temporary popup focus ring; the active item carries the
-    // highlight.
-    "outline-none overflow-auto overscroll-contain",
-    "has-[>.combobox-list]:flex has-[>.combobox-list]:flex-col",
-    "max-h-[min(var(--popover-available-height),20rem)]",
-    "max-w-(--popover-available-width)",
-    "min-w-[min(var(--popover-anchor-width),var(--popover-available-width))]",
-    // Use native invoker anchors unless Ariakit supplies inline positioning.
-    "top-[calc(anchor(bottom)+(--spacing(1)))]",
-    "inset-s-[calc(anchor(start)-var(--ak-frame-padding))]",
-    "[position-try-fallbacks:flip-block,flip-inline]",
-  ],
+  class: "ui-combobox-popover",
   defaultVariants: {
     $rounded: "xl",
     $p: 1,
@@ -93,10 +81,7 @@ export const comboboxPopover = cv({
 
 /** A scrollable list of combobox options. */
 export const comboboxList = cv({
-  class: [
-    "combobox-list min-h-0 overflow-auto overscroll-contain outline-none",
-    "[.combobox-input+&]:mt-1",
-  ],
+  class: "ui-combobox-list",
 });
 
 /** A group of combobox options that covers the parent frame. */
@@ -122,19 +107,21 @@ export const comboboxGroupLabel = cv({
 export const comboboxItem = cv({
   extend: [option],
   class: [
-    // Follow current focus. The active item keeps data-active-item after focus
-    // leaves the combobox, so that attribute would leave a stale highlight.
-    "ui-focus:ak-state-5",
+    "ui-combobox-item",
     // Use system selection colors without browser canvas backplates. Every
     // descendant needs HighlightText after automatic color adjustment is
     // disabled. The important flag keeps the selection text color of the option
     // over its hover ink, because the pointer also gives focus to the option.
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
     "ui-focus:forced-colors:forced-color-adjust-none",
     "ui-focus:forced-colors:bg-[Highlight]",
     "ui-focus:forced-colors:text-[HighlightText]!",
     "ui-focus:forced-colors:**:text-[HighlightText]",
     // A disabled option can still have focus. The extra state selector lets the
     // selection text color override the system disabled color.
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
     "ui-focus:ui-disabled:forced-colors:text-[HighlightText]!",
     "ui-focus:ui-disabled:forced-colors:**:text-[HighlightText]!",
   ],
@@ -253,9 +240,7 @@ export const comboboxSelect = cv({
 /** A select arrow aligned at the end of the control. */
 export const comboboxSelectArrow = cv({
   extend: [buttonSlot],
-  // After an empty label, which fills the free space, the arrow keeps its side
-  // margins, so it stays centered in a select that fits its content.
-  class: "ms-auto [:empty+&]:ms-(--mx,0px)",
+  class: "ui-combobox-select-arrow",
 });
 
 /** Select label text with optional truncation. */
@@ -267,5 +252,5 @@ export const comboboxSelectPlaceholder = inputPlaceholder;
 /** A selection mark that keeps its space when empty. */
 export const comboboxItemCheck = cv({
   extend: [optionSlot],
-  class: "pointer-events-none empty:invisible",
+  class: "ui-combobox-item-check",
 });

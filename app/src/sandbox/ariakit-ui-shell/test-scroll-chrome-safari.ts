@@ -10,7 +10,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
   }) => {
     await selectScenario(q, "parts");
-    const body = q.navigation("Part navigation").locator(".shell-sidebar-body");
+    const body = q
+      .navigation("Part navigation")
+      .locator(".ui-shell-sidebar-body");
     await body.evaluate((node) => node.scrollTo(0, node.scrollHeight));
     await expect(q.link("Section 60", { exact: true })).toBeInViewport();
     await body.hover();

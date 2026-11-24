@@ -7,7 +7,7 @@ async function selectScenario(value: string) {
 
 function getColumn(label: string) {
   const landmark = q.navigation.maybe(label) ?? q.complementary(label);
-  const column = landmark.closest(".shell-sidebar");
+  const column = landmark.closest(".ui-shell-sidebar");
   expect(column).not.toBeNull();
   return column as HTMLElement;
 }

@@ -21,10 +21,10 @@ test("lets a list disclosure count its marker as a leading slot", () => {
 test("leaves out the button marker of a disclosure without a marker", () => {
   const box = q.within(q.article("Disclosure without a marker"));
   const button = box.button("Right-to-left layouts");
-  expect(button.querySelector(".list-marker")).toBeNull();
+  expect(button.querySelector(".ui-list-item-marker")).toBeNull();
   // The other rows of the list keep their markers.
   const row = box.text("Keyboard shortcuts").closest("li");
-  expect(row?.querySelector(".list-marker")).not.toBeNull();
+  expect(row?.querySelector(".ui-list-item-marker")).not.toBeNull();
 });
 
 // https://github.com/ariakit/ariakit/pull/7494#discussion_r3995263562
@@ -60,7 +60,7 @@ test("keeps a bare fragment label separate from its description and badge", asyn
   const button = q.button("Checked Account tasks");
   expect(button).toHaveAccessibleDescription("Manage account tasks");
   expect(
-    button.querySelector(":scope > .disclosure-button-slot"),
+    button.querySelector(":scope > .ui-disclosure-button-slot"),
   ).toHaveTextContent("3");
   await click(button);
   expect(q.text("Update account tasks")).toBeVisible();

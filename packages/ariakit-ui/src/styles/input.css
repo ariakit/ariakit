@@ -1,0 +1,134 @@
+/* The CSS of the input style recipe in input.ts. Import this file in the CSS
+   file that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that input.ts imports:
+
+   @import "./ui.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./input.css"; */
+
+@utility ui-input {
+  max-width: 100%;
+  cursor: text;
+  align-items: center;
+  justify-content: flex-start;
+
+  @variant placeholder {
+    @apply ak-ink-0;
+  }
+
+  @variant hover {
+    /* Animate hover entry only to avoid a delayed exit. */
+    @apply transition-[background-color];
+  }
+
+  @variant not-ui-field-disabled {
+    @variant hover {
+      /* Use ordinary hover because ui-hover excludes nested controls. Apply the
+         field's disabled condition explicitly. */
+      @apply ak-state-2.5;
+    }
+  }
+
+  :is(& *) {
+    @variant ui-disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  @variant ui-field-disabled {
+    /* Read disabled state from DOM entry controls, including updates after
+       render. Enabled entries or a disabled action button keep the field
+       enabled. The plugin's zero-lighten utility cancels the inline default. */
+    @apply ak-disabled;
+    /* Skip the descendant ink in forced colors: an icon gets the system color
+       only while its color inherits. A :has() before a universal selector makes
+       Chrome restyle the whole subtree of each :has() anchor whose state
+       changes, on any page with the rule. So the field sets a flag that its
+       descendants read with a style query. The repeated class outranks the
+       hover ink of an enabled action button, as the :has() check of
+       ui-field-disabled did. */
+    @apply ak-ink-0 ak-edge-10 ak-layer-lighten-0;
+    /* Drop the chroma cap too, or a field on a tinted layer stays
+       nearly white instead of matching the surface around it. */
+    @apply ak-layer-max-c-[initial];
+    cursor: not-allowed;
+    --field-disabled: 1;
+  }
+
+  & & {
+    @variant ui-base {
+      /* Nested fields fill the free space beside the slots and can shrink below
+         the native width that a flex item keeps by default. Zero specificity
+         lets callers give one a fixed width with flex-none. */
+      flex: 1;
+    }
+  }
+
+  & :is(input, textarea) {
+    @variant placeholder {
+      @apply ak-ink-0;
+    }
+  }
+
+  & :is(
+    input:not(:where([type=hidden], [type=button], [type=submit], [type=reset], [type=image], [type=checkbox], [type=radio])),
+    textarea,
+    select
+  ) {
+    /* Entry controls share the wrapper's focus ring; action buttons keep
+       theirs. :where() prevents higher specificity from type exclusions. */
+    @apply outline-none;
+  }
+
+  & input {
+    box-sizing: content-box;
+    height: 1lh;
+  }
+
+  &:is(input) {
+    /* A native input uses the control line box; a textarea keeps its rows. */
+    box-sizing: content-box;
+    height: 1lh;
+  }
+
+  :is(& &) {
+    /* Nested fields use the outer geometry; ! also overrides their focus-state
+       ring. */
+    @apply border-0 ring-0 shadow-none outline-none! ak-layer-lighten-0;
+    @apply ak-state-0;
+    padding: 0;
+    background-color: transparent;
+    /* Nested fields have no padding, so a concentric radius would clip the
+       caret and text at their start. The outer field draws the shape. */
+    border-radius: 0;
+    min-width: 0;
+  }
+
+  @variant not-forced-colors {
+    @container style(--field-disabled: 1) {
+      &&&&& * {
+        @apply ak-ink-0;
+      }
+    }
+  }
+
+  &:where(.ui-input--fit-content-true) {
+    /* Zero specificity lets callers set a width, such as a minimum. */
+    field-sizing: content;
+
+    &:not(:is(textarea)) {
+      @variant ui-base {
+        width: fit-content;
+      }
+    }
+
+    & :is(input, textarea) {
+      /* Entry controls in a group stop filling the free space, so the group
+         fits them. Browsers without field sizing keep the native width. */
+      field-sizing: content;
+      flex: 0 auto;
+    }
+  }
+}

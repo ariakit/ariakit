@@ -1,0 +1,137 @@
+/* The CSS of the slot-frame style recipe in slot-frame.ts. Import this file
+   after ui.css in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./slot-frame.css"; */
+
+@utility ui-slot-frame {
+  display: flex;
+  /* Subtract glyph side bearings from gaps for optical text alignment. */
+  --sidebearing: 0.15em;
+
+  &:where(.ui-slot-frame--gap-sm) {
+    --gap: var(--py);
+
+    &.ui-slot-frame--flush {
+      --gap: calc(var(--flush-gap) - var(--sidebearing));
+    }
+  }
+
+  &:where(.ui-slot-frame--gap-md) {
+    --gap: max(var(--spacing), calc(var(--px) - var(--sidebearing)));
+
+    &.ui-slot-frame--flush {
+      --gap: var(--flush-gap);
+    }
+  }
+
+  &:where(.ui-slot-frame--gap-lg) {
+    --gap: max(var(--spacing), var(--px));
+
+    &.ui-slot-frame--flush {
+      --gap: calc(var(--flush-gap) + var(--sidebearing));
+    }
+  }
+
+  &:where(.ui-slot-frame--gap-xl) {
+    --gap: max(var(--spacing), calc(var(--px) + var(--sidebearing)));
+
+    &.ui-slot-frame--flush {
+      --gap: calc(var(--flush-gap) + var(--sidebearing) * 2);
+    }
+  }
+
+  &:where(.ui-slot-frame--gap-y-auto) {
+    --gap-y: calc(var(--gap) / 4);
+  }
+}
+
+@utility ui-slot-frame-slot {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  /* Align slots to the first text row. Stacked cards set --control-inline to
+     zero to remove these margins. Slots move into the side padding, so an
+     icon sits as far from the side as from the top; text slots set
+     --slot-pull to zero to keep the text inset. */
+  --my: calc((1lh - var(--size,1lh)) / 2 * var(--row-span) * var(--control-inline,1));
+  --mx: calc((var(--py) - var(--px) + var(--my)) * var(--slot-pull,1) * var(--control-inline,1));
+  min-width: var(--size);
+  height: calc(var(--size) * var(--row-span));
+  /* Publish the resolved height for flat keys and keycaps that fill the
+     slot. */
+  --slot-height: calc(var(--size) * var(--row-span));
+  margin-block: var(--my);
+
+  &:has(> kbd + kbd) {
+    @variant ui-base {
+      /* Keep separate keys of a chord left to right, with a gap between them
+         that a caller gap class can replace. */
+      gap: 0.25em;
+    }
+  }
+
+  &:has(> kbd + kbd):dir(rtl) {
+    flex-direction: row-reverse;
+  }
+
+  & > :is(button, a).ui-control {
+    /* A nested button or select fills the slot like a picture does, so the
+       slot size sets its height and the gaps around it stay even. Its content
+       stays centered when its own padding is taller. */
+    @apply size-full;
+    align-items: center;
+  }
+
+  & > svg {
+    /* Custom marks set --slot-icon-size; painted icon slots use
+       --slot-icon-scale. */
+    @apply size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)));
+    display: block;
+  }
+
+  .ui-slot-frame--flush > & {
+    /* A slot frame without padding has no edge to show that distance, so a
+       slot starts at its edge, like a list bullet. A control inside the slot
+       moves its own slots again, like in a text slot. */
+    --slot-pull: 0;
+  }
+
+  .ui-slot-frame--flush > & > * {
+    --slot-pull: initial;
+  }
+
+  &:where(.ui-slot-frame-slot--kind-thumbnail) {
+    overflow: clip;
+    aspect-ratio: 4/3;
+  }
+
+  &:where(.ui-slot-frame-slot--kind-text) {
+    --slot-pull: 0;
+    /* This rule comes after the base min-width, so it replaces it. Every
+       min-w-* class sorts after this utility, so a caller class replaces the
+       zero minimum. */
+    min-width: 0;
+  }
+}
+
+@utility ui-slot-frame-content {
+  flex: 1;
+  min-width: 0;
+  align-content: flex-start;
+
+  &:where(.ui-slot-frame-content--orientation-horizontal) {
+    display: flex;
+    align-items: baseline;
+  }
+}
+
+@utility ui-slot-frame-text--grow {
+  flex-grow: 1;
+
+  @variant ui-base {
+    /* Zero specificity lets a caller class center the text again. */
+    text-align: start;
+  }
+}

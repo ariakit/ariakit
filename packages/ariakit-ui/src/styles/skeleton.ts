@@ -8,7 +8,7 @@ const WEIGHT_STEPS = { light: 1, normal: 2, medium: 4, bold: 6 } as const;
  * Parts outside a root never animate.
  */
 export const skeleton = cv({
-  class: "skeleton",
+  class: "ui-skeleton",
   variants: {
     /**
      * Sets the animation of the parts. `shimmer` moves a highlight across each
@@ -16,7 +16,7 @@ export const skeleton = cv({
      * whole area.
      */
     $animate: {
-      shimmer: "skeleton-shimmer motion-reduce:animate-pulse",
+      shimmer: "ui-skeleton--animate-shimmer motion-reduce:animate-pulse",
       pulse: "animate-pulse",
       false: "",
     },
@@ -26,47 +26,17 @@ export const skeleton = cv({
   },
 });
 
-// Parts read the highlight from a variable so that each shape can paint it on
-// its own layer: over the element, its bar, or the child it fills. The tint
-// resolves here, before a filled child redefines the layer color.
-const shimmerHighlight = cx(
-  "[--skeleton-highlight:oklch(from_var(--ak-layer)_calc(l+0.07)_c_h)]",
-);
-
-// The highlight moves on a layer one tile of the highlight stream wider than
-// the part. Moving a layer runs on the compositor, while moving a background
-// repaints the part on every frame. The layers can move the part's edges by a
-// fraction of a pixel, so they exist only while the highlight moves.
-const shimmerLayer = cx(
-  "before:hidden ui-skeleton-shimmer:before:block",
-  // Paint containment clips the layer to the part's corners and gives it a
-  // containing block without changing how the part is positioned.
-  "ui-skeleton-shimmer:contain-paint",
-  "before:absolute before:inset-y-0 before:left-0 before:ui-skeleton-shimmer-layer",
-  // The direction shares the variant, so the animation shorthand cannot reset
-  // it. The layer mirrors too, so the band leans and leads the same way.
-  "ui-skeleton-shimmer:before:animate-ui-skeleton-shimmer ui-skeleton-shimmer:rtl:before:[animation-direction:reverse] rtl:before:-scale-x-100",
-);
-
-// The inset edge moves from the part to a layer above the highlight, so the
-// highlight passes under it, as it did as a background. Other edge types paint
-// outside the clipped layer.
 const shimmerInsetEdge = cx(
-  "after:hidden ui-skeleton-shimmer:after:block ui-skeleton-shimmer:ring-0",
-  "after:absolute after:inset-0 after:rounded-[inherit]",
-  "after:ring-(length:--border-width) after:ring-inset after:ring-(--ak-edge)",
+  "ui-skeleton-shimmer-inset-edge",
+  // Stays a class to come after the --tw-ring-shadow of `frameBase`, which it
+  // replaces.
+  "ui-skeleton-shimmer:ring-0",
 );
 
 /** Shared tint, edge, and highlight for every skeleton part. */
 const skeletonBase = cv({
   extend: [frame],
-  class: [
-    "select-none pointer-events-none",
-    // A pending part keeps its space without painting, so the layout does not
-    // move when the placeholders fade in.
-    "transition-opacity data-pending:opacity-0",
-    shimmerHighlight,
-  ],
+  class: "ui-skeleton-base",
   variants: {
     /** Sets the tint strength against the parent surface. */
     $weight: { light: "", normal: "", medium: "", bold: "" },
@@ -105,7 +75,12 @@ const skeletonBase = cv({
 /** A rectangular placeholder, such as for an image or a card. */
 export const skeletonBox = cv({
   extend: [skeletonBase],
-  class: ["block forced-colors:outline", shimmerLayer],
+  class: [
+    "ui-skeleton-box ui-skeleton-shimmer-before",
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
+    "forced-colors:outline",
+  ],
   variants: {
     $borderType: { inset: shimmerInsetEdge },
   },
@@ -117,7 +92,12 @@ export const skeletonBox = cv({
 /** A round placeholder, such as for an avatar. */
 export const skeletonCircle = cv({
   extend: [skeletonBase],
-  class: ["block aspect-square forced-colors:outline", shimmerLayer],
+  class: [
+    "ui-skeleton-circle ui-skeleton-shimmer-before",
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
+    "forced-colors:outline",
+  ],
   variants: {
     $borderType: { inset: shimmerInsetEdge },
   },
@@ -137,26 +117,10 @@ export const skeletonCircle = cv({
 export const skeletonLine = cv({
   extend: [skeletonBase],
   class: [
-    // Zero specificity lets an extending recipe or a class set another
-    // display, such as inline-block for a bar in a line of text.
-    "ui-base:block h-lh relative bg-transparent!",
-    // The space above and below the bar. Capital letters plus a fifth of the
-    // font size is close to the height from ascenders to descenders.
-    "[--skeleton-bar-inset:calc((1lh-1cap-0.2em)/2)]",
-    // A pseudo-element paints the bar. Vertical margins on the element itself
-    // would collapse with siblings and move the layout.
-    "before:absolute before:inset-x-0 before:inset-y-(--skeleton-bar-inset)",
-    "before:rounded-[inherit] before:bg-(--ak-layer)",
-    "before:ring-(length:--border-width) before:ring-inset before:ring-(--ak-edge)",
+    "ui-skeleton-line",
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
     "forced-colors:before:outline",
-    // The highlight moves on a layer above the bar, one tile of the highlight
-    // stream wider than the bar. Paint containment clips it to the bar's ends,
-    // and a clip path to the bar's height and corners. As on the other parts,
-    // they exist only while the highlight moves.
-    "after:hidden ui-skeleton-shimmer:after:block ui-skeleton-shimmer:contain-paint",
-    "ui-skeleton-shimmer:[clip-path:inset(var(--skeleton-bar-inset)_0_round_var(--ak-frame-radius))]",
-    "after:absolute after:inset-y-(--skeleton-bar-inset) after:left-0 after:ui-skeleton-shimmer-layer",
-    "ui-skeleton-shimmer:after:animate-ui-skeleton-shimmer ui-skeleton-shimmer:rtl:after:[animation-direction:reverse] rtl:after:-scale-x-100",
   ],
   defaultVariants: {
     // About a quarter of the bar height.
@@ -201,29 +165,28 @@ export const skeletonLine = cv({
 export const skeletonFill = cv({
   extend: [skeletonBase],
   class: [
-    // The wrapper generates no box, so the child keeps its place in the parent
-    // layout. Custom properties still pass through it to the child.
-    "contents",
-    // Resolve the tint here, before the child's own layer redefines these
-    // variables.
-    "[--skeleton-tint:var(--ak-layer)] [--skeleton-edge:var(--ak-edge)]",
+    "ui-skeleton-fill",
     // Important utilities replace the child's own paint.
-    "*:bg-(--skeleton-tint)! *:bg-none! *:text-transparent! *:placeholder:text-transparent!",
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
+    "*:bg-(--skeleton-tint)! *:bg-none! *:text-transparent!",
     "*:border-transparent! *:[box-shadow:inset_0_0_0_var(--border-width)_var(--skeleton-edge)]!",
-    // The before and after variants would add pseudo-elements that take space
-    // in a flex child, so these selectors only hide existing ones.
-    "*:*:invisible *:[&::before]:invisible *:[&::after]:invisible",
     // Opacity does not apply to the wrapper without a box, so the child fades
     // with the same timing as the other parts, not its own.
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
     "*:[transition:opacity_var(--default-transition-duration)_var(--default-transition-timing-function)]!",
-    "data-pending:*:opacity-0!",
     // Forced colors replace the transparent text color, so match the text to
     // the background instead. The outline then needs its own color.
-    "forced-colors:*:outline forced-colors:*:outline-[CanvasText]",
-    "forced-colors:*:text-[Canvas]!",
-    // While the highlight moves, the child's pseudo-elements carry it and the
-    // edge, as on the other parts.
-    "ui-skeleton-fill-shimmer",
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
+    "forced-colors:*:text-[Canvas]! forced-colors:*:outline",
+    // Stays a class to come after the outline of `ak-outline` on the child,
+    // which it replaces in forced colors.
+    "forced-colors:*:outline-[CanvasText]",
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
+    "*:*:invisible",
   ],
   defaultVariants: {
     $borderType: "unset",

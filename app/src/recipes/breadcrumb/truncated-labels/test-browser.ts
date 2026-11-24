@@ -6,7 +6,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }) => {
     const trail = query(q.navigation("Breadcrumb"));
     const regional = trail.link("Regional operations and logistics");
-    const label = regional.locator(".breadcrumb-truncate");
+    const label = regional.locator(".ui-breadcrumb-label--truncate");
     await test.expect
       .poll(() =>
         label.evaluate(
@@ -53,7 +53,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.setViewportSize({ width: 240, height: 600 });
     const label = q
       .link("Regional operations and logistics")
-      .locator(".breadcrumb-truncate");
+      .locator(".ui-breadcrumb-label--truncate");
     const room = await label.evaluate((element) => {
       const context = element.ownerDocument
         .createElement("canvas")

@@ -152,67 +152,69 @@
 }
 
 @utility ak-layer {
-  color: var(--ak-text);
-  border-color: var(--ak-edge);
-  background-color: var(--ak-layer);
-  @apply ring-[color:var(--ak-edge)];
-  --ak-layer: oklch(from var(--_ak-lo) calc(var(--_ak-lpl) + (clamp(0, (min((var(--_ak-lpl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lpl))) * 1000000), 1) * ((var(--_ak-fla) + (clamp(0, ((var(--_ak-lpl) - ((var(--_ak-fla) + var(--_ak-flb)) / 2)) * 1000000), 1) * (var(--_ak-flb) - var(--_ak-fla)))) - var(--_ak-lpl)))) clamp(var(--_ak-layer-chroma-min), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
-  --ak-text: var(--_ak-ls);
-  @container not style(--_ak-text-alpha: 1) {
-    --ak-text: oklch(from var(--ak-layer) var(--_ak-tfcl) 0 0 / max((((((var(--_ak-lil) * var(--_ak-tmal)) + (var(--_ak-dal) * (var(--_ak-tmad) + var(--_ak-tmab)))) + (c * 0.135)) * var(--_ak-text-contrast-scale)) + (var(--_ak-ct) * 0.6668)), var(--_ak-text-alpha)));
-  }
-  --ak-edge: var(--_ak-edge-floor, oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(var(--_ak-edge-lightness-min), var(--_ak-edge-lightness, (clamp(0, (l + ((var(--_ak-edge-push-lightness) + var(--_ak-ecv)) * var(--_ak-epd, -1))), 1) + var(--_ak-edge-relative-lightness) + (clamp(0, (var(--_ak-edge-relative-lightness) * 1000000), 1) * max(0, (0.13 - clamp(0, (l + ((var(--_ak-edge-push-lightness) + var(--_ak-ecv)) * var(--_ak-epd, -1))), 1)))))), var(--_ak-edge-lightness-max)) clamp(var(--_ak-edge-chroma-min), var(--_ak-edge-chroma, (c + var(--_ak-edge-relative-chroma))), var(--_ak-edge-chroma-max, var(--chroma-p3-max, 0.368))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue))) / clamp(0, (var(--_ak-edge-alpha) + var(--_ak-ecv)), 1)));
-  --_ak-lbd: oklch(from var(--ak-layer) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
-  --_ak-ls: oklch(from var(--ak-layer) var(--_ak-tfcl) 0 0);
-  --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
-  --_ak-ltl: lch(from var(--ak-layer) round(down, var(--_ak-ltlv), 3.125) 0 0);
-  --_ak-ct: calc((max(0, var(--contrast, 0)) / 100) * var(--_ak-contrast-scale));
-  --_ak-cps: calc(1 + (var(--_ak-ct) * 3.334));
-  --_ak-lcb: calc((var(--_ak-ct) * -1) * 0.3334 * var(--_ak-lod));
-  --_ak-fla: max(0.2, (var(--_ak-flab) - (var(--_ak-ct) * 0.35)));
-  --_ak-flb: min(0.9, (var(--_ak-flbb) + (var(--_ak-ct) * 0.175)));
-  --_ak-odtl: clamp(0, var(--_ak-lod), 1);
-  --_ak-bw: calc(var(--_ak-flb) - var(--_ak-fla));
-  --_ak-eb: calc(var(--_ak-flb) + (var(--_ak-odtl) * (var(--_ak-fla) - var(--_ak-flb))));
-  --_ak-ecv: calc(var(--_ak-ct) * 0.3334);
-  --_ak-lib: oklch(from var(--_ak-layer-color, var(--ak-layer-parent, canvas)) var(--_ak-layer-lightness, calc(l + var(--_ak-layer-idle-relative-lightness) + (clamp(0, (var(--_ak-layer-idle-relative-lightness) * 1000000), 1) * var(--_ak-llfb)))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue))));
-  --_ak-lio: oklch(from var(--_ak-layer-mix, var(--_ak-lib)) var(--_ak-liprl, var(--_ak-layer-idle-lightness-offset-resolved, clamp(var(--_ak-layer-lightness-min), (l + var(--_ak-layer-idle-lightness-offset) + (clamp(0, (var(--_ak-layer-idle-lightness-offset) * 1000000), 1) * var(--_ak-llfb))), var(--_ak-layer-lightness-max)))) c h);
-  --_ak-li: var(--_ak-layer-idle-floor, oklch(from var(--_ak-layer-fade, var(--_ak-lio)) calc((((l + (var(--_ak-lcd) * max(0, ((clamp(0, (var(--_ak-lcpl) + ((var(--_ak-layer-idle-contrast-lightness) * var(--_ak-cps)) * var(--_ak-lcd))), 1) - l) * var(--_ak-lcd))))) * (var(--_ak-lcd) * var(--_ak-lcd))) + (l * (1 - (var(--_ak-lcd) * var(--_ak-lcd))))) + ((var(--_ak-lcb) * (1 - (var(--_ak-lcd) * var(--_ak-lcd))) * var(--_ak-lcbm, 1)) * (1 - var(--_ak-lipe)))) c h));
-  --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(l + var(--_ak-layer-relative-lightness) + (clamp(0, (var(--_ak-layer-relative-lightness) * 1000000), 1) * var(--_ak-llfb))) calc(c + var(--_ak-layer-relative-chroma)) calc(h + var(--_ak-layer-relative-hue))) calc(l + (clamp(0, (min((l - var(--_ak-fla)), (var(--_ak-flb) - l)) * 1000000), 1) * ((var(--_ak-fla) + (clamp(0, ((l - ((var(--_ak-fla) + var(--_ak-flb)) / 2)) * 1000000), 1) * (var(--_ak-flb) - var(--_ak-fla)))) - l))) c h);
-  --_ak-lo: oklch(from var(--_ak-lb) var(--_ak-layer-lightness-offset-resolved, calc(l + var(--_ak-layer-lightness-offset) + (clamp(0, (var(--_ak-layer-lightness-offset) * 1000000), 1) * var(--_ak-llfb)))) c h);
-  @variant ak-light {
-    --_ak-epd: -1;
-  }
-  @variant ak-dark {
-    --_ak-epd: 1;
-  }
-  @container (style(--_context-0: even)) or (not style(--_context-0)) {
-    --_context-0: odd;
-    --_ak-lcbm: max(var(--_ak-lm), (1 - var(--_ak-lprc-even, 0)));
-    --_ak-lprc-odd: 1;
-    --_ak-lpc-odd: var(--ak-layer);
-    --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-even));
-    &:not(body):has(> [class*="ak-outset"]) {
-      --_ak-lppc-odd: var(--ak-layer-parent, canvas);
-      --_ak-osls: oklch(from var(--ak-layer-parent, canvas) var(--_ak-tfcl) 0 0);
-      --_ak-oslbd: oklch(from var(--ak-layer-parent, canvas) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
+  @layer ak {
+    color: var(--ak-text);
+    border-color: var(--ak-edge);
+    background-color: var(--ak-layer);
+    @apply ring-[color:var(--ak-edge)];
+    --ak-layer: oklch(from var(--_ak-lo) calc(var(--_ak-lpl) + (clamp(0, (min((var(--_ak-lpl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lpl))) * 1000000), 1) * ((var(--_ak-fla) + (clamp(0, ((var(--_ak-lpl) - ((var(--_ak-fla) + var(--_ak-flb)) / 2)) * 1000000), 1) * (var(--_ak-flb) - var(--_ak-fla)))) - var(--_ak-lpl)))) clamp(var(--_ak-layer-chroma-min), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
+    --ak-text: var(--_ak-ls);
+    @container not style(--_ak-text-alpha: 1) {
+      --ak-text: oklch(from var(--ak-layer) var(--_ak-tfcl) 0 0 / max((((((var(--_ak-lil) * var(--_ak-tmal)) + (var(--_ak-dal) * (var(--_ak-tmad) + var(--_ak-tmab)))) + (c * 0.135)) * var(--_ak-text-contrast-scale)) + (var(--_ak-ct) * 0.6668)), var(--_ak-text-alpha)));
     }
-    --_ak-ltlc-odd: var(--_ak-ltl);
-    --_ak-llc-odd: var(--_ak-ll);
-  }
-  @container style(--_context-0: odd) {
-    --_context-0: even;
-    --_ak-lcbm: max(var(--_ak-lm), (1 - var(--_ak-lprc-odd, 0)));
-    --_ak-lprc-even: 1;
-    --_ak-lpc-even: var(--ak-layer);
-    --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-odd));
-    &:not(body):has(> [class*="ak-outset"]) {
-      --_ak-lppc-even: var(--ak-layer-parent, canvas);
-      --_ak-osls: oklch(from var(--ak-layer-parent, canvas) var(--_ak-tfcl) 0 0);
-      --_ak-oslbd: oklch(from var(--ak-layer-parent, canvas) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
+    --ak-edge: var(--_ak-edge-floor, oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(var(--_ak-edge-lightness-min), var(--_ak-edge-lightness, (clamp(0, (l + ((var(--_ak-edge-push-lightness) + var(--_ak-ecv)) * var(--_ak-epd, -1))), 1) + var(--_ak-edge-relative-lightness) + (clamp(0, (var(--_ak-edge-relative-lightness) * 1000000), 1) * max(0, (0.13 - clamp(0, (l + ((var(--_ak-edge-push-lightness) + var(--_ak-ecv)) * var(--_ak-epd, -1))), 1)))))), var(--_ak-edge-lightness-max)) clamp(var(--_ak-edge-chroma-min), var(--_ak-edge-chroma, (c + var(--_ak-edge-relative-chroma))), var(--_ak-edge-chroma-max, var(--chroma-p3-max, 0.368))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue))) / clamp(0, (var(--_ak-edge-alpha) + var(--_ak-ecv)), 1)));
+    --_ak-lbd: oklch(from var(--ak-layer) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
+    --_ak-ls: oklch(from var(--ak-layer) var(--_ak-tfcl) 0 0);
+    --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
+    --_ak-ltl: lch(from var(--ak-layer) round(down, var(--_ak-ltlv), 3.125) 0 0);
+    --_ak-ct: calc((max(0, var(--contrast, 0)) / 100) * var(--_ak-contrast-scale));
+    --_ak-cps: calc(1 + (var(--_ak-ct) * 3.334));
+    --_ak-lcb: calc((var(--_ak-ct) * -1) * 0.3334 * var(--_ak-lod));
+    --_ak-fla: max(0.2, (var(--_ak-flab) - (var(--_ak-ct) * 0.35)));
+    --_ak-flb: min(0.9, (var(--_ak-flbb) + (var(--_ak-ct) * 0.175)));
+    --_ak-odtl: clamp(0, var(--_ak-lod), 1);
+    --_ak-bw: calc(var(--_ak-flb) - var(--_ak-fla));
+    --_ak-eb: calc(var(--_ak-flb) + (var(--_ak-odtl) * (var(--_ak-fla) - var(--_ak-flb))));
+    --_ak-ecv: calc(var(--_ak-ct) * 0.3334);
+    --_ak-lib: oklch(from var(--_ak-layer-color, var(--ak-layer-parent, canvas)) var(--_ak-layer-lightness, calc(l + var(--_ak-layer-idle-relative-lightness) + (clamp(0, (var(--_ak-layer-idle-relative-lightness) * 1000000), 1) * var(--_ak-llfb)))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue))));
+    --_ak-lio: oklch(from var(--_ak-layer-mix, var(--_ak-lib)) var(--_ak-liprl, var(--_ak-layer-idle-lightness-offset-resolved, clamp(var(--_ak-layer-lightness-min), (l + var(--_ak-layer-idle-lightness-offset) + (clamp(0, (var(--_ak-layer-idle-lightness-offset) * 1000000), 1) * var(--_ak-llfb))), var(--_ak-layer-lightness-max)))) c h);
+    --_ak-li: var(--_ak-layer-idle-floor, oklch(from var(--_ak-layer-fade, var(--_ak-lio)) calc((((l + (var(--_ak-lcd) * max(0, ((clamp(0, (var(--_ak-lcpl) + ((var(--_ak-layer-idle-contrast-lightness) * var(--_ak-cps)) * var(--_ak-lcd))), 1) - l) * var(--_ak-lcd))))) * (var(--_ak-lcd) * var(--_ak-lcd))) + (l * (1 - (var(--_ak-lcd) * var(--_ak-lcd))))) + ((var(--_ak-lcb) * (1 - (var(--_ak-lcd) * var(--_ak-lcd))) * var(--_ak-lcbm, 1)) * (1 - var(--_ak-lipe)))) c h));
+    --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(l + var(--_ak-layer-relative-lightness) + (clamp(0, (var(--_ak-layer-relative-lightness) * 1000000), 1) * var(--_ak-llfb))) calc(c + var(--_ak-layer-relative-chroma)) calc(h + var(--_ak-layer-relative-hue))) calc(l + (clamp(0, (min((l - var(--_ak-fla)), (var(--_ak-flb) - l)) * 1000000), 1) * ((var(--_ak-fla) + (clamp(0, ((l - ((var(--_ak-fla) + var(--_ak-flb)) / 2)) * 1000000), 1) * (var(--_ak-flb) - var(--_ak-fla)))) - l))) c h);
+    --_ak-lo: oklch(from var(--_ak-lb) var(--_ak-layer-lightness-offset-resolved, calc(l + var(--_ak-layer-lightness-offset) + (clamp(0, (var(--_ak-layer-lightness-offset) * 1000000), 1) * var(--_ak-llfb)))) c h);
+    @variant ak-light {
+      --_ak-epd: -1;
     }
-    --_ak-ltlc-even: var(--_ak-ltl);
-    --_ak-llc-even: var(--_ak-ll);
+    @variant ak-dark {
+      --_ak-epd: 1;
+    }
+    @container (style(--_context-0: even)) or (not style(--_context-0)) {
+      --_context-0: odd;
+      --_ak-lcbm: max(var(--_ak-lm), (1 - var(--_ak-lprc-even, 0)));
+      --_ak-lprc-odd: 1;
+      --_ak-lpc-odd: var(--ak-layer);
+      --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-even));
+      &:not(body):has(> [class*="ak-outset"]) {
+        --_ak-lppc-odd: var(--ak-layer-parent, canvas);
+        --_ak-osls: oklch(from var(--ak-layer-parent, canvas) var(--_ak-tfcl) 0 0);
+        --_ak-oslbd: oklch(from var(--ak-layer-parent, canvas) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
+      }
+      --_ak-ltlc-odd: var(--_ak-ltl);
+      --_ak-llc-odd: var(--_ak-ll);
+    }
+    @container style(--_context-0: odd) {
+      --_context-0: even;
+      --_ak-lcbm: max(var(--_ak-lm), (1 - var(--_ak-lprc-odd, 0)));
+      --_ak-lprc-even: 1;
+      --_ak-lpc-even: var(--ak-layer);
+      --ak-layer-parent: var(--_ak-osp, var(--_ak-lpc-odd));
+      &:not(body):has(> [class*="ak-outset"]) {
+        --_ak-lppc-even: var(--ak-layer-parent, canvas);
+        --_ak-osls: oklch(from var(--ak-layer-parent, canvas) var(--_ak-tfcl) 0 0);
+        --_ak-oslbd: oklch(from var(--ak-layer-parent, canvas) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
+      }
+      --_ak-ltlc-even: var(--_ak-ltl);
+      --_ak-llc-even: var(--_ak-ll);
+    }
   }
 }
 
@@ -1647,44 +1649,46 @@
 }
 
 @utility ak-frame {
-  --ak-frame-padding: var(--_ak-frame-padding);
-  --ak-frame-margin: var(--_ak-frame-margin);
-  --ak-frame-border: var(--_ak-frame-border);
-  --ak-frame-ring: var(--_ak-frame-ring);
-  @supports (color: color-mix(in lab, red, red)) {
-    --ak-frame-backdrop: color-mix(in oklab, var(--_ak-frame-border-backdrop, var(--ak-layer)), var(--ak-layer-parent, canvas) calc(sign(var(--ak-frame-ring)) * 100%));
-  }
-  padding: var(--ak-frame-padding);
-  scroll-padding: var(--ak-frame-padding);
-  border-radius: var(--ak-frame-radius);
-  margin: var(--ak-frame-margin);
-  @container (style(--_context-2: even)) or (not style(--_context-2)) {
-    --_context-2: odd;
-    --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * min(max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), (min(max(0.125em, (var(--_ak-fprc-even, var(--_ak-frame-radius)) - 0.5rem)), var(--_ak-frame-radius)) + (max((var(--_ak-frame-radius) - max(0.125em, (var(--_ak-fprc-even, var(--_ak-frame-radius)) - 0.5rem))), 0px) * clamp(0, tan(atan2(((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin)) - 0.5rem), 0.5rem)), 1)))), (var(--_ak-frame-radius) + (max(((1rem - 0.5px) - (var(--_ak-fppc-even, 0px) + var(--ak-frame-margin))), 0px) * 1000000000)))));
-    --_ak-fprc-odd: var(--ak-frame-radius);
-    --_ak-fppc-odd: var(--ak-frame-padding);
-    --_ak-fpbc-odd: var(--ak-frame-border);
-    --_ak-fpbbc-odd: calc((var(--_ak-fpbbc-even, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-border) * var(--_ak-frame-bordering-context)));
-    --_ak-fpbgc-odd: calc((var(--_ak-fpbgc-even, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-ring) * var(--_ak-frame-bordering-context)));
-    --_ak-fpwc-odd: var(--_ak-frame-row);
-    --_ak-fpcss-odd: 1;
-    --_ak-fpcse-odd: 1;
-    --_ak-fpces-odd: 1;
-    --_ak-fpcee-odd: 1;
-  }
-  @container style(--_context-2: odd) {
-    --_context-2: even;
-    --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * min(max((var(--_ak-fprc-odd, var(--_ak-frame-radius)) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), (min(max(0.125em, (var(--_ak-fprc-odd, var(--_ak-frame-radius)) - 0.5rem)), var(--_ak-frame-radius)) + (max((var(--_ak-frame-radius) - max(0.125em, (var(--_ak-fprc-odd, var(--_ak-frame-radius)) - 0.5rem))), 0px) * clamp(0, tan(atan2(((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin)) - 0.5rem), 0.5rem)), 1)))), (var(--_ak-frame-radius) + (max(((1rem - 0.5px) - (var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin))), 0px) * 1000000000)))));
-    --_ak-fprc-even: var(--ak-frame-radius);
-    --_ak-fppc-even: var(--ak-frame-padding);
-    --_ak-fpbc-even: var(--ak-frame-border);
-    --_ak-fpbbc-even: calc((var(--_ak-fpbbc-odd, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-border) * var(--_ak-frame-bordering-context)));
-    --_ak-fpbgc-even: calc((var(--_ak-fpbgc-odd, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-ring) * var(--_ak-frame-bordering-context)));
-    --_ak-fpwc-even: var(--_ak-frame-row);
-    --_ak-fpcss-even: 1;
-    --_ak-fpcse-even: 1;
-    --_ak-fpces-even: 1;
-    --_ak-fpcee-even: 1;
+  @layer ak {
+    --ak-frame-padding: var(--_ak-frame-padding);
+    --ak-frame-margin: var(--_ak-frame-margin);
+    --ak-frame-border: var(--_ak-frame-border);
+    --ak-frame-ring: var(--_ak-frame-ring);
+    @supports (color: color-mix(in lab, red, red)) {
+      --ak-frame-backdrop: color-mix(in oklab, var(--_ak-frame-border-backdrop, var(--ak-layer)), var(--ak-layer-parent, canvas) calc(sign(var(--ak-frame-ring)) * 100%));
+    }
+    padding: var(--ak-frame-padding);
+    scroll-padding: var(--ak-frame-padding);
+    border-radius: var(--ak-frame-radius);
+    margin: var(--ak-frame-margin);
+    @container (style(--_context-2: even)) or (not style(--_context-2)) {
+      --_context-2: odd;
+      --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * min(max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), (min(max(0.125em, (var(--_ak-fprc-even, var(--_ak-frame-radius)) - 0.5rem)), var(--_ak-frame-radius)) + (max((var(--_ak-frame-radius) - max(0.125em, (var(--_ak-fprc-even, var(--_ak-frame-radius)) - 0.5rem))), 0px) * clamp(0, tan(atan2(((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin)) - 0.5rem), 0.5rem)), 1)))), (var(--_ak-frame-radius) + (max(((1rem - 0.5px) - (var(--_ak-fppc-even, 0px) + var(--ak-frame-margin))), 0px) * 1000000000)))));
+      --_ak-fprc-odd: var(--ak-frame-radius);
+      --_ak-fppc-odd: var(--ak-frame-padding);
+      --_ak-fpbc-odd: var(--ak-frame-border);
+      --_ak-fpbbc-odd: calc((var(--_ak-fpbbc-even, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-border) * var(--_ak-frame-bordering-context)));
+      --_ak-fpbgc-odd: calc((var(--_ak-fpbgc-even, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-ring) * var(--_ak-frame-bordering-context)));
+      --_ak-fpwc-odd: var(--_ak-frame-row);
+      --_ak-fpcss-odd: 1;
+      --_ak-fpcse-odd: 1;
+      --_ak-fpces-odd: 1;
+      --_ak-fpcee-odd: 1;
+    }
+    @container style(--_context-2: odd) {
+      --_context-2: even;
+      --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * min(max((var(--_ak-fprc-odd, var(--_ak-frame-radius)) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), (min(max(0.125em, (var(--_ak-fprc-odd, var(--_ak-frame-radius)) - 0.5rem)), var(--_ak-frame-radius)) + (max((var(--_ak-frame-radius) - max(0.125em, (var(--_ak-fprc-odd, var(--_ak-frame-radius)) - 0.5rem))), 0px) * clamp(0, tan(atan2(((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin)) - 0.5rem), 0.5rem)), 1)))), (var(--_ak-frame-radius) + (max(((1rem - 0.5px) - (var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin))), 0px) * 1000000000)))));
+      --_ak-fprc-even: var(--ak-frame-radius);
+      --_ak-fppc-even: var(--ak-frame-padding);
+      --_ak-fpbc-even: var(--ak-frame-border);
+      --_ak-fpbbc-even: calc((var(--_ak-fpbbc-odd, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-border) * var(--_ak-frame-bordering-context)));
+      --_ak-fpbgc-even: calc((var(--_ak-fpbgc-odd, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-ring) * var(--_ak-frame-bordering-context)));
+      --_ak-fpwc-even: var(--_ak-frame-row);
+      --_ak-fpcss-even: 1;
+      --_ak-fpcse-even: 1;
+      --_ak-fpces-even: 1;
+      --_ak-fpcee-even: 1;
+    }
   }
 }
 
@@ -1739,12 +1743,14 @@
     --_ak-fpcse-odd: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--_ak-fpcse-even, 1));
     --_ak-fpces-odd: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--_ak-fpces-even, 1));
     --_ak-fpcee-odd: calc(var(--_ak-frame-end) * var(--_ak-fpcee-even, 1));
-    margin-block: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end))) * var(--ak-frame-margin));
-    margin-inline: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--ak-frame-margin));
-    border-start-start-radius: calc(var(--_ak-fpcss-odd) * var(--ak-frame-radius));
-    border-start-end-radius: calc(var(--_ak-fpcse-odd) * var(--ak-frame-radius));
-    border-end-start-radius: calc(var(--_ak-fpces-odd) * var(--ak-frame-radius));
-    border-end-end-radius: calc(var(--_ak-fpcee-odd) * var(--ak-frame-radius));
+    @layer ak {
+      margin-block: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end))) * var(--ak-frame-margin));
+      margin-inline: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--ak-frame-margin));
+      border-start-start-radius: calc(var(--_ak-fpcss-odd) * var(--ak-frame-radius));
+      border-start-end-radius: calc(var(--_ak-fpcse-odd) * var(--ak-frame-radius));
+      border-end-start-radius: calc(var(--_ak-fpces-odd) * var(--ak-frame-radius));
+      border-end-end-radius: calc(var(--_ak-fpcee-odd) * var(--ak-frame-radius));
+    }
   }
   @container style(--_context-2: odd) {
     --_context-2: even;
@@ -1763,12 +1769,14 @@
     --_ak-fpcse-even: calc(max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * var(--_ak-fpcse-odd, 1));
     --_ak-fpces-even: calc(max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * var(--_ak-fpces-odd, 1));
     --_ak-fpcee-even: calc(var(--_ak-frame-end) * var(--_ak-fpcee-odd, 1));
-    margin-block: calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end))) * var(--ak-frame-margin));
-    margin-inline: calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * var(--ak-frame-margin));
-    border-start-start-radius: calc(var(--_ak-fpcss-even) * var(--ak-frame-radius));
-    border-start-end-radius: calc(var(--_ak-fpcse-even) * var(--ak-frame-radius));
-    border-end-start-radius: calc(var(--_ak-fpces-even) * var(--ak-frame-radius));
-    border-end-end-radius: calc(var(--_ak-fpcee-even) * var(--ak-frame-radius));
+    @layer ak {
+      margin-block: calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end))) * var(--ak-frame-margin));
+      margin-inline: calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * var(--ak-frame-margin));
+      border-start-start-radius: calc(var(--_ak-fpcss-even) * var(--ak-frame-radius));
+      border-start-end-radius: calc(var(--_ak-fpcse-even) * var(--ak-frame-radius));
+      border-end-start-radius: calc(var(--_ak-fpces-even) * var(--ak-frame-radius));
+      border-end-end-radius: calc(var(--_ak-fpcee-even) * var(--ak-frame-radius));
+    }
   }
 }
 
@@ -2070,12 +2078,14 @@
 }
 
 @utility ak-frame-backdrop {
-  --_ak-frame-backdrop-on: 1;
-  @supports (color: color-mix(in lab, red, red)) {
-    --_ak-frame-border-backdrop: color-mix(in oklab, var(--ak-layer), var(--_ak-frame-backdrop, var(--ak-layer-parent, canvas)) calc(var(--_ak-frame-on-parent-ring) * 100%));
+  @layer ak {
+    --_ak-frame-backdrop-on: 1;
+    @supports (color: color-mix(in lab, red, red)) {
+      --_ak-frame-border-backdrop: color-mix(in oklab, var(--ak-layer), var(--_ak-frame-backdrop, var(--ak-layer-parent, canvas)) calc(var(--_ak-frame-on-parent-ring) * 100%));
+    }
+    background-image: linear-gradient(oklch(from var(--ak-layer) l c h / calc(alpha * var(--_ak-frame-on-parent-ring))) 0 0), linear-gradient(oklch(from var(--_ak-frame-backdrop, var(--ak-layer-parent, canvas)) l c h / calc(alpha * var(--_ak-frame-on-parent-ring))) 0 0);
+    background-clip: padding-box, border-box;
   }
-  background-image: linear-gradient(oklch(from var(--ak-layer) l c h / calc(alpha * var(--_ak-frame-on-parent-ring))) 0 0), linear-gradient(oklch(from var(--_ak-frame-backdrop, var(--ak-layer-parent, canvas)) l c h / calc(alpha * var(--_ak-frame-on-parent-ring))) 0 0);
-  background-clip: padding-box, border-box;
 }
 
 @utility ak-frame-backdrop-* {

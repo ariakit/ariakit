@@ -11,7 +11,7 @@ test("reading pages set the default text in a 42em column beside smaller bars", 
   await gotoAndSettle(page, "/react/recipes/text-field/");
   const prose = q
     .main()
-    .locator(":scope > .shell-main-body > .shell-popout > .prose");
+    .locator(":scope > .ui-shell-main-body > .ui-shell-popout > .ui-prose");
   await expect(prose).toHaveCSS("font-size", "16px");
   await expect(prose).toHaveCSS("row-gap", "20px");
   await expect(prose).toHaveCSS("width", "672px");
@@ -24,14 +24,19 @@ test("reading pages pop code fences out of the 42em column", async ({
   q,
 }) => {
   await gotoAndSettle(page, "/react/components/styling/");
-  const content = q.main().locator(":scope > .shell-main-body > .shell-popout");
-  const prose = content.locator(":scope > .prose").first();
-  const fence = content.locator(":scope > .shell-popout").first();
+  const content = q
+    .main()
+    .locator(":scope > .ui-shell-main-body > .ui-shell-popout");
+  const prose = content.locator(":scope > .ui-prose").first();
+  const fence = content.locator(":scope > .ui-shell-popout").first();
   await expect(prose).toHaveCSS("width", "672px");
   // The popout tracks add 1rem on each side of the text column.
   await expect(fence).toHaveCSS("width", "704px");
   // The popout band has square corners, and the block keeps its own radius.
-  await expect(fence.locator(".code-block")).toHaveCSS("border-radius", "12px");
+  await expect(fence.locator(".ui-code-block")).toHaveCSS(
+    "border-radius",
+    "12px",
+  );
 });
 
 test("reading pages name the scroll area of untitled code", async ({
@@ -53,7 +58,7 @@ test("reading pages space gallery cards like the gutter around them", async ({
   await expect(grid).toHaveCSS("column-gap", "28px");
   // This gallery stacks its cards directly in the band, without a grid.
   await gotoAndSettle(page, "/react/recipes/combobox-group/");
-  const band = page.locator(".shell-main-body > .shell-wide").first();
+  const band = page.locator(".ui-shell-main-body > .ui-shell-wide").first();
   await expect(band).toHaveCSS("row-gap", "28px");
 });
 
@@ -65,7 +70,7 @@ test("reading pages use base text and the gutter of the shell's text on a phone"
   await gotoAndSettle(page, "/react/recipes/text-field/");
   const prose = q
     .main()
-    .locator(":scope > .shell-main-body > .shell-popout > .prose");
+    .locator(":scope > .ui-shell-main-body > .ui-shell-popout > .ui-prose");
   await expect(prose).toHaveCSS("font-size", "16px");
   const box = await prose.boundingBox();
   expect(box?.x).toBeCloseTo(14, 0);
@@ -78,7 +83,7 @@ for (const { name, path } of [
 ]) {
   test(`${name} stays inside the body`, async ({ page, q }) => {
     await gotoAndSettle(page, path);
-    const body = q.main().locator(":scope > .shell-main-body");
+    const body = q.main().locator(":scope > .ui-shell-main-body");
     // The body clips its overflow, so a long line that leaves its block shows
     // only as extra scroll width here.
     const overflow = await body.evaluate(

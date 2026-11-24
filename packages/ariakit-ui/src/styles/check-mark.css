@@ -1,0 +1,26 @@
+/* The CSS of the check-mark style recipe in check-mark.ts. Import this file
+   after ui.css in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./check-mark.css"; */
+
+/* The Lucide check mask has a heavier stroke to stay clear at 11px. */
+:root {
+  --choice-mark-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+}
+
+@utility ui-check-mark {
+  --check-mark-size: calc(var(--check-mark-box,100%) * var(--check-mark-scale));
+
+  &:where(.ui-check-mark--check) {
+    @variant after {
+      @apply size-(--check-mark-size);
+      background-color: currentcolor;
+      forced-color-adjust: none;
+      mask-image: var(--choice-mark-check);
+      mask-size: contain;
+      mask-position: center;
+      mask-repeat: no-repeat;
+    }
+  }
+}

@@ -60,7 +60,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await expect(q.navigation("Documentation")).toHaveCount(0);
       const sidebar = page.locator("#sidebar");
       await expect(sidebar).toBeHidden();
-      await expect(page.locator(".shell-sidebar")).toHaveCSS("width", "0px");
+      await expect(page.locator(".ui-shell-sidebar")).toHaveCSS("width", "0px");
       await q.button("Toggle sidebar").focus();
       await page.keyboard.press("Tab");
       expect(

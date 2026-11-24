@@ -98,7 +98,7 @@ test("keeps the header controls at the start of the header", async ({
   // The Open menu button is hidden at this width. Its island must not leave an
   // empty flex item and a gap before the Toggle navigation button.
   const offset = await q.button("Toggle navigation").evaluate((element) => {
-    const start = element.closest(".shell-bar-start");
+    const start = element.closest(".ui-shell-start");
     if (!start) return null;
     const padding = Number.parseFloat(
       getComputedStyle(start).paddingInlineStart,

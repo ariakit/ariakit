@@ -14,7 +14,7 @@ function getHiddenBarLinks(dialog: Locator) {
     let covered = 0;
     const hidden: string[] = [];
     for (const link of nav.querySelectorAll("a")) {
-      const bar = link.querySelector<HTMLElement>(".toc-link-bar");
+      const bar = link.querySelector<HTMLElement>(".ui-toc-link-bar");
       if (!bar) continue;
       // Each bar piece holds the range that glides on it.
       const style = getComputedStyle(bar);

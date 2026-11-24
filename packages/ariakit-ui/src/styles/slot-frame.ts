@@ -16,11 +16,11 @@ import { text } from "./text.ts";
 export const slotFrame = cv({
   extend: [textFrame, text],
   class: [
-    "flex",
-    // Subtract glyph side bearings from gaps for optical text alignment.
-    "[--sidebearing:0.15em]",
+    "ui-slot-frame",
     // Reset stacked-card spacing on nested controls' parts while preserving the
     // element's own inherited alignment.
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
     "*:[--control-inline:initial]",
   ],
   variants: {
@@ -35,11 +35,31 @@ export const slotFrame = cv({
       // With padding, sm follows the block padding, and the other steps follow
       // the side padding. Without padding, the slots have no side margins, so
       // the gap alone keeps them apart from the text.
-      sm: "[--gap:var(--py)] [&.slot-frame-flush]:[--gap:calc(var(--flush-gap)-var(--sidebearing))] gap-(--gap)",
+      sm: [
+        "ui-slot-frame--gap-sm",
+        // Stays a class, so that the gap of `choiceCard` still comes after it
+        // and replaces it.
+        "gap-(--gap)",
+      ],
       // Keep content apart in rows with little side padding.
-      md: "[--gap:max(var(--spacing),calc(var(--px)-var(--sidebearing)))] [&.slot-frame-flush]:[--gap:var(--flush-gap)] gap-(--gap)",
-      lg: "[--gap:max(var(--spacing),var(--px))] [&.slot-frame-flush]:[--gap:calc(var(--flush-gap)+var(--sidebearing))] gap-(--gap)",
-      xl: "[--gap:max(var(--spacing),calc(var(--px)+var(--sidebearing)))] [&.slot-frame-flush]:[--gap:calc(var(--flush-gap)+var(--sidebearing)*2)] gap-(--gap)",
+      md: [
+        "ui-slot-frame--gap-md",
+        // Stays a class, so that the gap of `choiceCard` still comes after it
+        // and replaces it.
+        "gap-(--gap)",
+      ],
+      lg: [
+        "ui-slot-frame--gap-lg",
+        // Stays a class, so that the gap of `choiceCard` still comes after it
+        // and replaces it.
+        "gap-(--gap)",
+      ],
+      xl: [
+        "ui-slot-frame--gap-xl",
+        // Stays a class, so that the gap of `choiceCard` still comes after it
+        // and replaces it.
+        "gap-(--gap)",
+      ],
     },
     /**
      * Sets the vertical gap between the element's label and description.
@@ -47,7 +67,12 @@ export const slotFrame = cv({
      */
     $gapY: {
       none: "",
-      auto: "[--gap-y:calc(var(--gap)/4)] gap-y-(--gap-y)",
+      auto: [
+        "ui-slot-frame--gap-y-auto",
+        // Stays a class to come after the gap of `controlFieldError`, which it
+        // replaces.
+        "gap-y-(--gap-y)",
+      ],
     },
   },
   defaultVariants: {
@@ -59,7 +84,7 @@ export const slotFrame = cv({
       // Mark a row without padding, so its slots start at its edges, like list
       // bullets, and its gaps grow from --flush-gap. Field errors read
       // --flush-gap to match the gap of the field above.
-      addClass("slot-frame-flush [--flush-gap:0.4375em]");
+      addClass("ui-slot-frame--flush [--flush-gap:0.4375em]");
     }
     // Forced colors remove the fill, which may be the only boundary.
     if (variants.$border != null) return;
@@ -104,13 +129,13 @@ export function hasSlotSurface(variants: VariantProps<typeof frame>) {
 
 const floatingClass = [
   "m-0! absolute border",
-  "in-[.control,.badge]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
+  "in-[.ui-control,.ui-badge]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
   // A floating slot hangs over the surface around its parent, so its border
   // takes that color and reads as a cut-out.
   "[.ak-layer>&]:ak-outset",
   // What fills the slot sits inside this border, so a round count stays
   // round. The selector wins over the base --slot-height.
-  "[&.slot-frame-slot]:[--slot-height:calc(var(--size)*var(--row-span)-2px)]",
+  "[&.ui-slot-frame-slot]:[--slot-height:calc(var(--size)*var(--row-span)-2px)]",
 ];
 
 // The slot moves out by half its size, not half its width, so the round end of
@@ -145,34 +170,12 @@ const floatingCornerClasses = {
 export const slotFrameSlot = cv({
   extend: [frame],
   class: [
-    "slot-frame-slot flex flex-none items-center justify-center",
-    // Align slots to the first text row. Stacked cards set --control-inline to
-    // zero to remove these margins. Slots move into the side padding, so an
-    // icon sits as far from the side as from the top; text slots set
-    // --slot-pull to zero to keep the text inset.
-    "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span)*var(--control-inline,1))]",
-    "[--mx:calc((var(--py)-var(--px)+var(--my))*var(--slot-pull,1)*var(--control-inline,1))]",
-    // A slot frame without padding has no edge to show that distance, so a
-    // slot starts at its edge, like a list bullet. A control inside the slot
-    // moves its own slots again, like in a text slot.
-    "[.slot-frame-flush>&]:[--slot-pull:0] [.slot-frame-flush>&>*]:[--slot-pull:initial]",
-    "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
-    // Publish the resolved height for flat keys and keycaps that fill the
-    // slot.
-    "[--slot-height:calc(var(--size)*var(--row-span))]",
-    // Custom marks set --slot-icon-size; painted icon slots use
-    // --slot-icon-scale.
-    "[&>svg]:block [&>svg]:size-(--slot-icon-size,calc(var(--size)*var(--slot-icon-scale,1)))",
-    // A nested button or select fills the slot like a picture does, so the
-    // slot size sets its height and the gaps around it stay even. Its content
-    // stays centered when its own padding is taller.
-    "[&>:is(button,a).control]:size-full [&>:is(button,a).control]:items-center",
+    "ui-slot-frame-slot",
     // Outside a text frame, --px and --py are missing and the slot has no side
     // margin.
-    "mx-(--mx,0px) my-(--my)",
-    // Keep separate keys of a chord left to right, with a gap between them
-    // that a caller gap class can replace.
-    "has-[>kbd+kbd]:ui-base:gap-[0.25em] [&:has(>kbd+kbd):dir(rtl)]:flex-row-reverse",
+    // Stays a class, so that the margin of `ui-combobox-select-arrow` still
+    // comes after it and replaces it.
+    "mx-(--mx,0px)",
   ],
   variants: {
     /** Sets the slot size. */
@@ -186,17 +189,30 @@ export const slotFrameSlot = cv({
     $mx: {
       unset: "",
       // Add the far-side overflow of oversized icons to the label gap. Tailwind
-      // emits me-* after mx-*, so this margin wins.
+      // emits me-* after mx-*, so this margin wins. Stays a class to come after
+      // the margin of `controlFieldErrorIcon`, which it replaces.
       auto: "me-[calc(var(--mx)+max(0px,(var(--size,1lh)-1lh)/2)*var(--slot-pull,1)*var(--control-inline,1))]",
+      // Stays a class to keep its order with the classes of the elements that
+      // it styles.
       closeGap:
         "[&+*]:ms-[calc(var(--spacing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--spacing)*-1*var(--control-inline,1))]",
+      // Stays a class to keep its order with the classes of the elements that
+      // it styles.
       xs: "[&+*]:ms-[calc(var(--sidebearing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*-1*var(--control-inline,1))]",
+      // Stays a class to keep its order with the classes of the elements that
+      // it styles.
       sm: "[&+*]:ms-[calc(var(--sidebearing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*-1*var(--control-inline,1))]",
       md: "",
       lg: "",
+      // Stays a class to keep its order with the classes of the elements that
+      // it styles.
       xl: "[&+*]:ms-[calc(var(--sidebearing)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*var(--control-inline,1))]",
+      // Stays a class to keep its order with the classes of the elements that
+      // it styles.
       "2xl":
         "[&+*]:ms-[calc(var(--py)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--py)*var(--control-inline,1))]",
+      // Stays a class to keep its order with the classes of the elements that
+      // it styles.
       full: "[&+*]:ms-[calc(1cap*var(--control-inline,1))] [*:has(+&)]:me-[calc(1cap*var(--control-inline,1))]",
     },
     /**
@@ -222,13 +238,20 @@ export const slotFrameSlot = cv({
     $kind: {
       icon: "",
       box: "",
-      thumbnail: "overflow-clip aspect-4/3 *:size-full *:object-cover",
+      thumbnail: [
+        "ui-slot-frame-slot--kind-thumbnail",
+        // Stays a class to keep its order with the classes of the elements that
+        // it styles.
+        "*:size-full *:object-cover",
+      ],
       // Keep the side padding of the row text, and let nested slots move again.
       // Fit short text, such as a single digit, instead of a line-wide box.
-      // Tailwind sorts min-width utilities by name, so min-w-0 follows the base
-      // min-w-(--size). Number, keyword, and bracket min-w-* classes still
-      // override it; min-w-(--var) classes sort earlier and do not.
-      text: "[--slot-pull:0] *:[--slot-pull:initial] min-w-0",
+      text: [
+        "ui-slot-frame-slot--kind-text",
+        // Stays a class to keep its order with the classes of the elements that
+        // it styles.
+        "*:[--slot-pull:initial]",
+      ],
     },
     /** Sets the slot to be a square. */
     $square: "aspect-square",
@@ -318,8 +341,8 @@ export const slotFrameSlot = cv({
     // adding the classes to each size.
     if (variants.$size !== "unset") {
       addClass([
-        "[&>.control-group]:[--slot-control-height:calc(var(--slot-height)-(var(--ak-frame-padding)+var(--ak-frame-border))*2)]",
-        "[&>.control-group>.control:not(.slot-frame-flush)]:ak-frame-p-[max(0px,calc((var(--slot-control-height)-1lh)/2-var(--ak-frame-border)))]",
+        "[&>.ui-control-group]:[--slot-control-height:calc(var(--slot-height)-(var(--ak-frame-padding)+var(--ak-frame-border))*2)]",
+        "[&>.ui-control-group>.ui-control:not(.ui-slot-frame--flush)]:ak-frame-p-[max(0px,calc((var(--slot-control-height)-1lh)/2-var(--ak-frame-border)))]",
       ]);
     }
     if (variants.$kind !== "icon") return;
@@ -356,14 +379,14 @@ export function getIconSlotSize<Size extends string>(
  * frame. Controls extend it, and so can static rows, such as dialog headers.
  */
 export const slotFrameContent = cv({
-  class: "flex-1 min-w-0 content-start gap-x-(--gap) gap-y-(--gap-y)",
+  class: "ui-slot-frame-content gap-x-(--gap) gap-y-(--gap-y)",
   variants: {
     /**
      * Arranges the parts in a row or column. `unset` omits layout styles.
      */
     $orientation: {
       unset: "",
-      horizontal: "flex flex-wrap items-baseline",
+      horizontal: "ui-slot-frame-content--orientation-horizontal flex-wrap",
       vertical: "flex flex-col",
     },
   },
@@ -385,8 +408,7 @@ export const slotFrameText = cv({
      * Fills the free space in its row, so the slots after it sit together at
      * the row end.
      */
-    // A grown label starts its text, also in a button, which centers it. Zero
-    // specificity lets a caller class center the text again.
-    $grow: "grow ui-base:text-start",
+    // A grown label starts its text, also in a button, which centers it.
+    $grow: "ui-slot-frame-text--grow",
   },
 });

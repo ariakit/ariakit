@@ -11,20 +11,14 @@ import { cv } from "clava";
  * 45-degree strokes as if they were being written.
  */
 export const checkMark = cv({
-  class: [
-    "[--check-mark-size:calc(var(--check-mark-box,100%)*var(--check-mark-scale))]",
-  ],
+  class: "ui-check-mark",
   variants: {
     /**
      * The mark drawn in the host. `check` draws a check mark.
      * @default "check"
      */
     $mark: {
-      check: [
-        "after:bg-current after:forced-color-adjust-none",
-        "after:size-(--check-mark-size) after:mask-(--choice-mark-check)",
-        "after:mask-contain after:mask-center after:mask-no-repeat",
-      ],
+      check: "ui-check-mark--check",
     },
     /**
      * Makes the check smaller in a round box. The tip of a check points at a

@@ -170,8 +170,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // the frames of the move.
     const farthest = tab.evaluate((element) => {
       return new Promise<number>((resolve) => {
-        const group = element.closest(".glider-group");
-        const box = group?.querySelector('.glider-box[data-selected="true"]');
+        const group = element.closest(".ui-glider-group");
+        const box = group?.querySelector(
+          '.ui-glider-box[data-selected="true"]',
+        );
         let distance = box ? 0 : Number.POSITIVE_INFINITY;
         let frames = 0;
         const step = () => {
@@ -226,7 +228,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // so this reads both corners on each frame. The travel takes 200ms (the
     // default glider duration), and 30 frames cover it at 60Hz and at 120Hz.
     const corners = await q.tab("Workshop").evaluate(async (workshop) => {
-      const row = workshop.closest(".tab-row");
+      const row = workshop.closest(".ui-tab-row");
       const panels = row?.nextElementSibling;
       if (!row || !panels) return [];
       if (!(workshop instanceof HTMLElement)) return [];

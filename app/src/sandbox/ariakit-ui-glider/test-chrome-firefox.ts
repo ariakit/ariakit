@@ -6,11 +6,11 @@ import { withFramework } from "#app/test-utils/preview.ts";
 // item. It returns null while the hover box is hidden.
 function getHoverBoxOffset(item: Locator) {
   return item.evaluate((element) => {
-    const control = element.closest(".control");
-    const group = control?.closest(".glider-group");
-    const box = group?.querySelector(".glider-box.ui-hovered");
+    const control = element.closest(".ui-control");
+    const group = control?.closest(".ui-glider-group");
+    const box = group?.querySelector(".ui-glider-box.ui-hovered");
     if (!control || !box) return Number.POSITIVE_INFINITY;
-    if (box.closest(".glider-track[data-hidden]")) return null;
+    if (box.closest(".ui-glider-track[data-hidden]")) return null;
     const itemRect = control.getBoundingClientRect();
     const boxRect = box.getBoundingClientRect();
     return Math.max(
@@ -74,8 +74,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         const addCard = Array.from(node.querySelectorAll("button")).find(
           (button) => button.textContent === "Add a card",
         );
-        const box = node.querySelector('.glider-box[data-selected="true"]');
-        const boxWindow = node.querySelector(".glider-window");
+        const box = node.querySelector('.ui-glider-box[data-selected="true"]');
+        const boxWindow = node.querySelector(".ui-glider-window");
         if (!board || !addCard || !box || !boxWindow) return [];
         const afterPaint = () =>
           new Promise((resolve) => {

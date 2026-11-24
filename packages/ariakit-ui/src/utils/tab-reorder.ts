@@ -98,13 +98,13 @@ function startFollow(strip: HTMLElement) {
   // The row counts the controls beside the strip, so a control there keeps the
   // corner of the panel round.
   const parent = strip.parentElement;
-  const row = parent?.classList.contains("tab-row") ? parent : strip;
+  const row = parent?.classList.contains("ui-tab-row") ? parent : strip;
   // The elements that follow the box of a glider, such as the panels, follow a
   // tab that moves by the same rules.
-  const scope = strip.closest<HTMLElement>(".glider-scope");
+  const scope = strip.closest<HTMLElement>(".ui-glider-scope");
   const followers = Array.from(
-    scope?.querySelectorAll<HTMLElement>(".glider-follower") ?? [],
-  ).filter((follower) => follower.closest(".glider-scope") === scope);
+    scope?.querySelectorAll<HTMLElement>(".ui-glider-follower") ?? [],
+  ).filter((follower) => follower.closest(".ui-glider-scope") === scope);
   const rtl = win.getComputedStyle(strip).direction === "rtl";
   const places = new Map<HTMLElement, string>();
   const clear = (element: HTMLElement) => {
@@ -202,7 +202,7 @@ interface SlideTabsParams {
 
 function getStripSeparators(strip: HTMLElement) {
   return Array.from(
-    strip.querySelectorAll<HTMLElement>(":scope > .control-separator"),
+    strip.querySelectorAll<HTMLElement>(":scope > .ui-control-separator"),
   );
 }
 

@@ -15,7 +15,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     await q.checkbox("Unbounded content").check();
     const content = q.main().locator("#layout-content");
-    const headerText = q.banner().locator(".shell-bar-start > span");
+    const headerText = q.banner().locator(".ui-shell-start > span");
     const footerText = q.text("Layout footer", { exact: true });
     expect((await getBox(content)).x).toBeCloseTo(
       (await getBox(headerText)).x,
@@ -44,7 +44,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     const inset = page.locator('[aria-label="Inset frame"]');
     const flush = page.locator('[aria-label="Flush frame"]');
-    await expect(page.locator(".shell")).toHaveCSS(
+    await expect(page.locator(".ui-shell")).toHaveCSS(
       "border-top-left-radius",
       "0px",
     );
@@ -54,7 +54,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.checkbox("Flush gutter").check();
     await expect(flush).toHaveCSS("border-bottom-left-radius", "20px");
     expect((await getBox(flush)).width).toBeCloseTo(
-      (await getBox(q.main().locator(":scope > .shell-main-body"))).width,
+      (await getBox(q.main().locator(":scope > .ui-shell-main-body"))).width,
       0,
     );
   });
@@ -72,7 +72,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect
       .poll(
         async () =>
-          (await getBox(q.main().locator(":scope > .shell-main-body"))).x,
+          (await getBox(q.main().locator(":scope > .ui-shell-main-body"))).x,
       )
       .toBeCloseTo(192, 0);
     await q.checkbox("Wide navigation").check();
@@ -82,7 +82,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect
       .poll(
         async () =>
-          (await getBox(q.main().locator(":scope > .shell-main-body"))).x,
+          (await getBox(q.main().locator(":scope > .ui-shell-main-body"))).x,
       )
       .toBeCloseTo(320, 0);
     // The header's 2px border adds to its 72px.

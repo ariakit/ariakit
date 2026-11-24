@@ -37,7 +37,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(analytics).toHaveAttribute("aria-current", "page");
     await test.expect(nav).toHaveAttribute("data-bar-traveling");
     // The bar of the new current link waits for the bar that travels to it.
-    await test.expect(analytics.locator(".control-bar")).toBeHidden();
+    await test.expect(analytics.locator(".ui-bar")).toBeHidden();
     await test.expect
       .poll(async () => {
         const center = await getTravelingBarCenter(nav);
@@ -54,7 +54,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const analytics = query(nav).link("Analytics");
     await analytics.click();
     // The bar shows only after the bar that travels to it arrives.
-    await test.expect(analytics.locator(".control-bar")).toBeVisible();
+    await test.expect(analytics.locator(".ui-bar")).toBeVisible();
     await test.expect(nav).not.toHaveAttribute("data-bar-traveling");
   });
 
@@ -68,7 +68,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const nav = q.navigation("Main");
     const analytics = query(nav).link("Analytics");
     await analytics.click();
-    await test.expect(analytics.locator(".control-bar")).toBeVisible();
+    await test.expect(analytics.locator(".ui-bar")).toBeVisible();
     await test.expect(nav).not.toHaveAttribute("data-bar-traveling");
   });
 });

@@ -13,6 +13,43 @@
    applies to the file that imports it. */
 @import "tailwindcss";
 @import "@ariakit/ui/styles/ui.css";
+/* Each style recipe CSS file comes after the files that its first comment
+   lists, whose custom variants it can use. */
+@import "@ariakit/ui/styles/active.css";
+@import "@ariakit/ui/styles/check-mark.css";
+@import "@ariakit/ui/styles/code.css";
+@import "@ariakit/ui/styles/glider.css";
+@import "@ariakit/ui/styles/heading.css";
+@import "@ariakit/ui/styles/kbd.css";
+@import "@ariakit/ui/styles/link.css";
+@import "@ariakit/ui/styles/progress.css";
+@import "@ariakit/ui/styles/prose.css";
+@import "@ariakit/ui/styles/segment.css";
+@import "@ariakit/ui/styles/separator.css";
+@import "@ariakit/ui/styles/shell.css";
+@import "@ariakit/ui/styles/skeleton.css";
+@import "@ariakit/ui/styles/slider.css";
+@import "@ariakit/ui/styles/slot-frame.css";
+@import "@ariakit/ui/styles/control.css";
+@import "@ariakit/ui/styles/avatar.css";
+@import "@ariakit/ui/styles/badge.css";
+@import "@ariakit/ui/styles/button.css";
+@import "@ariakit/ui/styles/breadcrumb.css";
+@import "@ariakit/ui/styles/carousel.css";
+@import "@ariakit/ui/styles/choice.css";
+@import "@ariakit/ui/styles/disclosure.css";
+@import "@ariakit/ui/styles/input.css";
+@import "@ariakit/ui/styles/list.css";
+@import "@ariakit/ui/styles/nav.css";
+@import "@ariakit/ui/styles/popover.css";
+@import "@ariakit/ui/styles/combobox.css";
+@import "@ariakit/ui/styles/dialog.css";
+@import "@ariakit/ui/styles/hovercard.css";
+@import "@ariakit/ui/styles/table.css";
+@import "@ariakit/ui/styles/tabs.css";
+@import "@ariakit/ui/styles/code-block.css";
+@import "@ariakit/ui/styles/toc.css";
+@import "@ariakit/ui/styles/tooltip.css";
 
 @source "../../../packages/ariakit-ui/src/**";
 
@@ -91,6 +128,6 @@ astro-static-slot {
 
 /* App shells round nested corners to the card viewport instead of a browser
    window once the card sends its radius. */
-:root[data-preview-viewport-radius] .shell {
+:root[data-preview-viewport-radius] .ui-shell {
   --shell-radius: var(--preview-viewport-radius);
 }

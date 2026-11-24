@@ -6,7 +6,7 @@ import { getBox } from "../ariakit-ui-shell/test-helpers.ts";
 // The bar is decorative and hidden from assistive technology, so only its box
 // can be queried. Every tab renders one, and only the selected tab shows it.
 function getBar(tab: Locator) {
-  return tab.locator(".control-bar");
+  return tab.locator(".ui-bar");
 }
 
 async function getCenterOffset(bar: Locator, tab: Locator) {

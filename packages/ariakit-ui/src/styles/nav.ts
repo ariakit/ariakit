@@ -37,56 +37,6 @@ import { getSlotSizeClass, isSlotSize } from "./slot-frame.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
 
-// The thickness of a bar on the guide. Normalize the 0–100 contrast scale so
-// high contrast adds only 20%, like other bars. Borders snap to device pixels,
-// so a fractional width would draw the bar beside the guide instead of over it.
-// The navigation resolves it for the rings of the markers, and each bar
-// resolves it again with its own `$width`.
-const navBarSizeClass = cx(
-  "[--nav-bar-size:round(calc(var(--bar-width,var(--bar-width-auto,2px))*(1+0.2*var(--contrast,0)/100)),1px)]",
-);
-
-// The gutter of a list with numbers, which holds half a number and the gap
-// around it after the guide offset.
-const navNumbersGutterClass = cx(
-  "[--nav-guide-offset:calc(var(--spacing-em)*2)]",
-  "[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
-);
-
-// The bar that travels from the bar of the last current link to the bar of the
-// new one, for bars that each link draws by itself. It is a pseudo-element, so
-// the navigation gets no child that its rows or a covering frame could count.
-// The `Nav` style component writes the place, the size, the color, and the
-// corners of the bar to the navigation, and sets `data-bar-traveling` while the
-// bar travels. Only then does the pseudo-element have a box. Each `after:`
-// utility below also sets the content of the pseudo-element, which
-// `after:content-none` takes back at rest.
-const navBarTravelerClass = cx(
-  "after:content-none data-bar-traveling:after:content-['']",
-  "after:absolute after:z-1 after:pointer-events-none",
-  // The place and the size are the registered values of a glider, which don't
-  // inherit. The navigation copies them to values that inherit, so the
-  // pseudo-element gets them. Safari doesn't update a pseudo-element that takes
-  // the registered values with `inherit`.
-  "[--nav-bar-traveler-x:var(--glider-x)] [--nav-bar-traveler-y:var(--glider-y)]",
-  "[--nav-bar-traveler-width:var(--glider-width)]",
-  "[--nav-bar-traveler-height:var(--glider-height)]",
-  // The place is a translation, which the browser animates off the main
-  // thread. The travel then stays smooth while the page works, such as when the
-  // current link changes with a new page.
-  "after:top-0 after:left-0",
-  "after:translate-x-(--nav-bar-traveler-x)",
-  "after:translate-y-(--nav-bar-traveler-y)",
-  "after:w-(--nav-bar-traveler-width) after:h-(--nav-bar-traveler-height)",
-  "after:bg-(--nav-bar-traveler-color) after:rounded-(--nav-bar-traveler-radius)",
-  // The travel takes the time and the easing of a glider, so the bar arrives
-  // with the selected box of a glider in the same navigation.
-  "after:[transition-property:translate,width,height]",
-  "after:duration-(--glider-duration,200ms) after:ease-[cubic-bezier(0.3,0,0,1)]",
-  // The bar goes to the place that it leaves from at once.
-  "data-bar-instant:after:transition-none",
-);
-
 /**
  * A navigation region: a list whose rows are links, with groups and current-row
  * bars. Like a list, `$itemPadding` sets the padding of its rows, `$gap` sets
@@ -115,56 +65,12 @@ const navBarTravelerClass = cx(
 export const nav = cv({
   extend: [list, frame, segmentGroup],
   class: [
-    // Keep rows at the start when the navigation region stretches.
-    "nav content-start min-w-0",
-    // The rows read these lengths, so they use the em step, like the item
-    // padding of a list.
-    "[--nav-group-gap:calc(var(--spacing-em)*4)]",
-    "[--nav-row-gap:calc(var(--spacing-em)*3)]",
-    // Registered lengths resolve the row padding in the navigation font,
-    // keeping smaller group labels aligned with rows.
-    "[--nav-py:var(--list-item-padding)]",
-    "[--nav-px:calc(var(--nav-py)+(1lh-1cap)*0.5)]",
-    "relative isolate",
-    // Bars in top-level rows reach the navigation padding edge.
-    "[--nav-bar-gap:var(--ak-frame-padding)]",
-    "[--nav-guide-width:1px]",
-    // The indent of a nested list, which is also the width of a bend of the
-    // guide. A list in a link row keeps the automatic indent of a list.
-    "[--nav-indent:var(--list-indent,calc(var(--spacing-em)*3))]",
-    // Bars on the guide and rings around markers are wider on a light layer,
-    // like other bars. This reads the layer around the navigation, so it
-    // ignores a surface that `$layer` paints on the navigation itself.
-    "ak-light:[--bar-width-auto:3px] ak-dark:[--bar-width-auto:2px]",
-    navBarSizeClass,
-    // The guide and the bar stop this far from a marker, so the surface around
-    // the navigation shows between them, whatever it paints. A ring around a
-    // marker draws in this gap with the width of the bar, so a wider bar widens
-    // the gap to keep the ring off the number.
-    "[--nav-marker-gap:max(calc(var(--spacing-em)*1),var(--nav-bar-size))]",
-    // How far a number reaches from the guide: half a counter chip of a list,
-    // and the gap. These stay unregistered, so they resolve in the font of
-    // each element that reads them.
-    "[--nav-number-size:calc(var(--list-marker-box,1.75em)-0.4em)]",
-    "[--nav-number-reach:calc(var(--nav-number-size)/2+var(--nav-marker-gap))]",
-    // How far the gap around a marker passes the first line of its link, above
-    // and below it. A dot of the default size stays inside the line. A number
-    // is taller than half a line, and a navigation has numbers when it is
-    // ordered or when one of its lists is. The guide pieces read this length.
-    // It is registered, so it resolves here once, in the font of the
-    // navigation, and each glide frame doesn't evaluate it again on each piece.
-    "[--nav-marker-overreach:max(0px,var(--list-bullet-size)/2+var(--nav-marker-gap)-0.5lh)]",
-    "[.nav-numbers,:has(.nav-list-numbers)]:[--nav-marker-overreach:max(0px,max(var(--nav-number-reach),var(--list-bullet-size)/2+var(--nav-marker-gap))-0.5lh)]",
-    // Colors resolve against this element, so pieces inside a current link
-    // keep the colors of the surface around the rows.
-    "[--nav-guide-color:var(--ak-edge)]",
-    "[--nav-surface-color:var(--ak-layer)]",
+    "ui-nav ui-nav-bar-size",
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
     "forced-colors:[--nav-guide-color:GrayText]",
     "forced-colors:[--nav-surface-color:Canvas]",
-    // A bar on the guide takes the text color at full strength.
-    "[--nav-bar-color:oklch(from_var(--ak-text)_l_c_h/1)]",
     "forced-colors:[--nav-bar-color:CanvasText]",
-    navBarTravelerClass,
   ],
   variants: {
     /**
@@ -189,7 +95,7 @@ export const nav = cv({
         "[--list-guide:1] [--nav-guide-bends:0] [--guide-curve:1]",
         // Numbers of a nested list stay on the guide of the outermost list, so
         // that list needs the gutter of an ordered navigation.
-        "[&:has(.nav-list-numbers)]:[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
+        "[&:has(.ui-nav-list--marker-counter)]:[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
       );
     },
     /**
@@ -200,34 +106,13 @@ export const nav = cv({
      * `vertical`.
      */
     $layout: {
-      // A shrinkable track lets long rows truncate or wrap instead of widening
-      // the navigation region.
-      vertical: [
-        "vertical grid grid-cols-[minmax(0,1fr)] [--list-layout:vertical]",
-        // Disclosure content clips only its height animation, so end bars of
-        // nested rows can reach the navigation padding.
-        "[&_.disclosure-content]:overflow-x-visible",
-        // A column doesn't scroll, so edge bars can cover its border.
-        "[--nav-edge-start:var(--ak-frame-border)] [--nav-edge-end:var(--ak-frame-border)]",
-      ],
+      vertical: "ui-vertical ui-nav--layout-vertical",
       horizontal: [
-        "[--list-layout:horizontal]",
-        // A row reaches over no edge unless it holds the viewport of a
-        // carousel, even inside a column that has a border.
-        "[--nav-edge-start:0px] [--nav-edge-end:0px]",
-        // A row with no overflow stays still under a sideways swipe.
-        "horizontal flex items-start overflow-x-auto overscroll-x-none [&>.control,&>.nav-list>li>.control]:shrink-0 [&>.control,&>.nav-list>li>.control]:whitespace-nowrap",
+        "ui-nav--layout-horizontal",
         // A bar outside the padding must not let the row scroll vertically.
+        // Stays a class to come after the overflow of
+        // `ui-segment-group-scroll`, which it replaces.
         "overflow-y-hidden",
-        // The scroll box clips at its padding box, so the region reaches over
-        // the border of its carousel root above and below, with the same
-        // padding. Then edge bars can cover that border.
-        "[.carousel>&]:[--nav-edge-start:var(--carousel-border,0px)] [.carousel>&]:[--nav-edge-end:var(--carousel-border,0px)]",
-        "[.carousel>&]:mt-[calc(var(--ak-frame-margin)-var(--nav-edge-start))]! [.carousel>&]:mb-[calc(var(--ak-frame-margin)-var(--nav-edge-end))]!",
-        "[.carousel>&]:pt-[calc(var(--ak-frame-padding)+var(--nav-edge-start))] [.carousel>&]:pb-[calc(var(--ak-frame-padding)+var(--nav-edge-end))]",
-        // The wider row gap lines up labels in a column, which a row lacks, so
-        // rows use the button gap.
-        "[&>.control,&>.nav-list>li>.control]:gap-[calc(var(--px)-var(--sidebearing))]",
         carouselFrameClass,
       ],
     },
@@ -236,10 +121,7 @@ export const nav = cv({
      * a `ShellSidebarBody`, and lets a child with its own `$fill`, such as a
      * `NavDisclosureGroup`, take the height left by the other rows.
      */
-    $fill: [
-      // A flex column, unlike the grid, gives the free height to one child.
-      "nav-fill grow min-h-0 [&.vertical]:flex! [&.vertical]:flex-col",
-    ],
+    $fill: "ui-nav--fill",
     /** Sets the space between groups. Numbers scale the spacing token. */
     $groupGap(value?: string | number) {
       if (value == null) return;
@@ -284,8 +166,8 @@ export const nav = cv({
      * is. Needs markers, a guide, and a bar. Defaults to `fill`.
      */
     $markerHighlight: {
-      fill: "nav-marker-fill",
-      ring: "nav-marker-ring",
+      fill: "ui-nav--marker-highlight-fill",
+      ring: "ui-nav--marker-highlight-ring",
       false: "",
     },
   },
@@ -339,14 +221,14 @@ export const nav = cv({
     // distance from the markers with and without a guide. The class tells the
     // navigation that its links have numbers.
     if (numbered) {
-      addClass(["nav-numbers", navNumbersGutterClass]);
+      addClass("ui-nav--numbers ui-nav-numbers-gutter");
       return;
     }
     addClass([
       "[--nav-guide-offset:calc(var(--spacing-em)*2)] [--nav-gutter:calc(var(--nav-guide-offset)+var(--spacing-em))]",
       // One guide runs along all groups, so an outermost list with numbers
       // widens the gutter of every list.
-      "[&:has(>.nav-list-numbers,>.nav-group>.nav-list-numbers)]:[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
+      "[&:has(>.ui-nav-list--marker-counter,>.ui-nav-group>.ui-nav-list--marker-counter)]:[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
     ]);
   },
 });
@@ -357,7 +239,10 @@ export const nav = cv({
  * lets long rows truncate or wrap instead of widening the grid.
  */
 export const navRowsClass = cx(
-  "grid grid-cols-[minmax(0,1fr)] content-start gap-(--list-gap)",
+  "ui-nav-rows",
+  // Stays a class to come after the display of `proseColumn`, which it
+  // replaces.
+  "grid",
 );
 
 /**
@@ -366,32 +251,7 @@ export const navRowsClass = cx(
  * bends of the guide stop at the third level, so deeper rows line up with it.
  */
 export const navList = cv({
-  class: [
-    // Disclosures and items with a nested list need their own layout box for
-    // indentation and vertical spacing.
-    "nav-list [&>li:not(.nav-disclosure,.nav-item)]:contents",
-    // A number marker counts its row itself, like the marker of a list, so
-    // this rule stops the implied increment of the list item.
-    "[&>li]:[counter-increment:list-item_0]",
-    // Depth flags for the guide pieces. A row bends in from its parent only in
-    // the second and third levels, and bends out by at most the levels it can
-    // return to.
-    "[--nav-depth:0] [--nav-guide-in-cap:0] [--nav-guide-out-cap:2]",
-    "[--nav-guide-lead:1]",
-    "[.nav-item>&]:grid [.nav-item>&]:grid-cols-[minmax(0,1fr)]",
-    "[.nav-item>&]:content-start [.nav-item>&]:gap-(--list-gap)",
-    "[.nav-item>&]:ps-(--nav-indent) [.nav-item>&]:[--nav-depth:1]",
-    "[.nav-item>&]:[--nav-guide-in-cap:1] [.nav-item>&]:[--nav-guide-out-cap:1]",
-    "[.nav-item>&]:[--nav-guide-lead:0]",
-    "[.nav-item_.nav-item>&]:[--nav-depth:2]",
-    "[.nav-item_.nav-item>&]:[--nav-guide-out-cap:0]",
-    "[.nav-item_.nav-item_.nav-item>&]:ps-0",
-    "[.nav-item_.nav-item_.nav-item>&]:[--nav-guide-in-cap:0]",
-    // The guide fades after the last row of the outermost list. Rows inherit
-    // the flag only through the last item of each list.
-    "[--nav-guide-tail:1] [.nav-item>&]:[--nav-guide-tail:inherit]",
-    "[&>li:not(:last-child)]:[--nav-guide-tail:0]",
-  ],
+  class: "ui-nav-list",
   variants: {
     /**
      * Gives the outermost list its own box with room for the guide and the
@@ -416,20 +276,11 @@ export const navList = cv({
      * outermost list.
      */
     $marker: {
-      counter: [
-        "nav-list-numbers",
-        listMarkerClasses.counter,
-        "not-ui-list-guide:[--nav-guide-offset:calc(var(--spacing-em)*2)]",
-        "not-ui-list-guide:[.nav-item>&]:ps-[calc(var(--nav-indent)+var(--nav-guide-offset)+var(--nav-number-reach))]",
-      ],
+      counter: ["ui-nav-list--marker-counter", listMarkerClasses.counter],
       bullet: listMarkerClasses.bullet,
       // A navigation with a marker shows it only at the rows of its outermost
       // list.
-      none: [
-        "[.nav-item>&]:[--list-marker:initial]",
-        "[.nav-item>&]:[--list-counter:initial]",
-        "[.nav-item>&]:[--list-glyph:initial]",
-      ],
+      none: "ui-nav-list--marker-none",
     },
   },
   defaultVariants: {
@@ -440,13 +291,13 @@ export const navList = cv({
     // navigation, such as in a group of a navigation without markers.
     if (!variants.$gutter) return;
     if (variants.$marker !== "counter") return;
-    addClass(navNumbersGutterClass);
+    addClass("ui-nav-numbers-gutter");
   },
 });
 
 /** A list item that holds a link and the nested list of its rows. */
 export const navItem = cv({
-  class: ["nav-item", navRowsClass],
+  class: ["ui-nav-item", navRowsClass],
 });
 
 /**
@@ -454,17 +305,7 @@ export const navItem = cv({
  * the top level of the navigation or in the body of a disclosure.
  */
 export const navGroup = cv({
-  class: [
-    "nav-group shrink-0",
-    navRowsClass,
-    // The label lines up with the links of a list with numbers, as in an
-    // ordered navigation.
-    "has-[>.nav-list-numbers]:[--nav-guide-offset:calc(var(--spacing-em)*2)]",
-    "has-[>.nav-list-numbers]:[--nav-gutter:calc(var(--nav-guide-offset)+var(--nav-number-reach))]",
-    "[.nav.vertical>*+&]:mt-[calc(var(--nav-group-gap)-var(--list-gap))]",
-    "[.nav.horizontal>*+&]:ms-[calc(var(--nav-group-gap)-var(--list-gap))]",
-    "[.nav-disclosure-content-body>*+&]:mt-[calc(var(--nav-group-gap)-var(--list-gap))]",
-  ],
+  class: ["ui-nav-group", navRowsClass],
   variants: {
     /**
      * Draws a line in the middle of the space before the group. A group that
@@ -473,32 +314,7 @@ export const navGroup = cv({
      * the body of a disclosure, the line spans the body padding and reaches the
      * body edges.
      */
-    $divider: [
-      // The marker class outranks the spacing rules above. The line takes the
-      // edge color of the navigation.
-      "nav-group-divider border-(--ak-edge)",
-      "[.nav.vertical>*+&.nav-group-divider]:border-t",
-      "[.nav.vertical>*+&.nav-group-divider]:mt-[calc(var(--nav-group-gap)/2-var(--list-gap))]",
-      "[.nav.vertical>*+&.nav-group-divider]:pt-[calc(var(--nav-group-gap)/2)]",
-      // The group reads the navigation's inherited frame padding. Its margins
-      // reach past that padding, and its own padding keeps the rows in place.
-      "[.nav.vertical>*+&.nav-group-divider]:-mx-(--ak-frame-padding)",
-      "[.nav.vertical>*+&.nav-group-divider]:px-(--ak-frame-padding)",
-      "[.nav.horizontal>*+&.nav-group-divider]:border-s",
-      "[.nav.horizontal>*+&.nav-group-divider]:ms-[calc(var(--nav-group-gap)/2-var(--list-gap))]",
-      "[.nav.horizontal>*+&.nav-group-divider]:ps-[calc(var(--nav-group-gap)/2)]",
-      "[.nav.horizontal>*+&.nav-group-divider]:-my-(--ak-frame-padding)",
-      "[.nav.horizontal>*+&.nav-group-divider]:py-(--ak-frame-padding)",
-      "[.nav-disclosure-content-body>*+&.nav-group-divider]:border-t",
-      "[.nav-disclosure-content-body>*+&.nav-group-divider]:mt-[calc(var(--nav-group-gap)/2-var(--list-gap))]",
-      "[.nav-disclosure-content-body>*+&.nav-group-divider]:pt-[calc(var(--nav-group-gap)/2)]",
-      // The body indents its start more than its end, so each side reaches past
-      // its own padding.
-      "[.nav-disclosure-content-body>*+&.nav-group-divider]:-ms-(--disclosure-body-ps)",
-      "[.nav-disclosure-content-body>*+&.nav-group-divider]:ps-(--disclosure-body-ps)",
-      "[.nav-disclosure-content-body>*+&.nav-group-divider]:-me-(--ak-frame-padding)",
-      "[.nav-disclosure-content-body>*+&.nav-group-divider]:pe-(--ak-frame-padding)",
-    ],
+    $divider: "ui-nav-group--divider",
     /** Sets the line style of the `$divider` line. */
     $dividerLine: {
       solid: "border-solid",
@@ -509,21 +325,7 @@ export const navGroup = cv({
      * Keeps the `$divider` line within the rows, so it starts and ends with the
      * row backgrounds instead of reaching the container edges.
      */
-    $dividerInset: [
-      // The second marker class outranks the reach of the `$divider` rules.
-      "nav-group-divider-inset",
-      // Rows at the top level fill the navigation's content box.
-      "[.nav.vertical>*+&.nav-group-divider.nav-group-divider-inset]:mx-0",
-      "[.nav.vertical>*+&.nav-group-divider.nav-group-divider-inset]:px-0",
-      "[.nav.horizontal>*+&.nav-group-divider.nav-group-divider-inset]:my-0",
-      "[.nav.horizontal>*+&.nav-group-divider.nav-group-divider-inset]:py-0",
-      // Rows in a disclosure body reach back over their own padding to align
-      // their text with the body, and end with the body's content box.
-      "[.nav-disclosure-content-body>*+&.nav-group-divider.nav-group-divider-inset]:-ms-(--nav-px)",
-      "[.nav-disclosure-content-body>*+&.nav-group-divider.nav-group-divider-inset]:ps-(--nav-px)",
-      "[.nav-disclosure-content-body>*+&.nav-group-divider.nav-group-divider-inset]:me-0",
-      "[.nav-disclosure-content-body>*+&.nav-group-divider.nav-group-divider-inset]:pe-0",
-    ],
+    $dividerInset: "ui-nav-group--divider-inset",
   },
 });
 
@@ -536,11 +338,8 @@ export const navGroupLabel = cv({
     // The label takes the vertical padding of a row, so the space between the
     // label and the first row matches the space between rows. Its smaller text
     // and the group gap above it set it apart as a heading.
-    "nav-group-label font-medium text-start",
-    // Line up with the text of the rows after the guide gutter. The gutter is
-    // a registered length, so it resolves in the font of the navigation, not
-    // the smaller font of the label.
-    "ms-(--nav-gutter,0px)",
+    "ui-nav-group-label",
+    "font-medium",
   ],
   variants: {
     /**
@@ -588,7 +387,9 @@ const navSlotBase = cv({
      */
     $mx: {
       auto: [
-        "[*+&]:[--mx:calc((var(--py)-var(--px)+max(0px,var(--my)))*var(--slot-pull,1)*var(--control-inline,1))]",
+        "ui-nav-slot-base--mx-auto",
+        // Stays a class to come after the margin of `slotFrameSlot`, which it
+        // replaces.
         "[*+&]:me-(--mx)",
       ],
     },
@@ -641,10 +442,10 @@ export const navSlot = cv({
 export const navLink = cv({
   extend: [button],
   class: [
-    // The guide and the marker of the link read this class.
-    "nav-link justify-start text-wrap",
+    "ui-nav-link",
     // Include optical padding so icon rows align with disclosures. Disable the
     // inherited gap variant below.
+    // Stays a class to come after the gap of `slotFrame`, which it replaces.
     "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]",
   ],
   defaultVariants: {
@@ -668,7 +469,7 @@ export const navLink = cv({
       // Rows in a horizontal navigation size to their text, so a heavier current
       // row would shift the rows after it. Its surface or bar marks it instead,
       // unless navLinkLabel reserves the heavier width from data-text.
-      "[.nav.horizontal>&,.nav.horizontal>.nav-list>li>&]:font-normal",
+      "[.ui-nav.ui-nav--layout-horizontal>&,.ui-nav.ui-nav--layout-horizontal>.ui-nav-list>li>&]:font-normal",
     ]);
   },
 });
@@ -676,12 +477,7 @@ export const navLink = cv({
 /** A navigation link label and description with shared control spacing. */
 export const navLinkContent = cv({
   extend: [buttonContent],
-  class: [
-    // Restore the content gaps because navLink disables the control gap
-    // variant.
-    "[--gap:calc(var(--px)-var(--sidebearing))]",
-    "[--gap-y:min(var(--py)/2,--spacing(2))]",
-  ],
+  class: "ui-nav-link-content",
 });
 
 /**
@@ -696,18 +492,7 @@ export const navLinkContent = cv({
  */
 export const navLinkLabel = cv({
   extend: [buttonLabel],
-  class: [
-    "group-has-[>.control-description]/control-content:ak-ink-100",
-    "group-has-[>.control-description]/control-content:font-[calc(500+var(--contrast))]",
-    // buttonLabel reserves the width of the heavier text from data-text, so
-    // the row keeps its size when the link becomes current. A horizontal row
-    // caps the label at the reserved width and centers the text in it, so both
-    // sides of the text share the extra space. Taking the free space of a
-    // wider row, or the width of a longer description, would move the text
-    // away from the start.
-    "in-[.nav.horizontal>.control,.nav.horizontal>.nav-list>li>.control]:data-text:max-w-fit",
-    "in-[.nav.horizontal>.control,.nav.horizontal>.nav-list>li>.control]:data-text:text-center",
-  ],
+  class: "ui-nav-link-label",
   defaultVariants: {
     $truncate: false,
     $grow: true,
@@ -728,10 +513,10 @@ export const navLinkDescription = cv({
 export const navButton = cv({
   extend: [button],
   class: [
-    // Fill the row so trailing slots reach its end.
-    "w-full justify-start overflow-clip whitespace-normal text-start",
+    "ui-nav-button",
     // Include optical padding so icon rows align with disclosures. Disable the
     // inherited gap variant below.
+    // Stays a class to come after the gap of `slotFrame`, which it replaces.
     "gap-[calc(var(--nav-row-gap,--spacing(3))+var(--px)-var(--py))]",
   ],
   defaultVariants: {
@@ -746,7 +531,7 @@ export const navButton = cv({
 
 /** A navigation button content box that clips overflowing content. */
 export const navButtonContent = cv({
-  class: "block overflow-hidden",
+  class: "ui-nav-button-content",
 });
 
 /**
@@ -759,40 +544,7 @@ export const navButtonContent = cv({
  */
 export const navLinkBar = cv({
   extend: [controlBarBase],
-  class: [
-    // Measure from the row to the edge of the region that holds it.
-    "[--bar-gap:var(--nav-bar-gap,0px)]",
-    "[.nav.vertical_&]:top-(--bar-inset) [.nav.vertical_&]:bottom-(--bar-inset)",
-    "[.nav.vertical_&]:w-(--bar) [.nav.vertical_&]:inset-e-auto",
-    "[.nav.vertical_&]:inset-s-[calc(var(--nav-bar-guide,calc(-1*(var(--bar-offset)+var(--bar))))-var(--control-border,0px))]",
-    // Start bars of nested rows meet the disclosure content's start edge. Body
-    // padding minus the row's own shift gives that distance.
-    "[.nav.vertical_.disclosure-content_&]:[--bar-gap:calc(var(--disclosure-body-ps,0px)-var(--px,0px))]",
-    // Named start offsets in guided content sit on the guide line. List
-    // disclosure content exposes the list guide along its markers.
-    "[.nav.vertical_.disclosure-content_&]:[&.nav-bar-guide:not(.nav-bar-end)]:[--nav-bar-guide:calc(var(--disclosure-guide)-var(--bar-gap)-var(--bar)/2)]",
-    "[.nav.vertical_&]:[&.nav-bar-end]:inset-s-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
-    // An `edge` bar covers the border of the column at its side.
-    "[.nav.vertical_&]:[--bar-edge:var(--nav-edge-start,0px)]",
-    "[.nav.vertical_&]:[&.nav-bar-end]:[--bar-edge:var(--nav-edge-end,0px)]",
-    // End bars of nested rows measure from the navigation padding, so the bar
-    // follows a row that a padded body insets.
-    "[.nav.vertical_.disclosure-content_&]:[&.nav-bar-end]:[--bar-gap:var(--nav-bar-gap,0px)]",
-    "[.nav.horizontal_&]:inset-s-(--bar-inset) [.nav.horizontal_&]:inset-e-(--bar-inset)",
-    "[.nav.horizontal_&]:h-(--bar)",
-    // Rows can sit centered in a taller region, such as a shell bar that sets
-    // --nav-block-size. A row taller than that region grows it, so the row and
-    // the nav padding set the minimum. Percentages resolve against the row's
-    // height.
-    "[.nav.horizontal_&]:[--bar-gap:calc(max(var(--nav-block-size,0px),100%+var(--control-border,0px)*2+var(--nav-bar-gap,0px)*2)/2-50%-var(--control-border,0px))]",
-    // The region reaches over an edge around it, so an `edge` bar covers that
-    // edge. Other offsets keep measuring to the inner side of the edge.
-    "[.nav.horizontal_&]:[--bar-edge:var(--nav-edge-end,0px)]",
-    "[.nav.horizontal_&]:[&.nav-bar-start]:[--bar-edge:var(--nav-edge-start,0px)]",
-    "[.nav.horizontal_&]:top-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
-    "[.nav.horizontal_&]:[&.nav-bar-start]:top-auto",
-    "[.nav.horizontal_&]:[&.nav-bar-start]:bottom-[calc(100%+var(--control-border,0px)+var(--bar-offset))]",
-  ],
+  class: "ui-nav-link-bar",
   variants: {
     /**
      * Places the bar at the row's start or end. In a horizontal navigation,
@@ -800,8 +552,8 @@ export const navLinkBar = cv({
      * side in vertical navigations and the bottom in horizontal ones.
      */
     $side: {
-      start: "nav-bar-start",
-      end: "nav-bar-end",
+      start: "ui-nav-link-bar--side-start",
+      end: "ui-nav-link-bar--side-end",
     },
     /**
      * Sets the gap from the row to the bar. `edge` puts the bar on the
@@ -835,7 +587,7 @@ export const navLinkBar = cv({
      */
     $offset(value?: BarOffset) {
       if (!isNamedBarOffset(value)) return getBarOffset(value);
-      return [getNamedBarOffsetClass(value), "nav-bar-guide"];
+      return [getNamedBarOffsetClass(value), "ui-nav-link-bar--guide"];
     },
   },
   defaultVariants: {
@@ -850,7 +602,7 @@ export const navLinkBar = cv({
 export const navDisclosureGroup = cv({
   extend: [disclosureGroup],
   class: [
-    "nav-disclosure-group",
+    "ui-nav-disclosure-group",
     // A group that starts the navigation meets its edge, which needs no line.
     "first:border-t-0",
   ],
@@ -862,10 +614,10 @@ export const navDisclosureGroup = cv({
      * corners.
      */
     $cover: [
-      // Covering frames take the container radius, which a shell sidebar paints
-      // square at its edges. The group and its sections paint square corners
-      // too, and keep the frame radius for the corners of their rows.
-      "rounded-none! *:rounded-none! [&>*>.disclosure-content>*]:rounded-none!",
+      "ui-nav-disclosure-group--cover",
+      // Stays a class to keep its order with the classes of the elements that
+      // it styles.
+      "*:rounded-none!",
     ],
   },
   defaultVariants: {
@@ -878,26 +630,16 @@ export const navDisclosureGroup = cv({
  */
 export const navDisclosure = cv({
   extend: [disclosure],
-  class: [
-    "nav-disclosure",
-    "[@container_style(--nav-slot-size)]:[--disclosure-icon-size:var(--nav-slot-size)]",
-  ],
+  class: "ui-nav-disclosure",
   variants: {
     /**
      * Separates the button and content with a border and content padding.
      * `false` clears inherited split state.
      */
     $split: {
-      true: [
-        // Inset rows on the body surface so their text lines up with the button
-        // text at both ends.
-        "[--nav-body-inset:max(0px,calc(var(--disclosure-padding)-var(--nav-py,--spacing(2))))]",
-        // The body spans the section, so its rows stay concentric with the
-        // section corners at the inset distance.
-        "[--nav-body-row-radius:calc(var(--disclosure-radius)-var(--nav-body-inset))]",
-      ],
+      true: "ui-nav-disclosure--split-true",
       // Reset the values for nested sections; a split one sets its own.
-      false: "[--nav-body-inset:0px] [--nav-body-row-radius:initial]",
+      false: "ui-nav-disclosure--split-false",
     },
     /**
      * Sets icon and nested slot sizes for this section, including its content
@@ -948,27 +690,8 @@ export const navDisclosureContentBody = cv({
   // colors.
   extend: [disclosureContentBody, frameBase],
   class: [
-    "nav-disclosure-content-body",
+    "ui-nav-disclosure-content-body",
     navRowsClass,
-    // Compensate for body padding so the concentric radius of nested rows
-    // matches the disclosure radius. A split body sets a smaller row radius for
-    // its inset rows.
-    "[--nav-body-radius:calc(var(--nav-body-row-radius,var(--disclosure-radius))+var(--ak-frame-padding))]",
-    // A split body meets its button with a straight edge.
-    "[@container_style(--disclosure-split:_1)]:rounded-t-none",
-    // Align row text with the body. Move nested disclosures as a whole to keep
-    // their guides aligned.
-    "[&_li>.control:not(.disclosure-button)]:-ms-(--px)",
-    "[&_li:has(>.disclosure-button)]:-ms-(--disclosure-px)",
-    // Group labels align with the row text too, after the gutter of a group
-    // with numbers.
-    "[&_.nav-group-label]:ms-[calc(var(--nav-gutter,0px)-var(--px))]",
-    // Inset focus rings to prevent disclosure clipping, even when a row sets
-    // its own `$focusOffset`.
-    "[&_li>.control]:-outline-offset-2",
-    // The guide and the markers of the navigation join its top-level links,
-    // not the rows of a disclosure.
-    "[--nav-gutter:0px] [--list-guide:0]",
     listMarkerClasses.none,
   ],
   // Without a split, leave the body unpadded so row ends and bars align with
@@ -989,64 +712,7 @@ export const navDisclosureContentBody = cv({
  */
 export const navLinkPiece = cv({
   extend: [listGuide],
-  class: [
-    "z-1 not-ui-list-guide:hidden",
-    // Levels to bend in from the parent or out to an earlier level. The first
-    // row of the outermost list starts the guide. The guide doesn't join the
-    // rows of a disclosure, so the row after one starts the guide again.
-    "[--nav-guide-first:0]",
-    "[li:first-child>*>&]:[--nav-guide-first:var(--nav-guide-lead,0)]",
-    "[li.nav-disclosure+li>*>&]:[--nav-guide-first:1]",
-    "[--nav-guide-in-raw:0]",
-    "[.nav-item>.nav-list>li:first-child>*>&]:[--nav-guide-in-raw:1]",
-    "[--nav-guide-out-raw:0]",
-    "[li:has(>.nav-list)+li>*>&]:[--nav-guide-out-raw:1]",
-    "[li:has(>.nav-list>li:last-child>.nav-list)+li>*>&]:[--nav-guide-out-raw:2]",
-    // The guide draws the bend and the line with the `--guide-*` values. A row
-    // can bend out by two levels, which the span counts.
-    "[--guide-in:calc(min(var(--nav-guide-in-raw),var(--nav-guide-in-cap,0))*var(--nav-guide-bends,1))]",
-    "[--nav-guide-out:calc(min(var(--nav-guide-out-raw),var(--nav-guide-out-cap,0))*var(--nav-guide-bends,1))]",
-    "[--guide-outward:min(1,var(--nav-guide-out))]",
-    "[--guide-span:calc((var(--guide-in)+var(--nav-guide-out))*var(--nav-indent))]",
-    // A bend runs from the end of the previous line, through the gap between
-    // the rows, to the start of this one. All rows take the row padding that
-    // the navigation resolves, so the pieces join when a link sets its own
-    // padding. The gap around a marker must stay inside the piece of its own
-    // link, so the joint moves toward the row edge by how far that gap passes
-    // the first line. All pieces of a navigation move it by the same length.
-    "[--nav-guide-joint:max(0px,var(--nav-py)-var(--nav-marker-overreach))]",
-    "[--guide-bend-height:calc(var(--list-gap,0px)+var(--nav-guide-joint)*2)]",
-    // The rail keeps the guide of the outermost list at every level.
-    "[--nav-guide-x:calc(-1*var(--nav-guide-offset,0px)-(1-var(--nav-guide-bends,1))*var(--nav-depth,0)*var(--nav-indent))]",
-    "top-[calc(var(--nav-guide-joint)-(1-var(--nav-guide-first))*var(--guide-bend-height))]",
-    "bottom-(--nav-guide-joint)",
-    "inset-s-[calc(var(--nav-guide-x)-var(--guide-width)/2-var(--guide-in)*var(--nav-indent))]",
-    "w-[calc(var(--guide-span)+var(--guide-width))]",
-    // A piece stops one gap before the marker of its link and starts again
-    // one gap after it, so nothing paints around a marker to hide the piece.
-    // A link without a marker keeps the whole piece. Only a piece with a
-    // marker declares the hole, because a glide of the bar restyles every
-    // piece in each frame.
-    "ui-list-counter:[--nav-marker-cut:var(--nav-number-reach)]",
-    "ui-list-bullet:[--nav-marker-cut:calc(var(--list-bullet-size)/2+var(--nav-marker-gap))]",
-    // The center of the marker in the piece. It is on the line along the row,
-    // which is at the end column after a bend in and at the start column
-    // otherwise, and on the first line of the link. Mask positions are
-    // physical, so right to left text swaps the columns.
-    "ui-list-counter:[--nav-hole-x:calc((var(--guide-in)*var(--guide-dir)+(1-var(--guide-dir))/2)*var(--guide-span)+var(--guide-width)/2)]",
-    "ui-list-bullet:[--nav-hole-x:calc((var(--guide-in)*var(--guide-dir)+(1-var(--guide-dir))/2)*var(--guide-span)+var(--guide-width)/2)]",
-    "ui-list-counter:[--nav-hole-y:calc(var(--py,0px)+0.5lh-var(--nav-guide-joint)+(1-var(--nav-guide-first))*var(--guide-bend-height))]",
-    "ui-list-bullet:[--nav-hole-y:calc(var(--py,0px)+0.5lh-var(--nav-guide-joint)+(1-var(--nav-guide-first))*var(--guide-bend-height))]",
-    // A mask cuts the hole, because a bend can end inside it. The mask is 2em
-    // larger than the piece on each side, so it keeps a line that draws
-    // outside the box, such as a slanted bend.
-    "ui-list-counter:[--nav-hole:radial-gradient(circle_at_calc(var(--nav-hole-x)+2em)_calc(var(--nav-hole-y)+2em),#0000_var(--nav-marker-cut),#000_0)]",
-    "ui-list-bullet:[--nav-hole:radial-gradient(circle_at_calc(var(--nav-hole-x)+2em)_calc(var(--nav-hole-y)+2em),#0000_var(--nav-marker-cut),#000_0)]",
-    "ui-list-counter:mask-(--nav-hole)",
-    "ui-list-bullet:mask-(--nav-hole)",
-    "mask-[-2em_-2em] mask-size-[calc(100%+4em)_calc(100%+4em)]",
-    "mask-no-repeat mask-no-clip",
-  ],
+  class: "ui-nav-link-piece",
   defaultVariants: {
     // A piece takes its color from the navigation, which also sets system
     // colors in forced colors, so it needs no layer to resolve an edge.
@@ -1063,21 +729,7 @@ export const navLinkPiece = cv({
  */
 export const navLinkGuide = cv({
   extend: [navLinkPiece],
-  class: [
-    "nav-link-guide",
-    "[--guide-width:var(--nav-guide-width,1px)]",
-    // Fade out after the last row. The fade is a second mask layer over the
-    // hole around the marker, in the box of the piece. The piece shows only
-    // where both layers do. A piece without a marker has no hole, so its
-    // second layer shows everything.
-    "[--nav-guide-end:0]",
-    "[li:last-child:not(:has(>.nav-list))>*>&]:[--nav-guide-end:1]",
-    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-[linear-gradient(to_bottom,#000_calc(100%-var(--nav-guide-tail,0)*var(--nav-guide-end)*(--spacing(2))),transparent),var(--nav-hole,linear-gradient(#000,#000))]",
-    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-position-[0_0,-2em_-2em]",
-    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-size-[100%_100%,calc(100%+4em)_calc(100%+4em)]",
-    "[li:last-child:not(:has(>.nav-list))>*>&]:[mask-clip:border-box,no-clip]",
-    "[li:last-child:not(:has(>.nav-list))>*>&]:mask-intersect",
-  ],
+  class: "ui-nav-link-guide",
   defaultVariants: {
     // An edge color resolves on the piece, against the surface around it.
     $layer(defaultValue, variants) {
@@ -1093,11 +745,6 @@ export const navLinkGuide = cv({
     addClass("[--guide-color:var(--nav-guide-color)]");
   },
 });
-
-// The timing that the glide of a bar and the highlight of a marker share.
-const navGlideTimingClass = cx(
-  "duration-200 ease-[cubic-bezier(0.25,0.7,0.3,1)]",
-);
 
 /**
  * The bar of a link in a navigation with a guide: a hidden piece that draws its
@@ -1116,29 +763,8 @@ export const navLinkGuideBar = cv({
   extend: [navLinkPiece],
   class: [
     // A bar on the guide is a bar of its control too.
-    "nav-link-guide-bar control-bar",
-    navBarSizeClass,
-    "[--guide-width:var(--nav-bar-size)] [--guide-color:var(--nav-bar-color)]",
-    // Where the line along the row starts in the piece, after the bend from
-    // the previous row.
-    "[--nav-bar-row:calc((1-var(--nav-guide-first))*var(--guide-bend-height))]",
-    // A bar stops at the marker of its link. The gap around a dot is shorter
-    // than its row, so a bar that ran to the row edge would show past the gap.
-    // The marker centers on the first line after the padding of its link,
-    // which can differ from the joint of the guide.
-    "[--nav-bar-marker-shift:calc(var(--py,0px)-var(--nav-guide-joint))]",
-    "ui-list-counter:[--nav-bar-marker-top:calc(var(--nav-bar-marker-shift)+0.5lh-var(--nav-number-size)/2)]",
-    "ui-list-counter:[--nav-bar-marker-bottom:calc(var(--nav-bar-marker-shift)+0.5lh+var(--nav-number-size)/2)]",
-    "ui-list-bullet:[--nav-bar-marker-top:calc(var(--nav-bar-marker-shift)+0.5lh-var(--list-bullet-size)/2)]",
-    "ui-list-bullet:[--nav-bar-marker-bottom:calc(var(--nav-bar-marker-shift)+0.5lh+var(--list-bullet-size)/2)]",
-    // The range of a current link without a script. The style attribute of a
-    // measured range wins over it.
-    "group-ui-selected/control:[--nav-bar-start:calc(var(--nav-bar-row)+var(--nav-bar-marker-top,0px))]",
-    "group-ui-selected/control:[--nav-bar-end:calc(var(--nav-bar-row)+var(--nav-bar-marker-bottom,100000px))]",
-    // Negative side insets keep the slanted lines of diagonal bends whole. A
-    // piece that the range doesn't cut keeps its edges outside the clip, which
-    // otherwise leaves seams between pieces at fractional pixel positions.
-    "[clip-path:inset(max(-1px,var(--nav-bar-start)-var(--nav-bar-top,0px))_-0.5em_max(-1px,var(--nav-bar-top,0px)+100%-var(--nav-bar-end))_-0.5em)]",
+    "ui-bar",
+    "ui-nav-link-guide-bar ui-nav-bar-size",
   ],
   variants: {
     /**
@@ -1161,8 +787,10 @@ export const navLinkGuideBar = cv({
      */
     $glide: {
       true: [
-        navGlideTimingClass,
-        "transition-[--nav-bar-start,--nav-bar-end] motion-reduce:transition-none",
+        "ui-nav-glide-timing ui-nav-link-guide-bar--glide-true",
+        // Stays a class to come after the classes of a caller, so that the
+        // reduced motion rule still applies.
+        "motion-reduce:transition-none",
       ],
       false: "",
     },
@@ -1185,70 +813,9 @@ export const navLinkGuideBar = cv({
 export const navLinkMarker = cv({
   extend: [listItemMarker],
   class: [
-    "nav-link-marker",
-    navGlideTimingClass,
-    // Only a list with numbers or dots shows the marker. A dot has no room
-    // without a guide.
-    "not-ui-list-counter:not-ui-list-bullet:hidden",
-    "not-ui-list-guide:ui-list-bullet:hidden",
+    "ui-nav-link-marker ui-nav-glide-timing",
     // The marker sits outside the link, on the surface around the rows.
     "[.ak-layer>&]:ak-outset",
-    // Center it on the guide and on the first line of the row. Like the guide
-    // pieces, a marker in a nested list stays on the rail. The link selector
-    // outranks the position of a marker in a list row.
-    "[.nav-link>&]:[--list-marker-center-x:calc(-1*var(--nav-guide-offset,0px)-(1-var(--nav-guide-bends,1))*var(--nav-depth,0)*var(--nav-indent))]",
-    "[.nav-link>&]:[--list-marker-center-y:calc(var(--py,0px)+0.5lh)]",
-    // A dot takes the color of the guide, also in forced colors. The link
-    // selector outranks the edge color of a list marker.
-    "[.nav-link>&]:ui-list-bullet:[--ak-edge:var(--nav-guide-color)]",
-    // The size of the marker as a length, which the clip of the fill needs.
-    "[--nav-marker-size:var(--list-marker-size)]",
-    "ui-list-bullet:[--nav-marker-size:var(--list-bullet-size)]",
-    // Without a measured range, the bar on the guide of a current link covers
-    // its marker. The bar comes before the marker in the link.
-    "[.nav-link-guide-bar~&]:group-ui-selected/control:[--nav-bar-start:-100000px]",
-    "[.nav-link-guide-bar~&]:group-ui-selected/control:[--nav-bar-end:100000px]",
-    // The marker has no transition, so its colors follow the theme at once.
-    // With `$glide`, the highlight animates the range on its own
-    // pseudo-element, which is much cheaper to restyle in each frame of a glide
-    // than the marker. It reads the timing from here.
-    "transition-none",
-    // The range doesn't inherit, so the highlight takes it from the marker.
-    "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-bar-start:inherit]",
-    "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-bar-end:inherit]",
-    "[.nav-marker-fill_&]:ui-list-guide:after:[--nav-bar-start:inherit]",
-    "[.nav-marker-fill_&]:ui-list-guide:after:[--nav-bar-end:inherit]",
-    // The ring is clipped to the range widened by the gap, so a marker is
-    // either lit or not while the bar is still. An empty range, with no link
-    // to cover, doesn't widen.
-    "[.nav-marker-ring_&]:ui-list-guide:after:[--nav-ring-reach:min(var(--nav-marker-gap),max(0px,(var(--nav-bar-end)-var(--nav-bar-start))*1000))]",
-    "[.nav-marker-ring_&]:ui-list-guide:after:absolute",
-    "[.nav-marker-ring_&]:ui-list-guide:after:-inset-(--nav-marker-gap)",
-    "[.nav-marker-ring_&]:ui-list-guide:after:rounded-full",
-    "[.nav-marker-ring_&]:ui-list-guide:after:border-solid",
-    "[.nav-marker-ring_&]:ui-list-guide:after:border-(length:--nav-bar-size)",
-    "[.nav-marker-ring_&]:ui-list-guide:after:border-(--nav-bar-color)",
-    "[.nav-marker-ring_&]:ui-list-guide:after:[clip-path:inset(max(-2px,var(--nav-bar-start)-var(--nav-bar-top,0px)+var(--nav-marker-gap)-var(--nav-ring-reach))_-2px_max(-2px,var(--nav-bar-top,0px)+100%-var(--nav-bar-end)-var(--nav-marker-gap)-var(--nav-ring-reach))_-2px)]",
-    // The fill shows only where the bar covers the marker. On a number, it
-    // repeats the number in the surface color, so the number flips along with
-    // the surface.
-    "[.nav-marker-fill_&]:ui-list-guide:after:absolute",
-    "[.nav-marker-fill_&]:ui-list-guide:after:inset-0",
-    "[.nav-marker-fill_&]:ui-list-guide:after:grid",
-    "[.nav-marker-fill_&]:ui-list-guide:after:place-items-center",
-    "[.nav-marker-fill_&]:ui-list-guide:after:rounded-full",
-    "[.nav-marker-fill_&]:ui-list-guide:after:bg-(--nav-bar-color)",
-    "[.nav-marker-fill_&]:ui-list-guide:after:text-(--nav-surface-color)",
-    "[.nav-marker-fill_&]:ui-list-guide:ui-list-counter:after:content-[counter(list-item)]",
-    "[.nav-marker-fill_&]:ui-list-guide:after:font-semibold",
-    "[.nav-marker-fill_&]:ui-list-guide:after:leading-(--nav-marker-size)",
-    "[.nav-marker-fill_&]:ui-list-guide:after:[font-size-adjust:0.45]",
-    // The clip of the fill follows the range, so the fill grows from the side
-    // where the bar arrives and shrinks to the side where the bar leaves. It
-    // stops at the edges of the marker, which needs lengths instead of
-    // percentages. An empty clip passes the edge, so a fractional size leaves
-    // no line.
-    "[.nav-marker-fill_&]:ui-list-guide:after:[clip-path:inset(min(var(--nav-marker-size)+1px,max(-1px,var(--nav-bar-start)-var(--nav-bar-top,0px)))_-1px_min(var(--nav-marker-size)+1px,max(-1px,var(--nav-bar-top,0px)+var(--nav-marker-size)-var(--nav-bar-end)))_-1px)]",
   ],
   variants: {
     /**
@@ -1261,14 +828,20 @@ export const navLinkMarker = cv({
      */
     $glide: {
       true: [
-        "[.nav-marker-ring_&]:ui-list-guide:after:transition-[--nav-bar-start,--nav-bar-end]",
-        "[.nav-marker-ring_&]:ui-list-guide:after:duration-[inherit]",
-        "[.nav-marker-ring_&]:ui-list-guide:after:ease-[inherit]",
-        "motion-reduce:[.nav-marker-ring_&]:ui-list-guide:after:transition-none",
-        "[.nav-marker-fill_&]:ui-list-guide:after:transition-[--nav-bar-start,--nav-bar-end]",
-        "[.nav-marker-fill_&]:ui-list-guide:after:duration-[inherit]",
-        "[.nav-marker-fill_&]:ui-list-guide:after:ease-[inherit]",
-        "motion-reduce:[.nav-marker-fill_&]:ui-list-guide:after:transition-none",
+        // Stays a class, so that another class here that sets the transition
+        // still comes after it and replaces it.
+        "[.ui-nav--marker-highlight-ring_&]:ui-list-guide:after:transition-[--nav-bar-start,--nav-bar-end]",
+        // Stays a class to come after another class here that sets the
+        // transition, which it replaces.
+        "[.ui-nav--marker-highlight-ring_&]:ui-list-guide:after:duration-[inherit]",
+        "[.ui-nav--marker-highlight-ring_&]:ui-list-guide:after:ease-[inherit]",
+        "motion-reduce:[.ui-nav--marker-highlight-ring_&]:ui-list-guide:after:transition-none",
+        // Stays a class, so that another class here that sets the transition
+        // still comes after it and replaces it.
+        "[.ui-nav--marker-highlight-fill_&]:ui-list-guide:after:transition-[--nav-bar-start,--nav-bar-end]",
+        "[.ui-nav--marker-highlight-fill_&]:ui-list-guide:after:duration-[inherit]",
+        "[.ui-nav--marker-highlight-fill_&]:ui-list-guide:after:ease-[inherit]",
+        "motion-reduce:[.ui-nav--marker-highlight-fill_&]:ui-list-guide:after:transition-none",
       ],
       false: "",
     },

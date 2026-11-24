@@ -6,19 +6,6 @@ import { skeletonLine } from "./skeleton.ts";
 import { tab, tabList, tabPanels, tabSeparator, tabs } from "./tabs.ts";
 import { text } from "./text.ts";
 
-// The block fits in the scroll area around it, between its sticky bars, which a
-// shell, a dialog, or a popover publishes. Without a height, it fits on the
-// screen, or in a size container. Outside one, cqb is the small viewport, so
-// the dynamic viewport follows mobile browser bars instead. The space at each
-// end is larger than the scroll margin, so a block that scrolls into view fits.
-const scrollportHeight = cx(
-  "[--code-block-scrollport:var(--scrollport-height,100dvh)]",
-  "[@container_(min-height:0px)]:[--code-block-scrollport:var(--scrollport-height,100cqb)]",
-  "scroll-mbs-[calc(var(--scrollport-start,0px)+--spacing(3))]",
-  "scroll-mbe-[calc(var(--scrollport-end,0px)+--spacing(3))]",
-  "[--code-block-max-height:min(var(--code-block-scrollport)-var(--scrollport-start,0px)-var(--scrollport-end,0px)-(--spacing(8)),60rem)]",
-);
-
 /**
  * A block of code with the geometry of tabs: a header with a selected folder
  * tab joins the code below it. Put a `codeBlockHeader` first for a title or
@@ -33,24 +20,10 @@ const scrollportHeight = cx(
 export const codeBlock = cv({
   extend: [tabs],
   class: [
-    "code-block",
-    // One column, where the copy button and the expand button share the row of
-    // the code. The code goes below a header, and the collapse row below the
-    // code. The code takes the height that the other rows leave, so it scrolls
-    // inside when the block reaches its maximum height. File tabs that scroll
-    // are in a carousel, which takes the row of the header.
-    "grid grid-cols-1 [&>*]:col-start-1",
-    "grid-rows-[minmax(0,1fr)_auto]",
-    "has-[>.code-block-header,>.tab-list-carousel]:grid-rows-[auto_minmax(0,1fr)_auto]",
-    "[&>.code-block-header,&>.tab-list-carousel]:row-start-1",
-    "[&>.code-block-code]:row-start-1",
-    "[&>.code-block-header~.code-block-code,&>.tab-list-carousel~.code-block-code]:row-start-2",
-    // The space around the copy button: the padding of the block, or a
-    // little space when the block has none, so the button never touches the
-    // edge. A whole pixel keeps the button on the pixel grid at text sizes
-    // where the em step isn't one.
-    "[--code-block-copy-gap:round(max(var(--tabs-padding),--spacing(1)),1px)]",
-    scrollportHeight,
+    "ui-code-block",
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
+    "[&>*]:col-start-1",
   ],
   variants: {
     /**
@@ -69,7 +42,7 @@ export const codeBlock = cv({
       if (value === false) return;
       // The marker of wrapped code is on the scroll area of a panel that shows.
       const limit =
-        "not-has-[>.code-block-code:not([hidden])>.code-block-wrap]:max-h-(--code-block-max-height)";
+        "not-has-[>.ui-code-block-code:not([hidden])>.ui-code-block-scroll--wrap-true]:max-h-(--code-block-max-height)";
       if (value === true) return limit;
       return { class: limit, style: { "--code-block-max-height": value } };
     },
@@ -91,19 +64,14 @@ export const codeBlock = cv({
  */
 export const codeBlockHeader = cv({
   extend: [tabList],
-  class: [
-    "code-block-header",
-    // The strip paints the color of the well, and the title keeps its own
-    // layer.
-    "not-[[role=tablist]]:[--well-color:transparent]",
-  ],
+  class: "ui-code-block-header",
 });
 
 // The folder of a file tab or a title. It's half a step lighter than the page,
 // like the code below it, and its text is a bit smaller than the code.
 const codeBlockFolder = cv({
   extend: [tab],
-  class: ["font-sans"],
+  class: "font-sans",
   defaultVariants: {
     // Half a step, not the step of the folder tabs that this extends, which a
     // color or another modifier replaces.
@@ -154,11 +122,13 @@ export const codeBlockTitle = cv({
   // tab, and it's shorter than a file tab.
   extend: [codeBlockFolder],
   class: [
-    // A title can shrink, so it stays in the block. Its label truncates.
-    "min-w-0 shrink",
+    "ui-code-block-title",
     // The text can be selected, like other text on the page, and the pointer
     // doesn't suggest a press.
-    "cursor-auto not-[button]:select-text",
+    "cursor-auto",
+    // Stays a class to come after the user-select of `ui-button`, which it
+    // replaces.
+    "not-[button]:select-text",
   ],
 });
 
@@ -173,32 +143,7 @@ export const codeBlockTitle = cv({
  */
 export const codeBlockCopy = cv({
   extend: [frame, text],
-  class: [
-    "code-block-copy flex",
-    // Over the code, in the corner inside the edge of the panel.
-    "z-2 self-start [justify-self:right]",
-    // Sticky offsets start inside the padding of the scroll area, so the top
-    // one takes it back. The scroll area has no side padding to cover.
-    "sticky right-0 -top-(--code-block-padding) mx-0",
-    // Wrapped code isn't a scroll area, so the frame would stick to the scroll
-    // area around the block instead.
-    "[.code-block-wrap>&]:relative [.code-block-wrap>&]:inset-auto",
-    // The button has the gap around it as the padding of the frame, and the
-    // rest of the padding of the code as its own padding. With the text of the
-    // code, the button is centered on the first line, and the icon lines up
-    // with its text.
-    "[--code-block-copy-p:calc(round(--spacing(2),1px)-var(--code-block-copy-gap))]",
-    // No space below the button, so the frame covers less of the second line.
-    "pb-0",
-    // Code that scrolls under the frame fades into it, instead of ending at a
-    // sharp edge. The fade goes before the frame and lets clicks through. The
-    // left corners are square, so the fade meets a straight edge.
-    "rounded-l-none",
-    "before:absolute before:inset-y-0 before:right-full before:w-[1lh]",
-    "before:pointer-events-none",
-    "before:bg-linear-to-r",
-    "before:from-transparent before:to-(--ak-layer)",
-  ],
+  class: "ui-code-block-copy",
   defaultVariants: {
     $p: "var(--code-block-copy-gap)",
     // The frame goes over the padding of the scroll area, like the code, and
@@ -217,16 +162,7 @@ export const codeBlockCopy = cv({
  */
 export const codeBlockExpand = cv({
   extend: [frameBase],
-  class: [
-    "code-block-expand flex items-end justify-center",
-    // Over the scroll area, below the copy button.
-    "z-1",
-    // The child is the expand button. Naming it keeps Chrome from restyling
-    // the whole subtree of each element that the pointer enters or leaves,
-    // which a hover rule for any child does. :where() keeps the specificity of
-    // `*`.
-    "cursor-pointer hover:[&>:where(.control)]:ak-state-(--hover-offset)",
-  ],
+  class: "ui-code-block-expand cursor-pointer",
   defaultVariants: {
     // A frame over the padding of the panel, like the scroll area, with a
     // little padding of its own, so the corners of the button stay concentric
@@ -242,39 +178,12 @@ export const codeBlockExpand = cv({
  * the row leaves that space above the button too.
  */
 export const codeBlockCollapse = cv({
-  class: [
-    "code-block-collapse flex justify-center",
-    "[.code-block>&]:row-start-2",
-    "[.code-block>.code-block-header~&,.code-block>.tab-list-carousel~&]:row-start-3",
-    "pt-[calc(var(--tabs-padding,0px)+var(--tabs-bordering,0px)+round(--spacing(2),1px))]",
-  ],
+  class: "ui-code-block-collapse",
 });
 
-// Line numbers come from a CSS counter in a gutter at the start of each line,
-// so they are never selected or copied. The empty alternative text after the
-// slash keeps screen readers from reading them. The gutter hangs before the
-// line, so wrapped lines start after it. It takes the width of the largest
-// number, plus a gap.
 const lineNumbers = cx(
-  "code-block-line-numbers",
-  "[&>code]:[counter-reset:line]",
-  "[&_.line]:[counter-increment:line]",
-  "[--code-block-gutter:calc(var(--code-block-digits,2)*1ch+2ch)]",
-  "[--code-block-start:calc(var(--code-block-px)+var(--code-block-gutter))]",
-  "[&_.line]:ps-(--code-block-start) [&_.line]:-indent-(--code-block-start)",
-  "[&_.line]:before:inline-block [&_.line]:before:indent-0",
-  "[&_.line]:before:w-(--code-block-start) [&_.line]:before:pe-[2ch]",
-  "[&_.line]:before:text-end [&_.line]:before:ak-ink-0",
-  "[&_.line]:before:select-none",
-  "[&_.line]:before:content-[counter(line)_/_'']",
-  // The gutter stays in view while the code scrolls sideways. It covers the
-  // code that scrolls under it, and it repeats the bar of a marked line, which
-  // is set here because only this variant gives the line a gutter.
-  "[&_.line]:before:sticky [&_.line]:before:start-0 [&_.line]:before:z-1",
-  "[&_.line]:before:bg-(--ak-layer)",
-  "[&_.highlighted]:before:shadow-[inset_var(--code-block-bar)_0_var(--ak-edge)]",
-  // Placeholder lines have a placeholder number in the gutter instead.
-  "[&_.skeleton_.line]:before:hidden",
+  "ui-code-block-scroll--line-numbers",
+  "[&_.line]:before:ak-ink-0",
 );
 
 /**
@@ -286,33 +195,19 @@ const lineNumbers = cx(
 export const codeBlockCode = cv({
   extend: [tabPanels, focus],
   class: [
-    "code-block-code grid min-w-0",
-    // One cell, where the scroll area takes the height that the block leaves
-    // it, and the buttons go over it.
-    "grid-cols-1 grid-rows-[minmax(0,1fr)] [&>*]:col-start-1 [&>*]:row-start-1",
-    // The buttons over the code cover the padding, like the scroll area.
-    "[--code-block-padding:var(--ak-frame-padding)]",
-    // The code is always left to right, but the strip above it follows the
-    // page. On a right-to-left page, the start of the strip is on the right, so
-    // the top corners that join it swap sides.
-    "[.code-block:dir(rtl)>&]:not-first:rounded-tr-[calc(var(--tabs-corner-s)+(var(--tabs-notch,0px)-var(--tabs-corner-s))*var(--tabs-open-s,0))]",
-    "[.code-block:dir(rtl)>&]:not-first:rounded-tl-[calc(var(--tabs-corner-e)+(var(--tabs-notch,0px)-var(--tabs-corner-e))*var(--tabs-open-e,0))]",
-    // The ring goes over the edge, outside the content, which would cover it,
-    // such as the gutter of line numbers, marked lines, and the copy button.
-    // With focus, the panel goes up to the layer of the tabs, which it follows
-    // in the DOM, so the ring crosses the selected tab. A panel without a tab
-    // stop inside, such as one with wrapped code, takes the focus itself.
-    "-outline-offset-(--ak-frame-border) ui-focus-visible:z-6",
-    "has-[>.code-block-scroll:focus-visible]:z-6",
+    "ui-code-block-code",
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
+    "[&>*]:col-start-1 [&>*]:row-start-1",
   ],
   variants: {
     // The scroll area takes the keyboard focus, so the panel shows its ring
     // then too, like focusWithin for a control with a nested input.
     $focus: {
-      1: "has-[>.code-block-scroll:focus-visible]:outline",
-      true: "has-[>.code-block-scroll:focus-visible]:outline-2",
-      2: "has-[>.code-block-scroll:focus-visible]:outline-2",
-      3: "has-[>.code-block-scroll:focus-visible]:outline-3",
+      1: "ui-code-block-code--focus-1",
+      true: "ui-code-block-code--focus-true",
+      2: "ui-code-block-code--focus-2",
+      3: "ui-code-block-code--focus-3",
     },
   },
   defaultVariants: {
@@ -343,45 +238,10 @@ export const codeBlockCode = cv({
 export const codeBlockScroll = cv({
   extend: [frameBase, text],
   class: [
-    // One cell, where the copy button goes over the code. The cell is as wide
-    // as the code, so the button sticks to the corner when the code scrolls
-    // sideways too. It has no stacking context of its own, so the copy button
-    // stays above the expand button next to it.
-    "code-block-scroll grid min-h-0 min-w-0 *:[grid-area:1/1]",
-    // The copy button sticks to the corner, so a scroll padding would scroll
-    // the code each time the button takes the focus.
-    "scroll-p-0",
-    "tab-2",
-    // The panel shows the focus ring.
-    "outline-none",
-    // The frame padding, which the scroll area takes from the panel that it
-    // covers, stays at the top and the bottom. The side padding moves to each
-    // line, so line backgrounds reach both edges, and the gutter of line
-    // numbers can replace it. It's the side padding of textFrame: the frame
-    // padding and half the leading around the caps. Glyphs of a monospace font
-    // start a bit inside their cell, so a sixth of a character comes off.
-    "px-0",
-    "[--code-block-px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*0.5-1ch/6)]",
-    "[&>code]:min-w-full",
-    // Lines are separated by line feeds, so they stay inline. An empty line
-    // still needs the height of a line for its background.
-    "[&_.line]:relative [&_.line]:inline-block [&_.line]:min-w-full",
-    "[&_.line]:min-h-lh [&_.line]:align-top",
-    // Zero specificity, so the gutters of line numbers and prompt signs can
-    // replace the start padding.
-    "[&_.line]:ui-base:px-(--code-block-px)",
-    // The first line leaves room for the frame of a copy button after the
-    // code, which is as wide as the line is tall with its padding.
-    "[&:has(>.code-block-copy)_.line:first-child]:pe-[calc(var(--code-block-px)+1lh+2*var(--ak-frame-padding))]",
-    // Adapt each theme color to the layer of its line, so tokens keep enough
-    // contrast on any background. The layer decides which theme applies, not
-    // the page color scheme, so a dark block on a light page gets dark colors.
-    // Tokens have their colors in a style attribute. Marked text from
-    // codeBlockMarkedText has a style attribute too, but it keeps the text
-    // color of its tokens.
-    "[&_.line_span[style]:not(.ui-code-block-marked-text)]:ak-text",
-    "ak-light:[&_.line_span[style]:not(.ui-code-block-marked-text)]:ak-text-color-(--shiki-light)",
-    "ak-dark:[&_.line_span[style]:not(.ui-code-block-marked-text)]:ak-text-color-(--shiki-dark)",
+    "ui-code-block-scroll",
+    // Stays a class to keep its order with the classes of the elements that it
+    // styles.
+    "*:[grid-area:1/1]",
   ],
   variants: {
     /**
@@ -407,10 +267,8 @@ export const codeBlockScroll = cv({
     $wrap: {
       // The block reads the marker, so it doesn't limit the height of wrapped
       // code.
-      true: "code-block-wrap [&>code]:whitespace-pre-wrap [&>code]:wrap-anywhere",
-      // The code is as wide as its longest line, so every line background spans
-      // the full scroll width.
-      false: "overflow-x-auto overscroll-x-contain [&>code]:w-max",
+      true: "ui-code-block-scroll--wrap-true",
+      false: "ui-code-block-scroll--wrap-false",
     },
     /**
      * Shows this many lines, and fades out the last ones into the layer of the
@@ -442,12 +300,7 @@ export const codeBlockScroll = cv({
      * not selected or copied. Don't combine it with `$lineNumbers`, which takes
      * the same space before each line.
      */
-    $prompt: [
-      "[&_.line]:ps-[calc(var(--code-block-px)+2ch)]",
-      "[&_.line]:before:absolute [&_.line]:before:start-(--code-block-px)",
-      "[&_.line]:before:select-none [&_.line]:before:ak-ink-0",
-      "[&_.line]:before:content-['$'_/_'']",
-    ],
+    $prompt: "ui-code-block-scroll--prompt [&_.line]:before:ak-ink-0",
   },
   defaultVariants: {
     $font: "mono",
@@ -477,21 +330,7 @@ export const codeBlockScroll = cv({
  */
 export const codeBlockMarkedLine = cv({
   extend: [edge],
-  class: [
-    "highlighted",
-    "[--code-block-bar:calc(3px+var(--contrast,0)*0.01px)]",
-    "shadow-[inset_var(--code-block-bar)_0_var(--ak-edge)]",
-    // Dotted edges in the brand color mark the top and the bottom of each run
-    // of marked lines. They are adaptive, so they show only when contrast
-    // increases. A see-through layer resolves their color without painting
-    // over the code, and they go over the gutter of sticky line numbers too.
-    "after:pointer-events-none after:absolute after:inset-0 after:z-1",
-    "after:ak-layer after:ak-layer-transparent",
-    "after:ak-edge-brand after:ak-edge-0",
-    "after:border-dotted after:border-(--ak-edge)",
-    "not-[.highlighted+*]:after:border-t",
-    "not-has-[+.highlighted]:after:border-b",
-  ],
+  class: "highlighted ui-code-block-marked-line after:ak-layer",
   defaultVariants: {
     $layer: "brand",
     // Keep the brand tint near white and black too, where a layer drops its
@@ -511,12 +350,7 @@ export const codeBlockMarkedLine = cv({
  */
 export const codeBlockMarkedText = cv({
   extend: [edge],
-  class: [
-    "highlighted-word ui-code-block-marked-text",
-    "ring rounded-sm",
-    "-mx-[0.25ch] px-[0.25ch] py-[0.15em]",
-    "[box-decoration-break:clone]",
-  ],
+  class: "highlighted-word ui-code-block-marked-text",
   variants: {
     /**
      * Marks text in one token with colors, inside the element of that token.
@@ -525,11 +359,15 @@ export const codeBlockMarkedText = cv({
      * decides which theme color applies, as it does for the tokens.
      */
     $token: [
-      // It follows ak-layer in the CSS, so it replaces the layer text color.
+      // Stays a class to come after the color of `ink`, which it replaces.
       "text-inherit",
+      // Stays a class to come after the --_ak-layer-color of `layer`, which it
+      // replaces.
       "ak-light:ak-layer-color-(--shiki-light)",
-      "ak-light:ak-edge-color-(--shiki-light)",
       "ak-dark:ak-layer-color-(--shiki-dark)",
+      // Stays a class to come after the --_ak-edge-color of `edge`, which it
+      // replaces.
+      "ak-light:ak-edge-color-(--shiki-light)",
       "ak-dark:ak-edge-color-(--shiki-dark)",
     ],
   },
@@ -558,8 +396,12 @@ export const codeBlockMarkedText = cv({
 // A token mixes the color of its kind into the tint of the skeleton. The layer
 // of the code decides which theme applies, as it does for highlighted tokens.
 const tokenTint = cx(
+  // Stays a class to come after the --_ak-layer-color of `layer`, which it
+  // replaces.
   "ak-light:ak-layer-color-(--code-block-token-light)",
   "ak-dark:ak-layer-color-(--code-block-token-dark)",
+  // Stays a class, so that the --_ak-layer-mix-amount of `layer` still comes
+  // after it and replaces it.
   "ak-layer-mix-35",
 );
 
@@ -573,34 +415,17 @@ const tokenTint = cx(
  */
 export const codeBlockSkeletonToken = cv({
   extend: [skeletonLine],
-  class: "inline-block align-top",
+  class: "ui-code-block-skeleton-token",
   variants: {
     $token: {
       text: "",
-      keyword: [
-        tokenTint,
-        "[--code-block-token-light:#D73A49] [--code-block-token-dark:#F97583]",
-      ],
-      function: [
-        tokenTint,
-        "[--code-block-token-light:#6F42C1] [--code-block-token-dark:#B392F0]",
-      ],
-      string: [
-        tokenTint,
-        "[--code-block-token-light:#032F62] [--code-block-token-dark:#9ECBFF]",
-      ],
-      constant: [
-        tokenTint,
-        "[--code-block-token-light:#005CC5] [--code-block-token-dark:#79B8FF]",
-      ],
+      keyword: [tokenTint, "ui-code-block-skeleton-token--keyword"],
+      function: [tokenTint, "ui-code-block-skeleton-token--function"],
+      string: [tokenTint, "ui-code-block-skeleton-token--string"],
+      constant: [tokenTint, "ui-code-block-skeleton-token--constant"],
       // It shows only in code with line numbers, at the start of the line, in
-      // the gutter. The selector outranks the display of the token. The margins
-      // take the rest of the gutter, so the bar ends where the number would.
-      number: [
-        "[.code-block-scroll:not(.code-block-line-numbers)_&]:hidden",
-        "ms-[calc(var(--code-block-start)-2ch-var(--code-block-token-length)*1ch)]",
-        "me-[2ch]",
-      ],
+      // the gutter.
+      number: "ui-code-block-skeleton-token--number",
     },
     $length(value?: number) {
       if (value == null) return;

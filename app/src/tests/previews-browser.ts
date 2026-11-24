@@ -17,7 +17,7 @@ const LOADING_SELECTOR = [
   // A skeleton can keep its placeholders for 200 ms after its region loads.
   // Only the animation classes mark that state, so a root with $animate={false}
   // is not covered. The region scope skips previews that never finish loading.
-  ":is([aria-busy], [aria-busy] *):is(.skeleton-shimmer, .skeleton.animate-pulse)",
+  ":is([aria-busy], [aria-busy] *):is(.ui-skeleton--animate-shimmer, .ui-skeleton.animate-pulse)",
 ].join(", ");
 
 // Covers hydration and the slowest simulated request (1.8 s).

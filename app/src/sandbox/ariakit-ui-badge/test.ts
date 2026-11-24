@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 test("puts plain text and numbers in a label", () => {
   const box = q.within(q.article("Plain text children"));
   for (const text of ["Text", "0", "3 new", "Icon"]) {
-    expect(box.text(text).parentElement).toHaveClass("badge");
+    expect(box.text(text).parentElement).toHaveClass("ui-badge");
   }
 });
 

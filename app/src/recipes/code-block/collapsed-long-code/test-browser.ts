@@ -12,7 +12,7 @@ withCaptures(import.meta.dirname, async ({ id, test }) => {
     await forEachColorScheme(page, async (colorScheme) => {
       await test.expect(q.button("Show all 36 lines")).toBeVisible();
       await visual(
-        getCapture(page.locator(".code-block"), colorScheme, {
+        getCapture(page.locator(".ui-code-block"), colorScheme, {
           item: `${id}/collapsed`,
         }),
       );
@@ -26,9 +26,9 @@ withCaptures(import.meta.dirname, async ({ id, test }) => {
     await forEachColorScheme(page, async (colorScheme) => {
       // The pointer is on the first lines, far from the button, where only the
       // click target over the code is hovered.
-      await hoverOver(page.locator(".code-block-expand"), { x: 80, y: 40 });
+      await hoverOver(page.locator(".ui-code-block-expand"), { x: 80, y: 40 });
       await visual(
-        getCapture(page.locator(".code-block"), colorScheme, {
+        getCapture(page.locator(".ui-code-block"), colorScheme, {
           item: `${id}/collapsed-hover`,
         }),
       );
@@ -49,7 +49,7 @@ withCaptures(import.meta.dirname, async ({ id, test }) => {
         .expect(q.button("Show fewer lines"))
         .toBeInViewport({ ratio: 1 });
       await visual(
-        getCapture(page.locator(".code-block"), colorScheme, {
+        getCapture(page.locator(".ui-code-block"), colorScheme, {
           item: `${id}/expanded`,
         }),
       );

@@ -1,0 +1,60 @@
+/* The CSS of the link style recipe in link.ts. Import this file after ui.css in
+   the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./link.css"; */
+
+@custom-variant ui-new-window {
+  &[target="_blank"] {
+    @slot;
+  }
+}
+
+/* The Lucide arrow-up-right mask of a link that opens in a new window. */
+:root {
+  --link-new-window-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7h10v10'/%3E%3Cpath d='M7 17 17 7'/%3E%3C/svg%3E");
+  /* The empty alternative text keeps the word joiner out of the accessible name
+     of the link. */
+  --link-new-window-content: "\2060" / "";
+}
+
+@utility ui-link {
+  /* Expand the hit target and focus ring without shifting flex or grid
+     layout. The padding follows the text size of the link. */
+  @apply ui-spacing-em;
+  margin-top: --spacing(-1);
+  margin-bottom: --spacing(-1.5);
+  padding-top: var(--spacing);
+  padding-bottom: --spacing(1.5);
+  border-radius: calc(var(--radius) * 1);
+  text-underline-offset: 0.25em;
+
+  @variant ak-dark {
+    /* Style queries read the ancestor layer, not the link itself. */
+    --link-dark: 1;
+  }
+
+  @variant ui-hover {
+    text-decoration-thickness: 3px;
+  }
+
+  @variant ui-new-window {
+    @variant after {
+      /* A word joiner in an inline box keeps its padding with the text before
+         it and out of the underline. An inline-block or a nested icon could
+         wrap onto its own line. Without a character in the box, Chromium would
+         not count the padding when it breaks a line, and the icon would pass
+         the column edge. The height and alignment only apply when a flex link
+         blockifies the box. */
+      @apply content-(--link-new-window-content);
+      padding-inline-start: 1em;
+      height: 1em;
+      align-self: center;
+      background-color: currentcolor;
+      /* WebKit leaves an inline box unmasked outside the mask image, so the
+         image fills the box. The SVG keeps its aspect ratio inside it. */
+      mask-image: var(--link-new-window-icon);
+      mask-size: 100% 100%;
+    }
+  }
+}

@@ -447,6 +447,33 @@ function atRule(
   return { type: Type.AtRule, name, children: [params, ...children] };
 }
 
+// The nested cascade layer of the base utilities. Inside the utilities layer of
+// Tailwind, it becomes `utilities.ak`, which is below every rule that is
+// directly in that layer.
+const BASE_LAYER = "ak";
+
+/**
+ * Puts declarations and rules in the cascade layer of the base utilities, such
+ * as `ak-layer` and `ak-frame`. In the utilities layer, any other utility on
+ * the same element replaces them, whatever the order of the two rules. Tailwind
+ * writes each utility where a class uses it, so each use is its own `@layer ak`
+ * block, and the browser joins the blocks into one layer.
+ *
+ * In an unlayered rule, such as one that applies `ak-frame` with `@apply`, the
+ * block is a top-level `ak` layer, which loses to every unlayered declaration.
+ * In a rule inside another layer, such as `base`, it is nested in that layer
+ * and loses to every rule directly in it, Preflight included.
+ *
+ * Layers reverse the order of important declarations, so when both sides are
+ * important, this turns around: with Tailwind's `important` option or with `!`,
+ * the base declarations win against every other utility, unlayered rule, or
+ * rule directly in the same layer that sets the same property, the modifier
+ * utilities of this package included.
+ */
+export function base(...children: (AtRuleChild | AtRuleChild[])[]): AtRule {
+  return atRule(AtRuleName.Layer, BASE_LAYER, ...children.flat());
+}
+
 function variant(
   variant: string | CustomVariant,
   ...children: AtRuleChild[]

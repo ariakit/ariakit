@@ -28,7 +28,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         });
         await selectScenario(q, "areas");
         await q.checkbox("Right to left").setChecked(rtl);
-        const header = page.locator(".shell-header");
+        const header = page.locator(".ui-shell-header");
         await expect(header).toHaveCSS(
           "padding-left",
           `${Math.max(left, 11)}px`,

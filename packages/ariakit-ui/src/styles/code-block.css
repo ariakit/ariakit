@@ -1,0 +1,440 @@
+/* The CSS of the code-block style recipe in code-block.ts. Import this file in
+   the CSS file that imports Tailwind CSS, after ui.css and the CSS files of the
+   style recipes that code-block.ts imports:
+
+   @import "./ui.css";
+   @import "./skeleton.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./carousel.css";
+   @import "./glider.css";
+   @import "./tabs.css";
+   @import "./code-block.css";
+
+   The style component in code-block.ariakit.react.tsx also needs popover.css
+   and tooltip.css, which hold the CSS of style recipes that it imports. Import
+   those files too. */
+
+@utility ui-code-block {
+  /* One column, where the copy button and the expand button share the row of
+     the code. The code goes below a header, and the collapse row below the
+     code. The code takes the height that the other rows leave, so it scrolls
+     inside when the block reaches its maximum height. File tabs that scroll
+     are in a carousel, which takes the row of the header. */
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) auto;
+  /* The space around the copy button: the padding of the block, or a
+     little space when the block has none, so the button never touches the
+     edge. A whole pixel keeps the button on the pixel grid at text sizes
+     where the em step isn't one. */
+  --code-block-copy-gap: round(max(var(--tabs-padding), var(--spacing)), 1px);
+  /* The block fits in the scroll area around it, between its sticky bars, which
+     a shell, a dialog, or a popover publishes. Without a height, it fits on the
+     screen, or in a size container. Outside one, cqb is the small viewport, so
+     the dynamic viewport follows mobile browser bars instead. The space at each
+     end is larger than the scroll margin, so a block that scrolls into view
+     fits. */
+  --code-block-scrollport: var(--scrollport-height,100dvh);
+  scroll-margin-block-start: calc(var(--scrollport-start, 0px) + --spacing(3));
+  scroll-margin-block-end: calc(var(--scrollport-end, 0px) + --spacing(3));
+  --code-block-max-height: min(var(--code-block-scrollport) - var(--scrollport-start,0px) - var(--scrollport-end,0px) - (--spacing(8)), 60rem);
+
+  &:has(> .ui-code-block-header, > .ui-tab-list-carousel) {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  & > .ui-code-block-code {
+    grid-row-start: 1;
+  }
+
+  & > .ui-code-block-header, & > .ui-tab-list-carousel {
+    grid-row-start: 1;
+  }
+
+  & > .ui-code-block-header ~ .ui-code-block-code,
+  & > .ui-tab-list-carousel ~ .ui-code-block-code {
+    grid-row-start: 2;
+  }
+
+  @container (min-height: 0px) {
+    --code-block-scrollport: var(--scrollport-height,100cqb);
+  }
+}
+
+@utility ui-code-block-header {
+  &:not(:is([role=tablist])) {
+    /* The strip paints the color of the well, and the title keeps its own
+       layer. */
+    --well-color: transparent;
+  }
+}
+
+@utility ui-code-block-title {
+  /* A title can shrink, so it stays in the block. Its label truncates. */
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+@utility ui-code-block-copy {
+  /* Code that scrolls under the frame fades into it, instead of ending at a
+     sharp edge. The fade goes before the frame and lets clicks through. The
+     left corners are square, so the fade meets a straight edge. */
+  @apply rounded-l-none;
+  display: flex;
+  /* Over the code, in the corner inside the edge of the panel. */
+  z-index: 2;
+  align-self: flex-start;
+  justify-self: right;
+  /* Sticky offsets start inside the padding of the scroll area, so the top
+     one takes it back. The scroll area has no side padding to cover. */
+  position: sticky;
+  top: calc(var(--code-block-padding) * -1);
+  right: 0;
+  margin-inline: 0;
+  /* The button has the gap around it as the padding of the frame, and the
+     rest of the padding of the code as its own padding. With the text of the
+     code, the button is centered on the first line, and the icon lines up
+     with its text. */
+  --code-block-copy-p: calc(round(--spacing(2), 1px) - var(--code-block-copy-gap));
+  /* No space below the button, so the frame covers less of the second line. */
+  padding-bottom: 0;
+
+  @variant before {
+    @apply bg-linear-to-r from-transparent to-(--ak-layer);
+    position: absolute;
+    inset-block: 0;
+    right: 100%;
+    width: 1lh;
+    pointer-events: none;
+  }
+
+  .ui-code-block-scroll--wrap-true > & {
+    /* Wrapped code isn't a scroll area, so the frame would stick to the scroll
+       area around the block instead. */
+    position: relative;
+    inset: auto;
+  }
+}
+
+@utility ui-code-block-expand {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  /* Over the scroll area, below the copy button. */
+  z-index: 1;
+
+  @variant hover {
+    & > :where(.ui-control) {
+      /* The child is the expand button. Naming it keeps Chrome from restyling
+         the whole subtree of each element that the pointer enters or leaves,
+         which a hover rule for any child does. :where() keeps the specificity
+         of `*`. */
+      @apply ak-state-(--hover-offset);
+    }
+  }
+}
+
+@utility ui-code-block-collapse {
+  display: flex;
+  justify-content: center;
+  padding-top: calc(var(--tabs-padding, 0px) + var(--tabs-bordering, 0px) + round(--spacing(2), 1px));
+
+  .ui-code-block > & {
+    grid-row-start: 2;
+  }
+
+  .ui-code-block > .ui-code-block-header ~ &, .ui-code-block > .ui-tab-list-carousel ~ & {
+    grid-row-start: 3;
+  }
+}
+
+@utility ui-code-block-code {
+  display: grid;
+  min-width: 0;
+  /* One cell, where the scroll area takes the height that the block leaves
+     it, and the buttons go over it. */
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  /* The buttons over the code cover the padding, like the scroll area. */
+  --code-block-padding: var(--ak-frame-padding);
+  /* The ring goes over the edge, outside the content, which would cover it,
+     such as the gutter of line numbers, marked lines, and the copy button.
+     With focus, the panel goes up to the layer of the tabs, which it follows
+     in the DOM, so the ring crosses the selected tab. A panel without a tab
+     stop inside, such as one with wrapped code, takes the focus itself. */
+  outline-offset: calc(var(--ak-frame-border) * -1);
+
+  &:has(> .ui-code-block-scroll:focus-visible) {
+    z-index: 6;
+  }
+
+  @variant ui-focus-visible {
+    z-index: 6;
+  }
+
+  .ui-code-block:dir(rtl) > & {
+    @variant not-first {
+      border-top-left-radius: calc(var(--tabs-corner-e) + (var(--tabs-notch, 0px) - var(--tabs-corner-e)) * var(--tabs-open-e, 0));
+      /* The code is always left to right, but the strip above it follows the
+         page. On a right-to-left page, the start of the strip is on the right,
+         so the top corners that join it swap sides. */
+      border-top-right-radius: calc(var(--tabs-corner-s) + (var(--tabs-notch, 0px) - var(--tabs-corner-s)) * var(--tabs-open-s, 0));
+    }
+  }
+
+  &:where(.ui-code-block-code--focus-1) {
+    &:has(> .ui-code-block-scroll:focus-visible) {
+      @apply outline;
+    }
+  }
+
+  &:where(.ui-code-block-code--focus-true) {
+    &:has(> .ui-code-block-scroll:focus-visible) {
+      @apply outline-2;
+    }
+  }
+
+  &:where(.ui-code-block-code--focus-2) {
+    &:has(> .ui-code-block-scroll:focus-visible) {
+      @apply outline-2;
+    }
+  }
+
+  &:where(.ui-code-block-code--focus-3) {
+    &:has(> .ui-code-block-scroll:focus-visible) {
+      @apply outline-3;
+    }
+  }
+}
+
+@utility ui-code-block-scroll {
+  /* The panel shows the focus ring. */
+  @apply outline-none;
+  /* One cell, where the copy button goes over the code. The cell is as wide
+     as the code, so the button sticks to the corner when the code scrolls
+     sideways too. It has no stacking context of its own, so the copy button
+     stays above the expand button next to it. */
+  display: grid;
+  min-height: 0;
+  min-width: 0;
+  /* The copy button sticks to the corner, so a scroll padding would scroll
+     the code each time the button takes the focus. */
+  scroll-padding: 0;
+  tab-size: 2;
+  /* The frame padding, which the scroll area takes from the panel that it
+     covers, stays at the top and the bottom. The side padding moves to each
+     line, so line backgrounds reach both edges, and the gutter of line
+     numbers can replace it. It's the side padding of textFrame: the frame
+     padding and half the leading around the caps. Glyphs of a monospace font
+     start a bit inside their cell, so a sixth of a character comes off. */
+  padding-inline: 0;
+  --code-block-px: calc(var(--ak-frame-padding,0px) + (1lh - 1cap) * 0.5 - 1ch / 6);
+
+  & .line {
+    /* Lines are separated by line feeds, so they stay inline. An empty line
+       still needs the height of a line for its background. */
+    position: relative;
+    display: inline-block;
+    min-width: 100%;
+    min-height: 1lh;
+    vertical-align: top;
+
+    @variant ui-base {
+      /* Zero specificity, so the gutters of line numbers and prompt signs can
+         replace the start padding. */
+      padding-inline: var(--code-block-px);
+    }
+  }
+
+  & .line span[style]:not(.ui-code-block-marked-text) {
+    /* Adapt each theme color to the layer of its line, so tokens keep enough
+       contrast on any background. The layer decides which theme applies, not
+       the page color scheme, so a dark block on a light page gets dark colors.
+       Tokens have their colors in a style attribute. Marked text from
+       codeBlockMarkedText has a style attribute too, but it keeps the text
+       color of its tokens. */
+    @apply ak-text;
+  }
+
+  @variant ak-dark {
+    & .line span[style]:not(.ui-code-block-marked-text) {
+      @apply ak-text-color-(--shiki-dark);
+    }
+  }
+
+  @variant ak-light {
+    & .line span[style]:not(.ui-code-block-marked-text) {
+      @apply ak-text-color-(--shiki-light);
+    }
+  }
+
+  &:has(> .ui-code-block-copy) .line:first-child {
+    /* The first line leaves room for the frame of a copy button after the
+       code, which is as wide as the line is tall with its padding. */
+    padding-inline-end: calc(var(--code-block-px) + 1lh + 2 * var(--ak-frame-padding));
+  }
+
+  & > code {
+    min-width: 100%;
+  }
+
+  /* Line numbers come from a CSS counter in a gutter at the start of each line,
+     so they are never selected or copied. The empty alternative text after the
+     slash keeps screen readers from reading them. The gutter hangs before the
+     line, so wrapped lines start after it. It takes the width of the largest
+     number, plus a gap. */
+  &:where(.ui-code-block-scroll--line-numbers) {
+    --code-block-gutter: calc(var(--code-block-digits,2) * 1ch + 2ch);
+    --code-block-start: calc(var(--code-block-px) + var(--code-block-gutter));
+
+    & .highlighted {
+      @variant before {
+        @apply shadow-[inset_var(--code-block-bar)_0_var(--ak-edge)];
+      }
+    }
+
+    & .line {
+      counter-increment: line;
+      padding-inline-start: var(--code-block-start);
+      text-indent: calc(var(--code-block-start) * -1);
+
+      @variant before {
+        @apply select-none content-[counter(line)/''];
+        display: inline-block;
+        text-indent: 0;
+        width: var(--code-block-start);
+        padding-inline-end: 2ch;
+        text-align: end;
+        /* The gutter stays in view while the code scrolls sideways. It covers
+           the code that scrolls under it, and it repeats the bar of a marked
+           line, which is set here because only this variant gives the line a
+           gutter. */
+        position: sticky;
+        inset-inline-start: 0;
+        z-index: 1;
+        background-color: var(--ak-layer);
+      }
+    }
+
+    & .ui-skeleton .line {
+      @variant before {
+        /* Placeholder lines have a placeholder number in the gutter instead. */
+        display: none;
+      }
+    }
+
+    & > code {
+      counter-reset: line;
+    }
+  }
+
+  &:where(.ui-code-block-scroll--wrap-true) {
+    & > code {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &:where(.ui-code-block-scroll--wrap-false) {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+
+    & > code {
+      /* The code is as wide as its longest line, so every line background
+         spans the full scroll width. */
+      width: max-content;
+    }
+  }
+
+  &:where(.ui-code-block-scroll--prompt) {
+    & .line {
+      padding-inline-start: calc(var(--code-block-px) + 2ch);
+
+      @variant before {
+        @apply select-none content-['$'/''];
+        position: absolute;
+        inset-inline-start: var(--code-block-px);
+      }
+    }
+  }
+}
+
+@utility ui-code-block-marked-line {
+  @apply shadow-[inset_var(--code-block-bar)_0_var(--ak-edge)];
+  --code-block-bar: calc(3px + var(--contrast,0) * 0.01px);
+
+  @variant after {
+    /* Dotted edges in the brand color mark the top and the bottom of each run
+       of marked lines. They are adaptive, so they show only when contrast
+       increases. A see-through layer resolves their color without painting
+       over the code, and they go over the gutter of sticky line numbers too. */
+    @apply ak-layer-transparent ak-edge-brand ak-edge-0 border-dotted;
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-color: var(--ak-edge);
+  }
+
+  &:not(:has(+ .highlighted)) {
+    @variant after {
+      @apply border-b;
+    }
+  }
+
+  &:not(:is(.highlighted + *)) {
+    @variant after {
+      @apply border-t;
+    }
+  }
+}
+
+@utility ui-code-block-marked-text {
+  @apply ring;
+  border-radius: calc(var(--radius) * 1);
+  margin-inline: calc(0.25ch * -1);
+  padding-inline: 0.25ch;
+  padding-block: 0.15em;
+  box-decoration-break: clone;
+}
+
+@utility ui-code-block-skeleton-token {
+  display: inline-block;
+  vertical-align: top;
+
+  &:where(.ui-code-block-skeleton-token--keyword) {
+    --code-block-token-light: #D73A49;
+    --code-block-token-dark: #F97583;
+  }
+
+  &:where(.ui-code-block-skeleton-token--function) {
+    --code-block-token-light: #6F42C1;
+    --code-block-token-dark: #B392F0;
+  }
+
+  &:where(.ui-code-block-skeleton-token--string) {
+    --code-block-token-light: #032F62;
+    --code-block-token-dark: #9ECBFF;
+  }
+
+  &:where(.ui-code-block-skeleton-token--constant) {
+    --code-block-token-light: #005CC5;
+    --code-block-token-dark: #79B8FF;
+  }
+
+  &:where(.ui-code-block-skeleton-token--number) {
+    /* The margins take the rest of the gutter, so the bar ends where the
+       number would. */
+    margin-inline-start: calc(var(--code-block-start) - 2ch - var(--code-block-token-length) * 1ch);
+    margin-inline-end: 2ch;
+
+    .ui-code-block-scroll:not(.ui-code-block-scroll--line-numbers) & {
+      /* The selector outranks the display of the token. */
+      display: none;
+    }
+  }
+}

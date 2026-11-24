@@ -35,7 +35,7 @@ export default function GliderRadius() {
   const getBox = () => {
     const subject = subjectRef.current;
     const box = subject?.querySelector<HTMLElement>(
-      ".glider-track:not([data-hidden]) .glider-box[data-selected]",
+      ".ui-glider-track:not([data-hidden]) .ui-glider-box[data-selected]",
     );
     return box ?? subject?.querySelector<HTMLElement>('[aria-selected="true"]');
   };

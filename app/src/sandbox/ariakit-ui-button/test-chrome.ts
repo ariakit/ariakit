@@ -156,8 +156,8 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const example = q.article("Vertical bar");
     const system = query(example).radio("System");
     const dark = query(example).radio("Dark");
-    const systemBar = system.locator(".control-bar");
-    const darkBar = dark.locator(".control-bar");
+    const systemBar = system.locator(".ui-bar");
+    const darkBar = dark.locator(".ui-bar");
     await example.scrollIntoViewIfNeeded();
     await test.expect(system).toBeChecked();
     await test.expect(systemBar).toBeVisible();

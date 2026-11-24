@@ -7,7 +7,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       const getEnd = (name: string, pseudo: string) => {
         const links = [...element.querySelectorAll("a")];
         const link = links.find((item) => item.textContent === name);
-        const guide = link?.querySelector(".toc-link-guide");
+        const guide = link?.querySelector(".ui-toc-link-guide");
         if (!guide) return Number.NaN;
         const style = getComputedStyle(guide, pseudo);
         const lengths = [
@@ -51,7 +51,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         return animations.flatMap((animation) => {
           const { effect } = animation;
           if (!(effect instanceof KeyframeEffect)) return [];
-          if (!effect.target?.matches(".toc-link-marker")) {
+          if (!effect.target?.matches(".ui-toc-link-marker")) {
             return [];
           }
           return animation instanceof CSSTransition
@@ -73,7 +73,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         "transitionrun",
         (event) => {
           if (!(event.target instanceof HTMLElement)) return;
-          if (!event.target.matches(".toc-link-bar")) return;
+          if (!event.target.matches(".ui-toc-link-bar")) return;
           runs.push(event.propertyName);
         },
         true,
@@ -82,7 +82,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.reload();
     const bar = query(q.navigation("Dot steps"))
       .link("Install")
-      .locator(".toc-link-bar");
+      .locator(".ui-toc-link-bar");
     await test.expect(bar).toHaveAttribute("style", /--nav-bar-top/);
     const getRuns = () => {
       return page.evaluate(() => {
@@ -101,7 +101,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       marker: "number" | "dot" | null,
     ) => {
       const row = query(q.navigation(nav)).link(link);
-      const element = row.locator(".toc-link-marker");
+      const element = row.locator(".ui-toc-link-marker");
       await test.expect(element).toBeVisible({ visible: marker != null });
       if (!marker) return;
       // One element draws both markers, and only a number has content.
@@ -122,7 +122,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   test("measures dots that show after the first render", async ({ q }) => {
     const nav = q.navigation("Dots shown later");
-    const dot = query(nav).link("Install").locator(".toc-link-marker");
+    const dot = query(nav).link("Install").locator(".ui-toc-link-marker");
     await test.expect(dot).toBeHidden();
     await q.button("Show dots").click();
     await test.expect(dot).toBeVisible();

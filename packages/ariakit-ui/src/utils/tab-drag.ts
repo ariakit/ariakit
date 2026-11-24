@@ -156,10 +156,10 @@ export function observeTabDrag(params: TabDragParams) {
   // row, which follows the last tab.
   const getSeparatorAfterStrip = () => {
     let next = strip.nextElementSibling;
-    if (next?.classList.contains("carousel-button-area")) {
+    if (next?.classList.contains("ui-carousel-button-area")) {
       next = next.nextElementSibling;
     }
-    return next?.classList.contains("control-separator") ? next : null;
+    return next?.classList.contains("ui-control-separator") ? next : null;
   };
 
   // A separator hides beside the selected tab. The style rules find that tab
@@ -273,7 +273,7 @@ export function observeTabDrag(params: TabDragParams) {
     );
     const separators = tabs.map((item) => {
       const previous = children[children.indexOf(item) - 1];
-      if (!previous?.classList.contains("control-separator")) return null;
+      if (!previous?.classList.contains("ui-control-separator")) return null;
       return previous;
     });
     const reducedMotion = prefersReducedMotion(strip);
@@ -513,7 +513,7 @@ export function observeTabDrag(params: TabDragParams) {
     if (!tab) return;
     if (isFixedTab(tab)) return;
     // A press on the close mark closes the tab.
-    const mark = tab.querySelector(".tab-remove");
+    const mark = tab.querySelector(".ui-tab-remove");
     if (mark && event.composedPath().includes(mark)) return;
     const touch = event.pointerType === "touch";
     const { pointerId, clientX: x, clientY: y } = event;

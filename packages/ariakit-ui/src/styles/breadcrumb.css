@@ -1,0 +1,214 @@
+/* The CSS of the breadcrumb style recipe in breadcrumb.ts. Import this file in
+   the CSS file that imports Tailwind CSS, after ui.css and the CSS files of the
+   style recipes that breadcrumb.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./breadcrumb.css"; */
+
+@utility ui-breadcrumb {
+  /* The gap between the steps follows the text size of the trail. */
+  @apply ui-spacing-em;
+  /* A row that can't shrink below its content never scrolls. */
+  min-width: 0;
+  --breadcrumb-gap: var(--spacing);
+
+  @variant ui-base {
+    /* Zero specificity lets caller text-* classes win. */
+    @apply text-sm;
+  }
+
+  &:where(.ui-breadcrumb--scroll) {
+    display: flex;
+    flex-direction: row-reverse;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: none;
+    /* The scroll container clips, so the padding keeps room for focus rings,
+       and the first step and the list stay inside it. */
+    --breadcrumb-pull: 0;
+
+    & > .ui-breadcrumb-list {
+      /* The list is the only flex child, so the steps keep their order, and a
+         short trail stays at the start through the auto margin. */
+      flex: none;
+      width: max-content;
+      flex-wrap: nowrap;
+      margin-inline-end: auto;
+      padding: var(--spacing);
+      margin-inline-start: 0;
+    }
+  }
+}
+
+@utility ui-breadcrumb-list {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  list-style-type: none;
+  column-gap: var(--breadcrumb-gap);
+  row-gap: 0;
+
+  &:has(:is(.ui-breadcrumb-label--truncate)) {
+    /* Auto tracks start at the minimum width of each step and share the free
+       space equally up to the full width of each step. So short labels get all
+       of their text first, and the longest ones clip first. Flex items would
+       all shrink together. */
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    justify-content: flex-start;
+    /* A row that no longer fits must not widen the page. The end padding keeps
+       room for a focus ring. */
+    overflow-x: clip;
+    padding-inline-end: var(--spacing);
+    /* The first step hangs past the start of the row, so the clip starts
+       further out. The padding and the margin cancel each other in the layout,
+       and the padding must not take pointer events from what comes before. */
+    padding-inline-start: --spacing(4);
+    margin-inline-start: --spacing(-4);
+    /* The children are list items, native or from the item prop. Naming them
+       keeps Chrome from restyling the whole subtree of each :has() anchor whose
+       state changes, which a :has() before a universal selector does. :where()
+       keeps the specificity of `*`. */
+    pointer-events: none;
+
+    & > :where(li, [role=listitem]) {
+      pointer-events: auto;
+    }
+
+    & > li:not(:has(.ui-breadcrumb-label--truncate)) {
+      /* Steps that don't clip stay whole. */
+      min-width: max-content;
+    }
+  }
+}
+
+@utility ui-breadcrumb-item {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  flex-shrink: 0;
+
+  &:has(:is(.ui-breadcrumb-label--truncate)) {
+    min-width: auto;
+  }
+}
+
+@utility ui-breadcrumb-step {
+  /* The step is a flex item of its list item, and a clipped label needs it to
+     shrink. */
+  justify-content: flex-start;
+  text-wrap: wrap;
+  min-width: 0;
+
+  @variant not-ui-selected {
+    @apply font-normal;
+  }
+
+  .ui-breadcrumb-item:first-child > &:first-child {
+    /* The first step hangs by its own side padding, so its content lines up
+       with the text around the trail at any $px. Slots usually move into that
+       padding. Here a slot stays at the padding edge, which holds at any slot
+       size, and a slot alone stays centered. */
+    margin-inline-start: calc(var(--px) * var(--breadcrumb-pull, 1) * -1);
+  }
+
+  .ui-breadcrumb-item:first-child > &:first-child > .ui-slot-frame-slot:first-child {
+    margin-inline-start: 0;
+  }
+
+  .ui-breadcrumb-item:first-child > &:first-child > .ui-slot-frame-slot:only-child {
+    margin-inline-end: 0;
+  }
+}
+
+@utility ui-breadcrumb-link {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+
+  &.ui-breadcrumb-step--quiet {
+    @variant ui-hover {
+      text-decoration-line: underline;
+    }
+  }
+}
+
+@utility ui-breadcrumb-label--truncate {
+  /* The text can break anywhere and shows one line, which looks like nowrap,
+     but it gives the label a small minimum width and keeps its full width.
+     The step and the list item then find their minimum from the label, the
+     padding, and the slots. The minimum leaves room for a letter and the
+     ellipsis. */
+  @apply line-clamp-1;
+  min-width: 3ch;
+  white-space: normal !important;
+  word-break: break-all;
+
+  @supports (width: calc-size(auto,size)) {
+    @supports not (font: -apple-system-body) {
+      /* Where calc-size() works, the minimum adds no space beside narrower
+         text. WebKit keeps the plain minimum, because it gives a flex item
+         with this minimum its full max-content width, and the labels
+         overlap. */
+      min-width: calc-size(max-content, min(size, 3ch));
+    }
+  }
+}
+
+@utility ui-breadcrumb-separator {
+  flex-shrink: 0;
+  /* The margin of a control separator closes the padding of a control group.
+     A padded parent must not pull the mark over the steps around it. */
+  --ak-frame-padding: 0px;
+  --group-gap: var(--breadcrumb-gap);
+
+  &:not(:is(.ui-control-separator--kind-chevron)) {
+    /* Stands in for the gap of a control group, so the mark needs more strength
+       beside muted text than it has beside a control surface. */
+    @apply ak-edge-alpha-[0.36];
+  }
+
+  /* Steps sit in list items, where the sibling rules of a group can't see
+     them, and an item can hold more than one control. Only the control that
+     faces the mark counts, and only if it paints a surface: a quiet step
+     paints nothing on hover, and an expanded control needs a selected surface.
+     A step with $hovered counts as hovered. */
+  &:has(+ li > :nth-child(1 of .ui-control).ui-popover-disclosure--surface[aria-expanded='true']) {
+    opacity: var(--separator-shy-opacity);
+  }
+
+  &:has(+ li > :nth-child(1 of .ui-control):focus-visible) {
+    opacity: var(--separator-shy-opacity);
+  }
+
+  &:has(+ li > :nth-child(1 of .ui-control):is(:hover, .ui-hovered):not(.ui-breadcrumb-step--quiet, :disabled, [aria-disabled='true'])) {
+    opacity: var(--separator-shy-opacity);
+  }
+
+  li:has(> :nth-last-child(1 of .ui-control).ui-popover-disclosure--surface[aria-expanded='true']) + & {
+    opacity: var(--separator-shy-opacity);
+  }
+
+  li:has(> :nth-last-child(1 of .ui-control):focus-visible) + & {
+    opacity: var(--separator-shy-opacity);
+  }
+
+  li:has(> :nth-last-child(1 of .ui-control):is(:hover, .ui-hovered):not(.ui-breadcrumb-step--quiet, :disabled, [aria-disabled='true'])) + & {
+    opacity: var(--separator-shy-opacity);
+  }
+
+  &:where(.ui-breadcrumb-separator--kind-none) {
+    @apply border-e-0!;
+    height: auto !important;
+
+    & > svg {
+      @apply size-4;
+    }
+  }
+}

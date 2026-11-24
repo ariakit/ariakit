@@ -1,4 +1,4 @@
-import { cv, cx } from "clava";
+import { cv } from "clava";
 import type { VariantProps } from "clava";
 import { keys } from "../utils/keys.ts";
 import { getScaledStyleValue, getSpacingValue } from "../utils/styles.ts";
@@ -9,13 +9,6 @@ import { hover } from "./hover.ts";
 import { layer } from "./layer.ts";
 import { textFrame } from "./text-frame.ts";
 import { text } from "./text.ts";
-
-const tableEdgeInputs = cx(
-  // Inherited inputs are defaults; explicit edge utilities on a part win.
-  "ui-base:ak-edge-color-(--table-edge-color)",
-  "ui-base:ak-edge-alpha-(--table-edge-alpha,0.1)",
-  "ui-base:ak-edge-push-(--table-edge-push,1)",
-);
 
 // Resolve edge colors on each cell so hover and selection surfaces keep
 // matching grid lines.
@@ -133,17 +126,7 @@ const tableBorderVariants = {
  */
 export const table = cv({
   extend: [textFrame],
-  class: [
-    tableEdgeInputs,
-    "relative w-full border-separate border-spacing-0",
-    "[--table-row-line:max(var(--table-border-bs,0),var(--table-border-be,0))]",
-    "[--table-cell-line:max(var(--table-border-s,0),var(--table-border-e,0))]",
-    // Registered padding lengths keep smaller headers aligned with body cells.
-    // Only cells receive padding; `!` clears the table frame padding.
-    "[--table-py:var(--py)] [--table-px:var(--px)]",
-    "[--table-size:1em]",
-    "p-0!",
-  ],
+  class: "ui-table-edge-inputs ui-table",
   variants: {
     ...tableBorderVariants,
   },
@@ -161,12 +144,9 @@ export const table = cv({
 export const tableContainer = cv({
   extend: [frame],
   class: [
-    // Overflow does not clip table boxes; the wrapper clips corner cells.
-    "overflow-clip",
-    // Allow shrinking in flex and grid layouts so the scroller takes overflow.
-    "min-w-0",
-    // Reset inherited edge colors for nested tables.
-    "[--table-edge-color:initial] [--table-edge-alpha:initial] [--table-edge-push:initial]",
+    "ui-table-container",
+    // Stays a class, so that the border-style of `frameBase` still comes after
+    // it and replaces it.
     "border-s-[calc(var(--table-border-s,0)*1px)]",
     "border-e-[calc(var(--table-border-e,0)*1px)]",
     "border-bs-[calc(var(--table-border-bs,0)*1px)]",
@@ -189,47 +169,25 @@ export const tableContainer = cv({
 /** A table caption aligned with the cell content. */
 export const tableCaption = cv({
   extend: [text],
-  class: "px-(--table-px) py-(--table-py) text-start",
+  class: "ui-table-caption",
 });
 
 /** A scrollable table viewport with scrollbars that follow its color scheme. */
 export const tableScroller = cv({
-  class: [
-    "max-h-[inherit] overflow-auto",
-    // Scrollbars follow the surface even when the theme differs from the system
-    // scheme.
-    "ak-dark:scheme-dark ak-light:scheme-light",
-  ],
+  class: "ui-table-scroller",
 });
 
 /** A row group with optional sticky positioning and table edge flags. */
 export const tableRowGroup = cv({
   extend: [layer],
-  class: [
-    tableEdgeInputs,
-    "[--table-grid-edge:var(--ak-edge)]",
-    "relative",
-    // Reset group position flags so nested tables do not inherit outer
-    // corners.
-    "[--table-rowgroup-first:0] [--table-rowgroup-last:0]",
-    "[&:is(thead):first-of-type]:[--table-rowgroup-first:1]",
-    "[:not(:has(>thead))>&:nth-child(1_of_tbody,tfoot)]:[--table-rowgroup-first:1]",
-    "[&:is(tfoot):last-of-type]:[--table-rowgroup-last:1]",
-    "[:not(:has(>tfoot))>&:last-child]:[--table-rowgroup-last:1]",
-  ],
+  class: "ui-table-edge-inputs ui-table-row-group",
   variants: {
     /**
      * Pins the group above pinned cells and row focus rings while scrolling.
      */
     $sticky: {
-      top: "z-3 sticky top-0",
-      // A bottom-pinned group draws its own leading line because the previous
-      // row scrolls away.
-      bottom: [
-        "z-3 sticky bottom-0",
-        "[&>tr:first-child]:[--table-row-line-bs:calc(var(--table-row-line)*(1-var(--table-row-first,0)))]",
-        "[:has(+&)>tr:last-child]:[--table-row-line-be:0]",
-      ],
+      top: "ui-table-row-group--sticky-top",
+      bottom: "ui-table-row-group--sticky-bottom",
     },
   },
 });
@@ -277,29 +235,13 @@ const tableItem = cv({
 /** A table row with hover, selection, and keyboard focus styles. */
 export const tableRow = cv({
   extend: [tableItem, hover],
-  class: [
-    tableEdgeInputs,
-    // Reset row position flags before forwarding group edges to cells.
-    "[--table-row-first:0] [--table-row-last:0]",
-    "first-of-type:[--table-row-first:var(--table-rowgroup-first,0)]",
-    "last-of-type:[--table-row-last:var(--table-rowgroup-last,0)]",
-    // Omit the last row line. A bottom-pinned group supplies its own leading
-    // line.
-    "[--table-row-line-be:calc(var(--table-row-line)*(1-var(--table-row-last,0)))]",
-    // Hover and selection repaint the previous row's line, except at the table
-    // start or when the row already owns that line.
-    "[--table-row-shadow:calc(var(--table-row-state,0)*(var(--table-row-line)*(1-var(--table-row-first,0))-var(--table-row-line-bs,0)))]",
-    // Match the container's inner corners so row and cell rings follow its
-    // clipping.
-    "[--table-row-radius-bs:calc((var(--ak-frame-radius,0px)-var(--table-border-bs,0)*1px)*var(--table-row-first,0))]",
-    "[--table-row-radius-be:calc((var(--ak-frame-radius,0px)-var(--table-border-be,0)*1px)*var(--table-row-last,0))]",
-  ],
+  class: "ui-table-edge-inputs ui-table-row",
   variants: {
     /**
      * Uses `$hoverOffset` to tint the row and its surrounding grid lines on
      * hover.
      */
-    $hover: "ui-hover:[--table-row-state:1]",
+    $hover: "ui-table-row--hover",
     /**
      * Sets keyboard focus ring thickness. The ring is a pseudo-element above
      * the cells so pinned cells cannot cover it.
@@ -314,10 +256,7 @@ export const tableRow = cv({
      * Tints the row and surrounding grid lines when `aria-selected="true"`.
      * Hover can still adjust the selected surface.
      */
-    $selected: [
-      "ui-selected:ak-layer-brand ui-selected:ak-layer-mix-15",
-      "ui-selected:[--table-row-state:1]",
-    ],
+    $selected: "ui-table-row--selected",
   },
   defaultVariants: {
     $focus: true,
@@ -369,46 +308,16 @@ export const tableRow = cv({
  */
 export const tableCell = cv({
   extend: [tableItem],
-  class: [
-    tableEdgeInputs,
-    "aria-[sort=ascending]:ak-ink-100 aria-[sort=descending]:ak-ink-100",
-    "px-(--table-px) py-(--table-py)",
-    // Cells own their trailing row and column lines. End-pinned cells own
-    // their leading divider instead. Borders keep focus rings inside the grid;
-    // row surfaces show through unpainted cells.
-    "[--table-cell-line-e:var(--table-cell-line)] last:[--table-cell-line-e:0]",
-    "[&:has(+.table-pinned)]:[--table-cell-line-e:0]",
-    "border-bs-[calc(var(--table-row-line-bs,0)*1px)]",
-    "border-be-[calc(var(--table-row-line-be,0)*1px)]",
-    "border-s-[calc(var(--table-cell-line-s,0)*1px)]",
-    "border-e-[calc(var(--table-cell-line-e,0)*1px)]",
-    // Slice one gradient into row lines and inset column dividers.
-    // Border-image slices use unitless widths and physical sides, so RTL needs
-    // reversed slices.
-    "[border-image-source:linear-gradient(var(--table-cell-edge)_calc(var(--table-row-line-bs,0)*1px),transparent_0_calc(var(--table-row-line-bs,0)*1px+var(--table-border-inset,0px)),var(--table-cell-edge)_0_calc(100%-var(--table-row-line-be,0)*1px-var(--table-border-inset,0px)),transparent_0_calc(100%-var(--table-row-line-be,0)*1px),var(--table-cell-edge)_0)]",
-    "[border-image-slice:var(--table-row-line-bs,0)_var(--table-cell-line-e,0)_var(--table-row-line-be,0)_var(--table-cell-line-s,0)]",
-    "rtl:[border-image-slice:var(--table-row-line-bs,0)_var(--table-cell-line-s,0)_var(--table-row-line-be,0)_var(--table-cell-line-e,0)]",
-    // Later cells repaint the previous row's line with their own surface and
-    // edge. The first shadow paints on top; zero offset keeps idle shadows
-    // under cells.
-    "shadow-[0_calc(var(--table-row-shadow,0)*-1px)_0_var(--table-cell-edge),0_calc(var(--table-row-shadow,0)*-1px)_0_var(--ak-layer)]",
-    "first:rounded-ss-(--table-row-radius-bs) first:rounded-es-(--table-row-radius-be)",
-    "last:rounded-se-(--table-row-radius-bs) last:rounded-ee-(--table-row-radius-be)",
-  ],
+  class: "ui-table-edge-inputs ui-table-cell",
   variants: {
     /** Whether the cell is a header, and which kind. */
     $header: {
       false: "",
-      column: [
-        "ak-ink-70 font-semibold",
-        // A bare choice or icon keeps the body size beside the smaller label.
-        // Slots inside a control keep that control's own explicit size.
-        "[&>.slot-frame-slot]:text-(length:--table-size)",
-      ],
+      column: "ui-table-cell--header-column ak-ink-70 font-semibold",
       row: "font-semibold",
     },
     /** Aligns and formats the cell for numbers. */
-    $numeric: "text-end tabular-nums",
+    $numeric: "ui-table-cell--numeric",
     /**
      * Pins a column to the scrolling edge. Set on every cell, including its
      * header. The cell paints its row surface and owns the divider facing
@@ -416,19 +325,8 @@ export const tableCell = cv({
      * fractional device-pixel edges.
      */
     $sticky: {
-      start: [
-        "z-1 sticky inset-s-0",
-        "after:absolute after:inset-y-0 after:w-px",
-        "after:inset-e-[calc(-1px-var(--table-cell-line-e,0)*1px)]",
-        "after:bg-(--ak-layer) after:pointer-events-none",
-      ],
-      end: [
-        "table-pinned z-1 sticky inset-e-0",
-        "[--table-cell-line-s:var(--table-cell-line)]",
-        "after:absolute after:inset-y-0 after:w-px",
-        "after:inset-s-[calc(-1px-var(--table-cell-line-s,0)*1px)]",
-        "after:bg-(--ak-layer) after:pointer-events-none",
-      ],
+      start: "ui-table-cell--sticky-start",
+      end: "ui-table-cell--sticky-end",
     },
     /**
      * Draws a ring inside the cell while it has keyboard focus, and how thick.
@@ -444,7 +342,7 @@ export const tableCell = cv({
      * Sizes the column to its content. Give another column `$grow` to absorb
      * extra width. Declarative rows inherit this from the header cell.
      */
-    $fit: "w-0 whitespace-nowrap",
+    $fit: "ui-table-cell--fit",
     /**
      * Takes the surplus width of the table, so a `$fit` column stays at its
      * content width.
@@ -494,20 +392,12 @@ export const tableCell = cv({
 export const tableSortButton = cv({
   extend: [button],
   class: [
-    // Use registered table padding, which the button frame does not replace.
-    // Negative margins cover the cell; an explicit width prevents button
-    // shrink-wrapping.
-    "-my-(--table-py) -mx-(--table-px)",
-    "w-[calc(100%+var(--table-px)*2)]",
-    "justify-start text-start",
-    // Preserve the header weight and ink, including the stronger sorted state.
-    "[font-weight:inherit] text-inherit",
-    "[--table-sort-ink:0.4]",
-    "ui-hover:ak-ink-100 ui-hover:[--table-sort-ink:1]",
-    "ui-focus-visible:ak-ink-100 ui-focus-visible:[--table-sort-ink:1]",
-    // Inherit individual cell corners so the focus ring follows container
-    // clipping. This utility sorts after frame rounding.
-    "rounded-[inherit]",
+    "ui-table-sort-button",
+    // Stays a class to come after the color of `ink`, which it replaces.
+    "text-inherit",
+    // Stays a class to come after the --_ak-text-alpha of `hover`, which it
+    // replaces.
+    "ui-hover:ak-ink-100",
   ],
   variants: {
     /**
@@ -540,9 +430,12 @@ export const tableSortButton = cv({
 export const tableSortIndicator = cv({
   extend: [buttonSlot],
   class: [
-    "[--slot-icon-size:1.1em]",
-    "transition-[rotate] duration-150 motion-reduce:transition-none",
-    "in-aria-[sort=descending]:rotate-180",
+    "ui-table-sort-indicator",
+    // Stays a class to come after the classes of a caller, so that the reduced
+    // motion rule still applies.
+    "motion-reduce:transition-none",
+    // Stays a class to come after the --_ak-text-alpha of `ink`, which it
+    // replaces.
     "in-aria-[sort=none]:ak-ink-(--table-sort-ink)",
   ],
   defaultVariants: {

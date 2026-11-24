@@ -2,37 +2,22 @@ import { cv } from "clava";
 
 /** Press scaling and transitions for interactive elements. */
 export const active = cv({
-  class: [
-    // Keep these channels defined even when $active is off so composed
-    // transition lists stay valid.
-    "[--active-transition:scale] [--active-duration:100ms]",
-  ],
+  class: "ui-active",
   variants: {
     /** Whether to scale the element when active (pressed). */
     $active: [
-      // Per-axis depths override the shared depth, including values set through
-      // the style attribute.
-      "ui-active:[--active-scale-x:min(100%,98%+2%*calc(1-clamp(0,var(--active-depth-x,var(--active-depth))/10,1)))]",
-      "ui-active:[--active-scale-y:min(100%,94%+6%*calc(1-clamp(0,var(--active-depth-y,var(--active-depth))/10,1)))]",
+      "ui-active--on",
       // Keep the same origin for the press and release.
-      "origin-bottom ui-active:scale-x-(--active-scale-x) ui-active:scale-y-(--active-scale-y)",
-      // Halve vertical depth for taller controls with descriptions.
-      // $activeDepthY still overrides this rule.
-      "has-[.control-description]:[--active-depth-y:calc(var(--active-depth)*0.5)]",
-      // A press can't change a settled element, such as the current page, so
-      // it doesn't scale, and neither does a bar inside it. An element that
-      // settles while easing back from a press drops to full size at once, so
-      // a script that measures it, such as for a bar that glides, reads it
-      // where it rests.
-      "ui-settled:scale-none ui-settled:[--active-transition:--none]",
+      // Stays a class, so that the transform-origin of `carouselButton` still
+      // comes after it and replaces it.
+      "origin-bottom",
     ],
     /**
      * Animates press scaling. Extenders with their own transition list must
      * replace this variant and include `--active-transition` and
      * `--active-duration`.
      */
-    $transition:
-      "transition-(--active-transition) duration-(--active-duration)",
+    $transition: "ui-active--transition",
     /**
      * Horizontal press depth, overriding `$activeDepth`. Use smaller values for
      * wider elements.

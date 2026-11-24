@@ -820,10 +820,10 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
 // this reads its box from the DOM, like getBoxOffset.
 function recordOffsets(tab: Locator) {
   return tab.evaluateHandle((element) => {
-    const control = element.closest(".control");
+    const control = element.closest(".ui-control");
     const box = control
-      ?.closest(".glider-group")
-      ?.querySelector('.glider-box[data-selected="true"]');
+      ?.closest(".ui-glider-group")
+      ?.querySelector('.ui-glider-box[data-selected="true"]');
     if (!control || !box) {
       throw new Error("Missing glider box");
     }
@@ -867,8 +867,8 @@ async function recordTravel(tab: Locator, count?: Locator) {
   const countElement = count ? await count.elementHandle() : null;
   return tab.evaluateHandle((element, countElement) => {
     const box = element
-      .closest(".glider-group")
-      ?.querySelector('.glider-box[data-selected="true"]');
+      .closest(".ui-glider-group")
+      ?.querySelector('.ui-glider-box[data-selected="true"]');
     if (!box) {
       throw new Error("Missing glider box");
     }
@@ -945,8 +945,8 @@ function getTravelLead(frames: TravelFrame[], duration: number) {
 function getFolderCurves(tab: Locator) {
   return tab.evaluate((element) => {
     const box = element
-      .closest(".glider-group")
-      ?.querySelector('.glider-box[data-selected="true"]');
+      .closest(".ui-glider-group")
+      ?.querySelector('.ui-glider-box[data-selected="true"]');
     if (!box) {
       throw new Error("Missing glider box");
     }
@@ -960,7 +960,7 @@ function getFolderCurves(tab: Locator) {
 function getDistanceFromPanel(tab: Locator) {
   return tab.evaluate((node) => {
     const panel = node
-      .closest(".tabs")
+      .closest(".ui-tabs")
       ?.querySelector(":scope > :has(> [role=tablist]) + *");
     if (!panel) {
       throw new Error("Missing tab panels");
@@ -987,7 +987,7 @@ function recordFold(name: Locator) {
     // around it folds with the column.
     const part = element.parentElement;
     const panel = element
-      .closest(".tabs")
+      .closest(".ui-tabs")
       ?.querySelector(":scope > :has(> [role=tablist]) + *");
     if (!part || !panel) {
       throw new Error("Missing tab panels");
@@ -1050,7 +1050,7 @@ async function stepFold(name: Locator, button: Locator) {
   await button.click();
   return name.evaluate(async (element, { transition: running }) => {
     const transition = await running;
-    const row = element.closest(".tab-row");
+    const row = element.closest(".ui-tab-row");
     const panel = row?.nextElementSibling;
     if (!row || !panel) {
       throw new Error("Missing tab row or panels");
@@ -1088,7 +1088,7 @@ async function stepFold(name: Locator, button: Locator) {
 function getPanelCorners(list: Locator) {
   return list.evaluate((node) => {
     const panel = node
-      .closest(".tabs")
+      .closest(".ui-tabs")
       ?.querySelector(":scope > :has(> [role=tablist]) + *");
     if (!panel) {
       throw new Error("Missing tab panels");

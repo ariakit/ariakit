@@ -33,7 +33,7 @@ export const hovercardDismiss = popoverDismiss;
  */
 export const hovercardDisclosure = cv({
   extend: [button],
-  class: ["size-6 shrink-0 items-center justify-center", "[&>svg]:size-3"],
+  class: "ui-hovercard-disclosure",
   defaultVariants: {
     $rounded: "full",
     $p: "none",

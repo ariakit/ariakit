@@ -15,7 +15,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       wrapper.style.width = "70rem";
       wrapper.style.maxWidth = "none";
     });
-    const label = link.locator(".breadcrumb-truncate");
+    const label = link.locator(".ui-breadcrumb-label--truncate");
     await test.expect
       .poll(() =>
         label.evaluate(

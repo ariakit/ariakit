@@ -18,7 +18,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       page.locator(`#${id}-shell`),
     );
     const headers = shells.map((shell) =>
-      shell.locator(":scope > .shell-header"),
+      shell.locator(":scope > .ui-shell-header"),
     );
     // Each header is 56, 64, or 72px without its border, plus the 1px border.
     const heights = [57, 65, 73];
@@ -81,7 +81,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Close overlay").click();
     await expect(overlay).toHaveCount(0);
     await page.evaluate(() => window.scrollTo(0, 500));
-    const header = page.locator("#outer-shell > .shell-header");
+    const header = page.locator("#outer-shell > .ui-shell-header");
     expect(
       await header.evaluate((node) =>
         node.contains(document.elementFromPoint(20, 20)),
@@ -94,8 +94,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
   }) => {
     const inner = page.locator("#inner-shell");
-    const middleHeader = page.locator("#middle-shell > .shell-header");
-    const innerHeader = inner.locator(":scope > .shell-header");
+    const middleHeader = page.locator("#middle-shell > .ui-shell-header");
+    const innerHeader = inner.locator(":scope > .ui-shell-header");
     await page.evaluate(() => window.scrollTo(0, 500));
     const middleBox = await getBox(middleHeader);
     // End the inner shell halfway through its parent's sticky header so both

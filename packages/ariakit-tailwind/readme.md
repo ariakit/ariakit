@@ -57,6 +57,58 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 
    These root colors establish one application canvas. The [theming](#theming) section replaces them with a semantic canvas token, and the [mental model](#mental-model) explains how to choose descendant surfaces.
 
+### Base styles and other utilities
+
+The base styles of `ak-layer`, `ak-frame`, `ak-frame-cover`, and `ak-frame-backdrop` are in a nested `ak` cascade layer inside the Tailwind `utilities` layer. Another utility on the same element overrides them, whatever order Tailwind gives the two rules. Modifier utilities, such as `ak-layer-10` and `ak-frame-p-2`, are not in that layer.
+
+```html
+<!-- The margin of sr-only applies. -->
+<h2 class="ak-frame sr-only">Settings</h2>
+```
+
+A base utility with a variant, such as `sm:ak-frame` or `hover:ak-layer`, is in the same layer, so another utility on the element overrides it too. To let it win under its condition, limit the other utility to the opposite condition:
+
+```html
+<div class="max-sm:p-2 sm:ak-frame sm:ak-frame-p-6"></div>
+```
+
+In CSS outside a cascade layer, `@apply` puts the base styles in a top-level `ak` layer, and rules outside a layer override them. Keep resets and other element rules in a layer, such as the `base` layer of Tailwind:
+
+```css
+@layer base {
+  button {
+    padding: 0;
+  }
+}
+
+.segment {
+  @apply ak-layer ak-frame;
+}
+```
+
+In a rule inside a cascade layer, `@apply` puts the base styles in an `ak` layer nested in that layer, and every rule directly in that layer overrides them. In the `base` layer, this includes Preflight, which resets properties such as the `margin` and `padding` of every element and the text color of links and buttons. Apply the base utilities in a later layer, such as `components`, and keep element rules out of that layer:
+
+```css
+@layer components {
+  .card {
+    @apply ak-layer ak-frame;
+  }
+}
+```
+
+A stylesheet that the browser can read before the main Tailwind stylesheet, such as a CSS module or a component style block that uses `@reference`, would declare that `ak` layer first, below the layers of Tailwind. Declare the layer order of Tailwind in such a stylesheet:
+
+```css
+@reference "../app.css";
+@layer theme, base, components, utilities;
+
+.card {
+  @apply ak-layer ak-frame;
+}
+```
+
+Cascade layers reverse the order of important declarations, so when both sides are important, the cases above turn around. With the `important` option of Tailwind, the base styles override every other utility that sets the same property on the element, the modifier utilities of this package included. For example, `ak-layer-transparent` and `ak-ink-*` no longer change the colors of an element with `ak-layer`, and `ak-frame-cover` no longer stretches an element with `ak-frame`. A base utility with the `!` modifier, such as `ak-frame!`, overrides every other important utility that sets the same property, such as `p-4!`. With `!` in `@apply`, such as `@apply ak-frame!`, the base styles override the important rules outside a layer, or directly in the same layer, that set the same property. Everything else in this readme describes normal declarations, without the `important` option or the `!` modifier.
+
 ## Theming
 
 Ariakit Tailwind integrates directly with Tailwind's theming system. Every `--color-*`, `--radius-*`, and `--spacing-*` token in your `@theme` block becomes available to the matching Ariakit utilities.
@@ -1029,7 +1081,7 @@ The backdrop is a background layer, and a background layer in the element's own 
 | `ak-frame-row`   | Flags the frame as a horizontal flow (affects how `cover` / `start` / `end` compute edges). |
 | `ak-frame-col`   | Flags the frame as a vertical flow.                                                         |
 
-`ak-frame-cover` uses logical margin and radius properties so row covers follow the frame direction. When overriding its stretch margin on the same element, prefer axis or side utilities such as `mx-*`, `my-*`, `ms-*`, `me-*`, `mt-*`, `mr-*`, `mb-*`, or `ml-*`; Tailwind sorts the bare `m-*` shorthand before the cover declarations, so it will not reset the logical stretch. Covers should also share the frame's `dir` and `writing-mode`; apply direction changes inside the cover when the content needs a different flow.
+`ak-frame-cover` uses logical margin and radius properties so row covers follow the frame direction. Its margins are [base styles](#base-styles-and-other-utilities), so any margin utility on the same element, such as `m-*`, `mx-*`, or `ms-*`, overrides the logical stretch. Covers should also share the frame's `dir` and `writing-mode`; apply direction changes inside the cover when the content needs a different flow.
 
 ### Dividers
 
@@ -1097,7 +1149,7 @@ Joining keeps the child padding and frame radius. Inner corners become square on
 
 Joining also composes with `ak-frame-cover`. Cover stretches the outer and cross-axis edges toward the parent, while joining overlaps only the internal edges. Squared corners propagate to nested covers. The start and end flags also define the outside edges for cover.
 
-The item utility carries its own declarations, so both group and item utilities work through `@apply` in custom CSS classes:
+The item utility carries its own declarations, so both group and item utilities work through `@apply` in custom CSS classes. Outside a cascade layer, keep resets for `button` elements in a layer too, as [Base styles and other utilities](#base-styles-and-other-utilities) explains:
 
 ```css
 .segmented-control {

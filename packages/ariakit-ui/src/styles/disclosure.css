@@ -1,0 +1,361 @@
+/* The CSS of the disclosure style recipe in disclosure.ts. Import this file in
+   the CSS file that imports Tailwind CSS, after ui.css and the CSS files of the
+   style recipes that disclosure.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./prose.css";
+   @import "./disclosure.css"; */
+
+@custom-variant ui-disclosure-open {
+  @container style(--disclosure-open: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disclosure-group {
+  @container style(--disclosure-group: 1) {
+    @slot;
+  }
+}
+
+/* A flag that a disclosure group sets from its own :has() check, for its
+   children to read with a style query. See the tabs flags in tabs.css. Without
+   inheritance, a change of the flag restyles only the children that read it,
+   not the rest of the subtree. */
+@property --disclosure-group-closed {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+/* Resolve icon-column lengths at the root so part fonts cannot change them. */
+@property --disclosure-px {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --disclosure-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --disclosure-lead {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the guide center on the content so row fonts cannot move it. */
+@property --disclosure-guide-center {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the body offset once to align its padding with the content guide. */
+@property --disclosure-body-offset {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the body inset on the body so row fonts cannot move nested bars. */
+@property --disclosure-body-ps {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@utility ui-disclosure-group {
+  @apply divide-y divide-(--ak-edge);
+  --disclosure-group: 1;
+
+  &:where(.ui-disclosure-group--fill) {
+    /* An open disclosure reaches the group's end, which needs no edge. While
+       every disclosure is closed, the last one draws it right below itself. */
+    @apply border-b-0!;
+    /* Grow in a flex column parent without growing it past its height. */
+    flex-grow: 1;
+    min-height: 0;
+    display: flex;
+
+    :is(& > *) {
+      @variant last {
+        border-color: var(--ak-edge);
+      }
+
+      &[data-open] {
+        /* Only the open disclosure may shrink below its content. */
+        flex-grow: 1;
+        min-height: 0;
+      }
+    }
+
+    &:not(:has(> [data-open])) {
+      /* A :has() before a selector with no class, attribute, or tag makes
+         Chrome restyle the whole subtree of each :has() anchor whose state
+         changes, on any page with the rule. So the group sets a flag that the
+         last member reads with a style query. The doubled class keeps the
+         specificity of the :has() check. */
+      --disclosure-group-closed: 1;
+    }
+
+    & > * > .ui-disclosure-content {
+      flex-grow: 1;
+      flex-basis: 0;
+      min-height: 0;
+    }
+
+    & > * > .ui-disclosure-content > * {
+      /* The body scrolls, so the content keeps clipping its rounded corners.
+         Overscroll chains to the page, so the body does not trap the wheel. */
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    & > [data-open] > .ui-disclosure-content {
+      /* Open content grows past its own height to fill the disclosure. */
+      max-height: 100% !important;
+    }
+
+    @container style(--disclosure-group-closed: 1) {
+      && > :last-child {
+        @apply border-b;
+      }
+    }
+  }
+}
+
+@utility ui-disclosure {
+  /* The padding and the gaps of the parts follow the text size of the root.
+     The parts read lengths that resolve on the root, so a button with smaller
+     text keeps the icon size and the `$indent` of the body. */
+  @apply ui-spacing-em;
+  /* Copy non-inherited --tw-duration into a shared channel. Reduced motion
+     disables descendant animations through the same channel. */
+  @apply duration-300;
+  --disclosure-duration: var(--tw-duration);
+  /* Descendants use the frame padding; the empty root must not apply it
+     again, including through caller utilities. */
+  padding: 0 !important;
+  max-width: inherit;
+  transition-property: none;
+  /* Capture state and geometry before nested frames change them. */
+  --disclosure-open: 0;
+  --disclosure-padding: var(--ak-frame-padding);
+  --disclosure-radius: var(--ak-frame-radius);
+  --disclosure-border: calc(var(--ak-frame-border) + var(--ak-frame-ring));
+  /* Match the button's default optical text inset. A button-specific $size or
+     $px changes only its label position. */
+  --disclosure-px: calc(var(--disclosure-padding) + (1lh - 1cap) * 0.5);
+  /* Clear ancestor indentation before nested disclosures set their own. */
+  --disclosure-ps: initial;
+  /* Registered as a length so the body and its guide use the same measured
+     offset. */
+  --disclosure-body-offset: 0px;
+  /* Share the slot gap with the body to align it under the label. */
+  --disclosure-gap: max(--spacing(2), var(--disclosure-padding) / 2);
+  /* Include oversized leading-icon overflow. Registered lengths preserve
+     root-font measurements in descendants; the button must keep the root line
+     height. */
+  --disclosure-lead: calc(var(--disclosure-padding) + 1lh + var(--disclosure-gap) + max(0px, (var(--disclosure-icon-size,1em) - 1lh) / 2) * var(--disclosure-icon,0));
+  /* Only a first slot, or one after a start indicator, indents the body.
+     Reset nested state; :where() lets utility order decide overrides. */
+  --disclosure-icon: 0;
+
+  @variant open {
+    --disclosure-open: 1;
+  }
+
+  &[data-open] {
+    --disclosure-open: 1;
+  }
+
+  @variant ui-disclosure-group {
+    /* Group members have no border of their own, so a split line matches the
+       group dividers. */
+    --disclosure-border: 1px;
+  }
+
+  &:has(> :where(.ui-disclosure-button) > :where(.ui-disclosure-button-slot):where(:first-child, [data-disclosure-indicator]:first-child + *)) {
+    --disclosure-icon: 1;
+  }
+
+  &:where(.ui-disclosure--content-padding-true) {
+    --disclosure-content-padding: 1;
+  }
+
+  &:where(.ui-disclosure--content-padding-false) {
+    --disclosure-content-padding: 0;
+  }
+}
+
+@utility ui-disclosure-button {
+  overflow: clip;
+  width: 100%;
+  justify-content: flex-start;
+  text-wrap: wrap;
+  text-align: start;
+
+  @variant ui-disclosure-group {
+    border-radius: inherit;
+  }
+
+  @container style(--disclosure-split: 1) {
+    @variant ui-disclosure-open {
+      /* Only split layouts need square open corners. The style query comes
+         after the inherited radius rule, so it wins. */
+      @apply rounded-b-none;
+    }
+  }
+
+  &:where(.ui-disclosure-button--gap-auto) {
+    /* Restore the slot's negative side margin so the label matches the body
+       indent. */
+    --gap: calc(var(--disclosure-gap) + var(--px) - var(--py));
+    gap: var(--gap);
+  }
+}
+
+@utility ui-disclosure-button-label {
+  min-width: 0;
+
+  &:has(~ .ui-disclosure-indicator--position-next) {
+    /* A next indicator follows the label text instead of the row end. */
+    flex-grow: 0;
+  }
+}
+
+@utility ui-disclosure-button-slot--size-auto {
+  --size: var(--disclosure-icon-size,1em);
+}
+
+@utility ui-disclosure-chevron {
+  @apply transition-[rotate,opacity] duration-(--disclosure-duration);
+  /* Enlarge the glyph without changing the slot box used for alignment. */
+  --slot-icon-size: 1.1em;
+
+  &:where(.ui-disclosure-chevron--direction-right) {
+    rotate: calc(90deg * -1);
+
+    @variant rtl {
+      rotate: 90deg;
+    }
+
+    @variant ui-disclosure-open {
+      rotate: 0deg;
+    }
+  }
+
+  &:where(.ui-disclosure-chevron--direction-down) {
+    rotate: 0deg;
+
+    @variant ui-disclosure-open {
+      rotate: 180deg;
+    }
+  }
+}
+
+@utility ui-disclosure-plus {
+  @apply transition-[rotate,background-size,opacity];
+  @apply duration-[var(--disclosure-duration),calc(var(--disclosure-duration)/3)];
+  --plus-line-thickness: 2px;
+  /* Collapse one gradient stroke and rotate the other to change plus to
+     minus. */
+  background-image: linear-gradient(currentColor 0 0), linear-gradient(currentColor 0 0);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60% var(--plus-line-thickness), var(--plus-line-thickness) 60%;
+
+  @variant ui-disclosure-open {
+    rotate: 90deg;
+    background-size: var(--plus-line-thickness) 60%;
+  }
+}
+
+@utility ui-disclosure-content {
+  @apply rounded-b-[inherit];
+  @apply transition-[content-visibility,height,max-height];
+  position: relative;
+  z-index: 1;
+  max-height: 0;
+  overflow: clip;
+  /* Keep nested disclosures outside the ancestor group. */
+  --disclosure-group: 0;
+  /* Nested content without a guide must not inherit the outer guide. */
+  --disclosure-guide: initial;
+  transition-behavior: allow-discrete;
+  interpolate-size: allow-keywords;
+
+  &[data-open] {
+    max-height: max-content;
+  }
+
+  @supports (interpolate-size: allow-keywords) {
+    /* Only animate when the browser can interpolate to max-content. */
+    @apply duration-(--disclosure-duration);
+  }
+
+  @variant ui-disclosure-open {
+    max-height: max-content;
+  }
+
+  @container style(--disclosure-icon: 1) {
+    /* Use a style query so icon-free content can retain explicit root
+       indentation. */
+    --disclosure-ps: var(--disclosure-lead);
+  }
+
+  [open] > & {
+    max-height: max-content;
+  }
+
+  html:focus-within & {
+    @variant starting {
+      /* Prevent initially open content from animating before user
+         interaction. */
+      max-height: 0;
+    }
+  }
+
+  &:where(.ui-disclosure-content--guide) {
+    --disclosure-ps: var(--disclosure-lead);
+    --disclosure-guide-center: calc(var(--disclosure-padding) + 0.5lh);
+
+    @variant before {
+      @apply ak-layer border-e-(length:--disclosure-guide-width,1px);
+      position: absolute;
+      /* Center any guide width on the leading slot's one-line column. */
+      inset-inline-start: calc(var(--disclosure-guide-center) - var(--disclosure-guide-width, 1px) / 2);
+      top: var(--disclosure-body-offset);
+      bottom: 0;
+    }
+
+    &.ui-disclosure-content {
+      /* Expose the guide center to navigation bars in the content rows. The
+         compound selector outranks the reset above. */
+      --disclosure-guide: var(--disclosure-guide-center);
+    }
+  }
+}
+
+@utility ui-disclosure-content-body {
+  @apply rounded-b-[inherit];
+  /* Reset icon size for nested disclosures. `initial` restores var()
+     fallbacks; `unset` would inherit. */
+  --disclosure-icon-size: initial;
+  --disclosure-body-ps: var(--disclosure-ps,var(--disclosure-px));
+
+  & > .ak-frame-cover {
+    /* Cover children must cross the body's full start inset plus their frame
+       border. */
+    margin-inline-start: calc(calc(var(--disclosure-body-ps) + var(--ak-frame-border)) * -1);
+  }
+}

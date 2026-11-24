@@ -1,0 +1,858 @@
+/* The CSS of the nav style recipe in nav.ts. Import this file in the CSS file
+   that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that nav.ts imports:
+
+   @import "./ui.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./prose.css";
+   @import "./disclosure.css";
+   @import "./check-mark.css";
+   @import "./list.css";
+   @import "./nav.css";
+
+   The style component in nav.ariakit.react.tsx also needs carousel.css, which
+   holds the CSS of a style recipe that it imports. Import that file too. */
+
+/* Resolve row padding at the nav root to align labels with different fonts. */
+@property --nav-py {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --nav-px {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve how far the gap around a marker passes the first line, once on the
+   nav root, so the guide pieces of a navigation read one length. */
+@property --nav-marker-overreach {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Registration lets a navigation animate the range of the bar on its guide on
+   each piece that reads it. A range that doesn't inherit makes each frame of
+   the glide cheaper to restyle in Chrome. */
+@property --nav-bar-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --nav-bar-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Resolve the guide gutter at the nav root to align the smaller group labels
+   with the rows. */
+@property --nav-gutter {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the size of a navigation marker on the marker, so the clip of its
+   fill, which needs lengths, reads one length for a number and for a dot. */
+@property --nav-marker-size {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@utility ui-nav {
+  /* Keep rows at the start when the navigation region stretches. */
+  align-content: flex-start;
+  min-width: 0;
+  /* The rows read these lengths, so they use the em step, like the item
+     padding of a list. */
+  --nav-group-gap: calc(var(--spacing-em) * 4);
+  --nav-row-gap: calc(var(--spacing-em) * 3);
+  /* Registered lengths resolve the row padding in the navigation font,
+     keeping smaller group labels aligned with rows. */
+  --nav-py: var(--list-item-padding);
+  --nav-px: calc(var(--nav-py) + (1lh - 1cap) * 0.5);
+  position: relative;
+  isolation: isolate;
+  /* Bars in top-level rows reach the navigation padding edge. */
+  --nav-bar-gap: var(--ak-frame-padding);
+  --nav-guide-width: 1px;
+  /* The indent of a nested list, which is also the width of a bend of the
+     guide. A list in a link row keeps the automatic indent of a list. */
+  --nav-indent: var(--list-indent,calc(var(--spacing-em) * 3));
+  /* The guide and the bar stop this far from a marker, so the surface around
+     the navigation shows between them, whatever it paints. A ring around a
+     marker draws in this gap with the width of the bar, so a wider bar widens
+     the gap to keep the ring off the number. */
+  --nav-marker-gap: max(calc(var(--spacing-em) * 1), var(--nav-bar-size));
+  /* How far a number reaches from the guide: half a counter chip of a list,
+     and the gap. These stay unregistered, so they resolve in the font of
+     each element that reads them. */
+  --nav-number-size: calc(var(--list-marker-box,1.75em) - 0.4em);
+  --nav-number-reach: calc(var(--nav-number-size) / 2 + var(--nav-marker-gap));
+  /* How far the gap around a marker passes the first line of its link, above
+     and below it. A dot of the default size stays inside the line. A number is
+     taller than half a line, and a navigation has numbers when it is ordered or
+     when one of its lists is. The guide pieces read this length. It is
+     registered, so it resolves here once, in the font of the navigation, and
+     each glide frame doesn't evaluate it again on each piece. */
+  --nav-marker-overreach: max(0px, var(--list-bullet-size) / 2 + var(--nav-marker-gap) - 0.5lh);
+  /* Colors resolve against this element, so pieces inside a current link
+     keep the colors of the surface around the rows. */
+  --nav-guide-color: var(--ak-edge);
+  --nav-surface-color: var(--ak-layer);
+  /* A bar on the guide takes the text color at full strength. */
+  --nav-bar-color: oklch(from var(--ak-text) l c h/1);
+  /* The place and the size are the registered values of a glider, which don't
+     inherit. The navigation copies them to values that inherit, so the
+     pseudo-element gets them. Safari doesn't update a pseudo-element that takes
+     the registered values with `inherit`. */
+  --nav-bar-traveler-x: var(--glider-x);
+  --nav-bar-traveler-y: var(--glider-y);
+  --nav-bar-traveler-width: var(--glider-width);
+  --nav-bar-traveler-height: var(--glider-height);
+
+  @variant after {
+    /* The bar that travels from the bar of the last current link to the bar of
+       the new one, for bars that each link draws by itself. It is a
+       pseudo-element, so the navigation gets no child that its rows or a
+       covering frame could count. The `Nav` style component writes the place,
+       the size, the color, and the corners of the bar to the navigation, and
+       sets `data-bar-traveling` while the bar travels. Only then does the
+       pseudo-element have a box. Each `after:` utility below also sets the
+       content of the pseudo-element, which `after:content-none` takes back at
+       rest.
+
+       The place is a translation, which the browser animates off the main
+       thread. The travel then stays smooth while the page works, such as when
+       the current link changes with a new page. */
+    @apply content-none translate-x-(--nav-bar-traveler-x);
+    @apply translate-y-(--nav-bar-traveler-y);
+    /* The travel takes the time and the easing of a glider, so the bar arrives
+       with the selected box of a glider in the same navigation. */
+    @apply duration-(--glider-duration,200ms) ease-[cubic-bezier(0.3,0,0,1)];
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    width: var(--nav-bar-traveler-width);
+    height: var(--nav-bar-traveler-height);
+    background-color: var(--nav-bar-traveler-color);
+    border-radius: var(--nav-bar-traveler-radius);
+    transition-property: translate, width, height;
+  }
+
+  &[data-bar-instant] {
+    @variant after {
+      /* The bar goes to the place that it leaves from at once. */
+      transition-property: none;
+    }
+  }
+
+  &[data-bar-traveling] {
+    @variant after {
+      @apply content-[''];
+    }
+  }
+
+  @variant ak-dark {
+    /* Bars on the guide and rings around markers are wider on a light layer,
+       like other bars. This reads the layer around the navigation, so it
+       ignores a surface that `$layer` paints on the navigation itself. */
+    --bar-width-auto: 2px;
+  }
+
+  @variant ak-light {
+    --bar-width-auto: 3px;
+  }
+
+  &:is(.ui-nav--numbers, :has(.ui-nav-list--marker-counter)) {
+    --nav-marker-overreach: max(0px, max(var(--nav-number-reach), var(--list-bullet-size) / 2 + var(--nav-marker-gap)) - 0.5lh);
+  }
+
+  &:where(.ui-nav--layout-vertical) {
+    display: grid;
+    /* A shrinkable track lets long rows truncate or wrap instead of widening
+       the navigation region. */
+    grid-template-columns: minmax(0, 1fr);
+    --list-layout: vertical;
+    /* A column doesn't scroll, so edge bars can cover its border. */
+    --nav-edge-start: var(--ak-frame-border);
+    --nav-edge-end: var(--ak-frame-border);
+
+    & .ui-disclosure-content {
+      /* Disclosure content clips only its height animation, so end bars of
+         nested rows can reach the navigation padding. */
+      overflow-x: visible;
+    }
+  }
+
+  &:where(.ui-nav--layout-horizontal) {
+    --list-layout: horizontal;
+    /* A row reaches over no edge unless it holds the viewport of a
+       carousel, even inside a column that has a border. */
+    --nav-edge-start: 0px;
+    --nav-edge-end: 0px;
+    /* A row with no overflow stays still under a sideways swipe. */
+    display: flex;
+    align-items: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-x: none;
+
+    & > .ui-control, & > .ui-nav-list > li > .ui-control {
+      flex-shrink: 0;
+      white-space: nowrap;
+      /* The wider row gap lines up labels in a column, which a row lacks, so
+         rows use the button gap. */
+      gap: calc(var(--px) - var(--sidebearing));
+    }
+
+    .ui-carousel > & {
+      /* The scroll box clips at its padding box, so the region reaches over
+         the border of its carousel root above and below, with the same
+         padding. Then edge bars can cover that border. */
+      --nav-edge-start: var(--carousel-border,0px);
+      --nav-edge-end: var(--carousel-border,0px);
+      margin-top: calc(var(--ak-frame-margin) - var(--nav-edge-start)) !important;
+      margin-bottom: calc(var(--ak-frame-margin) - var(--nav-edge-end)) !important;
+      padding-top: calc(var(--ak-frame-padding) + var(--nav-edge-start));
+      padding-bottom: calc(var(--ak-frame-padding) + var(--nav-edge-end));
+    }
+  }
+
+  &:where(.ui-nav--fill) {
+    /* A flex column, unlike the grid, gives the free height to one child. */
+    flex-grow: 1;
+    min-height: 0;
+
+    &.ui-vertical {
+      display: flex !important;
+      flex-direction: column;
+    }
+  }
+}
+
+/* The thickness of a bar on the guide. Normalize the 0–100 contrast scale so
+   high contrast adds only 20%, like other bars. Borders snap to device pixels,
+   so a fractional width would draw the bar beside the guide instead of over it.
+   The navigation resolves it for the rings of the markers, and each bar
+   resolves it again with its own `$width`. */
+@utility ui-nav-bar-size {
+  --nav-bar-size: round(calc(var(--bar-width,var(--bar-width-auto,2px)) * (1 + 0.2 * var(--contrast,0) / 100)), 1px);
+}
+
+/* The gutter of a list with numbers, which holds half a number and the gap
+   around it after the guide offset. */
+@utility ui-nav-numbers-gutter {
+  --nav-guide-offset: calc(var(--spacing-em) * 2);
+  --nav-gutter: calc(var(--nav-guide-offset) + var(--nav-number-reach));
+}
+
+@utility ui-nav-list {
+  /* Depth flags for the guide pieces. A row bends in from its parent only in
+     the second and third levels, and bends out by at most the levels it can
+     return to. */
+  --nav-depth: 0;
+  --nav-guide-in-cap: 0;
+  --nav-guide-out-cap: 2;
+  --nav-guide-lead: 1;
+  /* The guide fades after the last row of the outermost list. Rows inherit
+     the flag only through the last item of each list. */
+  --nav-guide-tail: 1;
+
+  & > li {
+    /* A number marker counts its row itself, like the marker of a list, so
+       this rule stops the implied increment of the list item. */
+    counter-increment: list-item 0;
+  }
+
+  & > li:not(.ui-nav-disclosure, .ui-nav-item) {
+    /* Disclosures and items with a nested list need their own layout box for
+       indentation and vertical spacing. */
+    display: contents;
+  }
+
+  & > li:not(:last-child) {
+    --nav-guide-tail: 0;
+  }
+
+  .ui-nav-item .ui-nav-item .ui-nav-item > & {
+    padding-inline-start: 0;
+    --nav-guide-in-cap: 0;
+  }
+
+  .ui-nav-item .ui-nav-item > & {
+    --nav-depth: 2;
+    --nav-guide-out-cap: 0;
+  }
+
+  .ui-nav-item > & {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: flex-start;
+    gap: var(--list-gap);
+    padding-inline-start: var(--nav-indent);
+    --nav-depth: 1;
+    --nav-guide-in-cap: 1;
+    --nav-guide-out-cap: 1;
+    --nav-guide-lead: 0;
+    --nav-guide-tail: inherit;
+  }
+
+  &:where(.ui-nav-list--marker-counter) {
+    @variant not-ui-list-guide {
+      --nav-guide-offset: calc(var(--spacing-em) * 2);
+
+      .ui-nav-item > & {
+        padding-inline-start: calc(var(--nav-indent) + var(--nav-guide-offset) + var(--nav-number-reach));
+      }
+    }
+  }
+
+  &:where(.ui-nav-list--marker-none) {
+    .ui-nav-item > & {
+      --list-marker: initial;
+      --list-counter: initial;
+      --list-glyph: initial;
+    }
+  }
+}
+
+@utility ui-nav-rows {
+  grid-template-columns: minmax(0, 1fr);
+  align-content: flex-start;
+  gap: var(--list-gap);
+}
+
+@utility ui-nav-group {
+  flex-shrink: 0;
+
+  &:has(> .ui-nav-list--marker-counter) {
+    /* The label lines up with the links of a list with numbers, as in an
+       ordered navigation. */
+    --nav-guide-offset: calc(var(--spacing-em) * 2);
+    --nav-gutter: calc(var(--nav-guide-offset) + var(--nav-number-reach));
+  }
+
+  .ui-nav-disclosure-content-body > * + & {
+    margin-top: calc(var(--nav-group-gap) - var(--list-gap));
+  }
+
+  .ui-nav.ui-nav--layout-horizontal > * + & {
+    margin-inline-start: calc(var(--nav-group-gap) - var(--list-gap));
+  }
+
+  .ui-nav.ui-vertical > * + & {
+    margin-top: calc(var(--nav-group-gap) - var(--list-gap));
+  }
+
+  &:where(.ui-nav-group--divider) {
+    /* The marker class outranks the spacing rules above. The line takes the
+       edge color of the navigation. */
+    border-color: var(--ak-edge);
+
+    .ui-nav-disclosure-content-body > * + &.ui-nav-group--divider {
+      @apply border-t;
+      /* The body indents its start more than its end, so each side reaches past
+         its own padding. */
+      margin-inline-start: calc(var(--disclosure-body-ps) * -1);
+      padding-inline-start: var(--disclosure-body-ps);
+      margin-inline-end: calc(var(--ak-frame-padding) * -1);
+      padding-inline-end: var(--ak-frame-padding);
+      margin-top: calc(var(--nav-group-gap) / 2 - var(--list-gap));
+      padding-top: calc(var(--nav-group-gap) / 2);
+    }
+
+    .ui-nav.ui-nav--layout-horizontal > * + &.ui-nav-group--divider {
+      @apply border-s;
+      margin-block: calc(var(--ak-frame-padding) * -1);
+      padding-block: var(--ak-frame-padding);
+      margin-inline-start: calc(var(--nav-group-gap) / 2 - var(--list-gap));
+      padding-inline-start: calc(var(--nav-group-gap) / 2);
+    }
+
+    .ui-nav.ui-vertical > * + &.ui-nav-group--divider {
+      @apply border-t;
+      /* The group reads the navigation's inherited frame padding. Its margins
+         reach past that padding, and its own padding keeps the rows in
+         place. */
+      margin-inline: calc(var(--ak-frame-padding) * -1);
+      padding-inline: var(--ak-frame-padding);
+      margin-top: calc(var(--nav-group-gap) / 2 - var(--list-gap));
+      padding-top: calc(var(--nav-group-gap) / 2);
+    }
+  }
+
+  &:where(.ui-nav-group--divider-inset) {
+    /* The second modifier class outranks the reach of the $divider rules. */
+    .ui-nav-disclosure-content-body > * + &.ui-nav-group--divider.ui-nav-group--divider-inset {
+      /* Rows in a disclosure body reach back over their own padding to align
+         their text with the body, and end with the body's content box. */
+      margin-inline-start: calc(var(--nav-px) * -1);
+      padding-inline-start: var(--nav-px);
+      margin-inline-end: 0;
+      padding-inline-end: 0;
+    }
+
+    .ui-nav.ui-nav--layout-horizontal > * + &.ui-nav-group--divider.ui-nav-group--divider-inset {
+      margin-block: 0;
+      padding-block: 0;
+    }
+
+    .ui-nav.ui-vertical > * + &.ui-nav-group--divider.ui-nav-group--divider-inset {
+      /* Rows at the top level fill the navigation's content box. */
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+  }
+}
+
+@utility ui-nav-group-label {
+  text-align: start;
+  /* Line up with the text of the rows after the guide gutter. The gutter is
+     a registered length, so it resolves in the font of the navigation, not
+     the smaller font of the label. */
+  margin-inline-start: var(--nav-gutter, 0px);
+}
+
+@utility ui-nav-slot-base--mx-auto {
+  * + & {
+    --mx: calc((var(--py) - var(--px) + max(0px, var(--my))) * var(--slot-pull,1) * var(--control-inline,1));
+  }
+}
+
+@utility ui-nav-link {
+  /* The guide and the marker of the link read this class. */
+  justify-content: flex-start;
+  text-wrap: wrap;
+}
+
+@utility ui-nav-link-content {
+  /* Restore the content gaps because navLink disables the control gap
+     variant. */
+  --gap: calc(var(--px) - var(--sidebearing));
+  --gap-y: min(var(--py) / 2, --spacing(2));
+}
+
+@utility ui-nav-link-label {
+  :is(:where(.group\/control-content):has(> .ui-control-description) &) {
+    @apply ak-ink-100 font-[calc(500+var(--contrast))];
+  }
+
+  :where(:is(.ui-nav.ui-nav--layout-horizontal > .ui-control, .ui-nav.ui-nav--layout-horizontal > .ui-nav-list > li > .ui-control)) & {
+    &[data-text] {
+      /* buttonLabel reserves the width of the heavier text from data-text, so
+         the row keeps its size when the link becomes current. A horizontal row
+         caps the label at the reserved width and centers the text in it, so
+         both sides of the text share the extra space. Taking the free space of
+         a wider row, or the width of a longer description, would move the text
+         away from the start. */
+      max-width: fit-content;
+      text-align: center;
+    }
+  }
+}
+
+@utility ui-nav-button {
+  /* Fill the row so trailing slots reach its end. */
+  width: 100%;
+  justify-content: flex-start;
+  overflow: clip;
+  white-space: normal;
+  text-align: start;
+}
+
+@utility ui-nav-button-content {
+  display: block;
+  overflow: hidden;
+}
+
+@utility ui-nav-link-bar {
+  /* Measure from the row to the edge of the region that holds it. */
+  --bar-gap: var(--nav-bar-gap,0px);
+
+  .ui-nav.ui-nav--layout-horizontal & {
+    inset-inline-start: var(--bar-inset);
+    inset-inline-end: var(--bar-inset);
+    height: var(--bar);
+    /* Rows can sit centered in a taller region, such as a shell bar that sets
+       --nav-block-size. A row taller than that region grows it, so the row and
+       the nav padding set the minimum. Percentages resolve against the row's
+       height. */
+    --bar-gap: calc(max(var(--nav-block-size,0px), 100% + var(--control-border,0px) * 2 + var(--nav-bar-gap,0px) * 2) / 2 - 50% - var(--control-border,0px));
+    /* The region reaches over an edge around it, so an `edge` bar covers that
+       edge. Other offsets keep measuring to the inner side of the edge. */
+    --bar-edge: var(--nav-edge-end,0px);
+    top: calc(100% + var(--control-border, 0px) + var(--bar-offset));
+
+    &.ui-nav-link-bar--side-start {
+      --bar-edge: var(--nav-edge-start,0px);
+      top: auto;
+      bottom: calc(100% + var(--control-border, 0px) + var(--bar-offset));
+    }
+  }
+
+  .ui-nav.ui-vertical & {
+    inset-inline-start: calc(var(--nav-bar-guide, calc(-1 * (var(--bar-offset) + var(--bar)))) - var(--control-border, 0px));
+    inset-inline-end: auto;
+    width: var(--bar);
+    top: var(--bar-inset);
+    bottom: var(--bar-inset);
+    /* An `edge` bar covers the border of the column at its side. */
+    --bar-edge: var(--nav-edge-start,0px);
+
+    &.ui-nav-link-bar--side-end {
+      inset-inline-start: calc(100% + var(--control-border, 0px) + var(--bar-offset));
+      --bar-edge: var(--nav-edge-end,0px);
+    }
+  }
+
+  .ui-nav.ui-vertical .ui-disclosure-content & {
+    /* Start bars of nested rows meet the disclosure content's start edge. Body
+       padding minus the row's own shift gives that distance. */
+    --bar-gap: calc(var(--disclosure-body-ps,0px) - var(--px,0px));
+
+    &.ui-nav-link-bar--side-end {
+      /* End bars of nested rows measure from the navigation padding, so the bar
+         follows a row that a padded body insets. */
+      --bar-gap: var(--nav-bar-gap,0px);
+    }
+
+    &.ui-nav-link-bar--guide:not(.ui-nav-link-bar--side-end) {
+      /* Named start offsets in guided content sit on the guide line. List
+         disclosure content exposes the list guide along its markers. */
+      --nav-bar-guide: calc(var(--disclosure-guide) - var(--bar-gap) - var(--bar) / 2);
+    }
+  }
+}
+
+@utility ui-nav-disclosure-group--cover {
+  /* Covering frames take the container radius, which a shell sidebar paints
+     square at its edges. The group and its sections paint square corners
+     too, and keep the frame radius for the corners of their rows. */
+  border-radius: 0 !important;
+
+  & > * > .ui-disclosure-content > * {
+    border-radius: 0 !important;
+  }
+}
+
+@utility ui-nav-disclosure {
+  @container style(--nav-slot-size) {
+    --disclosure-icon-size: var(--nav-slot-size);
+  }
+
+  &:where(.ui-nav-disclosure--split-true) {
+    /* Inset rows on the body surface so their text lines up with the button
+       text at both ends. */
+    --nav-body-inset: max(0px, calc(var(--disclosure-padding) - var(--nav-py,--spacing(2))));
+    /* The body spans the section, so its rows stay concentric with the
+       section corners at the inset distance. */
+    --nav-body-row-radius: calc(var(--disclosure-radius) - var(--nav-body-inset));
+  }
+
+  &:where(.ui-nav-disclosure--split-false) {
+    --nav-body-inset: 0px;
+    --nav-body-row-radius: initial;
+  }
+}
+
+@utility ui-nav-disclosure-content-body {
+  /* Compensate for body padding so the concentric radius of nested rows
+     matches the disclosure radius. A split body sets a smaller row radius for
+     its inset rows. */
+  --nav-body-radius: calc(var(--nav-body-row-radius,var(--disclosure-radius)) + var(--ak-frame-padding));
+  /* The guide and the markers of the navigation join its top-level links,
+     not the rows of a disclosure. */
+  --nav-gutter: 0px;
+  --list-guide: 0;
+
+  & .ui-nav-group-label {
+    /* Group labels align with the row text too, after the gutter of a group
+       with numbers. */
+    margin-inline-start: calc(var(--nav-gutter, 0px) - var(--px));
+  }
+
+  & li:has(> .ui-disclosure-button) {
+    margin-inline-start: calc(var(--disclosure-px) * -1);
+  }
+
+  & li > .ui-control {
+    /* Inset focus rings to prevent disclosure clipping, even when a row sets
+       its own `$focusOffset`. */
+    outline-offset: calc(2px * -1);
+  }
+
+  & li > .ui-control:not(.ui-disclosure-button) {
+    /* Align row text with the body. Move nested disclosures as a whole to keep
+       their guides aligned. */
+    margin-inline-start: calc(var(--px) * -1);
+  }
+
+  @container style(--disclosure-split: 1) {
+    /* A split body meets its button with a straight edge. */
+    @apply rounded-t-none;
+  }
+}
+
+@utility ui-nav-link-piece {
+  z-index: 1;
+  /* Levels to bend in from the parent or out to an earlier level. The first
+     row of the outermost list starts the guide. The guide doesn't join the
+     rows of a disclosure, so the row after one starts the guide again. */
+  --nav-guide-first: 0;
+  --nav-guide-in-raw: 0;
+  --nav-guide-out-raw: 0;
+  /* The guide draws the bend and the line with the `--guide-*` values. A row
+     can bend out by two levels, which the span counts. */
+  --guide-in: calc(min(var(--nav-guide-in-raw), var(--nav-guide-in-cap,0)) * var(--nav-guide-bends,1));
+  --nav-guide-out: calc(min(var(--nav-guide-out-raw), var(--nav-guide-out-cap,0)) * var(--nav-guide-bends,1));
+  --guide-outward: min(1, var(--nav-guide-out));
+  --guide-span: calc((var(--guide-in) + var(--nav-guide-out)) * var(--nav-indent));
+  /* A bend runs from the end of the previous line, through the gap between
+     the rows, to the start of this one. All rows take the row padding that
+     the navigation resolves, so the pieces join when a link sets its own
+     padding. The gap around a marker must stay inside the piece of its own
+     link, so the joint moves toward the row edge by how far that gap passes
+     the first line. All pieces of a navigation move it by the same length. */
+  --nav-guide-joint: max(0px, var(--nav-py) - var(--nav-marker-overreach));
+  --guide-bend-height: calc(var(--list-gap,0px) + var(--nav-guide-joint) * 2);
+  /* The rail keeps the guide of the outermost list at every level. */
+  --nav-guide-x: calc(-1 * var(--nav-guide-offset,0px) - (1 - var(--nav-guide-bends,1)) * var(--nav-depth,0) * var(--nav-indent));
+  inset-inline-start: calc(var(--nav-guide-x) - var(--guide-width) / 2 - var(--guide-in) * var(--nav-indent));
+  top: calc(var(--nav-guide-joint) - (1 - var(--nav-guide-first)) * var(--guide-bend-height));
+  bottom: var(--nav-guide-joint);
+  width: calc(var(--guide-span) + var(--guide-width));
+  mask-position: -2em -2em;
+  mask-size: calc(100% + 4em) calc(100% + 4em);
+  mask-repeat: no-repeat;
+  mask-clip: no-clip;
+
+  @variant not-ui-list-guide {
+    display: none;
+  }
+
+  @variant ui-list-counter {
+    /* A piece stops one gap before the marker of its link and starts again
+       one gap after it, so nothing paints around a marker to hide the piece.
+       A link without a marker keeps the whole piece. Only a piece with a
+       marker declares the hole, because a glide of the bar restyles every
+       piece in each frame. */
+    --nav-marker-cut: var(--nav-number-reach);
+    /* The center of the marker in the piece. It is on the line along the row,
+       which is at the end column after a bend in and at the start column
+       otherwise, and on the first line of the link. Mask positions are
+       physical, so right to left text swaps the columns. */
+    --nav-hole-x: calc((var(--guide-in) * var(--guide-dir) + (1 - var(--guide-dir)) / 2) * var(--guide-span) + var(--guide-width) / 2);
+    --nav-hole-y: calc(var(--py,0px) + 0.5lh - var(--nav-guide-joint) + (1 - var(--nav-guide-first)) * var(--guide-bend-height));
+    /* A mask cuts the hole, because a bend can end inside it. The mask is 2em
+       larger than the piece on each side, so it keeps a line that draws
+       outside the box, such as a slanted bend. */
+    --nav-hole: radial-gradient(circle at calc(var(--nav-hole-x) + 2em) calc(var(--nav-hole-y) + 2em),#0000 var(--nav-marker-cut),#000 0);
+    mask-image: var(--nav-hole);
+  }
+
+  @variant ui-list-bullet {
+    --nav-marker-cut: calc(var(--list-bullet-size) / 2 + var(--nav-marker-gap));
+    --nav-hole-x: calc((var(--guide-in) * var(--guide-dir) + (1 - var(--guide-dir)) / 2) * var(--guide-span) + var(--guide-width) / 2);
+    --nav-hole-y: calc(var(--py,0px) + 0.5lh - var(--nav-guide-joint) + (1 - var(--nav-guide-first)) * var(--guide-bend-height));
+    --nav-hole: radial-gradient(circle at calc(var(--nav-hole-x) + 2em) calc(var(--nav-hole-y) + 2em),#0000 var(--nav-marker-cut),#000 0);
+    mask-image: var(--nav-hole);
+  }
+
+  .ui-nav-item > .ui-nav-list > li:first-child > * > & {
+    --nav-guide-in-raw: 1;
+  }
+
+  li.ui-nav-disclosure + li > * > & {
+    --nav-guide-first: 1;
+  }
+
+  li:first-child > * > & {
+    --nav-guide-first: var(--nav-guide-lead,0);
+  }
+
+  li:has(> .ui-nav-list) + li > * > & {
+    --nav-guide-out-raw: 1;
+  }
+
+  li:has(> .ui-nav-list > li:last-child > .ui-nav-list) + li > * > & {
+    --nav-guide-out-raw: 2;
+  }
+}
+
+@utility ui-nav-link-guide {
+  --guide-width: var(--nav-guide-width,1px);
+  /* Fade out after the last row. The fade is a second mask layer over the
+     hole around the marker, in the box of the piece. The piece shows only
+     where both layers do. A piece without a marker has no hole, so its
+     second layer shows everything. */
+  --nav-guide-end: 0;
+
+  li:last-child:not(:has(> .ui-nav-list)) > * > & {
+    --nav-guide-end: 1;
+    mask-image: linear-gradient(to bottom, #000 calc(100% - var(--nav-guide-tail, 0) * var(--nav-guide-end) * (--spacing(2))), transparent), var(--nav-hole, linear-gradient(#000, #000));
+    mask-position: 0 0, -2em -2em;
+    mask-size: 100% 100%, calc(100% + 4em) calc(100% + 4em);
+    mask-clip: border-box, no-clip;
+    mask-composite: intersect;
+  }
+}
+
+@utility ui-nav-link-guide-bar {
+  --guide-width: var(--nav-bar-size);
+  --guide-color: var(--nav-bar-color);
+  /* Where the line along the row starts in the piece, after the bend from
+     the previous row. */
+  --nav-bar-row: calc((1 - var(--nav-guide-first)) * var(--guide-bend-height));
+  /* A bar stops at the marker of its link. The gap around a dot is shorter
+     than its row, so a bar that ran to the row edge would show past the gap.
+     The marker centers on the first line after the padding of its link,
+     which can differ from the joint of the guide. */
+  --nav-bar-marker-shift: calc(var(--py,0px) - var(--nav-guide-joint));
+  /* Negative side insets keep the slanted lines of diagonal bends whole. A
+     piece that the range doesn't cut keeps its edges outside the clip, which
+     otherwise leaves seams between pieces at fractional pixel positions. */
+  clip-path: inset(max(-1px, var(--nav-bar-start) - var(--nav-bar-top, 0px)) -0.5em max(-1px, var(--nav-bar-top, 0px) + 100% - var(--nav-bar-end)) -0.5em);
+
+  @variant group-ui-selected/control {
+    /* The range of a current link without a script. The style attribute of a
+       measured range wins over it. */
+    --nav-bar-start: calc(var(--nav-bar-row) + var(--nav-bar-marker-top,0px));
+    --nav-bar-end: calc(var(--nav-bar-row) + var(--nav-bar-marker-bottom,100000px));
+  }
+
+  @variant ui-list-counter {
+    --nav-bar-marker-top: calc(var(--nav-bar-marker-shift) + 0.5lh - var(--nav-number-size) / 2);
+    --nav-bar-marker-bottom: calc(var(--nav-bar-marker-shift) + 0.5lh + var(--nav-number-size) / 2);
+  }
+
+  @variant ui-list-bullet {
+    --nav-bar-marker-top: calc(var(--nav-bar-marker-shift) + 0.5lh - var(--list-bullet-size) / 2);
+    --nav-bar-marker-bottom: calc(var(--nav-bar-marker-shift) + 0.5lh + var(--list-bullet-size) / 2);
+  }
+
+  &:where(.ui-nav-link-guide-bar--glide-true) {
+    @apply transition-[--nav-bar-start,--nav-bar-end];
+  }
+}
+
+/* The timing that the glide of a bar and the highlight of a marker share. */
+@utility ui-nav-glide-timing {
+  @apply duration-200 ease-[cubic-bezier(0.25,0.7,0.3,1)];
+}
+
+@utility ui-nav-link-marker {
+  /* The size of the marker as a length, which the clip of the fill needs. */
+  --nav-marker-size: var(--list-marker-size);
+  /* The marker has no transition, so its colors follow the theme at once.
+     With `$glide`, the highlight animates the range on its own
+     pseudo-element, which is much cheaper to restyle in each frame of a glide
+     than the marker. It reads the timing from here. */
+  transition-property: none;
+
+  @variant not-ui-list-counter {
+    @variant not-ui-list-bullet {
+      /* Only a list with numbers or dots shows the marker. */
+      display: none;
+    }
+  }
+
+  @variant ui-list-bullet {
+    --nav-marker-size: var(--list-bullet-size);
+  }
+
+  @variant not-ui-list-guide {
+    @variant ui-list-bullet {
+      /* A dot has no room without a guide. */
+      display: none;
+    }
+  }
+
+  .ui-nav-link-guide-bar ~ & {
+    @variant group-ui-selected/control {
+      /* Without a measured range, the bar on the guide of a current link covers
+         its marker. The bar comes before the marker in the link. */
+      --nav-bar-start: -100000px;
+      --nav-bar-end: 100000px;
+    }
+  }
+
+  .ui-nav-link > & {
+    /* Center it on the guide and on the first line of the row. Like the guide
+       pieces, a marker in a nested list stays on the rail. The link selector
+       outranks the position of a marker in a list row. */
+    --list-marker-center-x: calc(-1 * var(--nav-guide-offset,0px) - (1 - var(--nav-guide-bends,1)) * var(--nav-depth,0) * var(--nav-indent));
+    --list-marker-center-y: calc(var(--py,0px) + 0.5lh);
+
+    @variant ui-list-bullet {
+      /* A dot takes the color of the guide, also in forced colors. The link
+         selector outranks the edge color of a list marker. */
+      --ak-edge: var(--nav-guide-color);
+    }
+  }
+
+  .ui-nav--marker-highlight-fill & {
+    @variant ui-list-guide {
+      @variant after {
+        @apply font-semibold leading-(--nav-marker-size);
+        --nav-bar-start: inherit;
+        --nav-bar-end: inherit;
+        /* The fill shows only where the bar covers the marker. On a number, it
+           repeats the number in the surface color, so the number flips along
+           with the surface. */
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        border-radius: calc(var(--radius) * infinity);
+        background-color: var(--nav-bar-color);
+        color: var(--nav-surface-color);
+        font-size-adjust: 0.45;
+        /* The clip of the fill follows the range, so the fill grows from the
+           side where the bar arrives and shrinks to the side where the bar
+           leaves. It stops at the edges of the marker, which needs lengths
+           instead of percentages. An empty clip passes the edge, so a
+           fractional size leaves no line. */
+        clip-path: inset(min(var(--nav-marker-size) + 1px, max(-1px, var(--nav-bar-start) - var(--nav-bar-top, 0px))) -1px min(var(--nav-marker-size) + 1px, max(-1px, var(--nav-bar-top, 0px) + var(--nav-marker-size) - var(--nav-bar-end))) -1px);
+      }
+
+      @variant ui-list-counter {
+        @variant after {
+          @apply content-[counter(list-item)];
+        }
+      }
+    }
+  }
+
+  .ui-nav--marker-highlight-ring & {
+    @variant ui-list-guide {
+      @variant after {
+        @apply border-solid border-(length:--nav-bar-size);
+        /* The range doesn't inherit, so the highlight takes it from the
+           marker. */
+        --nav-bar-start: inherit;
+        --nav-bar-end: inherit;
+        /* The ring is clipped to the range widened by the gap, so a marker is
+           either lit or not while the bar is still. An empty range, with no
+           link to cover, doesn't widen. */
+        --nav-ring-reach: min(var(--nav-marker-gap), max(0px, (var(--nav-bar-end) - var(--nav-bar-start)) * 1000));
+        position: absolute;
+        inset: calc(var(--nav-marker-gap) * -1);
+        border-radius: calc(var(--radius) * infinity);
+        border-color: var(--nav-bar-color);
+        clip-path: inset(max(-2px, var(--nav-bar-start) - var(--nav-bar-top, 0px) + var(--nav-marker-gap) - var(--nav-ring-reach)) -2px max(-2px, var(--nav-bar-top, 0px) + 100% - var(--nav-bar-end) - var(--nav-marker-gap) - var(--nav-ring-reach)) -2px);
+      }
+    }
+  }
+}

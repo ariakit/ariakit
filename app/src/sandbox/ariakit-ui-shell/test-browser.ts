@@ -204,9 +204,9 @@ withDeferredVisualLoad(import.meta.dirname, async ({ test, query }) => {
           ] as const) {
             // The panel draws the seam, and its body scrolls the covering nav.
             const panel = q.navigation(name);
-            const body = panel.locator(".shell-sidebar-body");
-            const nav = body.locator(".nav");
-            const bar = nav.locator(".control-bar:visible");
+            const body = panel.locator(".ui-shell-sidebar-body");
+            const nav = body.locator(".ui-nav");
+            const bar = nav.locator(".ui-bar:visible");
             await expect(panel).toHaveCSS(
               `border-${seamOnRight ? "right" : "left"}-width`,
               "1px",

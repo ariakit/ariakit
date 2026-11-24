@@ -316,7 +316,7 @@ const textModifiers = cv({
  */
 export const text = cv({
   extend: [ink, textModifiers],
-  class: "text",
+  class: "ui-text",
   variants: {
     /**
      * Sets the font family to the `sans`, `serif`, or `mono` font of the theme.

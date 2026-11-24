@@ -6,8 +6,13 @@ import { getSpacingValue } from "../utils/styles.ts";
  */
 export const proseColumn = cv({
   class: [
-    // The gaps of the column follow its text size.
-    "ui-spacing-em flex flex-col gap-(--prose-gap) [--prose-gap:--spacing(5)]",
+    "ui-prose-column",
+    "flex-col",
+    // Stays a class, so that the display of `listDisclosureContentBody` still
+    // comes after it and replaces it.
+    "flex",
+    // Stays a class to come after the gap of `ui-nav-rows`, which it replaces.
+    "gap-(--prose-gap)",
   ],
   variants: {
     /**
@@ -28,33 +33,9 @@ export const proseColumn = cv({
 export const prose = cv({
   extend: [proseColumn],
   class: [
-    "prose",
-    // Use zero specificity so text size and line-height utilities can override
-    // these defaults. A sized shell main sets the token to 1em, which resolves
-    // against the parent here, so the column follows the text around it. A
-    // unitless line height keeps smaller text inside in proportion.
-    "ui-base:text-(length:--prose-size,1rem)/[1.75]",
+    "ui-prose",
+    // Stays a class to come after the --_ak-text-alpha of `ink`, which it
+    // replaces.
     "ak-dark:ak-ink-75 ak-light:ak-ink-90",
-    // Keep markup defaults at zero specificity. Paragraphs and list items
-    // restore muted ink inside nested surfaces.
-    "[&_:is(p,li)]:ak-dark:ui-base:ak-ink-75",
-    "[&_:is(p,li)]:ak-light:ui-base:ak-ink-90",
-    "[&_strong]:ui-base:ak-ink-100 [&_strong]:ui-base:font-medium",
-    // A heading starts a new part of the column, so it adds space above the gap.
-    // Adjacent headings stay closer. Zero specificity lets caller mt-* classes
-    // win, and em values follow the size of each heading. A spacing step would
-    // follow the text size of the column instead.
-    "[&>:not(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6)]:ui-base:mt-[1em]",
-    // A column after a popout, feature, or full band between two columns, such
-    // as a code block, a figure, or a callout in an article, continues the same
-    // text, so its first heading starts a new part too.
-    "[:is(.shell-popout,.shell-feature,.shell-full)+&>:is(h1,h2,h3,h4,h5,h6):first-child]:ui-base:mt-[1em]",
-    "[&>:is(h1,h2,h3,h4,h5,h6)+:is(h1,h2,h3,h4,h5,h6)]:ui-base:mt-[0.35em]",
-    // Tighten only the space after a heading, so later children keep the gap.
-    // The margin is negative while the gap is larger than this space.
-    "[&>:is(h1,h2,h3,h4,h5,h6)+.heading-description]:ui-base:mt-[calc(var(--spacing)*3.5-var(--prose-gap))]",
-    // A short lead sits closer together than the paragraphs below it. A direct
-    // property keeps the leading fallbacks of text-* classes.
-    "[&>.heading-description]:ui-base:[line-height:1.625]",
   ],
 });

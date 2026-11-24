@@ -40,61 +40,19 @@ export function getInputEdgeRaw(
 export const input = cv({
   extend: [control, focusHighlight],
   class: [
-    "max-w-full cursor-text items-center justify-start",
+    "ui-input",
     inputInvalidEdge,
-    // Animate hover entry only to avoid a delayed exit.
-    "hover:transition-[background-color]",
-    // Use ordinary hover because ui-hover excludes nested controls. Apply the
-    // field's disabled condition explicitly.
-    "not-ui-field-disabled:hover:ak-state-2.5",
-    // Read disabled state from DOM entry controls, including updates after
-    // render. Enabled entries or a disabled action button keep the field
-    // enabled. The plugin's zero-lighten utility cancels the inline default.
-    "ui-field-disabled:ak-disabled",
-    "ui-field-disabled:cursor-not-allowed **:ui-disabled:cursor-not-allowed",
-    // Skip the descendant ink in forced colors: an icon gets the system color
-    // only while its color inherits. A :has() before a universal selector makes
-    // Chrome restyle the whole subtree of each :has() anchor whose state
-    // changes, on any page with the rule. So the field sets a flag that its
-    // descendants read with a style query. The repeated class outranks the
-    // hover ink of an enabled action button, as the :has() check of
-    // ui-field-disabled did.
-    "ui-field-disabled:ak-ink-0",
-    "ui-field-disabled:[--field-disabled:1]",
-    "not-forced-colors:[@container_style(--field-disabled:1)]:[&&&&&_*]:ak-ink-0",
-    "ui-field-disabled:ak-edge-10",
-    "ui-field-disabled:ak-layer-lighten-0",
-    // Drop the chroma cap too, or a field on a tinted layer stays
-    // nearly white instead of matching the surface around it.
-    "ui-field-disabled:ak-layer-max-c-[initial]",
     // Forced colors replace the ink and edge with the normal text color. Use
     // the system disabled color instead. An enabled action button and its
     // content keep their system colors, so the button does not look disabled:
     // the descendant rule leaves them out, and the last rule stops the button
     // from inheriting the field's color.
+    // Stays a class to come after the classes of a caller, so that the forced
+    // colors rule still applies.
     "ui-field-disabled:forced-colors:text-[GrayText]",
     "forced-colors:[@container_style(--field-disabled:1)]:[&&&&&_*:not(:is(button,input,a):not(:disabled,[aria-disabled='true']),:is(button,input,a):not(:disabled,[aria-disabled='true'])_*)]:text-[GrayText]",
     "ui-field-disabled:forced-colors:border-[GrayText]",
     "ui-field-disabled:forced-colors:[&_:is(button,input,a):not(:disabled,[aria-disabled='true'])]:text-[revert]",
-    // A native input uses the control line box; a textarea keeps its rows.
-    "[input]:box-content [input]:h-lh",
-    "[&_input]:box-content [&_input]:h-lh",
-    // Entry controls share the wrapper's focus ring; action buttons keep
-    // theirs. :where() prevents higher specificity from type exclusions.
-    "[&_:is(input:not(:where([type=hidden],[type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio])),textarea,select)]:outline-none",
-    "placeholder:ak-ink-0 [&_:is(input,textarea)]:placeholder:ak-ink-0",
-    // Nested fields use the outer geometry; ! also overrides their focus-state
-    // ring.
-    "[:is(&_&)]:p-0 [:is(&_&)]:border-0 [:is(&_&)]:ring-0",
-    "[:is(&_&)]:shadow-none [:is(&_&)]:outline-none!",
-    "[:is(&_&)]:bg-transparent [:is(&_&)]:ak-layer-lighten-0 [:is(&_&)]:ak-state-0",
-    // Nested fields have no padding, so a concentric radius would clip the
-    // caret and text at their start. The outer field draws the shape.
-    "[:is(&_&)]:rounded-none",
-    // Nested fields fill the free space beside the slots and can shrink below
-    // the native width that a flex item keeps by default. Zero specificity
-    // lets callers give one a fixed width with flex-none.
-    "[:is(&_&)]:min-w-0 [&_&]:ui-base:flex-1",
   ],
   variants: {
     /**
@@ -145,13 +103,7 @@ export const input = cv({
      * group fits its slots and the entry controls in it.
      */
     $fitContent: {
-      true: [
-        // Zero specificity lets callers set a width, such as a minimum.
-        "field-sizing-content not-[textarea]:ui-base:w-fit",
-        // Entry controls in a group stop filling the free space, so the group
-        // fits them. Browsers without field sizing keep the native width.
-        "[&_:is(input,textarea)]:field-sizing-content [&_:is(input,textarea)]:flex-initial",
-      ],
+      true: "ui-input--fit-content-true",
       false: "",
     },
   },

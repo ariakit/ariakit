@@ -12,9 +12,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(nav.locator("[aria-current]")).toHaveCount(0);
     // CSS draws the guide from the list structure. The bar range stays empty
     // until the script measures the visible rows.
-    await test.expect(nav.locator(".toc-link-guide").first()).toBeVisible();
+    await test.expect(nav.locator(".ui-toc-link-guide").first()).toBeVisible();
     const ranges = await nav.evaluate((element) => {
-      const bars = element.querySelectorAll(".toc-link-bar");
+      const bars = element.querySelectorAll(".ui-toc-link-bar");
       return [...bars].map((bar) => {
         const style = getComputedStyle(bar);
         return [

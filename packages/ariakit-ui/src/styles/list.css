@@ -1,0 +1,921 @@
+/* The CSS of the list style recipe in list.ts. Import this file in the CSS file
+   that imports Tailwind CSS, after ui.css and the CSS files of the style
+   recipes that list.ts imports:
+
+   @import "./ui.css";
+   @import "./check-mark.css";
+   @import "./active.css";
+   @import "./segment.css";
+   @import "./slot-frame.css";
+   @import "./control.css";
+   @import "./button.css";
+   @import "./prose.css";
+   @import "./disclosure.css";
+   @import "./list.css";
+
+   The style component in list.ariakit.react.tsx also needs progress.css, which
+   holds the CSS of a style recipe that it imports. Import that file too. */
+
+@custom-variant ui-list-counter {
+  @container style(--list-marker: counter) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-icon {
+  @container style(--list-marker: icon) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-bullet {
+  @container style(--list-marker: bullet) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-dash {
+  @container style(--list-marker: dash) {
+    @slot;
+  }
+}
+
+/* Heading level follows the document outline, so all levels count as blocks. */
+@custom-variant ui-list-item-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4, h5, h6)) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4, h5, h6)) {
+    @slot;
+  }
+  @container style(--list-blocks: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-sections {
+  &:has(:where(h1, h2, h3, h4, h5, h6)) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-horizontal {
+  @container style(--list-layout: horizontal) {
+    @slot;
+  }
+}
+
+/* A registered guide flag computes `auto` to a number this query can match. */
+@custom-variant ui-list-guide {
+  @container style(--list-guide: 1) {
+    @slot;
+  }
+}
+
+/* The last-row flag reaches guides at any depth and resets in nested lists. */
+@custom-variant ui-list-last-row {
+  @container style(--list-last-row: 1) {
+    @slot;
+  }
+}
+
+/* The first-row flag reaches guides at any depth and resets in nested lists. */
+@custom-variant ui-list-first-row {
+  @container style(--list-first-row: 1) {
+    @slot;
+  }
+}
+
+/* The branch flag reaches the rows of a branch list and resets in lists nested
+   in it. */
+@custom-variant ui-list-branch {
+  @container style(--list-branch: 1) {
+    @slot;
+  }
+}
+
+/* The flag of the row that holds a nested list reaches the rows of that list
+   and resets in lists nested in it. */
+@custom-variant ui-list-parent-last-row {
+  @container style(--list-parent-last-row: 1) {
+    @slot;
+  }
+}
+
+/* Compute the list guide flag, so `auto` can match a style query. */
+@property --list-guide {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* Resolve the content indent of a list disclosure at its root, so a content
+   font size cannot move the content away from the label. */
+@property --list-disclosure-indent {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the text inset of a list row in the font of the row, so a nested
+   list with another font size finds the text of the row. */
+@property --list-text-inset {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the marker box of a list row and how far its marker is from the
+   center of the box in the font of the row, so a nested list with another
+   font size finds that marker. */
+@property --list-row-marker-box {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --list-row-marker-shift {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the overhang of a list row in the font of the row, so a nested list
+   with another font size moves by the padding of the row. */
+@property --list-row-overhang {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Resolve the two lengths whose values a guide piece expands most, once on the
+   piece. Unresolved, they expand again in each value that reads them, and a
+   glide of the bar of a navigation restyles its pieces in each frame. */
+@property --guide-span {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --guide-bend-lower-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@utility ui-list {
+  /* The gaps and the insets of the list follow its text size. */
+  @apply ui-spacing-em;
+  gap: var(--list-gap);
+  /* The base gap is the rhythm of the text around the list. The space
+     between two rows derives from it, by how much content the rows hold. */
+  --list-gap-base: var(--list-gap-base-root,calc(var(--spacing-em) * 4));
+  /* The rows read these lengths. The em step keeps each length in em, so a
+     row with smaller text resolves it against its own text size. The step of
+     the list is a resolved length, which would give every row the same
+     padding. */
+  --list-item-padding: round(calc(var(--spacing-em) * 1), 1px);
+  /* Rows have padding that doesn't show without a surface, so the derived
+     gap takes it out. `$gap` sets the space between two rows directly. */
+  --list-gap: var(--list-gap-root,calc(var(--list-gap-base) * 0.5 - var(--list-item-padding)));
+  /* The blocks of a row are as far apart as they are from the edges of its
+     frame, so they read as one group. $itemGap replaces this gap. */
+  --list-item-gap: var(--list-item-gap-root,var(--list-item-padding));
+  /* Reset inherited flags so nested lists start with their own state. */
+  --list-blocks: 0;
+  --list-last-row: 0;
+  --list-first-row: 0;
+  /* A nested list reads the marker box of the row that holds it, so its
+     branch connectors can reach the marker of that row. */
+  --list-parent-marker-box: var(--list-row-marker-box);
+  /* It also reads whether that row is the last row of its list. A branch has
+     no row to curve back to after the last row. */
+  --list-parent-last-row: var(--list-row-last,0);
+  /* Rows without a surface start at the list edge. When a row has a surface,
+     is a disclosure, or is rendered as a link or a button, which have hover
+     surfaces, all rows keep their frames, so the markers of rows with the
+     same padding line up. Such a row can sit in its own list item. */
+  --list-flush: 1;
+  /* How far a row without a surface moves out of the list, which is its
+     padding. A row in prose stays in place. */
+  --list-row-outset: calc(var(--list-item-padding) * var(--list-flush));
+  /* The marker box is as far from the text as it is from the edges of the
+     frame, so a marker in a card or a hover surface sits in even space, and
+     the marker is as near to the text as the blocks of the row are to each
+     other. Rows without frames keep at least about the white between two
+     lines of text at a line height of 1.5, which runs along the line and
+     follows the font size. The gap starts at the end of the marker, so the
+     space that it leaves in its box counts. */
+  --list-marker-gap: max(calc(var(--list-item-padding) + var(--list-marker-space)), calc(0.75em * var(--list-flush)));
+  /* The space that a marker leaves between its end and the end of its box.
+     Without a guide, each marker ends where a counter chip ends. On a guide,
+     a bullet or a dash is on the center of the box. */
+  --list-chip-space: calc((var(--list-marker-box,1lh) - var(--list-marker-box,1.75em) + 0.4em) / 2);
+  --list-glyph-space: calc((var(--list-marker-box,1lh) - var(--list-glyph-width,0px)) / 2);
+  --list-marker-space: calc(var(--list-chip-space) + (var(--list-glyph-space) - var(--list-chip-space)) * var(--list-glyph) * var(--list-guide));
+  /* How far the center of a marker is from the center of its box. Without a
+     guide, a bullet or a dash ends where a chip ends, so it is not on the
+     center. A list with a check or a progress row measures it from that
+     marker, and each row measures its own marker for a list nested in it. */
+  --list-check-space: initial;
+  --list-marker-shift: calc((var(--list-check-space,var(--list-glyph-space)) - var(--list-chip-space)) * var(--list-glyph) * (1 - var(--list-guide)));
+  /* A nested list reads the shift of the marker of the row that holds it. */
+  --list-parent-marker-shift: var(--list-row-marker-shift);
+  /* The distance from the marker column of the row that holds a nested list
+     to the marker column of the list, when the list starts at the text of
+     that row: half of each marker box, the text inset of that row, and the
+     padding of the rows of this list, less how far they move out. The
+     markers of each list can be away from the center of their boxes. */
+  --list-indent-auto: calc(var(--list-parent-marker-box,1lh) / 2 + var(--list-marker-box,1lh) / 2 + var(--list-text-inset,0px) + var(--list-item-padding) - var(--list-row-outset) - var(--list-parent-marker-shift) + var(--list-marker-shift));
+  /* The guide stops this far from each marker, so the surface around the
+     list shows between them, whatever it paints. */
+  --list-guide-gap: calc(var(--spacing-em) * 1);
+  /* A nested list reads how far the guide stops from the marker of the row
+     that holds it, and from the marker of the row after that one, so its
+     branch connectors stop there too. */
+  --list-parent-marker-cut: var(--list-row-marker-cut);
+  --list-parent-next-marker-cut: var(--list-row-next-marker-cut);
+  /* The size of a bullet, which equals seven pixels at a 16px font size.
+     $bulletSize replaces it. */
+  --list-bullet-size: 0.4375em;
+
+  :where(:is(.ui-prose)) & {
+    /* Prose supplies the default base gap. Explicit `$baseGap` wins through the
+       style attribute; nested lists win by specificity. */
+    --list-gap-base: var(--list-gap-base-root,var(--prose-gap));
+    --list-row-outset: 0px;
+  }
+
+  &:has(
+    > .ui-list-item-check,
+    > * > .ui-list-item-check,
+    > * > * > .ui-list-item-check
+  ) {
+    --list-check-space: 0.2em;
+  }
+
+  &:has(
+    > .ui-list-item-surface,
+    > * > .ui-list-item-surface,
+    > :is(a, button),
+    > * > :is(a, button)
+  ) {
+    --list-flush: 0;
+  }
+
+  @variant ui-list-blocks {
+    /* Block content increases item spacing; nested lists inherit this mode. */
+    --list-blocks: 1;
+    --list-item-padding: calc(var(--spacing-em) * 2);
+    --list-gap: var(--list-gap-root,calc(var(--list-gap-base) * 0.75 - var(--list-item-padding)));
+  }
+
+  @variant ui-list-sections {
+    /* This rule comes after the block rule, so its gap overrides block mode
+       when a list matches both. */
+    --list-gap: var(--list-gap-root,calc(var(--list-gap-base) * 1 - var(--list-item-padding)));
+  }
+
+  &:not(ol, ul, menu) {
+    /* Only list elements scope the native counter by default. */
+    counter-reset: list-item;
+  }
+
+  & > li {
+    /* Markers read the native counter, so the `start` attribute applies. They
+       increment it themselves because a grid row does not count. This rule
+       stops the implied increment of other rows, which would count twice. */
+    counter-increment: list-item 0;
+  }
+
+  & > li:first-of-type {
+    --list-first-row: 1;
+  }
+
+  & > li:last-of-type {
+    --list-last-row: 1;
+  }
+
+  .ui-list-row & {
+    /* An explicit indent moves a nested list by its difference from that
+       distance. The list grows at its start, so its rows end where they did. */
+    margin-inline-start: calc(var(--list-indent, var(--list-indent-auto)) - var(--list-indent-auto));
+    /* A list in a row of another list keeps the gap of its parent, and its
+       indent shows the level. Below the text of its row, or below the marker
+       box when it is taller, it keeps the space that its own rows have between
+       them. A row with blocks already adds part of it as a gap. A list that
+       another list holds outside its rows, such as the list of a navigation,
+       is not nested. */
+    margin-top: calc(var(--list-gap) + var(--list-item-padding) + var(--list-row-overhang) - var(--list-item-gap) * var(--list-row-blocks, 0));
+
+    @variant last {
+      /* At the end of its row, the bottom padding of its last row would add to
+         the bottom padding of the parent row. Only the padding of the parent
+         row stays below the last row. */
+      margin-bottom: calc(-1 * var(--list-item-padding) - var(--list-row-overhang));
+    }
+  }
+
+  &:where(.ui-list--marker-icon) {
+    --list-marker: icon;
+    /* An icon chip takes the surface and the automatic guide of a counter. */
+    --list-counter: 1;
+    --list-glyph: 0;
+  }
+
+  &:where(.ui-list--marker-dash) {
+    --list-marker: dash;
+    --list-counter: 0;
+    --list-glyph: 1;
+    --list-glyph-width: 0.5lh;
+  }
+
+  &:where(.ui-list--marker-auto) {
+    --list-marker: dash;
+    --list-counter: 0;
+    --list-glyph: 1;
+    --list-glyph-width: 0.5lh;
+
+    /* Each level of automatic lists outranks the level before it. */
+    :is(& & & &) {
+      --list-marker: bullet;
+      --list-glyph-width: var(--list-bullet-size);
+    }
+
+    :is(& & &) {
+      --list-marker: dash;
+      --list-glyph-width: 0.5lh;
+    }
+
+    :is(& &) {
+      --list-marker: bullet;
+      --list-glyph-width: var(--list-bullet-size);
+    }
+  }
+
+  &:where(.ui-list--guide-auto) {
+    --list-guide: calc(var(--list-counter) * var(--list-blocks));
+  }
+}
+
+@utility ui-list-row {
+  /* Freeze line height as a length so larger child text stays aligned with
+     the marker. */
+  @apply leading-[1lh];
+  /* A list nested in the row reads this class. */
+  position: relative;
+  /* Copy the non-inheriting frame border and ring into channels the guide
+     can inherit. */
+  --list-row-border: var(--ak-frame-border);
+  --list-row-ring: var(--ak-frame-ring);
+  /* A row with a surface sets this flag, so its guide starts below it. */
+  --list-row-solid: 0;
+  /* Pass the marker box of this row to a list nested in it. */
+  --list-row-marker-box: var(--list-marker-box,1lh);
+  /* Tell a nested list how far the marker of this row is from the center of
+     its box. A check row sets its own space. */
+  --list-row-marker-shift: calc((var(--list-row-glyph-space,var(--list-glyph-space,0px)) - var(--list-chip-space,0px)) * var(--list-glyph,0) * (1 - var(--list-guide,0)));
+  /* Tell a nested list whether this row is the last row of its list. */
+  --list-row-last: var(--list-last-row,0);
+  /* How far a marker reaches from its center along the guide. A check, an
+     empty slot, or progress fills the marker box, less its inset. A counter
+     or an icon is a chip, and a check in such a list has its size. */
+  --list-row-check-reach: calc(var(--list-marker-box,1lh) / 2 - 0.2em);
+  /* A bullet or a dash is smaller than the box. A vertical guide crosses a
+     dash, and a horizontal guide runs along it. */
+  --list-row-plain-reach: var(--list-row-check-reach);
+  /* The marker of this row is a check when the row is a list item with the
+     check class, or a disclosure whose button has it. */
+  --list-row-marker-reach: var(--list-row-check-reach);
+  /* The guide stops one gap before the marker and starts again one gap after
+     it. The pieces of the row, the stem of a branch list in the row, and
+     that list read this distance. A row without a marker has none. */
+  --list-row-marker-cut: calc((var(--list-row-marker-reach) + var(--list-guide-gap,0px)) * var(--list-row-marker-on,1));
+  /* The same distance for the marker of the next row, where the guide piece of
+     this row stops and a branch list in this row returns to the guide. The next
+     row can have a check when this row has none. That row is a list item, or a
+     link or a disclosure in a list item. A row in its own list item, such as a
+     link or a disclosure, reads the list item after that one. */
+  --list-row-next-marker-cut: calc(var(--list-row-plain-reach) + var(--list-guide-gap,0px));
+  /* The text starts one marker gap after the marker, so it starts after the
+     marker box by that gap, less the space that the marker leaves in the
+     box. A nested list reads this length to find the text of its row. */
+  --list-text-inset: calc(var(--list-marker-gap,0px) - var(--list-marker-space,0px));
+  /* Tell a nested list whether this row lays out its content as blocks. */
+  --list-row-blocks: 0;
+  /* How far a marker box taller than one line extends past the first line,
+     above and below it. */
+  --list-marker-overhang: max(0px, (var(--list-marker-box,1lh) - 1lh) / 2);
+  /* Tell a nested list how much padding the overhang adds around the content
+     of this row. A horizontal row puts the marker box above its content. */
+  --list-row-overhang: var(--list-marker-overhang);
+
+  &:not(:is(.ui-list-item-check, :has(> .ui-list-item-check))) {
+    --list-row-marker-reach: var(--list-row-plain-reach);
+  }
+
+  &:has(
+    + li.ui-list-item-check,
+    + li > .ui-list-item-check,
+    + li > .ui-list-row > .ui-list-item-check
+  ) {
+    --list-row-next-marker-cut: calc(var(--list-row-check-reach) + var(--list-guide-gap,0px));
+  }
+
+  @variant ui-list-counter {
+    --list-row-check-reach: calc(var(--list-marker-box,1.75em) / 2 - 0.2em);
+  }
+
+  @variant ui-list-icon {
+    --list-row-check-reach: calc(var(--list-marker-box,1.75em) / 2 - 0.2em);
+  }
+
+  @variant ui-list-bullet {
+    --list-row-plain-reach: calc(var(--list-bullet-size) / 2);
+  }
+
+  @variant ui-list-dash {
+    --list-row-plain-reach: 0.5px;
+  }
+
+  @variant ui-list-item-blocks {
+    --list-row-blocks: 1;
+  }
+
+  @variant ui-list-horizontal {
+    --list-row-overhang: 0px;
+
+    @variant ui-list-dash {
+      --list-row-plain-reach: 0.25lh;
+    }
+  }
+
+  li:has(+ li.ui-list-item-check, + li > .ui-list-item-check, + li > .ui-list-row > .ui-list-item-check) > & {
+    --list-row-next-marker-cut: calc(var(--list-row-check-reach) + var(--list-guide-gap,0px));
+  }
+}
+
+@utility ui-list-item {
+  /* Put the marker in the padding corner. The content resets this offset. */
+  --list-marker-offset: var(--ak-frame-padding);
+
+  @variant ui-list-item-blocks {
+    /* A stretched row, such as a short column next to a taller one in a
+       horizontal list, keeps its blocks together and leaves the extra height
+       below them. */
+    display: grid;
+    align-content: flex-start;
+    gap: var(--list-item-gap);
+  }
+
+  @variant ui-list-horizontal {
+    /* The rows of a horizontal list share one grid row, and each row centers
+       its content under the marker. */
+    grid-row-start: 1;
+    text-align: center;
+    justify-items: center;
+  }
+
+  &:where(.ui-list-item--check) {
+    /* A check fills the marker box, less its inset, so its center is nearer
+       to the center of the box than the center of a bullet. */
+    --list-row-glyph-space: 0.2em;
+  }
+
+  &:where(.ui-list-item--disabled) {
+    @variant not-forced-colors {
+      @variant ui-text {
+        /* An adaptive text color targets nested text and icons directly, so set
+           the ink on the same targets. Skip forced colors, where this rule
+           would override the system disabled color. */
+        @apply ak-ink-0;
+      }
+    }
+  }
+}
+
+@utility ui-list-item-content {
+  /* Markers must come first: Firefox and Safari otherwise read nested
+     counters. This wrapper restores :first-child for content. Use a span; a
+     div would force block mode. */
+  display: contents;
+  /* A marker in the content, such as a status icon, must not count or sit
+     like the row marker. A nested list sets this state again. */
+  --list-marker: initial;
+  --list-counter: initial;
+  --list-glyph: initial;
+  --list-marker-offset: initial;
+  --list-marker-box: initial;
+  --list-row-glyph-space: initial;
+}
+
+@utility ui-list-item-marker {
+  position: absolute;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  /* The guide stops before the marker and never runs behind it, so the
+     marker needs no paint around it to hide the guide. */
+  z-index: 3;
+  /* Bullets and dashes override these marker dimensions by stylesheet order. */
+  --list-marker-inset: 0.2em;
+  --list-marker-size: calc(var(--list-marker-box,1lh) - var(--list-marker-inset) * 2);
+  /* A chip follows the font size, not the line height, so a counter has the
+     same size in a tall line. Checks in a list of chips take that size too. */
+  --list-chip-size: calc(var(--list-marker-box,calc(1.35em + var(--list-marker-inset) * 2)) - var(--list-marker-inset) * 2);
+  /* Center the marker box on the first line, at the start of the row.
+     Outside a row, such as in row content, it is centered in the one-line
+     host. */
+  --list-marker-center-x: calc(var(--list-marker-offset,0px) + var(--list-marker-box,1lh) / 2);
+  --list-marker-center-y: calc(var(--list-marker-offset,0px) + var(--list-marker-overhang,0px) + 0.5lh);
+  /* Without a guide, a bullet, a dash, or a check ends where a counter chip
+     ends, so all kinds of markers end at one line and have the same distance
+     to the text. On a guide and in a horizontal list, they stay on the
+     center. A marker outside a list row also stays on the center. */
+  --list-marker-reach: calc(var(--list-chip-size) / 2);
+  --list-marker-hang: calc(var(--list-glyph,0) * (1 - var(--list-guide,0)));
+  width: var(--list-marker-size);
+  height: var(--list-marker-size);
+  border-radius: calc(var(--radius) * infinity);
+  /* Counters override the thick progress arc with a thin ring around the
+     number. */
+  --list-progress-thickness: calc(30% + 0.25% * var(--contrast,0));
+  --progress-thickness: var(--list-progress-thickness);
+
+  @variant ui-list-counter {
+    /* A thin outline in the color of the layer behind the marker separates a
+       number from a row surface that it overlaps, such as the current link of
+       a navigation, where the marker sits on the surface around the rows. A
+       ring paints outside the marker, so the outline starts after it. */
+    @apply outline-1;
+    outline-offset: var(--ak-frame-ring);
+    --list-marker-size: var(--list-chip-size);
+    counter-increment: list-item;
+    --list-progress-thickness: 0.15em;
+
+    @variant before {
+      @apply content-[counter(list-item)] font-semibold;
+      @apply leading-(--list-marker-size);
+      position: absolute;
+      inset: 0;
+      text-align: center;
+      font-size-adjust: 0.45;
+    }
+  }
+
+  @variant ui-list-icon {
+    --list-marker-size: var(--list-chip-size);
+    --list-progress-thickness: 0.15em;
+  }
+
+  @variant ui-list-horizontal {
+    /* A horizontal row centers the marker box above its content. */
+    --list-marker-center-x: 50%;
+    --list-marker-center-y: calc(var(--list-marker-offset,0px) + var(--list-marker-box,1lh) / 2);
+    --list-marker-hang: 0;
+  }
+
+  & > [data-indeterminate] {
+    /* A spinning arc shows no value, so a thinner stroke reads as loading. The
+       base value has its own name, because a property that refers to itself is
+       invalid. */
+    --progress-thickness: calc(var(--list-progress-thickness) * 2 / 3);
+  }
+
+  & > svg {
+    /* An icon is small in a marker, so a lighter stroke keeps its shape
+       clear. */
+    @apply size-[60%];
+    stroke-width: 1.5;
+  }
+
+  &:where(.ui-list-item-marker--checked-none) {
+    @variant ui-list-bullet {
+      /* A bullet paints only its edge color, which is translucent, so it
+         takes the tone of the surface behind it, like the guide. No guide
+         runs behind a marker. In forced colors, it keeps the canvas color
+         under the system color of the edge. */
+      @apply bg-linear-to-b from-(--ak-edge) to-(--ak-edge);
+      width: var(--list-bullet-size);
+      height: var(--list-bullet-size);
+    }
+
+    @variant ui-list-dash {
+      width: 0.5lh;
+      height: auto;
+      border-radius: 0;
+    }
+  }
+
+  &:where(.ui-list-item-marker--checked-true) {
+    @variant before {
+      display: none;
+    }
+  }
+}
+
+@utility ui-list-item-marker-check {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+
+  &:where(.ui-list-item-marker-check--checked-true) {
+    @variant after {
+      clip-path: inset(0);
+    }
+
+    @variant motion-safe {
+      @variant after {
+        /* Only this state sets the transition, so the check goes away at
+           once. */
+        @apply transition-[clip-path] duration-150 ease-linear;
+      }
+    }
+  }
+
+  &:where(.ui-list-item-marker-check--checked-false) {
+    @variant after {
+      clip-path: inset(0 100% 0 0);
+    }
+  }
+}
+
+@utility ui-list-guide {
+  position: absolute;
+  pointer-events: none;
+  --guide-bent: min(1, var(--guide-in) + var(--guide-outward));
+  /* The two curves of a bend take the same share of it, so they have the
+     same size. */
+  --guide-bend-lower: 0.5;
+  /* At whole scales, a whole number of pixels gives both curves one exact edge.
+     Fractions could round to an overlap, which darkens a pixel of a translucent
+     guide. The span leaves room for the border of the other curve. */
+  --guide-bend-lower-width: min(var(--guide-span), round(calc((var(--guide-span) + var(--guide-width)) * var(--guide-bend-lower)), 1px));
+  /* The radius of the curves grows with the span, so a wide bend does not
+     look square, and a narrow bend keeps a radius that is easy to see. */
+  --guide-radius: max(--spacing(1.5), var(--guide-span) / 3);
+  /* A curve is a quarter of a circle, so its radius is at most the width and
+     the height of its half of the bend. A straight part joins two curves that
+     don't fill the bend. */
+  --guide-curve-radius: min(var(--guide-radius), var(--guide-bend-lower-width), var(--guide-span) + var(--guide-width) - var(--guide-bend-lower-width), (var(--guide-bend-height) + var(--guide-width)) * var(--guide-bend-lower));
+  /* Mirror diagonal bends in right to left text. Logical insets mirror the
+     rest. */
+  --guide-dir: 1;
+
+  @variant before {
+    @apply border-s-[calc(var(--guide-width)*(var(--guide-curve)*var(--guide-in)+(1-var(--guide-curve))*var(--guide-bent)))];
+    @apply border-e-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-outward))];
+    @apply border-be-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-bent))];
+    /* The first half of a smooth bend is a quarter curve from the previous
+       line. A diagonal bend is one slanted line instead. A straight piece
+       leaves it empty. */
+    position: absolute;
+    /* Browsers snap a box and its border to device pixels separately, so at
+       fractional scales a border can be thinner than the line. A border at the
+       far side of a box keeps the column or row of the line only if the box
+       adds the border after the content, which ends where the line starts. The
+       height and the minimum width do that, and an inset as wide as the line
+       keeps the automatic width below that minimum. Without a far border, the
+       insets end a curve where the next starts. A slanted line keeps a box as
+       wide as its border, which is where it rotates. */
+    inset-inline-start: calc(var(--guide-outward) * (var(--guide-curve) * var(--guide-bend-lower-width) + (1 - var(--guide-curve)) * var(--guide-span)));
+    box-sizing: content-box;
+    border-color: var(--guide-color, var(--ak-edge));
+    inset-inline-end: calc((1 - var(--guide-curve) * var(--guide-outward)) * (var(--guide-curve) * var(--guide-bend-lower-width) + (1 - var(--guide-curve)) * (var(--guide-span) + var(--guide-width))) + var(--guide-curve) * var(--guide-outward) * var(--guide-width));
+    top: 0;
+    min-width: calc(var(--guide-curve) * var(--guide-outward) * (var(--guide-span) - var(--guide-bend-lower-width)));
+    height: calc(var(--guide-curve) * ((var(--guide-bend-height) + var(--guide-width)) * (1 - var(--guide-bend-lower)) - var(--guide-width)) + (1 - var(--guide-curve)) * var(--guide-bent) * hypot(var(--guide-span), var(--guide-bend-height)));
+    border-end-end-radius: calc(var(--guide-curve-radius) * var(--guide-curve) * var(--guide-outward));
+    border-end-start-radius: calc(var(--guide-curve-radius) * var(--guide-curve) * var(--guide-in));
+    /* Only a diagonal bend rotates. A rotation of zero degrees still makes
+       Firefox paint the curve one device pixel away from the line it leaves.
+       This rule is for a piece that takes the shape from an element around
+       it, and the `$bend` variant has the rule for its own shape. */
+    transform-origin: top;
+  }
+
+  @variant after {
+    @apply border-s-[calc(var(--guide-width)*(1-var(--guide-curve)*var(--guide-in)))];
+    @apply border-e-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-in))];
+    @apply border-bs-[calc(var(--guide-width)*var(--guide-curve)*var(--guide-bent))];
+    /* The second half of a smooth bend curves into this row and continues as
+       the line along it. Other pieces draw only the line. */
+    position: absolute;
+    inset-inline-start: calc(var(--guide-in) * (var(--guide-curve) * (var(--guide-span) + var(--guide-width) - var(--guide-bend-lower-width)) + (1 - var(--guide-curve)) * var(--guide-span)));
+    box-sizing: content-box;
+    border-color: var(--guide-color, var(--ak-edge));
+    inset-inline-end: calc((1 - var(--guide-in)) * (var(--guide-span) + var(--guide-width) - var(--guide-curve) * max(var(--guide-width), var(--guide-bend-lower-width))) + var(--guide-curve) * var(--guide-in) * var(--guide-width));
+    top: calc(var(--guide-bent) * (var(--guide-curve) * ((var(--guide-bend-height) + var(--guide-width)) * (1 - var(--guide-bend-lower)) - var(--guide-width)) + (1 - var(--guide-curve)) * var(--guide-bend-height)));
+    bottom: 0;
+    min-width: calc(var(--guide-curve) * var(--guide-in) * (var(--guide-bend-lower-width) - var(--guide-width)));
+    border-start-start-radius: calc(var(--guide-curve-radius) * var(--guide-curve) * var(--guide-outward));
+    border-start-end-radius: calc(var(--guide-curve-radius) * var(--guide-curve) * var(--guide-in));
+  }
+
+  @variant rtl {
+    --guide-dir: -1;
+  }
+
+  @container style(--guide-curve: 0) {
+    @variant before {
+      rotate: calc(var(--guide-dir) * (var(--guide-outward) - var(--guide-in)) * atan2(var(--guide-span), var(--guide-bend-height)));
+    }
+  }
+
+  &:where(.ui-list-guide--bend-diagonal) {
+    --guide-curve: 0;
+
+    @variant before {
+      rotate: calc(var(--guide-dir) * (var(--guide-outward) - var(--guide-in)) * atan2(var(--guide-span), var(--guide-bend-height)));
+    }
+  }
+
+  &:where(.ui-list-guide--line-solid) {
+    @variant before {
+      @apply border-solid;
+    }
+
+    @variant after {
+      @apply border-solid;
+    }
+  }
+
+  &:where(.ui-list-guide--line-dashed) {
+    @variant before {
+      @apply border-dashed;
+    }
+
+    @variant after {
+      @apply border-dashed;
+    }
+  }
+
+  &:where(.ui-list-guide--line-dotted) {
+    @variant before {
+      @apply border-dotted;
+    }
+
+    @variant after {
+      @apply border-dotted;
+    }
+  }
+}
+
+@utility ui-list-item-guide {
+  --guide-width: calc(var(--list-guide,0) * 1px);
+  /* The marker of a row is centered on its first line, after its padding and
+     the overhang of the marker box. */
+  --list-guide-start: calc(var(--ak-frame-padding) + var(--list-marker-overhang,0px) + 0.5lh);
+  /* Center the line on the marker column. */
+  --list-guide-x: calc(var(--ak-frame-padding) + var(--list-marker-box,1lh) / 2 - var(--guide-width) / 2);
+
+  &:where(.ui-list-item-guide--piece-line) {
+    /* Keep the line below disclosure content and the surfaces of later
+       rows, which come after it. It stays above the bends of a branch list,
+       which start and end on this line, so the line keeps its color where a
+       bend runs along it. */
+    z-index: 2;
+    --guide-in: 0;
+    --guide-outward: 0;
+    --guide-span: 0px;
+    --guide-bend-height: 0px;
+    /* The guide of a row with a surface starts below the row, so the
+       surface hides the part that runs to its marker. It also starts below
+       the border or the ring of the row, which grow outward, because a
+       translucent line over a translucent border shows as a darker dot. */
+    --list-guide-skip: calc((100% - var(--list-guide-start) + var(--list-row-border,0px) + var(--list-row-ring,0px)) * var(--list-row-solid,0));
+    /* The piece of a row runs from its marker to the next marker, so the
+       guide props of a row style the part of the line that leaves it. Row
+       borders overlap the gap, so they add no length. Clamp negative gaps
+       to zero, as grid layout does. */
+    --list-guide-reach: max(0px, var(--list-gap));
+    /* A row without a marker starts its piece where the piece of the row
+       before it stops, one cut before the center of this row. */
+    --list-guide-lead: calc((var(--list-row-plain-reach) + var(--list-guide-gap,0px)) * (1 - var(--list-row-marker-on,1)) * (1 - var(--list-first-row,0)) * (1 - var(--list-row-solid,0)));
+    width: var(--guide-width);
+    height: calc(100% + var(--list-guide-reach) - var(--list-guide-skip) + var(--list-guide-lead));
+    /* The clip removes the line around the marker of the row and around
+       the next marker, so the surface behind the list shows there,
+       whatever it paints. The piece of a row with a surface starts below
+       the row, so it keeps its start. The sides extend past the piece, so
+       the clip never thins a line that snaps to a device pixel beside it. */
+    clip-path: inset(calc(var(--list-row-marker-cut, 0px) * (1 - var(--list-row-solid, 0))) -1px var(--list-row-next-marker-cut, 0px) -1px);
+
+    @variant ui-list-horizontal {
+      height: var(--guide-width);
+      width: calc(100% + var(--list-guide-reach) + var(--list-guide-lead));
+      /* The clip takes physical sides, so right to left text swaps the cut
+         of this marker and the cut of the next one. */
+      clip-path: inset(-1px calc((var(--list-row-next-marker-cut, 0px) * (1 + var(--guide-dir)) + var(--list-row-marker-cut, 0px) * (1 - var(--guide-dir))) / 2) -1px calc((var(--list-row-marker-cut, 0px) * (1 + var(--guide-dir)) + var(--list-row-next-marker-cut, 0px) * (1 - var(--guide-dir))) / 2));
+
+      @variant after {
+        @apply border-s-0 border-bs-(length:--guide-width);
+        inset-inline-end: 0;
+      }
+    }
+
+    @variant ui-list-last-row {
+      /* No marker follows the last row. */
+      display: none;
+    }
+  }
+
+  &:where(.ui-list-item-guide--piece-in) {
+    --guide-in: 1;
+    --guide-outward: 0;
+    /* The bend starts at the marker of the row that holds the list. */
+    --list-guide-far-cut: var(--list-parent-marker-cut,0px);
+    /* The stem of the list ends where this bend starts. */
+    anchor-name: var(--list-guide-anchor);
+    top: calc(var(--list-guide-start) - var(--list-row-marker-cut, 0px) - var(--guide-bend-height));
+  }
+
+  &:where(.ui-list-item-guide--piece-out) {
+    --guide-in: 0;
+    --guide-outward: 1;
+    /* The bend ends at the marker of the row after the one that holds the
+       list. */
+    --list-guide-far-cut: var(--list-parent-next-marker-cut,0px);
+    top: calc(var(--list-guide-start) + var(--list-row-marker-cut, 0px));
+    /* The tail of the list starts where this bend ends. */
+    anchor-name: var(--list-guide-anchor);
+  }
+
+  &:where(.ui-list-item-guide--piece-stem) {
+    /* From one gap after the marker of the row to where the first bend
+       starts. Without an anchor, the stem has no height. */
+    top: calc(var(--list-guide-start) + var(--list-row-marker-cut, 0px));
+  }
+
+  &:where(.ui-list-item-guide--piece-tail) {
+    bottom: calc(-1 * (max(0px, var(--list-gap)) + var(--list-guide-start) - var(--list-row-next-marker-cut, 0px)));
+  }
+}
+
+@utility ui-list-disclosure {
+  /* With a guide, indent content to the row text. The unpadded root still
+     supplies the frame channels. A registered length keeps the indent of the
+     row when the content sets a font size. */
+  --list-disclosure-indent: calc(var(--py) + (var(--list-text-inset) + var(--list-marker-box,1lh)) * var(--list-guide));
+
+  & > .ui-disclosure-content {
+    /* Reset the list state in the content, as list item content does, whatever
+       body the content renders. */
+    --list-marker: initial;
+    --list-counter: initial;
+    --list-glyph: initial;
+    /* The button pads its label with the overhang, so a nested list in the
+       content adds none. */
+    --list-row-overhang: 0px;
+    /* Raise the content over the guide, as the guide of a disclosure content
+       runs under its rows. The child selector outranks the content's own
+       stacking. The guide of the row comes after the content and never bends,
+       so it stays below the content. */
+    z-index: 2;
+  }
+
+  @variant ui-list-guide {
+    & > .ui-disclosure-content {
+      /* Expose the marker column as the content guide while the list draws its
+         guide there, so start bars of nav rows in the content sit on it. The
+         child selector outranks the content's own reset. */
+      --disclosure-guide-center: calc(var(--disclosure-padding) + var(--list-marker-box,1lh) / 2);
+      --disclosure-guide: var(--disclosure-guide-center);
+    }
+  }
+
+  & > .ui-disclosure-content > * {
+    /* The content reads the marker box for its guide, so reset it one level
+       down. */
+    --list-marker-box: initial;
+  }
+
+  & > .ui-list-item-guide {
+    z-index: 1;
+  }
+
+  &:where(.ui-list-disclosure--marker-true) {
+    /* The button holds the marker, so a disclosure without a button has
+       none. */
+    --list-row-marker-on: 0;
+
+    &:has(> .ui-disclosure-button) {
+      --list-row-marker-on: 1;
+    }
+  }
+}
+
+@utility ui-list-disclosure-button {
+  /* Hover and press surfaces cover the guide; the marker stays above both. */
+  z-index: 3;
+  /* Put the marker in the padding corner. Label content resets this offset. */
+  --list-marker-offset: var(--ak-frame-padding);
+
+  &:where(.ui-list-disclosure-button--marker-true) {
+    --disclosure-ps: calc(var(--py) + var(--list-marker-box,1lh) + var(--list-text-inset));
+  }
+}

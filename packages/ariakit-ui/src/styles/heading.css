@@ -1,0 +1,81 @@
+/* The CSS of the heading style recipe in heading.ts. Import this file after
+   ui.css in the CSS file that imports Tailwind CSS:
+
+   @import "./ui.css";
+   @import "./heading.css"; */
+
+@utility ui-heading {
+  @apply font-medium;
+  --heading-size-1: 2.25em;
+  --heading-size-2: 1.75em;
+  --heading-size-3: 1.4em;
+  --heading-size-4: 1.2em;
+  --heading-size-5: 1em;
+
+  @variant ui-base {
+    /* Larger text needs less space between letters. The value reads the final
+       font size, so $level needs no extra rule. Zero specificity permits
+       overrides; a direct property keeps the letter spacing fallback of text-*
+       classes. */
+    letter-spacing: calc(0.025rem - 0.036em);
+    /* The balance shorthand would also reset the wrap mode, and a heading in a
+       nowrap parent would then wrap. */
+    text-wrap-style: balance;
+  }
+
+  &:not(:is(li *)) {
+    @variant ui-base {
+      /* Larger text needs less space between lines. The value reads the final
+         font size, so $level needs no extra rule. Preserve list-item line
+         height. Zero specificity permits overrides; a direct property keeps the
+         leading fallback of text-* classes. */
+      line-height: round(calc(1em + 0.25rem), 1px);
+    }
+  }
+
+  & a {
+    /* Permalink colors and decoration widths need ! to override Link's compound
+       state selectors. */
+    @apply font-[weight:inherit];
+    color: currentcolor !important;
+    text-decoration-line: none;
+
+    @variant hover {
+      text-decoration-line: underline;
+      text-decoration-thickness: 1px !important;
+      text-underline-offset: 0.25em;
+    }
+  }
+
+  &:is(h1) {
+    @variant ui-base {
+      /* Size h1–h5 by element; other elements inherit. Zero specificity lets
+         caller text-* classes override these steps. */
+      font-size: var(--heading-size-1);
+    }
+  }
+
+  &:is(h2) {
+    @variant ui-base {
+      font-size: var(--heading-size-2);
+    }
+  }
+
+  &:is(h3) {
+    @variant ui-base {
+      font-size: var(--heading-size-3);
+    }
+  }
+
+  &:is(h4) {
+    @variant ui-base {
+      font-size: var(--heading-size-4);
+    }
+  }
+
+  &:is(h5) {
+    @variant ui-base {
+      font-size: var(--heading-size-5);
+    }
+  }
+}

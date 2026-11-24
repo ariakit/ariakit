@@ -5,14 +5,7 @@ import { edge } from "./edge.ts";
 /** A section divider with adaptive edge color and prose spacing. */
 export const separator = cv({
   extend: [edge],
-  class: [
-    // Set a border width for elements other than hr.
-    "border-bs my-(--separator-gap)",
-    "[--separator-gap:calc(var(--prose-gap,--spacing(5))*0.5)]",
-    // The separator supplies the next element's top spacing. `not-first`
-    // raises specificity above margin utilities on that element.
-    "[&+*]:not-first:mt-0",
-  ],
+  class: "ui-separator",
   variants: {
     /** Sets the divider line style. */
     $line: {

@@ -19,7 +19,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const isClipped = (name: string) =>
       q
         .link(name)
-        .locator(".breadcrumb-truncate")
+        .locator(".ui-breadcrumb-label--truncate")
         .evaluate((element) => element.scrollHeight > element.clientHeight);
     await test.expect.poll(() => isClipped("components")).toBe(true);
     // The minimum holds three characters, so these labels show all of their

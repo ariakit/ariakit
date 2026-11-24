@@ -18,10 +18,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     await page.addStyleTag({
       content: `
-        .toc { --nav-guide-color: #f0f !important; }
-        .toc-link-bar, .toc-link-marker { display: none !important; }
-        .toc-link-guide { mask: none !important; }
-        .toc a { background: transparent !important; }
+        .ui-toc { --nav-guide-color: #f0f !important; }
+        .ui-toc-link-bar, .ui-toc-link-marker { display: none !important; }
+        .ui-toc-link-guide { mask: none !important; }
+        .ui-toc a { background: transparent !important; }
       `,
     });
     test.expect(await page.evaluate(() => devicePixelRatio)).toBe(1.5);
@@ -62,7 +62,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           const links = [...element.querySelectorAll("a")];
           const rows = links.map((link) => {
             const box = link.getBoundingClientRect();
-            const guide = link.querySelector(".toc-link-guide");
+            const guide = link.querySelector(".ui-toc-link-guide");
             const bottom = guide?.getBoundingClientRect().bottom ?? 0;
             const y = Math.round((box.top + box.height / 2) * devicePixelRatio);
             const columns: number[] = [];

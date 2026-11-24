@@ -86,9 +86,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.combobox("Band").selectOption("full");
     const area = await getBox(q.group("Header area"));
     const start = await getBox(
-      page.locator(".shell-header > .shell-bar-start"),
+      page.locator(".ui-shell-header > .ui-shell-start"),
     );
-    const end = await getBox(page.locator(".shell-header > .shell-bar-end"));
+    const end = await getBox(page.locator(".ui-shell-header > .ui-shell-end"));
     expect(area.x).toBeGreaterThan(start.x + start.width);
     expect(area.x - (start.x + start.width)).toBeLessThan(16);
     expect(end.x - (area.x + area.width)).toBeLessThan(16);
@@ -105,13 +105,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expectAligned(q.group("Header area"), column);
     await q.combobox("Start part").selectOption("long");
     for (const [name, parent] of [
-      ["Header area", ".shell-header"],
-      ["Main header area", ".shell-main-header"],
+      ["Header area", ".ui-shell-header"],
+      ["Main header area", ".ui-shell-main-header"],
     ] as const) {
       const area = q.group(name);
       const body = await getBox(column);
       const box = await getBox(area);
-      const start = await getBox(page.locator(`${parent} > .shell-bar-start`));
+      const start = await getBox(page.locator(`${parent} > .ui-shell-start`));
       expect(box.x - body.x).toBeGreaterThan(50);
       expect(Math.abs(box.x + box.width - (body.x + body.width))).toBeLessThan(
         0.5,
@@ -131,7 +131,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.checkbox("Start sidebar").uncheck();
     await q.combobox("Start part").selectOption("long");
     await expect(
-      page.locator(".shell-header > .shell-bar-start"),
+      page.locator(".ui-shell-header > .ui-shell-start"),
     ).toBeVisible();
     await expectAligned(q.group("Header area"), q.group("Body column"));
     await expectAligned(q.group("Main header area"), q.group("Body column"));
@@ -145,10 +145,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expectAligned(q.group("Header area"), q.group("Body column"));
     // The part keeps its space to the area when it reaches the limit.
     for (const [name, parent] of [
-      ["Header area", ".shell-header"],
-      ["Main header area", ".shell-main-header"],
+      ["Header area", ".ui-shell-header"],
+      ["Main header area", ".ui-shell-main-header"],
     ] as const) {
-      const start = await getBox(page.locator(`${parent} > .shell-bar-start`));
+      const start = await getBox(page.locator(`${parent} > .ui-shell-start`));
       const area = await getBox(q.group(name));
       expect(area.x - (start.x + start.width)).toBeGreaterThan(4);
     }
@@ -160,10 +160,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.checkbox("Shrink end part").check();
     await expectAligned(q.group("Header area"), q.group("Body column"));
     for (const [name, parent] of [
-      ["Header area", ".shell-header"],
-      ["Main header area", ".shell-main-header"],
+      ["Header area", ".ui-shell-header"],
+      ["Main header area", ".ui-shell-main-header"],
     ] as const) {
-      const end = await getBox(page.locator(`${parent} > .shell-bar-end`));
+      const end = await getBox(page.locator(`${parent} > .ui-shell-end`));
       const area = await getBox(q.group(name));
       expect(end.x - (area.x + area.width)).toBeGreaterThan(4);
     }
@@ -178,8 +178,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.checkbox("Shrink start part").check();
     await q.checkbox("Area minimum width").check();
     await page.setViewportSize({ width: 320, height: 900 });
-    for (const parent of [".shell-header", ".shell-main-header"]) {
-      const start = page.locator(`${parent} > .shell-bar-start`);
+    for (const parent of [".ui-shell-header", ".ui-shell-main-header"]) {
+      const start = page.locator(`${parent} > .ui-shell-start`);
       await expect.poll(async () => (await getBox(start)).width).toBe(160);
     }
   });
@@ -253,7 +253,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await expect(q.group("Header area")).toHaveCount(0);
     await q.checkbox("Area in the header").check();
     const animations = await page
-      .locator(".shell-header")
+      .locator(".ui-shell-header")
       .evaluate((header) => header.getAnimations().length);
     expect(animations).toBe(0);
     await expectAligned(q.group("Header area"), q.group("Body column"));
@@ -323,9 +323,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       await q.checkbox("End sidebar").check();
       await expect(getSidebar(q, "End sidebar")).toHaveCSS("width", "256px");
       await expectAligned(q.group("Main header area"), q.group("Body band"));
-      const header = await getBox(page.locator(".shell-main-header"));
+      const header = await getBox(page.locator(".ui-shell-main-header"));
       const end = await getBox(
-        page.locator(".shell-main-header > .shell-bar-end"),
+        page.locator(".ui-shell-main-header > .ui-shell-end"),
       );
       const sidebar = await getBox(getSidebar(q, "End sidebar"));
       // The header's surface spans an end sidebar that starts at the body, and
@@ -399,11 +399,11 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   test("keeps Center on the middle of the main header", async ({ q, page }) => {
-    const header = page.locator(".shell-main-header");
+    const header = page.locator(".ui-shell-main-header");
     await q.combobox("Middle part").selectOption("center");
     await expectCentered(q.main().getByLabel("Main header center"), header);
     await q.combobox("Middle part").selectOption("grow");
-    const center = page.locator(".shell-main-header > .shell-bar-center");
+    const center = page.locator(".ui-shell-main-header > .ui-shell-center");
     await expectCentered(center, header);
     const box = await getBox(center);
     const headerBox = await getBox(header);
@@ -421,7 +421,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
       .toBe(320);
     const end = await getBox(
-      page.locator(".shell-main-header > .shell-bar-end"),
+      page.locator(".ui-shell-main-header > .ui-shell-end"),
     );
     expect(end.x + end.width).toBeLessThanOrEqual(320);
   });
@@ -431,7 +431,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     page,
   }) => {
     await q.checkbox("Navigation in the main header").check();
-    const header = page.locator(".shell-main-header");
+    const header = page.locator(".ui-shell-main-header");
     const nav = q.navigation("Local");
     await expect(nav).toBeVisible();
     await expect
@@ -449,7 +449,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     // The navigation reaches over the facing edge, so the current link's bar
     // covers it.
     await expect(header).toHaveCSS("border-bottom-width", "1px");
-    const bar = query(nav).link("One").locator(".control-bar");
+    const bar = query(nav).link("One").locator(".ui-bar");
     await expect
       .poll(async () => {
         const [barBox, navBox, headerBox] = await Promise.all([
