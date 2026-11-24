@@ -1,6 +1,7 @@
 import type { AtRule, Value, VarProperty, WithContextParams } from "./lib.ts";
 import {
   at,
+  base,
   createContext,
   createNamespace,
   createVar,
@@ -2057,60 +2058,70 @@ const inkText = fn.oklch(vars.layer, {
 const layerContext = createContext();
 const edgeContext = createContext();
 
+// The base utilities, `ak-layer`, `ak-frame`, `ak-frame-backdrop`, and the
+// standard declarations of `ak-frame-cover`, set the final properties of an
+// element, such as its padding and colors. Tailwind sorts a utility by its
+// properties, so a larger utility on the same element can come before a base
+// utility and lose to it. `base()` puts them in a lower layer instead. The
+// modifier utilities stay out of it, so they still replace other normal
+// declarations, and so does `ak-text`, which must still win over `ak-ink-*`.
+// `base()` describes the reverse order of important declarations.
 utility(
   "layer",
-  set.color(vars.text),
-  set.borderColor(vars.edge),
-  set.backgroundColor(vars.layer),
-  at.apply`ring-[color:${vars.edge}]`,
-  set(vars.layer, layer),
-  set(vars.text, vars.layerScheme),
-  // The ink amount inherits, so a layer under dimmed text dims its own text
-  // with the floor of its own color. The formula costs a relative color per
-  // layer, so it runs only where the inherited amount is below 1. The amount
-  // is a typed number, so `ink-100` and an untouched amount both read as 1
-  // and keep the scheme color computed above.
-  at.container.not(fn.style(inputs.textA, 1), set(vars.text, inkText)),
-  // ak-edge-contrast sets the floor; other elements fall back to the edge.
-  set(vars.edge, fn.var(vars.edgeFloor, edge)),
-  set(vars.layerBand, getLayerBand(vars.layer)),
-  set(vars.layerScheme, getLayerScheme(vars.layer)),
-  getBaseDeclarations(vars.layer),
-  layerMathDeclarations,
-  layerColorDeclarations,
-  at.variant(light, set(vars.edgePushDirection, -1)),
-  at.variant(dark, set(vars.edgePushDirection, 1)),
-  layerContext(({ provide, inherit }) => [
-    set(
-      vars.layerContrastBiasMask,
-      fn.max(
-        vars.layerModified,
-        fn.sub(1, inherit(vars.layerPresentContext, 0)),
+  base(
+    set.color(vars.text),
+    set.borderColor(vars.edge),
+    set.backgroundColor(vars.layer),
+    at.apply`ring-[color:${vars.edge}]`,
+    set(vars.layer, layer),
+    set(vars.text, vars.layerScheme),
+    // The ink amount inherits, so a layer under dimmed text dims its own text
+    // with the floor of its own color. The formula costs a relative color per
+    // layer, so it runs only where the inherited amount is below 1. The amount
+    // is a typed number, so `ink-100` and an untouched amount both read as 1
+    // and keep the scheme color computed above.
+    at.container.not(fn.style(inputs.textA, 1), set(vars.text, inkText)),
+    // ak-edge-contrast sets the floor; other elements fall back to the edge.
+    set(vars.edge, fn.var(vars.edgeFloor, edge)),
+    set(vars.layerBand, getLayerBand(vars.layer)),
+    set(vars.layerScheme, getLayerScheme(vars.layer)),
+    getBaseDeclarations(vars.layer),
+    layerMathDeclarations,
+    layerColorDeclarations,
+    at.variant(light, set(vars.edgePushDirection, -1)),
+    at.variant(dark, set(vars.edgePushDirection, 1)),
+    layerContext(({ provide, inherit }) => [
+      set(
+        vars.layerContrastBiasMask,
+        fn.max(
+          vars.layerModified,
+          fn.sub(1, inherit(vars.layerPresentContext, 0)),
+        ),
       ),
-    ),
-    set(provide(vars.layerPresentContext), 1),
-    set(provide(vars.layerParentContext), vars.layer),
-    set(
-      vars.layerParent,
-      fn.var(vars.outsetLayerParent, inherit(vars.layerParentContext)),
-    ),
-    // The body has no layer around it, and portals add and remove its children
-    // often, which would invalidate its :has() state on every popup.
-    rule(
-      '&:not(body):has(> [class*="ak-outset"])',
-      set(provide(vars.layerParentParentContext), vars.layerParent),
-      // The scheme and band of the outer layer, which the ak-outset-* variants
-      // on the children read. They split the same way as the regular variants
-      // on a direct child of the outer layer. A rule on ak-outset itself could
-      // skip a child where a conditional ak-outset doesn't apply, but each
-      // compiled form of ak-outset would add a :has() rule that every element
-      // must test.
-      set(vars.outsetLayerScheme, getLayerScheme(vars.layerParent)),
-      set(vars.outsetLayerBand, getLayerBand(vars.layerParent)),
-    ),
-    set(provide(vars.layerTextLContext), vars.layerTextL),
-    set(provide(vars.layerLContext), vars.layerL),
-  ]),
+      set(provide(vars.layerPresentContext), 1),
+      set(provide(vars.layerParentContext), vars.layer),
+      set(
+        vars.layerParent,
+        fn.var(vars.outsetLayerParent, inherit(vars.layerParentContext)),
+      ),
+      // The body has no layer around it, and portals add and remove its
+      // children often, which would invalidate its :has() state on every popup.
+      rule(
+        '&:not(body):has(> [class*="ak-outset"])',
+        set(provide(vars.layerParentParentContext), vars.layerParent),
+        // The scheme and band of the outer layer, which the ak-outset-*
+        // variants on the children read. They split the same way as the regular
+        // variants on a direct child of the outer layer. A rule on ak-outset
+        // itself could skip a child where a conditional ak-outset doesn't
+        // apply, but each compiled form of ak-outset would add a :has() rule
+        // that every element must test.
+        set(vars.outsetLayerScheme, getLayerScheme(vars.layerParent)),
+        set(vars.outsetLayerBand, getLayerBand(vars.layerParent)),
+      ),
+      set(provide(vars.layerTextLContext), vars.layerTextL),
+      set(provide(vars.layerLContext), vars.layerL),
+    ]),
+  ),
 );
 
 // Paints the layer color only while the modified flag is set, so a control that
@@ -3202,7 +3213,8 @@ function getFrameStretchDeclarations({
     set(inputs.framePadding, childPadding),
     // Override frameMargin so descendants see the total effective margin.
     // This wins over ak-frame's own set(vars.frameMargin, inputs.frameMargin)
-    // because ak-frame-cover appears later in the cascade.
+    // because ak-frame keeps its custom properties in the base layer and
+    // ak-frame-cover doesn't. Important declarations reverse this; see `base()`.
     set(vars.frameMargin, totalNegMargin),
     // Override the frame utility's computed radius so the context propagates
     // the stretch-derived value rather than the frame-* hint radius.
@@ -3212,157 +3224,166 @@ function getFrameStretchDeclarations({
     set(childCornerStartEnd, cornerStartEnd),
     set(childCornerEndStart, cornerEndStart),
     set(childCornerEndEnd, cornerEndEnd),
-    // Cross-axis margins always applied; main-axis margins only at edges
-    // Col: inline = cross, block = main
-    // Row: block = cross, inline = main
-    set.marginBlock(fn.join([blockStartMargin, blockEndMargin], " ")),
-    set.marginInline(fn.join([inlineStartMargin, inlineEndMargin], " ")),
-    // Corner radii: each logical corner inherits its parent's corner state.
-    set.borderStartStartRadius(fn.mul(childCornerStartStart, vars.frameRadius)),
-    set.borderStartEndRadius(fn.mul(childCornerStartEnd, vars.frameRadius)),
-    set.borderEndStartRadius(fn.mul(childCornerEndStart, vars.frameRadius)),
-    set.borderEndEndRadius(fn.mul(childCornerEndEnd, vars.frameRadius)),
+    // The custom properties above must still win over the frame modifiers,
+    // such as ak-frame-p-*. Only the standard declarations are base styles.
+    base(
+      // Cross-axis margins always applied; main-axis margins only at edges
+      // Col: inline = cross, block = main
+      // Row: block = cross, inline = main
+      set.marginBlock(fn.join([blockStartMargin, blockEndMargin], " ")),
+      set.marginInline(fn.join([inlineStartMargin, inlineEndMargin], " ")),
+      // Corner radii: each logical corner inherits its parent's corner state.
+      set.borderStartStartRadius(
+        fn.mul(childCornerStartStart, vars.frameRadius),
+      ),
+      set.borderStartEndRadius(fn.mul(childCornerStartEnd, vars.frameRadius)),
+      set.borderEndStartRadius(fn.mul(childCornerEndStart, vars.frameRadius)),
+      set.borderEndEndRadius(fn.mul(childCornerEndEnd, vars.frameRadius)),
+    ),
   ];
 }
 
 utility(
   "frame",
-  set(vars.framePadding, inputs.framePadding),
-  set(vars.frameMargin, inputs.frameMargin),
-  set(vars.frameBorder, inputs.frameBorder),
-  set(vars.frameRing, inputs.frameRing),
-  // A ring paints over the parent layer. A border paints over the element's
-  // own layer, unless ak-frame-backdrop paints another surface under it.
-  withColorMixSupport(
-    set(
-      vars.frameBackdrop,
-      fn.colorMix(
-        "oklab",
-        fn.var(inputs.frameBorderBackdrop, vars.layer),
-        vars.layerParent,
-        fn.mul(fn.exp`sign(${vars.frameRing})`, "100%"),
+  base(
+    set(vars.framePadding, inputs.framePadding),
+    set(vars.frameMargin, inputs.frameMargin),
+    set(vars.frameBorder, inputs.frameBorder),
+    set(vars.frameRing, inputs.frameRing),
+    // A ring paints over the parent layer. A border paints over the element's
+    // own layer, unless ak-frame-backdrop paints another surface under it.
+    withColorMixSupport(
+      set(
+        vars.frameBackdrop,
+        fn.colorMix(
+          "oklab",
+          fn.var(inputs.frameBorderBackdrop, vars.layer),
+          vars.layerParent,
+          fn.mul(fn.exp`sign(${vars.frameRing})`, "100%"),
+        ),
       ),
     ),
+    set.padding(vars.framePadding),
+    set.scrollPadding(vars.framePadding),
+    set.borderRadius(vars.frameRadius),
+    set.margin(vars.frameMargin),
+    frameContext(({ provide, inherit }) => {
+      const parentRadius = inherit(
+        vars.frameParentRadiusContext,
+        inputs.frameRadius,
+      );
+      const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
+      const parentBorder = inherit(vars.frameParentBorderContext, "0px");
+      const parentBorderingBorder = inherit(
+        vars.frameParentBorderingBorderContext,
+        "0px",
+      );
+      const parentBorderingRing = inherit(
+        vars.frameParentBorderingRingContext,
+        "0px",
+      );
+      const parentPaddingAndMargin = fn.add(parentPadding, vars.frameMargin);
+      const parentDistance = fn.add(
+        parentPadding,
+        parentBorder,
+        vars.frameMargin,
+      );
+      // The concentric radius falls to the floor before the declared radius
+      // takes over at FRAME_PADDING_CAP. From FRAME_RADIUS_BLEND_START, the
+      // radius is at least a line that ends at the declared radius at the cap,
+      // so it has no jump. The line starts at the concentric radius at the
+      // start, or at the declared radius if that is smaller. It only raises the
+      // radius, so a frame inside a pill stays a pill.
+      //
+      // Before the start, the line stays at its start radius, so the radius is
+      // never below the floor: min(0.125em, declared). The floor follows the
+      // frame's own font size, like em-based radius and spacing tokens, so
+      // frames scaled down by font size stay concentric.
+      const blendStartRadius = fn.max(
+        "0.125em",
+        fn.sub(parentRadius, FRAME_RADIUS_BLEND_START),
+      );
+      // tan(atan2(a, b)) divides lengths where Firefox calc() cannot.
+      const blendProgress = fn.clamp01(
+        fn.exp`tan(atan2(${fn.sub(
+          parentDistance,
+          FRAME_RADIUS_BLEND_START,
+        )}, ${FRAME_RADIUS_BLEND_RANGE}))`,
+      );
+      // min() + max() * progress is exact at progress 0, also when the declared
+      // radius is the largest length of the browser (rounded-full).
+      const blendRadius = fn.add(
+        fn.min(blendStartRadius, inputs.frameRadius),
+        fn.mul(
+          fn.max(fn.sub(inputs.frameRadius, blendStartRadius), "0px"),
+          blendProgress,
+        ),
+      );
+      // The line is never negative, so it also clamps the concentric radius.
+      const autoRadius = fn.max(
+        fn.sub(parentRadius, parentDistance),
+        blendRadius,
+      );
+      // When parent padding + margin >= 1rem, the child is far enough from the
+      // parent edge that concentric radius is not meaningful — use the child's
+      // own declared radius instead. The line above already reaches the
+      // declared radius there, so the cap only lowers a larger concentric
+      // radius.
+      //
+      // Formula: min(auto, declared + shortfall)
+      // - Below the cap, shortfall is huge. The result is auto.
+      // - From the cap, shortfall is 0px. The result is min(auto, declared).
+      //
+      // The cap starts 0.5px before 1rem, so a distance that is a fraction of a
+      // pixel short of 1rem also takes the declared radius. In that 0.5px, a
+      // frame on the line keeps the line, which is almost the declared radius.
+      const shortfall = fn.max(
+        fn.sub(fn.sub(FRAME_PADDING_CAP, "0.5px"), parentPaddingAndMargin),
+        "0px",
+      );
+      // The inflated shortfall must exceed each finite radius. A parent radius
+      // can be the largest length of the browser (rounded-full), which no
+      // length exceeds. That frame stays a pill, because declared + inflated is
+      // also far larger than its box.
+      const inflatedShortfall = fn.mul(shortfall, 1e9);
+      const cappedRadius = fn.min(
+        autoRadius,
+        fn.add(inputs.frameRadius, inflatedShortfall),
+      );
+      // When forced, use the declared radius directly.
+      const frameRadius = fn.add(
+        fn.mul(inputs.frameForce, inputs.frameRadius),
+        fn.mul(fn.sub(1, inputs.frameForce), cappedRadius),
+      );
+      const inheritedBorderingContext = fn.invert(inputs.frameBorderingContext);
+      return [
+        set(vars.frameRadius, frameRadius),
+        set(provide(vars.frameParentRadiusContext), vars.frameRadius),
+        set(provide(vars.frameParentPaddingContext), vars.framePadding),
+        set(provide(vars.frameParentBorderContext), vars.frameBorder),
+        set(
+          provide(vars.frameParentBorderingBorderContext),
+          fn.add(
+            fn.mul(parentBorderingBorder, inheritedBorderingContext),
+            fn.mul(inputs.frameBorder, inputs.frameBorderingContext),
+          ),
+        ),
+        set(
+          provide(vars.frameParentBorderingRingContext),
+          fn.add(
+            fn.mul(parentBorderingRing, inheritedBorderingContext),
+            fn.mul(inputs.frameRing, inputs.frameBorderingContext),
+          ),
+        ),
+        set(provide(vars.frameParentRowContext), inputs.frameRow),
+        // Default: all corners rounded (non-stretch parents).
+        set(provide(vars.frameParentCornerStartStartContext), 1),
+        set(provide(vars.frameParentCornerStartEndContext), 1),
+        set(provide(vars.frameParentCornerEndStartContext), 1),
+        set(provide(vars.frameParentCornerEndEndContext), 1),
+      ];
+    }),
   ),
-  set.padding(vars.framePadding),
-  set.scrollPadding(vars.framePadding),
-  set.borderRadius(vars.frameRadius),
-  set.margin(vars.frameMargin),
-  frameContext(({ provide, inherit }) => {
-    const parentRadius = inherit(
-      vars.frameParentRadiusContext,
-      inputs.frameRadius,
-    );
-    const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
-    const parentBorder = inherit(vars.frameParentBorderContext, "0px");
-    const parentBorderingBorder = inherit(
-      vars.frameParentBorderingBorderContext,
-      "0px",
-    );
-    const parentBorderingRing = inherit(
-      vars.frameParentBorderingRingContext,
-      "0px",
-    );
-    const parentPaddingAndMargin = fn.add(parentPadding, vars.frameMargin);
-    const parentDistance = fn.add(
-      parentPadding,
-      parentBorder,
-      vars.frameMargin,
-    );
-    // The concentric radius falls to the floor before the declared radius takes
-    // over at FRAME_PADDING_CAP. From FRAME_RADIUS_BLEND_START, the radius is
-    // at least a line that ends at the declared radius at the cap, so it has no
-    // jump. The line starts at the concentric radius at the start, or at the
-    // declared radius if that is smaller. It only raises the radius, so a frame
-    // inside a pill stays a pill.
-    //
-    // Before the start, the line stays at its start radius, so the radius is
-    // never below the floor: min(0.125em, declared). The floor follows the
-    // frame's own font size, like em-based radius and spacing tokens, so frames
-    // scaled down by font size stay concentric.
-    const blendStartRadius = fn.max(
-      "0.125em",
-      fn.sub(parentRadius, FRAME_RADIUS_BLEND_START),
-    );
-    // tan(atan2(a, b)) divides lengths where Firefox calc() cannot.
-    const blendProgress = fn.clamp01(
-      fn.exp`tan(atan2(${fn.sub(
-        parentDistance,
-        FRAME_RADIUS_BLEND_START,
-      )}, ${FRAME_RADIUS_BLEND_RANGE}))`,
-    );
-    // min() + max() * progress is exact at progress 0, also when the declared
-    // radius is the largest length of the browser (rounded-full).
-    const blendRadius = fn.add(
-      fn.min(blendStartRadius, inputs.frameRadius),
-      fn.mul(
-        fn.max(fn.sub(inputs.frameRadius, blendStartRadius), "0px"),
-        blendProgress,
-      ),
-    );
-    // The line is never negative, so it also clamps the concentric radius.
-    const autoRadius = fn.max(
-      fn.sub(parentRadius, parentDistance),
-      blendRadius,
-    );
-    // When parent padding + margin >= 1rem, the child is far enough from the
-    // parent edge that concentric radius is not meaningful — use the child's
-    // own declared radius instead. The line above already reaches the declared
-    // radius there, so the cap only lowers a larger concentric radius.
-    //
-    // Formula: min(auto, declared + shortfall)
-    // - Below the cap, shortfall is huge. The result is auto.
-    // - From the cap, shortfall is 0px. The result is min(auto, declared).
-    //
-    // The cap starts 0.5px before 1rem, so a distance that is a fraction of a
-    // pixel short of 1rem also takes the declared radius. In that 0.5px, a
-    // frame on the line keeps the line, which is almost the declared radius.
-    const shortfall = fn.max(
-      fn.sub(fn.sub(FRAME_PADDING_CAP, "0.5px"), parentPaddingAndMargin),
-      "0px",
-    );
-    // The inflated shortfall must exceed each finite radius. A parent radius
-    // can be the largest length of the browser (rounded-full), which no length
-    // exceeds. That frame stays a pill, because declared + inflated is also far
-    // larger than its box.
-    const inflatedShortfall = fn.mul(shortfall, 1e9);
-    const cappedRadius = fn.min(
-      autoRadius,
-      fn.add(inputs.frameRadius, inflatedShortfall),
-    );
-    // When forced, use the declared radius directly.
-    const frameRadius = fn.add(
-      fn.mul(inputs.frameForce, inputs.frameRadius),
-      fn.mul(fn.sub(1, inputs.frameForce), cappedRadius),
-    );
-    const inheritedBorderingContext = fn.invert(inputs.frameBorderingContext);
-    return [
-      set(vars.frameRadius, frameRadius),
-      set(provide(vars.frameParentRadiusContext), vars.frameRadius),
-      set(provide(vars.frameParentPaddingContext), vars.framePadding),
-      set(provide(vars.frameParentBorderContext), vars.frameBorder),
-      set(
-        provide(vars.frameParentBorderingBorderContext),
-        fn.add(
-          fn.mul(parentBorderingBorder, inheritedBorderingContext),
-          fn.mul(inputs.frameBorder, inputs.frameBorderingContext),
-        ),
-      ),
-      set(
-        provide(vars.frameParentBorderingRingContext),
-        fn.add(
-          fn.mul(parentBorderingRing, inheritedBorderingContext),
-          fn.mul(inputs.frameRing, inputs.frameBorderingContext),
-        ),
-      ),
-      set(provide(vars.frameParentRowContext), inputs.frameRow),
-      // Default: all corners rounded (non-stretch parents).
-      set(provide(vars.frameParentCornerStartStartContext), 1),
-      set(provide(vars.frameParentCornerStartEndContext), 1),
-      set(provide(vars.frameParentCornerEndStartContext), 1),
-      set(provide(vars.frameParentCornerEndEndContext), 1),
-    ];
-  }),
 );
 
 utility("frame-force", set(inputs.frameForce, 1));
@@ -3712,7 +3733,7 @@ function getFrameBackdropDeclarations() {
   ];
 }
 
-utility("frame-backdrop", getFrameBackdropDeclarations());
+utility("frame-backdrop", base(getFrameBackdropDeclarations()));
 
 utility(
   "frame-backdrop-*",
