@@ -10,6 +10,7 @@ import tsx from "@shikijs/langs/tsx";
 import typescript from "@shikijs/langs/typescript";
 import githubDark from "@shikijs/themes/github-dark";
 import githubLight from "@shikijs/themes/github-light";
+import type { HTMLProps } from "clava";
 import type { Element, ElementContent } from "hast";
 import {
   addClassToHast,
@@ -19,6 +20,10 @@ import {
 } from "shiki/core";
 import type { ShikiTransformer } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
+import {
+  codeBlockMarkedLine,
+  codeBlockMarkedText,
+} from "../styles/code-block.ts";
 
 // This module runs only on the server or at build time. A module that the
 // browser loads must not import it, or Shiki goes to the browser too. Type
@@ -161,13 +166,26 @@ function splitRangesByLine(code: string, ranges: TextRange[]) {
   return rangesByLine;
 }
 
-function createMark(children: ElementContent[]): Element {
-  return {
+// Adds the class and the inline style of a style recipe to an element, as a
+// style component does.
+function addStyleProps(node: Element, { class: className, style }: HTMLProps) {
+  addClassToHast(node, className);
+  if (!style) return;
+  node.properties.style = style;
+}
+
+// Creates a mark around the children. Pass the token that the mark goes in, so
+// it takes the colors of that token. Plain text has tokens with no colors.
+function createMark(children: ElementContent[], token?: Element): Element {
+  const mark: Element = {
     type: "element",
     tagName: "span",
-    properties: { class: "highlighted-word" },
+    properties: {},
     children,
   };
+  const $token = token?.properties.style != null;
+  addStyleProps(mark, codeBlockMarkedText.html({ $token }));
+  return mark;
 }
 
 // Marks the tokens in each range of a line. The tokens split at the edges of
@@ -191,7 +209,7 @@ function markTokens(line: Element, ranges: TextRange[]) {
     const children = line.children.slice(first, last + 1);
     const token = children[0];
     if (children.length === 1 && token?.type === "element") {
-      token.children = [createMark(token.children)];
+      token.children = [createMark(token.children, token)];
       continue;
     }
     line.children.splice(first, children.length, createMark(children));
@@ -214,7 +232,7 @@ function createMarksTransformer(
     },
     line(node, lineNumber) {
       if (markedLines.has(lineNumber)) {
-        addClassToHast(node, "highlighted");
+        addStyleProps(node, codeBlockMarkedLine.html());
       }
       const ranges = rangesByLine.get(lineNumber - 1);
       if (!ranges) return;

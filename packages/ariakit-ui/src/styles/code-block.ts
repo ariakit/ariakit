@@ -1,4 +1,5 @@
 import { cv, cx } from "clava";
+import { edge } from "./edge.ts";
 import { focus } from "./focus.ts";
 import { frame, frameBase } from "./frame.ts";
 import { skeletonLine } from "./skeleton.ts";
@@ -267,7 +268,8 @@ const lineNumbers = cx(
   "[&_.line]:before:select-none",
   "[&_.line]:before:content-[counter(line)_/_'']",
   // The gutter stays in view while the code scrolls sideways. It covers the
-  // code that scrolls under it, and it repeats the bar of a marked line.
+  // code that scrolls under it, and it repeats the bar of a marked line, which
+  // is set here because only this variant gives the line a gutter.
   "[&_.line]:before:sticky [&_.line]:before:start-0 [&_.line]:before:z-1",
   "[&_.line]:before:bg-(--ak-layer)",
   "[&_.highlighted]:before:shadow-[inset_var(--code-block-bar)_0_var(--ak-edge)]",
@@ -333,9 +335,10 @@ export const codeBlockCode = cv({
  * The scroll area of the code in a `codeBlockCode` panel, rendered as a `pre`
  * element with the HTML of the lines in a `code` element, and an optional
  * `codeBlockCopy` after it. It reads the markup of `highlight`: a `line` class
- * on each line, `highlighted` on marked lines, and `highlighted-word` on marked
- * text. Token colors come from the `--shiki-light` and `--shiki-dark`
- * variables, and follow the layer of each line.
+ * on each line, and tokens with their colors in the `--shiki-light` and
+ * `--shiki-dark` variables, which follow the layer of each line. `highlight`
+ * styles marked lines and text with `codeBlockMarkedLine` and
+ * `codeBlockMarkedText`.
  */
 export const codeBlockScroll = cv({
   extend: [frameBase, text],
@@ -373,53 +376,12 @@ export const codeBlockScroll = cv({
     // Adapt each theme color to the layer of its line, so tokens keep enough
     // contrast on any background. The layer decides which theme applies, not
     // the page color scheme, so a dark block on a light page gets dark colors.
-    // Only tokens have a style attribute, not the spans that wrap marked text.
-    "[&_.line_span[style]]:ak-text",
-    "ak-light:[&_.line_span[style]]:ak-text-color-(--shiki-light)",
-    "ak-dark:[&_.line_span[style]]:ak-text-color-(--shiki-dark)",
-    // Marked lines are layers, so the tokens on them adapt to their background
-    // too. A bar at the start marks them without color alone. Its brand edge
-    // keeps 3:1 against the code, or 4.5:1 and a wider bar in high contrast
-    // mode.
-    "[&_.highlighted]:ak-layer [&_.highlighted]:ak-layer-brand",
-    "[&_.highlighted]:ak-layer-mix-15",
-    "[&_.highlighted]:ak-edge-brand [&_.highlighted]:ak-edge-raw",
-    "[&_.highlighted]:ak-edge-contrast",
-    "[--code-block-bar:calc(3px+var(--contrast,0)*0.01px)]",
-    "[&_.highlighted]:shadow-[inset_var(--code-block-bar)_0_var(--ak-edge)]",
-    // Dotted edges in the brand color mark the top and the bottom of each run
-    // of marked lines. They are adaptive, so they show only when contrast
-    // increases. A see-through layer resolves their color without painting
-    // over the code, and they go over the gutter of sticky line numbers too.
-    "[&_.highlighted]:after:pointer-events-none [&_.highlighted]:after:absolute",
-    "[&_.highlighted]:after:inset-0 [&_.highlighted]:after:z-1",
-    "[&_.highlighted]:after:ak-layer [&_.highlighted]:after:ak-layer-transparent",
-    "[&_.highlighted]:after:ak-edge-brand [&_.highlighted]:after:ak-edge-0",
-    "[&_.highlighted]:after:border-dotted [&_.highlighted]:after:border-(--ak-edge)",
-    "[&_.highlighted:not(.highlighted+.highlighted)]:after:border-t",
-    "[&_.highlighted:not(:has(+.highlighted))]:after:border-b",
-    // Marked text is a layer with a ring. A mark that spans tokens wraps them,
-    // and it's a step off the line. A mark in one token goes inside it, and it
-    // mixes the color of the token into the line, with an edge of that color.
-    // A negative margin takes back the padding, so the text doesn't move.
-    "[&_.highlighted-word]:ak-layer [&_.highlighted-word]:ak-layer-offset-5",
-    "[&_.highlighted-word]:ak-edge-25 [&_.highlighted-word]:ring",
-    "[&_.highlighted-word]:rounded-sm",
-    "[&_.highlighted-word]:-mx-[0.25ch] [&_.highlighted-word]:px-[0.25ch]",
-    "[&_.highlighted-word]:py-[0.15em]",
-    "[&_.highlighted-word]:[box-decoration-break:clone]",
-    // [style] matches a token: each token has its colors in a style attribute,
-    // as --shiki-light and --shiki-dark, and the spans that wrap marked text
-    // have none. So [style]>.highlighted-word is a mark inside one token, and
-    // it inherits the colors of that token.
-    "[&_[style]>.highlighted-word]:ak-layer-offset-0",
-    "[&_[style]>.highlighted-word]:ak-layer-mix-10",
-    "[&_[style]>.highlighted-word]:ak-edge-20",
-    "[&_[style]>.highlighted-word]:text-inherit",
-    "ak-light:[&_[style]>.highlighted-word]:ak-layer-color-(--shiki-light)",
-    "ak-light:[&_[style]>.highlighted-word]:ak-edge-color-(--shiki-light)",
-    "ak-dark:[&_[style]>.highlighted-word]:ak-layer-color-(--shiki-dark)",
-    "ak-dark:[&_[style]>.highlighted-word]:ak-edge-color-(--shiki-dark)",
+    // Tokens have their colors in a style attribute. Marked text from
+    // codeBlockMarkedText has a style attribute too, but it keeps the text
+    // color of its tokens.
+    "[&_.line_span[style]:not(.ui-code-block-marked-text)]:ak-text",
+    "ak-light:[&_.line_span[style]:not(.ui-code-block-marked-text)]:ak-text-color-(--shiki-light)",
+    "ak-dark:[&_.line_span[style]:not(.ui-code-block-marked-text)]:ak-text-color-(--shiki-dark)",
   ],
   variants: {
     /**
@@ -504,6 +466,92 @@ export const codeBlockScroll = cv({
     if (variants.$wrap) return;
     if (variants.$maxLines != null) return;
     addClass("overflow-y-auto");
+  },
+});
+
+/**
+ * A marked line in a `codeBlockScroll`, which `highlight` applies to the lines
+ * it marks. The line is a layer, so the tokens on it adapt to its background. A
+ * bar at the start marks it without color alone. Its brand edge keeps 3:1
+ * against the code, or 4.5:1 and a wider bar in high contrast mode.
+ */
+export const codeBlockMarkedLine = cv({
+  extend: [edge],
+  class: [
+    "highlighted",
+    "[--code-block-bar:calc(3px+var(--contrast,0)*0.01px)]",
+    "shadow-[inset_var(--code-block-bar)_0_var(--ak-edge)]",
+    // Dotted edges in the brand color mark the top and the bottom of each run
+    // of marked lines. They are adaptive, so they show only when contrast
+    // increases. A see-through layer resolves their color without painting
+    // over the code, and they go over the gutter of sticky line numbers too.
+    "after:pointer-events-none after:absolute after:inset-0 after:z-1",
+    "after:ak-layer after:ak-layer-transparent",
+    "after:ak-edge-brand after:ak-edge-0",
+    "after:border-dotted after:border-(--ak-edge)",
+    "not-[.highlighted+*]:after:border-t",
+    "not-has-[+.highlighted]:after:border-b",
+  ],
+  defaultVariants: {
+    $layer: "brand",
+    // Keep the brand tint near white and black too, where a layer drops its
+    // chroma by default.
+    $chromaMax: null,
+    $mix: 15,
+    $edge: "brand",
+    $edgeRaw: true,
+    $edgeContrast: true,
+  },
+});
+
+/**
+ * Marked text in a `codeBlockScroll`, which `highlight` applies to the text it
+ * marks. The mark is a layer with a ring, a step off the line. A negative
+ * margin takes back its padding, so the text doesn't move.
+ */
+export const codeBlockMarkedText = cv({
+  extend: [edge],
+  class: [
+    "highlighted-word ui-code-block-marked-text",
+    "ring rounded-sm",
+    "-mx-[0.25ch] px-[0.25ch] py-[0.15em]",
+    "[box-decoration-break:clone]",
+  ],
+  variants: {
+    /**
+     * Marks text in one token with colors, inside the element of that token.
+     * The mark mixes the color of the token into the line, with an edge of that
+     * color, and it keeps the text color of the token. The layer of the line
+     * decides which theme color applies, as it does for the tokens.
+     */
+    $token: [
+      // It follows ak-layer in the CSS, so it replaces the layer text color.
+      "text-inherit",
+      "ak-light:ak-layer-color-(--shiki-light)",
+      "ak-light:ak-edge-color-(--shiki-light)",
+      "ak-dark:ak-layer-color-(--shiki-dark)",
+      "ak-dark:ak-edge-color-(--shiki-dark)",
+    ],
+  },
+  defaultVariants: {
+    // Keep the tint of the line near white and black too, where a layer drops
+    // its chroma by default.
+    $chromaMax: null,
+    $lightnessOffset(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$token) return 0;
+      return true;
+    },
+    $mix(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (!variants.$token) return defaultValue;
+      return 10;
+    },
+    $edgeWeight(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$token) return "medium";
+      return 25;
+    },
   },
 });
 

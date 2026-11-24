@@ -49,8 +49,9 @@ const count = 1;
   expect(code).toContain('kind: "code"');
   expect(code).toContain('"title": "counter.tsx"');
   expect(code).toContain('"text": "const count = 1;"');
-  expect(code).toContain('class=\\"line highlighted\\"');
-  expect(code).toContain('class=\\"highlighted-word\\"');
+  // The marks start with their marker classes, then the style recipe classes.
+  expect(code).toContain('class=\\"line highlighted ');
+  expect(code).toContain('class=\\"highlighted-word ');
   expect(code).not.toContain("_components.pre");
 });
 
