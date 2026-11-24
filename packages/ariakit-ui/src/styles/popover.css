@@ -8,7 +8,10 @@
    @import "./slot-frame.css";
    @import "./control.css";
    @import "./button.css";
-   @import "./popover.css"; */
+   @import "./popover.css";
+
+   The style component in popover.ariakit.react.tsx also needs carousel.css,
+   which holds the CSS of a style recipe that it imports. Import that file too. */
 
 /* Keep ui-open and ui-closed complementary for native and Ariakit overlays.
    Set data-open on markup that must render open. */

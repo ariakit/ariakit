@@ -12,7 +12,11 @@
    @import "./carousel.css";
    @import "./glider.css";
    @import "./tabs.css";
-   @import "./code-block.css"; */
+   @import "./code-block.css";
+
+   The style component in code-block.ariakit.react.tsx also needs popover.css
+   and tooltip.css, which hold the CSS of style recipes that it imports. Import
+   those files too. */
 
 @utility ui-code-block {
   /* One column, where the copy button and the expand button share the row of

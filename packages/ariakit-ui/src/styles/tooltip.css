@@ -9,7 +9,10 @@
    @import "./control.css";
    @import "./button.css";
    @import "./popover.css";
-   @import "./tooltip.css"; */
+   @import "./tooltip.css";
+
+   The style component in tooltip.ariakit.react.tsx also needs carousel.css,
+   which holds the CSS of a style recipe that it imports. Import that file too. */
 
 @utility ui-tooltip {
   /* Allow caller max-w-* utilities to override the wrapping limit. */

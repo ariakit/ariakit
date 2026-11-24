@@ -7,7 +7,10 @@
    @import "./segment.css";
    @import "./slot-frame.css";
    @import "./control.css";
-   @import "./button.css"; */
+   @import "./button.css";
+
+   The style component in button.ariakit.react.tsx also needs carousel.css,
+   which holds the CSS of a style recipe that it imports. Import that file too. */
 
 @utility ui-button {
   &:not(:is(button)) {

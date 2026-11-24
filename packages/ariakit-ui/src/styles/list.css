@@ -11,7 +11,10 @@
    @import "./button.css";
    @import "./prose.css";
    @import "./disclosure.css";
-   @import "./list.css"; */
+   @import "./list.css";
+
+   The style component in list.ariakit.react.tsx also needs progress.css, which
+   holds the CSS of a style recipe that it imports. Import that file too. */
 
 @custom-variant ui-list-counter {
   @container style(--list-marker: counter) {

@@ -9,7 +9,12 @@
    @import "./control.css";
    @import "./button.css";
    @import "./check-mark.css";
-   @import "./choice.css"; */
+   @import "./choice.css";
+
+   The radio.ts style recipe has no CSS file, so this comment also covers the
+   style component in radio.ariakit.react.tsx. That component also needs
+   carousel.css, which holds the CSS of a style recipe that it imports. Import
+   that file too. */
 
 /* The complement of ui-choice-on, with the same specificity as not-ui-choice-on.
    The not- variant turns the host check into `:where(…) *`. A :has() before a

@@ -4,36 +4,6 @@
    @import "./ui.css";
    @import "./glider.css"; */
 
-/* Registration lets a glider box travel: the Glider style component sets the
-   place and the size of the box, and the browser animates them as lengths. They
-   don't inherit, so an animation frame changes only the element that travels,
-   not the box or the copies of the items inside it. The bar that travels
-   between the links of a navigation takes its place and its size from the same
-   values, which the Nav style component sets on the navigation. */
-@property --glider-x {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-@property --glider-y {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-@property --glider-width {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-@property --glider-height {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
 /* How far the selected glider box is from the start and from the end of its
    group, or of its row, along the inline axis. The box and the elements that
    follow it add the two parts that the Glider style component writes. A rule

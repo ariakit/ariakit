@@ -10,7 +10,10 @@
    @import "./button.css";
    @import "./input.css";
    @import "./popover.css";
-   @import "./combobox.css"; */
+   @import "./combobox.css";
+
+   The style component in combobox.ariakit.react.tsx also needs carousel.css,
+   which holds the CSS of a style recipe that it imports. Import that file too. */
 
 @utility ui-combobox-popover {
   /* Suppress the temporary popup focus ring; the active item carries the

@@ -132,6 +132,36 @@ body > * {
   initial-value: 0px;
 }
 
+/* Registration lets a glider box travel: the Glider style component sets the
+   place and the size of the box, and the browser animates them as lengths. They
+   don't inherit, so an animation frame changes only the element that travels,
+   not the box or the copies of the items inside it. The bar that travels
+   between the links of a navigation takes its place and its size from the same
+   values, which the Nav style component sets on the navigation. */
+@property --glider-x {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-width {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --glider-height {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 /* Zero specificity, so any caller class overrides the default it sets. Place it
    last in a variant stack so that it wraps the whole selector. */
 @custom-variant ui-base (:where(&));

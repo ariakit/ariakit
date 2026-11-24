@@ -12,7 +12,10 @@
    @import "./disclosure.css";
    @import "./check-mark.css";
    @import "./list.css";
-   @import "./nav.css"; */
+   @import "./nav.css";
+
+   The style component in nav.ariakit.react.tsx also needs carousel.css, which
+   holds the CSS of a style recipe that it imports. Import that file too. */
 
 /* Resolve row padding at the nav root to align labels with different fonts. */
 @property --nav-py {

@@ -9,7 +9,10 @@
    @import "./control.css";
    @import "./button.css";
    @import "./popover.css";
-   @import "./hovercard.css"; */
+   @import "./hovercard.css";
+
+   The style component in hovercard.ariakit.react.tsx also needs carousel.css,
+   which holds the CSS of a style recipe that it imports. Import that file too. */
 
 @utility ui-hovercard-disclosure {
   @apply size-6;
