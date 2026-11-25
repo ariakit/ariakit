@@ -22,7 +22,7 @@ import type { IncomingMessage, Server, ServerResponse } from "node:http";
 import { availableParallelism } from "node:os";
 import path from "node:path";
 import { chromium, webkit } from "@playwright/test";
-import type { Browser, Page } from "@playwright/test";
+import type { Browser, Page, Request } from "@playwright/test";
 
 export const styleCompareBrowsers = ["chromium", "webkit"] as const;
 
@@ -217,8 +217,8 @@ interface PageMedia {
 interface BuildPage {
   page: Page;
   origin: string;
-  /** Stylesheets that failed in the last load. */
-  failedStylesheets: string[];
+  /** Stylesheets that failed in the last load, with the reason. */
+  failedStylesheets: Map<string, string>;
 }
 
 interface WorkerPages {
@@ -441,14 +441,28 @@ async function openBuildPage(browser: Browser, origin: string) {
     return route.continue();
   });
   const page = await context.newPage();
-  const buildPage: BuildPage = { page, origin, failedStylesheets: [] };
+  const failedStylesheets = new Map<string, string>();
+  const buildPage: BuildPage = { page, origin, failedStylesheets };
   // Without its styles, a page would match an unstyled page in the other build,
-  // such as when the build folder is wrong.
+  // such as when the build folder is wrong. Stylesheets from other hosts fail
+  // too, because the route above blocks them. The browsers report a stylesheet
+  // with an error status as a failed request too, so only the first reason
+  // counts. Only the main document counts, because the comparison does not read
+  // iframes, and the browsers abort stylesheets of lazy preview iframes.
+  const addFailure = (request: Request, reason: string) => {
+    if (request.resourceType() !== "stylesheet") return;
+    if (request.frame() !== page.mainFrame()) return;
+    const parsed = new URL(request.url());
+    const file = parsed.origin === origin ? parsed.pathname : parsed.href;
+    if (failedStylesheets.has(file)) return;
+    failedStylesheets.set(file, reason);
+  };
   page.on("response", (response) => {
-    if (response.request().resourceType() !== "stylesheet") return;
     if (response.status() < 400) return;
-    const { pathname } = new URL(response.url());
-    buildPage.failedStylesheets.push(`${pathname} (${response.status()})`);
+    addFailure(response.request(), String(response.status()));
+  });
+  page.on("requestfailed", (request) => {
+    addFailure(request, request.failure()?.errorText ?? "failed");
   });
   return buildPage;
 }
@@ -512,7 +526,7 @@ async function loadPage(
     forcedColors: media.forcedColors,
     reducedMotion: media.reducedMotion,
   });
-  buildPage.failedStylesheets.length = 0;
+  buildPage.failedStylesheets.clear();
   await buildPage.page.goto(new URL(pagePath, buildPage.origin).href, {
     waitUntil: "load",
     timeout: NAVIGATION_TIMEOUT,
@@ -912,8 +926,12 @@ async function compareLoad({
   const { pagePath, browser } = task;
   const jobs = load.map((pair) => ({ pagePath, browser, ...pair }));
   const failures = [
-    ...pages.baseline.failedStylesheets.map((file) => `${file} in baseline`),
-    ...pages.current.failedStylesheets.map((file) => `${file} in current`),
+    ...[...pages.baseline.failedStylesheets].map(
+      ([file, reason]) => `${file} (${reason}) in baseline`,
+    ),
+    ...[...pages.current.failedStylesheets].map(
+      ([file, reason]) => `${file} (${reason}) in current`,
+    ),
   ];
   if (failures.length) {
     const message = `Stylesheets failed to load: ${failures.join(", ")}`;

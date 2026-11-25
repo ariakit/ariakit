@@ -508,6 +508,68 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
   );
 
   test(
+    "reports a stylesheet that fails without a response as an error",
+    async () => {
+      // Requests to other hosts are blocked, so this stylesheet never loads.
+      const external = `<link rel="stylesheet" href="https://example.invalid/theme.css">`;
+      await using fixture = await createFixture(
+        { "index.html": page(`<p>Text</p>`) },
+        { "index.html": page(`<p>Text</p>`, "", external) },
+      );
+      const fixtureReport = await runStyleCompare({
+        baseline: fixture.baseline,
+        current: fixture.current,
+        browsers: ["chromium"],
+        motions: ["reduce"],
+        states: ["rest"],
+        workers: 1,
+        log: () => {},
+      });
+      const [result] = fixtureReport.results;
+      expect(result?.status).toBe("error");
+      if (result?.status !== "error") return;
+      expect(result.message).toMatch(
+        /^Stylesheets failed to load: https:\/\/example\.invalid\/theme\.css \(.+\) in current$/,
+      );
+    },
+    BROWSER_TIMEOUT,
+  );
+
+  test(
+    "ignores stylesheets that fail in an iframe",
+    async () => {
+      // The framed page is a page of its own, and reports its stylesheet.
+      const files = {
+        "index.html": page(`<iframe src="/frame/"></iframe>`),
+        "frame/index.html": page(
+          `<p>Frame</p>`,
+          "",
+          `<link rel="stylesheet" href="/missing.css">`,
+        ),
+      };
+      await using fixture = await createFixture(files, files);
+      const fixtureReport = await runStyleCompare({
+        baseline: fixture.baseline,
+        current: fixture.current,
+        browsers: ["chromium"],
+        motions: ["reduce"],
+        states: ["rest"],
+        workers: 1,
+        log: () => {},
+      });
+      const [main] = getResults(fixtureReport, "/");
+      const [frame] = getResults(fixtureReport, "/frame/");
+      expect(main?.status).toBe("same");
+      expect(frame).toMatchObject({
+        status: "error",
+        message:
+          "Stylesheets failed to load: /missing.css (404) in baseline, /missing.css (404) in current",
+      });
+    },
+    BROWSER_TIMEOUT,
+  );
+
+  test(
     "restores each state before the next one on the same load",
     async () => {
       const markup = `<p>Text</p>
