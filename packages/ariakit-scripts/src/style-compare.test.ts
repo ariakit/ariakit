@@ -570,6 +570,53 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
   );
 
   test(
+    "compares url() values without the origin of each build",
+    async () => {
+      const image = (path: string) =>
+        page(
+          `<p class="image">Image</p>`,
+          `.image { background-image: url("${path}"); }`,
+        );
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"></svg>`;
+      await using fixture = await createFixture(
+        {
+          "same/index.html": image("/a.svg"),
+          "moved/index.html": image("/a.svg"),
+          "a.svg": svg,
+        },
+        {
+          "same/index.html": image("/a.svg"),
+          "moved/index.html": image("/b.svg"),
+          "b.svg": svg,
+          "a.svg": svg,
+        },
+      );
+      const output: string[] = [];
+      const fixtureReport = await runStyleCompare({
+        baseline: fixture.baseline,
+        current: fixture.current,
+        browsers: ["chromium"],
+        motions: ["reduce"],
+        states: ["rest"],
+        workers: 1,
+        log: (line) => output.push(line),
+      });
+      const statuses = fixtureReport.results.map((result) => [
+        result.pagePath,
+        result.status,
+      ]);
+      expect(statuses).toEqual([
+        ["/moved/", "diff"],
+        ["/same/", "same"],
+      ]);
+      expect(output.join("\n")).toContain(
+        `background-image: url("/a.svg") -> url("/b.svg")`,
+      );
+    },
+    BROWSER_TIMEOUT,
+  );
+
+  test(
     "restores each state before the next one on the same load",
     async () => {
       const markup = `<p>Text</p>

@@ -673,6 +673,7 @@ async function collectStyles(ignoreProperties: readonly string[]) {
   await document.fonts.ready;
   finishAnimations();
 
+  const { origin } = location;
   const isIgnored = (property: string) =>
     ignoreProperties.some((pattern) =>
       pattern.endsWith("*")
@@ -691,7 +692,9 @@ async function collectStyles(ignoreProperties: readonly string[]) {
     for (let i = 0; i < style.length; i++) {
       const property = style.item(i);
       if (isIgnored(property)) continue;
-      entries.push([property, style.getPropertyValue(property)]);
+      // Computed url() values are absolute, and each build has its own origin.
+      const value = style.getPropertyValue(property).replaceAll(origin, "");
+      entries.push([property, value]);
     }
     return entries;
   };
