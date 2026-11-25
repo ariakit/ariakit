@@ -648,16 +648,19 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
       const markup = `<a class="link" href="#">Link</a>
         <a class="md:hover:x" href="#">Stacked</a>
         <a class="nest" href="#">Nested</a>
+        <button class="quoted" data-state=":hover">Quoted</button>
         <input class="field" aria-label="Field">
         <button class="plain">Plain</button>
         <button class="imported">Imported</button>`;
       // Rules that read only the native pseudo-classes, as Tailwind variants
-      // do, including a stacked variant, a nested rule, and an imported sheet.
+      // do, including a stacked variant, a nested rule, an attribute value with
+      // a pseudo-class in it, and an imported sheet.
       const rules = (width: string) => `
         @import url("/imported.css");
         @media (hover: hover) { .link:hover { border: ${width} solid; } }
         .md\\:hover\\:x:hover { border: ${width} solid; }
         .nest { &:hover { border: ${width} solid; } }
+        .quoted[data-state=":hover"]:hover { border: ${width} solid; }
         .field:focus-visible { border: ${width} solid; }
         .plain:focus { border: ${width} solid; }`;
       const imported = (width: string) =>
@@ -693,7 +696,12 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
         ["rest", "same"],
         [
           "hover",
-          ["link ui-hovered", "md:hover:x ui-hovered", "nest ui-hovered"],
+          [
+            "link ui-hovered",
+            "md:hover:x ui-hovered",
+            "nest ui-hovered",
+            "quoted ui-hovered",
+          ],
         ],
         ["focus", ["field", "plain", "imported"]],
       ]);

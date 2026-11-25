@@ -610,21 +610,26 @@ function applyState(state: StyleCompareState) {
 
   // Native rules, such as the hover: utilities of the app, do not read the
   // markers. In these states, their pseudo-classes also match the markers, with
-  // the same specificity. An escaped colon is part of a class name, such as in
-  // .md\:hover\:underline.
-  const replacement =
+  // the same specificity. Escapes, such as in .md\:hover\:underline, and quoted
+  // strings, such as attribute values, match first and stay as they are.
+  const pseudoClass =
     state === "hover"
-      ? ([/(?<!\\):hover(?![\w-])/g, ":is(:hover, .ui-hovered)"] as const)
+      ? { name: String.raw`:hover(?![\w-])`, marker: ".ui-hovered" }
       : state === "focus"
-        ? ([
-            /(?<!\\):focus(-visible|-within)?(?![\w-])/g,
-            ":is(:focus$1, [data-focus-visible])",
-          ] as const)
+        ? {
+            name: String.raw`:focus(?:-visible|-within)?(?![\w-])`,
+            marker: "[data-focus-visible]",
+          }
         : undefined;
+  const kept = String.raw`\\[\s\S]|"(?:[^"\\]|\\[\s\S])*"|'(?:[^'\\]|\\[\s\S])*'`;
+  const replacement = pseudoClass && {
+    pattern: new RegExp(`${kept}|${pseudoClass.name}`, "g"),
+    replace: (match: string) =>
+      match.startsWith(":") ? `:is(${match}, ${pseudoClass.marker})` : match,
+  };
   const selectorChanges: SelectorChange[] = [];
   const rewrite = (rules: CSSRuleList) => {
     if (!replacement) return;
-    const [pattern, value] = replacement;
     for (const rule of Array.from(rules)) {
       if (rule instanceof CSSImportRule) {
         if (rule.styleSheet) {
@@ -634,7 +639,7 @@ function applyState(state: StyleCompareState) {
       }
       if (rule instanceof CSSStyleRule) {
         const selector = rule.selectorText;
-        const next = selector.replace(pattern, value);
+        const next = selector.replace(replacement.pattern, replacement.replace);
         if (next !== selector) {
           selectorChanges.push([rule, selector]);
           rule.selectorText = next;
