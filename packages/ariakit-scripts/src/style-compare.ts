@@ -178,10 +178,14 @@ interface StyleCompareInspector {
 /** An attribute and its value before applyState changed it. */
 type AttributeChange = [element: Element, name: string, value: string | null];
 
+/** A style rule and its selector before applyState changed it. */
+type SelectorChange = [rule: CSSStyleRule, selector: string];
+
 interface StyleCompareWindow extends Window {
   ariakitStyleCompareElements?: Element[];
   ariakitStyleCompareChanges?: AttributeChange[];
   ariakitStyleCompareReattached?: boolean;
+  ariakitStyleCompareSelectors?: SelectorChange[];
   ariakitStyleCompare?: StyleCompareInspector;
 }
 
@@ -603,13 +607,57 @@ function applyState(state: StyleCompareState) {
   if (state === "rtl") {
     setAttribute(document.documentElement, "dir", "rtl");
   }
+
+  // Native rules, such as the hover: utilities of the app, do not read the
+  // markers. In these states, their pseudo-classes also match the markers, with
+  // the same specificity. An escaped colon is part of a class name, such as in
+  // .md\:hover\:underline.
+  const replacement =
+    state === "hover"
+      ? ([/(?<!\\):hover(?![\w-])/g, ":is(:hover, .ui-hovered)"] as const)
+      : state === "focus"
+        ? ([
+            /(?<!\\):focus(-visible|-within)?(?![\w-])/g,
+            ":is(:focus$1, [data-focus-visible])",
+          ] as const)
+        : undefined;
+  const selectorChanges: SelectorChange[] = [];
+  const rewrite = (rules: CSSRuleList) => {
+    if (!replacement) return;
+    const [pattern, value] = replacement;
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSImportRule) {
+        if (rule.styleSheet) {
+          rewrite(rule.styleSheet.cssRules);
+        }
+        continue;
+      }
+      if (rule instanceof CSSStyleRule) {
+        const selector = rule.selectorText;
+        const next = selector.replace(pattern, value);
+        if (next !== selector) {
+          selectorChanges.push([rule, selector]);
+          rule.selectorText = next;
+        }
+      }
+      // Nested style rules, and media, supports, layer, and container rules.
+      if (rule instanceof CSSStyleRule || rule instanceof CSSGroupingRule) {
+        rewrite(rule.cssRules);
+      }
+    }
+  };
+  for (const sheet of Array.from(document.styleSheets)) {
+    rewrite(sheet.cssRules);
+  }
+
   target.ariakitStyleCompareElements = elements;
   target.ariakitStyleCompareChanges = changes;
+  target.ariakitStyleCompareSelectors = selectorChanges;
 }
 
 /**
- * Runs in the page. Restores the attributes that applyState changed, so the
- * next state starts from the loaded page.
+ * Runs in the page. Restores the attributes and selectors that applyState
+ * changed, so the next state starts from the loaded page.
  */
 function restoreState() {
   const target: StyleCompareWindow = window;
@@ -633,7 +681,12 @@ function restoreState() {
   if (detach) {
     root.insertBefore(body, bodyNext);
   }
+  const selectorChanges = target.ariakitStyleCompareSelectors ?? [];
+  for (const [rule, selector] of selectorChanges.toReversed()) {
+    rule.selectorText = selector;
+  }
   target.ariakitStyleCompareChanges = [];
+  target.ariakitStyleCompareSelectors = [];
 }
 
 /**

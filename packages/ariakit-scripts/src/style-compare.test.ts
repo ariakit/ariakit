@@ -643,14 +643,76 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
   );
 
   test(
+    "forces native hover and focus rules",
+    async () => {
+      const markup = `<a class="link" href="#">Link</a>
+        <a class="md:hover:x" href="#">Stacked</a>
+        <a class="nest" href="#">Nested</a>
+        <input class="field" aria-label="Field">
+        <button class="plain">Plain</button>
+        <button class="imported">Imported</button>`;
+      // Rules that read only the native pseudo-classes, as Tailwind variants
+      // do, including a stacked variant, a nested rule, and an imported sheet.
+      const rules = (width: string) => `
+        @import url("/imported.css");
+        @media (hover: hover) { .link:hover { border: ${width} solid; } }
+        .md\\:hover\\:x:hover { border: ${width} solid; }
+        .nest { &:hover { border: ${width} solid; } }
+        .field:focus-visible { border: ${width} solid; }
+        .plain:focus { border: ${width} solid; }`;
+      const imported = (width: string) =>
+        `.imported:focus { border: ${width} solid; }`;
+      await using fixture = await createFixture(
+        {
+          "index.html": page(markup, rules("1px")),
+          "imported.css": imported("1px"),
+        },
+        {
+          "index.html": page(markup, rules("2px")),
+          "imported.css": imported("2px"),
+        },
+      );
+      const fixtureReport = await runStyleCompare({
+        baseline: fixture.baseline,
+        current: fixture.current,
+        browsers: ["chromium"],
+        motions: ["reduce"],
+        states: ["rest", "hover", "focus"],
+        workers: 1,
+        log: () => {},
+      });
+      // The border also changes the height of the html and body elements, which
+      // have no class.
+      const differences = fixtureReport.results.map((result) => [
+        result.state,
+        result.status === "diff"
+          ? result.details.map((detail) => detail.className).filter(Boolean)
+          : result.status,
+      ]);
+      expect(differences).toEqual([
+        ["rest", "same"],
+        [
+          "hover",
+          ["link ui-hovered", "md:hover:x ui-hovered", "nest ui-hovered"],
+        ],
+        ["focus", ["field", "plain", "imported"]],
+      ]);
+    },
+    BROWSER_TIMEOUT,
+  );
+
+  test(
     "restores each state before the next one on the same load",
     async () => {
+      // The box has the hover marker in its markup, so a hover selector that
+      // stays rewritten would also match it in the rest state.
       const markup = `<p>Text</p>
         <div role="tab" aria-selected="false">Tab</div>
-        <button>Button</button>`;
+        <button>Button</button>
+        <div class="box ui-hovered">Box</div>`;
       const rules = (color: string) => `
         p[class], [aria-selected="true"], [aria-disabled="true"],
-        [data-focus-visible], [dir="rtl"] body { color: ${color}; }`;
+        [data-focus-visible], [dir="rtl"] body, .box:hover { color: ${color}; }`;
       await using fixture = await createFixture(
         { "index.html": page(markup, rules("rgb(255, 0, 0)")) },
         { "index.html": page(markup, rules("rgb(0, 0, 255)")) },
