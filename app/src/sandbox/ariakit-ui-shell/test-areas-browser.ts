@@ -142,15 +142,24 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await q.checkbox("Start sidebar").uncheck();
     await q.combobox("Start part").selectOption("long");
     await q.checkbox("Shrink start part").check();
+    await expect(getSidebar(q, "Start sidebar")).toHaveCSS("width", "0px");
     await expectAligned(q.group("Header area"), q.group("Body column"));
     // The part keeps its space to the area when it reaches the limit.
     for (const [name, parent] of [
       ["Header area", ".ui-shell-header"],
       ["Main header area", ".ui-shell-main-header"],
     ] as const) {
-      const start = await getBox(page.locator(`${parent} > .ui-shell-start`));
-      const area = await getBox(q.group(name));
-      expect(area.x - (start.x + start.width)).toBeGreaterThan(4);
+      const start = page.locator(`${parent} > .ui-shell-start`);
+      const area = q.group(name);
+      await expect
+        .poll(async () => {
+          const [startBox, areaBox] = await Promise.all([
+            getBox(start),
+            getBox(area),
+          ]);
+          return areaBox.x - (startBox.x + startBox.width);
+        })
+        .toBeGreaterThan(4);
     }
   });
 
@@ -158,14 +167,23 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.setViewportSize({ width: 1000, height: 900 });
     await q.checkbox("Start sidebar").uncheck();
     await q.checkbox("Shrink end part").check();
+    await expect(getSidebar(q, "Start sidebar")).toHaveCSS("width", "0px");
     await expectAligned(q.group("Header area"), q.group("Body column"));
     for (const [name, parent] of [
       ["Header area", ".ui-shell-header"],
       ["Main header area", ".ui-shell-main-header"],
     ] as const) {
-      const end = await getBox(page.locator(`${parent} > .ui-shell-end`));
-      const area = await getBox(q.group(name));
-      expect(end.x - (area.x + area.width)).toBeGreaterThan(4);
+      const end = page.locator(`${parent} > .ui-shell-end`);
+      const area = q.group(name);
+      await expect
+        .poll(async () => {
+          const [endBox, areaBox] = await Promise.all([
+            getBox(end),
+            getBox(area),
+          ]);
+          return endBox.x - (areaBox.x + areaBox.width);
+        })
+        .toBeGreaterThan(4);
     }
   });
 
