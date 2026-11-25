@@ -165,6 +165,8 @@ interface ElementStyles {
 
 interface CollectedPage {
   tags: string[];
+  /** Position of the parent of each element, or -1 for the root. */
+  parents: number[];
   digests: string[];
 }
 
@@ -731,8 +733,13 @@ async function collectStyles(ignoreProperties: readonly string[]) {
   // Keeps the styles for readElementStyles, which runs after the comparison.
   target.ariakitStyleCompare = { elements, readStyle };
 
+  const positions = new Map(elements.map((element, index) => [element, index]));
   const collected: CollectedPage = {
     tags: elements.map((element) => element.localName),
+    parents: elements.map((element) => {
+      const parent = element.parentElement;
+      return parent ? (positions.get(parent) ?? -1) : -1;
+    }),
     digests: elements.map((element) =>
       [
         digest(readStyle(element, "self")),
@@ -771,16 +778,21 @@ function readElementStyles(indexes: number[]) {
 
 /**
  * Describes the first difference between two element lists, or returns nothing
- * when they have the same tags in the same order.
+ * when they have the same tags and parents at each position.
  */
-function getDomDifference(baseline: string[], current: string[]) {
-  const length = Math.max(baseline.length, current.length);
+function getDomDifference(baseline: CollectedPage, current: CollectedPage) {
+  const length = Math.max(baseline.tags.length, current.tags.length);
   for (let i = 0; i < length; i++) {
-    const baselineTag = baseline[i];
-    const currentTag = current[i];
-    if (baselineTag === currentTag) continue;
-    const describe = (tag?: string) => (tag ? `<${tag}>` : "no element");
-    return `DOM differs at element #${i}: ${describe(baselineTag)} in baseline, ${describe(currentTag)} in current`;
+    const baselineTag = baseline.tags[i];
+    const currentTag = current.tags[i];
+    if (baselineTag !== currentTag) {
+      const describe = (tag?: string) => (tag ? `<${tag}>` : "no element");
+      return `DOM differs at element #${i}: ${describe(baselineTag)} in baseline, ${describe(currentTag)} in current`;
+    }
+    const baselineParent = baseline.parents[i];
+    const currentParent = current.parents[i];
+    if (baselineParent === currentParent) continue;
+    return `DOM differs at element #${i}: <${currentTag}> is in #${baselineParent} in baseline, #${currentParent} in current`;
   }
   return;
 }
@@ -870,7 +882,7 @@ async function compareMotion({
     ignoreProperties,
   );
 
-  const domDifference = getDomDifference(baseline.tags, current.tags);
+  const domDifference = getDomDifference(baseline, current);
   if (domDifference) {
     return { ...job, rerun, status: "error", message: domDifference };
   }

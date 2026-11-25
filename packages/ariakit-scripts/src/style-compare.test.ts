@@ -617,6 +617,32 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
   );
 
   test(
+    "reports elements with a different parent as a DOM difference",
+    async () => {
+      // The same tags in the same order, with a different nesting.
+      await using fixture = await createFixture(
+        { "index.html": page(`<div><span>A</span></div><div>B</div>`) },
+        { "index.html": page(`<div></div><span>A</span><div>B</div>`) },
+      );
+      const fixtureReport = await runStyleCompare({
+        baseline: fixture.baseline,
+        current: fixture.current,
+        browsers: ["chromium"],
+        motions: ["reduce"],
+        states: ["rest"],
+        workers: 1,
+        log: () => {},
+      });
+      expect(fixtureReport.results[0]).toMatchObject({
+        status: "error",
+        message:
+          "DOM differs at element #3: <span> is in #2 in baseline, #1 in current",
+      });
+    },
+    BROWSER_TIMEOUT,
+  );
+
+  test(
     "restores each state before the next one on the same load",
     async () => {
       const markup = `<p>Text</p>
