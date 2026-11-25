@@ -115,9 +115,12 @@ function startFollow(strip: HTMLElement) {
   };
   let frame = 0;
   const update = () => {
-    const tab = strip.querySelector<HTMLElement>(
+    const selected = strip.querySelector<HTMLElement>(
       ":scope > [role=tab][aria-selected=true]",
     );
+    // A tab in a hidden tab list has no box, so it shows nowhere, and the shape
+    // keeps the order of the tabs.
+    const tab = selected?.getClientRects().length ? selected : null;
     // Only a folder tab meets the corners of the panels. A selected tab of
     // another kind still gets its mark, which a glider in the strip reads.
     const folder = tab?.classList.contains("ui-folder");

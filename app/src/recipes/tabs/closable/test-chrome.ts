@@ -8,6 +8,14 @@ function getCloseMark(tab: Locator) {
   return tab.locator(":scope > :last-child");
 }
 
+/** The top corner of an element at the start of the row. */
+function getStartCorner(element: Locator) {
+  return element.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return Number.parseFloat(style.borderStartStartRadius);
+  });
+}
+
 interface WidthTransition {
   /** Whether a width transition started on the tab. */
   ran: boolean;
@@ -142,6 +150,52 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
     await test.expect(tab).toHaveCount(0);
     test.expect(transition).toEqual({ ran: true, ranBeforeRemoval: true });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/8597
+  test("makes the corner of the panel follow a selected tab that slides to the start", async ({
+    q,
+  }) => {
+    await q.tab("Workshop").click();
+    const panels = q.tabpanel("Workshop").locator("..");
+    // A selected tab that isn't first leaves the corner of the panel whole.
+    const whole = await getStartCorner(panels);
+    test.expect(whole).toBeGreaterThan(0);
+    // The closed tab shrinks to no width, so the selected tab slides to the
+    // start of the row. This reads the place of the tab and the corner of the
+    // panels after each frame, from before the click until the closed tab is
+    // gone.
+    const sampling = panels.evaluate(async (panels) => {
+      const samples: Array<{ start: number; corner: number }> = [];
+      const tab = document.getElementById("note-workshop");
+      if (!tab) return samples;
+      const row = tab.closest(".ui-tab-row");
+      if (!row) return samples;
+      while (document.getElementById("note-groceries")) {
+        await new Promise((resolve) => {
+          requestAnimationFrame(() => setTimeout(resolve));
+        });
+        if (!document.getElementById("note-groceries")) break;
+        const tabLeft = tab.getBoundingClientRect().left;
+        const start = tabLeft - row.getBoundingClientRect().left;
+        const style = getComputedStyle(panels);
+        const corner = Number.parseFloat(style.borderStartStartRadius);
+        samples.push({ start, corner });
+      }
+      return samples;
+    });
+    await getCloseMark(q.tab("Groceries")).click();
+    const frames = await sampling;
+    // Near the start of the row, the corner leaves room for the curve of the
+    // tab, as it does for a tab that a drag moves there.
+    const near = frames.filter((frame) => frame.start < whole / 2);
+    test.expect(near.length).toBeGreaterThan(0);
+    for (const frame of near) {
+      test.expect(frame.corner).toBeLessThan(whole);
+    }
+    await test.expect(q.tab("Groceries")).toHaveCount(0);
+    // A selected first tab leaves no room for the corner.
+    await test.expect.poll(() => getStartCorner(panels)).toBe(0);
   });
 
   test("grows a new tab in", async ({ q, page }) => {
