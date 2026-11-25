@@ -14,6 +14,11 @@ import { DisclosureButtonLabel } from "@ariakit/ui/components/disclosure.ariakit
 import type { DisclosureButtonLabelProps } from "@ariakit/ui/components/disclosure.ariakit.react";
 import { Frame } from "@ariakit/ui/components/frame.ariakit.react";
 import { Kbd } from "@ariakit/ui/components/kbd.ariakit.react";
+import {
+  List,
+  ListDisclosure,
+  ListDisclosureButton,
+} from "@ariakit/ui/components/list.ariakit.react";
 import type {
   NavLinkProps,
   NavProps,
@@ -25,6 +30,7 @@ import {
   NavDisclosure,
   NavDisclosureButton,
   NavDisclosureContent,
+  NavDisclosureContentBody,
   NavGroup,
   NavGroupLabel,
   NavLink,
@@ -332,6 +338,46 @@ function LooseCurrentSections() {
         </NavList>
       </NavDisclosure>
       {link("Changelog", "false")}
+    </Nav>
+  );
+}
+
+function ListDisclosureGuideBar() {
+  const [current, setCurrent] = useState("/adding-state");
+  const lessons = [
+    { href: "/adding-state", label: "Adding state" },
+    { href: "/derived-state", label: "Derived state" },
+  ];
+  return (
+    <Nav
+      aria-label="List disclosure guide bar"
+      list={<List ordered />}
+      bar={{ $offset: "halfway", $length: "full" }}
+      className="w-full"
+    >
+      <li>
+        <ListDisclosure
+          defaultOpen
+          button={<ListDisclosureButton>State</ListDisclosureButton>}
+          content={{ guide: true, body: <NavDisclosureContentBody /> }}
+        >
+          <NavList>
+            {lessons.map((lesson) => (
+              <NavLink
+                key={lesson.href}
+                href={lesson.href}
+                aria-current={current === lesson.href ? "page" : undefined}
+                onClick={(event) => {
+                  event.preventDefault();
+                  setCurrent(lesson.href);
+                }}
+              >
+                {lesson.label}
+              </NavLink>
+            ))}
+          </NavList>
+        </ListDisclosure>
+      </li>
     </Nav>
   );
 }
@@ -2254,6 +2300,32 @@ export default function NavExamples() {
             <NavLinkLabel>Alerts</NavLinkLabel>
           </NavLink>
         </Nav>
+      </Example>
+
+      <Example
+        title="List disclosure guide bar"
+        description="A navigation with an ordered list and list disclosure content that draws a guide. The traveling bar stays above the content guide while moving between links."
+        code={`
+          <Nav
+            list={<List ordered />}
+            bar={{ $offset: "halfway", $length: "full" }}
+          >
+            <li>
+              <ListDisclosure
+                defaultOpen
+                button={<ListDisclosureButton>State</ListDisclosureButton>}
+                content={{ guide: true, body: <NavDisclosureContentBody /> }}
+              >
+                <NavList>
+                  <NavLink href="/adding-state" aria-current="page">Adding state</NavLink>
+                  <NavLink href="/derived-state">Derived state</NavLink>
+                </NavList>
+              </ListDisclosure>
+            </li>
+          </Nav>
+        `}
+      >
+        <ListDisclosureGuideBar />
       </Example>
     </ExampleGrid>
   );
