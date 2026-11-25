@@ -717,10 +717,18 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
         <input type="radio" name="group" class="second" aria-label="Second">
         <button class="button">Button</button>
         <select class="select" aria-label="Select"><option>One</option></select>
-        <div class="custom" role="checkbox" aria-checked="false">Custom</div>`;
-      // Rules that read only the native states, as Tailwind variants do.
+        <div class="custom" role="checkbox" aria-checked="false">Custom</div>
+        <form id="other"></form>
+        <form>
+          <input type="radio" name="linked" class="own" aria-label="Own">
+          <input type="radio" name="linked" form="other" aria-label="Other">
+        </form>`;
+      // Rules that read only the native states, as Tailwind variants do. The
+      // two linked radios have different forms, so each is in its own group.
       const rules = (width: string) => `
-        .check:checked, .first:not(:checked) { outline: ${width} solid; }
+        .check:checked, .first:not(:checked), .own:checked {
+          outline: ${width} solid;
+        }
         .button:disabled, .select:disabled { outline: ${width} solid; }`;
       await using fixture = await createFixture(
         { "index.html": page(markup, rules("1px")) },
@@ -743,7 +751,7 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
       ]);
       expect(differences).toEqual([
         ["rest", "same"],
-        ["selected", ["check", "first"]],
+        ["selected", ["check", "first", "own"]],
         ["disabled", ["button", "select"]],
       ]);
     },
@@ -794,6 +802,54 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
         ["selected", "diff"],
         ["disabled", "diff"],
         ["rtl", "diff"],
+      ]);
+    },
+    BROWSER_TIMEOUT,
+  );
+
+  test(
+    "keeps the checked radios of other forms on a detached body",
+    async () => {
+      // The linked radios have different forms, so both can be checked. On a
+      // detached body, the second one falls back to the first form. WebKit
+      // unchecks the first one when it parses the second, so a script checks
+      // them.
+      const markup = `<form id="other"></form>
+        <form>
+          <input type="radio" name="linked" class="own" aria-label="Own">
+          <input type="radio" name="linked" form="other" aria-label="Other">
+        </form>
+        <script>
+          for (const input of document.querySelectorAll("[name=linked]")) {
+            input.checked = true;
+          }
+        </script>`;
+      const rules = (width: string) =>
+        `.own:not(:checked) { outline: ${width} solid; }`;
+      await using fixture = await createFixture(
+        { "index.html": page(markup, rules("1px")) },
+        { "index.html": page(markup, rules("2px")) },
+      );
+      const fixtureReport = await runStyleCompare({
+        baseline: fixture.baseline,
+        current: fixture.current,
+        browsers: ["chromium"],
+        motions: ["reduce"],
+        // One load serves the states in this order, so the rest state at the
+        // end also checks the restore.
+        states: ["hover", "focus", "disabled", "rest"],
+        workers: 1,
+        log: () => {},
+      });
+      const statuses = fixtureReport.results.map((result) => [
+        result.state,
+        result.status,
+      ]);
+      expect(statuses).toEqual([
+        ["rest", "same"],
+        ["hover", "same"],
+        ["focus", "same"],
+        ["disabled", "same"],
       ]);
     },
     BROWSER_TIMEOUT,

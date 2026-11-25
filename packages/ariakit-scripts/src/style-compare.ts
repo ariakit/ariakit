@@ -571,8 +571,15 @@ async function applyState(state: StyleCompareState) {
     document.querySelectorAll("html, body, body *"),
   ).filter((element) => !skippedTags.includes(element.localName));
   const changes: AttributeChange[] = [];
-  const checkedChanges: CheckedChange[] = [];
   const fields: Element[] = [];
+  // A radio with a form attribute loses that form on a detached body, and can
+  // join the group of another form, which unchecks one of them. So the states
+  // are saved first, and written again on the page.
+  const checkedChanges = elements.flatMap((element): CheckedChange[] => {
+    if (!(element instanceof HTMLInputElement)) return [];
+    if (element.type !== "checkbox" && element.type !== "radio") return [];
+    return [[element, element.checked]];
+  });
 
   const setAttribute = (element: Element, name: string, value: string) => {
     changes.push([element, name, element.getAttribute(name)]);
@@ -619,12 +626,6 @@ async function applyState(state: StyleCompareState) {
       ) {
         setAttribute(element, "aria-selected", "true");
       }
-      const checkable =
-        element instanceof HTMLInputElement &&
-        (element.type === "checkbox" || element.type === "radio");
-      if (checkable) {
-        checkedChanges.push([element, element.checked]);
-      }
     } else if (state === "disabled") {
       if (element.matches("button, a, input, [role=tab], [role=button]")) {
         setAttribute(element, "aria-disabled", "true");
@@ -636,14 +637,18 @@ async function applyState(state: StyleCompareState) {
       }
     }
   }
-  // Native :checked reads the checked property, not an attribute. All states
-  // are saved before this flip, because checking a radio unchecks the others in
-  // its group.
-  for (const [input, checked] of checkedChanges) {
-    input.checked = !checked;
-  }
   if (detach) {
     document.documentElement.insertBefore(body, bodyNext);
+  }
+  // Native :checked reads the checked property, not an attribute. The selected
+  // state flips each saved state. All states are saved before any write,
+  // because checking a radio unchecks the others in its group. Inputs that keep
+  // their state are not written, so their checked attribute still applies.
+  const flipChecked = state === "selected";
+  for (const [input, checked] of checkedChanges) {
+    const next = flipChecked ? !checked : checked;
+    if (input.checked === next) continue;
+    input.checked = next;
   }
   // In WebKit, a text field that becomes disabled on a detached body, or in the
   // frame that the body goes back, keeps a narrower width than a disabled field
@@ -738,14 +743,16 @@ function restoreState() {
       element.setAttribute(name, value);
     }
   }
-  // The saved states are those before any change, so their order does not
-  // matter within a radio group.
-  const checkedChanges = target.ariakitStyleCompareChecked ?? [];
-  for (const [input, checked] of checkedChanges) {
-    input.checked = checked;
-  }
   if (detach) {
     root.insertBefore(body, bodyNext);
+  }
+  // The saved states are those before any change, so their order does not
+  // matter within a radio group. They change on the page, and only where they
+  // differ, as in applyState.
+  const checkedChanges = target.ariakitStyleCompareChecked ?? [];
+  for (const [input, checked] of checkedChanges) {
+    if (input.checked === checked) continue;
+    input.checked = checked;
   }
   const selectorChanges = target.ariakitStyleCompareSelectors ?? [];
   for (const [rule, selector] of selectorChanges.toReversed()) {
