@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 
-import { program } from "commander";
+import { InvalidArgumentError, program } from "commander";
 import { build, clean } from "./build.ts";
 import { dev } from "./dev.ts";
 import { react18 } from "./react18.ts";
 
 program.name("ariakit");
+
+function parseCount(value: string, min: number) {
+  const count = Number(value);
+  if (Number.isInteger(count) && count >= min) return count;
+  throw new InvalidArgumentError(`Use a whole number from ${min}.`);
+}
 
 program
   .command("build")
@@ -80,6 +86,87 @@ program
       resultsDir: options.resultsDir,
     });
     console.log(markdown);
+  });
+
+program
+  .command("style-compare")
+  .description(
+    "Compare the computed styles of every element between two app builds",
+  )
+  .argument(
+    "[pages...]",
+    "Page path prefixes to compare, such as react/previews/app-shell (default: all pages)",
+  )
+  .requiredOption(
+    "--baseline <path>",
+    "Baseline build folder, such as a saved copy of app/dist/client",
+  )
+  .requiredOption("--current <path>", "Current build folder")
+  .option(
+    "--browsers <names>",
+    "Comma-separated browsers: chromium, webkit (default: all)",
+  )
+  .option(
+    "--motions <values>",
+    "Comma-separated prefers-reduced-motion values: reduce, no-preference (default: all)",
+  )
+  .option(
+    "--states <names>",
+    "Comma-separated states: rest, narrow, hover, focus, selected, disabled, dark, forced, rtl (default: all)",
+  )
+  .option(
+    "--workers <count>",
+    "Pages that load at the same time in each build (default: 3/4 of the CPUs)",
+    (value) => parseCount(value, 1),
+  )
+  .option(
+    "--details <count>",
+    "Elements to detail for each different page state (default: 12)",
+    (value) => parseCount(value, 0),
+  )
+  .option(
+    "--ignore-properties <names>",
+    "Comma-separated computed properties to skip; a trailing * matches a prefix, such as --tw-*",
+  )
+  .action(async (pages: string[], options) => {
+    const {
+      hasStyleCompareFailures,
+      parseStyleCompareList,
+      runStyleCompare,
+      splitStyleCompareList,
+      styleCompareBrowsers,
+      styleCompareMotions,
+      styleCompareStates,
+    } = await import("./style-compare.ts");
+    const parse = <T extends string>(
+      value: string | undefined,
+      allowed: readonly T[],
+    ) => {
+      if (value == null) return;
+      try {
+        return parseStyleCompareList(value, allowed);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : error;
+        return program.error(`error: ${String(message)}`);
+      }
+    };
+    const report = await runStyleCompare({
+      baseline: options.baseline,
+      current: options.current,
+      pages,
+      browsers: parse(options.browsers, styleCompareBrowsers),
+      motions: parse(options.motions, styleCompareMotions),
+      states: parse(options.states, styleCompareStates),
+      workers: options.workers,
+      details: options.details,
+      ignoreProperties:
+        options.ignoreProperties == null
+          ? undefined
+          : splitStyleCompareList(options.ignoreProperties),
+    });
+    if (hasStyleCompareFailures(report)) {
+      process.exitCode = 1;
+    }
   });
 
 program
