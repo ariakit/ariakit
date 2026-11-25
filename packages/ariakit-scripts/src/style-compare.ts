@@ -29,6 +29,24 @@ export const styleCompareBrowsers = ["chromium", "webkit"] as const;
 /** Values of the `prefers-reduced-motion` media feature. */
 export const styleCompareMotions = ["reduce", "no-preference"] as const;
 
+/**
+ * States that the comparison forces on every element at once:
+ * - `hover`: the `ui-hovered` class, and native `:hover` rules also match it.
+ * - `focus`: the `data-focus-visible` attribute, and native `:focus`,
+ *   `:focus-visible`, and `:focus-within` rules also match it.
+ * - `selected`: flips `aria-selected`, `aria-checked`, and `data-selected`,
+ *   selects tabs, toggles native checkboxes, and checks one radio in each
+ *   group, the last one that was not checked.
+ * - `disabled`: `aria-disabled` on buttons, links, inputs, tabs, and
+ *   `role=button` elements, and the `disabled` attribute on buttons, inputs,
+ *   selects, and text areas.
+ * - `narrow`, `dark`, `forced`, and `rtl`: the viewport, the color scheme,
+ *   forced colors, and the `dir` attribute of the root.
+ *
+ * Other states are not forced, such as `:active`, `:indeterminate`, `:open`,
+ * `:placeholder-shown`, validity, `aria-expanded`, `aria-pressed`, and styles
+ * in shadow roots.
+ */
 export const styleCompareStates = [
   "rest",
   "narrow",
@@ -178,6 +196,9 @@ interface StyleCompareInspector {
 /** An attribute and its value before applyState changed it. */
 type AttributeChange = [element: Element, name: string, value: string | null];
 
+/** A native checkbox or radio and its checked state before applyState. */
+type CheckedChange = [input: HTMLInputElement, checked: boolean];
+
 /** A style rule and its selector before applyState changed it. */
 type SelectorChange = [rule: CSSStyleRule, selector: string];
 
@@ -186,6 +207,7 @@ interface StyleCompareWindow extends Window {
   ariakitStyleCompareChanges?: AttributeChange[];
   ariakitStyleCompareReattached?: boolean;
   ariakitStyleCompareSelectors?: SelectorChange[];
+  ariakitStyleCompareChecked?: CheckedChange[];
   ariakitStyleCompare?: StyleCompareInspector;
 }
 
@@ -541,14 +563,16 @@ async function loadPage(
 
 /**
  * Runs in the page. Forces the state on every element, and keeps the elements
- * for collectStyles and the changed attributes for restoreState.
+ * for collectStyles and the changes for restoreState.
  */
-function applyState(state: StyleCompareState) {
+async function applyState(state: StyleCompareState) {
   const skippedTags = ["script", "style", "template", "link", "meta"];
   const elements = Array.from(
     document.querySelectorAll("html, body, body *"),
   ).filter((element) => !skippedTags.includes(element.localName));
   const changes: AttributeChange[] = [];
+  const checkedChanges: CheckedChange[] = [];
+  const fields: Element[] = [];
 
   const setAttribute = (element: Element, name: string, value: string) => {
     changes.push([element, name, element.getAttribute(name)]);
@@ -595,14 +619,44 @@ function applyState(state: StyleCompareState) {
       ) {
         setAttribute(element, "aria-selected", "true");
       }
+      const checkable =
+        element instanceof HTMLInputElement &&
+        (element.type === "checkbox" || element.type === "radio");
+      if (checkable) {
+        checkedChanges.push([element, element.checked]);
+      }
     } else if (state === "disabled") {
       if (element.matches("button, a, input, [role=tab], [role=button]")) {
         setAttribute(element, "aria-disabled", "true");
       }
+      if (element.localName === "button") {
+        setAttribute(element, "disabled", "");
+      } else if (element.matches("input, select, textarea")) {
+        fields.push(element);
+      }
     }
+  }
+  // Native :checked reads the checked property, not an attribute. All states
+  // are saved before this flip, because checking a radio unchecks the others in
+  // its group.
+  for (const [input, checked] of checkedChanges) {
+    input.checked = !checked;
   }
   if (detach) {
     document.documentElement.insertBefore(body, bodyNext);
+  }
+  // In WebKit, a text field that becomes disabled on a detached body, or in the
+  // frame that the body goes back, keeps a narrower width than a disabled field
+  // on the page. Pages have few fields, so they change on the page, two frames
+  // later.
+  if (fields.length) {
+    const frame = () =>
+      new Promise((resolve) => requestAnimationFrame(resolve));
+    await frame();
+    await frame();
+    for (const field of fields) {
+      setAttribute(field, "disabled", "");
+    }
   }
   if (state === "rtl") {
     setAttribute(document.documentElement, "dir", "rtl");
@@ -658,11 +712,12 @@ function applyState(state: StyleCompareState) {
   target.ariakitStyleCompareElements = elements;
   target.ariakitStyleCompareChanges = changes;
   target.ariakitStyleCompareSelectors = selectorChanges;
+  target.ariakitStyleCompareChecked = checkedChanges;
 }
 
 /**
- * Runs in the page. Restores the attributes and selectors that applyState
- * changed, so the next state starts from the loaded page.
+ * Runs in the page. Restores the attributes, checked states, and selectors that
+ * applyState changed, so the next state starts from the loaded page.
  */
 function restoreState() {
   const target: StyleCompareWindow = window;
@@ -683,6 +738,12 @@ function restoreState() {
       element.setAttribute(name, value);
     }
   }
+  // The saved states are those before any change, so their order does not
+  // matter within a radio group.
+  const checkedChanges = target.ariakitStyleCompareChecked ?? [];
+  for (const [input, checked] of checkedChanges) {
+    input.checked = checked;
+  }
   if (detach) {
     root.insertBefore(body, bodyNext);
   }
@@ -692,6 +753,7 @@ function restoreState() {
   }
   target.ariakitStyleCompareChanges = [];
   target.ariakitStyleCompareSelectors = [];
+  target.ariakitStyleCompareChecked = [];
 }
 
 /**

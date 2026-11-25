@@ -710,17 +710,64 @@ describe.skipIf(!!process.env.CI)("in Chromium", () => {
   );
 
   test(
+    "forces native checked and disabled states",
+    async () => {
+      const markup = `<input type="checkbox" class="check" aria-label="Check">
+        <input type="radio" name="group" class="first" aria-label="First" checked>
+        <input type="radio" name="group" class="second" aria-label="Second">
+        <button class="button">Button</button>
+        <select class="select" aria-label="Select"><option>One</option></select>
+        <div class="custom" role="checkbox" aria-checked="false">Custom</div>`;
+      // Rules that read only the native states, as Tailwind variants do.
+      const rules = (width: string) => `
+        .check:checked, .first:not(:checked) { outline: ${width} solid; }
+        .button:disabled, .select:disabled { outline: ${width} solid; }`;
+      await using fixture = await createFixture(
+        { "index.html": page(markup, rules("1px")) },
+        { "index.html": page(markup, rules("2px")) },
+      );
+      const fixtureReport = await runStyleCompare({
+        baseline: fixture.baseline,
+        current: fixture.current,
+        browsers: ["chromium"],
+        motions: ["reduce"],
+        states: ["rest", "selected", "disabled"],
+        workers: 1,
+        log: () => {},
+      });
+      const differences = fixtureReport.results.map((result) => [
+        result.state,
+        result.status === "diff"
+          ? result.details.map((detail) => detail.className)
+          : result.status,
+      ]);
+      expect(differences).toEqual([
+        ["rest", "same"],
+        ["selected", ["check", "first"]],
+        ["disabled", ["button", "select"]],
+      ]);
+    },
+    BROWSER_TIMEOUT,
+  );
+
+  test(
     "restores each state before the next one on the same load",
     async () => {
       // The box has the hover marker in its markup, so a hover selector that
-      // stays rewritten would also match it in the rest state.
+      // stays rewritten would also match it in the rest state. The last radio
+      // starts checked, and the selected state checks the others first.
       const markup = `<p>Text</p>
         <div role="tab" aria-selected="false">Tab</div>
         <button>Button</button>
-        <div class="box ui-hovered">Box</div>`;
+        <div class="box ui-hovered">Box</div>
+        <input type="checkbox" class="check" aria-label="Check">
+        <input type="radio" name="group" aria-label="First">
+        <input type="radio" name="group" aria-label="Second">
+        <input type="radio" name="group" class="last" aria-label="Last" checked>`;
       const rules = (color: string) => `
         p[class], [aria-selected="true"], [aria-disabled="true"],
-        [data-focus-visible], [dir="rtl"] body, .box:hover { color: ${color}; }`;
+        [data-focus-visible], [dir="rtl"] body, .box:hover, :disabled,
+        .check:checked, .last:not(:checked) { color: ${color}; }`;
       await using fixture = await createFixture(
         { "index.html": page(markup, rules("rgb(255, 0, 0)")) },
         { "index.html": page(markup, rules("rgb(0, 0, 255)")) },
