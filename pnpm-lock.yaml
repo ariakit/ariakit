@@ -787,6 +787,9 @@ importers:
       '@jridgewell/trace-mapping':
         specifier: 0.3.31
         version: 0.3.31
+      '@playwright/test':
+        specifier: 1.65.1
+        version: 1.65.1
       chokidar:
         specifier: 6.0.0
         version: 6.0.0
@@ -809,9 +812,6 @@ importers:
         specifier: 2.11.17
         version: 2.11.17(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.1.1))(solid-js@1.9.20)(supports-color@10.2.2)(vite@8.3.8(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
     devDependencies:
-      '@playwright/test':
-        specifier: 1.65.1
-        version: 1.65.1
       react:
         specifier: 19.3.1
         version: 19.3.1

@@ -13,6 +13,7 @@
     "build-app": "pnpm -F app -F nextjs --no-sort run build",
     "preview-app": "pnpm -F app -F nextjs run preview",
     "react18": "ariakit react18",
+    "style-compare": "ariakit style-compare",
     "test": "vitest",
     "bench": "vitest bench --config vitest.bench.config.ts",
     "test-react18": "ariakit react18 -- pnpm test --project react",
