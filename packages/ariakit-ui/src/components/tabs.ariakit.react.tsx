@@ -47,7 +47,11 @@ import {
   scrollIntoClearRange,
 } from "../utils/carousel-clear.ts";
 import { observeTabDrag } from "../utils/tab-drag.ts";
-import { observeTabReorderKeys, setTabStatus } from "../utils/tab-reorder.ts";
+import {
+  followSelectedTab,
+  observeTabReorderKeys,
+  setTabStatus,
+} from "../utils/tab-reorder.ts";
 import {
   Carousel,
   CarouselButton,
@@ -151,8 +155,13 @@ function useTabRemove({ store, onRemove }: UseTabRemoveParams) {
       finish();
       return;
     }
+    // The tabs after a tab that leaves slide into its place.
+    const release = followStripSelection(element);
     const timer = setTimeout(finish, time);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      release?.();
+    };
   }, [leaving, onRemoveEvent]);
 
   return { ref, leaving, remove };
@@ -161,6 +170,19 @@ function useTabRemove({ store, onRemove }: UseTabRemoveParams) {
 /** The strip around a tab, which scrolls the tabs. */
 function getStrip(element: HTMLElement) {
   return element.closest<HTMLElement>("[role='tablist']");
+}
+
+/**
+ * Makes the shape of a selected folder in the strip of a tab, and the corners
+ * of its panels, follow the place where the selected tab shows, while the tab
+ * enters or leaves. The tabs after it then slide, so the selected tab can show
+ * away from the place that the order of the tabs gives it, such as near the
+ * start of the row while a closed tab before it still shrinks.
+ */
+function followStripSelection(element: HTMLElement | null) {
+  const strip = element ? getStrip(element) : null;
+  if (!strip) return;
+  return followSelectedTab(strip);
 }
 
 /** The selected tab of a strip, among its own tabs. */
@@ -378,8 +400,13 @@ function useTabEntering(
     if (!entering) return;
     const element = ref.current;
     const time = element ? getTransitionTime(element) : 0;
+    // The tabs after a tab that enters slide away from its place.
+    const release = time ? followStripSelection(element) : undefined;
     const timer = setTimeout(() => setEntering(false), time);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      release?.();
+    };
   }, [entering, ref]);
   // A tab that a button opens can get the selection in a later update than the
   // one that adds it, such as when the store takes a controlled selection, so
