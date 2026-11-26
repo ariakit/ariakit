@@ -599,6 +599,24 @@ export default function InputExamples() {
       </Example>
 
       <Example
+        title="Pill group with a text prefix"
+        description="The prefix moves in from the round end and keeps the text gap to the input."
+        code={`
+          <InputGroup $rounded="full">
+            <InputSlot $kind="text">$</InputSlot>
+            <Input aria-label="Amount" />
+          </InputGroup>
+        `}
+      >
+        <InputGroup $rounded="full">
+          <InputSlot aria-hidden $kind="text" className="ak-ink-60">
+            $
+          </InputSlot>
+          <Input aria-label="Amount" placeholder="0.00" />
+        </InputGroup>
+      </Example>
+
+      <Example
         title="Compact"
         description="Less padding around the text, at the same font size."
         code={`

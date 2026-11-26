@@ -536,6 +536,9 @@ export const controlBarBase = cv({
   extend: [layer],
   class: [
     "ui-bar ui-control-bar-base",
+    // The bar floats over the edge of its control, so the rules that find the
+    // first and last item of the row skip it by this class.
+    "ui-slot-frame-floating",
     // A dark bar on a light layer looks thinner than a light bar on a dark
     // one, so it is wider by default. The bar paints on the surface around
     // its control, or on the control itself when it is over the control.

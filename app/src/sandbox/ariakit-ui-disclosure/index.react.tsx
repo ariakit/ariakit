@@ -427,6 +427,52 @@ export default function DisclosureExamples() {
       </Example>
 
       <Example
+        title="Plain text buttons"
+        description="Without a label part or an indicator, the button text keeps the indentation of the disclosure, so it starts where the open content starts. A pill button has the same room at both round ends."
+        stretch
+        code={`
+          <Disclosure $indent={6} $border $rounded="xl" $p={3} defaultOpen button={<DisclosureButton label={false} indicator={false}>Invoices</DisclosureButton>}>
+            …
+          </Disclosure>
+          <Disclosure button={<DisclosureButton $rounded="full" $border label={false} indicator={false}>Filters</DisclosureButton>}>
+            …
+          </Disclosure>
+        `}
+      >
+        <div className="grid justify-items-start gap-3">
+          <Disclosure
+            $indent={6}
+            $border
+            $rounded="xl"
+            $p={3}
+            defaultOpen
+            className="justify-self-stretch"
+            button={
+              <DisclosureButton label={false} indicator={false}>
+                Invoices
+              </DisclosureButton>
+            }
+          >
+            <p>The last invoice was paid on the first of the month.</p>
+          </Disclosure>
+          <Disclosure
+            button={
+              <DisclosureButton
+                $rounded="full"
+                $border
+                label={false}
+                indicator={false}
+              >
+                Filters
+              </DisclosureButton>
+            }
+          >
+            <p>Show only open orders from this week.</p>
+          </Disclosure>
+        </div>
+      </Example>
+
+      <Example
         title="Icon"
         description="An icon comes before the label. The open content aligns with the label, and the chevron moves to the end of the row."
         stretch

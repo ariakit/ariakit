@@ -879,6 +879,22 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Pill count with a hidden label"
+        description="The label always hides but still names the button, so the count has the same room at both round ends."
+        code={`
+          <Button $kind="bevel" $rounded="full">
+            <ButtonSlot $kind="text">12</ButtonSlot>
+            <ButtonLabel $show={false}>Unread messages</ButtonLabel>
+          </Button>
+        `}
+      >
+        <Button $kind="bevel" $rounded="full">
+          <ButtonSlot $kind="text">12</ButtonSlot>
+          <ButtonLabel $show={false}>Unread messages</ButtonLabel>
+        </Button>
+      </Example>
+
+      <Example
         title="Badge hue"
         description="A hue on a colored badge turns its ring along with its fill."
         code={`

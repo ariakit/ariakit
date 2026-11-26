@@ -432,6 +432,32 @@ export default function TooltipExamples() {
       </Example>
 
       <Example
+        title="Pill with an arrow"
+        description="The arrow floats over the edge, so the text has the same room at both round ends."
+        code={`
+          <TooltipProvider open>
+            <TooltipAnchor render={<Button $kind="bevel" />}>Like</TooltipAnchor>
+            <TooltipPopover $rounded="full">
+              <TooltipArrow />
+              <TooltipText>Like this post</TooltipText>
+            </TooltipPopover>
+          </TooltipProvider>
+        `}
+      >
+        <ExampleStage anchor="end" height={24}>
+          <TooltipProvider open>
+            <TooltipAnchor render={<Button $kind="bevel" />}>
+              Like
+            </TooltipAnchor>
+            <TooltipPopover {...openTooltipProps} $rounded="full">
+              <TooltipArrow />
+              <TooltipText>Like this post</TooltipText>
+            </TooltipPopover>
+          </TooltipProvider>
+        </ExampleStage>
+      </Example>
+
+      <Example
         title="Roomy padding"
         description="More padding. The sides add the optical inset of the text to the frame padding, so both axes grow together."
         code={`

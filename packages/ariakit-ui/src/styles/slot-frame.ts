@@ -8,10 +8,13 @@ import { text } from "./text.ts";
 
 /**
  * A text frame that lays out slots and text in a row. Its gaps and the margins
- * of the slots inside follow its padding and font size. With `$p="none"`, a
- * slot at an edge starts at that edge, like a list bullet, so it lines up with
- * the text around the frame. It has no interactive state, so controls extend
- * it, and so can static elements, such as field errors.
+ * of the slots inside follow its padding and font size. Its corners also count:
+ * text at a round end moves in, and a rounder frame makes the `md` side padding
+ * as wide as `lg`, so a pill looks as roomy as a square frame. Slots stay where
+ * they are. With `$p="none"`, a slot at an edge starts at that edge, like a
+ * list bullet, so it lines up with the text around the frame. It has no
+ * interactive state, so controls extend it, and so can static elements, such as
+ * field errors.
  */
 export const slotFrame = cv({
   extend: [textFrame, text],
@@ -26,12 +29,13 @@ export const slotFrame = cv({
   variants: {
     /**
      * Sets the gap between the element's content and its siblings. Side padding
-     * beyond `md`, from `$px`, widens the room between a slot that moves into
-     * the side padding and the text next to it by the same amount. Text next to
-     * text, including text slots, keeps the room that it has with the `md` side
-     * padding. Text slots read this variant, so set the gap with it, not with a
-     * gap class. With `$p="none"`, `md` is `0.4375em`, and the other steps are
-     * `0.15em` apart.
+     * beyond `md`, from `$px` or a round frame, widens the room between a slot
+     * that moves into the side padding and the text next to it by the same
+     * amount. Text next to text, including text slots, keeps the room that it
+     * has with the `md` side padding. Text at a round end moves in, which
+     * changes neither room. Text slots read this variant, so set the gap with
+     * it, not with a gap class. With `$p="none"`, `md` is `0.4375em`, and the
+     * other steps are `0.15em` apart.
      * @default "md"
      */
     $gap: {
@@ -132,6 +136,9 @@ export function hasSlotSurface(variants: VariantProps<typeof frame>) {
 }
 
 const floatingClass = [
+  // The rules that find the first and last item of a row skip an element
+  // that floats over the frame by this class.
+  "ui-slot-frame-floating",
   "m-0! absolute border",
   "in-[.ui-control,.ui-badge]:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
   // A floating slot hangs over the surface around its parent, so its border

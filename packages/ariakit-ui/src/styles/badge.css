@@ -31,6 +31,13 @@
   }
 
   &:where(.ui-badge--round) {
+    &.ui-badge {
+      /* A round count keeps compact side padding, so a single digit stays a
+         circle. The extra class wins over the values of the slot frame. */
+      --px-round: 0px;
+      --px-pill: 0px;
+    }
+
     .ui-slot-frame-slot > &.ui-badge {
       /* The extra selector wins over the side padding that fits the slot. */
       --px: calc(var(--slot-height) * 0.15);

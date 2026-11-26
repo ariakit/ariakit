@@ -35,9 +35,10 @@ export const badge = cv({
      */
     $kind: { tint: "", solid: "" },
     /**
-     * Keeps a short count round in a slot. Longer text gets less side padding.
-     * A raw `$px` length overrides it, and a named `$px` has no effect. Outside
-     * a slot, it has no effect.
+     * Keeps a short count round. Its round ends add no room, and `md` doesn't
+     * widen to `lg`, so a single digit stays a circle. In a slot, the side
+     * padding also follows the slot height, so longer text gets less of it.
+     * There, a raw `$px` length overrides it, and a named `$px` has no effect.
      */
     $round: "ui-badge--round",
   },
@@ -71,12 +72,6 @@ export const badge = cv({
     // or taller, so it doesn't make the line taller. In a slot, the slot height
     // sets the padding.
     $p: 0.5,
-    $px(defaultValue, variants) {
-      // Replace only the text frame default; explicit padding still wins.
-      if (defaultValue !== "md") return defaultValue;
-      if (variants.$rounded === "full") return "lg";
-      return defaultValue;
-    },
     $border(defaultValue, variants) {
       if (variants.$kind === "solid") return defaultValue;
       return defaultValue ?? true;
@@ -138,7 +133,7 @@ export const badge = cv({
         // would sit outside the fill. --slot-height is a registered length that
         // keeps the font of the slot, and 1lh and 1cap follow the badge.
         "[.ui-slot-frame-slot>&]:[--py:max(0px,calc((var(--slot-height)-1lh)/2))]",
-        "[.ui-slot-frame-slot>&]:[--px:max(0px,calc((var(--slot-height)-1lh)/2+(1lh-1cap)*var(--px-scale)))]",
+        "[.ui-slot-frame-slot>&]:[--px:max(0px,calc((var(--slot-height)-1lh)/2+(1lh-1cap)*var(--px-scale)+var(--px-pill)))]",
       ]);
     }
     if (variants.$kind === "solid") return;
