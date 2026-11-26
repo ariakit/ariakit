@@ -33,9 +33,12 @@ export const hovercardDismiss = popoverDismiss;
  */
 export const hovercardDisclosure = cv({
   extend: [button],
-  class: "ui-hovercard-disclosure",
   defaultVariants: {
     $rounded: "full",
-    $p: "none",
+    // Extra-small text sizes the icon in its slot to 12px on a 16px line. A
+    // spacing step would shrink with that text, so a fixed padding makes the
+    // icon-only button a 24px circle.
+    $size: "xs",
+    $p: "0.25rem",
   },
 });
