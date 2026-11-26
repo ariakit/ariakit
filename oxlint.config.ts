@@ -190,5 +190,18 @@ export default defineConfig({
         "tailwindcss/no-deprecated-classes": "off",
       },
     },
+    {
+      // ts-morph declares Node subclasses via intersection-based mixin bases,
+      // which triggers false positives. Remove once oxlint-tsgolint traverses
+      // intersection base types.
+      // https://github.com/typescript-eslint/typescript-eslint/issues/13214#issuecomment-7046818762
+      files: [
+        "app/src/lib/jsdoc-loader.ts",
+        "packages/ariakit-scripts/src/docs.ts",
+      ],
+      rules: {
+        "typescript/no-unsafe-class-instance-assignment": "off",
+      },
+    },
   ],
 });
