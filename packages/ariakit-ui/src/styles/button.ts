@@ -15,7 +15,7 @@ import {
 import { focusHighlight } from "./focus.ts";
 import { hover } from "./hover.ts";
 import { hasLayerBackground, isLayerColor } from "./layer.ts";
-import { segment } from "./segment.ts";
+import { isSegmentedKind, segment } from "./segment.ts";
 import { selected } from "./selected.ts";
 
 interface BevelLightenVariants {
@@ -95,6 +95,12 @@ export const button = cv({
       if (!hasBevelLighten(variants)) return defaultValue;
       // Lighten neutral bevels so the gradient remains distinct on dark
       // surfaces.
+      return defaultValue ?? true;
+    },
+    $roundEnds(defaultValue, variants) {
+      if (!isSegmentedKind(variants.$kind)) return defaultValue;
+      // A segment takes its radius from its group, so it can be a pill without
+      // its own $rounded="full".
       return defaultValue ?? true;
     },
   },

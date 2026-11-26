@@ -8,13 +8,10 @@ import { text } from "./text.ts";
 
 /**
  * A text frame that lays out slots and text in a row. Its gaps and the margins
- * of the slots inside follow its padding and font size. Its corners also count:
- * text at a round end moves in, and a rounder frame makes the `md` side padding
- * as wide as `lg`, so a pill looks as roomy as a square frame. Slots stay where
- * they are. With `$p="none"`, a slot at an edge starts at that edge, like a
- * list bullet, so it lines up with the text around the frame. It has no
- * interactive state, so controls extend it, and so can static elements, such as
- * field errors.
+ * of the slots inside follow its padding and font size. With `$p="none"`, a
+ * slot at an edge starts at that edge, like a list bullet, so it lines up with
+ * the text around the frame. It has no interactive state, so controls extend
+ * it, and so can static elements, such as field errors.
  */
 export const slotFrame = cv({
   extend: [textFrame, text],
@@ -29,13 +26,13 @@ export const slotFrame = cv({
   variants: {
     /**
      * Sets the gap between the element's content and its siblings. Side padding
-     * beyond `md`, from `$px` or a round frame, widens the room between a slot
+     * beyond `md`, from `$px` or `$roundEnds`, widens the room between a slot
      * that moves into the side padding and the text next to it by the same
      * amount. Text next to text, including text slots, keeps the room that it
-     * has with the `md` side padding. Text at a round end moves in, which
-     * changes neither room. Text slots read this variant, so set the gap with
-     * it, not with a gap class. With `$p="none"`, `md` is `0.4375em`, and the
-     * other steps are `0.15em` apart.
+     * has with the `md` side padding. Text that `$roundEnds` moves in at a
+     * round end changes neither room. Text slots read this variant, so set the
+     * gap with it, not with a gap class. With `$p="none"`, `md` is `0.4375em`,
+     * and the other steps are `0.15em` apart.
      * @default "md"
      */
     $gap: {
@@ -82,10 +79,23 @@ export const slotFrame = cv({
         "gap-y-(--gap-y)",
       ],
     },
+    /**
+     * Adds room at round ends. Text next to a round end looks closer than its
+     * side padding, because the curve cuts the corners, so it moves in, and a
+     * rounder frame makes the `md` side padding as wide as `lg`. Slots stay
+     * where they are. The room follows the radius, so small corners get none,
+     * and a frame taller than one line counts as rounder than it is. It's on by
+     * default with `$rounded="full"`, and in badges and segmented items.
+     */
+    $roundEnds: "ui-slot-frame--round-ends",
   },
   defaultVariants: {
     $gap: "md",
     $gapY: "auto",
+    $roundEnds(defaultValue, variants) {
+      if (variants.$rounded === "full") return defaultValue ?? true;
+      return defaultValue;
+    },
   },
   refine({ variants, addClass }) {
     if (variants.$p === "none") {

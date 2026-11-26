@@ -44,6 +44,8 @@ export const badge = cv({
   },
   defaultVariants: {
     $kind: "tint",
+    // A badge is usually a pill, and the room follows its radius otherwise.
+    $roundEnds: true,
     $layer(defaultValue, variants) {
       // Replace only frame's transparent default; preserve explicit colors.
       if (defaultValue !== "transparent") return defaultValue;
