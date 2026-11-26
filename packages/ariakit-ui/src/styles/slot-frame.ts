@@ -25,16 +25,20 @@ export const slotFrame = cv({
   ],
   variants: {
     /**
-     * Sets the gap between the element's content and its siblings. With
-     * `$p="none"`, `md` is `0.4375em`, and the other steps are a side bearing
-     * apart.
+     * Sets the gap between the element's content and its siblings. Side padding
+     * beyond `md`, from `$px`, widens the room between a slot that moves into
+     * the side padding and the text next to it by the same amount. Text next to
+     * text, including text slots, keeps the room that it has with the `md` side
+     * padding. Text slots read this variant, so set the gap with it, not with a
+     * gap class. With `$p="none"`, `md` is `0.4375em`, and the other steps are
+     * `0.15em` apart.
      * @default "md"
      */
     $gap: {
       none: "",
       // With padding, sm follows the block padding, and the other steps follow
-      // the side padding. Without padding, the slots have no side margins, so
-      // the gap alone keeps them apart from the text.
+      // the md side padding. Without padding, the slots have no side margins,
+      // so the gap alone keeps them apart from the text.
       sm: [
         "ui-slot-frame--gap-sm",
         // Stays a class, so that the gap of `choiceCard` still comes after it
@@ -187,6 +191,9 @@ export const slotFrameSlot = cv({
      * these margins.
      */
     $mx: {
+      // The start margin of the next sibling replaces its own, so it keeps what
+      // a next text slot gives back next to another text slot. That value is
+      // zero on every other sibling.
       unset: "",
       // Add the far-side overflow of oversized icons to the label gap. Tailwind
       // emits me-* after mx-*, so this margin wins. Stays a class to come after
@@ -195,25 +202,25 @@ export const slotFrameSlot = cv({
       // Stays a class to keep its order with the classes of the elements that
       // it styles.
       closeGap:
-        "[&+*]:ms-[calc(var(--spacing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--spacing)*-1*var(--control-inline,1))]",
+        "[&+*]:ms-[calc(var(--text-cut-start,0px)+var(--spacing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--spacing)*-1*var(--control-inline,1))]",
       // Stays a class to keep its order with the classes of the elements that
       // it styles.
-      xs: "[&+*]:ms-[calc(var(--sidebearing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*-1*var(--control-inline,1))]",
+      xs: "[&+*]:ms-[calc(var(--text-cut-start,0px)+var(--gap-step)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--gap-step)*-1*var(--control-inline,1))]",
       // Stays a class to keep its order with the classes of the elements that
       // it styles.
-      sm: "[&+*]:ms-[calc(var(--sidebearing)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*-1*var(--control-inline,1))]",
+      sm: "[&+*]:ms-[calc(var(--text-cut-start,0px)+var(--gap-step)*-1*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--gap-step)*-1*var(--control-inline,1))]",
       md: "",
       lg: "",
       // Stays a class to keep its order with the classes of the elements that
       // it styles.
-      xl: "[&+*]:ms-[calc(var(--sidebearing)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--sidebearing)*var(--control-inline,1))]",
+      xl: "[&+*]:ms-[calc(var(--text-cut-start,0px)+var(--gap-step)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--gap-step)*var(--control-inline,1))]",
       // Stays a class to keep its order with the classes of the elements that
       // it styles.
       "2xl":
-        "[&+*]:ms-[calc(var(--py)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--py)*var(--control-inline,1))]",
+        "[&+*]:ms-[calc(var(--text-cut-start,0px)+var(--py)*var(--control-inline,1))] [*:has(+&)]:me-[calc(var(--py)*var(--control-inline,1))]",
       // Stays a class to keep its order with the classes of the elements that
       // it styles.
-      full: "[&+*]:ms-[calc(1cap*var(--control-inline,1))] [*:has(+&)]:me-[calc(1cap*var(--control-inline,1))]",
+      full: "[&+*]:ms-[calc(var(--text-cut-start,0px)+1cap*var(--control-inline,1))] [*:has(+&)]:me-[calc(1cap*var(--control-inline,1))]",
     },
     /**
      * Sets the radius from a named step, CSS length, or expression. `auto`
@@ -251,6 +258,10 @@ export const slotFrameSlot = cv({
         // Stays a class to keep its order with the classes of the elements that
         // it styles.
         "*:[--slot-pull:initial]",
+        // Adds what the slot gives back next to text to the slot margin. Stays
+        // a class to come after the slot margin, which it replaces, and before
+        // caller margins.
+        "mx-(--mx-inline,var(--mx,0px))",
       ],
     },
     /** Sets the slot to be a square. */
@@ -379,7 +390,7 @@ export function getIconSlotSize<Size extends string>(
  * frame. Controls extend it, and so can static rows, such as dialog headers.
  */
 export const slotFrameContent = cv({
-  class: "ui-slot-frame-content gap-x-(--gap) gap-y-(--gap-y)",
+  class: "ui-slot-frame-content gap-x-(--gap-text,var(--gap)) gap-y-(--gap-y)",
   variants: {
     /**
      * Arranges the parts in a row or column. `unset` omits layout styles.
@@ -410,5 +421,23 @@ export const slotFrameText = cv({
      */
     // A grown label starts its text, also in a button, which centers it.
     $grow: "ui-slot-frame-text--grow",
+    /**
+     * Shows the text from a size of the nearest size container up. Below that
+     * size, the text is visually hidden, but it still names its control for
+     * screen readers. `true` shows it at every width, and `false` hides it at
+     * every width. Outside a size container, the text shows at every width.
+     * Text slots read this variant to set the room next to the text, so hide
+     * labels with it, not with classes.
+     * @default true
+     */
+    $show: {
+      true: "",
+      false: "ui-slot-frame-text--show-false",
+      xs: "ui-slot-frame-text--show-xs",
+      sm: "ui-slot-frame-text--show-sm",
+      md: "ui-slot-frame-text--show-md",
+      lg: "ui-slot-frame-text--show-lg",
+    },
   },
+  defaultVariants: { $show: true },
 });

@@ -32,11 +32,13 @@ import { Text } from "@ariakit/ui/components/text.ariakit.react";
 import { button, buttonGroup } from "@ariakit/ui/styles/button";
 import { control } from "@ariakit/ui/styles/control";
 import {
+  Archive,
   ArrowRight,
   ArrowUpRight,
   ChevronDown,
   Command,
   FolderOpen,
+  Inbox,
   Plus,
   Pencil,
   Settings,
@@ -821,6 +823,59 @@ export default function ButtonExamples() {
             <Badge $kind="solid">12</Badge>
           </ButtonSlot>
         </Button>
+      </Example>
+
+      <Example
+        title="Label shown from a container size"
+        description="The label shows from the xs size of its container up. In a narrower container, it is visually hidden but still names the button, and the count keeps the room after the icon. A false value always hides the label."
+        code={`
+          <div className="@container w-64">
+            <Button $px="lg" $border>
+              <ButtonSlot><Inbox /></ButtonSlot>
+              <ButtonLabel $show="xs">Inbox</ButtonLabel>
+              <ButtonSlot $kind="text">12</ButtonSlot>
+            </Button>
+          </div>
+          <Button $px="lg" $border>
+            <ButtonSlot><Archive /></ButtonSlot>
+            <ButtonLabel $show={false}>Archive</ButtonLabel>
+          </Button>
+        `}
+      >
+        <div className="flex flex-col items-start gap-3">
+          <div
+            role="group"
+            aria-label="Narrow container"
+            className="@container w-64"
+          >
+            <Button $px="lg" $border>
+              <ButtonSlot>
+                <Inbox />
+              </ButtonSlot>
+              <ButtonLabel $show="xs">Inbox</ButtonLabel>
+              <ButtonSlot $kind="text">12</ButtonSlot>
+            </Button>
+          </div>
+          <div
+            role="group"
+            aria-label="Wide container"
+            className="@container w-80"
+          >
+            <Button $px="lg" $border>
+              <ButtonSlot>
+                <Inbox />
+              </ButtonSlot>
+              <ButtonLabel $show="xs">Inbox</ButtonLabel>
+              <ButtonSlot $kind="text">12</ButtonSlot>
+            </Button>
+          </div>
+          <Button $px="lg" $border>
+            <ButtonSlot>
+              <Archive />
+            </ButtonSlot>
+            <ButtonLabel $show={false}>Archive</ButtonLabel>
+          </Button>
+        </div>
       </Example>
 
       <Example

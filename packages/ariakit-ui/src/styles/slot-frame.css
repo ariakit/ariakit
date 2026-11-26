@@ -4,45 +4,88 @@
    @import "./ui.css";
    @import "./slot-frame.css"; */
 
+/* Resolve the side padding beyond md in the font of the frame, so a part with
+   other text metrics reads the same length. */
+@property --px-extra {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* What a text slot gives back at each side. They don't inherit, so the
+   neighbors and the nested slots of a text slot read zero. */
+@property --text-cut-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --text-cut-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @utility ui-slot-frame {
   display: flex;
-  /* Subtract glyph side bearings from gaps for optical text alignment. */
-  --sidebearing: 0.15em;
+  /* The gap steps are this far apart. The md gap is one step less than the
+     side padding, which makes up for the space at the sides of the glyphs. */
+  --gap-step: 0.15em;
+  /* The side padding beyond md. A stretch group widens md only to center its
+     items, so that md adds nothing. */
+  --px-extra: max(0px, var(--text-frame-inset) - (1lh - 1cap) * var(--stretch-px-scale, 0.5));
+
+  /* The room between two pieces of text. Each step below sets it to the
+     value that the step has with the md side padding, so text keeps that room
+     when the side padding grows past md. A frame without a step reads its own
+     gap instead of the text gap of an outer frame. */
+  --gap-text: initial;
+  /* What a text slot gives back at a side that faces text, so that the pair
+     keeps the text gap. */
+  --gap-cut: calc(var(--gap-text, var(--gap, 0px)) - var(--gap, 0px));
 
   &:where(.ui-slot-frame--gap-sm) {
-    --gap: var(--py);
+    --gap-text: var(--py);
 
     &.ui-slot-frame--flush {
-      --gap: calc(var(--flush-gap) - var(--sidebearing));
+      --gap-text: calc(var(--flush-gap) - var(--gap-step));
     }
   }
 
   &:where(.ui-slot-frame--gap-md) {
-    --gap: max(var(--spacing), calc(var(--px) - var(--sidebearing)));
+    --gap-text: max(var(--spacing), calc(var(--px) - var(--px-extra) - var(--gap-step)));
 
     &.ui-slot-frame--flush {
-      --gap: var(--flush-gap);
+      --gap-text: var(--flush-gap);
     }
   }
 
   &:where(.ui-slot-frame--gap-lg) {
-    --gap: max(var(--spacing), var(--px));
+    --gap-text: max(var(--spacing), calc(var(--px) - var(--px-extra)));
 
     &.ui-slot-frame--flush {
-      --gap: calc(var(--flush-gap) + var(--sidebearing));
+      --gap-text: calc(var(--flush-gap) + var(--gap-step));
     }
   }
 
   &:where(.ui-slot-frame--gap-xl) {
-    --gap: max(var(--spacing), calc(var(--px) + var(--sidebearing)));
+    --gap-text: max(var(--spacing), calc(var(--px) - var(--px-extra) + var(--gap-step)));
 
     &.ui-slot-frame--flush {
-      --gap: calc(var(--flush-gap) + var(--sidebearing) * 2);
+      --gap-text: calc(var(--flush-gap) + var(--gap-step) * 2);
     }
   }
 
+  &:where(.ui-slot-frame--gap-sm, .ui-slot-frame--gap-md, .ui-slot-frame--gap-lg, .ui-slot-frame--gap-xl) {
+    /* A slot margin cancels the side padding in the gap next to it, extra
+       included. So the gap adds the extra twice: once to make up for the
+       margin, and once to widen the room after the slot with the padding.
+       Text next to text takes --gap-text instead. */
+    --gap: calc(var(--gap-text) + var(--px-extra) * 2);
+  }
+
   &:where(.ui-slot-frame--gap-y-auto) {
-    --gap-y: calc(var(--gap) / 4);
+    --gap-y: calc(var(--gap-text, var(--gap)) / 4);
   }
 }
 
@@ -113,6 +156,65 @@
        min-w-* class sorts after this utility, so a caller class replaces the
        zero minimum. */
     min-width: 0;
+    /* The margin class of a text slot reads this. */
+    --mx-inline: calc(var(--mx) + var(--text-cut-start)) calc(var(--mx) + var(--text-cut-end));
+  }
+
+  /* The row gap adds the extra for pulled slots, but a text slot doesn't
+     pull. So a text slot gives that part back at its start when it follows
+     text or another text slot, and at its end when text follows it. Then the
+     pair keeps the text gap. A neighbor with the hidden attribute or a label
+     that $show hides takes no room, so it doesn't count. These selectors
+     can't see a neighbor that classes hide, so it still counts. The neighbor
+     has zero specificity, so the $show rules below win by order. */
+  .ui-slot-frame > :where(:is(.ui-text, .ui-slot-frame-content, .ui-slot-frame-slot--kind-text):not([hidden], .ui-slot-frame-text--show-false)) + &:where(.ui-slot-frame-slot--kind-text) {
+    --text-cut-start: calc(var(--gap-cut) * var(--control-inline, 1));
+  }
+
+  .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ :is(.ui-text, .ui-slot-frame-content):not([hidden], .ui-slot-frame-text--show-false))) {
+    --text-cut-end: calc(var(--gap-cut) * var(--control-inline, 1));
+  }
+
+  /* Each query is the one that hides the label, so the two always agree.
+     Outside a size container, neither applies. */
+  @variant @max-xs {
+    .ui-slot-frame > :where(.ui-slot-frame-text--show-xs) + &:where(.ui-slot-frame-slot--kind-text) {
+      --text-cut-start: 0px;
+    }
+
+    .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ .ui-slot-frame-text--show-xs)) {
+      --text-cut-end: 0px;
+    }
+  }
+
+  @variant @max-sm {
+    .ui-slot-frame > :where(.ui-slot-frame-text--show-sm) + &:where(.ui-slot-frame-slot--kind-text) {
+      --text-cut-start: 0px;
+    }
+
+    .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ .ui-slot-frame-text--show-sm)) {
+      --text-cut-end: 0px;
+    }
+  }
+
+  @variant @max-md {
+    .ui-slot-frame > :where(.ui-slot-frame-text--show-md) + &:where(.ui-slot-frame-slot--kind-text) {
+      --text-cut-start: 0px;
+    }
+
+    .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ .ui-slot-frame-text--show-md)) {
+      --text-cut-end: 0px;
+    }
+  }
+
+  @variant @max-lg {
+    .ui-slot-frame > :where(.ui-slot-frame-text--show-lg) + &:where(.ui-slot-frame-slot--kind-text) {
+      --text-cut-start: 0px;
+    }
+
+    .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ .ui-slot-frame-text--show-lg)) {
+      --text-cut-end: 0px;
+    }
   }
 }
 
@@ -133,5 +235,37 @@
   @variant ui-base {
     /* Zero specificity lets a caller class center the text again. */
     text-align: start;
+  }
+}
+
+/* Visually hidden text stays in the accessibility tree, so it still names its
+   control. Its box is absolute, and controls, badges, and tooltips are
+   positioned, so the box stays inside them. Without a size container, the
+   queries never apply, and the text shows. */
+@utility ui-slot-frame-text--show-false {
+  @apply sr-only;
+}
+
+@utility ui-slot-frame-text--show-xs {
+  @variant @max-xs {
+    @apply sr-only;
+  }
+}
+
+@utility ui-slot-frame-text--show-sm {
+  @variant @max-sm {
+    @apply sr-only;
+  }
+}
+
+@utility ui-slot-frame-text--show-md {
+  @variant @max-md {
+    @apply sr-only;
+  }
+}
+
+@utility ui-slot-frame-text--show-lg {
+  @variant @max-lg {
+    @apply sr-only;
   }
 }
