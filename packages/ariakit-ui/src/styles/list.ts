@@ -646,6 +646,9 @@ export const listGuide = cv({
   extend: [edge],
   class: [
     "ui-list-guide",
+    // The guide floats over the start of its row, so the rules that find the
+    // first and last item of the row skip it by this class.
+    "ui-slot-frame-floating",
     // Keep the line in forced colors, with a system color.
     // Stays a class to come after the classes of a caller, so that the forced
     // colors rule still applies.
@@ -892,8 +895,9 @@ export const listDisclosureButton = cv({
         // replaces.
         "pe-[calc(var(--px)+var(--list-marker-overhang))]",
       ],
-      // The label starts where the text of a row without a marker starts.
-      false: "[--disclosure-ps:var(--px)]",
+      // Clear the indentation, so the label starts where the text of a row
+      // without a marker starts, like a disclosure button without indentation.
+      false: "[--disclosure-ps:initial]",
     },
     /**
      * Marks a row whose marker shows a check, an empty check slot, or progress,

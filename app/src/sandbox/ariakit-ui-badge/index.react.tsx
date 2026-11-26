@@ -211,21 +211,21 @@ export default function BadgeExamples() {
 
       <Example
         title="Counts"
-        description="Use compact side padding for numbers. A single digit keeps a round shape, and longer counts can grow."
+        description="Use $round for numbers. A single digit keeps a round shape, and longer counts can grow."
         code={`
-          <Badge $px="md"><BadgeLabel>1</BadgeLabel></Badge>
-          <Badge $px="md"><BadgeLabel>8</BadgeLabel></Badge>
-          <Badge $px="md"><BadgeLabel>128</BadgeLabel></Badge>
+          <Badge $round><BadgeLabel>1</BadgeLabel></Badge>
+          <Badge $round><BadgeLabel>8</BadgeLabel></Badge>
+          <Badge $round><BadgeLabel>128</BadgeLabel></Badge>
         `}
       >
         <div className="flex items-center gap-3">
-          <Badge $px="md">
+          <Badge $round>
             <BadgeLabel>1</BadgeLabel>
           </Badge>
-          <Badge $px="md">
+          <Badge $round>
             <BadgeLabel>8</BadgeLabel>
           </Badge>
-          <Badge $px="md">
+          <Badge $round>
             <BadgeLabel>128</BadgeLabel>
           </Badge>
         </div>
@@ -235,18 +235,18 @@ export default function BadgeExamples() {
         title="Count sizes"
         description="The minimum width follows the font, padding, and border."
         code={`
-          <Badge $px="md" $size="lg"><BadgeLabel>1</BadgeLabel></Badge>
-          <Badge $px="md" $p={2} $borderType="border" $border={2}>
+          <Badge $round $size="lg"><BadgeLabel>1</BadgeLabel></Badge>
+          <Badge $round $p={2} $borderType="border" $border={2}>
             <BadgeLabel>2</BadgeLabel>
           </Badge>
           <Badge $p="none"><BadgeLabel>3</BadgeLabel></Badge>
         `}
       >
         <div className="flex items-center gap-3">
-          <Badge $px="md" $size="lg">
+          <Badge $round $size="lg">
             <BadgeLabel>1</BadgeLabel>
           </Badge>
-          <Badge $px="md" $p={2} $borderType="border" $border={2}>
+          <Badge $round $p={2} $borderType="border" $border={2}>
             <BadgeLabel>2</BadgeLabel>
           </Badge>
           <Badge $p="none">
@@ -261,7 +261,7 @@ export default function BadgeExamples() {
         code={`
           <Badge><BadgeLabel>New</BadgeLabel></Badge>
           <Badge $rounded="md"><BadgeLabel>New</BadgeLabel></Badge>
-          <Badge $px="md"><BadgeLabel>New</BadgeLabel></Badge>
+          <Badge $px="sm"><BadgeLabel>New</BadgeLabel></Badge>
         `}
       >
         <div className="flex items-center gap-3">
@@ -271,7 +271,7 @@ export default function BadgeExamples() {
           <Badge $rounded="md">
             <BadgeLabel>New</BadgeLabel>
           </Badge>
-          <Badge $px="md">
+          <Badge $px="sm">
             <BadgeLabel>New</BadgeLabel>
           </Badge>
         </div>

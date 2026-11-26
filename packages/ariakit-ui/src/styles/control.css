@@ -147,8 +147,10 @@
 @utility ui-control-label-row {
   display: flex;
   align-items: flex-start;
-  /* A wrapped slot sits as far below the label as the description does. */
-  column-gap: var(--gap);
+  /* A wrapped slot sits as far below the label as the description does. The
+     slots in the row don't pull toward the label, so it takes the text
+     gap. */
+  column-gap: var(--gap-text, var(--gap));
   row-gap: var(--gap-y);
 
   & > .ui-slot-frame-slot {

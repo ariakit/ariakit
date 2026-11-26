@@ -762,7 +762,7 @@ export default function KbdExamples() {
           <Button $rounded="full">…</Button>
         `}
       >
-        <div className="grid grid-cols-2 items-start gap-2">
+        <div className="grid grid-cols-2 items-start justify-items-start gap-2">
           {(["2xl", "full"] as const).map((rounded) =>
             (["flat", "keycap"] as const).map((kind) => (
               <Button
