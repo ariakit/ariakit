@@ -110,7 +110,6 @@
     "./styles/heading.css": "./src/styles/heading.css",
     "./styles/hover": "./src/styles/hover.ts",
     "./styles/hovercard": "./src/styles/hovercard.ts",
-    "./styles/hovercard.css": "./src/styles/hovercard.css",
     "./styles/ink": "./src/styles/ink.ts",
     "./styles/input": "./src/styles/input.ts",
     "./styles/input.css": "./src/styles/input.css",

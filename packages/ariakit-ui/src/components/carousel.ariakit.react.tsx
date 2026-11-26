@@ -33,7 +33,7 @@ import {
   getClearRange,
   getViewportClearOffset,
 } from "../utils/carousel-clear.ts";
-import { Button } from "./button.ariakit.react.tsx";
+import { Button, ButtonSlot } from "./button.ariakit.react.tsx";
 import type { ButtonProps } from "./button.ariakit.react.tsx";
 
 type CarouselKind = "row" | "slides";
@@ -1175,7 +1175,11 @@ export function CarouselButton({ children, ...props }: CarouselButtonProps) {
   return (
     <div ref={setArea} {...carouselButtonArea.jsx({ $side: props.$side })}>
       <Button recipe={carouselButton} {...props}>
-        {children ?? <Icon />}
+        {children ?? (
+          <ButtonSlot>
+            <Icon />
+          </ButtonSlot>
+        )}
       </Button>
     </div>
   );

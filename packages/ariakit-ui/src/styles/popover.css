@@ -10,8 +10,11 @@
    @import "./button.css";
    @import "./popover.css";
 
-   The style component in popover.ariakit.react.tsx also needs carousel.css,
-   which holds the CSS of a style recipe that it imports. Import that file too. */
+   The hovercard.ts style recipe has no CSS file, so this comment also covers
+   it and the style component in hovercard.ariakit.react.tsx. The style
+   components in popover.ariakit.react.tsx and hovercard.ariakit.react.tsx also
+   need carousel.css, which holds the CSS of a style recipe that they import.
+   Import that file too. */
 
 /* Keep ui-open and ui-closed complementary for native and Ariakit overlays.
    Set data-open on markup that must render open. */

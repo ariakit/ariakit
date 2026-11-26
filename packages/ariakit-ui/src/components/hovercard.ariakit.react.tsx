@@ -221,8 +221,8 @@ export function HovercardDisclosure({
   ...props
 }: HovercardDisclosureProps) {
   const [variantProps, rest] = splitProps(props, hovercardDisclosure);
-  // The icon is hidden from assistive technology, so an icon-only button needs
-  // a label.
+  // A slot keeps the icon-only button square. The icon is hidden from assistive
+  // technology, so an icon-only button needs a label.
   const iconOnly = !hasContent(children);
   const fallbackLabel = iconOnly ? "More details" : undefined;
   return (
@@ -232,7 +232,13 @@ export function HovercardDisclosure({
       // Preserve the fallback when the caller passes undefined.
       aria-label={rest["aria-label"] ?? fallbackLabel}
     >
-      {iconOnly ? <ChevronDownIcon /> : children}
+      {iconOnly ? (
+        <ButtonSlot>
+          <ChevronDownIcon />
+        </ButtonSlot>
+      ) : (
+        children
+      )}
     </ak.HovercardDisclosure>
   );
 }
