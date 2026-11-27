@@ -481,6 +481,79 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
+  // A panel without a tab stop inside takes the focus. The panels draw its ring
+  // on their edge, over the seam with the selected folder, instead of the
+  // browser ring around the text of the panel.
+  test("paints the focus ring of a panel on the edge of the panels @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorSchemeOf(page, ["Folder tabs"], async (colorScheme) => {
+      const box = q.article("Folder tabs");
+      await tabTo(page, query(box).tab("Code"));
+      await page.keyboard.press("Tab");
+      await expectFocusVisible(query(box).tabpanel("Code"));
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-tabs/focused-panel",
+      });
+    });
+  });
+
+  // A strip outside a carousel has no layer, so its folder stacks with the
+  // panels, which go up to it with focus. The ring crosses the folder.
+  test("paints the focus ring of a scrollable panel across a static folder @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorSchemeOf(
+      page,
+      ["Static folder over a scrollable panel"],
+      async (colorScheme) => {
+        const box = q.article("Static folder over a scrollable panel");
+        const panel = query(box).region("notes.md");
+        await tabTo(page, panel);
+        await expectFocusVisible(panel);
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-tabs/focused-static-folder-panel",
+        });
+      },
+    );
+  });
+
+  // The panels turn off the outline of a focused tab panel inside, whose ring
+  // they draw. A tab panel that draws the ring of a field in it keeps it.
+  // https://github.com/ariakit/ariakit/pull/8610#discussion_r4715147068
+  test("keeps the ring that a tab panel draws for a field in it @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorSchemeOf(
+      page,
+      ["Tab panel with the ring of its field"],
+      async (colorScheme) => {
+        const box = q.article("Tab panel with the ring of its field");
+        const field = query(box).textbox("Monday note");
+        await tabTo(page, field);
+        await expectFocusVisible(field);
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-tabs/focused-field-panel",
+        });
+      },
+    );
+  });
+
   // Focus kept the selected offset of flat and bevel tabs, so the brand fill
   // fell under 3:1 against a dark strip, also while hovered. Without the
   // offset, a selected push alone lightens the fill under 3:1 in light mode.
