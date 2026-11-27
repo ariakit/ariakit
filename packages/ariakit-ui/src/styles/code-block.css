@@ -164,10 +164,16 @@
   /* The scroll area takes the focus, and the panel shows its ring on the edge
      like tab panels do, outside the content that would cover it, such as the
      gutter of line numbers, marked lines, and the copy button. Like tab panels
-     with focus, the panel goes up to the layer of the tabs, so the ring
+     with focus, the panel goes up to the layer of the strip, so the ring
      crosses the selected tab. */
   &:has(> .ui-code-block-scroll:focus-visible) {
-    z-index: 6;
+    z-index: 2;
+
+    /* Like tab panels, it goes up to the tabs after a strip that has no
+       layer, such as a title. */
+    .ui-tab-strip ~ & {
+      z-index: 6;
+    }
   }
 
   .ui-code-block:dir(rtl) > & {

@@ -503,28 +503,52 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
-  // The frame of a sticky row paints the edge over the panels, so it would
-  // cover their ring. The focused panel keeps its own ring there.
-  test("keeps the focus ring of a panel after a sticky row @visual", async ({
+  // A strip outside a carousel has no layer, so its folder stacks with the
+  // panels, which go up to it with focus. The ring crosses the folder.
+  test("paints the focus ring of a scrollable panel across a static folder @visual", async ({
     page,
     q,
     visual,
   }) => {
     await forEachColorSchemeOf(
       page,
-      ["Sticky tab row"],
+      ["Static folder over a scrollable panel"],
       async (colorScheme) => {
-        const box = q.article("Sticky tab row");
-        await query(box).tab("Code").click();
-        // The new tab button of the row is the last tab stop before the panel.
-        await tabTo(page, query(box).button("Sticky tab row new tab"));
-        await page.keyboard.press("Tab");
-        await expectFocusVisible(query(box).tabpanel("Code"));
+        const box = q.article("Static folder over a scrollable panel");
+        const panel = query(box).region("notes.md");
+        await tabTo(page, panel);
+        await expectFocusVisible(panel);
         await captureInView({
           visual,
           box,
           colorScheme,
-          item: "ariakit-ui-tabs/sticky-row-focused-panel",
+          item: "ariakit-ui-tabs/focused-static-folder-panel",
+        });
+      },
+    );
+  });
+
+  // The panels turn off the outline of a focused tab panel inside, whose ring
+  // they draw. A tab panel that draws the ring of a field in it keeps it.
+  // https://github.com/ariakit/ariakit/pull/8610#discussion_r4715147068
+  test("keeps the ring that a tab panel draws for a field in it @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorSchemeOf(
+      page,
+      ["Tab panel with the ring of its field"],
+      async (colorScheme) => {
+        const box = q.article("Tab panel with the ring of its field");
+        const field = query(box).textbox("Monday note");
+        await tabTo(page, field);
+        await expectFocusVisible(field);
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-tabs/focused-field-panel",
         });
       },
     );

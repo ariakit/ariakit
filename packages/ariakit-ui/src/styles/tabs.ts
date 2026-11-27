@@ -598,12 +598,16 @@ export const tabRow = cv({
      * row and below the frame, so a press there doesn't reach the content that
      * the strip color covers. The row covers the start of the scroll area, and
      * CSS can't give its height to the panels, so a control that gets the focus
-     * can stay under the row. Give the scroll area a start scroll padding as
-     * tall as the row and the space above it, such as `scroll-pbs-*` on the
-     * page or on the size container, so the browser scrolls a focused control
-     * into the frame. With `$m`, also give it an end scroll padding as tall as
-     * that margin, such as `scroll-pbe-*`, because the margin below the frame
-     * covers the content too. Defaults to `false`.
+     * can stay under the row. Give the scroll area a start scroll padding, such
+     * as `scroll-pbs-*` on the page or on the size container, a little taller
+     * than the row and the space above it, so the browser scrolls a focused
+     * control into the frame. Leave room there for the focus ring and for the
+     * border and the padding of a field. With `$m`, also give the scroll area
+     * an end scroll padding as tall as that margin, such as `scroll-pbe-*`,
+     * because the margin below the frame covers the content too. The frame also
+     * covers the edge of the panels, where their focus ring would be, so give
+     * each tab panel a tab stop, such as a field. Ariakit then keeps the focus
+     * off the tab panel. Defaults to `false`.
      */
     $sticky: {
       true: tabRowSticky,
@@ -661,8 +665,6 @@ export const tabRowFrame = cv({
 /**
  * A panel surface whose top edge and corners join the selected tab. It shows a
  * focus ring on its edge when it, or a tab panel in it, has the keyboard focus.
- * After a sticky tab row, whose frame would cover that ring, the focused
- * element keeps the browser ring.
  */
 export const tabPanels = cv({
   extend: [frame, focus],

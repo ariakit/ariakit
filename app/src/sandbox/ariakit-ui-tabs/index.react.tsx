@@ -2467,6 +2467,56 @@ export default function TabsExamples() {
       </Example>
 
       <Example
+        title="Tab panel with the ring of its field"
+        description="Each note is a borderless field, and its tab panel shows the focus ring of the field. The tab panel doesn't take the focus itself, so the panels keep its ring."
+        stretch
+        code={`
+          <Tabs>
+            <TabList>
+              <Tab>
+                <TabLabel>Monday</TabLabel>
+              </Tab>
+              <Tab>
+                <TabLabel>Tuesday</TabLabel>
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel className="rounded-lg ak-outline ak-outline-brand ui-focus-visible-within:outline-2">
+                <input className="outline-none" />
+              </TabPanel>
+              …
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs defaultSelectedId="field-monday">
+          <TabList aria-label="Tab panel with the ring of its field">
+            <Tab id="field-monday">
+              <TabLabel>Monday</TabLabel>
+            </Tab>
+            <Tab id="field-tuesday">
+              <TabLabel>Tuesday</TabLabel>
+            </Tab>
+          </TabList>
+          <TabPanels>
+            {["Monday", "Tuesday"].map((day) => (
+              <TabPanel
+                key={day}
+                tabId={`field-${day.toLowerCase()}`}
+                className="rounded-lg ak-outline ak-outline-brand ui-focus-visible-within:outline-2"
+              >
+                <input
+                  aria-label={`${day} note`}
+                  placeholder="Write a note"
+                  className="w-full bg-transparent p-2 text-sm outline-none"
+                />
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
         title="Static folder"
         description='A folder that is not a tab, such as a file name over its code. data-selected="true" makes it look selected, and it meets the panel like a selected first tab.'
         stretch
@@ -2491,6 +2541,49 @@ export default function TabsExamples() {
           </div>
           <TabPanels>
             <p className="text-sm">The code of the file.</p>
+          </TabPanels>
+        </Tabs>
+      </Example>
+
+      <Example
+        title="Static folder over a scrollable panel"
+        description="The panel scrolls, so it takes the keyboard focus itself, and its focus ring crosses the static folder like it crosses a selected tab."
+        stretch
+        code={`
+          <Tabs>
+            <div {...tabList.jsx()}>
+              <div {...tab.jsx()} data-selected="true">
+                <TabLabel>notes.md</TabLabel>
+              </div>
+            </div>
+            <TabPanels
+              role="region"
+              aria-label="notes.md"
+              tabIndex={0}
+              className="max-h-28 overflow-auto"
+            >
+              …
+            </TabPanels>
+          </Tabs>
+        `}
+      >
+        <Tabs>
+          <div {...tabList.jsx()}>
+            <div {...tab.jsx()} data-selected="true">
+              <TabLabel>notes.md</TabLabel>
+            </div>
+          </div>
+          <TabPanels
+            role="region"
+            aria-label="notes.md"
+            tabIndex={0}
+            className="max-h-28 overflow-auto"
+          >
+            {Array.from({ length: 8 }, (_, index) => (
+              <p key={index} className="text-sm">
+                Note {index + 1} of the week.
+              </p>
+            ))}
           </TabPanels>
         </Tabs>
       </Example>
