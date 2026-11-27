@@ -481,6 +481,55 @@ withCaptures(import.meta.dirname, async ({ query, test }) => {
     });
   });
 
+  // A panel without a tab stop inside takes the focus. The panels draw its ring
+  // on their edge, over the seam with the selected folder, instead of the
+  // browser ring around the text of the panel.
+  test("paints the focus ring of a panel on the edge of the panels @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorSchemeOf(page, ["Folder tabs"], async (colorScheme) => {
+      const box = q.article("Folder tabs");
+      await tabTo(page, query(box).tab("Code"));
+      await page.keyboard.press("Tab");
+      await expectFocusVisible(query(box).tabpanel("Code"));
+      await captureInView({
+        visual,
+        box,
+        colorScheme,
+        item: "ariakit-ui-tabs/focused-panel",
+      });
+    });
+  });
+
+  // The frame of a sticky row paints the edge over the panels, so it would
+  // cover their ring. The focused panel keeps its own ring there.
+  test("keeps the focus ring of a panel after a sticky row @visual", async ({
+    page,
+    q,
+    visual,
+  }) => {
+    await forEachColorSchemeOf(
+      page,
+      ["Sticky tab row"],
+      async (colorScheme) => {
+        const box = q.article("Sticky tab row");
+        await query(box).tab("Code").click();
+        // The new tab button of the row is the last tab stop before the panel.
+        await tabTo(page, query(box).button("Sticky tab row new tab"));
+        await page.keyboard.press("Tab");
+        await expectFocusVisible(query(box).tabpanel("Code"));
+        await captureInView({
+          visual,
+          box,
+          colorScheme,
+          item: "ariakit-ui-tabs/sticky-row-focused-panel",
+        });
+      },
+    );
+  });
+
   // Focus kept the selected offset of flat and bevel tabs, so the brand fill
   // fell under 3:1 against a dark strip, also while hovered. Without the
   // offset, a selected push alone lightens the fill under 3:1 in light mode.

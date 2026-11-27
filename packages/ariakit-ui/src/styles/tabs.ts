@@ -9,6 +9,7 @@ import {
   buttonSlot,
 } from "./button.ts";
 import { carousel, carouselStepClasses } from "./carousel.ts";
+import { focus } from "./focus.ts";
 import { frame } from "./frame.ts";
 import { gliderFollower, gliderHolder } from "./glider.ts";
 import { hover } from "./hover.ts";
@@ -657,9 +658,14 @@ export const tabRowFrame = cv({
   },
 });
 
-/** A panel surface whose top edge and corners join the selected tab. */
+/**
+ * A panel surface whose top edge and corners join the selected tab. It shows a
+ * focus ring on its edge when it, or a tab panel in it, has the keyboard focus.
+ * After a sticky tab row, whose frame would cover that ring, the focused
+ * element keeps the browser ring.
+ */
 export const tabPanels = cv({
-  extend: [frame],
+  extend: [frame, focus],
   class: [
     "ui-tab-panels",
     // The root sets the meet when the selection moves to or from an outer
@@ -676,6 +682,17 @@ export const tabPanels = cv({
     // while it travels. Other selected tabs don't meet the panel.
     gliderFollower,
   ],
+  variants: {
+    // A tab panel without a tab stop inside takes the keyboard focus, so the
+    // panels show its ring then too, like focusWithin for a control with a
+    // nested input.
+    $focus: {
+      1: "ui-tab-panels--focus-1",
+      true: "ui-tab-panels--focus-true",
+      2: "ui-tab-panels--focus-2",
+      3: "ui-tab-panels--focus-3",
+    },
+  },
   defaultVariants: {
     // Lighten from the layer around the root, like selected tabs, not from the
     // root layer, which is the strip color. A color or another modifier
@@ -693,6 +710,8 @@ export const tabPanels = cv({
       if (defaultValue === "auto") return "border";
       return defaultValue;
     },
+    $focus: true,
+    $focusOffset: "unset",
   },
   refine({ variants, addClass }) {
     if (!inheritsTabsBorder(variants)) return;

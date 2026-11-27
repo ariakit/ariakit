@@ -161,18 +161,12 @@
   grid-template-rows: minmax(0, 1fr);
   /* The buttons over the code cover the padding, like the scroll area. */
   --code-block-padding: var(--ak-frame-padding);
-  /* The ring goes over the edge, outside the content, which would cover it,
-     such as the gutter of line numbers, marked lines, and the copy button.
-     With focus, the panel goes up to the layer of the tabs, which it follows
-     in the DOM, so the ring crosses the selected tab. A panel without a tab
-     stop inside, such as one with wrapped code, takes the focus itself. */
-  outline-offset: calc(var(--ak-frame-border) * -1);
-
+  /* The scroll area takes the focus, and the panel shows its ring on the edge
+     like tab panels do, outside the content that would cover it, such as the
+     gutter of line numbers, marked lines, and the copy button. Like tab panels
+     with focus, the panel goes up to the layer of the tabs, so the ring
+     crosses the selected tab. */
   &:has(> .ui-code-block-scroll:focus-visible) {
-    z-index: 6;
-  }
-
-  @variant ui-focus-visible {
     z-index: 6;
   }
 

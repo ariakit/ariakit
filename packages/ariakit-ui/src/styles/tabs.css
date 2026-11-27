@@ -1297,6 +1297,54 @@
      pass over it. */
   --tabs-corner-s: calc(min(var(--tabs-notch,0px), var(--tabs-meet,var(--tabs-notch,0px))) * var(--tabs-round-s,1));
   --tabs-corner-e: calc(min(var(--tabs-notch,0px), var(--tabs-meet-end,var(--tabs-notch,0px))) * var(--tabs-round-e,1));
+  /* The ring goes over the edge, so it follows the corners. */
+  outline-offset: calc(var(--ak-frame-border) * -1);
+
+  /* The frame of a sticky row paints the edge over the panels after it, and
+     it would cover their ring, so a tab panel there keeps its own ring. */
+  &:where(:not(.ui-tab-row--sticky ~ *)) {
+    &:where(.ui-tab-panels--focus-1, .ui-tab-panels--focus-true, .ui-tab-panels--focus-2, .ui-tab-panels--focus-3) {
+      /* With focus, the panels go up to the layer of the tabs, which they
+         follow in the DOM, so the ring crosses the selected tab. */
+      &:has(> [role='tabpanel']:is(:focus-visible, [data-focus-visible])) {
+        z-index: 6;
+      }
+
+      @variant ui-focus-visible {
+        z-index: 6;
+      }
+
+      /* A tab panel inside would draw its ring around its content, in the
+         padding of the panels, which show the ring instead. */
+      & > :where([role='tabpanel']) {
+        @apply outline-none;
+      }
+    }
+
+    &:where(.ui-tab-panels--focus-1) {
+      &:has(> [role='tabpanel']:is(:focus-visible, [data-focus-visible])) {
+        @apply outline;
+      }
+    }
+
+    &:where(.ui-tab-panels--focus-true) {
+      &:has(> [role='tabpanel']:is(:focus-visible, [data-focus-visible])) {
+        @apply outline-2;
+      }
+    }
+
+    &:where(.ui-tab-panels--focus-2) {
+      &:has(> [role='tabpanel']:is(:focus-visible, [data-focus-visible])) {
+        @apply outline-2;
+      }
+    }
+
+    &:where(.ui-tab-panels--focus-3) {
+      &:has(> [role='tabpanel']:is(:focus-visible, [data-focus-visible])) {
+        @apply outline-3;
+      }
+    }
+  }
 
   @variant not-first {
     /* Overlap the strip notch and root edge so the selected folder covers the
@@ -1321,6 +1369,13 @@
     /* The frame of a sticky row draws the edge over the panels, so the panels
        keep only the surface under it. */
     border-color: transparent;
+
+    @variant ui-focus-visible {
+      /* The frame would cover a ring on the edge, so panels that take the
+         focus themselves keep the browser ring, like a tab panel inside. */
+      outline: revert;
+      outline-offset: revert;
+    }
 
     @variant after {
       /* Below the frame of a sticky row, the strip color covers the content in
