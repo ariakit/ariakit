@@ -1,6 +1,5 @@
 import { cv, cx } from "clava";
 import { edge } from "./edge.ts";
-import { focus } from "./focus.ts";
 import { frame, frameBase } from "./frame.ts";
 import { skeletonLine } from "./skeleton.ts";
 import { tab, tabList, tabPanels, tabSeparator, tabs } from "./tabs.ts";
@@ -193,7 +192,7 @@ const lineNumbers = cx(
  * The buttons inherit its layer.
  */
 export const codeBlockCode = cv({
-  extend: [tabPanels, focus],
+  extend: [tabPanels],
   class: [
     "ui-code-block-code",
     // Stays a class to keep its order with the classes of the elements that it
@@ -218,8 +217,6 @@ export const codeBlockCode = cv({
       return defaultValue;
     },
     $p: 2,
-    $focus: true,
-    $focusOffset: "unset",
     // The code is the last visible frame in the block, even when a copy button
     // or hidden panels come after it.
     $frameEnd: true,

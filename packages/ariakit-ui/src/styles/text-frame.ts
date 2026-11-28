@@ -15,8 +15,8 @@ export const textFrame = cv({
     /**
      * Sets side padding. Named sizes scale the optical extra added to frame
      * padding; other CSS values replace the full side padding. A control group
-     * with `$layout="stretch"` makes `md` as wide as `lg`. Ignored when `$p` is
-     * `"none"`.
+     * with `$layout="stretch"` makes `md` as wide as `lg`, and so does a round
+     * slot frame with `$roundEnds`. Ignored when `$p` is `"none"`.
      */
     $px(value?: "sm" | "md" | "lg" | "xl" | "2xl" | (string & {})) {
       if (value == null) return;
@@ -52,14 +52,17 @@ export const textFrame = cv({
       return;
     }
     addClass([
-      // Derive the optical inset from line height and capital height. A raw
-      // `$px` wins through the style attribute.
-      "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
+      // Derive the optical inset from line height and capital height. Slot
+      // frames with `$roundEnds` set the side padding that a round frame adds.
+      // A raw `$px` wins through the style attribute.
+      "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale)+var(--px-pill,0px))]",
       "[--py:var(--ak-frame-padding,0px)]",
       // Register the inset as a length so slots with different font metrics
       // inherit the same spacing.
-      "[--text-frame-inset:calc((1lh-1cap)*var(--px-scale))]",
-      "px-(--px) py-(--py)",
+      "[--text-frame-inset:calc((1lh-1cap)*var(--px-scale)+var(--px-pill,0px))]",
+      // A slot frame with `$roundEnds` and only plain text sets --px-plain,
+      // which adds the room of its round ends.
+      "px-(--px-plain,var(--px)) py-(--py)",
     ]);
   },
 });

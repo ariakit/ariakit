@@ -204,13 +204,18 @@ export default function ListExamples() {
 
       <Example
         title="Disclosure without a marker"
-        description="A disclosure row in a list with tall markers can leave out its own marker. Its button shows none and keeps even inline padding."
+        description="A disclosure row in a list with tall markers can leave out its own marker. Its button shows none and keeps even inline padding, also as a pill with plain text."
         stretch
         code={`
           <List $markerSize={12}>
             <ListItem>Keyboard shortcuts</ListItem>
             <li>
               <ListDisclosure $marker={false} button={{ children: "Right-to-left layouts", indicator: "chevron-down-end" }}>
+                …
+              </ListDisclosure>
+            </li>
+            <li>
+              <ListDisclosure $marker={false} button={<ListDisclosureButton $rounded="full" $border label={false} indicator={false}>Filters</ListDisclosureButton>}>
                 …
               </ListDisclosure>
             </li>
@@ -228,6 +233,23 @@ export default function ListExamples() {
               }}
             >
               <p>Logical properties place every part of the row.</p>
+            </ListDisclosure>
+          </li>
+          <li>
+            <ListDisclosure
+              $marker={false}
+              button={
+                <ListDisclosureButton
+                  $rounded="full"
+                  $border
+                  label={false}
+                  indicator={false}
+                >
+                  Filters
+                </ListDisclosureButton>
+              }
+            >
+              <p>Show only open orders from this week.</p>
             </ListDisclosure>
           </li>
         </List>

@@ -316,9 +316,9 @@ export const controlFieldError = cv({
      * `--field-error-icon-gap`. Without padding, the fallback is the `md` gap
      * of a slot frame without padding at the size of the field text, so the
      * text lines up with the label of a checkbox or radio field. With padding,
-     * the fallback is the icon's distance from the top edge, minus the side
-     * bearing, like the space after the icon of a control, and at least
-     * `0.375em`.
+     * the fallback is the icon's distance from the top edge, less one step of
+     * the gap scale, like the space after the icon of a control, and at least
+     * `0.375em`. Side padding beyond `md` widens it by the same amount.
      */
     $gap: {
       // The refine picks the gap for the padding.
@@ -351,10 +351,12 @@ export const controlFieldError = cv({
     }
     // The custom property is read with a fallback and never set here, so a
     // value on the error or an ancestor always wins. The fallback size matches
-    // the one in the icon part.
+    // the one in the icon part. The icon has no margin on the text side, so the
+    // side padding beyond md widens the gap once, like the room after a slot in
+    // other rows.
     if (variants.$gap === "auto" && padded) {
       addClass(
-        "[--gap:var(--field-error-icon-gap,max(0.375em,calc(var(--py)+(1lh-var(--field-error-icon-size,1.125em))/2-var(--sidebearing))))] gap-(--gap)",
+        "[--gap:var(--field-error-icon-gap,calc(max(0.375em,calc(var(--py)+(1lh-var(--field-error-icon-size,1.125em))/2-var(--gap-step)))+var(--px-extra)))] gap-(--gap)",
       );
     }
     // Without padding, slotFrame starts the icon at the edge, like a list
@@ -534,6 +536,9 @@ export const controlBarBase = cv({
   extend: [layer],
   class: [
     "ui-bar ui-control-bar-base",
+    // The bar floats over the edge of its control, so the rules that find the
+    // first and last item of the row skip it by this class.
+    "ui-slot-frame-floating",
     // A dark bar on a light layer looks thinner than a light bar on a dark
     // one, so it is wider by default. The bar paints on the surface around
     // its control, or on the control itself when it is over the control.

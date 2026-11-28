@@ -1,4 +1,5 @@
 import { Glider } from "@ariakit/ui/components/glider.ariakit.react";
+import { Input, InputField } from "@ariakit/ui/components/input.ariakit.react";
 import {
   Nav,
   NavLink,
@@ -147,6 +148,12 @@ export default function Example() {
     setSelectedId(id);
   };
 
+  const renameNote = (id: string, name: string) => {
+    setNotes((notes) =>
+      notes.map((note) => (note.id === id ? { ...note, name } : note)),
+    );
+  };
+
   // The tab moves the selection and the focus to the tab beside it before it
   // calls onRemove, so this only removes the note.
   const removeNote = (id: string) => {
@@ -172,13 +179,15 @@ export default function Example() {
       $darken={0.5}
       className="[--edge:1px] [--tab-padding:round(--spacing(3),1px)]"
     >
-      {/* A scroll padding keeps a focused link out from under the sticky row
-          and the margin below the frame. CSS can't give the height of the row
-          to the page, so these are fixed values for the default text size,
-          with some room. */}
+      {/* A scroll padding keeps a focused field or link out from under the
+          sticky row and the margin below the frame. CSS can't give the height
+          of the row to the page, so these are fixed values for the default
+          text size, with some room. Firefox and Safari keep only the text of
+          a field out of the padding, so the room also takes the border, the
+          padding, and the ring of the title field. */}
       <style>
         {
-          "html { scroll-padding-block: calc(var(--spacing) * 10 + 1.25rem) calc(var(--spacing) * 4); }"
+          "html { scroll-padding-block: calc(var(--spacing) * 10 + 1.75rem) calc(var(--spacing) * 4); }"
         }
       </style>
       {/* The toggle button and the logo take their styles from a Tabs, so they
@@ -309,7 +318,7 @@ export default function Example() {
                   separator={!!index || !sidebarOpen}
                   onRemove={closable ? () => removeNote(note.id) : undefined}
                 >
-                  {note.name}
+                  {note.name.trim() || "Untitled"}
                 </Tab>
               ))}
             </TabList>
@@ -334,6 +343,23 @@ export default function Example() {
                 {/* The note stays on the center of the window, not of the
                     panel, so it doesn't move when the sidebar opens. */}
                 <ShellMainBody $center="outer">
+                  {/* The title of the note names its tab. The field is a tab
+                      stop, so the tab panel doesn't take the focus itself. The
+                      frame of the sticky row covers the edge of the panels,
+                      where their focus ring would be. A field in the shell body
+                      keeps its content width, so the field part stretches it
+                      to the column. */}
+                  <InputField>
+                    <Input
+                      aria-label="Title"
+                      placeholder="Untitled"
+                      value={note.name}
+                      onChange={(event) =>
+                        renameNote(note.id, event.target.value)
+                      }
+                      className="text-lg font-semibold"
+                    />
+                  </InputField>
                   <Prose>
                     {note.paragraphs.map((paragraph, index) => (
                       // The paragraphs of a note don't change order.

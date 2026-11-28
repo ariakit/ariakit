@@ -216,7 +216,9 @@
       white-space: nowrap;
       /* The wider row gap lines up labels in a column, which a row lacks, so
          rows use the button gap. */
-      gap: calc(var(--px) - var(--sidebearing));
+      --gap-text: calc(var(--px) - var(--px-extra) - var(--gap-step));
+      --gap: calc(var(--gap-text) + var(--px-extra) * 2);
+      gap: var(--gap);
     }
 
     .ui-carousel > & {
@@ -442,7 +444,8 @@
 @utility ui-nav-link-content {
   /* Restore the content gaps because navLink disables the control gap
      variant. */
-  --gap: calc(var(--px) - var(--sidebearing));
+  --gap-text: calc(var(--px) - var(--px-extra) - var(--gap-step));
+  --gap: calc(var(--gap-text) + var(--px-extra) * 2);
   --gap-y: min(var(--py) / 2, --spacing(2));
 }
 

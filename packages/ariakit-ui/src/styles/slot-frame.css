@@ -4,45 +4,182 @@
    @import "./ui.css";
    @import "./slot-frame.css"; */
 
+/* Resolve the side padding beyond md in the font of the frame, so a part with
+   other text metrics reads the same length. */
+@property --px-extra {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* What a text slot gives back at each side, and what it adds at a round end.
+   They don't inherit, so the neighbors and the nested slots of a text slot
+   read zero. */
+@property --text-cut-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --text-cut-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --text-edge-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --text-edge-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* The room that text takes at a round end. It resolves in the font of the
+   frame and inherits to the items of the frame, which read it only in a frame
+   with $roundEnds. A frame inside with $roundEnds sets its own. */
+@property --px-round {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* The side padding of a frame with only plain text. It doesn't inherit, so a
+   nested frame reads its own, and it has no initial value, so the side
+   padding class of the text frame falls back to --px. */
+@property --px-plain {
+  syntax: "*";
+  inherits: false;
+}
+
+/* The side padding that a round frame with $roundEnds adds to md, which the
+   side padding of a text frame reads. It doesn't inherit, so a text frame
+   inside reads its own. */
+@property --px-pill {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @utility ui-slot-frame {
   display: flex;
-  /* Subtract glyph side bearings from gaps for optical text alignment. */
-  --sidebearing: 0.15em;
+  /* The gap steps are this far apart. The md gap is one step less than the
+     side padding, which makes up for the space at the sides of the glyphs. */
+  --gap-step: 0.15em;
+  /* The side padding beyond md. A stretch group widens md only to center its
+     items, so that md adds nothing. */
+  --px-extra: max(0px, var(--text-frame-inset) - (1lh - 1cap) * var(--stretch-px-scale, 0.5));
+
+  /* The room between two pieces of text. Each step below sets it to the
+     value that the step has with the md side padding, so text keeps that room
+     when the side padding grows past md. A frame without a step reads its own
+     gap instead of the text gap of an outer frame. */
+  --gap-text: initial;
+  /* What a text slot gives back at a side that faces text, so that the pair
+     keeps the text gap. */
+  --gap-cut: calc(var(--gap-text, var(--gap, 0px)) - var(--gap, 0px));
+
+  &:where(.ui-slot-frame--round-ends) {
+    /* How close the frame is to a pill, as a length: zero up to a radius of
+       7/16 of the height of one line, and half the height for a pill. A row
+       taller than one line counts as rounder than it is. --ak-frame-radius is
+       the radius after concentric adjustment, so a frame that a parent makes
+       round counts, and a full radius that the parent reduces doesn't. */
+    --round-half-height: calc(0.5lh + var(--py, 0px) + var(--ak-frame-border, 0px));
+    --round-depth: max(0px, 8 * min(var(--ak-frame-radius, 0px), var(--round-half-height)) - 7 * var(--round-half-height));
+    /* Text next to a round end looks closer than its padding, because the
+       curve cuts the corners. So text at a round end moves in by the area
+       that the curve cuts, spread over the height, which is 1 - π/4 of the
+       radius of a pill. Slots and gaps don't change, so a frame with only
+       slots keeps its shape. */
+    --px-round: calc(var(--round-depth) * 0.2146);
+    /* A rounder frame makes md as wide as lg, and a pill reaches lg. It counts
+       as side padding beyond md, so the room after a slot grows with it. sm
+       and the steps from lg up don't change. */
+    --px-pill: calc(max(0px, min(var(--round-depth) * 0.5, (0.75 - var(--px-scale)) * (1lh - 1cap))) * clamp(0, (var(--px-scale) - 0.25) * 4, 1));
+  }
+
+  &:where(.ui-slot-frame--flush) {
+    /* Without padding, text has no side padding to correct. */
+    --px-round: 0px;
+  }
+
+  /* In a frame with $roundEnds, every child is an item of the row, except a
+     hidden element, a label that $show always hides, an element that floats
+     over the frame by the ui-slot-frame-floating class, such as a floating
+     slot, a tooltip arrow, a control bar, a list guide, or a navigation
+     marker, and a choice, file, or hidden input that isn't a slot, because it
+     covers the frame or hides. A label that $show hides below a container
+     size still counts. Another child out of the flow needs the class. The
+     five rules that find items repeat this list, so change them together.
+     Without items, plain text faces both ends, so the side padding class of
+     the text frame adds the room. A side padding class that replaces it
+     replaces the room too, unless it reads --px-plain. */
+  &:where(.ui-slot-frame--round-ends):not(:has(> :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating))) {
+    --px-plain: calc(var(--px) + var(--px-round));
+  }
+
+  /* Text as the first or the last item. A nested frame keeps its own margin,
+     and zero specificity lets a caller margin win. Text slots read the room
+     in their margin class instead. */
+  &:where(.ui-slot-frame--round-ends) > :is(.ui-text, .ui-slot-frame-content):not(.ak-frame):nth-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
+    @variant ui-base {
+      margin-inline-start: calc(var(--px-round) * var(--control-inline, 1));
+    }
+  }
+
+  &:where(.ui-slot-frame--round-ends) > :is(.ui-text, .ui-slot-frame-content):not(.ak-frame):nth-last-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
+    @variant ui-base {
+      margin-inline-end: calc(var(--px-round) * var(--control-inline, 1));
+    }
+  }
 
   &:where(.ui-slot-frame--gap-sm) {
-    --gap: var(--py);
+    --gap-text: var(--py);
 
     &.ui-slot-frame--flush {
-      --gap: calc(var(--flush-gap) - var(--sidebearing));
+      --gap-text: calc(var(--flush-gap) - var(--gap-step));
     }
   }
 
   &:where(.ui-slot-frame--gap-md) {
-    --gap: max(var(--spacing), calc(var(--px) - var(--sidebearing)));
+    --gap-text: max(var(--spacing), calc(var(--px) - var(--px-extra) - var(--gap-step)));
 
     &.ui-slot-frame--flush {
-      --gap: var(--flush-gap);
+      --gap-text: var(--flush-gap);
     }
   }
 
   &:where(.ui-slot-frame--gap-lg) {
-    --gap: max(var(--spacing), var(--px));
+    --gap-text: max(var(--spacing), calc(var(--px) - var(--px-extra)));
 
     &.ui-slot-frame--flush {
-      --gap: calc(var(--flush-gap) + var(--sidebearing));
+      --gap-text: calc(var(--flush-gap) + var(--gap-step));
     }
   }
 
   &:where(.ui-slot-frame--gap-xl) {
-    --gap: max(var(--spacing), calc(var(--px) + var(--sidebearing)));
+    --gap-text: max(var(--spacing), calc(var(--px) - var(--px-extra) + var(--gap-step)));
 
     &.ui-slot-frame--flush {
-      --gap: calc(var(--flush-gap) + var(--sidebearing) * 2);
+      --gap-text: calc(var(--flush-gap) + var(--gap-step) * 2);
     }
   }
 
+  &:where(.ui-slot-frame--gap-sm, .ui-slot-frame--gap-md, .ui-slot-frame--gap-lg, .ui-slot-frame--gap-xl) {
+    /* A slot margin cancels the side padding in the gap next to it, extra
+       included. So the gap adds the extra twice: once to make up for the
+       margin, and once to widen the room after the slot with the padding.
+       Text next to text takes --gap-text instead. */
+    --gap: calc(var(--gap-text) + var(--px-extra) * 2);
+  }
+
   &:where(.ui-slot-frame--gap-y-auto) {
-    --gap-y: calc(var(--gap) / 4);
+    --gap-y: calc(var(--gap-text, var(--gap)) / 4);
   }
 }
 
@@ -113,6 +250,74 @@
        min-w-* class sorts after this utility, so a caller class replaces the
        zero minimum. */
     min-width: 0;
+    /* The margin class of a text slot reads this. */
+    --mx-inline: calc(var(--mx) + var(--text-cut-start) + var(--text-edge-start)) calc(var(--mx) + var(--text-cut-end) + var(--text-edge-end));
+  }
+
+  /* The row gap adds the extra for pulled slots, but a text slot doesn't
+     pull. So a text slot gives that part back at its start when it follows
+     text or another text slot, and at its end when text follows it. Then the
+     pair keeps the text gap. A neighbor with the hidden attribute or a label
+     that $show hides takes no room, so it doesn't count. These selectors
+     can't see a neighbor that classes hide, so it still counts. The neighbor
+     has zero specificity, so the $show rules below win by order. */
+  .ui-slot-frame > :where(:is(.ui-text, .ui-slot-frame-content, .ui-slot-frame-slot--kind-text):not([hidden], .ui-slot-frame-text--show-false)) + &:where(.ui-slot-frame-slot--kind-text) {
+    --text-cut-start: calc(var(--gap-cut) * var(--control-inline, 1));
+  }
+
+  .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ :is(.ui-text, .ui-slot-frame-content):not([hidden], .ui-slot-frame-text--show-false))) {
+    --text-cut-end: calc(var(--gap-cut) * var(--control-inline, 1));
+  }
+
+  /* A text slot at a round end takes the room of text there, like a label. */
+  .ui-slot-frame:where(.ui-slot-frame--round-ends) > &:where(.ui-slot-frame-slot--kind-text):nth-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
+    --text-edge-start: calc(var(--px-round) * var(--control-inline, 1));
+  }
+
+  .ui-slot-frame:where(.ui-slot-frame--round-ends) > &:where(.ui-slot-frame-slot--kind-text):nth-last-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
+    --text-edge-end: calc(var(--px-round) * var(--control-inline, 1));
+  }
+
+  /* Each query is the one that hides the label, so the two always agree.
+     Outside a size container, neither applies. */
+  @variant @max-xs {
+    .ui-slot-frame > :where(.ui-slot-frame-text--show-xs) + &:where(.ui-slot-frame-slot--kind-text) {
+      --text-cut-start: 0px;
+    }
+
+    .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ .ui-slot-frame-text--show-xs)) {
+      --text-cut-end: 0px;
+    }
+  }
+
+  @variant @max-sm {
+    .ui-slot-frame > :where(.ui-slot-frame-text--show-sm) + &:where(.ui-slot-frame-slot--kind-text) {
+      --text-cut-start: 0px;
+    }
+
+    .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ .ui-slot-frame-text--show-sm)) {
+      --text-cut-end: 0px;
+    }
+  }
+
+  @variant @max-md {
+    .ui-slot-frame > :where(.ui-slot-frame-text--show-md) + &:where(.ui-slot-frame-slot--kind-text) {
+      --text-cut-start: 0px;
+    }
+
+    .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ .ui-slot-frame-text--show-md)) {
+      --text-cut-end: 0px;
+    }
+  }
+
+  @variant @max-lg {
+    .ui-slot-frame > :where(.ui-slot-frame-text--show-lg) + &:where(.ui-slot-frame-slot--kind-text) {
+      --text-cut-start: 0px;
+    }
+
+    .ui-slot-frame > &:where(.ui-slot-frame-slot--kind-text):where(:has(+ .ui-slot-frame-text--show-lg)) {
+      --text-cut-end: 0px;
+    }
   }
 }
 
@@ -133,5 +338,37 @@
   @variant ui-base {
     /* Zero specificity lets a caller class center the text again. */
     text-align: start;
+  }
+}
+
+/* Visually hidden text stays in the accessibility tree, so it still names its
+   control. Its box is absolute, and controls, badges, and tooltips are
+   positioned, so the box stays inside them. Without a size container, the
+   queries never apply, and the text shows. */
+@utility ui-slot-frame-text--show-false {
+  @apply sr-only;
+}
+
+@utility ui-slot-frame-text--show-xs {
+  @variant @max-xs {
+    @apply sr-only;
+  }
+}
+
+@utility ui-slot-frame-text--show-sm {
+  @variant @max-sm {
+    @apply sr-only;
+  }
+}
+
+@utility ui-slot-frame-text--show-md {
+  @variant @max-md {
+    @apply sr-only;
+  }
+}
+
+@utility ui-slot-frame-text--show-lg {
+  @variant @max-lg {
+    @apply sr-only;
   }
 }

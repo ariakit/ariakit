@@ -9,6 +9,7 @@ import {
   buttonSlot,
 } from "./button.ts";
 import { carousel, carouselStepClasses } from "./carousel.ts";
+import { focus } from "./focus.ts";
 import { frame } from "./frame.ts";
 import { gliderFollower, gliderHolder } from "./glider.ts";
 import { hover } from "./hover.ts";
@@ -597,12 +598,16 @@ export const tabRow = cv({
      * row and below the frame, so a press there doesn't reach the content that
      * the strip color covers. The row covers the start of the scroll area, and
      * CSS can't give its height to the panels, so a control that gets the focus
-     * can stay under the row. Give the scroll area a start scroll padding as
-     * tall as the row and the space above it, such as `scroll-pbs-*` on the
-     * page or on the size container, so the browser scrolls a focused control
-     * into the frame. With `$m`, also give it an end scroll padding as tall as
-     * that margin, such as `scroll-pbe-*`, because the margin below the frame
-     * covers the content too. Defaults to `false`.
+     * can stay under the row. Give the scroll area a start scroll padding, such
+     * as `scroll-pbs-*` on the page or on the size container, a little taller
+     * than the row and the space above it, so the browser scrolls a focused
+     * control into the frame. Leave room there for the focus ring and for the
+     * border and the padding of a field. With `$m`, also give the scroll area
+     * an end scroll padding as tall as that margin, such as `scroll-pbe-*`,
+     * because the margin below the frame covers the content too. The frame also
+     * covers the edge of the panels, where their focus ring would be, so give
+     * each tab panel a tab stop, such as a field. Ariakit then keeps the focus
+     * off the tab panel. Defaults to `false`.
      */
     $sticky: {
       true: tabRowSticky,
@@ -657,9 +662,12 @@ export const tabRowFrame = cv({
   },
 });
 
-/** A panel surface whose top edge and corners join the selected tab. */
+/**
+ * A panel surface whose top edge and corners join the selected tab. It shows a
+ * focus ring on its edge when it, or a tab panel in it, has the keyboard focus.
+ */
 export const tabPanels = cv({
-  extend: [frame],
+  extend: [frame, focus],
   class: [
     "ui-tab-panels",
     // The root sets the meet when the selection moves to or from an outer
@@ -676,6 +684,17 @@ export const tabPanels = cv({
     // while it travels. Other selected tabs don't meet the panel.
     gliderFollower,
   ],
+  variants: {
+    // A tab panel without a tab stop inside takes the keyboard focus, so the
+    // panels show its ring then too, like focusWithin for a control with a
+    // nested input.
+    $focus: {
+      1: "ui-tab-panels--focus-1",
+      true: "ui-tab-panels--focus-true",
+      2: "ui-tab-panels--focus-2",
+      3: "ui-tab-panels--focus-3",
+    },
+  },
   defaultVariants: {
     // Lighten from the layer around the root, like selected tabs, not from the
     // root layer, which is the strip color. A color or another modifier
@@ -693,6 +712,8 @@ export const tabPanels = cv({
       if (defaultValue === "auto") return "border";
       return defaultValue;
     },
+    $focus: true,
+    $focusOffset: "unset",
   },
   refine({ variants, addClass }) {
     if (!inheritsTabsBorder(variants)) return;

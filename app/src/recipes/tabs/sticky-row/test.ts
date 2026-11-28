@@ -1,5 +1,20 @@
-import { click, hover, press, q } from "@ariakit/test";
+import { click, focus, hover, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
+
+test("moves the focus from the new note button to the title of the note", async () => {
+  await click(q.tab("Workshop"));
+  await focus(q.button("New note"));
+  await press.Tab();
+  expect(q.within(q.tabpanel("Workshop")).textbox("Title")).toHaveFocus();
+});
+
+test("renames the tab of a note with its title", async () => {
+  await click(q.within(q.tabpanel("Trip")).textbox("Title"));
+  await type("\b".repeat("Trip".length));
+  expect(q.tab("Untitled")).toHaveAttribute("aria-selected", "true");
+  await type("Holiday");
+  expect(q.tab("Holiday")).toHaveAttribute("aria-selected", "true");
+});
 
 test("names the action of the sidebar button in its tooltip and keeps the button name", async () => {
   const toggle = q.button("Toggle sidebar");

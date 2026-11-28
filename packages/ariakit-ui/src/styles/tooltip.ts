@@ -55,6 +55,9 @@ export const tooltipSlot = slotFrameSlot;
  */
 export const tooltipArrow = cv({
   class: [
+    // The arrow floats over the tooltip edge, so the rules that find the
+    // first and last item of the row skip it by this class.
+    "ui-slot-frame-floating",
     // A line-tall slot after the arrow gives the element before it a margin,
     // which would move the arrow off the tooltip edge or the anchor. The slot
     // rule comes later in the CSS, so this needs !important.

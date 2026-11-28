@@ -816,6 +816,9 @@ export const navLinkMarker = cv({
     "ui-nav-link-marker ui-nav-glide-timing",
     // The marker sits outside the link, on the surface around the rows.
     "[.ak-layer>&]:ak-outset",
+    // Outside the link, the marker takes no room in its row, so the rules that
+    // find the first and last item of the row skip it by this class.
+    "ui-slot-frame-floating",
   ],
   variants: {
     /**

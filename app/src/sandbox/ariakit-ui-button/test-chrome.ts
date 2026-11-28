@@ -167,4 +167,15 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(darkBar).toBeVisible();
     await test.expect(systemBar).toBeHidden();
   });
+
+  // A label that $show hides is visually hidden, not removed, so it still names
+  // the button. With display: none, the name would lose the label.
+  test("keeps a label that $show hides in the button name", async ({ q }) => {
+    const example = query(q.article("Label shown from a container size"));
+    const narrow = query(example.group("Narrow container"));
+    const wide = query(example.group("Wide container"));
+    await test.expect(narrow.button("Inbox 12")).toBeVisible();
+    await test.expect(wide.button("Inbox 12")).toBeVisible();
+    await test.expect(example.button("Archive")).toBeVisible();
+  });
 });

@@ -151,10 +151,11 @@ export const disclosureButton = cv({
   class: [
     "ui-disclosure-button",
     // Let guide and list indentation override horizontal padding without
-    // changing ordinary buttons.
+    // changing ordinary buttons. Without indentation, plain text at a round
+    // start keeps the room that `--px-plain` adds at the end.
     // Stays a class to come after the padding of `textFrame`, which it
     // replaces.
-    "ps-(--disclosure-ps,var(--px))",
+    "ps-(--disclosure-ps,var(--px-plain,var(--px)))",
   ],
   variants: {
     /**

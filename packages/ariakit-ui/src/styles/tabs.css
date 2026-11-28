@@ -1281,6 +1281,15 @@
   background-image: none;
 }
 
+/* The panels while they, or a tab panel in them, have the keyboard focus. The
+   panels show the focus ring of such a tab panel. */
+@custom-variant ui-tab-panels-focus-visible {
+  &:is(:focus-visible, [data-focus-visible]),
+  &:has(> [role='tabpanel']:is(:focus-visible, [data-focus-visible])) {
+    @slot;
+  }
+}
+
 @utility ui-tab-panels {
   /* Square the corners while tabs pass over them. A strip that fades keeps
      its ends clear of the corners instead, so they stay round. The start
@@ -1297,6 +1306,51 @@
      pass over it. */
   --tabs-corner-s: calc(min(var(--tabs-notch,0px), var(--tabs-meet,var(--tabs-notch,0px))) * var(--tabs-round-s,1));
   --tabs-corner-e: calc(min(var(--tabs-notch,0px), var(--tabs-meet-end,var(--tabs-notch,0px))) * var(--tabs-round-e,1));
+  /* The panels show the focus ring of a tab panel inside, and their own, on
+     their edge, so it follows the corners. */
+  &:where(.ui-tab-panels--focus-1, .ui-tab-panels--focus-true, .ui-tab-panels--focus-2, .ui-tab-panels--focus-3) {
+    outline-offset: calc(var(--ak-frame-border) * -1);
+
+    /* With focus, the panels go up to the layer of the strip, which they
+       follow in the DOM, so the ring crosses the selected tab. What stacks
+       above the strip, such as its scroll buttons, stays above them. */
+    @variant ui-tab-panels-focus-visible {
+      z-index: 2;
+
+      /* Outside tabListCarousel, the strip has no layer, and its tabs stack
+         with the panels, so the panels go up to the tabs. */
+      .ui-tab-strip ~ & {
+        z-index: 6;
+      }
+    }
+
+    /* A focused tab panel inside would draw its ring around its content, in
+       the padding of the panels. A tab panel without the focus keeps its
+       outline, which can show the ring of a control in it. */
+    & > :where([role='tabpanel']) {
+      @variant ui-focus-visible {
+        @apply outline-none;
+      }
+    }
+  }
+
+  &:where(.ui-tab-panels--focus-1) {
+    @variant ui-tab-panels-focus-visible {
+      @apply outline;
+    }
+  }
+
+  &:where(.ui-tab-panels--focus-true, .ui-tab-panels--focus-2) {
+    @variant ui-tab-panels-focus-visible {
+      @apply outline-2;
+    }
+  }
+
+  &:where(.ui-tab-panels--focus-3) {
+    @variant ui-tab-panels-focus-visible {
+      @apply outline-3;
+    }
+  }
 
   @variant not-first {
     /* Overlap the strip notch and root edge so the selected folder covers the
