@@ -41,7 +41,8 @@
 
 /* The room that text takes at a round end. It resolves in the font of the
    frame and inherits to the items of the frame, which read it only in a frame
-   with $roundEnds. A frame inside with $roundEnds sets its own. */
+   with $balanceRoundEnds. A frame inside with $balanceRoundEnds sets its
+   own. */
 @property --px-round {
   syntax: "<length>";
   inherits: true;
@@ -56,9 +57,9 @@
   inherits: false;
 }
 
-/* The side padding that a round frame with $roundEnds adds to md, which the
-   side padding of a text frame reads. It doesn't inherit, so a text frame
-   inside reads its own. */
+/* The side padding that a round frame with $balanceRoundEnds adds to md,
+   which the side padding of a text frame reads. It doesn't inherit, so a text
+   frame inside reads its own. */
 @property --px-pill {
   syntax: "<length>";
   inherits: false;
@@ -83,24 +84,28 @@
      keeps the text gap. */
   --gap-cut: calc(var(--gap-text, var(--gap, 0px)) - var(--gap, 0px));
 
-  &:where(.ui-slot-frame--round-ends) {
-    /* How close the frame is to a pill, as a length: zero up to a radius of
-       7/16 of the height of one line, and half the height for a pill. A row
-       taller than one line counts as rounder than it is. --ak-frame-radius is
-       the radius after concentric adjustment, so a frame that a parent makes
-       round counts, and a full radius that the parent reduces doesn't. */
+  &:where(.ui-slot-frame--balance-round-ends) {
+    /* The radius r, up to the half height R of a pill, and r / R as a number:
+       0 for square corners and 1 for a pill. A row taller than one line counts
+       as rounder than it is. --ak-frame-radius is the radius after concentric
+       adjustment, so a frame that a parent makes round counts, and a full
+       radius that the parent reduces doesn't. tan(atan2(a,b)) divides two
+       lengths, also where calc() can't. */
     --round-half-height: calc(0.5lh + var(--py, 0px) + var(--ak-frame-border, 0px));
-    --round-depth: max(0px, 8 * min(var(--ak-frame-radius, 0px), var(--round-half-height)) - 7 * var(--round-half-height));
+    --round-radius: min(var(--ak-frame-radius, 0px), var(--round-half-height));
+    --round-ratio: tan(atan2(var(--round-radius), var(--round-half-height)));
     /* Text next to a round end looks closer than its padding, because the
        curve cuts the corners. So text at a round end moves in by the area
-       that the curve cuts, spread over the height, which is 1 - π/4 of the
-       radius of a pill. Slots and gaps don't change, so a frame with only
-       slots keeps its shape. */
-    --px-round: calc(var(--round-depth) * 0.2146);
-    /* A rounder frame makes md as wide as lg, and a pill reaches lg. It counts
-       as side padding beyond md, so the room after a slot grows with it. sm
-       and the steps from lg up don't change. */
-    --px-pill: calc(max(0px, min(var(--round-depth) * 0.5, (0.75 - var(--px-scale)) * (1lh - 1cap))) * clamp(0, (var(--px-scale) - 0.25) * 4, 1));
+       that the corners cut, spread over the height. Each corner cuts
+       (1 - π/4) · r², so the frame moves text in by (1 - π/4) · r² / R, which
+       is 1 - π/4 of the radius of a pill. Slots and gaps don't change, so a
+       frame with only slots keeps its shape. */
+    --px-round: calc(var(--round-radius) * (1 - pi / 4) * var(--round-ratio));
+    /* A rounder frame makes md wider by the same share of a pill, (r / R)², so
+       a pill makes it as wide as lg. It counts as side padding beyond md, so
+       the room after a slot grows with it. sm and the steps from lg up don't
+       change. */
+    --px-pill: calc(max(0px, (0.75 - var(--px-scale)) * (1lh - 1cap)) * clamp(0, (var(--px-scale) - 0.25) * 4, 1) * var(--round-ratio) * var(--round-ratio));
   }
 
   &:where(.ui-slot-frame--flush) {
@@ -108,31 +113,31 @@
     --px-round: 0px;
   }
 
-  /* In a frame with $roundEnds, every child is an item of the row, except a
-     hidden element, a label that $show always hides, an element that floats
-     over the frame by the ui-slot-frame-floating class, such as a floating
-     slot, a tooltip arrow, a control bar, a list guide, or a navigation
-     marker, and a choice, file, or hidden input that isn't a slot, because it
-     covers the frame or hides. A label that $show hides below a container
-     size still counts. Another child out of the flow needs the class. The
-     five rules that find items repeat this list, so change them together.
-     Without items, plain text faces both ends, so the side padding class of
-     the text frame adds the room. A side padding class that replaces it
-     replaces the room too, unless it reads --px-plain. */
-  &:where(.ui-slot-frame--round-ends):not(:has(> :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating))) {
+  /* In a frame with $balanceRoundEnds, every child is an item of the row,
+     except a hidden element, a label that $show always hides, an element that
+     floats over the frame by the ui-slot-frame-floating class, such as a
+     floating slot, a tooltip arrow, a control bar, a list guide, or a
+     navigation marker, and a choice, file, or hidden input that isn't a slot,
+     because it covers the frame or hides. A label that $show hides below a
+     container size still counts. Another child out of the flow needs the
+     class. The five rules that find items repeat this list, so change them
+     together. Without items, plain text faces both ends, so the side padding
+     class of the text frame adds the room. A side padding class that replaces
+     it replaces the room too, unless it reads --px-plain. */
+  &:where(.ui-slot-frame--balance-round-ends):not(:has(> :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating))) {
     --px-plain: calc(var(--px) + var(--px-round));
   }
 
   /* Text as the first or the last item. A nested frame keeps its own margin,
      and zero specificity lets a caller margin win. Text slots read the room
      in their margin class instead. */
-  &:where(.ui-slot-frame--round-ends) > :is(.ui-text, .ui-slot-frame-content):not(.ak-frame):nth-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
+  &:where(.ui-slot-frame--balance-round-ends) > :is(.ui-text, .ui-slot-frame-content):not(.ak-frame):nth-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
     @variant ui-base {
       margin-inline-start: calc(var(--px-round) * var(--control-inline, 1));
     }
   }
 
-  &:where(.ui-slot-frame--round-ends) > :is(.ui-text, .ui-slot-frame-content):not(.ak-frame):nth-last-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
+  &:where(.ui-slot-frame--balance-round-ends) > :is(.ui-text, .ui-slot-frame-content):not(.ak-frame):nth-last-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
     @variant ui-base {
       margin-inline-end: calc(var(--px-round) * var(--control-inline, 1));
     }
@@ -270,11 +275,11 @@
   }
 
   /* A text slot at a round end takes the room of text there, like a label. */
-  .ui-slot-frame:where(.ui-slot-frame--round-ends) > &:where(.ui-slot-frame-slot--kind-text):nth-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
+  .ui-slot-frame:where(.ui-slot-frame--balance-round-ends) > &:where(.ui-slot-frame-slot--kind-text):nth-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
     --text-edge-start: calc(var(--px-round) * var(--control-inline, 1));
   }
 
-  .ui-slot-frame:where(.ui-slot-frame--round-ends) > &:where(.ui-slot-frame-slot--kind-text):nth-last-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
+  .ui-slot-frame:where(.ui-slot-frame--balance-round-ends) > &:where(.ui-slot-frame-slot--kind-text):nth-last-child(1 of :not(:where(input:is([type=checkbox], [type=radio], [type=file], [type=hidden]):not(.ui-slot-frame-slot)), [hidden], .ui-slot-frame-text--show-false, .ui-slot-frame-floating)) {
     --text-edge-end: calc(var(--px-round) * var(--control-inline, 1));
   }
 

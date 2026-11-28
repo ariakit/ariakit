@@ -136,15 +136,15 @@ function DocLink({ label, description, describedBy, ...props }: DocLinkProps) {
 const pages = ["Overview", "Installation", "Usage", "Changelog"];
 
 interface DemoNavProps extends NavProps {
-  /** Adds room at the round ends of the links. */
-  linkRoundEnds?: NavLinkProps["$roundEnds"];
+  /** Balances the space at the round ends of the links. */
+  linkBalanceRoundEnds?: NavLinkProps["$balanceRoundEnds"];
 }
 
 /**
  * A flat nav whose current row moves on click, so its surface can be watched as
  * it moves. The initial current row is fixed.
  */
-function DemoNav({ linkRoundEnds, ...props }: DemoNavProps) {
+function DemoNav({ linkBalanceRoundEnds, ...props }: DemoNavProps) {
   const [current, setCurrent] = useState("Installation");
   return (
     <Nav {...props}>
@@ -157,7 +157,7 @@ function DemoNav({ linkRoundEnds, ...props }: DemoNavProps) {
             event.preventDefault();
             setCurrent(page);
           }}
-          $roundEnds={linkRoundEnds}
+          $balanceRoundEnds={linkBalanceRoundEnds}
           text={page}
         />
       ))}
@@ -1243,7 +1243,7 @@ export default function NavExamples() {
 
       <Example
         title="Room at the round ends of pill rows"
-        description="Pill rows that turn on round ends move their labels in from the curve. The bar after the label floats over the row, so the label still counts as the last item and gets the room at both ends."
+        description="Pill rows that balance their round ends move their labels in from the curve. The bar after the label floats over the row, so the label still counts as the last item and gets the room at both ends."
         code={`
           <Nav
             $layout="horizontal"
@@ -1252,10 +1252,10 @@ export default function NavExamples() {
             $border
             bar={{ $offset: "halfway" }}
           >
-            <NavLink $roundEnds text="Overview" />
-            <NavLink $roundEnds text="Installation" />
-            <NavLink $roundEnds text="Usage" />
-            <NavLink $roundEnds text="Changelog" />
+            <NavLink $balanceRoundEnds text="Overview" />
+            <NavLink $balanceRoundEnds text="Installation" />
+            <NavLink $balanceRoundEnds text="Usage" />
+            <NavLink $balanceRoundEnds text="Changelog" />
           </Nav>
         `}
       >
@@ -1266,7 +1266,7 @@ export default function NavExamples() {
           $rounded="full"
           $border
           bar={{ $offset: "halfway" }}
-          linkRoundEnds
+          linkBalanceRoundEnds
           className="max-w-full"
         />
       </Example>

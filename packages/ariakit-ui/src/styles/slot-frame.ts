@@ -26,13 +26,13 @@ export const slotFrame = cv({
   variants: {
     /**
      * Sets the gap between the element's content and its siblings. Side padding
-     * beyond `md`, from `$px` or `$roundEnds`, widens the room between a slot
-     * that moves into the side padding and the text next to it by the same
+     * beyond `md`, from `$px` or `$balanceRoundEnds`, widens the room between a
+     * slot that moves into the side padding and the text next to it by the same
      * amount. Text next to text, including text slots, keeps the room that it
-     * has with the `md` side padding. Text that `$roundEnds` moves in at a
-     * round end changes neither room. Text slots read this variant, so set the
-     * gap with it, not with a gap class. With `$p="none"`, `md` is `0.4375em`,
-     * and the other steps are `0.15em` apart.
+     * has with the `md` side padding. Text that `$balanceRoundEnds` moves in at
+     * a round end changes neither room. Text slots read this variant, so set
+     * the gap with it, not with a gap class. With `$p="none"`, `md` is
+     * `0.4375em`, and the other steps are `0.15em` apart.
      * @default "md"
      */
     $gap: {
@@ -80,19 +80,20 @@ export const slotFrame = cv({
       ],
     },
     /**
-     * Adds room at round ends. Text next to a round end looks closer than its
-     * side padding, because the curve cuts the corners, so it moves in, and a
-     * rounder frame makes the `md` side padding as wide as `lg`. Slots stay
-     * where they are. The room follows the radius, so small corners get none,
-     * and a frame taller than one line counts as rounder than it is. It's on by
-     * default with `$rounded="full"`, and in badges and segmented items.
+     * Balances the space at round ends. Text next to a round end looks closer
+     * than its side padding, because the curve cuts the corners, so it moves
+     * in, and the `md` side padding widens toward `lg`. Slots stay where they
+     * are. Both grow with the area that the corners cut, so small corners get a
+     * little room, and a pill gets the most, with the `md` side padding as wide
+     * as `lg`. A frame taller than one line counts as rounder than it is. It's
+     * on by default with `$rounded="full"`, and in badges and segmented items.
      */
-    $roundEnds: "ui-slot-frame--round-ends",
+    $balanceRoundEnds: "ui-slot-frame--balance-round-ends",
   },
   defaultVariants: {
     $gap: "md",
     $gapY: "auto",
-    $roundEnds(defaultValue, variants) {
+    $balanceRoundEnds(defaultValue, variants) {
       if (variants.$rounded === "full") return defaultValue ?? true;
       return defaultValue;
     },

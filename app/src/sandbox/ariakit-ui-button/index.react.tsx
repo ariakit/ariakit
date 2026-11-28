@@ -472,6 +472,36 @@ export default function ButtonExamples() {
       </Example>
 
       <Example
+        title="Round ends below a pill"
+        description="The room at balanced round ends grows with the area that the corners cut, so text moves in a little at small corners and the most on a pill."
+        code={`
+          <Button $kind="bevel" $balanceRoundEnds $rounded="none">Archive</Button>
+          <Button $kind="bevel" $balanceRoundEnds $rounded="10px">Archive</Button>
+          <Button $kind="bevel" $balanceRoundEnds $rounded="15px">Archive</Button>
+          <Button $kind="bevel" $balanceRoundEnds $rounded="18.75px">Archive</Button>
+          <Button $kind="bevel" $rounded="full">Archive</Button>
+        `}
+      >
+        <div className="grid justify-items-start gap-2">
+          <Button $kind="bevel" $balanceRoundEnds $rounded="none">
+            Archive
+          </Button>
+          <Button $kind="bevel" $balanceRoundEnds $rounded="10px">
+            Archive
+          </Button>
+          <Button $kind="bevel" $balanceRoundEnds $rounded="15px">
+            Archive
+          </Button>
+          <Button $kind="bevel" $balanceRoundEnds $rounded="18.75px">
+            Archive
+          </Button>
+          <Button $kind="bevel" $rounded="full">
+            Archive
+          </Button>
+        </div>
+      </Example>
+
+      <Example
         title="Decorative icon"
         description="Hide a decorative symbol so it does not add text to the button name."
         code={`

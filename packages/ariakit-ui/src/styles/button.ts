@@ -97,7 +97,7 @@ export const button = cv({
       // surfaces.
       return defaultValue ?? true;
     },
-    $roundEnds(defaultValue, variants) {
+    $balanceRoundEnds(defaultValue, variants) {
       if (!isSegmentedKind(variants.$kind)) return defaultValue;
       // A segment takes its radius from its group, so it can be a pill without
       // its own $rounded="full".
